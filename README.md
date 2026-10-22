@@ -2,6 +2,15 @@
 
 This project reconstructs the **GOG Windows 1.03** version of **Star Wars: Knights of the Old Republic** from its executable. This repository is intended to house the reconstructed source code. You must purchase the original game and supply its assets.
 
+![Reconstruction progress: playable build and MSVC 7.0 matching track](matching/assets/progress.svg)
+
+This project has two decompilations of the same executable:
+
+- `src/`: built with modern Visual Studio 2022 and its libraries. Work of [mattlgroff](https://github.com/mattlgroff).
+- `matching/`: built with the original Visual Studio .NET 2002 and its libraries, so it is byte-identical. Work of [RayesDiyab](https://github.com/RayesDiyab).
+
+See [STRUCTURE.md](STRUCTURE.md). Milestones follow [STATUS.md](STATUS.md).
+
 ## Supported version
 
 The project targets the English **GOG Windows 1.03** release. The original `swkotor.exe` is a 32-bit executable with file and product version **1.0.3.0** and a size of **4,042,752 bytes**.

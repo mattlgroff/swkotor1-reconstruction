@@ -1,0 +1,44 @@
+name: Update progress tracker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'matching/status.csv'
+      - 'matching/functions.csv'
+      - 'matching/crt_libcmt.csv'
+      - 'matching/tools/render_banner.py'
+      - 'build-manifest.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: progress-tracker
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Render progress tracker
+        run: python matching/tools/render_banner.py
+      - name: Commit tracker if changed
+        run: |
+          if git diff --quiet -- matching/assets/progress.svg; then
+            echo 'Progress tracker is already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add matching/assets/progress.svg
+          git commit -m 'Refresh progress tracker'
+          git push
