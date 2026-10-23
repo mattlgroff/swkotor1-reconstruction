@@ -32,17 +32,27 @@ between them.
 --holdout hides a share of the name pairs, runs the other signals and reports
 how many hidden pairs they recover correctly: the precision of each signal.
 
-Inputs are the user's own files; outputs go to a directory outside the
-checkout, since the names they hold come from the Mac binaries:
+A name pair also needs compatible parameters where both sides have them
+(see compatible): the same count, and per parameter the same kind
+(integer, floating point, pointer or reference, or the same class by value).
+Builds agree only on the same full signature; a function the builds pair
+with different methods or different parameters is left unnamed and its
+candidates are listed as a conflict.
+
+Inputs are the user's own files. The working set goes to a directory outside
+the checkout; --repo writes the hint files this repository keeps, which stay
+separate from the proved names in symbols.csv:
 
     python matching/tools/ppcnames.py --exe swkotor.exe --ppc "Knights of the Old Republic" XKOTOR --out DIR
     python matching/tools/ppcnames.py ... --holdout 0.2
 
 Writes DIR/pairs.csv (every Windows game function, paired or not),
 DIR/link_order.csv (with a debug map), DIR/mac_unpaired.csv (Mac functions
-with no Windows partner, by category) and prints a summary. --repo also
-refreshes matching/mac_names.csv and matching/link_order.csv, the copies
-this repository keeps; run it with both builds.
+with no Windows partner, by category), DIR/signature_rejects.csv (name pairs
+refused for their parameters) and prints a summary. --repo also refreshes
+matching/mac_names.csv and matching/link_order.csv; run it with both builds.
+
+Tests: python -m unittest discover -s matching/tools -p "test_*.py"
 """
 import argparse
 import csv
@@ -56,11 +66,7 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-import pefile
-
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import matchcmp  # noqa: E402
-import todo  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 MATCHING = ROOT / "matching"
@@ -88,6 +94,7 @@ def strings_in(data, base):
 
 class Windows:
     def __init__(self, path):
+        import pefile
         self.pe = pefile.PE(path, fast_load=True)
         self.base = self.pe.OPTIONAL_HEADER.ImageBase
         text = self.section(b".text")
@@ -109,7 +116,7 @@ class Windows:
 
 
 def read_csv(name):
-    with open(MATCHING / name, newline="") as f:
+    with open(MATCHING / name, newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
 
@@ -118,6 +125,7 @@ def windows_functions(win):
     functions.csv lacks). Starts are functions.csv, the addresses status.csv
     and symbols.csv name, and the exe's direct call targets; without the
     latter a function missing from functions.csv runs on into its neighbour."""
+    import matchcmp
     rows = read_csv("functions.csv")
     crt = {int(r["address"], 16) for r in read_csv("crt_libcmt.csv")}
     eh = {int(r["address"], 16) for r in rows if r["kind"] == "eh"}
@@ -132,21 +140,122 @@ def windows_functions(win):
     return game, set(starts), ends, crt, found - listed
 
 
+# x86 instruction lengths, enough for MSVC 7.0 code: the one-byte and 0F
+# opcode maps with whether a ModRM byte follows and the immediate's size
+# (b 1, w 2, wb 3, z 4 or 2 with 66, a moffs, p far pointer, grp3 only for
+# F6/F7 /0 and /1). scan_windows walks a body one instruction at a time so
+# an E8 or E9 byte inside an operand is not taken for a call.
+
+X86_PREFIXES = frozenset((0xF0, 0xF2, 0xF3, 0x2E, 0x36, 0x3E, 0x26, 0x64, 0x65, 0x66, 0x67))
+X86_ONE = {op: (False, None) for op in range(256)}
+for _base in range(0x00, 0x40, 0x08):
+    X86_ONE.update({_base + k: (True, None) for k in range(4)})
+    X86_ONE.update({_base + 4: (False, "b"), _base + 5: (False, "z")})
+X86_ONE.update({0x62: (True, None), 0x63: (True, None), 0x68: (False, "z"), 0x69: (True, "z"),
+                0x6A: (False, "b"), 0x6B: (True, "b"), 0x80: (True, "b"), 0x81: (True, "z"),
+                0x82: (True, "b"), 0x83: (True, "b"), 0x9A: (False, "p"), 0xA8: (False, "b"),
+                0xA9: (False, "z"), 0xC0: (True, "b"), 0xC1: (True, "b"), 0xC2: (False, "w"),
+                0xC4: (True, None), 0xC5: (True, None), 0xC6: (True, "b"), 0xC7: (True, "z"),
+                0xC8: (False, "wb"), 0xCA: (False, "w"), 0xCD: (False, "b"), 0xD4: (False, "b"),
+                0xD5: (False, "b"), 0xE8: (False, "z"), 0xE9: (False, "z"), 0xEA: (False, "p"),
+                0xEB: (False, "b"), 0xF6: (True, "grp3"), 0xF7: (True, "grp3"),
+                0xFE: (True, None), 0xFF: (True, None)})
+X86_ONE.update({op: (True, None) for op in [*range(0x84, 0x90), *range(0xD0, 0xD4), *range(0xD8, 0xE0)]})
+X86_ONE.update({op: (False, "b") for op in [*range(0x70, 0x80), *range(0xB0, 0xB8), *range(0xE0, 0xE8)]})
+X86_ONE.update({op: (False, "z") for op in range(0xB8, 0xC0)})
+X86_ONE.update({op: (False, "a") for op in range(0xA0, 0xA4)})
+X86_TWO = {op: (True, None) for op in range(256)}
+X86_TWO.update({op: (False, None) for op in [0x05, 0x06, 0x07, 0x08, 0x09, 0x0B, 0x0E, *range(0x30, 0x38),
+                                             0x77, 0xA0, 0xA1, 0xA2, 0xA8, 0xA9, 0xAA, *range(0xC8, 0xD0)]})
+X86_TWO.update({op: (False, "z") for op in range(0x80, 0x90)})
+X86_TWO.update({op: (True, "b") for op in (0x70, 0x71, 0x72, 0x73, 0xA4, 0xAC, 0xBA, 0xC2, 0xC4, 0xC5, 0xC6)})
+
+
+def x86_modrm(code, i, addr16):
+    """(bytes of ModRM, SIB and displacement at i, offset of a 4-byte displacement or None)."""
+    mod, rm = code[i] >> 6, code[i] & 7
+    if mod == 3:
+        return 1, None
+    if addr16:
+        return (3 if rm == 6 else 1, None) if mod == 0 else (2 if mod == 1 else 3, None)
+    n = 1
+    if rm == 4:
+        n = 2
+        if mod == 0 and code[i + 1] & 7 == 5:
+            return 6, i + 2
+    elif mod == 0 and rm == 5:
+        return 5, i + 1
+    if mod == 1:
+        return n + 1, None
+    if mod == 2:
+        return n + 4, i + n
+    return n, None
+
+
+def x86_instruction(code, i):
+    """(length, opcode, offsets of 4-byte displacements and immediates) of the
+    instruction at code[i]; 0F opcodes are 0x0F00 | second byte. Raises
+    IndexError when the instruction runs past the end of code."""
+    start, opsize, addr16 = i, False, False
+    while code[i] in X86_PREFIXES:
+        opsize |= code[i] == 0x66
+        addr16 |= code[i] == 0x67
+        i += 1
+    op = code[i]
+    i += 1
+    if op == 0x0F:
+        op = 0x0F00 | code[i]
+        i += 1
+        if op in (0x0F38, 0x0F3A):
+            i += 1
+            modrm, imm = True, "b" if op == 0x0F3A else None
+        else:
+            modrm, imm = X86_TWO[op & 0xFF]
+    else:
+        modrm, imm = X86_ONE[op]
+    fields = []
+    if modrm:
+        reg = (code[i] >> 3) & 7
+        n, disp = x86_modrm(code, i, addr16)
+        if disp is not None:
+            fields.append(disp)
+        i += n
+        if imm == "grp3":
+            imm = ("b" if op == 0xF6 else "z") if reg < 2 else None
+    size = {None: 0, "b": 1, "w": 2, "wb": 3, "z": 2 if opsize else 4,
+            "a": 2 if addr16 else 4, "p": 4 if opsize else 6}[imm]
+    if imm in ("z", "a", "p") and size >= 4:
+        fields.append(i)
+    i += size
+    if i > len(code):
+        raise IndexError(start)
+    return i - start, op, fields
+
+
 def scan_windows(win, starts, ends, functions):
-    """{function: (callees in order, string set)}, from E8/E9 rel32 targets that
-    are function starts and 4-byte values that are string addresses."""
+    """{function: (callees in order, string set)}, from the rel32 targets of
+    E8/E9 instructions that are function starts and the 4-byte displacements
+    and immediates that are string addresses, decoded instruction by
+    instruction."""
     out = {}
     for fn in functions:
         code = win.body(fn, ends[fn])
         calls, texts = [], set()
-        for i in range(len(code) - 4):
-            value = struct.unpack_from("<I", code, i)[0]
-            if value in win.strings:
-                texts.add(win.strings[value])
-            if code[i] in (0xE8, 0xE9) and i + 5 <= len(code):
+        i = 0
+        while i < len(code):
+            try:
+                n, op, fields = x86_instruction(code, i)
+            except IndexError:
+                break
+            for f in fields:
+                value = struct.unpack_from("<I", code, f)[0]
+                if value in win.strings:
+                    texts.add(win.strings[value])
+            if op in (0xE8, 0xE9) and n == 5:
                 target = (fn + i + 5 + struct.unpack_from("<i", code, i + 1)[0]) & 0xFFFFFFFF
                 if target in starts and target != fn and not (fn <= target < ends[fn]):
                     calls.append(target)
+            i += n
         out[fn] = (list(dict.fromkeys(calls)), frozenset(texts))
     return out
 
@@ -154,26 +263,103 @@ def scan_windows(win, starts, ends, functions):
 SPECIAL = {"??0": "ctor", "??1": "dtor", "??_G": "deleting", "??_E": "deleting"}
 
 
+CALLING = re.compile(r"\b__(thiscall|cdecl|stdcall|fastcall)\b")
+
+
 def normalize_params(params):
+    """MSVC and GCC spellings of a parameter list made comparable: no
+    class/struct/enum/union keywords or calling conventions, single spaces
+    between words only, "" for (void)."""
     params = re.sub(r"\b(class|struct|enum|union)\s+", "", params)
     params = params.replace("std::_FILE", "_iobuf").replace("__ptr64", "")
-    params = re.sub(r"\s+", "", params)
+    params = CALLING.sub("", params)
+    params = re.sub(r"\s+", " ", params).strip()
+    params = re.sub(r"\s*([*&,()<>])\s*", r"\1", params)
     return "" if params == "void" else params
 
 
 def split_name(demangled):
-    """(qualified name, normalized parameters or None) of a demangled name."""
-    text = re.sub(r"\b(public|private|protected): |\b(virtual|static) |__thiscall |__cdecl |__stdcall |__fastcall ", "", demangled)
+    """(qualified name, normalized parameters or None) of a demangled name.
+    A const method's parameters end in "|const"."""
+    text = re.sub(r"\b(public|private|protected): |\b(virtual|static) |\b(class|struct|enum|union) ", "", demangled)
+    text = CALLING.sub("", text)
     m = re.search(r"([A-Za-z_~][\w:~<>, `'*&]*?)\((.*)\)\s*(const)?\s*$", text)
     if not m:
         return text.strip(), None
-    qual = m.group(1).split(" ")[-1]
-    return qual, normalize_params(m.group(2)) + ("const" if m.group(3) else "")
+    # the name is the last word outside template arguments; before it, the return type
+    head, depth, cut = m.group(1).strip(), 0, 0
+    for i, c in enumerate(head):
+        depth += (c == "<") - (c == ">")
+        if c == " " and depth == 0:
+            cut = i + 1
+    qual = re.sub(r"\s*([*&,<>])\s*", r"\1", head[cut:]).replace(",", ", ")
+    return qual, normalize_params(m.group(2)) + ("|const" if m.group(3) else "")
+
+
+def split_params(params):
+    """The top-level parameters of a normalized parameter list."""
+    out, depth, current = [], 0, ""
+    for c in params:
+        if c == "," and depth == 0:
+            out.append(current)
+            current = ""
+            continue
+        depth += c in "(<"
+        depth -= c in ")>"
+        current += c
+    return out + [current] if current or out else out
+
+
+# Kinds a parameter must keep across the builds. The reconstruction's own
+# parameter types are partly guesses (int for unsigned long, a pointer for a
+# reference, a base class for a derived one), so within a kind they may differ:
+# all 32-bit-or-narrower integers (bool too: GCC's PowerPC bool is 4 bytes,
+# MSVC's 1, and the repo writes either as int), and all pointers and
+# references. A floating-point value, a 64-bit integer and a class passed by
+# value must stay the same.
+INTEGER_TYPES = {"bool", "__bool8", "char", "signed char", "unsigned char", "short", "unsigned short",
+                 "short int", "unsigned short int", "int", "unsigned int", "unsigned", "long",
+                 "unsigned long", "long int", "unsigned long int", "wchar_t", "__wchar_t"}
+INT64_TYPES = {"__int64", "unsigned __int64", "long long", "unsigned long long"}
+
+
+def param_kind(param):
+    if param == "...":
+        return "..."
+    if "(" in param or param.rstrip().endswith(("*", "&")):
+        return "pointer"
+    base = " ".join(re.sub(r"\b(const|volatile)\b", " ", param).split())
+    if base in INTEGER_TYPES:
+        return "int"
+    if base in INT64_TYPES:
+        return "int64"
+    if base in ("double", "long double"):
+        return "double"
+    return base
+
+
+def signature_match(a, b):
+    """How two normalized parameter lists agree: "exact", "compatible" (same
+    count and the same kind each, see param_kind), "unknown" when a side has
+    none (a status.csv name), else None."""
+    if a is None or b is None:
+        return "unknown"
+    if a == b:
+        return "exact"
+    pa, pb = split_params(a.split("|")[0]), split_params(b.split("|")[0])
+    if len(pa) == len(pb) and all(param_kind(x) == param_kind(y) for x, y in zip(pa, pb)):
+        return "compatible"
+    return None
 
 
 def windows_names():
-    """{address: (qual, params or None, special kind or None, shown name)}."""
-    names = {}
+    """({address: (qual, params or None, special kind or None, shown name)},
+    addresses the CSVs give different names). symbols.csv names one body
+    several times when /OPT:ICF folded it, and status.csv can disagree with
+    symbols.csv; such an address keeps its first name for display but is not
+    paired by name. One name with different parameter lists keeps the name
+    with its parameters unknown."""
+    names, seen = {}, defaultdict(set)
     for r in read_csv("symbols.csv"):
         if r["role"] not in ("defines", "calls"):
             continue
@@ -181,14 +367,25 @@ def windows_names():
         qual, params = split_name(r["demangled"])
         kind = next((k for p, k in SPECIAL.items() if r["symbol"].startswith(p)), None)
         names.setdefault(address, (qual, params, kind, r["demangled"]))
+        seen[address].add((qual, params))
     for r in read_csv("status.csv"):
         address = int(r["address"], 16)
-        if address not in names and r["name"]:
-            parts = r["name"].split("::")
-            kind = "ctor" if len(parts) > 1 and parts[-1] == parts[-2] else \
-                "dtor" if parts[-1].startswith("~") else None
-            names[address] = (r["name"], None, kind, r["name"])
-    return names
+        if not r["name"]:
+            continue
+        if address in names:
+            # a mangled status.csv name is the symbols.csv row's own symbol
+            if not r["name"].startswith("?") and r["name"] not in {q for q, _ in seen[address]}:
+                seen[address].add((r["name"], None))
+            continue
+        parts = r["name"].split("::")
+        kind = "ctor" if len(parts) > 1 and parts[-1] == parts[-2] else \
+            "dtor" if parts[-1].startswith("~") else None
+        names[address] = (r["name"], None, kind, r["name"])
+    for address, found in seen.items():
+        if len(found) > 1 and len({q for q, _ in found}) == 1:  # one name, guessed parameters differ
+            qual, _, kind, shown = names[address]
+            names[address] = (qual, None, kind, shown)
+    return names, {a for a, found in seen.items() if len({q for q, _ in found}) > 1}
 
 
 def windows_vtables(win):
@@ -221,35 +418,56 @@ N_FUN, N_SO, N_OSO = 0x24, 0x64, 0x66
 
 class MachO:
     def __init__(self, path):
+        self.path = path
         self.data = Path(path).read_bytes()
-        if struct.unpack_from(">I", self.data, 0)[0] == 0xCAFEBABE:  # universal
+        if len(self.data) >= 8 and struct.unpack_from(">I", self.data, 0)[0] == 0xCAFEBABE:  # universal
             count = struct.unpack_from(">I", self.data, 4)[0]
+            self.need(8 + 20 * count <= len(self.data), "universal header runs past the file")
             for i in range(count):
                 cpu, _, offset, size, _ = struct.unpack_from(">5I", self.data, 8 + 20 * i)
                 if cpu == CPU_PPC:
+                    self.need(offset + size <= len(self.data), "ppc slice runs past the file")
                     self.data = self.data[offset:offset + size]
                     break
+        self.need(len(self.data) >= 28, "too short for a Mach-O header")
         magic, cpu, _, _, ncmds, _, _ = struct.unpack_from(">7I", self.data, 0)
-        if magic != 0xFEEDFACE or cpu != CPU_PPC:
-            raise SystemExit(f"{path}: not a 32-bit PowerPC Mach-O or a universal binary with one")
+        self.need(magic == 0xFEEDFACE and cpu == CPU_PPC,
+                  "not a 32-bit PowerPC Mach-O or a universal binary with one")
         self.sections = []  # (segment, section, address, size, file offset)
+        self.symtab = None
         offset = 28
         for _ in range(ncmds):
+            self.need(offset + 8 <= len(self.data), "load commands run past the file")
             cmd, size = struct.unpack_from(">2I", self.data, offset)
+            self.need(size >= 8 and offset + size <= len(self.data), f"bad load command size {size}")
             if cmd == 1:  # LC_SEGMENT
+                self.need(size >= 56, "LC_SEGMENT too short")
                 nsects = struct.unpack_from(">I", self.data, offset + 48)[0]
+                self.need(56 + 68 * nsects <= size, "LC_SEGMENT sections run past the command")
                 for i in range(nsects):
                     s = offset + 56 + 68 * i
-                    sect = self.data[s:s + 16].rstrip(b"\0").decode()
-                    seg = self.data[s + 16:s + 32].rstrip(b"\0").decode()
+                    sect = self.data[s:s + 16].rstrip(b"\0").decode("latin1")
+                    seg = self.data[s + 16:s + 32].rstrip(b"\0").decode("latin1")
                     addr, sz, off = struct.unpack_from(">3I", self.data, s + 32)
+                    self.need(not off or off + sz <= len(self.data), f"section {seg},{sect} runs past the file")
                     self.sections.append((seg, sect, addr, sz, off))
             elif cmd == 2:  # LC_SYMTAB
+                self.need(size >= 24, "LC_SYMTAB too short")
                 self.symtab = struct.unpack_from(">4I", self.data, offset + 8)
+                symoff, nsyms, stroff, strsize = self.symtab
+                self.need(symoff + 12 * nsyms <= len(self.data) and stroff + strsize <= len(self.data),
+                          "symbol or string table runs past the file")
             offset += size
+        self.need(self.symtab is not None, "no symbol table (LC_SYMTAB): a stripped build has no names")
+
+    def need(self, ok, problem):
+        if not ok:
+            raise SystemExit(f"{self.path}: {problem}")
 
     def section(self, seg, sect):
-        return next(s for s in self.sections if s[0] == seg and s[1] == sect)
+        found = next((s for s in self.sections if s[0] == seg and s[1] == sect), None)
+        self.need(found is not None, f"no {seg},{sect} section")
+        return found
 
     def bytes_at(self, addr, n):
         for _, _, start, size, off in self.sections:
@@ -261,6 +479,12 @@ class MachO:
         raw = self.bytes_at(addr, 4)
         return struct.unpack(">I", raw)[0] if len(raw) == 4 else None
 
+    def name(self, strx):
+        symoff, nsyms, stroff, strsize = self.symtab
+        self.need(strx < strsize, f"symbol name index {strx} outside the string table")
+        end = self.data.find(b"\0", stroff + strx, stroff + strsize)
+        return self.data[stroff + strx:end if end >= 0 else stroff + strsize].decode("latin1")
+
     def symbols(self):
         """[(address, section number, name)] of defined, non-debug symbols."""
         symoff, nsyms, stroff, _ = self.symtab
@@ -269,23 +493,26 @@ class MachO:
             strx, ntype, sect, _, value = struct.unpack_from(">IBBhI", self.data, symoff + 12 * i)
             if ntype & 0xE0 or ntype & 0x0E != 0x0E:
                 continue
-            end = self.data.index(b"\0", stroff + strx)
-            out.append((value, sect, self.data[stroff + strx:end].decode("latin1")))
+            out.append((value, sect, self.name(strx)))
         return out
 
     def objects(self):
-        """{function start: object file} from the debug map (N_OSO, then the
-        N_FUN entries of that object), or {} for a build without one."""
+        """{function start: object file} from the debug map: an N_OSO names
+        the object, its N_FUN entries follow, and an N_SO opens or closes a
+        compile unit, so an N_FUN after it belongs to no object until the next
+        N_OSO. {} for a build without a debug map."""
         symoff, nsyms, stroff, _ = self.symtab
         found, current = {}, None
         for i in range(nsyms):
             strx, ntype, _, _, value = struct.unpack_from(">IBBhI", self.data, symoff + 12 * i)
             if ntype not in (N_FUN, N_SO, N_OSO):
                 continue
-            name = self.data[stroff + strx:self.data.index(b"\0", stroff + strx)].decode("latin1")
+            name = self.name(strx)
             if ntype == N_OSO:
                 current = name.rsplit("/", 1)[-1]
-            elif ntype == N_FUN and name and current:
+            elif ntype == N_SO:
+                current = None
+            elif name and current:
                 found[value] = current
         return found
 
@@ -327,11 +554,16 @@ def sign16(v):
 LOADS = {32, 33, 34, 35, 40, 41, 42, 43}
 FLOAT_LOADS = {48, 49, 50, 51}
 STORES = {36, 37, 38, 39, 44, 45, 52, 53, 54, 55}
+UPDATES = {33, 35, 37, 39, 41, 43, 45, 49, 51, 53, 55}  # rA becomes the effective address
+VOLATILE = (0, *range(3, 13))  # what a call may change
 
 
 def scan_ppc(mac, ends, strings):
     """{function: (callees in order, string set)}. Tracks lis/addis/addi/ori
-    register values (and the bcl/mflr PIC base) to find string addresses."""
+    register values (and the bcl/mflr PIC base) to find string addresses.
+    A call (bl, bctrl, blrl, a linked bc) forgets the volatile registers and
+    the link register, an update-form load or store moves rA to its
+    effective address, and lmw forgets the registers it loads."""
     out = {}
     for fn, end in ends.items():
         code = mac.bytes_at(fn, end - fn)
@@ -341,23 +573,36 @@ def scan_ppc(mac, ends, strings):
             if value in strings:
                 texts.add(strings[value])
 
+        def called():
+            for r in VOLATILE:
+                regs.pop(r, None)
+
         for i in range(0, len(code) - 3, 4):
             pc, w = fn + i, struct.unpack_from(">I", code, i)[0]
             op, rd, ra, imm = w >> 26, (w >> 21) & 31, (w >> 16) & 31, w & 0xFFFF
+            xo = (w >> 1) & 0x3FF
             if op == 18:  # b / bl
                 li = w & 0x03FFFFFC
                 target = (li - 0x04000000 if li & 0x02000000 else li) + (0 if w & 2 else pc)
                 if target in ends and target != fn and not (fn <= target < end):
                     calls.append(target)
                 if w & 1:
-                    for r in (0, *range(3, 13)):
-                        regs.pop(r, None)
+                    called()
+                    lr = None
             elif w == 0x429F0005:  # bcl 20,31,$+4
                 lr = pc + 4
-            elif op == 31 and (w >> 1) & 0x3FF == 339 and ((w >> 11) & 0x3FF) == 0x100:  # mflr
+            elif op == 16 and w & 1:  # other linked bc
+                called()
+                lr = None
+            elif op == 19 and xo in (16, 528) and w & 1:  # bclrl / bcctrl (blrl, bctrl)
+                called()
+                lr = None
+            elif op == 31 and xo == 339 and ((w >> 11) & 0x3FF) == 0x100:  # mflr
                 regs.pop(rd, None)
                 if lr is not None:
                     regs[rd] = lr
+            elif op == 31 and xo == 467 and ((w >> 11) & 0x3FF) == 0x100:  # mtlr
+                lr = regs.get(rd)
             elif op == 15:  # addis / lis
                 base = 0 if ra == 0 else regs.get(ra)
                 regs.pop(rd, None)
@@ -377,10 +622,18 @@ def scan_ppc(mac, ends, strings):
                 else:
                     regs.pop(ra, None)
             elif op in LOADS or op in FLOAT_LOADS or op in STORES:
-                if ra and ra in regs:
-                    ref((regs[ra] + sign16(imm)) & 0xFFFFFFFF)
+                address = (regs[ra] + sign16(imm)) & 0xFFFFFFFF if ra and ra in regs else None
+                if address is not None:
+                    ref(address)
+                if op in UPDATES:
+                    regs.pop(ra, None)
+                    if address is not None:
+                        regs[ra] = address
                 if op in LOADS:
                     regs.pop(rd, None)
+            elif op == 46:  # lmw rD..r31
+                for r in range(rd, 32):
+                    regs.pop(r, None)
             elif op in (31, 20, 21, 23, 25, 26, 27, 28, 29, 7, 8, 12, 13):
                 regs.pop(rd, None)
                 regs.pop(ra, None)
@@ -435,9 +688,9 @@ def ppc_vtable(mac, address, ends, names, stubs):
 
 class Pairs:
     def __init__(self):
-        self.p, self.w, self.method, self.conflicts = {}, {}, {}, Counter()
+        self.p, self.w, self.method, self.signature, self.conflicts = {}, {}, {}, {}, Counter()
 
-    def add(self, w, p, method):
+    def add(self, w, p, method, signature=""):
         if p is None or w is None:
             return False
         if self.p.get(w) == p:
@@ -445,23 +698,30 @@ class Pairs:
         if w in self.p or p in self.w:
             self.conflicts[method] += 1
             return False
-        self.p[w], self.w[p], self.method[w] = p, w, method
+        self.p[w], self.w[p], self.method[w], self.signature[w] = p, w, method, signature
         return True
 
 
-def pair_names(pairs, wnames, pindex, allowed):
+def pair_names(pairs, wnames, pindex, allowed, rejects=None):
+    """Pair each allowed Windows name with the one Mac function of that name
+    whose parameters are compatible (see signature_match), preferring exact
+    parameters, and only then choose among GCC's ctor/dtor copies. A name
+    whose Mac candidates all fail on their parameters goes to rejects as
+    (address, [Mac starts])."""
     keys = Counter((q, a) for w, (q, a, k, _) in wnames.items() if w in allowed)
     for w, (qual, params, kind, _) in wnames.items():
         if w not in allowed or keys[(qual, params)] > 1:
             continue
-        cands = pindex.get(qual, [])
+        named = pindex.get(qual, [])
+        cands = [c for c in named if signature_match(params, c[1])]
+        cands = [c for c in cands if signature_match(params, c[1]) == "exact"] or cands
+        if named and not cands and rejects is not None:
+            rejects.append((w, [c[0] for c in named]))
         if kind in VARIANTS:
             cands = next((found for wanted in VARIANTS[kind]
                           if (found := [c for c in cands if c[2] in wanted])), [])
-        if params is not None and len(cands) > 1:
-            cands = [c for c in cands if c[1] == params]
         if len(cands) == 1:
-            pairs.add(w, cands[0][0], "name")
+            pairs.add(w, cands[0][0], "name", signature_match(params, cands[0][1]))
 
 
 MIN_FOLD_SAFE = 16  # /OPT:ICF folds tiny bodies across classes
@@ -470,9 +730,10 @@ MIN_FOLD_SAFE = 16  # /OPT:ICF folds tiny bodies across classes
 def pair_vtables(pairs, wtables, ptables, pnames, wsize, stats):
     """Slot-by-slot pairs. The Mac table's length is exact; the Windows read
     may run on into the next table, so only a Windows table at least as long
-    is used. Skipped: overloaded virtuals (MSVC orders an overload set in
-    reverse, GCC in declaration order), tiny bodies that may be folded, and
-    a slot body seen with two different partners."""
+    is used, and only when no slot contradicts a pair already made. Skipped:
+    overloaded virtuals (MSVC orders an overload set in reverse, GCC in
+    declaration order), tiny bodies that may be folded, and a slot body seen
+    with two different partners."""
     proposals = defaultdict(set)
     for cls, wslots in wtables.items():
         pslots = ptables.get(cls)
@@ -481,12 +742,16 @@ def pair_vtables(pairs, wtables, ptables, pnames, wsize, stats):
         if len(wslots) < len(pslots):
             stats["vtable size differs"] += 1
             continue
-        stats["vtables paired"] += 1
         method = [pnames[p][1].split("(")[0].split("::")[-1] if p else None for p in pslots]
         overloaded = {n for n, c in Counter(method).items() if c > 1}
-        for w, p, name in zip(wslots, pslots, method):
-            if p is not None and name not in overloaded and wsize.get(w, 0) >= MIN_FOLD_SAFE:
-                proposals[w].add(p)
+        usable = [(w, p) for w, p, name in zip(wslots, pslots, method)
+                  if p is not None and name not in overloaded and wsize.get(w, 0) >= MIN_FOLD_SAFE]
+        if any(pairs.p.get(w, p) != p or pairs.w.get(p, w) != w for w, p in usable):
+            stats["vtables contradicted"] += 1  # a known pair says the slots are misaligned
+            continue
+        stats["vtables paired"] += 1
+        for w, p in usable:
+            proposals[w].add(p)
     partners = Counter(p for ps in proposals.values() for p in ps)
     for w, ps in proposals.items():
         if len(ps) == 1 and partners[next(iter(ps))] == 1:
@@ -512,7 +777,8 @@ SIZE_RATIO = (0.25, 4.0)  # Mac / Windows body size, about the 1st to 99th perce
 def pair_calls(pairs, wscan, pscan, wgame, wsize, psize, min_votes):
     """Each paired function whose callees (or callers) leave exactly one
     unpaired function on each side proposes that pair. A proposal is taken
-    when min_votes paired functions make it and nothing competes with it."""
+    when min_votes distinct paired functions make it (one that is both caller
+    and callee counts once) and nothing competes with it."""
     wcallers, pcallers = defaultdict(list), defaultdict(list)
     for w, (calls, _) in wscan.items():
         for c in calls:
@@ -529,19 +795,19 @@ def pair_calls(pairs, wscan, pscan, wgame, wsize, psize, min_votes):
     method = "calls" if min_votes > 1 else "calls1"
     changed = True
     while changed:
-        votes = Counter()
+        anchors = defaultdict(set)  # proposal: the paired functions that make it
         for w, p in pairs.p.items():
             for wl, pl in ((wscan.get(w, ([],))[0], pscan.get(p, ([],))[0]),
                            (wcallers.get(w, []), pcallers.get(p, []))):
                 wl = [x for x in wl if x in wgame and x not in pairs.p]
                 pl = [x for x in pl if x not in pairs.w]
                 if len(wl) == 1 and len(pl) == 1 and plausible(wl[0], pl[0]):
-                    votes[(wl[0], pl[0])] += 1
-        wseen = Counter(w for w, _ in votes)
-        pseen = Counter(p for _, p in votes)
+                    anchors[(wl[0], pl[0])].add(w)
+        wseen = Counter(w for w, _ in anchors)
+        pseen = Counter(p for _, p in anchors)
         changed = False
-        for (w, p), n in votes.items():
-            if n >= min_votes and wseen[w] == 1 and pseen[p] == 1:
+        for (w, p), by in anchors.items():
+            if len(by) >= min_votes and wseen[w] == 1 and pseen[p] == 1:
                 changed |= pairs.add(w, p, method)
 
 
@@ -554,10 +820,10 @@ class Original:
         self.win = Windows(path)
         self.game, self.starts, self.ends, self.crt, self.unlisted = windows_functions(self.win)
         self.scan = scan_windows(self.win, self.starts, self.ends, self.game)
-        self.names = windows_names()
+        self.names, self.ambiguous = windows_names()
         self.tables = windows_vtables(self.win)
         self.size = {w: self.ends[w] - w for w in self.ends}
-        self.named = {w for w in self.names if w in self.game}
+        self.named = {w for w in self.names if w in self.game and w not in self.ambiguous}
 
 
 class MacBuild:
@@ -575,9 +841,9 @@ class MacBuild:
         self.objects = mac.objects()
 
 
-def run(w, mac, allowed, stats):
+def run(w, mac, allowed, stats, rejects=None):
     pairs = Pairs()
-    pair_names(pairs, w.names, mac.index, allowed)
+    pair_names(pairs, w.names, mac.index, allowed, rejects)
     pair_vtables(pairs, w.tables, mac.tables, mac.names, w.size, stats)
     pair_strings(pairs, w.scan, mac.scan, w.game)
     pair_calls(pairs, w.scan, mac.scan, w.game, w.size, mac.size, 2)
@@ -586,35 +852,67 @@ def run(w, mac, allowed, stats):
     return pairs
 
 
-def holdout(w, mac, share, seed):
-    reference = Pairs()
-    pair_names(reference, w.names, mac.index, w.named)
-    hidden = set(random.Random(seed).sample(sorted(reference.p), int(len(reference.p) * share)))
-    pairs = run(w, mac, w.named - hidden, Counter())
-    print(f"{mac.label}: {len(hidden)} of {len(reference.p)} name pairs hidden")
-    print(f"  {'method':8} {'recovered':>9} {'correct':>8} {'precision':>9}")
-    for method in METHODS[1:]:
-        got = [x for x in hidden if pairs.method.get(x) == method]
-        ok = sum(pairs.p[x] == reference.p[x] for x in got)
-        print(f"  {method:8} {len(got):9} {ok:8} {ok / len(got) if got else 0:9.1%}")
-
-
-def qualified(demangled):
-    return demangled.split("(")[0]
+def holdout(w, builds, share, seed):
+    """Precision and coverage of signals 2 to 5. The targets are frozen first:
+    the functions some build pairs by name with every name known, and what it
+    pairs them with. One seeded sample of them is hidden from every build, so
+    each build and the combination are measured on the same functions."""
+    references = []
+    for mac in builds:
+        reference = Pairs()
+        pair_names(reference, w.names, mac.index, w.named)
+        references.append(reference)
+    targets = sorted(set().union(*(r.p for r in references)))
+    hidden = set(random.Random(seed).sample(targets, int(len(targets) * share)))
+    print(f"{len(hidden)} of {len(targets)} name pairs hidden (seed {seed})")
+    results = []
+    for mac, reference in zip(builds, references):
+        pairs = run(w, mac, w.named - hidden, Counter())
+        results.append(pairs)
+        eligible = hidden & reference.p.keys()
+        print(f"{mac.label}: {len(eligible)} of them paired by name in this build")
+        print(f"  {'method':8} {'recovered':>9} {'correct':>8} {'precision':>9}")
+        total = 0
+        for method in METHODS[1:]:
+            got = [x for x in eligible if pairs.method.get(x) == method]
+            ok = sum(pairs.p[x] == reference.p[x] for x in got)
+            total += len(got)
+            print(f"  {method:8} {len(got):9} {ok:8} {ok / len(got) if got else 0:9.1%}")
+        print(f"  coverage {total} of {len(eligible)} ({total / len(eligible) if eligible else 0:.1%})")
+    if len(builds) < 2:
+        return
+    truth = defaultdict(set)  # hidden function: the signatures its name pairs give it
+    for mac, reference in zip(builds, references):
+        for x in hidden & reference.p.keys():
+            truth[x].add(split_name(mac.names[reference.p[x]][1]))
+    every = f"{len(builds)}/{len(builds)}"
+    got, right = Counter(), Counter()
+    for x, (name, _, agree, _) in combine(hidden, builds, results).items():
+        group = "conflict" if agree == "conflict" else "all builds" if agree == every else "some builds"
+        got[group] += 1
+        right[group] += bool(name) and split_name(name) in truth[x]
+    print("combined:")
+    print(f"  {'builds':11} {'recovered':>9} {'correct':>8} {'precision':>9}")
+    for group in ("all builds", "some builds"):
+        print(f"  {group:11} {got[group]:9} {right[group]:8} {right[group] / got[group] if got[group] else 0:9.1%}")
+    print(f"  {'conflict':11} {got['conflict']:9}        - (left unnamed)")
+    named = got["all builds"] + got["some builds"]
+    print(f"  coverage {named} of {len(hidden)} named ({named / len(hidden) if hidden else 0:.1%})")
 
 
 def combine(game, builds, results):
     """{function: (name, best method, agreement, conflicting names)}. Builds
-    agree when they pair a function with the same qualified name."""
+    agree when they pair a function with the same full signature, name and
+    parameters; otherwise it stays unnamed and every candidate is listed."""
     out = {}
     for w in game:
         hits = [(mac.names[pairs.p[w]][1], pairs.method[w])
                 for mac, pairs in zip(builds, results) if w in pairs.p]
         if not hits:
             continue
-        quals = {qualified(name) for name, _ in hits}
-        if len(quals) > 1:
-            out[w] = ("", "", "conflict", " | ".join(sorted(quals)))
+        names = sorted({name for name, _ in hits})
+        if len({split_name(name) for name in names}) > 1:
+            out[w] = ("", "", "conflict", " | ".join(names))
             continue
         method = min((m for _, m in hits), key=METHODS.index)
         out[w] = (hits[0][0], method, f"{len(hits)}/{len(builds)}", "")
@@ -643,24 +941,38 @@ def link_order(sources):
 
 
 def write_link_order(path, order):
-    with open(path, "w", newline="") as f:
+    with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["order", "first", "last", "object", "functions"])
         for i, (first, last, obj, n) in enumerate(order, 1):
             writer.writerow([i, f"0x{first:08X}", f"0x{last:08X}", obj, n])
 
 
-def write_mac_names(path, game, combined, sources, inferred):
-    """The repository's copy: each game function with a Mac name or a source file."""
-    with open(path, "w", newline="") as f:
+def source_how(x, sources, inferred):
+    """How a function's source file is known: "debug map" when the function
+    itself is paired with a function the debug map places, "neighbours" when
+    it only sits inside a run of that file's functions."""
+    return "debug map" if x in sources else "neighbours" if x in inferred else ""
+
+
+def signature_of(x, results):
+    """exact, compatible or unknown for a name pair: how its Windows and Mac
+    parameters agree (see signature_match); "" for the other signals."""
+    return next((pairs.signature[x] for pairs in results if pairs.signature.get(x)), "")
+
+
+def write_mac_names(path, game, combined, sources, inferred, results):
+    """The repository's hint file: each game function with a Mac name or a source file."""
+    with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["address", "mac_name", "method", "builds", "conflict", "source", "source_how"])
+        writer.writerow(["address", "mac_name", "method", "builds", "conflict", "signature", "source", "source_how"])
         for x in sorted(game):
             name, method, agree, conflict = combined.get(x, ("", "", "", ""))
             source = sources.get(x) or inferred.get(x, "")
             if agree or source:
-                how = "paired" if x in sources else "inside run" if x in inferred else ""
-                writer.writerow([f"0x{x:08X}", name, method, agree, conflict, source, how])
+                writer.writerow([f"0x{x:08X}", name, method, agree, conflict,
+                                 signature_of(x, results) if name else "", source,
+                                 source_how(x, sources, inferred)])
 
 
 def category(demangled):
@@ -697,12 +1009,12 @@ def main():
     w = Original(args.exe)
     builds = [MacBuild(path, args.cxxfilt) for path in args.ppc]
     if args.holdout:
-        for mac in builds:
-            holdout(w, mac, args.holdout, args.seed)
+        holdout(w, builds, args.holdout, args.seed)
         return
 
     stats = [Counter() for _ in builds]
-    results = [run(w, mac, w.named, s) for mac, s in zip(builds, stats)]
+    rejects = [[] for _ in builds]
+    results = [run(w, mac, w.named, s, r) for mac, s, r in zip(builds, stats, rejects)]
     combined = combine(w.game, builds, results)
     sources = {}
     for mac, pairs in zip(builds, results):
@@ -715,32 +1027,42 @@ def main():
         for x in w.game:
             if first < x < last and x not in sources:
                 inferred[x] = obj
+    import todo
     status = {int(r["address"], 16): r["status"] for r in read_csv("status.csv")}
     playable = todo.playable_index()
 
     out.mkdir(parents=True, exist_ok=False)
     (out / ".gitignore").write_text("*\n")
-    with open(out / "pairs.csv", "w", newline="") as f:
+    with open(out / "pairs.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["address", "size", "listed", "status", "playable", "repo_name", "mac_name",
-                         "method", "builds", "conflict", "source", "source_how", "mac_addresses"])
+        writer.writerow(["address", "size", "listed", "status", "playable", "repo_name", "repo_name_conflict",
+                         "mac_name", "method", "builds", "conflict", "signature", "source", "source_how",
+                         "mac_addresses"])
         for x in sorted(w.game):
             name, method, agree, conflict = combined.get(x, ("", "", "", ""))
             where = playable.get(x)
             source = sources.get(x) or inferred.get(x, "")
-            how = "paired" if x in sources else "inside run" if x in inferred else ""
+            how = source_how(x, sources, inferred)
             macs = ";".join(f"{mac.label}:0x{pairs.p[x]:08X}" for mac, pairs in zip(builds, results) if x in pairs.p)
             writer.writerow([f"0x{x:08X}", w.size[x], "no" if x in w.unlisted else "yes",
                              status.get(x, "todo"), where[0].relative_to(ROOT).as_posix() if where else "",
-                             w.names.get(x, (None, None, None, ""))[3], name, method, agree, conflict,
+                             w.names.get(x, (None, None, None, ""))[3], "yes" if x in w.ambiguous else "",
+                             name, method, agree, conflict, signature_of(x, results) if name else "",
                              source, how, macs])
     for where in [out] + ([MATCHING] if args.repo else []):
         if order:
             write_link_order(where / "link_order.csv", order)
     if args.repo:
-        write_mac_names(MATCHING / "mac_names.csv", w.game, combined, sources, inferred)
+        write_mac_names(MATCHING / "mac_names.csv", w.game, combined, sources, inferred, results)
+    with open(out / "signature_rejects.csv", "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["build", "address", "repo_name", "mac_candidates"])
+        for mac, refused in zip(builds, rejects):
+            for x, starts in refused:
+                writer.writerow([mac.label, f"0x{x:08X}", w.names[x][3],
+                                 " | ".join(mac.names[p][1] for p in starts)])
     unpaired = Counter()
-    with open(out / "mac_unpaired.csv", "w", newline="") as f:
+    with open(out / "mac_unpaired.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["build", "mac_address", "size", "category", "mac_name"])
         for mac, pairs in zip(builds, results):
@@ -755,10 +1077,14 @@ def main():
 
     print(f"Windows game functions: {len(w.game)} ({len(w.game & w.unlisted)} missing from functions.csv; "
           f"stock LIBCMT excluded: {len(w.crt)})")
-    for mac, pairs, s in zip(builds, results, stats):
+    print(f"repo names left out of name pairing: {len(w.ambiguous & w.game)} addresses the CSVs name differently")
+    for mac, pairs, s, refused in zip(builds, results, stats, rejects):
         print(f"{mac.label}: {len(mac.ends)} functions, {len(mac.objects)} with an object file; "
-              f"{s['vtables paired']} vtables paired; {len(pairs.p)} Windows functions paired "
-              + "(" + ", ".join(f"{m} {sum(1 for v in pairs.method.values() if v == m)}" for m in METHODS) + ")")
+              f"{s['vtables paired']} vtables paired, {s['vtables contradicted']} contradicted; "
+              f"{len(pairs.p)} Windows functions paired "
+              + "(" + ", ".join(f"{m} {sum(1 for v in pairs.method.values() if v == m)}" for m in METHODS) + "); "
+              + "name pairs by parameters: " + ", ".join(f"{k} {n}" for k, n in sorted(Counter(pairs.signature[x] for x, m in pairs.method.items() if m == "name").items()))
+              + f"; refused for parameters {len(refused)}")
     print()
     print(f"{'':42} {'functions':>9}")
     new = lambda x: x in combined and combined[x][0] and x not in w.names

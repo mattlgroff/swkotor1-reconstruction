@@ -1,0 +1,349 @@
+"""Regression tests for ppcnames.py on synthetic inputs; no game files needed.
+
+    python -m unittest discover -s matching/tools -p "test_*.py"
+"""
+import contextlib
+import io
+import struct
+import sys
+import tempfile
+import unittest
+from collections import Counter
+from pathlib import Path
+from types import SimpleNamespace
+from unittest import mock
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import ppcnames as pn  # noqa: E402
+
+
+def mac_index(*entries):
+    """ppc_index from (start, demangled, mangled) entries."""
+    return pn.ppc_index({start: (mangled, demangled) for start, demangled, mangled in entries})
+
+
+def windows(*entries):
+    """windows_names-shaped {address: (qual, params, kind, shown)} from (address, demangled, kind)."""
+    return {a: (*pn.split_name(d), kind, d) for a, d, kind in entries}
+
+
+class Signatures(unittest.TestCase):
+    def test_unique_name_with_wrong_parameter_kind_is_refused(self):
+        pairs, rejects = pn.Pairs(), []
+        pn.pair_names(pairs, windows((0x1000, "public: void __thiscall Foo::bar(int)", None)),
+                      mac_index((0x10, "Foo::bar(float)", "__ZN3Foo3barEf")), {0x1000}, rejects)
+        self.assertEqual(pairs.p, {})
+        self.assertEqual(rejects, [(0x1000, [0x10])])
+
+    def test_guessed_integer_and_pointer_types_are_compatible(self):
+        pairs = pn.Pairs()
+        pn.pair_names(pairs, windows((0x1000, "public: int __thiscall Foo::bar(int,class CExoString *)", None)),
+                      mac_index((0x10, "Foo::bar(unsigned long, CExoString const&)", "__ZN3Foo3barEmRK10CExoString")),
+                      {0x1000})
+        self.assertEqual(pairs.p, {0x1000: 0x10})
+        self.assertEqual(pairs.signature[0x1000], "compatible")
+
+    def test_parameter_count_must_match(self):
+        self.assertIsNone(pn.signature_match("int,int", "int"))
+        self.assertIsNone(pn.signature_match("int", ""))
+        self.assertIsNone(pn.signature_match("Vector", "Vector*"))
+        self.assertIsNone(pn.signature_match("float", "double"))
+        self.assertEqual(pn.signature_match(None, "int"), "unknown")
+        self.assertEqual(pn.signature_match("CExoString const&", "CExoString const&"), "exact")
+
+    def test_msvc_and_gcc_spellings_normalize_alike(self):
+        _, a = pn.split_name("public: void __thiscall Foo::bar(class CExoString const &,char const *)const ")
+        _, b = pn.split_name("Foo::bar(CExoString const&, char const*) const")
+        self.assertEqual(a, b)
+        self.assertEqual(pn.split_name("public: void __thiscall CExoArrayList<unsigned long>::SetSize(int)"),
+                         pn.split_name("CExoArrayList<unsigned long>::SetSize(int)"))
+
+    def test_exact_parameters_win_over_compatible_ones(self):
+        pairs = pn.Pairs()
+        pn.pair_names(pairs, windows((0x1000, "public: void __thiscall Foo::bar(int)", None)),
+                      mac_index((0x10, "Foo::bar(unsigned long)", "__ZN3Foo3barEm"),
+                                (0x20, "Foo::bar(int)", "__ZN3Foo3barEi")), {0x1000})
+        self.assertEqual(pairs.p, {0x1000: 0x20})
+        self.assertEqual(pairs.signature[0x1000], "exact")
+
+    def test_parameters_are_checked_before_ctor_variants(self):
+        # The complete-object copy (C1) is preferred, but only among
+        # constructors whose parameters fit.
+        pairs = pn.Pairs()
+        pn.pair_names(pairs, windows((0x1000, "public: __thiscall Foo::Foo(int)", "ctor")),
+                      mac_index((0x10, "Foo::Foo(float)", "__ZN3FooC1Ef"),
+                                (0x20, "Foo::Foo(int)", "__ZN3FooC2Ei")), {0x1000})
+        self.assertEqual(pairs.p, {0x1000: 0x20})
+
+
+class Agreement(unittest.TestCase):
+    def build(self, names):
+        return SimpleNamespace(names={p: ("", d) for p, d in names.items()})
+
+    def pairs(self, mapping, method="name"):
+        pairs = pn.Pairs()
+        for w, p in mapping.items():
+            pairs.add(w, p, method)
+        return pairs
+
+    def test_same_method_different_parameters_is_a_conflict(self):
+        builds = [self.build({0x10: "Foo::bar(int)"}), self.build({0x30: "Foo::bar(float)"})]
+        out = pn.combine({0x1000}, builds, [self.pairs({0x1000: 0x10}), self.pairs({0x1000: 0x30})])
+        self.assertEqual(out[0x1000], ("", "", "conflict", "Foo::bar(float) | Foo::bar(int)"))
+
+    def test_same_signature_agrees(self):
+        builds = [self.build({0x10: "Foo::bar(int)"}), self.build({0x30: "Foo::bar(int)"})]
+        out = pn.combine({0x1000}, builds, [self.pairs({0x1000: 0x10}), self.pairs({0x1000: 0x30}, "calls")])
+        self.assertEqual(out[0x1000], ("Foo::bar(int)", "name", "2/2", ""))
+
+
+class Propagation(unittest.TestCase):
+    def test_one_anchor_that_is_caller_and_callee_counts_once(self):
+        # A (paired) calls X and X calls A: the callee and the caller views
+        # both propose X, but only A supports them.
+        pairs = pn.Pairs()
+        pairs.add(0xA, 0xA0, "name")
+        wscan = {0xA: ([0xB], frozenset()), 0xB: ([0xA], frozenset())}
+        pscan = {0xA0: ([0xB0], frozenset()), 0xB0: ([0xA0], frozenset())}
+        size = {0xA: 32, 0xB: 32, 0xA0: 32, 0xB0: 32}
+        pn.pair_calls(pairs, wscan, pscan, {0xA, 0xB}, size, size, 2)
+        self.assertNotIn(0xB, pairs.p)
+        pn.pair_calls(pairs, wscan, pscan, {0xA, 0xB}, size, size, 1)
+        self.assertEqual(pairs.method.get(0xB), "calls1")
+
+    def test_two_independent_anchors_pair(self):
+        pairs = pn.Pairs()
+        pairs.add(0xA, 0xA0, "name")
+        pairs.add(0xC, 0xC0, "name")
+        wscan = {0xA: ([0xB], frozenset()), 0xC: ([0xB], frozenset()), 0xB: ([], frozenset())}
+        pscan = {0xA0: ([0xB0], frozenset()), 0xC0: ([0xB0], frozenset()), 0xB0: ([], frozenset())}
+        size = {x: 32 for x in (0xA, 0xB, 0xC, 0xA0, 0xB0, 0xC0)}
+        pn.pair_calls(pairs, wscan, pscan, {0xA, 0xB, 0xC}, size, size, 2)
+        self.assertEqual(pairs.method.get(0xB), "calls")
+
+    def vtable(self, known):
+        pairs, stats = pn.Pairs(), Counter()
+        for w, p in known.items():
+            pairs.add(w, p, "name")
+        names = {0x10: ("", "Foo::a()"), 0x20: ("", "Foo::b()"), 0x30: ("", "Foo::c()")}
+        pn.pair_vtables(pairs, {"Foo": [0x100, 0x200, 0x300]}, {"Foo": [0x10, 0x20, 0x30]},
+                        names, {0x100: 32, 0x200: 32, 0x300: 32}, stats)
+        return pairs, stats
+
+    def test_vtable_alignment_is_used_when_known_slots_agree(self):
+        pairs, stats = self.vtable({0x100: 0x10})
+        self.assertEqual(pairs.p, {0x100: 0x10, 0x200: 0x20, 0x300: 0x30})
+        self.assertEqual(stats["vtables paired"], 1)
+
+    def test_vtable_alignment_stops_when_a_known_slot_contradicts_it(self):
+        pairs, stats = self.vtable({0x100: 0x20})
+        self.assertEqual(pairs.p, {0x100: 0x20})
+        self.assertEqual(stats["vtables contradicted"], 1)
+
+
+class X86Scanner(unittest.TestCase):
+    def scan(self, code, starts=(), strings=None):
+        win = SimpleNamespace(body=lambda s, e: code[:e - s], strings=strings or {})
+        return pn.scan_windows(win, set(starts) | {0x1000}, {0x1000: 0x1000 + len(code)}, [0x1000])[0x1000]
+
+    def test_e8_inside_an_operand_is_not_a_call(self):
+        # mov eax, 0x00000FFA_E8 ... : the E8 is the MOV's immediate
+        calls, _ = self.scan(bytes.fromhex("b8 e8 fa 0f 00 00 90 c3"), starts={0x2000, 0x1FFF})
+        self.assertEqual(calls, [])
+
+    def test_real_call_and_string_reference(self):
+        code = bytes.fromhex("68 00 30 40 00") + b"\xe8" + struct.pack("<i", 0x2000 - 0x100A) + b"\xc3"
+        calls, texts = self.scan(code, starts={0x2000}, strings={0x403000: "hello"})
+        self.assertEqual(calls, [0x2000])
+        self.assertEqual(texts, {"hello"})
+
+    def test_lengths(self):
+        for hexcode, length in (("8b 04 8d 00 10 40 00", 7),  # mov eax, [ecx*4+0x401000]
+                                ("66 c7 45 f8 34 12", 6),     # mov word [ebp-8], 0x1234
+                                ("0f 84 00 00 00 00", 6),     # jz rel32
+                                ("f6 45 08 01", 4),           # test byte [ebp+8], 1
+                                ("f7 d8", 2),                 # neg eax
+                                ("d9 05 00 10 40 00", 6),     # fld dword [0x401000]
+                                ("c2 08 00", 3)):
+            code = bytes.fromhex(hexcode)
+            self.assertEqual(pn.x86_instruction(code, 0)[0], length, hexcode)
+
+    def test_truncated_instruction_ends_the_scan(self):
+        self.assertEqual(self.scan(bytes.fromhex("90 e8 00 00"))[0], [])
+
+
+def ppc(*words):
+    return b"".join(struct.pack(">I", w) for w in words)
+
+
+def lis(rd, hi):
+    return (15 << 26) | (rd << 21) | (hi & 0xFFFF)
+
+
+def addi(rd, ra, imm):
+    return (14 << 26) | (rd << 21) | (ra << 16) | (imm & 0xFFFF)
+
+
+def dform(op, rd, ra, imm):
+    return (op << 26) | (rd << 21) | (ra << 16) | (imm & 0xFFFF)
+
+
+MFLR3 = 0x7C6802A6
+BCTRL = 0x4E800421
+BL_NEXT = 0x48000005  # bl $+4
+
+
+class PPCScanner(unittest.TestCase):
+    def texts(self, code, strings):
+        mac = SimpleNamespace(bytes_at=lambda a, n: code[a - 0x1000:a - 0x1000 + n])
+        return pn.scan_ppc(mac, {0x1000: 0x1000 + len(code)}, strings)[0x1000][1]
+
+    def test_bctrl_forgets_volatile_registers(self):
+        code = ppc(lis(3, 1), BCTRL, addi(5, 3, 0x20))
+        self.assertEqual(self.texts(code, {0x10020: "stale"}), frozenset())
+
+    def test_bl_forgets_the_link_register(self):
+        # bcl 20,31,$+4 sets the PIC base; a later bl changes LR, so mflr after it is unknown
+        code = ppc(0x429F0005, BL_NEXT, MFLR3, addi(4, 3, 0x10))
+        self.assertEqual(self.texts(code, {0x1004 + 0x10: "pic", 0x1008 + 0x10: "after bl"}), frozenset())
+        code = ppc(0x429F0005, MFLR3, addi(4, 3, 0x10))
+        self.assertEqual(self.texts(code, {0x1004 + 0x10: "pic"}), {"pic"})
+
+    def test_update_form_moves_the_base_register(self):
+        # lis r3,1; stwu r4,16(r3); addi r5,r3,32 -> r3 is 0x10010, so 0x10030
+        code = ppc(lis(3, 1), dform(37, 4, 3, 16), addi(5, 3, 32))
+        self.assertEqual(self.texts(code, {0x10020: "stale", 0x10030: "right"}), {"right"})
+        code = ppc(lis(3, 1), dform(33, 4, 3, 16), addi(5, 3, 32))  # lwzu
+        self.assertEqual(self.texts(code, {0x10020: "stale", 0x10030: "right"}), {"right"})
+
+    def test_lmw_forgets_what_it_loads(self):
+        code = ppc(lis(30, 1), dform(46, 29, 1, 8), addi(5, 30, 0x20))
+        self.assertEqual(self.texts(code, {0x10020: "stale"}), frozenset())
+
+
+def macho(symbols=(), text=b"\0" * 16, symtab=True, cpu=18, magic=0xFEEDFACE):
+    """A minimal PowerPC Mach-O: __TEXT,__text and, with symtab, nlist entries
+    (name, type, section, value)."""
+    strtab = b"\0"
+    nlist = b""
+    for name, ntype, sect, value in symbols:
+        nlist += struct.pack(">IBBhI", len(strtab), ntype, sect, 0, value)
+        strtab += name.encode() + b"\0"
+    seg_size, symtab_size = 56 + 68, 24 if symtab else 0
+    text_off = 28 + seg_size + symtab_size
+    sym_off = text_off + len(text)
+    str_off = sym_off + len(nlist)
+    header = struct.pack(">7I", magic, cpu, 0, 2, 2 if symtab else 1, seg_size + symtab_size, 0)
+    seg = struct.pack(">2I16s8I", 1, seg_size, b"__TEXT", 0x1000, len(text), text_off, len(text), 7, 5, 1, 0)
+    seg += struct.pack(">16s16s9I", b"__text", b"__TEXT", 0x1000, len(text), text_off, 2, 0, 0, 0, 0, 0)
+    cmds = seg + (struct.pack(">6I", 2, 24, sym_off, len(symbols), str_off, len(strtab)) if symtab else b"")
+    return header + cmds + text + nlist + strtab
+
+
+class MachOInput(unittest.TestCase):
+    def load(self, data):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "exe"
+            path.write_bytes(data)
+            return pn.MachO(path)
+
+    def test_valid(self):
+        mac = self.load(macho([("_main", 0x0F, 1, 0x1000)]))
+        self.assertEqual(mac.symbols(), [(0x1000, 1, "_main")])
+
+    def test_malformed_files_are_refused_cleanly(self):
+        good = macho([("_main", 0x0F, 1, 0x1000)])
+        for label, data in (("empty", b""),
+                            ("wrong magic", macho(magic=0xFEEDFACF)),
+                            ("x86", macho(cpu=7)),
+                            ("no symtab", macho(symtab=False)),
+                            ("truncated", good[:60]),
+                            ("universal without ppc", struct.pack(">2I5I", 0xCAFEBABE, 1, 7, 3, 28, len(good), 12) + good),
+                            ("universal slice past end", struct.pack(">2I5I", 0xCAFEBABE, 1, 18, 0, 28, 10 ** 6, 12))):
+            with self.subTest(label), self.assertRaises(SystemExit):
+                self.load(data)
+
+    def test_name_index_outside_the_string_table(self):
+        data = bytearray(macho([("_main", 0x0F, 1, 0x1000)]))
+        sym_off = 28 + 56 + 68 + 24 + 16
+        struct.pack_into(">I", data, sym_off, 10 ** 6)
+        with self.assertRaises(SystemExit):
+            self.load(bytes(data)).symbols()
+
+    def test_debug_map_resets_between_compile_units(self):
+        mac = self.load(macho([("", pn.N_SO, 0, 0), ("/obj/a.o", pn.N_OSO, 0, 0), ("_f", pn.N_FUN, 1, 0x1000),
+                               ("", pn.N_SO, 0, 0), ("_g", pn.N_FUN, 1, 0x1004),
+                               ("/obj/b.o", pn.N_OSO, 0, 0), ("_h", pn.N_FUN, 1, 0x1008)]))
+        self.assertEqual(mac.objects(), {0x1000: "a.o", 0x1008: "b.o"})
+
+
+class RepoNames(unittest.TestCase):
+    def names(self, symbols, status):
+        tables = {"symbols.csv": symbols, "status.csv": status}
+        with mock.patch.object(pn, "read_csv", lambda name: tables[name]):
+            return pn.windows_names()
+
+    def test_conflicting_rows_are_not_paired_by_name(self):
+        row = lambda s, d, a: {"symbol": s, "demangled": d, "address": a, "role": "defines"}
+        names, ambiguous = self.names(
+            [row("?a@Foo@@QAEXXZ", "public: void __thiscall Foo::a(void)", "0x1000"),
+             row("?b@Bar@@QAEXXZ", "public: void __thiscall Bar::b(void)", "0x1000"),
+             row("?c@Foo@@QAEXXZ", "public: void __thiscall Foo::c(void)", "0x2000"),
+             row("?d@Foo@@QAEXXZ", "public: void __thiscall Foo::d(void)", "0x3000"),
+             row("?f@Foo@@QAEXH@Z", "public: void __thiscall Foo::f(int)", "0x5000"),
+             row("?f@Foo@@QAEXPAH@Z", "public: void __thiscall Foo::f(int *)", "0x5000")],
+            [{"address": "0x2000", "name": "Foo::other", "status": "todo"},
+             {"address": "0x3000", "name": "Foo::d", "status": "MATCH"},
+             {"address": "0x4000", "name": "Foo::e", "status": "todo"}])
+        self.assertEqual(ambiguous, {0x1000, 0x2000})
+        self.assertEqual(names[0x1000][0], "Foo::a")
+        self.assertEqual(names[0x4000][:2], ("Foo::e", None))
+        self.assertEqual(names[0x5000][:2], ("Foo::f", None))  # one name, two guessed parameter lists
+
+
+class Outputs(unittest.TestCase):
+    def test_source_labels(self):
+        self.assertEqual(pn.source_how(1, {1: "a.o"}, {}), "debug map")
+        self.assertEqual(pn.source_how(2, {1: "a.o"}, {2: "a.o"}), "neighbours")
+        self.assertEqual(pn.source_how(3, {}, {}), "")
+
+
+class Holdout(unittest.TestCase):
+    def world(self):
+        """Ten Windows functions named Foo::fN, each calling the next, and
+        two Mac builds with the same functions and calls."""
+        n = 10
+        ws = [0x1000 + 0x40 * i for i in range(n)]
+        w = SimpleNamespace(
+            names={a: (f"Foo::f{i}", "", None, f"Foo::f{i}()") for i, a in enumerate(ws)},
+            game=set(ws), ambiguous=set(), tables={},
+            scan={a: ([ws[i + 1]] if i + 1 < n else [], frozenset()) for i, a in enumerate(ws)},
+            size={a: 0x40 for a in ws})
+        w.named = set(ws)
+        builds = []
+        for label, base in (("one", 0x10000), ("two", 0x20000)):
+            ps = [base + 0x40 * i for i in range(n)]
+            names = {p: (f"__ZN3Foo2f{i}Ev", f"Foo::f{i}()") for i, p in enumerate(ps)}
+            builds.append(SimpleNamespace(label=label, names=names, index=pn.ppc_index(names), tables={},
+                                          scan={p: ([ps[i + 1]] if i + 1 < n else [], frozenset())
+                                                for i, p in enumerate(ps)},
+                                          size={p: 0x40 for p in ps}))
+        return w, builds
+
+    def report(self, seed):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            pn.holdout(*self.world(), 0.3, seed)
+        return out.getvalue()
+
+    def test_reproducible_with_the_same_hidden_targets_and_a_combined_report(self):
+        first = self.report(7)
+        self.assertEqual(first, self.report(7))
+        self.assertIn("3 of 10 name pairs hidden", first)
+        self.assertEqual(first.count("3 of them paired by name in this build"), 2)
+        self.assertIn("combined:", first)
+        self.assertIn("coverage", first)
+
+
+if __name__ == "__main__":
+    unittest.main()

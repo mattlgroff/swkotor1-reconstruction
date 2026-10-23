@@ -197,22 +197,33 @@ python .\matching\tools\ppcnames.py ... --holdout 0.2      # precision of each s
 ```
 
 Either build works alone. Signals, in order: names this project already
-proved (`status.csv`, `symbols.csv`), vtables both builds name, the exact
+proved (`status.csv`, `symbols.csv`) with compatible parameters, vtables
+both builds name (unless a known pair contradicts the alignment), the exact
 set of strings a function references, and the call graph around paired
-functions (`calls` needs two agreeing neighbours, `calls1` one). Given both
-Mac builds, each is paired separately; a function they name differently is
-left unnamed. Names both builds agree on (`2/2`) were about 99% correct
-under `--holdout`; single-build names 87–96%. Treat a paired name as a
-strong lead, not proof: confirm it against the code before annotating.
-`todo.py` shows the name and source file next to each unclaimed function. [research/mac-ppc-names.md](research/mac-ppc-names.md)
+functions (`calls` needs two distinct paired neighbours, `calls1` one).
+Given both Mac builds, each is paired separately; a function they name
+differently, including the same method with different parameters, is left
+unnamed with both candidates listed. `--holdout` hides one seeded sample of
+the name pairs from every build and reports precision and coverage per
+build and combined. Treat a paired name as a strong lead, not proof:
+confirm it against the code before annotating. `todo.py --names
+matching/mac_names.csv` shows the name and source file next to each
+unclaimed function. [research/mac-ppc-names.md](research/mac-ppc-names.md)
 has the method, results and what the pairing found about this repository.
+`python -m unittest discover -s matching/tools -p "test_*.py"` runs the
+pairing's regression tests on synthetic inputs.
 
-`matching/mac_names.csv` holds, for each game function, the Mac name, the
-signal, how many builds agree and the original source file;
+`matching/mac_names.csv` holds hints, kept apart from the proved names in
+`symbols.csv`: for each game function, the Mac name, the signal, how many
+builds agree, how a name pair's parameters agree (`exact`, `compatible`:
+same count and kinds but different guessed types, `unknown`: the repo name
+has none), the original source file and whether that came from the debug
+map or only from the neighbouring functions;
 `matching/link_order.csv` holds the runs of one source file's functions in
 address order: the inferred original link order. `--repo` refreshes both
 (run it with both builds after `status.csv` or `symbols.csv` change).
-`--out` gets the full working set: `pairs.csv` lists every game function with its status here,
+`--out` gets the full working set: `signature_rejects.csv` lists repo names
+refused for their parameters, `pairs.csv` lists every game function with its status here,
 its playable `src/` file, the repo's name, the Mac name, the signal, how
 many builds agree, the original source file and the Mac addresses, and
 `mac_unpaired.csv` lists Mac

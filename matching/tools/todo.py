@@ -9,7 +9,7 @@ Compiler-generated EH funclets and stock LIBCMT functions are never listed.
     python matching/tools/todo.py --near               NONMATCH attempts, closest first
     python matching/tools/todo.py --range 0x5E0000 0x620000 -n 50
     python matching/tools/todo.py --address 0x005B2EF0 print the playable definition
-    python matching/tools/todo.py --names none       hide the Mac names and source files
+    python matching/tools/todo.py --names matching/mac_names.csv   with the Mac names (hints)
 
 Columns: address, size in bytes, status (todo or NONMATCH with diff count),
 and the src/ file that defines kotor_<cc>_<address>, if any. That file is
@@ -17,12 +17,13 @@ behaviour-equivalent C++, play-tested, with original instruction addresses
 in its comments: read it for semantics and offsets, then write 2002-style
 classes. Its raw-offset style never compiles to the original bytes.
 
-Each function is shown with its name in Aspyr's Mac builds, from
-matching/mac_names.csv (or --names / KOTOR_PPC_NAMES: another file
-ppcnames.py wrote, or "none"), with the signal that
-paired it and how many builds agree (2/2 is the most reliable), then its
-original source file. A function with no name may still have a source file
-from its neighbours. Confirm a name against the code before using it.
+With --names (or KOTOR_PPC_NAMES), each function is also shown with its
+name in Aspyr's Mac builds, from matching/mac_names.csv or a pairs.csv that
+ppcnames.py wrote: the signal that paired it, how many builds agree (2/2 is
+the most reliable) and, for a name pair, how the parameters agree, then its
+original source file, marked "near" when it is only inferred from the
+neighbouring functions. These are hints, not proved names: confirm one
+against the code before using it.
 """
 
 from __future__ import annotations
@@ -66,14 +67,19 @@ def body(path: Path, line: int) -> str:
 
 
 def mac_names(path: str | None) -> dict[int, str]:
-    """address -> "name [signal, builds] (source file)" from a ppcnames.py pairs.csv."""
-    if not path or path == "none" or not Path(path).exists():
+    """address -> "name [signal, builds, parameters] (source file)" from
+    matching/mac_names.csv or a ppcnames.py pairs.csv."""
+    if not path or path == "none":
         return {}
+    if not Path(path).exists():
+        sys.exit(f"--names: {path} does not exist")
     found = {}
     with open(path, encoding="utf-8") as source:
         for r in csv.DictReader(source):
-            name = f"{r['mac_name']} [{r['method']}, {r['builds']}]" if r["mac_name"] else ""
-            where = f"({r['source']})" if r["source"] else ""
+            tags = [r["method"], r["builds"]] + ([r["signature"]] if r.get("signature") else [])
+            name = f"{r['mac_name']} [{', '.join(tags)}]" if r["mac_name"] else ""
+            near = "near " if r.get("source_how") in ("neighbours", "inside run") else ""
+            where = f"({near}{r['source']})" if r["source"] else ""
             if name or where:
                 found[int(r["address"], 16)] = f"{name} {where}".strip()
     return found
@@ -89,9 +95,8 @@ def main() -> None:
     parser.add_argument("--min-size", type=int, default=16,
                         help="skip functions smaller than this many bytes (default 16)")
     parser.add_argument("--address", help="print the playable definition of one function")
-    parser.add_argument("--names", default=os.environ.get("KOTOR_PPC_NAMES",
-                                                          str(ROOT / "matching" / "mac_names.csv")),
-                        help='Mac names from ppcnames.py (default matching/mac_names.csv; "none" to hide)')
+    parser.add_argument("--names", default=os.environ.get("KOTOR_PPC_NAMES"),
+                        help="show Mac name hints from ppcnames.py, e.g. matching/mac_names.csv (off by default)")
     args = parser.parse_args()
     names = mac_names(args.names)
 
