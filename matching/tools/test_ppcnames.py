@@ -366,6 +366,15 @@ class PPCScanner(unittest.TestCase):
         words[0] = 0x41820000 | (3 * 4)  # beq to the instruction after the guard
         self.assertIsNone(self.recovered(ppc(*words), table, bctr))
 
+    def test_skipping_the_compare_or_the_load_is_not_proven(self):
+        code, table, bctr, _ = self.switch(False, count=1)
+        words = [struct.unpack_from(">I", code, i)[0] for i in range(0, len(code), 4)]
+        mtctr = words.index(MTCTR0)
+        for label, first in (("b over the cmplwi to the guard", 0x48000008),
+                             ("beq past the load to the mtctr", 0x41820000 | (mtctr * 4))):
+            with self.subTest(label):
+                self.assertIsNone(self.recovered(ppc(first, *words[1:]), table, bctr))
+
     def test_a_bound_no_branch_enforces_is_not_proven(self):
         code, table, bctr, _ = self.switch(False, count=1)
         words = [struct.unpack_from(">I", code, i)[0] for i in range(0, len(code), 4)]

@@ -807,112 +807,99 @@ def ppc_cr_writes(w):
     return set()
 
 
-def ppc_writer(words, k, reg, limit=12):
-    """The index of the last instruction before k that may change reg, within
-    limit instructions, or None."""
-    return next((i for i in range(k - 1, max(k - 1 - limit, -1), -1) if reg in ppc_writes(words[i])), None)
-
-
-def ppc_bounded(words, fn, flow, check, scale, load):
-    """Whether the cmplwi crF,rI,N at check keeps rI <= N on every path to
-    the table load. The first branch after it, with crF unchanged and rI
-    unchanged up to the scale, must be on crF's GT bit and either leave
-    when above (bgt, bgtlr; it may follow the scale) or go on only when not
-    above (ble); then, walking back along flow (each instruction's
-    successors by its branches) from the scale, or from the load when the
-    branch follows the scale, every path must come through that branch's
-    not-above edge without changing rI before the scale, and from the scale
-    to the load nothing may enter but the instruction before."""
-    field, index = (words[check] >> 23) & 7, (words[check] >> 16) & 31
-    guard = ok = None
-    for g in range(check + 1, load):
-        w = words[g]
-        op, bo, bi = w >> 26, (w >> 21) & 31, (w >> 16) & 31
-        if bi == 4 * field + 1 and not w & 1 and (op == 16 or (op == 19 and (w >> 1) & 0x3FF == 16)):
-            if bo & 0x1C == 0x0C:  # branch when above: bgt, bgtlr
-                guard, ok = g, g + 1
-            elif bo & 0x1C == 0x04 and op == 16:  # branch when not above: ble
-                guard, ok = g, (ppc_branch_target(w, fn + 4 * g) - fn) // 4
-            break
-        if field in ppc_cr_writes(w) or (g < scale and index in ppc_writes(w)) or op in (16, 18, 19):
-            return False
-    if guard is None:
-        return False
+def ppc_chain(flow, j, limit=48):
+    """The instructions every path to j runs through, in order, ending at j:
+    walking back while an instruction has a single predecessor (through
+    fallthrough, an unconditional b, or one edge of a conditional branch),
+    so whatever reaches j has run all of them."""
     preds = defaultdict(set)
     for i, out in enumerate(flow):
         for s in out:
             preds[s].add(i)
-    if any(preds[i] != {i - 1} for i in range(scale + 1, load + 1)):
-        return False
-    start = scale if guard < scale else load
-    seen, work = set(), [start]
-    while work:
-        i = work.pop()
-        if i in seen:
-            continue
-        seen.add(i)
-        if start == scale and i != scale and index in ppc_writes(words[i]):
-            return False
-        if not preds[i]:
-            return False  # the entry, or code entered some other way
-        for p in preds[i]:
-            if p == guard:
-                if i != ok:
-                    return False  # the above edge
-            else:
-                work.append(p)
-    return True
+    chain, i = [j], j
+    while len(preds[i]) == 1 and len(chain) < limit:
+        i = next(iter(preds[i]))
+        if i in chain:
+            break
+        chain.append(i)
+    return chain[::-1]
 
 
 def ppc_jump_table(words, fn, before, j, read, flow=None):
     """The case indices a bctr at j goes to, read from its jump table, or
-    None when that is not proven. GCC's switch checks the index (cmplwi rI,N
-    and a branch on it, see ppc_bounded), scales it (rlwinm rS,rI,2,...), loads the
-    case from a table whose address a register holds, either as an address
-    (lwzx rX,rT,rS; mtctr rX) or as an offset from the table (lwzx rY,rT,rS;
-    add rX,rY,rT; mtctr rX). Each step must be the last write to the
-    register it reads, the table has exactly N + 1 entries, and every entry
-    must land in the function. flow is ppc_flow's successors."""
+    None when that is not proven. GCC's switch checks the index (cmplwi
+    crF,rI,N), branches on crF's GT bit (bgt or bgtlr leaving when above,
+    or ble going on when not above; before or after the scale), scales it
+    (rlwinm rS,rI,2,0,29), loads the case from a table whose address a
+    register holds, either as an address (lwzx rX,rT,rS; mtctr rX) or as
+    an offset from the table (lwzx rY,rT,rS; add rX,rY,rT; mtctr rX), and
+    jumps. All of it must lie on the single path into the bctr (ppc_chain),
+    the path must take the guard's not-above edge, crF must not change
+    between the compare and the guard nor rI between the compare and the
+    scale, each step must be the last write on the path to the register it
+    reads, the table has exactly N + 1 entries, and every entry must land
+    in the function. flow is ppc_flow's successors."""
     n = len(words)
     if before[j] is None:
         return None
     flow = flow if flow is not None else ppc_flow(words, fn)[0]
-    mtctr = next((k for k in range(j - 1, max(j - 4, -1), -1)
-                  if words[k] >> 26 == 31 and (words[k] >> 1) & 0x3FF == 467
-                  and (words[k] >> 11) & 0x3FF == 0x120), None)
-    if mtctr is None or any(words[k] >> 26 in (16, 18, 19) or (words[k] >> 26 == 31 and (words[k] >> 1) & 0x3FF == 467)
-                            for k in range(mtctr + 1, j)):
+    chain = ppc_chain(flow, j)
+    at = {i: k for k, i in enumerate(chain)}
+
+    def writer(k, reg):
+        """The position on the chain of the last write to reg before position k."""
+        return next((m for m in range(k - 1, -1, -1) if reg in ppc_writes(words[chain[m]])), None)
+
+    def op31(m, xo):
+        return m is not None and words[chain[m]] >> 26 == 31 and (words[chain[m]] >> 1) & 0x3FF == xo
+
+    mtctr = len(chain) - 2
+    w = words[chain[mtctr]] if mtctr >= 0 else 0
+    if not (op31(mtctr, 467) and (w >> 11) & 0x3FF == 0x120):
         return None
-    k = ppc_writer(words, mtctr, (words[mtctr] >> 21) & 31)
-    if k is None or before[k] is None or words[k] >> 26 != 31:
-        return None
-    w, regs = words[k], before[k][0]
-    relative, base = False, None
-    if (w >> 1) & 0x3FF == 266:  # add rX,rA,rB: one of them the table, the other the loaded offset
+    m = writer(mtctr, (w >> 21) & 31)
+    relative = op31(m, 266)  # add rX,rA,rB: one of them the table, the other the loaded offset
+    if relative:
+        w, regs = words[chain[m]], before[chain[m]][0]
         ra, rb = (w >> 16) & 31, (w >> 11) & 31
         if (ra in regs) == (rb in regs):
             return None
-        relative, base = True, regs[ra] if ra in regs else regs[rb]
-        k = ppc_writer(words, k, rb if ra in regs else ra)
-        if k is None or before[k] is None or words[k] >> 26 != 31:
-            return None
-        w, regs = words[k], before[k][0]
-    if (w >> 1) & 0x3FF != 23:  # lwzx
+        added = regs[ra] if ra in regs else regs[rb]
+        m = writer(m, rb if ra in regs else ra)
+    if not op31(m, 23) or before[chain[m]] is None:  # lwzx
         return None
+    load, w, regs = m, words[chain[m]], before[chain[m]][0]
     ra, rb = (w >> 16) & 31, (w >> 11) & 31
-    if (ra in regs) == (rb in regs) or (relative and regs.get(ra, regs.get(rb)) != base):
+    if (ra in regs) == (rb in regs):
         return None
     base, scaled = (regs[ra], rb) if ra in regs else (regs[rb], ra)
-    load, k = k, ppc_writer(words, k, scaled)
-    w = words[k] if k is not None else 0
+    if relative and base != added:
+        return None
+    scale = writer(load, scaled)
+    w = words[chain[scale]] if scale is not None else 0
     if w >> 26 != 21 or (w >> 11) & 31 != 2 or (w >> 6) & 31 != 0 or (w >> 1) & 31 != 29:
         return None  # rlwinm rS,rI,2,0,29
     index = (w >> 21) & 31
-    check = next((i for i in range(k - 1, max(k - 13, -1), -1)
-                  if words[i] >> 26 == 10 and (words[i] >> 16) & 31 == index), None)  # cmplwi crF,rI,N
-    if check is None or not ppc_bounded(words, fn, flow, check, k, load):
+    check = next((c for c in range(scale - 1, -1, -1) if words[chain[c]] >> 26 == 10
+                  and (words[chain[c]] >> 16) & 31 == index), None)  # cmplwi crF,rI,N
+    if check is None or any(index in ppc_writes(words[chain[c]]) for c in range(check + 1, scale)):
         return None
-    count = (words[check] & 0xFFFF) + 1
+    field = (words[chain[check]] >> 23) & 7
+    for g in range(check + 1, load):
+        w = words[chain[g]]
+        op, bo, bi = w >> 26, (w >> 21) & 31, (w >> 16) & 31
+        if op in (16, 19) and bi == 4 * field + 1 and not w & 1 and (op == 16 or (w >> 1) & 0x3FF == 16):
+            target = (ppc_branch_target(w, fn + 4 * chain[g]) - fn) // 4 if op == 16 else None
+            taken = chain[g + 1] == target  # the path goes on through the branch
+            above = bo & 0x1C == 0x0C  # branch when above (bgt, bgtlr) or when not (ble)
+            if bo & 0x1C not in (0x0C, 0x04) or taken == above:
+                return None
+            break
+        if field in ppc_cr_writes(w):
+            return None
+    else:
+        return None
+    count = (words[chain[check]] & 0xFFFF) + 1
     if count > MAX_CASES:
         return None
     cases = []
