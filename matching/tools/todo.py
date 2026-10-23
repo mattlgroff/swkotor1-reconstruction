@@ -9,18 +9,28 @@ Compiler-generated EH funclets and stock LIBCMT functions are never listed.
     python matching/tools/todo.py --near               NONMATCH attempts, closest first
     python matching/tools/todo.py --range 0x5E0000 0x620000 -n 50
     python matching/tools/todo.py --address 0x005B2EF0 print the playable definition
+    python matching/tools/todo.py --names matching/mac_names.csv   with the Mac names (hints)
 
 Columns: address, size in bytes, status (todo or NONMATCH with diff count),
 and the src/ file that defines kotor_<cc>_<address>, if any. That file is
 behaviour-equivalent C++, play-tested, with original instruction addresses
 in its comments: read it for semantics and offsets, then write 2002-style
 classes. Its raw-offset style never compiles to the original bytes.
+
+With --names (or KOTOR_PPC_NAMES), each function is also shown with its
+name in Aspyr's Mac builds, from matching/mac_names.csv or a pairs.csv that
+ppcnames.py wrote: the signal that paired it, how many builds agree (2/2 is
+the most reliable) and, for a name pair, how the parameters agree, then its
+original source file, marked "near" when it is only inferred from the
+neighbouring functions. These are hints, not proved names: confirm one
+against the code before using it.
 """
 
 from __future__ import annotations
 
 import argparse
 import csv
+import os
 import re
 import sys
 from pathlib import Path
@@ -56,6 +66,25 @@ def body(path: Path, line: int) -> str:
     return "\n".join(lines[top:end + 1])
 
 
+def mac_names(path: str | None) -> dict[int, str]:
+    """address -> "name [signal, builds, parameters] (source file)" from
+    matching/mac_names.csv or a ppcnames.py pairs.csv."""
+    if not path or path == "none":
+        return {}
+    if not Path(path).exists():
+        sys.exit(f"--names: {path} does not exist")
+    found = {}
+    with open(path, encoding="utf-8") as source:
+        for r in csv.DictReader(source):
+            tags = [r["method"], r["builds"]] + ([r["signature"]] if r.get("signature") else [])
+            name = f"{r['mac_name']} [{', '.join(tags)}]" if r["mac_name"] else ""
+            near = "near " if r.get("source_how") in ("neighbours", "inside run") else ""
+            where = f"({near}{r['source']})" if r["source"] else ""
+            if name or where:
+                found[int(r["address"], 16)] = f"{name} {where}".strip()
+    return found
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -66,7 +95,10 @@ def main() -> None:
     parser.add_argument("--min-size", type=int, default=16,
                         help="skip functions smaller than this many bytes (default 16)")
     parser.add_argument("--address", help="print the playable definition of one function")
+    parser.add_argument("--names", default=os.environ.get("KOTOR_PPC_NAMES"),
+                        help="show Mac name hints from ppcnames.py, e.g. matching/mac_names.csv (off by default)")
     args = parser.parse_args()
+    names = mac_names(args.names)
 
     index = playable_index()
     if args.address:
@@ -74,6 +106,8 @@ def main() -> None:
         if not hit:
             sys.exit(f"src/ has no definition named for {args.address}")
         print(f"== {hit[0].relative_to(ROOT).as_posix()}:{hit[1]}")
+        if int(args.address, 16) in names:
+            print(f"// Mac name: {names[int(args.address, 16)]}")
         print(body(*hit))
         return
 
@@ -103,7 +137,8 @@ def main() -> None:
     rows.sort(key=lambda r: (r[0], -r[1] if args.largest else r[1], r[2]))
     print(f"{len(rows):,} functions; showing {min(args.n, len(rows))}")
     for _, size, address, state, where in rows[:args.n]:
-        print(f"0x{address:08X}  {size:6,} B  {state:<14} {where}")
+        name = f"  {names[address]}" if address in names else ""
+        print(f"0x{address:08X}  {size:6,} B  {state:<14} {where}{name}")
 
 
 if __name__ == "__main__":

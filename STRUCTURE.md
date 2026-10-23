@@ -47,10 +47,14 @@ matching/
   functions.csv             the exe's 20,397 function starts; kind "eh" = EH funclet
   crt_libcmt.csv            functions identical to the stock LIBCMT.LIB
   symbols.csv               symbol -> original address, the bridge (phase 2)
+  mac_names.csv             Mac PowerPC name hints and source files by address
+  link_order.csv            inferred original link order (source file runs)
   assets/progress.svg       progress tracker, refreshed by CI
   tools/matchcmp.py         compile with MSVC 7.0 and compare each function
   tools/libmatch.py         find stock library functions in the exe
   tools/symbolmap.py        build symbols.csv from matched objects
+  tools/ppcnames.py         pair functions with the Mac PowerPC builds' names
+  tools/test_ppcnames.py    its regression tests, on synthetic inputs
   tools/render_banner.py    render the tracker
 .github/workflows/update-progress-tracker.yml
 ```
