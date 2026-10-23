@@ -616,7 +616,7 @@ X31_WRITE_NONE = {0, 32, 4, 144, 146, 150, 151, 215, 407, 661, 662, 663, 725, 72
 X31_WRITE_RA_ONLY_UPDATE = {183, 247, 439, 567, 631, 695, 759}
 X31_ARITHMETIC = {266, 10, 138, 234, 202, 40, 8, 136, 232, 200, 104, 235, 75, 11, 491, 459}
 X31_WRITE_RD = {23, 87, 279, 343, 534, 790, 20, 339, 19, 83, 371, 595, 659} | X31_ARITHMETIC \
-    | {x + 512 for x in X31_ARITHMETIC}
+    | {x + 512 for x in X31_ARITHMETIC - {75, 11}}  # mulhw and mulhwu have no OE form
 X31_WRITE_NONE |= {467, 210, 242}
 X31_OR = 444
 
@@ -760,13 +760,51 @@ def ppc_flow(words, fn):
 
 
 MAX_CASES = 1024
-SENTINEL = {r: 0x7F000000 + r for r in range(32)}
-
-
 def ppc_writes(w):
-    """The registers an instruction may change, from ppc_step."""
-    after, _ = ppc_step(w, 0, SENTINEL, None, lambda address: None)
-    return {r for r in range(32) if after.get(r) != SENTINEL[r]}
+    """The general registers an instruction may change, from its encoding:
+    ppc_step changes no others. mr rN,rN changes nothing."""
+    op, rd, ra, rb = w >> 26, (w >> 21) & 31, (w >> 16) & 31, (w >> 11) & 31
+    xo = (w >> 1) & 0x3FF
+    if op in (16, 18) or (op == 19 and xo in (16, 528)):
+        return set(VOLATILE) if w & 1 and w != 0x429F0005 else set()
+    if op == 31:
+        if xo == X31_OR and rd == rb:
+            return set() if rd == ra else {ra}
+        if xo == 597:
+            return {(rd + k) % 32 for k in range((((w >> 11) & 31 or 32) + 3) // 4)}
+        if xo == 533:
+            return set(range(32))
+        if xo in X31_WRITE_RA or xo in X31_WRITE_RA_ONLY_UPDATE:
+            return {ra}
+        if xo in X31_WRITE_NONE:
+            return set()
+        if xo in X31_WRITE_RD:
+            return {rd}
+        return {rd, ra}
+    if op in (14, 15) or op in WRITE_RD:
+        return {rd}
+    if op == 24 or op in WRITE_RA:
+        return {ra}
+    if op == 46:
+        return set(range(rd, 32))
+    return ({rd} if op in LOADS else set()) | ({ra} if op in UPDATES else set())
+
+
+def ppc_cr_writes(w):
+    """The condition register fields an instruction may change."""
+    op, xo, field = w >> 26, (w >> 1) & 0x3FF, (w >> 23) & 7
+    if op in (10, 11) or (op == 31 and xo in (0, 32, 512)) or (op == 63 and xo in (0, 32, 64)) \
+            or (op == 19 and xo == 0):
+        return {field}
+    if op == 19 and xo in (33, 129, 193, 225, 257, 289, 417, 449):  # condition register logic
+        return {((w >> 21) & 31) // 4}
+    if op == 31 and xo == 144:  # mtcrf
+        return set(range(8))
+    if op in (59, 63) and w & 1:
+        return {1}
+    if op in (13, 28, 29) or (op in (20, 21, 23, 31) and w & 1):
+        return {0}
+    return set()
 
 
 def ppc_writer(words, k, reg, limit=12):
@@ -775,22 +813,75 @@ def ppc_writer(words, k, reg, limit=12):
     return next((i for i in range(k - 1, max(k - 1 - limit, -1), -1) if reg in ppc_writes(words[i])), None)
 
 
-def ppc_jump_table(words, fn, before, j, read):
+def ppc_bounded(words, fn, flow, check, scale, load):
+    """Whether the cmplwi crF,rI,N at check keeps rI <= N on every path to
+    the table load. The first branch after it, with crF unchanged and rI
+    unchanged up to the scale, must be on crF's GT bit and either leave
+    when above (bgt, bgtlr; it may follow the scale) or go on only when not
+    above (ble); then, walking back along flow (each instruction's
+    successors by its branches) from the scale, or from the load when the
+    branch follows the scale, every path must come through that branch's
+    not-above edge without changing rI before the scale, and from the scale
+    to the load nothing may enter but the instruction before."""
+    field, index = (words[check] >> 23) & 7, (words[check] >> 16) & 31
+    guard = ok = None
+    for g in range(check + 1, load):
+        w = words[g]
+        op, bo, bi = w >> 26, (w >> 21) & 31, (w >> 16) & 31
+        if bi == 4 * field + 1 and not w & 1 and (op == 16 or (op == 19 and (w >> 1) & 0x3FF == 16)):
+            if bo & 0x1C == 0x0C:  # branch when above: bgt, bgtlr
+                guard, ok = g, g + 1
+            elif bo & 0x1C == 0x04 and op == 16:  # branch when not above: ble
+                guard, ok = g, (ppc_branch_target(w, fn + 4 * g) - fn) // 4
+            break
+        if field in ppc_cr_writes(w) or (g < scale and index in ppc_writes(w)) or op in (16, 18, 19):
+            return False
+    if guard is None:
+        return False
+    preds = defaultdict(set)
+    for i, out in enumerate(flow):
+        for s in out:
+            preds[s].add(i)
+    if any(preds[i] != {i - 1} for i in range(scale + 1, load + 1)):
+        return False
+    start = scale if guard < scale else load
+    seen, work = set(), [start]
+    while work:
+        i = work.pop()
+        if i in seen:
+            continue
+        seen.add(i)
+        if start == scale and i != scale and index in ppc_writes(words[i]):
+            return False
+        if not preds[i]:
+            return False  # the entry, or code entered some other way
+        for p in preds[i]:
+            if p == guard:
+                if i != ok:
+                    return False  # the above edge
+            else:
+                work.append(p)
+    return True
+
+
+def ppc_jump_table(words, fn, before, j, read, flow=None):
     """The case indices a bctr at j goes to, read from its jump table, or
     None when that is not proven. GCC's switch checks the index (cmplwi rI,N
-    and a branch away above it), scales it (rlwinm rS,rI,2,...), loads the
+    and a branch on it, see ppc_bounded), scales it (rlwinm rS,rI,2,...), loads the
     case from a table whose address a register holds, either as an address
     (lwzx rX,rT,rS; mtctr rX) or as an offset from the table (lwzx rY,rT,rS;
     add rX,rY,rT; mtctr rX). Each step must be the last write to the
     register it reads, the table has exactly N + 1 entries, and every entry
-    must land in the function."""
+    must land in the function. flow is ppc_flow's successors."""
     n = len(words)
     if before[j] is None:
         return None
+    flow = flow if flow is not None else ppc_flow(words, fn)[0]
     mtctr = next((k for k in range(j - 1, max(j - 4, -1), -1)
                   if words[k] >> 26 == 31 and (words[k] >> 1) & 0x3FF == 467
                   and (words[k] >> 11) & 0x3FF == 0x120), None)
-    if mtctr is None or any(ppc_writes(words[k]) for k in range(mtctr + 1, j)):
+    if mtctr is None or any(words[k] >> 26 in (16, 18, 19) or (words[k] >> 26 == 31 and (words[k] >> 1) & 0x3FF == 467)
+                            for k in range(mtctr + 1, j)):
         return None
     k = ppc_writer(words, mtctr, (words[mtctr] >> 21) & 31)
     if k is None or before[k] is None or words[k] >> 26 != 31:
@@ -812,14 +903,14 @@ def ppc_jump_table(words, fn, before, j, read):
     if (ra in regs) == (rb in regs) or (relative and regs.get(ra, regs.get(rb)) != base):
         return None
     base, scaled = (regs[ra], rb) if ra in regs else (regs[rb], ra)
-    k = ppc_writer(words, k, scaled)
+    load, k = k, ppc_writer(words, k, scaled)
     w = words[k] if k is not None else 0
     if w >> 26 != 21 or (w >> 11) & 31 != 2 or (w >> 6) & 31 != 0 or (w >> 1) & 31 != 29:
         return None  # rlwinm rS,rI,2,0,29
     index = (w >> 21) & 31
     check = next((i for i in range(k - 1, max(k - 13, -1), -1)
                   if words[i] >> 26 == 10 and (words[i] >> 16) & 31 == index), None)  # cmplwi crF,rI,N
-    if check is None or any(index in ppc_writes(words[i]) for i in range(check + 1, k)):
+    if check is None or not ppc_bounded(words, fn, flow, check, k, load):
         return None
     count = (words[check] & 0xFFFF) + 1
     if count > MAX_CASES:
@@ -909,7 +1000,7 @@ def ppc_analyse(words, fn, read):
         for j in jumps:
             if j in fallback:
                 continue
-            found = ppc_jump_table(words, fn, before, j, read)
+            found = ppc_jump_table(words, fn, before, j, read, succ0)
             if found != cases.get(j):
                 if j in cases:
                     del cases[j]

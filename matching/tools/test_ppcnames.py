@@ -305,20 +305,24 @@ class PPCScanner(unittest.TestCase):
     def scan(self, code, ends=None):
         return pn.scan_ppc(memory(code), ends or {0x1000: 0x1000 + len(code)}, {})[0x1000]
 
-    def switch(self, relative, entries=None, count=2, between=()):
-        """lis r31,1; cmplwi r3,count-1; bgt out; r9 = 0x8000 (the table);
-        slwi r0,r3,2; lwzx r0,r9,r0; [add r0,r0,r9;] [between;] mtctr r0;
-        bctr; then case 1: addi r4,r31,0x20; blr; a block only the bgt
-        reaches: lis r31,3; addi r7,r31,0x50; blr; case 2: lis r31,2;
-        addi r6,r31,0x40; blr. Returns (code, table, bctr index, case indices)."""
-        body = [lis(31, 1), cmplwi(3, count - 1), None, lis(9, 1), addi(9, 9, -0x8000),
-                slwi(0, 3, 2), lwzx(0, 9, 0)]
+    def switch(self, relative, entries=None, count=2, between=(), guard="bgt", after_guard=()):
+        """lis r31,1; cmplwi r3,count-1; guard; after_guard; r9 = 0x8000 (the
+        table); slwi r0,r3,2; lwzx r0,r9,r0; [add r0,r0,r9;] [between;]
+        mtctr r0; bctr; then case 1: addi r4,r31,0x20; blr; a block only the
+        guard reaches: lis r31,3; addi r7,r31,0x50; blr; case 2: lis r31,2;
+        addi r6,r31,0x40; blr. The guard is bgt out, bgtlr, or ble past a
+        b out. Returns (code, table, bctr index, case indices)."""
+        guards = {"bgt": [None], "bgtlr": [0x4D810020], "ble": [0x40810008, None]}
+        body = [lis(31, 1), cmplwi(3, count - 1)] + guards[guard] + list(after_guard)
+        body += [lis(9, 1), addi(9, 9, -0x8000), slwi(0, 3, 2), lwzx(0, 9, 0)]
         body += [add(0, 0, 9)] if relative else []
         body += list(between) + [MTCTR0, BCTR]
         bctr = len(body) - 1
         case1, out, case2 = bctr + 1, bctr + 3, bctr + 6
         body += [addi(4, 31, 0x20), BLR, lis(31, 3), addi(7, 31, 0x50), BLR, lis(31, 2), addi(6, 31, 0x40), BLR]
-        body[2] = 0x41810000 | ((out - 2) * 4)  # bgt out
+        if None in body:
+            at = body.index(None)
+            body[at] = (0x41810000 if guard == "bgt" else 0x48000000) | ((out - at) * 4)  # bgt out / b out
         targets = entries or [0x1000 + 4 * case1, 0x1000 + 4 * case2]
         table = b"".join(struct.pack(">i", e - 0x8000 if relative else e) for e in targets)
         return ppc(*body), table, bctr, [case1, case2]
@@ -336,6 +340,63 @@ class PPCScanner(unittest.TestCase):
                 self.assertEqual(succ[bctr], cases)  # not every block: the bgt-only block is left out
                 self.assertEqual(self.texts(code, {0x10020: "case 1", 0x20040: "case 2", 0x30050: "out"}, table),
                                  {"case 1", "case 2", "out"})
+
+    def recovered(self, code, table, bctr):
+        words, (before, _) = self.analyse(code, table)
+        return pn.ppc_jump_table(words, 0x1000, before, bctr, memory(code, table).word)
+
+    def test_real_guard_shapes_prove_the_bound(self):
+        for guard in ("bgt", "bgtlr", "ble"):
+            with self.subTest(guard=guard):
+                code, table, bctr, cases = self.switch(False, guard=guard)
+                self.assertEqual(self.recovered(code, table, bctr), cases)
+
+    def test_guard_after_the_scale(self):
+        # cmplwi r3,1; slwi r0,r3,2; bgt out; table load ... (0xb0230 in the 2009 build)
+        code, table, bctr, cases = self.switch(False)
+        words = [struct.unpack_from(">I", code, i)[0] for i in range(0, len(code), 4)]
+        bgt, scale = words[2], words.index(slwi(0, 3, 2))
+        moved = words[:2] + words[3:scale + 1] + [0x41810000 | ((bgt & 0xFFFC) - 4 * (scale - 2))] + words[scale + 1:]
+        self.assertEqual(self.recovered(ppc(*moved), table, bctr), cases)
+
+    def test_another_way_into_the_switch_is_not_proven(self):
+        # a branch from before the guard straight to the table code skips the check
+        code, table, bctr, _ = self.switch(False)
+        words = [struct.unpack_from(">I", code, i)[0] for i in range(0, len(code), 4)]
+        words[0] = 0x41820000 | (3 * 4)  # beq to the instruction after the guard
+        self.assertIsNone(self.recovered(ppc(*words), table, bctr))
+
+    def test_a_bound_no_branch_enforces_is_not_proven(self):
+        code, table, bctr, _ = self.switch(False, count=1)
+        words = [struct.unpack_from(">I", code, i)[0] for i in range(0, len(code), 4)]
+        bgt = words[2]
+        for label, change in (("no branch", {2: 0x60000000}),
+                              ("blt", {2: 0x41800000 | (bgt & 0xFFFF)}),
+                              ("bgt on cr1", {2: 0x41850000 | (bgt & 0xFFFF)}),
+                              ("cr0 overwritten", {0: cmplwi(3, 0), 1: cmplwi(4, 0)})):
+            with self.subTest(label):
+                changed = [change.get(i, w) for i, w in enumerate(words)]
+                self.assertIsNone(self.recovered(ppc(*changed), table, bctr))
+
+    def test_index_changed_after_the_guard_is_not_proven(self):
+        ori = (24 << 26) | (3 << 21) | (3 << 16) | 1  # ori r3,r3,1
+        self.assertEqual(pn.ppc_writes(ori), {3})
+        code, table, bctr, _ = self.switch(False, after_guard=[ori])
+        self.assertIsNone(self.recovered(code, table, bctr))
+
+    def test_writes_cover_what_a_step_changes(self):
+        import random
+        rng = random.Random(4)
+        for _ in range(20000):
+            w = rng.getrandbits(32)
+            regs = {r: rng.getrandbits(32) for r in range(32)}
+            after, _ = pn.ppc_step(w, 0x1000, regs, None, lambda a: None)
+            changed = {r for r in range(32) if after.get(r) != regs[r]}
+            self.assertLessEqual(changed, pn.ppc_writes(w), f"{w:08x}")
+
+    def test_mulhw_has_no_overflow_form(self):
+        self.assertNotIn(75 + 512, pn.X31_WRITE_RD)
+        self.assertNotIn(11 + 512, pn.X31_WRITE_RD)
 
     def test_jump_table_reads_only_the_checked_entries(self):
         # one case checked; the next word looks like a case but is not one
