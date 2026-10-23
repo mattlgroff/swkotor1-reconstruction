@@ -56,11 +56,16 @@ code defines in `symbols.csv`, 3,064 appear in the 2004 build.
    Mac build defines once with compatible parameters, exact ones preferred
    (with ctor/dtor variants resolved after that: GCC's complete-object
    `C1`/`D1`, else `C2`/`D2`; MSVC's `??_G` is GCC's `D0`). Compatible
-   means the same number of parameters and the same kind each: integer
-   (the repo often guesses `int` for `unsigned long`), pointer or
-   reference, `float`, `double`, 64-bit integer or a class by value. An
-   address the CSVs give two different names (a body `/OPT:ICF` folded,
-   or `status.csv` against `symbols.csv`) is not paired by name.
+   means the same count and method `const`, and per parameter only these
+   listed differences (`param_match`): another spelling or signedness of
+   the same integer width; a repo `int` for a narrower integer or `bool`;
+   a pointer for a reference to the same type at the same depth, with or
+   without `const`; `void*` for any pointer; and `char*`/`unsigned char*`
+   for each other. Another class, a callback type, a float or a 64-bit
+   value must be equal. An address the CSVs give two different names (a
+   body `/OPT:ICF` folded, two `status.csv` rows, or `status.csv` against
+   `symbols.csv`) is not paired by name; one name with several parameter
+   lists pairs if any of them fits.
 2. **vtable**: vtables both builds name, slot by slot, unless a slot
    contradicts a name pair already made.
 3. **strings**: the exact set of string literals a function references,
@@ -70,7 +75,10 @@ code defines in `symbols.csv`, 3,064 appear in the 2004 build.
 4. **calls**: around each paired function, a single remaining unpaired
    callee or caller on each side, proposed by two distinct paired
    functions. On Windows the calls come from decoding each instruction, so
-   an `E8` byte inside an operand is not a call.
+   an `E8` byte inside an operand is not a call. On the PowerPC, register
+   values follow the function's branches: where paths meet only the values
+   they agree on survive, and calls, update forms and multi-register loads
+   change what they change.
 5. **calls1**: the same with one proposal.
 
 Given both builds, it pairs each separately. Where both name a function,
@@ -80,30 +88,30 @@ otherwise the function is left unnamed and both candidates are listed.
 ### Accuracy
 
 `--holdout 0.2` freezes the name pairs first, then hides one seeded fifth
-of them (731 of 3,655) from both builds and checks what signals 2 to 5
-recover. The hidden functions are ones the name signal can pair, likely
-easier than functions no name reaches, so read these as upper bounds.
-Three seeds:
+of them (699 of 3,497) from both builds and checks what signals 2 to 5
+recover; the pairs not hidden seed them as they are. The hidden functions
+are ones the name signal can pair, likely easier than functions no name
+reaches, so read these as upper bounds. Three seeds:
 
 | Signal | 2004 build | 2009 build |
 | --- | --- | --- |
 | vtable | 100% | 100% |
-| strings | 96–100% | 94–98% |
-| calls | 98–99% | 94–100% |
-| calls1 | 93–97% | 89–91% |
-| coverage | 50–59% | 48–51% |
+| strings | 97–98% | 94–98% |
+| calls | 95–99% | 91–100% |
+| calls1 | 92–95% | 86–89% |
+| coverage | 52–55% | 46–49% |
 
 Combined over the same hidden functions:
 
 | Combined | Recovered | Correct |
 | --- | --- | --- |
-| both builds agree | 291–331 | **98.6–99.1%** |
-| only one build pairs it | 98–104 | 85–92% |
-| builds disagree (left unnamed) | 5–9 | – |
-| coverage | 54–59% of the hidden | |
+| both builds agree | 279–290 | **97.9–98.9%** |
+| only one build pairs it | 85–105 | 87–93% |
+| builds disagree (left unnamed) | 4–10 | – |
+| coverage | 53–55% of the hidden | |
 
 Where both builds pair a function, they agree on the full signature for
-4,813 of 4,904 (98.1%).
+4,655 of 4,731 (98.4%).
 
 ## Results
 
@@ -111,22 +119,22 @@ Where both builds pair a function, they agree on the full signature for
 | --- | --- |
 | Game functions in the exe (stock LIBCMT excluded) | 8,910 |
 | Named by this project | 6,369 |
-| Paired with a Mac build | 5,620 |
-| Builds disagree, left unnamed | 91 |
-| **Paired and not named here** | **927** |
-| of which both builds agree | **737** |
-| Neither | 1,614 |
+| Paired with a Mac build | 5,476 |
+| Builds disagree, left unnamed | 76 |
+| **Paired and not named here** | **909** |
+| of which both builds agree | **705** |
+| Neither | 1,632 |
 
-A name pair also records how its parameters agree with the repo's: 2,873
-exact, 407 compatible (same count and kinds, different guessed types), 344
-unknown (a `status.csv` name without parameters). 112 repo names per build
-were refused for their parameters (`signature_rejects.csv`), and 606
-addresses the CSVs name differently are not paired by name. 30 of the 2009
-build's vtables were dropped because a known pair contradicted their
-alignment: that build adds a virtual (`AsNavigable`) to the `CSWGuiControl`
-family, shifting every later slot.
+A name pair also records how its parameters agree with the repo's: 2,972
+exact, 282 compatible, 221 unknown (a `status.csv` name without
+parameters). 282 and 294 repo names (2004, 2009 build) were refused for
+their parameters (`signature_rejects.csv`), and 610 addresses the CSVs name
+differently are not paired by name. 30 of the 2009 build's vtables were
+dropped because a known pair contradicted their alignment: that build adds
+a virtual (`AsNavigable`) to the `CSWGuiControl` family, shifting every
+later slot.
 
-None of the 927 has been attempted in `matching/`. They cover the whole
+None of the 909 has been attempted in `matching/`. They cover the whole
 game: server-side logic, UI, client side, client/server messages,
 renderer (`GLRender`, `CAurInternalGL`, `Scene`), NWScript commands and
 the minigames (`CSWMiniGame`, `CSWMiniPlayer`, Pazaak), four of which have
@@ -134,21 +142,21 @@ no playable `src/` definition yet.
 
 ### Source files and link order
 
-The 2009 debug map gives the original object file for the 5,390 Windows
+The 2009 debug map gives the original object file for the 5,200 Windows
 functions paired with that build. In address order these fall into long
 runs, one object at a time: the exe is laid out file by file, as MSVC links
 `.obj` files. The single-function interruptions are inline helpers that
 GCC emitted in a different file than MSVC did.
 
-- 276 runs of at least three functions cover 5,219 of the 5,390.
-- Merged, they give an inferred link order of 232 runs over 221 object
+- 266 runs of at least three functions cover 5,031 of the 5,200.
+- Merged, they give an inferred link order of 226 runs over 216 object
   files, beginning `appmanager`, `main`, `exomovieplayerinternal`,
   `exoresman`, `guiingame`, `swgui`, `swguiabilitieschargen`, `swgui`,
   `exoresfile`, `resgff`.
   STRUCTURE.md lists the original link order as open work for phase 4.
-- 2,436 functions sit inside a run; 858 of them are still unnamed, and the
-  run gives their likely source file (55 in `nwscreatureai`, 52 in
-  `guiingame`, 39 in `aurglcore`, 34 in `swguipazaak`). `mac_names.csv`
+- 2,593 functions sit inside a run; 860 of them are still unnamed, and the
+  run gives their likely source file (56 in `nwscreatureai`, 53 in
+  `guiingame`, 39 in `aurglcore`, 35 in `nwccreature`). `mac_names.csv`
   marks these `neighbours`, apart from the `debug map` ones.
 
 ## Findings for this repository

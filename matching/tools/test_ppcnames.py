@@ -43,6 +43,18 @@ class Signatures(unittest.TestCase):
         self.assertEqual(pairs.p, {0x1000: 0x10})
         self.assertEqual(pairs.signature[0x1000], "compatible")
 
+    def test_only_the_listed_differences_are_compatible(self):
+        for windows, mac in (("Foo*", "Bar*"), ("void(*)(int)", "void(*)(float)"), ("|const", ""),
+                             ("unsigned char", "int"), ("Foo*", "Foo**"), ("int", "float"), ("int", "Foo*")):
+            with self.subTest(windows=windows, mac=mac):
+                self.assertIsNone(pn.signature_match(windows, mac))
+        for windows, mac in (("int", "unsigned long"), ("int", "unsigned char"), ("int", "bool"),
+                             ("Foo*", "Foo const&"), ("void*", "Foo*"), ("Foo*", "void*"),
+                             ("char*", "unsigned char*"), ("CExoKeyTable**", "CExoKeyTable*&"),
+                             ("int|const", "unsigned long|const")):
+            with self.subTest(windows=windows, mac=mac):
+                self.assertEqual(pn.signature_match(windows, mac), "compatible")
+
     def test_parameter_count_must_match(self):
         self.assertIsNone(pn.signature_match("int,int", "int"))
         self.assertIsNone(pn.signature_match("int", ""))
@@ -168,6 +180,16 @@ class X86Scanner(unittest.TestCase):
             code = bytes.fromhex(hexcode)
             self.assertEqual(pn.x86_instruction(code, 0)[0], length, hexcode)
 
+    def test_prefixed_call_counts_and_16_bit_call_does_not(self):
+        self.assertEqual(self.scan(bytes.fromhex("2e e8 fa 0f 00 00 c3"), starts={0x2000})[0], [0x2000])
+        self.assertEqual(self.scan(bytes.fromhex("66 2e e8 f9 0f c3"), starts={0x1FFE, 0x0FF9F833})[0], [])
+
+    def test_3dnow_ends_in_its_opcode_byte(self):
+        # pavgusb mm0, mm0 (0F 0F C0 BF), then call 0x2000
+        code = bytes.fromhex("0f 0f c0 bf e8 f7 0f 00 00 c3")
+        self.assertEqual(pn.x86_instruction(code, 0)[0], 4)
+        self.assertEqual(self.scan(code, starts={0x2000})[0], [0x2000])
+
     def test_truncated_instruction_ends_the_scan(self):
         self.assertEqual(self.scan(bytes.fromhex("90 e8 00 00"))[0], [])
 
@@ -216,6 +238,21 @@ class PPCScanner(unittest.TestCase):
         code = ppc(lis(3, 1), dform(33, 4, 3, 16), addi(5, 3, 32))  # lwzu
         self.assertEqual(self.texts(code, {0x10020: "stale", 0x10030: "right"}), {"right"})
 
+    def test_code_a_branch_skips_does_not_feed_the_target(self):
+        # b +8 skips lis r3,1; at addi r3 is unknown on the only path that reaches it
+        code = ppc(0x48000008, lis(3, 1), addi(5, 3, 32))
+        self.assertEqual(self.texts(code, {0x10020: "false"}), frozenset())
+
+    def test_paths_that_agree_keep_their_value(self):
+        # lis r3,1; beq +8; li r4,0; addi r5,r3,32: r3 is the same on both paths
+        code = ppc(lis(3, 1), 0x41820008, addi(4, 0, 0), addi(5, 3, 32))
+        self.assertEqual(self.texts(code, {0x10020: "kept"}), {"kept"})
+
+    def test_lswi_forgets_every_register_it_loads(self):
+        lswi = (31 << 26) | (4 << 21) | (1 << 16) | (8 << 11) | (597 << 1)  # r4, r5
+        code = ppc(lis(5, 1), lswi, addi(6, 5, 32))
+        self.assertEqual(self.texts(code, {0x10020: "false"}), frozenset())
+
     def test_lmw_forgets_what_it_loads(self):
         code = ppc(lis(30, 1), dform(46, 29, 1, 8), addi(5, 30, 0x20))
         self.assertEqual(self.texts(code, {0x10020: "stale"}), frozenset())
@@ -263,6 +300,17 @@ class MachOInput(unittest.TestCase):
             with self.subTest(label), self.assertRaises(SystemExit):
                 self.load(data)
 
+    def test_load_commands_must_fill_sizeofcmds(self):
+        data = bytearray(macho([("_main", 0x0F, 1, 0x1000)]))
+        struct.pack_into(">I", data, 20, 0)
+        with self.assertRaises(SystemExit):
+            self.load(bytes(data))
+
+    def test_unterminated_symbol_name(self):
+        data = macho([("_main", 0x0F, 1, 0x1000)])
+        with self.assertRaises(SystemExit):
+            self.load(data[:-1] + b"X").symbols()
+
     def test_name_index_outside_the_string_table(self):
         data = bytearray(macho([("_main", 0x0F, 1, 0x1000)]))
         sym_off = 28 + 56 + 68 + 24 + 16
@@ -298,7 +346,27 @@ class RepoNames(unittest.TestCase):
         self.assertEqual(ambiguous, {0x1000, 0x2000})
         self.assertEqual(names[0x1000][0], "Foo::a")
         self.assertEqual(names[0x4000][:2], ("Foo::e", None))
-        self.assertEqual(names[0x5000][:2], ("Foo::f", None))  # one name, two guessed parameter lists
+        self.assertEqual(names[0x5000][:2], ("Foo::f", ("int", "int*")))  # one name, two parameter lists
+
+    def test_status_rows_that_disagree_with_each_other_or_the_symbol(self):
+        row = {"symbol": "?a@Foo@@QAEXXZ", "demangled": "public: void __thiscall Foo::a(void)",
+               "address": "0x1000", "role": "defines"}
+        _, ambiguous = self.names(
+            [row], [{"address": "0x1000", "name": "?zz@Other@@QAEXXZ", "status": "todo"},
+                    {"address": "0x2000", "name": "Foo::a", "status": "todo"},
+                    {"address": "0x2000", "name": "Foo::b", "status": "todo"},
+                    {"address": "0x3000", "name": "?a@Foo@@QAEXXZ", "status": "todo"}])
+        self.assertEqual(ambiguous, {0x1000, 0x2000})
+
+    def test_several_parameter_lists_do_not_admit_a_third(self):
+        row = lambda d: {"symbol": "?f", "demangled": d, "address": "0x1000", "role": "defines"}
+        names, _ = self.names([row("public: void __thiscall Foo::f(int)"),
+                               row("public: void __thiscall Foo::f(float)")], [])
+        pairs = pn.Pairs()
+        pn.pair_names(pairs, names, mac_index((0x10, "Foo::f(double)", "__ZN3Foo1fEd")), {0x1000})
+        self.assertEqual(pairs.p, {})
+        pn.pair_names(pairs, names, mac_index((0x10, "Foo::f(float)", "__ZN3Foo1fEf")), {0x1000})
+        self.assertEqual(pairs.p, {0x1000: 0x10})
 
 
 class Outputs(unittest.TestCase):
@@ -306,6 +374,21 @@ class Outputs(unittest.TestCase):
         self.assertEqual(pn.source_how(1, {1: "a.o"}, {}), "debug map")
         self.assertEqual(pn.source_how(2, {1: "a.o"}, {2: "a.o"}), "neighbours")
         self.assertEqual(pn.source_how(3, {}, {}), "")
+
+
+class Seeds(unittest.TestCase):
+    def test_a_hidden_seed_is_not_paired_again_through_another_name(self):
+        # 1 and 2 are both Foo::f; with every name known only 1 pairs. Hiding
+        # 1 must not let 2 take its Mac partner.
+        w = SimpleNamespace(names=windows((1, "public: void __thiscall Foo::f(int)", None),
+                                          (2, "public: void __thiscall Foo::f(unsigned int)", None)),
+                            tables={}, scan={}, game={1, 2}, size={})
+        mac = SimpleNamespace(index=mac_index((101, "Foo::f(int)", "__ZN3Foo1fEi")), tables={}, names={},
+                              scan={}, size={})
+        reference = pn.Pairs()
+        pn.pair_names(reference, w.names, mac.index, {1, 2})
+        self.assertEqual(reference.p, {1: 101})
+        self.assertEqual(pn.run(w, mac, {2}, Counter(), seeds=reference).p, {})
 
 
 class Holdout(unittest.TestCase):

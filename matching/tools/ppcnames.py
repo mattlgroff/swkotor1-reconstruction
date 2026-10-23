@@ -143,7 +143,7 @@ def windows_functions(win):
 # x86 instruction lengths, enough for MSVC 7.0 code: the one-byte and 0F
 # opcode maps with whether a ModRM byte follows and the immediate's size
 # (b 1, w 2, wb 3, z 4 or 2 with 66, a moffs, p far pointer, grp3 only for
-# F6/F7 /0 and /1). scan_windows walks a body one instruction at a time so
+# F6/F7 /0 and /1; 0F 0F, 3DNow!, ends in its opcode byte). scan_windows walks a body one instruction at a time so
 # an E8 or E9 byte inside an operand is not taken for a call.
 
 X86_PREFIXES = frozenset((0xF0, 0xF2, 0xF3, 0x2E, 0x36, 0x3E, 0x26, 0x64, 0x65, 0x66, 0x67))
@@ -168,7 +168,7 @@ X86_TWO = {op: (True, None) for op in range(256)}
 X86_TWO.update({op: (False, None) for op in [0x05, 0x06, 0x07, 0x08, 0x09, 0x0B, 0x0E, *range(0x30, 0x38),
                                              0x77, 0xA0, 0xA1, 0xA2, 0xA8, 0xA9, 0xAA, *range(0xC8, 0xD0)]})
 X86_TWO.update({op: (False, "z") for op in range(0x80, 0x90)})
-X86_TWO.update({op: (True, "b") for op in (0x70, 0x71, 0x72, 0x73, 0xA4, 0xAC, 0xBA, 0xC2, 0xC4, 0xC5, 0xC6)})
+X86_TWO.update({op: (True, "b") for op in (0x0F, 0x70, 0x71, 0x72, 0x73, 0xA4, 0xAC, 0xBA, 0xC2, 0xC4, 0xC5, 0xC6)})
 
 
 def x86_modrm(code, i, addr16):
@@ -193,9 +193,10 @@ def x86_modrm(code, i, addr16):
 
 
 def x86_instruction(code, i):
-    """(length, opcode, offsets of 4-byte displacements and immediates) of the
-    instruction at code[i]; 0F opcodes are 0x0F00 | second byte. Raises
-    IndexError when the instruction runs past the end of code."""
+    """(length, opcode, offsets of 4-byte displacements and immediates,
+    (offset, size) of the immediate or None) of the instruction at code[i];
+    0F opcodes are 0x0F00 | second byte. Raises IndexError when the
+    instruction runs past the end of code."""
     start, opsize, addr16 = i, False, False
     while code[i] in X86_PREFIXES:
         opsize |= code[i] == 0x66
@@ -226,17 +227,18 @@ def x86_instruction(code, i):
             "a": 2 if addr16 else 4, "p": 4 if opsize else 6}[imm]
     if imm in ("z", "a", "p") and size >= 4:
         fields.append(i)
+    immediate = (i, size) if size else None
     i += size
     if i > len(code):
         raise IndexError(start)
-    return i - start, op, fields
+    return i - start, op, fields, immediate
 
 
 def scan_windows(win, starts, ends, functions):
     """{function: (callees in order, string set)}, from the rel32 targets of
-    E8/E9 instructions that are function starts and the 4-byte displacements
-    and immediates that are string addresses, decoded instruction by
-    instruction."""
+    E8/E9 instructions (prefixed or not; a 16-bit rel16 form is skipped)
+    that are function starts and the 4-byte displacements and immediates
+    that are string addresses, decoded instruction by instruction."""
     out = {}
     for fn in functions:
         code = win.body(fn, ends[fn])
@@ -244,15 +246,15 @@ def scan_windows(win, starts, ends, functions):
         i = 0
         while i < len(code):
             try:
-                n, op, fields = x86_instruction(code, i)
+                n, op, fields, immediate = x86_instruction(code, i)
             except IndexError:
                 break
             for f in fields:
                 value = struct.unpack_from("<I", code, f)[0]
                 if value in win.strings:
                     texts.add(win.strings[value])
-            if op in (0xE8, 0xE9) and n == 5:
-                target = (fn + i + 5 + struct.unpack_from("<i", code, i + 1)[0]) & 0xFFFFFFFF
+            if op in (0xE8, 0xE9) and immediate[1] == 4:
+                target = (fn + i + n + struct.unpack_from("<i", code, immediate[0])[0]) & 0xFFFFFFFF
                 if target in starts and target != fn and not (fn <= target < ends[fn]):
                     calls.append(target)
             i += n
@@ -310,44 +312,66 @@ def split_params(params):
     return out + [current] if current or out else out
 
 
-# Kinds a parameter must keep across the builds. The reconstruction's own
-# parameter types are partly guesses (int for unsigned long, a pointer for a
-# reference, a base class for a derived one), so within a kind they may differ:
-# all 32-bit-or-narrower integers (bool too: GCC's PowerPC bool is 4 bytes,
-# MSVC's 1, and the repo writes either as int), and all pointers and
-# references. A floating-point value, a 64-bit integer and a class passed by
-# value must stay the same.
-INTEGER_TYPES = {"bool", "__bool8", "char", "signed char", "unsigned char", "short", "unsigned short",
-                 "short int", "unsigned short int", "int", "unsigned int", "unsigned", "long",
-                 "unsigned long", "long int", "unsigned long int", "wchar_t", "__wchar_t"}
-INT64_TYPES = {"__int64", "unsigned __int64", "long long", "unsigned long long"}
+# The differences a name pair may have between the repo's parameter types
+# (the Windows side, partly guessed) and the Mac's, each one explicit:
+# - another spelling or signedness of the same integer width (int and
+#   unsigned long are both 32 bits on both platforms);
+# - a 32-bit integer in the repo for a narrower integer or a bool on the Mac
+#   (MSVC pushes every integer argument as 32 bits and the repo often
+#   writes int; GCC's PowerPC bool is 4 bytes, MSVC's 1);
+# - a pointer for a reference, at the same depth, and const or volatile on
+#   what is pointed to;
+# - void* for a pointer of the same depth, on either side;
+# - char*, signed char* and unsigned char* for one another (byte buffers).
+# Anything else has to be equal: another class, a callback's type, a
+# floating-point or 64-bit value, and a method's own const.
+INT32 = {"int", "unsigned int", "unsigned", "signed", "signed int", "long", "unsigned long",
+         "long int", "unsigned long int", "signed long"}
+INT16 = {"short", "unsigned short", "short int", "unsigned short int", "signed short",
+         "wchar_t", "__wchar_t"}
+INT8 = {"char", "signed char", "unsigned char"}
+BOOL = {"bool", "__bool8"}
 
 
-def param_kind(param):
-    if param == "...":
-        return "..."
-    if "(" in param or param.rstrip().endswith(("*", "&")):
-        return "pointer"
-    base = " ".join(re.sub(r"\b(const|volatile)\b", " ", param).split())
-    if base in INTEGER_TYPES:
-        return "int"
-    if base in INT64_TYPES:
-        return "int64"
-    if base in ("double", "long double"):
-        return "double"
-    return base
+def base_type(param):
+    """(the type without const, volatile, * and &, pointer and reference depth)."""
+    depth = param.count("*") + param.count("&")
+    base = re.sub(r"\b(const|volatile)\b|[*&]", " ", param)
+    return " ".join(base.split()), depth
 
 
-def signature_match(a, b):
-    """How two normalized parameter lists agree: "exact", "compatible" (same
-    count and the same kind each, see param_kind), "unknown" when a side has
-    none (a status.csv name), else None."""
-    if a is None or b is None:
+def param_match(windows, mac):
+    """Whether a repo parameter type may stand for a Mac one (see above)."""
+    if windows == mac:
+        return True
+    if "(" in windows or "(" in mac:
+        return False
+    (wb, wd), (mb, md) = base_type(windows), base_type(mac)
+    if wd != md:
+        return False
+    if wd:
+        return wb == mb or "void" in (wb, mb) or (wb in INT8 and mb in INT8)
+    if wb == mb or any(wb in c and mb in c for c in (INT32, INT16, INT8, BOOL)):
+        return True
+    return wb in INT32 and (mb in INT16 or mb in INT8 or mb in BOOL)
+
+
+def signature_match(windows, mac):
+    """How a repo parameter list agrees with a Mac one: "exact", "compatible"
+    (the same count, each pair allowed by param_match, the same method
+    const), "unknown" when the repo has none (a status.csv name), else None.
+    A repo function the CSVs give several parameter lists is a tuple of
+    them; the best of them counts."""
+    if windows is None or mac is None:
         return "unknown"
-    if a == b:
+    if isinstance(windows, tuple):
+        found = {signature_match(w, mac) for w in windows}
+        return next((m for m in ("exact", "compatible") if m in found), None)
+    if windows == mac:
         return "exact"
-    pa, pb = split_params(a.split("|")[0]), split_params(b.split("|")[0])
-    if len(pa) == len(pb) and all(param_kind(x) == param_kind(y) for x, y in zip(pa, pb)):
+    (wp, _, wconst), (mp, _, mconst) = windows.partition("|"), mac.partition("|")
+    wl, ml = split_params(wp), split_params(mp)
+    if wconst == mconst and len(wl) == len(ml) and all(param_match(w, m) for w, m in zip(wl, ml)):
         return "compatible"
     return None
 
@@ -355,11 +379,12 @@ def signature_match(a, b):
 def windows_names():
     """({address: (qual, params or None, special kind or None, shown name)},
     addresses the CSVs give different names). symbols.csv names one body
-    several times when /OPT:ICF folded it, and status.csv can disagree with
-    symbols.csv; such an address keeps its first name for display but is not
-    paired by name. One name with different parameter lists keeps the name
-    with its parameters unknown."""
-    names, seen = {}, defaultdict(set)
+    several times when /OPT:ICF folded it, two status.csv rows can name one
+    address, and status.csv can disagree with symbols.csv (by name, or by a
+    mangled name that is not that address's symbol); such an address keeps
+    its first name for display but is not paired by name. One name with
+    several parameter lists keeps them all as a tuple."""
+    names, seen, symbols = {}, defaultdict(set), defaultdict(set)
     for r in read_csv("symbols.csv"):
         if r["role"] not in ("defines", "calls"):
             continue
@@ -368,24 +393,29 @@ def windows_names():
         kind = next((k for p, k in SPECIAL.items() if r["symbol"].startswith(p)), None)
         names.setdefault(address, (qual, params, kind, r["demangled"]))
         seen[address].add((qual, params))
+        symbols[address].add(r["symbol"])
     for r in read_csv("status.csv"):
-        address = int(r["address"], 16)
-        if not r["name"]:
+        address, name = int(r["address"], 16), r["name"]
+        if not name:
             continue
-        if address in names:
-            # a mangled status.csv name is the symbols.csv row's own symbol
-            if not r["name"].startswith("?") and r["name"] not in {q for q, _ in seen[address]}:
-                seen[address].add((r["name"], None))
+        if address in symbols:
+            if name.startswith("?") and name not in symbols[address]:
+                seen[address].add((name, None))
+            elif not name.startswith("?") and name not in {q for q, _ in seen[address]}:
+                seen[address].add((name, None))
             continue
-        parts = r["name"].split("::")
+        parts = name.split("::")
         kind = "ctor" if len(parts) > 1 and parts[-1] == parts[-2] else \
             "dtor" if parts[-1].startswith("~") else None
-        names[address] = (r["name"], None, kind, r["name"])
+        names.setdefault(address, (name, None, kind, name))
+        seen[address].add((name, None))
+    ambiguous = {a for a, found in seen.items() if len({q for q, _ in found}) > 1}
     for address, found in seen.items():
-        if len(found) > 1 and len({q for q, _ in found}) == 1:  # one name, guessed parameters differ
+        params = sorted({p for _, p in found if p is not None})
+        if len(params) > 1 and address not in ambiguous:
             qual, _, kind, shown = names[address]
-            names[address] = (qual, None, kind, shown)
-    return names, {a for a, found in seen.items() if len({q for q, _ in found}) > 1}
+            names[address] = (qual, tuple(params), kind, shown)
+    return names, ambiguous
 
 
 def windows_vtables(win):
@@ -430,16 +460,18 @@ class MachO:
                     self.data = self.data[offset:offset + size]
                     break
         self.need(len(self.data) >= 28, "too short for a Mach-O header")
-        magic, cpu, _, _, ncmds, _, _ = struct.unpack_from(">7I", self.data, 0)
+        magic, cpu, _, _, ncmds, sizeofcmds, _ = struct.unpack_from(">7I", self.data, 0)
         self.need(magic == 0xFEEDFACE and cpu == CPU_PPC,
                   "not a 32-bit PowerPC Mach-O or a universal binary with one")
+        commands_end = 28 + sizeofcmds
+        self.need(commands_end <= len(self.data), "load commands run past the file")
         self.sections = []  # (segment, section, address, size, file offset)
         self.symtab = None
         offset = 28
         for _ in range(ncmds):
-            self.need(offset + 8 <= len(self.data), "load commands run past the file")
+            self.need(offset + 8 <= commands_end, "load commands run past sizeofcmds")
             cmd, size = struct.unpack_from(">2I", self.data, offset)
-            self.need(size >= 8 and offset + size <= len(self.data), f"bad load command size {size}")
+            self.need(size >= 8 and offset + size <= commands_end, f"bad load command size {size}")
             if cmd == 1:  # LC_SEGMENT
                 self.need(size >= 56, "LC_SEGMENT too short")
                 nsects = struct.unpack_from(">I", self.data, offset + 48)[0]
@@ -458,6 +490,7 @@ class MachO:
                 self.need(symoff + 12 * nsyms <= len(self.data) and stroff + strsize <= len(self.data),
                           "symbol or string table runs past the file")
             offset += size
+        self.need(offset == commands_end, "load commands do not fill sizeofcmds")
         self.need(self.symtab is not None, "no symbol table (LC_SYMTAB): a stripped build has no names")
 
     def need(self, ok, problem):
@@ -483,7 +516,8 @@ class MachO:
         symoff, nsyms, stroff, strsize = self.symtab
         self.need(strx < strsize, f"symbol name index {strx} outside the string table")
         end = self.data.find(b"\0", stroff + strx, stroff + strsize)
-        return self.data[stroff + strx:end if end >= 0 else stroff + strsize].decode("latin1")
+        self.need(end >= 0, f"symbol name at string index {strx} is not NUL-terminated")
+        return self.data[stroff + strx:end].decode("latin1")
 
     def symbols(self):
         """[(address, section number, name)] of defined, non-debug symbols."""
@@ -558,85 +592,173 @@ UPDATES = {33, 35, 37, 39, 41, 43, 45, 49, 51, 53, 55}  # rA becomes the effecti
 VOLATILE = (0, *range(3, 13))  # what a call may change
 
 
-def scan_ppc(mac, ends, strings):
-    """{function: (callees in order, string set)}. Tracks lis/addis/addi/ori
-    register values (and the bcl/mflr PIC base) to find string addresses.
+def ppc_step(w, pc, regs, lr, ref):
+    """The register values (dict) and link register after one instruction,
+    given those before it; ref(address) is called for each address it forms.
     A call (bl, bctrl, blrl, a linked bc) forgets the volatile registers and
     the link register, an update-form load or store moves rA to its
-    effective address, and lmw forgets the registers it loads."""
+    effective address, and lmw, lswi and lswx forget what they load."""
+    regs = dict(regs)
+    op, rd, ra, imm = w >> 26, (w >> 21) & 31, (w >> 16) & 31, w & 0xFFFF
+    xo = (w >> 1) & 0x3FF
+
+    def called():
+        for r in VOLATILE:
+            regs.pop(r, None)
+
+    if op == 18:  # b / bl
+        if w & 1:
+            called()
+            lr = None
+    elif w == 0x429F0005:  # bcl 20,31,$+4
+        lr = pc + 4
+    elif op == 16 and w & 1:  # other linked bc
+        called()
+        lr = None
+    elif op == 19 and xo in (16, 528) and w & 1:  # bclrl / bcctrl (blrl, bctrl)
+        called()
+        lr = None
+    elif op == 31 and xo == 339 and ((w >> 11) & 0x3FF) == 0x100:  # mflr
+        regs.pop(rd, None)
+        if lr is not None:
+            regs[rd] = lr
+    elif op == 31 and xo == 467 and ((w >> 11) & 0x3FF) == 0x100:  # mtlr
+        lr = regs.get(rd)
+    elif op == 31 and xo == 597:  # lswi: ceil(NB / 4) registers from rD, wrapping
+        nb = (w >> 11) & 31 or 32
+        for k in range((nb + 3) // 4):
+            regs.pop((rd + k) % 32, None)
+    elif op == 31 and xo == 533:  # lswx: a count from XER
+        regs.clear()
+    elif op == 15:  # addis / lis
+        base = 0 if ra == 0 else regs.get(ra)
+        regs.pop(rd, None)
+        if base is not None:
+            regs[rd] = (base + (imm << 16)) & 0xFFFFFFFF
+    elif op == 14:  # addi / li
+        if ra and ra in regs:
+            value = (regs[ra] + sign16(imm)) & 0xFFFFFFFF
+            ref(value)
+            regs[rd] = value
+        else:
+            regs.pop(rd, None)
+    elif op == 24:  # ori rA,rS,imm
+        if rd in regs:
+            regs[ra] = regs[rd] | imm
+            ref(regs[ra])
+        else:
+            regs.pop(ra, None)
+    elif op in LOADS or op in FLOAT_LOADS or op in STORES:
+        address = (regs[ra] + sign16(imm)) & 0xFFFFFFFF if ra and ra in regs else None
+        if address is not None:
+            ref(address)
+        if op in UPDATES:
+            regs.pop(ra, None)
+            if address is not None:
+                regs[ra] = address
+        if op in LOADS:
+            regs.pop(rd, None)
+    elif op == 46:  # lmw rD..r31
+        for r in range(rd, 32):
+            regs.pop(r, None)
+    elif op in (31, 20, 21, 23, 25, 26, 27, 28, 29, 7, 8, 12, 13):
+        regs.pop(rd, None)
+        regs.pop(ra, None)
+    return regs, lr
+
+
+def ppc_flow(words, fn):
+    """Successors of each instruction by its branches. A block no branch
+    reaches (a jump table's case) follows every bctr of the function."""
+    n = len(words)
+
+    def index(target):
+        i, rest = divmod(target - fn, 4)
+        return i if not rest and 0 <= i < n else None
+
+    succ, ends, jumps = [], set(), []
+    for i, w in enumerate(words):
+        op, link, pc = w >> 26, w & 1, fn + 4 * i
+        always = (w >> 21) & 0x14 == 0x14  # BO: branch whatever the condition
+        out = [i + 1]
+        if op == 18:
+            li = w & 0x03FFFFFC
+            target = (li - 0x04000000 if li & 0x02000000 else li) + (0 if w & 2 else pc)
+            if not link:
+                out = [index(target)]  # outside the function: a tail call
+                ends.add(i)
+        elif op == 16:
+            bd = w & 0xFFFC
+            target = (bd - 0x10000 if bd & 0x8000 else bd) + (0 if w & 2 else pc)
+            out = ([] if always and not link else [i + 1]) + [index(target)]
+            if always and not link:
+                ends.add(i)
+        elif op == 19 and (w >> 1) & 0x3FF in (16, 528) and always and not link:  # blr / bctr
+            out = []
+            ends.add(i)
+            if (w >> 1) & 0x3FF == 528:
+                jumps.append(i)
+        succ.append([s for s in out if s is not None and s < n])
+    reached, stack = set(), [0]
+    while stack:
+        i = stack.pop()
+        if i not in reached:
+            reached.add(i)
+            stack.extend(succ[i])
+    orphans = [i for i in range(1, n) if i not in reached and i - 1 in ends]
+    for j in jumps:
+        succ[j].extend(orphans)
+    return succ
+
+
+def ppc_meet(a, b):
+    """What two paths agree on: the registers with one value on both, the
+    link register if it is the same."""
+    if a is None:
+        return b
+    return {r: v for r, v in a[0].items() if b[0].get(r) == v}, a[1] if a[1] == b[1] else None
+
+
+def scan_ppc(mac, ends, strings):
+    """{function: (callees in order, string set)}. Tracks lis/addis/addi/ori
+    register values (and the bcl/mflr PIC base) to find string addresses,
+    along the function's branches (see ppc_step, ppc_flow): where paths
+    meet, only the values they agree on survive, and code no known path
+    reaches starts with nothing known."""
     out = {}
+    nothing = lambda address: None
     for fn, end in ends.items():
         code = mac.bytes_at(fn, end - fn)
-        regs, lr, calls, texts = {}, None, [], set()
+        words = [struct.unpack_from(">I", code, i)[0] for i in range(0, len(code) - 3, 4)]
+        succ = ppc_flow(words, fn)
+        before = [None] * len(words)
+        for start in range(len(words)):
+            if before[start] is not None:
+                continue
+            before[start] = ({}, None)
+            work = [start]
+            while work:
+                i = work.pop()
+                after = ppc_step(words[i], fn + 4 * i, *before[i], nothing)
+                for s in succ[i]:
+                    merged = ppc_meet(before[s], after)
+                    if merged != before[s]:
+                        before[s] = merged
+                        work.append(s)
+        calls, texts = [], set()
 
         def ref(value):
             if value in strings:
                 texts.add(strings[value])
 
-        def called():
-            for r in VOLATILE:
-                regs.pop(r, None)
-
-        for i in range(0, len(code) - 3, 4):
-            pc, w = fn + i, struct.unpack_from(">I", code, i)[0]
-            op, rd, ra, imm = w >> 26, (w >> 21) & 31, (w >> 16) & 31, w & 0xFFFF
-            xo = (w >> 1) & 0x3FF
-            if op == 18:  # b / bl
+        for i, w in enumerate(words):
+            pc = fn + 4 * i
+            if w >> 26 == 18:  # b / bl
                 li = w & 0x03FFFFFC
                 target = (li - 0x04000000 if li & 0x02000000 else li) + (0 if w & 2 else pc)
                 if target in ends and target != fn and not (fn <= target < end):
                     calls.append(target)
-                if w & 1:
-                    called()
-                    lr = None
-            elif w == 0x429F0005:  # bcl 20,31,$+4
-                lr = pc + 4
-            elif op == 16 and w & 1:  # other linked bc
-                called()
-                lr = None
-            elif op == 19 and xo in (16, 528) and w & 1:  # bclrl / bcctrl (blrl, bctrl)
-                called()
-                lr = None
-            elif op == 31 and xo == 339 and ((w >> 11) & 0x3FF) == 0x100:  # mflr
-                regs.pop(rd, None)
-                if lr is not None:
-                    regs[rd] = lr
-            elif op == 31 and xo == 467 and ((w >> 11) & 0x3FF) == 0x100:  # mtlr
-                lr = regs.get(rd)
-            elif op == 15:  # addis / lis
-                base = 0 if ra == 0 else regs.get(ra)
-                regs.pop(rd, None)
-                if base is not None:
-                    regs[rd] = (base + (imm << 16)) & 0xFFFFFFFF
-            elif op == 14:  # addi / li
-                if ra and ra in regs:
-                    value = (regs[ra] + sign16(imm)) & 0xFFFFFFFF
-                    ref(value)
-                    regs[rd] = value
-                else:
-                    regs.pop(rd, None)
-            elif op == 24:  # ori rA,rS,imm
-                if rd in regs:
-                    regs[ra] = regs[rd] | imm
-                    ref(regs[ra])
-                else:
-                    regs.pop(ra, None)
-            elif op in LOADS or op in FLOAT_LOADS or op in STORES:
-                address = (regs[ra] + sign16(imm)) & 0xFFFFFFFF if ra and ra in regs else None
-                if address is not None:
-                    ref(address)
-                if op in UPDATES:
-                    regs.pop(ra, None)
-                    if address is not None:
-                        regs[ra] = address
-                if op in LOADS:
-                    regs.pop(rd, None)
-            elif op == 46:  # lmw rD..r31
-                for r in range(rd, 32):
-                    regs.pop(r, None)
-            elif op in (31, 20, 21, 23, 25, 26, 27, 28, 29, 7, 8, 12, 13):
-                regs.pop(rd, None)
-                regs.pop(ra, None)
+            ppc_step(w, pc, *before[i], ref)
         out[fn] = (list(dict.fromkeys(calls)), frozenset(texts))
     return out
 
@@ -841,9 +963,16 @@ class MacBuild:
         self.objects = mac.objects()
 
 
-def run(w, mac, allowed, stats, rejects=None):
+def run(w, mac, allowed, stats, rejects=None, seeds=None):
+    """Pair one build. seeds, a Pairs of name pairs made beforehand, stands
+    in for the name signal; the others start from the allowed ones."""
     pairs = Pairs()
-    pair_names(pairs, w.names, mac.index, allowed, rejects)
+    if seeds is None:
+        pair_names(pairs, w.names, mac.index, allowed, rejects)
+    else:
+        for x, p in seeds.p.items():
+            if x in allowed:
+                pairs.add(x, p, "name", seeds.signature[x])
     pair_vtables(pairs, w.tables, mac.tables, mac.names, w.size, stats)
     pair_strings(pairs, w.scan, mac.scan, w.game)
     pair_calls(pairs, w.scan, mac.scan, w.game, w.size, mac.size, 2)
@@ -853,10 +982,11 @@ def run(w, mac, allowed, stats, rejects=None):
 
 
 def holdout(w, builds, share, seed):
-    """Precision and coverage of signals 2 to 5. The targets are frozen first:
-    the functions some build pairs by name with every name known, and what it
-    pairs them with. One seeded sample of them is hidden from every build, so
-    each build and the combination are measured on the same functions."""
+    """Precision and coverage of signals 2 to 5. The name pairs are frozen
+    first, with every name known: the hidden ones are the reference, the
+    rest seed the other signals as they are, without pairing names again. One
+    seeded sample is hidden from every build, so each build and the
+    combination are measured on the same functions."""
     references = []
     for mac in builds:
         reference = Pairs()
@@ -867,7 +997,7 @@ def holdout(w, builds, share, seed):
     print(f"{len(hidden)} of {len(targets)} name pairs hidden (seed {seed})")
     results = []
     for mac, reference in zip(builds, references):
-        pairs = run(w, mac, w.named - hidden, Counter())
+        pairs = run(w, mac, w.named - hidden, Counter(), seeds=reference)
         results.append(pairs)
         eligible = hidden & reference.p.keys()
         print(f"{mac.label}: {len(eligible)} of them paired by name in this build")
