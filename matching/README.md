@@ -41,7 +41,8 @@ the tracker above is rebuilt from it.
 - `tools/libmatch.py`, `crt_libcmt.csv`: stock library functions in the exe.
 - `tools/symbolmap.py`, `symbols.csv`: symbol-to-address map, the bridge to
   the playable build.
-- `tools/ppcnames.py`: names from the Mac PowerPC build, paired by address.
+- `tools/ppcnames.py`, `research/mac-ppc-names.md`: names from the Mac
+  PowerPC build, paired by address, and what that found.
 - `tools/render_banner.py`, `assets/progress.svg`: the progress tracker.
 - `status.csv`, `functions.csv`: the tracker's inputs.
 
@@ -201,7 +202,10 @@ needs two agreeing neighbours, `calls1` one). `--holdout` hides a fifth
 of the name pairs and checks what the other signals recover; on the GOG
 exe that gives about 100% for `vtable`, 98% for `strings`, 97% for
 `calls` and 95% for `calls1`. Treat a paired name as a strong lead, not
-proof: confirm it against the code before annotating.
+proof: confirm it against the code before annotating. `todo.py --names
+DIR/pairs.csv` shows the paired name next to each unclaimed function.
+[research/mac-ppc-names.md](research/mac-ppc-names.md) has the method,
+results and what the pairing found about this repository.
 
 The output names come from the Mac binary, so they go to a directory
 outside the checkout. `pairs.csv` lists every game function with its

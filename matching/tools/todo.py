@@ -9,18 +9,24 @@ Compiler-generated EH funclets and stock LIBCMT functions are never listed.
     python matching/tools/todo.py --near               NONMATCH attempts, closest first
     python matching/tools/todo.py --range 0x5E0000 0x620000 -n 50
     python matching/tools/todo.py --address 0x005B2EF0 print the playable definition
+    python matching/tools/todo.py --names DIR/pairs.csv  add the Mac PowerPC name, if paired
 
 Columns: address, size in bytes, status (todo or NONMATCH with diff count),
 and the src/ file that defines kotor_<cc>_<address>, if any. That file is
 behaviour-equivalent C++, play-tested, with original instruction addresses
 in its comments: read it for semantics and offsets, then write 2002-style
 classes. Its raw-offset style never compiles to the original bytes.
+
+--names (or KOTOR_PPC_NAMES) reads the pairs.csv that ppcnames.py wrote and
+shows each function's name in the Mac PowerPC build, with the signal that
+paired it. Confirm such a name against the code before using it.
 """
 
 from __future__ import annotations
 
 import argparse
 import csv
+import os
 import re
 import sys
 from pathlib import Path
@@ -56,6 +62,15 @@ def body(path: Path, line: int) -> str:
     return "\n".join(lines[top:end + 1])
 
 
+def mac_names(path: str | None) -> dict[int, str]:
+    """address -> "name [signal]" from a ppcnames.py pairs.csv, if given."""
+    if not path:
+        return {}
+    with open(path, encoding="utf-8") as source:
+        return {int(r["address"], 16): f"{r['ppc_name']} [{r['method']}]"
+                for r in csv.DictReader(source) if r["ppc_name"]}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -66,7 +81,10 @@ def main() -> None:
     parser.add_argument("--min-size", type=int, default=16,
                         help="skip functions smaller than this many bytes (default 16)")
     parser.add_argument("--address", help="print the playable definition of one function")
+    parser.add_argument("--names", default=os.environ.get("KOTOR_PPC_NAMES"),
+                        help="pairs.csv from ppcnames.py, to show Mac PowerPC names")
     args = parser.parse_args()
+    names = mac_names(args.names)
 
     index = playable_index()
     if args.address:
@@ -74,6 +92,8 @@ def main() -> None:
         if not hit:
             sys.exit(f"src/ has no definition named for {args.address}")
         print(f"== {hit[0].relative_to(ROOT).as_posix()}:{hit[1]}")
+        if int(args.address, 16) in names:
+            print(f"// Mac PowerPC name: {names[int(args.address, 16)]}")
         print(body(*hit))
         return
 
@@ -103,7 +123,8 @@ def main() -> None:
     rows.sort(key=lambda r: (r[0], -r[1] if args.largest else r[1], r[2]))
     print(f"{len(rows):,} functions; showing {min(args.n, len(rows))}")
     for _, size, address, state, where in rows[:args.n]:
-        print(f"0x{address:08X}  {size:6,} B  {state:<14} {where}")
+        name = f"  {names[address]}" if address in names else ""
+        print(f"0x{address:08X}  {size:6,} B  {state:<14} {where}{name}")
 
 
 if __name__ == "__main__":
