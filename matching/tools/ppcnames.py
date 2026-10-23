@@ -1343,7 +1343,7 @@ def link_order(sources):
 
 def write_link_order(path, order):
     with open(path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["order", "first", "last", "object", "functions"])
         for i, (first, last, obj, n) in enumerate(order, 1):
             writer.writerow([i, f"0x{first:08X}", f"0x{last:08X}", obj, n])
@@ -1365,7 +1365,7 @@ def signature_of(x, results):
 def write_mac_names(path, game, combined, sources, inferred, results):
     """The repository's hint file: each game function with a Mac name or a source file."""
     with open(path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["address", "mac_name", "method", "builds", "conflict", "signature", "source", "source_how"])
         for x in sorted(game):
             name, method, agree, conflict = combined.get(x, ("", "", "", ""))
@@ -1435,7 +1435,7 @@ def main():
     out.mkdir(parents=True, exist_ok=False)
     (out / ".gitignore").write_text("*\n")
     with open(out / "pairs.csv", "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["address", "size", "listed", "status", "playable", "repo_name", "repo_name_conflict",
                          "mac_name", "method", "builds", "conflict", "signature", "source", "source_how",
                          "mac_addresses"])
@@ -1456,7 +1456,7 @@ def main():
     if args.repo:
         write_mac_names(MATCHING / "mac_names.csv", w.game, combined, sources, inferred, results)
     with open(out / "signature_rejects.csv", "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["build", "address", "repo_name", "mac_candidates"])
         for mac, refused in zip(builds, rejects):
             for x, starts in refused:
@@ -1464,7 +1464,7 @@ def main():
                                  " | ".join(mac.names[p][1] for p in starts)])
     unpaired = Counter()
     with open(out / "mac_unpaired.csv", "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["build", "mac_address", "size", "category", "mac_name"])
         for mac, pairs in zip(builds, results):
             for p in sorted(mac.ends):
