@@ -51,7 +51,7 @@ matching/
   tools/matchcmp.py         compile with MSVC 7.0 and compare each function
   tools/libmatch.py         find stock library functions in the exe
   tools/symbolmap.py        build symbols.csv from matched objects
-  tools/ppcnames.py         pair functions with the Mac PowerPC build's names
+  tools/ppcnames.py         pair functions with the Mac PowerPC builds' names
   tools/render_banner.py    render the tracker
 .github/workflows/update-progress-tracker.yml
 ```

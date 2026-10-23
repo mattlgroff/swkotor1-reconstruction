@@ -9,7 +9,7 @@ Compiler-generated EH funclets and stock LIBCMT functions are never listed.
     python matching/tools/todo.py --near               NONMATCH attempts, closest first
     python matching/tools/todo.py --range 0x5E0000 0x620000 -n 50
     python matching/tools/todo.py --address 0x005B2EF0 print the playable definition
-    python matching/tools/todo.py --names DIR/pairs.csv  add the Mac PowerPC name, if paired
+    python matching/tools/todo.py --names DIR/pairs.csv  add the Mac name and source file, if known
 
 Columns: address, size in bytes, status (todo or NONMATCH with diff count),
 and the src/ file that defines kotor_<cc>_<address>, if any. That file is
@@ -18,8 +18,10 @@ in its comments: read it for semantics and offsets, then write 2002-style
 classes. Its raw-offset style never compiles to the original bytes.
 
 --names (or KOTOR_PPC_NAMES) reads the pairs.csv that ppcnames.py wrote and
-shows each function's name in the Mac PowerPC build, with the signal that
-paired it. Confirm such a name against the code before using it.
+shows each function's name in Aspyr's Mac builds, with the signal that
+paired it and how many builds agree (2/2 is the most reliable), then its
+original source file. A function with no name may still have a source file
+from its neighbours. Confirm a name against the code before using it.
 """
 
 from __future__ import annotations
@@ -63,12 +65,17 @@ def body(path: Path, line: int) -> str:
 
 
 def mac_names(path: str | None) -> dict[int, str]:
-    """address -> "name [signal]" from a ppcnames.py pairs.csv, if given."""
+    """address -> "name [signal, builds] (source file)" from a ppcnames.py pairs.csv."""
     if not path:
         return {}
+    found = {}
     with open(path, encoding="utf-8") as source:
-        return {int(r["address"], 16): f"{r['ppc_name']} [{r['method']}]"
-                for r in csv.DictReader(source) if r["ppc_name"]}
+        for r in csv.DictReader(source):
+            name = f"{r['mac_name']} [{r['method']}, {r['builds']}]" if r["mac_name"] else ""
+            where = f"({r['source']})" if r["source"] else ""
+            if name or where:
+                found[int(r["address"], 16)] = f"{name} {where}".strip()
+    return found
 
 
 def main() -> None:
@@ -93,7 +100,7 @@ def main() -> None:
             sys.exit(f"src/ has no definition named for {args.address}")
         print(f"== {hit[0].relative_to(ROOT).as_posix()}:{hit[1]}")
         if int(args.address, 16) in names:
-            print(f"// Mac PowerPC name: {names[int(args.address, 16)]}")
+            print(f"// Mac name: {names[int(args.address, 16)]}")
         print(body(*hit))
         return
 

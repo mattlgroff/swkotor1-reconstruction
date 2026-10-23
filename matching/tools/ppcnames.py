@@ -1,10 +1,15 @@
-"""Pair the original's functions with the named functions of the 2004 Mac PowerPC build.
+"""Pair the original's functions with the named functions of Aspyr's Mac PowerPC builds.
 
-Aspyr's Mac port (v1.03, PowerPC, 2004) compiled the same game source with
-GCC and shipped its symbol table: about 9,500 functions with their C++ names
-and parameter types. This tool pairs those functions with addresses in the
-GOG Windows 1.03 swkotor.exe, so functions that the reconstruction only knows
-by address can get their original names.
+Aspyr's Mac ports compiled the same game source with GCC and kept their
+symbol tables: C++ names with parameter types. Two builds are known:
+
+- v1.03 (2004), PowerPC: about 10,300 functions
+- v1.03e (2009), universal PowerPC/i386: about 13,300 functions, plus a
+  debug map that names each function's object file (BioWare's source file)
+
+This tool pairs their functions with addresses in the GOG Windows 1.03
+swkotor.exe, so functions that the reconstruction only knows by address can
+get their original names. A universal binary is read through its ppc slice.
 
 Signals, strongest first:
 
@@ -18,18 +23,24 @@ Signals, strongest first:
             on each side, proposed by at least two paired functions, repeated
             until nothing changes; then calls1, which takes a single proposal
 
+With several builds, each is paired on its own; a function the builds name
+differently is left unnamed and reported as a conflict. With a debug map,
+paired functions get their object file, and runs of one object's functions
+in address order give the original link order and place unnamed functions
+between them.
+
 --holdout hides a share of the name pairs, runs the other signals and reports
 how many hidden pairs they recover correctly: the precision of each signal.
 
 Inputs are the user's own files; outputs go to a directory outside the
-checkout, since the names they hold come from the Mac binary:
+checkout, since the names they hold come from the Mac binaries:
 
-    python matching/tools/ppcnames.py --exe swkotor.exe --ppc "Knights of the Old Republic" --out DIR
+    python matching/tools/ppcnames.py --exe swkotor.exe --ppc "Knights of the Old Republic" XKOTOR --out DIR
     python matching/tools/ppcnames.py ... --holdout 0.2
 
 Writes DIR/pairs.csv (every Windows game function, paired or not),
-DIR/ppc_unpaired.csv (Mac functions with no Windows partner, by category)
-and prints a summary.
+DIR/link_order.csv (with a debug map), DIR/mac_unpaired.csv (Mac functions
+with no Windows partner, by category) and prints a summary.
 """
 import argparse
 import csv
@@ -199,14 +210,26 @@ def windows_vtables(win):
 
 
 # ---------------------------------------------------------------------------
-# Mac PowerPC: a 32-bit big-endian Mach-O with its symbol table
+# Mac PowerPC: a 32-bit big-endian Mach-O with its symbol table, on its own
+# or as the ppc slice of a universal binary
+
+CPU_PPC = 18
+N_FUN, N_SO, N_OSO = 0x24, 0x64, 0x66
+
 
 class MachO:
     def __init__(self, path):
         self.data = Path(path).read_bytes()
+        if struct.unpack_from(">I", self.data, 0)[0] == 0xCAFEBABE:  # universal
+            count = struct.unpack_from(">I", self.data, 4)[0]
+            for i in range(count):
+                cpu, _, offset, size, _ = struct.unpack_from(">5I", self.data, 8 + 20 * i)
+                if cpu == CPU_PPC:
+                    self.data = self.data[offset:offset + size]
+                    break
         magic, cpu, _, _, ncmds, _, _ = struct.unpack_from(">7I", self.data, 0)
-        if magic != 0xFEEDFACE or cpu != 18:
-            raise SystemExit(f"{path}: not a 32-bit PowerPC Mach-O")
+        if magic != 0xFEEDFACE or cpu != CPU_PPC:
+            raise SystemExit(f"{path}: not a 32-bit PowerPC Mach-O or a universal binary with one")
         self.sections = []  # (segment, section, address, size, file offset)
         offset = 28
         for _ in range(ncmds):
@@ -248,6 +271,22 @@ class MachO:
             out.append((value, sect, self.data[stroff + strx:end].decode("latin1")))
         return out
 
+    def objects(self):
+        """{function start: object file} from the debug map (N_OSO, then the
+        N_FUN entries of that object), or {} for a build without one."""
+        symoff, nsyms, stroff, _ = self.symtab
+        found, current = {}, None
+        for i in range(nsyms):
+            strx, ntype, _, _, value = struct.unpack_from(">IBBhI", self.data, symoff + 12 * i)
+            if ntype not in (N_FUN, N_SO, N_OSO):
+                continue
+            name = self.data[stroff + strx:self.data.index(b"\0", stroff + strx)].decode("latin1")
+            if ntype == N_OSO:
+                current = name.rsplit("/", 1)[-1]
+            elif ntype == N_FUN and name and current:
+                found[value] = current
+        return found
+
 
 def demangle(names, tool):
     """Demangled names in order; Mach-O symbols carry one extra leading underscore."""
@@ -272,10 +311,9 @@ def ppc_functions(mac, tool):
     names = {a: (n, d) for (a, n), d in zip(starts, demangled)}
     addresses = [a for a, _ in starts]
     ends = dict(zip(addresses, addresses[1:] + [text[2] + text[3]]))
-    vtables = {}
-    for a, s, n in syms:
-        if n.startswith("__ZTV"):
-            vtables[demangle([n], tool)[0].replace("vtable for ", "")] = a
+    tables = [(a, n) for a, _, n in syms if n.startswith("__ZTV")]
+    vtables = {d.replace("vtable for ", ""): a
+               for (a, _), d in zip(tables, demangle([n for _, n in tables], tool))}
     stubs = [(s[2], s[2] + s[3]) for s in mac.sections if "stub" in s[1]]
     return ends, names, vtables, stubs
 
@@ -508,15 +546,98 @@ def pair_calls(pairs, wscan, pscan, wgame, wsize, psize, min_votes):
 METHODS = ("name", "vtable", "strings", "calls", "calls1")
 
 
-def run(wnames, allowed, pindex, pnames, wtables, ptables, wscan, pscan, wgame, wsize, psize, stats):
+class Original:
+    """What the pairing needs from the Windows side."""
+    def __init__(self, path):
+        self.win = Windows(path)
+        self.game, self.starts, self.ends, self.crt, self.unlisted = windows_functions(self.win)
+        self.scan = scan_windows(self.win, self.starts, self.ends, self.game)
+        self.names = windows_names()
+        self.tables = windows_vtables(self.win)
+        self.size = {w: self.ends[w] - w for w in self.ends}
+        self.named = {w for w in self.names if w in self.game}
+
+
+class MacBuild:
+    """One Mac executable: its functions, names, scans and debug-map objects."""
+    def __init__(self, path, tool):
+        self.label = Path(path).name
+        mac = MachO(path)
+        cstring = mac.section("__TEXT", "__cstring")
+        strings = strings_in(mac.bytes_at(cstring[2], cstring[3]), cstring[2])
+        self.ends, self.names, vtables, stubs = ppc_functions(mac, tool)
+        self.scan = scan_ppc(mac, self.ends, strings)
+        self.index = ppc_index(self.names)
+        self.tables = {c: ppc_vtable(mac, a, self.ends, self.names, stubs) for c, a in vtables.items()}
+        self.size = {p: self.ends[p] - p for p in self.ends}
+        self.objects = mac.objects()
+
+
+def run(w, mac, allowed, stats):
     pairs = Pairs()
-    pair_names(pairs, wnames, pindex, allowed)
-    pair_vtables(pairs, wtables, ptables, pnames, wsize, stats)
-    pair_strings(pairs, wscan, pscan, wgame)
-    pair_calls(pairs, wscan, pscan, wgame, wsize, psize, 2)
-    pair_strings(pairs, wscan, pscan, wgame)
-    pair_calls(pairs, wscan, pscan, wgame, wsize, psize, 1)
+    pair_names(pairs, w.names, mac.index, allowed)
+    pair_vtables(pairs, w.tables, mac.tables, mac.names, w.size, stats)
+    pair_strings(pairs, w.scan, mac.scan, w.game)
+    pair_calls(pairs, w.scan, mac.scan, w.game, w.size, mac.size, 2)
+    pair_strings(pairs, w.scan, mac.scan, w.game)
+    pair_calls(pairs, w.scan, mac.scan, w.game, w.size, mac.size, 1)
     return pairs
+
+
+def holdout(w, mac, share, seed):
+    reference = Pairs()
+    pair_names(reference, w.names, mac.index, w.named)
+    hidden = set(random.Random(seed).sample(sorted(reference.p), int(len(reference.p) * share)))
+    pairs = run(w, mac, w.named - hidden, Counter())
+    print(f"{mac.label}: {len(hidden)} of {len(reference.p)} name pairs hidden")
+    print(f"  {'method':8} {'recovered':>9} {'correct':>8} {'precision':>9}")
+    for method in METHODS[1:]:
+        got = [x for x in hidden if pairs.method.get(x) == method]
+        ok = sum(pairs.p[x] == reference.p[x] for x in got)
+        print(f"  {method:8} {len(got):9} {ok:8} {ok / len(got) if got else 0:9.1%}")
+
+
+def qualified(demangled):
+    return demangled.split("(")[0]
+
+
+def combine(game, builds, results):
+    """{function: (name, best method, agreement, conflicting names)}. Builds
+    agree when they pair a function with the same qualified name."""
+    out = {}
+    for w in game:
+        hits = [(mac.names[pairs.p[w]][1], pairs.method[w])
+                for mac, pairs in zip(builds, results) if w in pairs.p]
+        if not hits:
+            continue
+        quals = {qualified(name) for name, _ in hits}
+        if len(quals) > 1:
+            out[w] = ("", "", "conflict", " | ".join(sorted(quals)))
+            continue
+        method = min((m for _, m in hits), key=METHODS.index)
+        out[w] = (hits[0][0], method, f"{len(hits)}/{len(builds)}", "")
+    return out
+
+
+MIN_RUN = 3  # functions in a row from one object before it counts as that object's place
+
+
+def link_order(sources):
+    """[(first, last, object, functions)] in address order: runs of at least
+    MIN_RUN functions from one object file, consecutive runs of one object merged."""
+    runs = []
+    for address, obj in sorted(sources.items()):
+        if runs and runs[-1][2] == obj:
+            runs[-1][1], runs[-1][3] = address, runs[-1][3] + 1
+        else:
+            runs.append([address, address, obj, 1])
+    order = []
+    for run_ in (r for r in runs if r[3] >= MIN_RUN):
+        if order and order[-1][2] == run_[2]:
+            order[-1][1], order[-1][3] = run_[1], order[-1][3] + run_[3]
+        else:
+            order.append(run_)
+    return order
 
 
 def category(demangled):
@@ -533,8 +654,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--exe", default=os.environ.get("KOTOR_ORIGINAL_EXE"), help="GOG 1.03 swkotor.exe")
-    parser.add_argument("--ppc", default=os.environ.get("KOTOR_PPC_EXE"),
-                        help="the Mac PowerPC executable (Contents/MacOS/Knights of the Old Republic)")
+    parser.add_argument("--ppc", nargs="+",
+                        default=[p for p in os.environ.get("KOTOR_PPC_EXE", "").split(os.pathsep) if p],
+                        help="one or more Mac PowerPC executables or universal binaries")
     parser.add_argument("--out", required=True, help="new output directory, outside the checkout")
     parser.add_argument("--cxxfilt", default=shutil.which("llvm-cxxfilt") or shutil.which("c++filt"))
     parser.add_argument("--holdout", type=float, default=0.0,
@@ -547,40 +669,27 @@ def main():
     if out == ROOT or ROOT in out.parents:
         parser.error("--out must be outside the checkout")
 
-    win = Windows(args.exe)
-    wgame, wstarts, wends, crt, unlisted = windows_functions(win)
-    wscan = scan_windows(win, wstarts, wends, wgame)
-    wnames = windows_names()
-    wtables = windows_vtables(win)
-    wsize = {w: wends[w] - w for w in wends}
-
-    mac = MachO(args.ppc)
-    cstring = mac.section("__TEXT", "__cstring")
-    pstrings = strings_in(mac.bytes_at(cstring[2], cstring[3]), cstring[2])
-    pends, pnames, pvtables, stubs = ppc_functions(mac, args.cxxfilt)
-    pscan = scan_ppc(mac, pends, pstrings)
-    pindex = ppc_index(pnames)
-    ptables = {c: ppc_vtable(mac, a, pends, pnames, stubs) for c, a in pvtables.items()}
-    psize = {p: pends[p] - p for p in pends}
-
-    named = {w for w in wnames if w in wgame}
+    w = Original(args.exe)
+    builds = [MacBuild(path, args.cxxfilt) for path in args.ppc]
     if args.holdout:
-        reference = Pairs()
-        pair_names(reference, wnames, pindex, named)
-        rng = random.Random(args.seed)
-        hidden = set(rng.sample(sorted(reference.p), int(len(reference.p) * args.holdout)))
-        stats = Counter()
-        pairs = run(wnames, named - hidden, pindex, pnames, wtables, ptables, wscan, pscan, wgame, wsize, psize, stats)
-        print(f"holdout: {len(hidden)} of {len(reference.p)} name pairs hidden")
-        print(f"{'method':8} {'recovered':>9} {'correct':>8} {'precision':>9}")
-        for method in METHODS[1:]:
-            got = [w for w in hidden if pairs.method.get(w) == method]
-            ok = sum(pairs.p[w] == reference.p[w] for w in got)
-            print(f"{method:8} {len(got):9} {ok:8} {ok / len(got) if got else 0:9.1%}")
+        for mac in builds:
+            holdout(w, mac, args.holdout, args.seed)
         return
 
-    stats = Counter()
-    pairs = run(wnames, named, pindex, pnames, wtables, ptables, wscan, pscan, wgame, wsize, psize, stats)
+    stats = [Counter() for _ in builds]
+    results = [run(w, mac, w.named, s) for mac, s in zip(builds, stats)]
+    combined = combine(w.game, builds, results)
+    sources = {}
+    for mac, pairs in zip(builds, results):
+        for x, p in pairs.p.items():
+            if x in w.game and p in mac.objects:
+                sources.setdefault(x, mac.objects[p])
+    order = link_order(sources)
+    inferred = {}
+    for first, last, obj, _ in order:
+        for x in w.game:
+            if first < x < last and x not in sources:
+                inferred[x] = obj
     status = {int(r["address"], 16): r["status"] for r in read_csv("status.csv")}
     playable = todo.playable_index()
 
@@ -588,56 +697,69 @@ def main():
     (out / ".gitignore").write_text("*\n")
     with open(out / "pairs.csv", "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["address", "size", "listed", "status", "playable", "repo_name",
-                         "ppc_address", "ppc_name", "method"])
-        for w in sorted(wgame):
-            p = pairs.p.get(w)
-            where = playable.get(w)
-            writer.writerow([f"0x{w:08X}", wends[w] - w, "no" if w in unlisted else "yes",
-                             status.get(w, "todo"),
-                             where[0].relative_to(ROOT).as_posix() if where else "",
-                             wnames.get(w, (None, None, None, ""))[3],
-                             f"0x{p:08X}" if p else "", pnames[p][1] if p else "", pairs.method.get(w, "")])
+        writer.writerow(["address", "size", "listed", "status", "playable", "repo_name", "mac_name",
+                         "method", "builds", "conflict", "source", "source_how", "mac_addresses"])
+        for x in sorted(w.game):
+            name, method, agree, conflict = combined.get(x, ("", "", "", ""))
+            where = playable.get(x)
+            source = sources.get(x) or inferred.get(x, "")
+            how = "paired" if x in sources else "inside run" if x in inferred else ""
+            macs = ";".join(f"{mac.label}:0x{pairs.p[x]:08X}" for mac, pairs in zip(builds, results) if x in pairs.p)
+            writer.writerow([f"0x{x:08X}", w.size[x], "no" if x in w.unlisted else "yes",
+                             status.get(x, "todo"), where[0].relative_to(ROOT).as_posix() if where else "",
+                             w.names.get(x, (None, None, None, ""))[3], name, method, agree, conflict,
+                             source, how, macs])
+    if order:
+        with open(out / "link_order.csv", "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["order", "first", "last", "object", "functions"])
+            for i, (first, last, obj, n) in enumerate(order, 1):
+                writer.writerow([i, f"0x{first:08X}", f"0x{last:08X}", obj, n])
     unpaired = Counter()
-    with open(out / "ppc_unpaired.csv", "w", newline="") as f:
+    with open(out / "mac_unpaired.csv", "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["ppc_address", "size", "category", "ppc_name"])
-        for p in sorted(pends):
-            if p not in pairs.w:
-                cat = category(pnames[p][1])
-                unpaired[cat] += 1
-                writer.writerow([f"0x{p:08X}", pends[p] - p, cat, pnames[p][1]])
+        writer.writerow(["build", "mac_address", "size", "category", "mac_name"])
+        for mac, pairs in zip(builds, results):
+            for p in sorted(mac.ends):
+                if p not in pairs.w:
+                    cat = category(mac.names[p][1])
+                    unpaired[(mac.label, cat)] += 1
+                    writer.writerow([mac.label, f"0x{p:08X}", mac.size[p], cat, mac.names[p][1]])
 
     def count(pred):
-        return sum(1 for w in wgame if pred(w))
+        return sum(1 for x in w.game if pred(x))
 
-    print(f"Windows game functions: {len(wgame)} ({len(wgame & unlisted)} missing from functions.csv; "
-          f"stock LIBCMT excluded: {len(crt)})")
-    print(f"Mac PowerPC functions: {len(pends)}; vtables named on both sides: "
-          f"{stats['vtables paired']} paired, {stats['vtable size differs']} with different slot counts")
+    print(f"Windows game functions: {len(w.game)} ({len(w.game & w.unlisted)} missing from functions.csv; "
+          f"stock LIBCMT excluded: {len(w.crt)})")
+    for mac, pairs, s in zip(builds, results, stats):
+        print(f"{mac.label}: {len(mac.ends)} functions, {len(mac.objects)} with an object file; "
+              f"{s['vtables paired']} vtables paired; {len(pairs.p)} Windows functions paired "
+              + "(" + ", ".join(f"{m} {sum(1 for v in pairs.method.values() if v == m)}" for m in METHODS) + ")")
     print()
-    print(f"{'':34} {'functions':>9}")
+    print(f"{'':42} {'functions':>9}")
+    new = lambda x: x in combined and combined[x][0] and x not in w.names
     for label, pred in (
-            ("byte-identical (MATCH)", lambda w: status.get(w) == "MATCH"),
-            ("attempted (NONMATCH)", lambda w: status.get(w) == "NONMATCH"),
-            ("not attempted", lambda w: w not in status),
-            ("  of which in the playable src/", lambda w: w not in status and w in playable),
-            ("named by the reconstruction", lambda w: w in wnames),
-            ("paired with the Mac build", lambda w: w in pairs.p)):
-        print(f"{label:34} {count(pred):9}")
-    print()
-    print("paired, by signal:")
-    for method in METHODS:
-        print(f"  {method:8} {count(lambda w: pairs.method.get(w) == method):6}"
-              f"   conflicts skipped: {pairs.conflicts[method]}")
-    new = lambda w: w in pairs.p and w not in wnames
-    print()
-    print(f"new names (paired, unnamed in the repo): {count(new)}")
-    print(f"  of which not yet attempted:            {count(lambda w: new(w) and w not in status)}")
-    print(f"still unnamed:                           {count(lambda w: w not in wnames and w not in pairs.p)}")
-    print()
-    print("Mac functions without a Windows partner: " + ", ".join(f"{k} {v}" for k, v in unpaired.most_common()))
-    print(f"wrote {out / 'pairs.csv'} and {out / 'ppc_unpaired.csv'}")
+            ("byte-identical (MATCH)", lambda x: status.get(x) == "MATCH"),
+            ("attempted (NONMATCH)", lambda x: status.get(x) == "NONMATCH"),
+            ("not attempted", lambda x: x not in status),
+            ("  of which in the playable src/", lambda x: x not in status and x in playable),
+            ("named by the reconstruction", lambda x: x in w.names),
+            ("paired with a Mac build", lambda x: x in combined and combined[x][0]),
+            ("  paired by several builds, same name", lambda x: x in combined and combined[x][2][0] not in "1c"),
+            ("  builds disagree (left unnamed)", lambda x: combined.get(x, ("",) * 3)[2] == "conflict"),
+            ("new names (unnamed in the repo)", new),
+            (f"  confirmed by all {len(builds)} builds", lambda x: new(x) and combined[x][2] == f"{len(builds)}/{len(builds)}"),
+            ("still unnamed", lambda x: x not in w.names and not (x in combined and combined[x][0])),
+            ("with an original source file (paired)", lambda x: x in sources),
+            ("  placed inside a source-file run", lambda x: x in inferred),
+            ("    of them still unnamed", lambda x: x in inferred and x not in w.names
+                                                 and not (x in combined and combined[x][0]))):
+        print(f"{label:42} {count(pred):9}")
+    if order:
+        print(f"\ninferred link order: {len(order)} runs over {len({o for _, _, o, _ in order})} object files")
+    print("\nMac functions without a Windows partner: "
+          + "; ".join(f"{b} {c} {n}" for (b, c), n in sorted(unpaired.items())))
+    print(f"wrote {out}")
 
 
 if __name__ == "__main__":
