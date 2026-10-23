@@ -59,6 +59,7 @@ class Signatures(unittest.TestCase):
         self.assertIsNone(pn.signature_match("Box<int*>", "Box<int&>"))
         self.assertIsNone(pn.signature_match("Box<int*>*", "Box<int&>*"))
         self.assertEqual(pn.signature_match("Box<int>*", "Box<int> const&"), "compatible")
+        self.assertEqual(pn.base_type("const volatile Box<int>*"), pn.base_type("Box<int> const volatile*"))
 
     def test_operators_keep_their_class(self):
         self.assertEqual(pn.split_name("Foo::operator int()"), ("Foo::operator int", ""))
@@ -66,6 +67,11 @@ class Signatures(unittest.TestCase):
         self.assertEqual(pn.split_name("public: class CResRef & __thiscall CResRef::operator=(class CResRef const &)"),
                          pn.split_name("CResRef::operator=(CResRef const&)"))
         self.assertEqual(pn.split_name("Foo::operator()(int) const"), ("Foo::operator()", "int|const"))
+        self.assertEqual(pn.split_name("Box<unsigned int>::operator bool() const")[0], "Box<unsigned int>::operator bool")
+        self.assertEqual(pn.split_name("bool Box<unsigned int>::operator==(Box<unsigned int> const&)")[0],
+                         "Box<unsigned int>::operator==")
+        self.assertNotEqual(pn.split_name("Box<unsigned int>::operator bool()"),
+                            pn.split_name("Other<unsigned int>::operator bool()"))
 
     def test_parameter_count_must_match(self):
         self.assertIsNone(pn.signature_match("int,int", "int"))
@@ -252,6 +258,14 @@ def lwzx(rd, ra, rb):
     return (31 << 26) | (rd << 21) | (ra << 16) | (rb << 11) | (23 << 1)
 
 
+def cmplwi(ra, value):
+    return (10 << 26) | (ra << 16) | (value & 0xFFFF)
+
+
+def slwi(ra, rs, n):
+    return (21 << 26) | (rs << 21) | (ra << 16) | (n << 11) | (0 << 6) | ((31 - n) << 1)
+
+
 def add(rd, ra, rb):
     return (31 << 26) | (rd << 21) | (ra << 16) | (rb << 11) | (266 << 1)
 
@@ -291,30 +305,68 @@ class PPCScanner(unittest.TestCase):
     def scan(self, code, ends=None):
         return pn.scan_ppc(memory(code), ends or {0x1000: 0x1000 + len(code)}, {})[0x1000]
 
-    def switch(self, relative):
-        """lis r31,1; lis r9,0 / addi r9,r9,0x8000 (the table); lwzx r0,r9,r3;
-        [add r0,r0,r9;] mtctr r0; bctr; case 1: addi r4,r31,0x20; blr; not a
-        case: lis r31,2; b case 1... ; case 2: addi r5,r31,0x30; blr"""
-        body = [lis(31, 1), lis(9, 0), addi(9, 9, 0x8000), lwzx(0, 9, 3)]
+    def switch(self, relative, entries=None, count=2, between=()):
+        """lis r31,1; cmplwi r3,count-1; bgt out; r9 = 0x8000 (the table);
+        slwi r0,r3,2; lwzx r0,r9,r0; [add r0,r0,r9;] [between;] mtctr r0;
+        bctr; then case 1: addi r4,r31,0x20; blr; a block only the bgt
+        reaches: lis r31,3; addi r7,r31,0x50; blr; case 2: lis r31,2;
+        addi r6,r31,0x40; blr. Returns (code, table, bctr index, case indices)."""
+        body = [lis(31, 1), cmplwi(3, count - 1), None, lis(9, 1), addi(9, 9, -0x8000),
+                slwi(0, 3, 2), lwzx(0, 9, 0)]
         body += [add(0, 0, 9)] if relative else []
-        body += [MTCTR0, BCTR]
-        case1 = 0x1000 + 4 * len(body)
-        body += [addi(4, 31, 0x20), BLR, lis(31, 2), addi(6, 31, 0x40), BLR]
-        case2 = 0x1000 + 4 * (len(body) - 3)
-        entries = [case1, case2] if not relative else [case1 - 0x8000, case2 - 0x8000]
-        return ppc(*body), b"".join(struct.pack(">i", e) for e in entries) + struct.pack(">I", 0xFFFFFFF0)
+        body += list(between) + [MTCTR0, BCTR]
+        bctr = len(body) - 1
+        case1, out, case2 = bctr + 1, bctr + 3, bctr + 6
+        body += [addi(4, 31, 0x20), BLR, lis(31, 3), addi(7, 31, 0x50), BLR, lis(31, 2), addi(6, 31, 0x40), BLR]
+        body[2] = 0x41810000 | ((out - 2) * 4)  # bgt out
+        targets = entries or [0x1000 + 4 * case1, 0x1000 + 4 * case2]
+        table = b"".join(struct.pack(">i", e - 0x8000 if relative else e) for e in targets)
+        return ppc(*body), table, bctr, [case1, case2]
 
-    def test_jump_table_cases_keep_the_switch_state(self):
+    def analyse(self, code, table):
+        words = [struct.unpack_from(">I", code, i)[0] for i in range(0, len(code), 4)]
+        return words, pn.ppc_analyse(words, 0x1000, memory(code, table).word)
+
+    def test_jump_table_is_recovered(self):
         for relative in (False, True):
             with self.subTest(relative=relative):
-                code, table = self.switch(relative)
-                # case 2 is the lis r31,2 block: its own value, not the switch's
-                self.assertEqual(self.texts(code, {0x10020: "case 1", 0x20040: "case 2", 0x10040: "wrong"}, table),
-                                 {"case 1", "case 2"})
-                words = [struct.unpack_from(">I", code, i)[0] for i in range(0, len(code), 4)]
-                bctr = words.index(BCTR)
-                _, succ = pn.ppc_analyse(words, 0x1000, memory(code, table).word)
-                self.assertEqual(succ[bctr], [bctr + 1, bctr + 3])  # the two cases, not every block
+                code, table, bctr, cases = self.switch(relative)
+                words, (before, succ) = self.analyse(code, table)
+                self.assertEqual(pn.ppc_jump_table(words, 0x1000, before, bctr, memory(code, table).word), cases)
+                self.assertEqual(succ[bctr], cases)  # not every block: the bgt-only block is left out
+                self.assertEqual(self.texts(code, {0x10020: "case 1", 0x20040: "case 2", 0x30050: "out"}, table),
+                                 {"case 1", "case 2", "out"})
+
+    def test_jump_table_reads_only_the_checked_entries(self):
+        # one case checked; the next word looks like a case but is not one
+        code, table, bctr, cases = self.switch(False, count=1)
+        words, (before, succ) = self.analyse(code, table)
+        self.assertEqual(succ[bctr], [cases[0]])
+
+    def test_jump_table_beyond_max_cases_is_not_proven(self):
+        code, table, bctr, _ = self.switch(False, count=pn.MAX_CASES + 2)
+        table = table[:4] * (pn.MAX_CASES + 2)
+        words, (before, _) = self.analyse(code, table)
+        self.assertIsNone(pn.ppc_jump_table(words, 0x1000, before, bctr, memory(code, table).word))
+
+    def test_jump_table_target_overwritten_is_not_proven(self):
+        code, table, bctr, _ = self.switch(False, between=[addi(0, 0, 0x1020)])  # li r0,0x1020
+        words, (before, succ) = self.analyse(code, table)
+        self.assertIsNone(pn.ppc_jump_table(words, 0x1000, before, bctr, memory(code, table).word))
+
+    def test_jump_table_no_longer_proven_falls_back(self):
+        # case 2 changes the table register and jumps back to the lwzx
+        code, table, bctr, cases = self.switch(False)
+        words = [struct.unpack_from(">I", code, i)[0] for i in range(0, len(code), 4)]
+        lwzx_at = next(i for i, w in enumerate(words) if w == lwzx(0, 9, 0))
+        back = cases[1] + 1
+        words[back] = lis(9, 2)
+        words[back + 1] = 0x48000000 | (((lwzx_at - 1 - (back + 1)) * 4) & 0x03FFFFFC)  # b slwi
+        code = ppc(*words)
+        _, (before, succ) = self.analyse(code, table)
+        self.assertIsNone(pn.ppc_jump_table(words, 0x1000, before, bctr, memory(code, table).word))
+        _, leaders, _ = pn.ppc_flow(words, 0x1000)
+        self.assertEqual(succ[bctr], leaders)
 
     def test_unreached_code_does_not_erase_reached_values(self):
         # lis r3,1; b +8; nop (nothing reaches it); addi r4,r3,32; blr
@@ -330,6 +382,26 @@ class PPCScanner(unittest.TestCase):
         # lis r3,1; beq case; lis r3,2; bctr; case: addi r4,r3,32; blr
         code = ppc(0x3C600001, 0x4182000C, 0x3C600002, 0x4E800420, 0x38830020, 0x4E800020)
         self.assertEqual(self.texts(code, {0x10020: "one path", 0x20020: "other path"}), frozenset())
+
+    def test_dead_code_in_a_function_without_calls_gives_nothing(self):
+        code = ppc(0x4800000C, lis(3, 1), addi(5, 3, 32), BLR)  # b +12 over lis/addi
+        self.assertEqual(self.texts(code, {0x10020: "dead"}), frozenset())
+
+    def test_body_without_a_symbol_after_a_return(self):
+        # li r3,1; blr; then another body: bcl 20,31,$+4; mflr r31; addi r4,r31,16
+        code = ppc(addi(3, 0, 1), BLR, 0x429F0005, 0x7FE802A6, addi(4, 31, 16), BLR)
+        self.assertEqual(self.texts(code, {0x100C + 16: "own body"}), {"own body"})
+
+    def test_landing_pad_after_pic_setup(self):
+        # bcl 20,31,$+4; mflr r31; bl elsewhere; blr; pad: addi r4,r31,16
+        mflr31 = 0x7FE802A6
+        code = ppc(0x429F0005, mflr31, 0x48001001, BLR, addi(4, 31, 16))
+        self.assertEqual(self.texts(code, {0x1004 + 16: "pad"}), {"pad"})
+
+    def test_mr_to_itself_keeps_the_value(self):
+        mr31 = (31 << 26) | (31 << 21) | (31 << 16) | (31 << 11) | (444 << 1)
+        code = ppc(lis(31, 1), mr31, addi(4, 31, 32))
+        self.assertEqual(self.texts(code, {0x10020: "real"}), {"real"})
 
     def test_bctr_does_not_undo_the_pic_base(self):
         # bcl 20,31,$+4; mflr r3; ... bctr; case: addi r4,r3,0x10

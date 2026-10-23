@@ -1749,7 +1749,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x0047E0B0,,,,,,aurtristripper.o,neighbours
 0x0047E170,,,,,,aurtristripper.o,neighbours
 0x0047E348,,,,,,aurtristripper.o,neighbours
-0x0047E470,,,,,,aurtristripper.o,neighbours
+0x0047E470,"std::vector<unsigned short, std::allocator<unsigned short>>::operator=(std::vector<unsigned short, std::allocator<unsigned short>> const&)",name,1/2,,exact,aurtristripper.o,debug map
 0x0047E5B0,"std::vector<unsigned short, std::allocator<unsigned short>>::push_back(unsigned short const&)",name,1/2,,exact,aurtristripper.o,debug map
 0x0047E630,,,,,,aurtristripper.o,neighbours
 0x0047E6B0,,,,,,aurtristripper.o,neighbours

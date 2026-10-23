@@ -37,7 +37,7 @@ order,first,last,object,functions
 36,0x0046EE00,0x00477B90,aurmodelrender.o,33
 37,0x00478670,0x00479430,aurprimitive.o,22
 38,0x0047ABD0,0x0047B8F0,aurmaterial.o,11
-39,0x0047BB80,0x00481140,aurtristripper.o,28
+39,0x0047BB80,0x00481140,aurtristripper.o,29
 40,0x00481850,0x00487190,auranim.o,25
 41,0x00487310,0x0048D6C0,aurskin.o,9
 42,0x0048D780,0x0049D790,auremitter.o,47
