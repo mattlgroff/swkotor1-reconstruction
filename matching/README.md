@@ -41,6 +41,7 @@ the tracker above is rebuilt from it.
 - `tools/libmatch.py`, `crt_libcmt.csv`: stock library functions in the exe.
 - `tools/symbolmap.py`, `symbols.csv`: symbol-to-address map, the bridge to
   the playable build.
+- `tools/ppcnames.py`: names from the Mac PowerPC build, paired by address.
 - `tools/render_banner.py`, `assets/progress.svg`: the progress tracker.
 - `status.csv`, `functions.csv`: the tracker's inputs.
 
@@ -177,6 +178,39 @@ file. Rerun it after merging matches:
 ```powershell
 python .\matching\tools\symbolmap.py --msvc "C:\Tools\msvc7" --exe "D:\Games\Star Wars - KotOR\swkotor.exe"
 ```
+
+## Names from the Mac PowerPC build
+
+Aspyr's 2004 Mac port (v1.03, PowerPC) was built with GCC from the same
+source and kept its symbol table: about 9,500 C++ names with parameter
+types. `tools/ppcnames.py` pairs those functions with the original's
+addresses, so functions known only by address can get their names. It
+needs your own copy of the PowerPC executable
+(`Knights of the Old Republic.app/Contents/MacOS/Knights of the Old Republic`),
+runs on any OS and does not need MSVC:
+
+```powershell
+python .\matching\tools\ppcnames.py --exe "D:\Games\Star Wars - KotOR\swkotor.exe" --ppc "<mac app>\Contents\MacOS\Knights of the Old Republic" --out "D:\KotorBuilds\ppcnames-01"
+python .\matching\tools\ppcnames.py ... --holdout 0.2      # precision of each signal
+```
+
+Signals, in order: names this project already proved (`status.csv`,
+`symbols.csv`), vtables both builds name, the exact set of strings a
+function references, and the call graph around paired functions (`calls`
+needs two agreeing neighbours, `calls1` one). `--holdout` hides a fifth
+of the name pairs and checks what the other signals recover; on the GOG
+exe that gives about 100% for `vtable`, 98% for `strings`, 97% for
+`calls` and 95% for `calls1`. Treat a paired name as a strong lead, not
+proof: confirm it against the code before annotating.
+
+The output names come from the Mac binary, so they go to a directory
+outside the checkout. `pairs.csv` lists every game function with its
+status here, its playable `src/` file, the repo's name and the Mac
+partner; `ppc_unpaired.csv` lists Mac functions without a Windows partner
+(Aspyr's platform layer, functions MSVC inlined, and the rest). The
+starts come from `functions.csv` plus the addresses `status.csv` and
+`symbols.csv` name and the exe's direct call targets; the summary counts
+the starts `functions.csv` lacks.
 
 ## Source-shape notes
 
