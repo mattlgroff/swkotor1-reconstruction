@@ -1,8 +1,8 @@
 order,first,last,object,functions
 1,0x00401000,0x00401380,appmanager.o,9
 2,0x004015B0,0x004041F0,main.o,12
-3,0x00404C40,0x00404F00,exomovieplayerinternal.o,3
-4,0x00405ED0,0x00409D70,exoresman.o,81
+3,0x00404C40,0x00405E50,exomovieplayerinternal.o,6
+4,0x00405ED0,0x00409D70,exoresman.o,85
 5,0x00409E80,0x00409EC0,guiingame.o,3
 6,0x00409EE0,0x0040B570,swgui.o,35
 7,0x0040B630,0x0040B680,swguiabilitieschargen.o,6
@@ -35,7 +35,7 @@ order,first,last,object,functions
 34,0x00463680,0x0046A5F0,aurmodelparse.o,30
 35,0x0046A610,0x0046ED00,aurscenemanager.o,17
 36,0x0046EE00,0x00477B90,aurmodelrender.o,33
-37,0x00478670,0x00479430,aurprimitive.o,20
+37,0x00478670,0x00479430,aurprimitive.o,22
 38,0x0047ABD0,0x0047B8F0,aurmaterial.o,11
 39,0x0047BB80,0x00481140,aurtristripper.o,28
 40,0x00481850,0x00487190,auranim.o,25
@@ -46,7 +46,7 @@ order,first,last,object,functions
 45,0x004A0580,0x004A15D0,aurio.o,8
 46,0x004A2A00,0x004A3F70,aurlightmanager.o,4
 47,0x004A57A0,0x004A6710,aurwindmanager.o,4
-48,0x004A96E0,0x004ACA00,math3d.o,20
+48,0x004A96E0,0x004ACA00,math3d.o,23
 49,0x004ACEA0,0x004AD630,bsp.o,3
 50,0x004ADBA0,0x004AE570,worldtimer.o,22
 51,0x004AE5D0,0x004AE650,ObjectLookupTable.o,4
@@ -56,10 +56,10 @@ order,first,last,object,functions
 55,0x004BB600,0x004C2200,nwsareapathfind.o,25
 56,0x004C30C0,0x004C3EA0,nwsmodule.o,9
 57,0x004C3FE0,0x004C4080,nwcjournal.o,3
-58,0x004C4100,0x004CA680,nwsmodule.o,45
+58,0x004C4100,0x004CA680,nwsmodule.o,46
 59,0x004CA7A0,0x004D1CF0,nwsobject.o,81
 60,0x004D1D50,0x004D5F70,nwscombatround.o,67
-61,0x004D6180,0x004D7360,nwmessage.o,22
+61,0x004D6180,0x004D6B10,nwmessage.o,21
 62,0x004D73A0,0x004D79B0,nwsscriptevent.o,5
 63,0x004D7D60,0x004D8290,gameobjectarray.o,9
 64,0x004D82B0,0x004E4750,nwseffectlist.o,52
@@ -74,11 +74,11 @@ order,first,last,object,functions
 73,0x0052B280,0x0052BCE0,factionmanager.o,15
 74,0x0052BF80,0x0054C960,nwvmachinecommands.o,94
 75,0x0054E9D0,0x0054EB10,serveroptiontable.o,3
-76,0x0054F260,0x00552C50,nwrules.o,13
+76,0x0054F260,0x00552C50,nwrules.o,14
 77,0x005530A0,0x00560970,nwsitem.o,62
-78,0x00560B30,0x005631E0,nwsplayer.o,19
+78,0x00560B30,0x005631E0,nwsplayer.o,20
 79,0x00563200,0x005667C0,partytables.o,36
-80,0x00566DA0,0x00578520,nwssendplayermessage.o,140
+80,0x00566DA0,0x00578520,nwssendplayermessage.o,142
 81,0x00578540,0x00578870,nwsmessage.o,4
 82,0x00578BE0,0x005792D0,swsareamap.o,12
 83,0x005793B0,0x00579840,swsroom.o,10
@@ -86,7 +86,7 @@ order,first,last,object,functions
 85,0x0057A1F0,0x0057A220,nwsrules.o,3
 86,0x0057A240,0x0057F4A0,nwsobjectai.o,24
 87,0x005802F0,0x00580320,nwssysadmin.o,3
-88,0x005805E0,0x00584220,swroomsurfacemesh.o,11
+88,0x005805E0,0x00584220,swroomsurfacemesh.o,14
 89,0x00584870,0x00587A70,nwsplaceable.o,20
 90,0x00588940,0x0058C5F0,nwsdoor.o,15
 91,0x0058C830,0x0058F030,nwstrigger.o,16
@@ -98,7 +98,7 @@ order,first,last,object,functions
 97,0x0059AFE0,0x0059B250,swvartable.o,3
 98,0x0059B310,0x0059BA20,nwspell.o,10
 99,0x0059D7D0,0x0059E170,nwsexpression.o,10
-100,0x0059E860,0x005A4880,nwsdialog.o,35
+100,0x0059E860,0x005A4880,nwsdialog.o,37
 101,0x005A4930,0x005A4C00,nwinventory.o,6
 102,0x005A4D00,0x005A6170,nwscreaturestats.o,33
 103,0x005A6190,0x005A6550,nwscreature.o,6
@@ -139,7 +139,7 @@ order,first,last,object,functions
 138,0x005DF3F0,0x005DF730,exoinput.o,36
 139,0x005DFD80,0x005E2F70,exoinputinternal.o,40
 140,0x005E3BE0,0x005E4050,exorawinputwin32.o,9
-141,0x005E5200,0x005E6450,exostring.o,29
+141,0x005E5140,0x005E6450,exostring.o,34
 142,0x005E6500,0x005E66A0,exobase.o,8
 143,0x005E6750,0x005E67E0,exoini.o,4
 144,0x005E6810,0x005E6AF0,exofile.o,20
@@ -149,9 +149,9 @@ order,first,last,object,functions
 148,0x005E9350,0x005E9430,exodebug.o,8
 149,0x005E94A0,0x005E9980,exostringlist.o,9
 150,0x005E9AA0,0x005E9DC0,exolinkedlistinternal.o,12
-151,0x005E9E70,0x005EA340,exolocstring.o,8
+151,0x005E9E70,0x005EA340,exolocstring.o,10
 152,0x005EA420,0x005EA4A0,exorand.o,3
-153,0x005EA540,0x005EB500,exoiniinternal.o,7
+153,0x005EA4D0,0x005EB500,exoiniinternal.o,8
 154,0x005EB570,0x005EC0E0,exofileinternal.o,16
 155,0x005EC160,0x005EC210,exotimersinternal.o,3
 156,0x005EC250,0x005EC280,exocritsectinternal.o,4
@@ -177,7 +177,7 @@ order,first,last,object,functions
 176,0x0064B530,0x0066A640,nwchandlemessage.o,81
 177,0x0066AD00,0x0066BBD0,nwcsoundobject.o,19
 178,0x0066BF10,0x0066C610,swmgobject.o,6
-179,0x0066C720,0x00670B10,swmgtrackfollower.o,40
+179,0x0066C720,0x00670B10,swmgtrackfollower.o,42
 180,0x006714E0,0x006735D0,swminigame.o,7
 181,0x006738D0,0x00674A10,swmgguns.o,14
 182,0x00675ED0,0x00676DA0,nwcjournal.o,4
@@ -193,7 +193,7 @@ order,first,last,object,functions
 192,0x006929B0,0x006958C0,swguiingamemap.o,9
 193,0x006964C0,0x00698B10,nwccreatureappearance.o,11
 194,0x00698EC0,0x00699C10,nwcanimbaseheadwield.o,8
-195,0x00699DD0,0x0069AFE0,nwcanimbasewield.o,9
+195,0x00699DD0,0x0069AFE0,nwcanimbasewield.o,10
 196,0x0069B0A0,0x0069BB80,nwcanimbasehead.o,6
 197,0x0069BCB0,0x0069CD60,nwcanimbasetw.o,15
 198,0x0069CD80,0x006A03A0,nwcanimbase.o,48

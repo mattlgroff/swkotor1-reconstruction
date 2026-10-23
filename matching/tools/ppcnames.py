@@ -143,8 +143,11 @@ def windows_functions(win):
 # x86 instruction lengths, enough for MSVC 7.0 code: the one-byte and 0F
 # opcode maps with whether a ModRM byte follows and the immediate's size
 # (b 1, w 2, wb 3, z 4 or 2 with 66, a moffs, p far pointer, grp3 only for
-# F6/F7 /0 and /1; 0F 0F, 3DNow!, ends in its opcode byte). scan_windows walks a body one instruction at a time so
-# an E8 or E9 byte inside an operand is not taken for a call.
+# F6/F7 /0 and /1; 0F 0F, 3DNow!, ends in its opcode byte). Later
+# extensions (SSE4a's 0F 78/79 with immediates, VEX-encoded AVX) are not
+# decoded: MSVC 7.0 does not emit them, and on this exe the lengths agree
+# with Capstone. scan_windows walks a body one instruction at a time so an
+# E8 or E9 byte inside an operand is not taken for a call.
 
 X86_PREFIXES = frozenset((0xF0, 0xF2, 0xF3, 0x2E, 0x36, 0x3E, 0x26, 0x64, 0x65, 0x66, 0x67))
 X86_ONE = {op: (False, None) for op in range(256)}
@@ -285,12 +288,19 @@ def split_name(demangled):
     A const method's parameters end in "|const"."""
     text = re.sub(r"\b(public|private|protected): |\b(virtual|static) |\b(class|struct|enum|union) ", "", demangled)
     text = CALLING.sub("", text)
-    m = re.search(r"([A-Za-z_~][\w:~<>, `'*&]*?)\((.*)\)\s*(const)?\s*$", text)
+    m = None
+    if "operator" in text:  # operator(), operator+, operator int, operator new[]
+        m = re.search(r"^(.*?\boperator\b(?:\(\)|[^(]*?))\((.*)\)\s*(const)?\s*$", text)
+    m = m or re.search(r"([A-Za-z_~][\w:~<>, `'*&]*?)\((.*)\)\s*(const)?\s*$", text)
     if not m:
         return text.strip(), None
-    # the name is the last word outside template arguments; before it, the return type
+    # the name is the last word outside template arguments, before it the
+    # return type; an operator's name runs from the word with "operator"
     head, depth, cut = m.group(1).strip(), 0, 0
-    for i, c in enumerate(head):
+    operator = re.search(r"(?:^|\s)(\S*\boperator\b.*)$", head)
+    if operator:
+        head, cut = operator.group(1), 0
+    for i, c in enumerate(head if not operator else ""):
         depth += (c == "<") - (c == ">")
         if c == " " and depth == 0:
             cut = i + 1
@@ -334,10 +344,13 @@ BOOL = {"bool", "__bool8"}
 
 
 def base_type(param):
-    """(the type without const, volatile, * and &, pointer and reference depth)."""
-    depth = param.count("*") + param.count("&")
-    base = re.sub(r"\b(const|volatile)\b|[*&]", " ", param)
-    return " ".join(base.split()), depth
+    """(the type without the outer const, volatile, * and &, the outer pointer
+    and reference depth). Template arguments stay as they are."""
+    close = param.rfind(">")
+    head, tail = param[:close + 1], param[close + 1:]
+    head = re.sub(r"^(const|volatile)\s+", "", head)
+    depth = tail.count("*") + tail.count("&")
+    return " ".join((head + re.sub(r"\b(const|volatile)\b|[*&]", " ", tail)).split()), depth
 
 
 def param_match(windows, mac):
@@ -590,6 +603,18 @@ FLOAT_LOADS = {48, 49, 50, 51}
 STORES = {36, 37, 38, 39, 44, 45, 52, 53, 54, 55}
 UPDATES = {33, 35, 37, 39, 41, 43, 45, 49, 51, 53, 55}  # rA becomes the effective address
 VOLATILE = (0, *range(3, 13))  # what a call may change
+NONVOLATILE = range(13, 32)  # what a call keeps
+WRITE_RA = {20, 21, 23, 25, 26, 27, 28, 29}  # rlwimi, rlwinm, rlwnm, oris, xori, xoris, andi., andis.: rA from rS
+WRITE_RD = {7, 8, 12, 13}  # mulli, subfic, addic, addic.
+# opcode 31 by extended opcode: logical and shift forms write rA from rS;
+# compares, plain stores, cache and sync operations write no register;
+# update-form stores and float loads write rA, update-form loads rD and rA.
+# Any other opcode 31 instruction is taken to write both rD and rA.
+X31_WRITE_RA = {28, 60, 124, 284, 316, 412, 444, 476, 24, 536, 792, 824, 26, 922, 954}
+X31_WRITE_NONE = {0, 32, 4, 144, 146, 150, 151, 215, 407, 661, 662, 663, 725, 727, 918, 983,
+                  54, 86, 246, 278, 470, 982, 1014, 598, 854, 535, 599}
+X31_WRITE_RA_ONLY_UPDATE = {183, 247, 439, 567, 631, 695, 759}
+X31_OR = 444
 
 
 def ppc_step(w, pc, regs, lr, ref):
@@ -661,54 +686,123 @@ def ppc_step(w, pc, regs, lr, ref):
     elif op == 46:  # lmw rD..r31
         for r in range(rd, 32):
             regs.pop(r, None)
-    elif op in (31, 20, 21, 23, 25, 26, 27, 28, 29, 7, 8, 12, 13):
+    elif op == 31 and xo == X31_OR and rd == (w >> 11) & 31:  # mr rA,rS
+        regs.pop(ra, None)
+        if rd in regs:
+            regs[ra] = regs[rd]
+    elif op == 31 and (xo in X31_WRITE_RA or xo in X31_WRITE_RA_ONLY_UPDATE):
+        regs.pop(ra, None)
+    elif op == 31 and xo in X31_WRITE_NONE:
+        pass
+    elif op in WRITE_RA:
+        regs.pop(ra, None)
+    elif op in WRITE_RD:
+        regs.pop(rd, None)
+    elif op == 31:
         regs.pop(rd, None)
         regs.pop(ra, None)
     return regs, lr
 
 
+def ppc_branch_target(w, pc):
+    """The target of a b or bc instruction."""
+    if w >> 26 == 18:
+        li = w & 0x03FFFFFC
+        return (li - 0x04000000 if li & 0x02000000 else li) + (0 if w & 2 else pc)
+    bd = w & 0xFFFC
+    return (bd - 0x10000 if bd & 0x8000 else bd) + (0 if w & 2 else pc)
+
+
 def ppc_flow(words, fn):
-    """Successors of each instruction by its branches. A block no branch
-    reaches (a jump table's case) follows every bctr of the function."""
+    """(successors of each instruction by its branches, block starts, bctr
+    indices). A bctr has no successors yet: see ppc_jump_table. Block starts
+    are the branch targets and the instructions after a branch that does not
+    fall through, but not the one after bcl 20,31,$+4, which only reads the
+    PC."""
     n = len(words)
 
     def index(target):
         i, rest = divmod(target - fn, 4)
         return i if not rest and 0 <= i < n else None
 
-    succ, ends, jumps = [], set(), []
+    succ, leaders, jumps = [], set(), []
     for i, w in enumerate(words):
-        op, link, pc = w >> 26, w & 1, fn + 4 * i
+        op, link = w >> 26, w & 1
         always = (w >> 21) & 0x14 == 0x14  # BO: branch whatever the condition
         out = [i + 1]
-        if op == 18:
-            li = w & 0x03FFFFFC
-            target = (li - 0x04000000 if li & 0x02000000 else li) + (0 if w & 2 else pc)
-            if not link:
-                out = [index(target)]  # outside the function: a tail call
-                ends.add(i)
-        elif op == 16:
-            bd = w & 0xFFFC
-            target = (bd - 0x10000 if bd & 0x8000 else bd) + (0 if w & 2 else pc)
-            out = ([] if always and not link else [i + 1]) + [index(target)]
-            if always and not link:
-                ends.add(i)
+        if w == 0x429F0005:
+            pass
+        elif op in (16, 18):
+            target = index(ppc_branch_target(w, fn + 4 * i))
+            if target is not None:
+                leaders.add(target)
+            if op == 18 and not link:
+                out = [target]  # outside the function: a tail call
+            elif op == 16 and (not always or link):
+                out = [i + 1, target]
+            elif op == 16:
+                out = [target]
         elif op == 19 and (w >> 1) & 0x3FF in (16, 528) and always and not link:  # blr / bctr
             out = []
-            ends.add(i)
             if (w >> 1) & 0x3FF == 528:
                 jumps.append(i)
+        if i + 1 not in out and i + 1 < n:
+            leaders.add(i + 1)
         succ.append([s for s in out if s is not None and s < n])
-    reached, stack = set(), [0]
-    while stack:
-        i = stack.pop()
-        if i not in reached:
-            reached.add(i)
-            stack.extend(succ[i])
-    orphans = [i for i in range(1, n) if i not in reached and i - 1 in ends]
-    for j in jumps:
-        succ[j].extend(orphans)
-    return succ
+    return succ, sorted(leaders), jumps
+
+
+MAX_CASES = 1024
+
+
+def ppc_jump_table(words, fn, before, j, read):
+    """The case indices a bctr at j goes to, read from its jump table, or
+    None. GCC's switch loads the case from a table whose address a register
+    holds, either as an address (lwzx rX,rT,rI; mtctr rX) or as an offset
+    from the table (lwzx; add rX,rX,rT; mtctr rX). Entries are read while
+    they land in the function."""
+    n = len(words)
+    mtctr = next((k for k in range(j - 1, max(j - 8, -1), -1)
+                  if words[k] >> 26 == 31 and (words[k] >> 1) & 0x3FF == 467
+                  and (words[k] >> 11) & 0x3FF == 0x120), None)
+    if mtctr is None or before[mtctr] is None:
+        return None
+    target_reg = (words[mtctr] >> 21) & 31
+    relative, base = False, None
+    for k in range(mtctr - 1, max(mtctr - 8, -1), -1):
+        w = words[k]
+        if w >> 26 != 31 or (w >> 21) & 31 != target_reg or before[k] is None:
+            continue
+        ra, rb, xo = (w >> 16) & 31, (w >> 11) & 31, (w >> 1) & 0x3FF
+        regs = before[k][0]
+        if xo == 266 and not relative:  # add rX,rA,rB: one of them is the table
+            known = [regs[r] for r in (ra, rb) if r in regs]
+            if len(known) == 1:
+                relative, base = True, known[0]
+                target_reg = rb if ra in regs else ra
+                continue
+            return None
+        if xo == 23:  # lwzx rX,rA,rB: one of them is the table
+            known = [regs[r] for r in (ra, rb) if r in regs]
+            if len(known) != 1 or (relative and known[0] != base):
+                return None
+            base = known[0]
+            break
+        return None
+    else:
+        return None
+    cases = []
+    for t in range(MAX_CASES):
+        entry = read(base + 4 * t)
+        if entry is None:
+            break
+        target = (base + (entry - 0x100000000 if entry & 0x80000000 else entry)) & 0xFFFFFFFF \
+            if relative else entry
+        i, rest = divmod(target - fn, 4)
+        if rest or not 0 <= i < n:
+            break
+        cases.append(i)
+    return sorted(set(cases)) or None
 
 
 def ppc_meet(a, b):
@@ -719,32 +813,82 @@ def ppc_meet(a, b):
     return {r: v for r, v in a[0].items() if b[0].get(r) == v}, a[1] if a[1] == b[1] else None
 
 
+def ppc_states(words, fn, succ):
+    """The register values and link register known before each instruction.
+    From the entry they follow the branches, keeping where paths meet only
+    what they agree on. Code no path from the entry reaches (an exception
+    landing pad, or dead code) is worked out apart, never merged into the
+    reached code: it starts from the non-volatile registers every reached
+    call leaves intact, since a landing pad is entered from a call."""
+    n = len(words)
+    before = [None] * n
+
+    def spread(start, state, allowed):
+        before[start] = state
+        work = [start]
+        while work:
+            i = work.pop()
+            after = ppc_step(words[i], fn + 4 * i, *before[i], lambda address: None)
+            for s in succ[i]:
+                if s not in allowed:
+                    continue
+                merged = ppc_meet(before[s], after)
+                if merged != before[s]:
+                    before[s] = merged
+                    work.append(s)
+
+    if not n:
+        return before
+    spread(0, ({}, None), range(n))
+    reached = {i for i in range(n) if before[i] is not None}
+    kept = None
+    for i in sorted(reached):
+        w = words[i]
+        if (w >> 26 == 18 or w >> 26 == 16 or (w >> 26 == 19 and (w >> 1) & 0x3FF in (16, 528))) and w & 1:
+            regs = {r: v for r, v in before[i][0].items() if r in NONVOLATILE}
+            kept = ppc_meet(kept, (regs, None))
+    unreached = set(range(n)) - reached
+    for start in sorted(unreached):
+        if before[start] is None:
+            spread(start, kept or ({}, None), unreached)
+    return before
+
+
+def ppc_analyse(words, fn, read):
+    """(the states before each instruction, successors). Each bctr gets its
+    jump table's cases once the states show the table's address; a bctr
+    whose table is not found may go to any block start."""
+    succ, leaders, jumps = ppc_flow(words, fn)
+    pending = list(jumps)
+    while True:
+        before = ppc_states(words, fn, succ)
+        found = False
+        for j in list(pending):
+            cases = ppc_jump_table(words, fn, before, j, read)
+            if cases:
+                succ[j] = cases
+                pending.remove(j)
+                found = True
+        if not found:
+            break
+    if pending:
+        for j in pending:
+            succ[j] = leaders
+        before = ppc_states(words, fn, succ)
+    return before, succ
+
+
 def scan_ppc(mac, ends, strings):
     """{function: (callees in order, string set)}. Tracks lis/addis/addi/ori
     register values (and the bcl/mflr PIC base) to find string addresses,
-    along the function's branches (see ppc_step, ppc_flow): where paths
-    meet, only the values they agree on survive, and code no known path
-    reaches starts with nothing known."""
+    along the function's branches and jump tables (see ppc_step,
+    ppc_analyse).
+    Callees are the targets of b, bl and bc outside the function."""
     out = {}
-    nothing = lambda address: None
     for fn, end in ends.items():
         code = mac.bytes_at(fn, end - fn)
         words = [struct.unpack_from(">I", code, i)[0] for i in range(0, len(code) - 3, 4)]
-        succ = ppc_flow(words, fn)
-        before = [None] * len(words)
-        for start in range(len(words)):
-            if before[start] is not None:
-                continue
-            before[start] = ({}, None)
-            work = [start]
-            while work:
-                i = work.pop()
-                after = ppc_step(words[i], fn + 4 * i, *before[i], nothing)
-                for s in succ[i]:
-                    merged = ppc_meet(before[s], after)
-                    if merged != before[s]:
-                        before[s] = merged
-                        work.append(s)
+        before, _ = ppc_analyse(words, fn, mac.word)
         calls, texts = [], set()
 
         def ref(value):
@@ -753,9 +897,8 @@ def scan_ppc(mac, ends, strings):
 
         for i, w in enumerate(words):
             pc = fn + 4 * i
-            if w >> 26 == 18:  # b / bl
-                li = w & 0x03FFFFFC
-                target = (li - 0x04000000 if li & 0x02000000 else li) + (0 if w & 2 else pc)
+            if w >> 26 in (16, 18):
+                target = ppc_branch_target(w, pc)
                 if target in ends and target != fn and not (fn <= target < end):
                     calls.append(target)
             ppc_step(w, pc, *before[i], ref)

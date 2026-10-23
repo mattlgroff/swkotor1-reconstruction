@@ -38,12 +38,23 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00404DE0,,,,,,exomovieplayerinternal.o,neighbours
 0x00404E00,CExoMoviePlayerInternal::ShowFadePanel(),name,2/2,,exact,exomovieplayerinternal.o,debug map
 0x00404F00,CExoMoviePlayerInternal::HideFadePanel(),name,2/2,,exact,exomovieplayerinternal.o,debug map
+0x00404F40,,,,,,exomovieplayerinternal.o,neighbours
+0x00404F80,,,,,,exomovieplayerinternal.o,neighbours
 0x00405040,CSWMessage::PeekAtWriteMessageSize(),calls1,1/2,,,nwmessage.o,debug map
+0x00405050,,,,,,exomovieplayerinternal.o,neighbours
 0x00405080,,,conflict,"CExoArrayList<CExoString>::Allocate(int) | CSWCCMessageData::SetFloat(int, float)",,clientexoapp.o,debug map
 0x00405150,CExoArrayList<unsigned long>::SetSize(int),calls1,1/2,,,nwcarea.o,debug map
+0x00405190,,,,,,exomovieplayerinternal.o,neighbours
+0x004053E0,,,,,,exomovieplayerinternal.o,neighbours
+0x004058F0,,,,,,exomovieplayerinternal.o,neighbours
+0x00405920,,,,,,exomovieplayerinternal.o,neighbours
 0x00405950,CExoArrayList<CExoString>::SetSize(int),name,1/2,,exact,clientexoapp.o,debug map
 0x004059A0,CExoArrayList<CExoString>::Add(CExoString),name,1/2,,exact,clientexoapp.o,debug map
-0x00405A50,CExoMoviePlayerInternal::~CExoMoviePlayerInternal(),calls1,1/2,,,,
+0x00405A20,,,,,,exomovieplayerinternal.o,neighbours
+0x00405A50,CExoMoviePlayerInternal::~CExoMoviePlayerInternal(),calls1,1/2,,,exomovieplayerinternal.o,neighbours
+0x00405B30,,,,,,exomovieplayerinternal.o,neighbours
+0x00405D10,CExoArrayList<CExoString>::operator=(CExoArrayList<CExoString> const&),name,1/2,,exact,exomovieplayerinternal.o,debug map
+0x00405D50,,,,,,exomovieplayerinternal.o,neighbours
 0x00405D70,CExoMoviePlayerInternal::CExoMoviePlayerInternal(),name,2/2,,exact,exomovieplayerinternal.o,debug map
 0x00405E50,"CExoMoviePlayerInternal::PlayMoviesAsync(CExoArrayList<CExoString> const&, int, CExoArrayList<int> const*)",name,2/2,,compatible,exomovieplayerinternal.o,debug map
 0x00405ED0,CResRef::CResRef(),calls,2/2,,,exoresman.o,debug map
@@ -53,14 +64,14 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00405FE0,CResRef::GetResRefStr() const,name,2/2,,exact,exoresman.o,debug map
 0x00406030,CResRef::IsValid() const,calls,2/2,,,exoresman.o,debug map
 0x00406040,CResRef::GetLength() const,name,2/2,,exact,exoresman.o,debug map
-0x00406060,,,,,,exoresman.o,neighbours
-0x004060B0,CResRef::operator==(CResRef const&) const,calls1,2/2,,,exoresman.o,debug map
-0x004060D0,CResRef::operator==(char*) const,calls1,2/2,,,exoresman.o,debug map
+0x00406060,CResRef::operator!=(char*) const,name,2/2,,compatible,exoresman.o,debug map
+0x004060B0,CResRef::operator==(CResRef const&) const,name,2/2,,exact,exoresman.o,debug map
+0x004060D0,CResRef::operator==(char*) const,name,2/2,,compatible,exoresman.o,debug map
 0x00406120,CResRef::operator=(CResRef const&),calls,2/2,,,exoresman.o,debug map
 0x00406170,CResRef::operator=(unsigned char*),calls1,1/2,,,exoresman.o,debug map
-0x004061F0,CResRef::operator=(CExoString const&),calls,2/2,,,exoresman.o,debug map
+0x004061F0,CResRef::operator=(CExoString const&),name,2/2,,exact,exoresman.o,debug map
 0x00406290,CResRef::operator=(char*),calls,1/2,,,exoresman.o,neighbours
-0x00406300,,,,,,exoresman.o,neighbours
+0x00406300,CResRef::operator+=(CExoString const&),name,2/2,,exact,exoresman.o,debug map
 0x00406460,CRes::CRes(),name,2/2,,exact,exoresman.o,debug map
 0x00406490,CRes::GetFixedResourceSize(),name,1/2,,exact,resdwk.o,debug map
 0x004064A0,CSWGuiDrawable::GetIdealHeight(),vtable,1/2,,,swguidrawable.o,debug map
@@ -81,8 +92,8 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00406D60,CResRef::CResRef(CExoString const&),name,2/2,,exact,exoresman.o,debug map
 0x00406D80,CResRef::CResRef(char*),calls,2/2,,,exoresman.o,debug map
 0x00406DA0,CResRef::CResRef(unsigned char*),calls1,1/2,,,exoresman.o,debug map
-0x00406DC0,CResRef::operator!=(CResRef const&) const,calls1,1/2,,,exoresman.o,neighbours
-0x00406DE0,CResRef::operator!=(CExoString const&) const,calls1,1/2,,,exoresman.o,neighbours
+0x00406DC0,CResRef::operator!=(CResRef const&) const,name,2/2,,exact,exoresman.o,debug map
+0x00406DE0,CResRef::operator!=(CExoString const&) const,name,2/2,,exact,exoresman.o,debug map
 0x00406E20,"CExoResMan::AddKeyTable(CExoString const&, unsigned long, unsigned long)",name,2/2,,exact,exoresman.o,debug map
 0x00407020,CExoResMan::Free(CRes*),name,2/2,,exact,exoresman.o,debug map
 0x004070A0,CExoResMan::FreeChunk(),name,2/2,,exact,exoresman.o,debug map
@@ -393,7 +404,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00414F90,,,,,,swguidrawable.o,neighbours
 0x00414FB0,CSWGuiScene::Draw(float),name,2/2,,exact,swguidrawable.o,debug map
 0x00415000,"CSWGuiBorderParams::CSWGuiBorderParams(CResRef const&, CResRef const&, CResRef const&, int, int, float, Vector const&, int)",name,2/2,,exact,swguidrawable.o,debug map
-0x004150C0,CSWGuiBorderParams::operator=(CSWGuiBorderParams const&),calls,2/2,,,swguidrawable.o,debug map
+0x004150C0,CSWGuiBorderParams::operator=(CSWGuiBorderParams const&),name,2/2,,exact,swguidrawable.o,debug map
 0x00415190,"CSWGuiBorder::Initialize(CSWGuiExtent const&, CSWGuiBorderParams const&)",name,2/2,,exact,swguidrawable.o,debug map
 0x004151C0,CSWGuiBorder::~CSWGuiBorder(),name,2/2,,exact,swguidrawable.o,debug map
 0x00415240,CSWGuiBorder::GetInnerExtent(),name,2/2,,exact,swguidrawable.o,debug map
@@ -403,7 +414,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00415900,"CSWGuiImageParams::SetImage(CResRef const&, int)",name,2/2,,exact,swguidrawable.o,debug map
 0x00415990,,,,,,swguidrawable.o,neighbours
 0x004159C0,,,,,,swguidrawable.o,neighbours
-0x004159F0,,,conflict,CSWGuiImage::CSWGuiImage() | CSWGuiImageParams::SetImageObject(CSWGuiImage*),,swguidrawable.o,debug map
+0x004159F0,CSWGuiImageParams::SetImageObject(CSWGuiImage*),calls,1/2,,,swguidrawable.o,neighbours
 0x00415A30,CSWGuiImage::CSWGuiImage(),name,2/2,,exact,swguidrawable.o,debug map
 0x00415AD0,CSWGuiImage::~CSWGuiImage(),name,2/2,,exact,swguidrawable.o,debug map
 0x00415B30,CSWGuiImage::GetImageExtent(),calls1,2/2,,,swguidrawable.o,debug map
@@ -432,13 +443,13 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x004167A0,,,,,,swguidrawable.o,neighbours
 0x004167F0,CSWGuiBorder::CSWGuiBorder(),name,2/2,,exact,swguidrawable.o,debug map
 0x004168A0,CSWGuiBorder::~CSWGuiBorder(),vtable,1/2,,,swguidrawable.o,neighbours
-0x00416DE0,CSWGuiImageParams::operator=(CSWGuiImageParams const&),calls1,2/2,,,swguidrawable.o,debug map
+0x00416DE0,CSWGuiImageParams::operator=(CSWGuiImageParams const&),name,2/2,,exact,swguidrawable.o,debug map
 0x00416E70,CSWGuiImage::~CSWGuiImage(),vtable,2/2,,,swguidrawable.o,debug map
 0x00416E90,"CSWGuiImage::Initialize(CSWGuiExtent const&, CSWGuiImageParams const&)",name,2/2,,exact,swguidrawable.o,debug map
 0x00416EC0,"CSWGuiImage::Load(CResGFF*, CResStruct&, CExoString const&)",name,2/2,,compatible,swguidrawable.o,debug map
 0x00417050,CSWGuiTextParams::CSWGuiTextParams(),name,2/2,,exact,swguidrawable.o,debug map
 0x00417120,"CSWGuiTextParams::CSWGuiTextParams(CExoString const&, CResRef const&, Vector const&, int, float)",name,2/2,,exact,swguidrawable.o,debug map
-0x004171E0,CSWGuiTextParams::operator=(CSWGuiTextParams const&),calls1,1/2,,,swguidrawable.o,neighbours
+0x004171E0,CSWGuiTextParams::operator=(CSWGuiTextParams const&),name,2/2,,unknown,swguidrawable.o,debug map
 0x00417280,CSWGuiText::CSWGuiText(),name,2/2,,exact,swguidrawable.o,debug map
 0x004172F0,CSWGuiText::~CSWGuiText(),vtable,2/2,,,swguidrawable.o,debug map
 0x00417310,"CSWGuiText::Initialize(CSWGuiExtent const&, CSWGuiTextParams const&, float)",name,2/2,,compatible,swguidrawable.o,debug map
@@ -874,6 +885,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00436400,InitializeVertexBufferObjectPoolManager(),calls1,1/2,,,aurglcore.o,debug map
 0x00436470,,,,,,aurglcore.o,neighbours
 0x00436490,GLRender::InitExtensions(),calls1,2/2,,,aurglcore.o,debug map
+0x00437A90,"operator/(Vector const&, float)",name,1/2,,exact,nwcanimbase.o,debug map
 0x00437AF0,Matrix::Matrix(),name,1/2,,exact,aurlightmanager.o,debug map
 0x00437BA0,"Matrix::Matrix(Vector, Vector, Vector)",name,1/2,,exact,aurlightmanager.o,debug map
 0x00437DB0,"UpdateAnimFootprint(MdlNode*, int)",calls,1/2,,,aurpostprocess.o,debug map
@@ -883,7 +895,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x0043A820,,,,,,aurpostprocess.o,neighbours
 0x0043B350,,,,,,aurpostprocess.o,neighbours
 0x0043B380,,,,,,aurpostprocess.o,neighbours
-0x0043BD40,MdlNodeDanglyMesh::InternalGenVertices(),calls1,2/2,,,aurpostprocess.o,debug map
+0x0043BD40,MdlNodeDanglyMesh::InternalGenVertices(),calls,2/2,,,aurpostprocess.o,debug map
 0x0043C090,MdlNodeTriMesh::InternalRemoveTemporaryArrays(),calls1,1/2,,,aurpostprocess.o,debug map
 0x0043C130,,,,,,aurpostprocess.o,neighbours
 0x0043C1A0,,,,,,aurpostprocess.o,neighbours
@@ -1012,7 +1024,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00444F10,,,,,,aurmodel.o,neighbours
 0x00444F70,,,,,,aurmodel.o,neighbours
 0x00444FA0,,,,,,aurmodel.o,neighbours
-0x00444FE0,,,,,,aurmodel.o,neighbours
+0x00444FE0,List<PartTrigger*>::allocate(int),calls1,1/2,,,aurscene.o,debug map
 0x00445020,,,conflict,"List<Model*>::Insert(Model*, int) | stricmp",,aurmodelparse.o,debug map
 0x00445080,,,,,,aurmodel.o,neighbours
 0x004450D0,,,,,,aurmodel.o,neighbours
@@ -1175,7 +1187,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x0044C740,,,,,,aurconsole.o,neighbours
 0x0044C870,,,,,,aurconsole.o,neighbours
 0x0044C8F0,,,,,,aurconsole.o,neighbours
-0x0044C980,dofile(char*),strings,1/2,,,aurconsole.o,debug map
+0x0044C980,dofile(char*),strings,2/2,,,aurconsole.o,debug map
 0x0044CB10,GLRender::SetUpTextFormat(),calls1,1/2,,,aurfont.o,debug map
 0x0044CB90,"GLRender::PrintStringAtScreenPos(char*, float, float)",calls1,1/2,,,aurfont.o,debug map
 0x0044CC40,AurInitFont(),name,2/2,,exact,aurfont.o,debug map
@@ -1247,7 +1259,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x0044F770,AurDisableInterleavedAnimations(),name,2/2,,exact,aurscene.o,debug map
 0x0044F7C0,,,,,,aurscene.o,neighbours
 0x0044F820,,,,,,aurscene.o,neighbours
-0x0044F880,Scene::SpawnRooms(char*),strings,1/2,,,aurscene.o,debug map
+0x0044F880,Scene::SpawnRooms(char*),strings,2/2,,,aurscene.o,debug map
 0x0044FAC0,"ProcessStaticObject(Gob*, Scene*, TileData*, Vector const&, Quaternion const&)",strings,2/2,,,aurscene.o,debug map
 0x0044FCD0,,,,,,aurscene.o,neighbours
 0x0044FD60,FindScene(char*),name,2/2,,exact,aurscene.o,debug map
@@ -1616,8 +1628,8 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00478670,VertexPrimitive::~VertexPrimitive(),name,2/2,,exact,aurprimitive.o,debug map
 0x00478680,"NodeVertex::NodeVertex(Vector*, Vector*, Vector*, Vector*, Vector*, Vector*, Vector*)",name,2/2,,exact,aurprimitive.o,debug map
 0x004787E0,"NodeVertexDangly::NodeVertexDangly(Vector*, Vector*, Vector*, Vector*, Vector*, Vector*, Vector*, float)",name,2/2,,exact,aurprimitive.o,debug map
-0x00478820,,,,,,aurprimitive.o,neighbours
-0x004788C0,,,,,,aurprimitive.o,neighbours
+0x00478820,NodeVertex::operator==(NodeVertex const&),name,2/2,,compatible,aurprimitive.o,debug map
+0x004788C0,NodeVertexDangly::operator==(NodeVertexDangly const&),name,2/2,,compatible,aurprimitive.o,debug map
 0x00478970,VertexPrimitive::~VertexPrimitive(),vtable,2/2,,,aurprimitive.o,debug map
 0x00478990,VertexPrimitiveFlat::~VertexPrimitiveFlat(),name,2/2,,exact,aurprimitive.o,debug map
 0x004789F0,VertexPrimitiveFlat::~VertexPrimitiveFlat(),vtable,2/2,,,aurprimitive.o,debug map
@@ -1989,10 +2001,10 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x004A96C0,VertexCache::~VertexCache(),name,2/2,,exact,aurvertexcache.o,debug map
 0x004A96E0,"Round(float, float)",name,2/2,,exact,math3d.o,debug map
 0x004A9710,,,,,,math3d.o,neighbours
-0x004A9740,Vector::operator+=(Vector const&),calls1,1/2,,,math3d.o,neighbours
-0x004A9770,Vector::operator-=(Vector const&),calls1,2/2,,,math3d.o,debug map
-0x004A97A0,,,,,,math3d.o,neighbours
-0x004A97D0,,,,,,math3d.o,neighbours
+0x004A9740,Vector::operator+=(Vector const&),name,2/2,,exact,math3d.o,debug map
+0x004A9770,Vector::operator-=(Vector const&),name,2/2,,exact,math3d.o,debug map
+0x004A97A0,Vector::operator*=(float),name,2/2,,exact,math3d.o,debug map
+0x004A97D0,Vector::operator/=(float),name,2/2,,exact,math3d.o,debug map
 0x004A9810,"PlaneHeightAtPoint(Vector const&, float, Vector const&)",calls1,2/2,,,math3d.o,debug map
 0x004A9850,,,,,,math3d.o,neighbours
 0x004A98B0,"lineproject(Vector const&, Vector const&, Vector const&)",name,2/2,,exact,math3d.o,debug map
@@ -2403,7 +2415,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x004C4CC0,"CResHelper<CResIFO, (unsigned short)2014>::SetResRef(CResRef const&, int)",calls1,1/2,,,nwsmodule.o,debug map
 0x004C4E20,,,,,,nwsmodule.o,neighbours
 0x004C4E90,,,,,,nwsmodule.o,neighbours
-0x004C4ED0,CExoLocString::operator!=(CExoLocString const&) const,calls1,1/2,,,nwsmodule.o,neighbours
+0x004C4ED0,NWPlayerCharacterList_st::operator==(NWPlayerCharacterList_st&),calls1,1/2,,,nwsmodule.o,debug map
 0x004C4F30,,,,,,nwsmodule.o,neighbours
 0x004C4F50,,,,,,nwsmodule.o,neighbours
 0x004C4FA0,CExoArrayList<CSWSTagNode>::Allocate(int),name,1/2,,exact,nwsmodule.o,debug map
@@ -2535,7 +2547,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x004CDAC0,,,,,,nwsobject.o,neighbours
 0x004CDB00,"CSWSObject::BroadcastSafeProjectile(unsigned long, unsigned long, Vector const&, Vector const&, unsigned long, unsigned char, int, unsigned char, unsigned char, int)",calls1,1/2,,,nwsobject.o,neighbours
 0x004CDD30,,,,,,nwsobject.o,neighbours
-0x004CDF50,,,,,,nwsobject.o,neighbours
+0x004CDF50,"CSWSObject::SpellCastAndImpact(unsigned long, Vector const&, unsigned long, unsigned char, unsigned long, int, int, unsigned char, int)",calls1,1/2,,,nwsobject.o,neighbours
 0x004CE220,CSWSObject::SpawnBodyBag(),strings,2/2,,,nwsobject.o,debug map
 0x004CE680,CSWSObject::GetHasFeatEffectApplied(unsigned short),name,2/2,,exact,nwsobject.o,debug map
 0x004CE6E0,"CSWSObject::ReportOverflow(int, int, int, int)",calls1,2/2,,,nwsobject.o,debug map
@@ -2689,10 +2701,8 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x004D6A40,CSWCCMessageData::~CSWCCMessageData(),calls1,1/2,,,nwmessage.o,neighbours
 0x004D6AE0,"CSWCCMessageData::SetString(int, CExoString const&)",name,2/2,,exact,nwmessage.o,debug map
 0x004D6B10,"CSWCCMessageData::LoadData(CResGFF*, CResStruct*)",strings,2/2,,,nwmessage.o,debug map
-0x004D6EE0,CSWCCMessageData::CopyTo(CSWCCMessageData*),calls1,1/2,,,nwmessage.o,neighbours
-0x004D7120,,,,,,nwmessage.o,neighbours
-0x004D71B0,,,,,,nwmessage.o,neighbours
-0x004D7270,,,,,,nwmessage.o,neighbours
+0x004D6EE0,CSWCCMessageData::CopyTo(CSWCCMessageData*),calls1,1/2,,,,
+0x004D7270,CScriptEvent::operator==(CScriptEvent const&) const,calls1,1/2,,,nwsscriptevent.o,debug map
 0x004D7360,CSWCCMessageData::GetString(int),name,2/2,,exact,nwmessage.o,debug map
 0x004D73A0,"CScriptEvent::SaveEvent(CResGFF*, CResStruct*)",name,2/2,,exact,nwsscriptevent.o,debug map
 0x004D7540,CScriptEvent::CScriptEvent(),name,2/2,,exact,nwsscriptevent.o,debug map
@@ -2976,7 +2986,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x004EFE30,CSWSCreature::InstantUseItem(unsigned long),name,2/2,,exact,nwscreature.o,debug map
 0x004EFEF0,,,,,,nwscreature.o,neighbours
 0x004EFF30,CSWSCreature::IsInjured(),calls1,2/2,,,nwscreature.o,debug map
-0x004EFFA0,,,,,,nwscreature.o,neighbours
+0x004EFFA0,CSWGuiInterfaceAction::operator=(CSWGuiInterfaceAction const&),name,1/2,,exact,clientexoappinternal.o,debug map
 0x004F0020,CSWSCreaturePartyFollowInfo::Clear(),calls1,1/2,,,nwscreature.o,debug map
 0x004F00A0,"CSWSCreature::SetActivity(int, int, int)",calls,2/2,,,nwscreature.o,debug map
 0x004F0310,"CSWSCreature::ReplaceEquipItemActions(CSWSItem*, unsigned long, int, int)",calls1,1/2,,,nwscreature.o,neighbours
@@ -3552,7 +3562,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x0054EAA0,CServerInfo::SetModuleName(CExoString const&),name,2/2,,compatible,serveroptiontable.o,debug map
 0x0054EB10,CServerInfo::CServerInfo(),strings,2/2,,,serveroptiontable.o,debug map
 0x0054F260,CCombatInformationNode::CCombatInformationNode(),name,2/2,,exact,nwrules.o,debug map
-0x0054F280,,,,,,nwrules.o,neighbours
+0x0054F280,CCombatInformationNode::operator!=(CCombatInformationNode&),name,1/2,,exact,nwrules.o,neighbours
 0x0054F2C0,CSWRules::LoadClassInfo(),strings,2/2,,,nwrules.o,debug map
 0x0054FEC0,CSWRules::LoadRaceInfo(),strings,2/2,,,nwrules.o,debug map
 0x00550590,CSWRules::LoadSkillInfo(),strings,2/2,,,nwrules.o,debug map
@@ -3564,7 +3574,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00550D10,,,,,,nwrules.o,neighbours
 0x00550E00,CCombatInformation::~CCombatInformation(),calls1,1/2,,,nwrules.o,neighbours
 0x00550F30,"CCombatInformation::SaveData(CResGFF*, CResStruct*)",calls,2/2,,,nwrules.o,debug map
-0x005512D0,,,,,,nwrules.o,neighbours
+0x005512D0,CCombatInformation::operator!=(CCombatInformation&),name,2/2,,unknown,nwrules.o,debug map
 0x00551440,CSWRules::~CSWRules(),name,2/2,,exact,nwrules.o,debug map
 0x005515E0,CSWRules::LoadFeatInfo(),strings,2/2,,,nwrules.o,debug map
 0x00552280,,,,,,nwrules.o,neighbours
@@ -3576,9 +3586,9 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00553210,"CSWSItem::SetPossessor(unsigned long, int, int, unsigned long)",name,2/2,,exact,nwsitem.o,debug map
 0x005538A0,CSWSItem::RemoveFromArea(),name,2/2,,exact,nwsitem.o,debug map
 0x00553900,,,,,,nwsitem.o,neighbours
-0x00553960,,,,,,nwsitem.o,neighbours
+0x00553960,CSWSItem::GetActiveProperty(int),calls1,1/2,,,nwsitem.o,neighbours
 0x00553990,CSWSItem::GetPassiveProperty(int),name,2/2,,exact,nwsitem.o,debug map
-0x005539C0,,,,,,nwsitem.o,neighbours
+0x005539C0,"CSWSItem::GetPropertyByType(CSWItemProperty**, unsigned short, unsigned short)",calls1,1/2,,,nwsitem.o,neighbours
 0x00553BB0,"CSWSItem::ApplyItemProperties(CSWSCreature*, unsigned long, int)",name,2/2,,exact,nwsitem.o,debug map
 0x00553C30,"CSWSItem::RemoveItemProperties(CSWSCreature*, unsigned long)",name,2/2,,exact,nwsitem.o,debug map
 0x00553CC0,CSWSItem::ComputeArmorClass(),calls1,1/2,,,nwsitem.o,neighbours
@@ -3593,17 +3603,17 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005543B0,CSWSItem::AddRangeProperties(CExoString&),name,2/2,,exact,nwsitem.o,debug map
 0x005544F0,CSWSItem::AddWeaponSizeProperties(CExoString&),name,2/2,,exact,nwsitem.o,debug map
 0x005545D0,,,,,,nwsitem.o,neighbours
-0x00554E00,,,,,,nwsitem.o,neighbours
+0x00554E00,"CSWSItem::GetPropertyStrings(unsigned short, unsigned short, unsigned short, unsigned char, CExoString&, CExoString&, CExoString&, CExoString&)",calls1,1/2,,,nwsitem.o,neighbours
 0x00555380,"CSWSItem::GetPropertyDamageRange(unsigned short, int&, int&)",name,2/2,,compatible,nwsitem.o,debug map
 0x005554D0,"CSWSItem::GetPropertyChanceDurationDC(unsigned short, unsigned char, int&, int&, int&)",name,2/2,,compatible,nwsitem.o,debug map
-0x00555610,,,,,,nwsitem.o,neighbours
+0x00555610,"CSWSItem::GetExistsHigherValuedProperty(unsigned short, unsigned short, unsigned short)",calls1,1/2,,,nwsitem.o,neighbours
 0x00555690,CSWSItem::IsLightsaber(),calls,2/2,,,nwsitem.o,debug map
 0x005556B0,CSWSItem::GetIcon(),name,2/2,,exact,nwsitem.o,debug map
 0x00555720,"CSWSItem::AddToArea(CSWSArea*, float, float, float, int)",name,2/2,,exact,nwsitem.o,debug map
 0x00555790,"CSWSItem::SaveItemProperties(CResGFF*, CResStruct*)",name,2/2,,exact,nwsitem.o,debug map
 0x00555A60,CSWSItem::GetUsedActivePropertyUsesLeft(unsigned char),name,2/2,,unknown,nwsitem.o,debug map
 0x00555BF0,,,,,,nwsitem.o,neighbours
-0x00555C90,,,,,,nwsitem.o,neighbours
+0x00555C90,"CSWSItem::GetPropertyByTypeExists(unsigned short, unsigned short)",calls1,1/2,,,nwsitem.o,neighbours
 0x00555DE0,CItemRepository::~CItemRepository(),name,2/2,,exact,nwsitem.o,debug map
 0x00555E00,"CItemRepository::FindItemWithBaseItemType(unsigned char, int)",name,2/2,,exact,nwsitem.o,debug map
 0x00555ED0,CItemRepository::FindItemWithTag(CExoString const&),name,2/2,,exact,nwsitem.o,debug map
@@ -3619,10 +3629,10 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005562D0,"CSWSItem::GetSortedPropertyStrings(CExoArrayList<CExoString>&, CExoString&)",name,2/2,,exact,nwsitem.o,debug map
 0x00556490,,,,,,nwsitem.o,neighbours
 0x00556DE0,CSWSItem::AddDamageProperties(CExoString&),strings,2/2,,,nwsitem.o,debug map
-0x005584C0,,,,,,nwsitem.o,neighbours
+0x005584C0,"CSWSItem::AddAttackBonusStrings(int, CExoString&)",calls1,1/2,,,nwsitem.o,neighbours
 0x00558950,CSWSItem::AddCriticalThreatProperties(CExoString&),name,2/2,,unknown,nwsitem.o,debug map
 0x00558C10,CSWSItem::AddOnHitProperties(CExoString&),strings,2/2,,,nwsitem.o,debug map
-0x005599D0,,,,,,nwsitem.o,neighbours
+0x005599D0,CSWSItem::AddDefenceProperties(CExoString&),calls1,1/2,,,nwsitem.o,neighbours
 0x0055A510,CSWSItem::AddMiscellaneousProperties(CExoString&),strings,2/2,,,nwsitem.o,debug map
 0x0055CCD0,"CSWSItem::SaveItem(CResGFF*, CResStruct*)",name,2/2,,exact,nwsitem.o,debug map
 0x0055CFA0,"CSWSItem::SaveContainerItems(CResGFF*, CResStruct*)",name,2/2,,exact,nwsitem.o,debug map
@@ -3635,7 +3645,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x0055DC10,CSWSItem::CloseItemForAllPlayers(),calls1,2/2,,,nwsitem.o,debug map
 0x0055DCA0,"CSWSItem::AcquireItem(CSWSItem**, unsigned long, int)",name,2/2,,exact,nwsitem.o,debug map
 0x0055DE20,"CSWSItem::DecrementUses(int, unsigned long)",name,2/2,,exact,nwsitem.o,debug map
-0x0055E180,,,,,,nwsitem.o,neighbours
+0x0055E180,"CSWSItem::AddProperty(unsigned short, unsigned short, unsigned short, unsigned char, CExoArrayList<CExoString>&)",calls1,1/2,,,nwsitem.o,neighbours
 0x0055E930,CSWSItem::AddAttackModifierProperties(CExoString&),name,2/2,,unknown,nwsitem.o,debug map
 0x0055EC70,,,conflict,"CSWSItem::EventHandler(unsigned long, unsigned long, void*, unsigned long, unsigned long) | CSWSItem::~CSWSItem()",,nwsitem.o,debug map
 0x0055F050,CSWSItem::InitRepository(unsigned long),name,2/2,,exact,nwsitem.o,debug map
@@ -3661,7 +3671,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00561100,CSWSPlayer::CreateNewPlayerLastUpdateObject(),name,2/2,,exact,nwsplayer.o,debug map
 0x00561190,CSWSPlayer::PermittedToDisplayCharacterSheet(unsigned long),name,2/2,,exact,nwsplayer.o,debug map
 0x005611F0,,,,,,nwsplayer.o,neighbours
-0x00561260,,,,,,nwsplayer.o,neighbours
+0x00561260,CSWSPlayerCharSheetGUI::ComputeCharacterSheetUpdateRequired(CSWSPlayer*),calls1,2/2,,,nwsplayer.o,debug map
 0x00561820,CSWSPlayer::GetLastUpdateObject(unsigned long),name,2/2,,exact,nwsplayer.o,debug map
 0x00561870,CSWSPlayer::PackCreatureIntoMessage(),name,2/2,,exact,nwsplayer.o,debug map
 0x00561C40,,,,,,nwsplayer.o,neighbours
@@ -3855,7 +3865,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x0056F160,,,,,,nwssendplayermessage.o,neighbours
 0x0056F370,"CSWSMessage::SendServerToPlayerExamineGui_DoorData(CSWSPlayer*, unsigned long)",name,2/2,,exact,nwssendplayermessage.o,debug map
 0x0056F430,"CSWSMessage::SendServerToPlayerGameObjUpdate_ObjControl(unsigned long, unsigned long)",calls1,2/2,,,nwssendplayermessage.o,debug map
-0x0056F490,,,,,,nwssendplayermessage.o,neighbours
+0x0056F490,"CSWSMessage::WriteGameObjUpdate_CharacterSheet(CSWSPlayer*, unsigned long)",calls1,2/2,,,nwssendplayermessage.o,debug map
 0x0056FB10,"CSWSMessage::SendServerToPlayerInventory_Drop(unsigned long, unsigned long)",name,2/2,,exact,nwssendplayermessage.o,debug map
 0x0056FB70,"CSWSMessage::SendServerToPlayerInventory_DropCancel(unsigned long, unsigned long)",name,2/2,,exact,nwssendplayermessage.o,debug map
 0x0056FBD0,"CSWSMessage::SendServerToPlayerInventory_EquipCancel(unsigned long, unsigned long, unsigned long)",name,2/2,,compatible,nwssendplayermessage.o,debug map
@@ -3879,7 +3889,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00571960,"CSWSMessage::SendServerToPlayerChatMessage(unsigned char, unsigned long, CExoString, unsigned long, CExoString const&)",calls,2/2,,,nwssendplayermessage.o,debug map
 0x00571EC0,"CSWSMessage::SendServerToPlayerQuickChatMessage(unsigned long, unsigned short)",calls,2/2,,,nwssendplayermessage.o,debug map
 0x00572070,"CSWSMessage::WriteGameObjUpdate_UpdateAppearance(CSWSObject*, CLastUpdateObject*, unsigned long)",calls1,2/2,,,nwssendplayermessage.o,debug map
-0x00572990,,,,,,nwssendplayermessage.o,neighbours
+0x00572990,CSWSMessage::WriteGameObjUpdate_MinorGUIPanels(CSWSPlayer*),calls1,2/2,,,nwssendplayermessage.o,debug map
 0x00572A20,"CSWSMessage::TestPlayerUpdateDifferences(CSWSPlayer*, CSWSPlayerLastUpdateObject*, CLastUpdateObject*, unsigned long&)",calls,2/2,,,nwssendplayermessage.o,debug map
 0x00572DC0,"CSWSMessage::WriteGameObjUpdate_PlayerUpdate(CSWSPlayer*, CSWSPlayerLastUpdateObject*, CLastUpdateObject*, unsigned long)",calls,2/2,,,nwssendplayermessage.o,debug map
 0x00574400,"CSWSMessage::StoreValuesInLastPlayerUpdateObject(CSWSPlayer*, CSWSPlayerLastUpdateObject*, CLastUpdateObject*, unsigned long)",calls,2/2,,,nwssendplayermessage.o,debug map
@@ -3984,8 +3994,8 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00580D50,,,,,,swroomsurfacemesh.o,neighbours
 0x00580E90,"CSWRoomSurfaceMesh::SetRoomAdjacency(CSWRoomSurfaceMesh*, int, int, Vector const&, Vector const&)",calls1,2/2,,,swroomsurfacemesh.o,debug map
 0x00581150,CSWRoomSurfaceMesh::GetAdjacentRoom(int),calls1,2/2,,,swroomsurfacemesh.o,debug map
-0x00581170,,,,,,swroomsurfacemesh.o,neighbours
-0x00581290,,,,,,swroomsurfacemesh.o,neighbours
+0x00581170,CExoArrayList<CSWRoomSurfaceMeshAABBNode>::Allocate(int),calls1,1/2,,,swroomsurfacemesh.o,debug map
+0x00581290,CExoArrayList<CSWRoomSurfaceMeshAABBNode>::Add(CSWRoomSurfaceMeshAABBNode),calls1,1/2,,,swroomsurfacemesh.o,debug map
 0x00581320,,,,,,swroomsurfacemesh.o,neighbours
 0x005814D0,,,,,,swroomsurfacemesh.o,neighbours
 0x00581530,,,,,,swroomsurfacemesh.o,neighbours
@@ -3995,7 +4005,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00581A10,CSWRoomSurfaceMesh::GetSurfaceMaterialWalkCheckOnly(Vector),calls1,1/2,,,swroomsurfacemesh.o,neighbours
 0x00581AF0,CSWRoomSurfaceMesh::TransformToWorld(Vector const&),calls1,1/2,,,swroomsurfacemesh.o,neighbours
 0x00581B30,"CSWRoomSurfaceMesh::ComputeHeight(Vector, int)",calls1,2/2,,,swroomsurfacemesh.o,debug map
-0x00581BD0,,,,,,swroomsurfacemesh.o,neighbours
+0x00581BD0,CExoArrayList<CSWRoomSurfaceMeshAABBNode>::operator=(CExoArrayList<CSWRoomSurfaceMeshAABBNode> const&),name,1/2,,exact,swroomsurfacemesh.o,debug map
 0x00581C30,,,,,,swroomsurfacemesh.o,neighbours
 0x00581CD0,,,,,,swroomsurfacemesh.o,neighbours
 0x00581D60,,,,,,swroomsurfacemesh.o,neighbours
@@ -4014,7 +4024,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00584B10,"CSWSPlaceable::AcquireItem(CSWSItem**, unsigned long, int)",name,2/2,,exact,nwsplaceable.o,debug map
 0x00584C20,,,,,,nwsplaceable.o,neighbours
 0x00584DB0,,,,,,nwsplaceable.o,neighbours
-0x00584EC0,,,,,,nwsplaceable.o,neighbours
+0x00584EC0,CSWSPlaceable::AIActionCastSpell(CSWSObjectActionNode*),calls1,1/2,,,nwsplaceable.o,neighbours
 0x00585080,CSWSPlaceable::SetLightIsOn(int),name,2/2,,exact,nwsplaceable.o,debug map
 0x00585130,CSWSPlaceable::GetLightIsOn(),name,2/2,,exact,nwsplaceable.o,debug map
 0x005851E0,CSWSPlaceable::GetBodyBagAppearance(),name,2/2,,unknown,nwsplaceable.o,debug map
@@ -4044,7 +4054,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005891B0,"CSWSDoor::GetActionPoint(int, unsigned char)",name,2/2,,exact,nwsdoor.o,debug map
 0x00589240,"CSWSDoor::GetNearestActionPoint(Vector const&, int)",calls1,2/2,,,nwsdoor.o,debug map
 0x00589580,CSWSDoor::GetLinkedObject(),name,2/2,,exact,nwsdoor.o,debug map
-0x00589600,,,,,,nwsdoor.o,neighbours
+0x00589600,"CSWSDoor::SetOpenState(unsigned char, int)",calls1,1/2,,,nwsdoor.o,neighbours
 0x00589680,CSWSDoor::MoveToNextOpenState(),name,2/2,,exact,nwsdoor.o,debug map
 0x005896E0,CSWSDoor::SetOrientation(Quaternion),calls1,1/2,,,nwsdoor.o,neighbours
 0x005897D0,,,,,,nwsdoor.o,neighbours
@@ -4221,7 +4231,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x0059ED70,"CSWSDialog::RunScript(CSWSObject*, CResRef const&)",calls1,1/2,,,nwsdialog.o,neighbours
 0x0059EE00,"CSWSDialog::GetStartEntryOneLiner(CSWSObject*, CExoLocString&, CResRef&, CResRef&)",calls1,2/2,,,nwsdialog.o,debug map
 0x0059EF00,"CSWSDialog::AddJournalEntry(CExoString const&, unsigned long, unsigned long)",calls1,2/2,,,nwsdialog.o,debug map
-0x0059F140,,,,,,nwsdialog.o,neighbours
+0x0059F140,CSWSDialogBase::operator=(CSWSDialogBase const&),name,1/2,,exact,nwsdialog.o,debug map
 0x0059F220,CSWSDialog::InitializePsuedoRandomCameraAngles(CResGFF*),name,2/2,,unknown,nwsdialog.o,debug map
 0x0059F320,"CSWSDialog::GetExoStringFromLocString(CExoLocString&, unsigned char)",name,2/2,,compatible,nwsdialog.o,debug map
 0x0059F3C0,"CSWSDialog::GiveDialogPlotXP(int, float)",name,2/2,,exact,nwsdialog.o,debug map
@@ -4236,7 +4246,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x0059FF50,,,,,,nwsdialog.o,neighbours
 0x005A0080,"CSWSDialog::SendDialogModels(CSWSObject*, unsigned long)",calls1,2/2,,,nwsdialog.o,debug map
 0x005A0240,"CSWSDialog::GetDialogModel(int, int&)",name,2/2,,compatible,nwsdialog.o,debug map
-0x005A0360,,,,,,nwsdialog.o,neighbours
+0x005A0360,CSWSDialogNode::operator=(CSWSDialogNode const&),calls1,1/2,,,nwsdialog.o,debug map
 0x005A03C0,"CSWSDialog::HandleReply(unsigned long, CSWSObject*, unsigned long, int, unsigned long, int)",calls,2/2,,,nwsdialog.o,debug map
 0x005A0940,CSWSDialog::ClearAllPlayerHostileActions(),name,2/2,,exact,nwsdialog.o,debug map
 0x005A0A40,"CSWSDialog::RunEndConversationScript(CSWSObject*, int)",name,2/2,,exact,nwsdialog.o,debug map
@@ -4306,7 +4316,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005A5D10,"CSWSCreatureStats::AddClass(unsigned char, unsigned char)",name,2/2,,exact,nwscreaturestats.o,debug map
 0x005A5D70,"CSWSCreatureStats::CheckForCategoryMatch(int, int)",calls1,1/2,,,nwscreaturestats.o,neighbours
 0x005A5DF0,,,,,,nwscreaturestats.o,neighbours
-0x005A5EE0,"CSWSCreatureStats::GetSpellGainWithBonus(unsigned char, unsigned char)",calls1,1/2,,,nwscreaturestats.o,debug map
+0x005A5EE0,"CSWSCreatureStats::GetSpellGainWithBonus(unsigned char, unsigned char)",calls1,2/2,,,nwscreaturestats.o,debug map
 0x005A5FD0,CSWSCreatureStats::GetLevel(int),calls,2/2,,,nwscreaturestats.o,debug map
 0x005A6060,CSWSCreatureStats::GetIsJedi(),name,2/2,,exact,nwscreaturestats.o,debug map
 0x005A60D0,CSWSCreatureStats::GetBaseAttackBonus(),calls1,2/2,,,nwscreaturestats.o,debug map
@@ -4484,7 +4494,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005BCCD0,CSWClass::GetFortSaveBonus(unsigned char),name,2/2,,exact,nwclass.o,debug map
 0x005BCCF0,CSWClass::GetRefSaveBonus(unsigned char),calls1,2/2,,,nwclass.o,debug map
 0x005BCD10,CSWClass::GetWillSaveBonus(unsigned char),calls1,2/2,,,nwclass.o,debug map
-0x005BCD30,"CSWClass::GetSpellGain(unsigned char, unsigned char)",calls1,1/2,,,nwclass.o,debug map
+0x005BCD30,"CSWClass::GetSpellGain(unsigned char, unsigned char)",calls1,2/2,,,nwclass.o,debug map
 0x005BCD60,,,,,,nwclass.o,neighbours
 0x005BCDA0,CSWClass::LoadAttackBonusTable(CExoString const&),name,2/2,,exact,nwclass.o,debug map
 0x005BCF70,CSWClass::LoadFeatGain(CExoString const&),name,2/2,,exact,nwclass.o,debug map
@@ -4621,6 +4631,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005C4C20,CTwoDimArrays::Load2DArrays(),calls,2/2,,,twodimarrays.o,debug map
 0x005C5070,CTwoDimArrays::UnLoad2DArrays(),calls,2/2,,,twodimarrays.o,debug map
 0x005C53E0,SJournalEntry::SJournalEntry(),name,1/2,,exact,nwchandlemessage.o,debug map
+0x005C5470,SJournalEntry::operator=(SJournalEntry const&),name,2/2,,exact,nwsjournal.o,debug map
 0x005C5500,SJournalEntry::~SJournalEntry(),name,1/2,,exact,clientexoappinternal.o,debug map
 0x005C5560,SJournalEntry::SJournalEntry(SJournalEntry const&),name,1/2,,exact,nwchandlemessage.o,debug map
 0x005C5630,"CClientExoApp::PlayerListChange(unsigned long, int, int)",vtable,2/2,,,clientexoapp.o,debug map
@@ -4763,7 +4774,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005CCE70,,,,,,swmgvmachinecommands.o,neighbours
 0x005CCF30,,,,,,swmgvmachinecommands.o,neighbours
 0x005CD0A0,"CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerPosition(int, int)",name,2/2,,exact,swmgvmachinecommands.o,debug map
-0x005CD160,"CSWVirtualMachineCommands::ExecuteCommandSWMG_SetSoundProperty(int, int)",calls1,1/2,,,swmgvmachinecommands.o,debug map
+0x005CD160,"CSWVirtualMachineCommands::ExecuteCommandSWMG_SetSoundProperty(int, int)",calls1,2/2,,,swmgvmachinecommands.o,debug map
 0x005CD230,,,,,,swmgvmachinecommands.o,neighbours
 0x005CD280,,,,,,swmgvmachinecommands.o,neighbours
 0x005CD2C0,CSWVirtualMachineCommands::InitializeSWMGCommands(),name,2/2,,exact,swmgvmachinecommands.o,debug map
@@ -4848,7 +4859,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005D15A0,CVirtualMachineStack::AddToTopOfStack(int),name,2/2,,exact,nwvmachineinternal.o,debug map
 0x005D16C0,"CVirtualMachineStack::ModifyIntegerAtLocation(int, int)",name,1/2,,exact,nwvmachineinternal.o,neighbours
 0x005D16F0,"CVirtualMachineInternal::InitializeScript(CVirtualMachineScript*, char*, int)",name,2/2,,exact,nwvmachineinternal.o,debug map
-0x005D1740,CVirtualMachineScript::CVirtualMachineScript(),name,1/2,,exact,nwvmachineinternal.o,debug map
+0x005D1740,,,conflict,CVirtualMachineScript::CVirtualMachineScript() | CVirtualMachineStack::CVirtualMachineStack(),,nwvmachineinternal.o,debug map
 0x005D17B0,,,,,,nwvmachineinternal.o,neighbours
 0x005D17F0,,,,,,nwvmachineinternal.o,neighbours
 0x005D1820,"CVirtualMachineInternal::GetRunScriptReturnValue(int*, void**)",name,2/2,,exact,nwvmachineinternal.o,debug map
@@ -5211,15 +5222,16 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005E3FA0,CExoRawInputInternal::InitializeDirectInputMouse(),name,2/2,,exact,exorawinputwin32.o,debug map
 0x005E4050,CExoRawInputInternal::GetMouseState(CExoMouseState&),name,2/2,,compatible,exorawinputwin32.o,debug map
 0x005E50C0,DirectInput8Create,calls1,1/2,,,,
+0x005E5140,CExoString::operator=(char const*),name,2/2,,exact,exostring.o,debug map
 0x005E5200,CExoString::operator==(CExoString const&) const,calls,2/2,,,exostring.o,debug map
-0x005E5290,CExoString::operator==(char const*) const,calls,2/2,,,exostring.o,debug map
-0x005E5310,,,,,,exostring.o,neighbours
+0x005E5290,CExoString::operator==(char const*) const,name,2/2,,exact,exostring.o,debug map
+0x005E5310,CExoString::operator!=(CExoString const&) const,name,2/2,,exact,exostring.o,debug map
 0x005E5390,CExoString::operator!=(char const*) const,calls1,2/2,,,exostring.o,debug map
 0x005E5410,CExoString::operator<(CExoString const&) const,name,2/2,,exact,exostring.o,debug map
 0x005E5490,CExoString::operator>(CExoString const&) const,name,2/2,,exact,exostring.o,debug map
-0x005E5500,,,,,,exostring.o,neighbours
-0x005E5580,,,,,,exostring.o,neighbours
-0x005E5600,CExoString::operator[](int) const,calls,2/2,,,exostring.o,debug map
+0x005E5500,CExoString::operator<=(CExoString const&) const,name,2/2,,exact,exostring.o,debug map
+0x005E5580,CExoString::operator>=(CExoString const&) const,name,2/2,,exact,exostring.o,debug map
+0x005E5600,CExoString::operator[](int) const,name,2/2,,exact,exostring.o,debug map
 0x005E5630,CExoString::AsINT() const,name,2/2,,exact,exostring.o,debug map
 0x005E5650,CExoString::AsFLOAT() const,name,2/2,,exact,exostring.o,debug map
 0x005E5670,CExoString::CStr() const,name,2/2,,exact,exostring.o,debug map
@@ -5235,8 +5247,8 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005E5B70,"CExoString::CExoString(char const*, int)",name,2/2,,exact,exostring.o,debug map
 0x005E5BC0,CExoString::CExoString(int),name,2/2,,exact,exostring.o,debug map
 0x005E5C20,CExoString::~CExoString(),calls,1/2,,,exostring.o,neighbours
-0x005E5C50,CExoString::operator=(CExoString const&),calls,2/2,,,exostring.o,debug map
-0x005E5D10,CExoString::operator+(CExoString const&) const,calls,1/2,,,exostring.o,neighbours
+0x005E5C50,CExoString::operator=(CExoString const&),name,2/2,,exact,exostring.o,debug map
+0x005E5D10,CExoString::operator+(CExoString const&) const,name,2/2,,exact,exostring.o,debug map
 0x005E5EB0,"CExoString::Find(CExoString const&, int) const",name,2/2,,exact,exostring.o,debug map
 0x005E5F20,"CExoString::Find(char, int) const",name,2/2,,exact,exostring.o,debug map
 0x005E5F70,CExoString::Left(int) const,name,2/2,,exact,exostring.o,debug map
@@ -5260,7 +5272,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005E6810,CExoAliasList::CExoAliasList(),name,2/2,,exact,exofile.o,debug map
 0x005E6880,"CExoAliasList::Add(CExoString const&, CExoString const&)",name,2/2,,exact,exofile.o,debug map
 0x005E6890,"CExoAliasList::GetAliasPath(CExoString const&, int) const",calls,2/2,,,exofile.o,debug map
-0x005E68A0,"CExoAliasList::ResolveFileName(CExoString const&, unsigned short) const",calls1,2/2,,,exofile.o,debug map
+0x005E68A0,"CExoAliasList::ResolveFileName(CExoString const&, unsigned short) const",calls,2/2,,,exofile.o,debug map
 0x005E68D0,"CExoFile::CExoFile(CExoString const&, unsigned short, CExoString const&)",name,2/2,,exact,exofile.o,debug map
 0x005E6940,CExoFile::GetOffset(),name,2/2,,exact,exofile.o,debug map
 0x005E6950,CExoFile::GetSize(),name,2/2,,exact,exofile.o,debug map
@@ -5329,16 +5341,16 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005E9D70,CExoLinkedListInternal::AddHead(void*),name,2/2,,exact,exolinkedlistinternal.o,debug map
 0x005E9DC0,CExoLinkedListInternal::AddTail(void*),name,2/2,,exact,exolinkedlistinternal.o,debug map
 0x005E9E10,CExoLocString::CExoLocString(),calls,1/2,,,,
-0x005E9E70,CExoLocString::operator=(CExoLocString const&),calls1,1/2,,,exolocstring.o,debug map
+0x005E9E70,CExoLocString::operator=(CExoLocString const&),name,2/2,,exact,exolocstring.o,debug map
 0x005E9EA0,CExoLocString::ClearLocString(),name,2/2,,exact,exolocstring.o,debug map
 0x005E9EB0,,,,,,exolocstring.o,neighbours
 0x005E9EF0,CExoLocString::GetStringCount() const,name,2/2,,exact,exolocstring.o,debug map
 0x005E9F00,,,,,,exolocstring.o,neighbours
-0x005E9F10,CExoLocString::Compare(CExoLocString const&) const,calls1,2/2,,,exolocstring.o,debug map
+0x005E9F10,,,conflict,CExoLocString::Compare(CExoLocString const&) const | CExoLocString::operator==(CExoLocString const&) const,,exolocstring.o,debug map
 0x005E9F80,CExoLocString::CExoLocString(CExoLocString const&),name,2/2,,exact,exolocstring.o,debug map
 0x005EA000,CExoLocString::~CExoLocString(),calls,2/2,,,exolocstring.o,debug map
-0x005EA020,CExoLocString::operator==(CExoLocString const&) const,calls1,1/2,,,exolocstring.o,neighbours
-0x005EA030,,,,,,exolocstring.o,neighbours
+0x005EA020,CExoLocString::operator==(CExoLocString const&) const,calls1,1/2,,,exolocstring.o,debug map
+0x005EA030,CExoLocString::operator!=(CExoLocString const&) const,name,2/2,,exact,exolocstring.o,debug map
 0x005EA050,"CExoLocString::GetString(int, CExoString*, unsigned char)",name,2/2,,compatible,exolocstring.o,debug map
 0x005EA130,"CExoLocString::RemoveString(int, unsigned char)",calls1,1/2,,,exolocstring.o,neighbours
 0x005EA240,"CExoLocString::GetStringLoc(int, CExoString*, unsigned char) const",calls1,1/2,,,exolocstring.o,neighbours
@@ -5347,6 +5359,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005EA420,CExoRand::CExoRand(),name,2/2,,exact,exorand.o,debug map
 0x005EA490,CExoRand::Rand(),name,2/2,,exact,exorand.o,debug map
 0x005EA4A0,CExoRand::~CExoRand(),name,2/2,,exact,exorand.o,debug map
+0x005EA4D0,CExoIniInternal::CExoIniInternal(),calls1,1/2,,,exoiniinternal.o,debug map
 0x005EA540,CExoIniInternal::CExoIniInternal(),name,2/2,,exact,exoiniinternal.o,debug map
 0x005EA5A0,CFileSection::~CFileSection(),name,1/2,,exact,exoiniinternal.o,debug map
 0x005EA600,CFileSection::CFileSection(),name,1/2,,exact,exoiniinternal.o,debug map
@@ -5388,7 +5401,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005EC680,CExoDebugInternal::~CExoDebugInternal(),name,2/2,,exact,exodebuginternal.o,debug map
 0x005EC690,CExoLocStringInternal::CExoLocStringInternal(),calls1,1/2,,,exolocstringinternal.o,debug map
 0x005EC700,"CExoLocStringInternal::AddString(int, CExoString const&)",name,2/2,,unknown,exolocstringinternal.o,debug map
-0x005EC7F0,CExoLocStringInternal::Compare(CExoLocString const&) const,calls1,2/2,,,exolocstringinternal.o,debug map
+0x005EC7F0,,,conflict,CExoLocString::Compare(CExoLocString const&) const | CExoLocStringInternal::Compare(CExoLocString const&) const,,exolocstringinternal.o,debug map
 0x005EC950,,,,,,exolocstringinternal.o,neighbours
 0x005EC9C0,"CExoLocString::GetStringInternal(int, CExoString*) const",calls1,1/2,,,exolocstringinternal.o,neighbours
 0x005ECA20,,,,,,exolocstringinternal.o,neighbours
@@ -5396,7 +5409,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005ECAF0,CExoLocStringInternal::CExoLocStringInternal(),name,2/2,,exact,exolocstringinternal.o,debug map
 0x005ECB10,CExoLocStringInternal::ClearLocString(),name,2/2,,exact,exolocstringinternal.o,debug map
 0x005ECB50,CExoLocStringInternal::~CExoLocStringInternal(),name,2/2,,exact,exolocstringinternal.o,debug map
-0x005ECBB0,CExoLocString::CExoLocString(CExoLocString const&),calls1,1/2,,,exolocstring.o,debug map
+0x005ECBB0,CExoLocStringInternal::Assign(CExoLocStringInternal*),calls,1/2,,,,
 0x005ECC80,CExoRandInternal::~CExoRandInternal(),name,2/2,,exact,exorandinternal.o,debug map
 0x005ECCA0,CExoRandInternal::Rand(),name,2/2,,exact,exorandinternal.o,debug map
 0x005ECD40,"CExoRandInternal::ReSeed(unsigned long, unsigned long, unsigned long, unsigned long)",name,2/2,,unknown,exorandinternal.o,debug map
@@ -5571,7 +5584,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x005EDFA0,CClientExoApp::GetAttackMashTutorialTimer(),name,2/2,,exact,clientexoapp.o,debug map
 0x005EDFB0,CClientExoApp::GetLoadingSaveGame(),name,2/2,,exact,clientexoapp.o,debug map
 0x005EDFC0,CClientExoApp::SetLoadingSaveGame(int),name,2/2,,exact,clientexoapp.o,debug map
-0x005EDFD0,,,,,,clientexoapp.o,neighbours
+0x005EDFD0,"CClientExoApp::SetLoadStep(int, unsigned char)",calls1,1/2,,,clientexoapp.o,neighbours
 0x005EDFF0,,,,,,clientexoapp.o,neighbours
 0x005EE010,CClientExoApp::ClearEnemySighted(),name,2/2,,exact,clientexoapp.o,debug map
 0x005EE020,,,,,,clientexoapp.o,neighbours
@@ -6416,7 +6429,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x006419A0,CSWCModule::UpdateCameraFollow(float),calls1,1/2,,,nwcmodule.o,neighbours
 0x00641CB0,,,,,,nwcmodule.o,neighbours
 0x00641CD0,CSWCModule::~CSWCModule(),name,2/2,,exact,nwcmodule.o,debug map
-0x00641DB0,CResRef::GetResRef() const,calls1,1/2,,,nwcmodule.o,neighbours
+0x00641DB0,CResRef::GetResRef() const,calls,1/2,,,nwcmodule.o,neighbours
 0x00641DC0,CSWCModule::RestoreCamera(),calls1,1/2,,,nwcmodule.o,neighbours
 0x006422E0,,,,,,nwcmodule.o,neighbours
 0x006433B0,,,,,,nwcmodule.o,neighbours
@@ -6457,7 +6470,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00647660,CSWCCreatureStats::GetRaceString(),calls1,2/2,,,nwccreaturestats.o,debug map
 0x00647720,CSWCCreatureStats::GetArmorClass(int),calls1,1/2,,,nwccreaturestats.o,neighbours
 0x00647730,CSWCCreatureStats::GetClass(unsigned char),calls1,2/2,,,nwccreaturestats.o,debug map
-0x00647750,,,,,,nwccreaturestats.o,neighbours
+0x00647750,CSWCCreatureStats::GetClassLevel(unsigned char),calls1,1/2,,,nwccreaturestats.o,neighbours
 0x00647770,,,,,,nwccreaturestats.o,neighbours
 0x00647790,,,,,,nwccreaturestats.o,neighbours
 0x006477B0,,,,,,nwccreaturestats.o,neighbours
@@ -6700,7 +6713,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x0066CA30,,,,,,swmgtrackfollower.o,neighbours
 0x0066CA50,,,,,,swmgtrackfollower.o,neighbours
 0x0066CA70,,,,,,swmgtrackfollower.o,neighbours
-0x0066CA90,"CSWTrackFollower::SetSoundVolume(int, int)",calls1,1/2,,,swmgtrackfollower.o,debug map
+0x0066CA90,"CSWTrackFollower::SetSoundVolume(int, int)",calls1,2/2,,,swmgtrackfollower.o,debug map
 0x0066CAD0,CSWTrackFollower::GetName(),vtable,2/2,,,swmgtrackfollower.o,debug map
 0x0066CB10,,,,,,swmgtrackfollower.o,neighbours
 0x0066CB40,,,,,,swmgtrackfollower.o,neighbours
@@ -6724,7 +6737,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x0066D280,,,,,,swmgtrackfollower.o,neighbours
 0x0066D2F0,"CSWTrackFollower::ForceSetTrack(CAurObject*, int)",strings,2/2,,,swmgtrackfollower.o,debug map
 0x0066D440,,,,,,swmgtrackfollower.o,neighbours
-0x0066D490,,,,,,swmgtrackfollower.o,neighbours
+0x0066D490,CSWTrackFollower::Hit(),calls1,2/2,,,swmgtrackfollower.o,debug map
 0x0066D4E0,CSWTrackFollower::DoBulletHitCheck(CAurObject*),calls1,2/2,,,swmgtrackfollower.o,debug map
 0x0066D550,"CSWTrackFollower::PlayAnimation(char*, float, int)",name,2/2,,compatible,swmgtrackfollower.o,debug map
 0x0066D5D0,CSWTrackFollower::GetPosition(),calls1,2/2,,,swmgtrackfollower.o,debug map
@@ -6750,7 +6763,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x0066E900,"CSWTrackFollower::SetSoundName(int, CResRef const&)",calls,2/2,,,swmgtrackfollower.o,debug map
 0x0066EB50,,,,,,swmgtrackfollower.o,neighbours
 0x0066ECF0,CSWMiniPlayer::~CSWMiniPlayer(),name,2/2,,exact,swmgtrackfollower.o,debug map
-0x0066EDA0,,,,,,swmgtrackfollower.o,neighbours
+0x0066EDA0,"CSWMiniPlayer::DoFollowerHitCheck(CExoArrayList<unsigned long>&, int)",calls1,2/2,,,swmgtrackfollower.o,debug map
 0x0066F440,"CSWMiniPlayer::CreateGunBank(int, CResRef const&, CResRef const&, CSWMGBullet const&, CResRef const&)",strings,2/2,,,swmgtrackfollower.o,debug map
 0x0066F5F0,"CSWMiniEnemy::CreateGunBank(int, CResRef const&, CResRef const&, CSWMGBullet const&, CSWMGTargettingParameters const&, CResRef const&)",strings,2/2,,,swmgtrackfollower.o,debug map
 0x0066F7C0,,,,,,swmgtrackfollower.o,neighbours
@@ -6876,6 +6889,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x00678280,"CSWCMessage::SendPlayerToServer_LevelUp(CSWCLevelUpStats*, CSWCLevelUpStats*)",calls1,2/2,,,nwcsendmessage.o,debug map
 0x00678820,"CSoundSet::GetStrres(unsigned short, STR_RES&)",calls1,2/2,,,soundset.o,debug map
 0x00678C10,CSoundSetList::CSoundSetList(),strings,2/2,,,soundset.o,debug map
+0x00678EF0,CSWPortrait::GetPortrait(unsigned char),calls1,2/2,,,nwportrait.o,debug map
 0x006790D0,CSWPortrait::SetPortraitId(unsigned short),strings,2/2,,,nwportrait.o,debug map
 0x006793C0,CSWPlayerControlCamRelative::Init(),strings,2/2,,,swplayercontrol.o,debug map
 0x00679510,,,,,,swplayercontrol.o,neighbours
@@ -7194,7 +7208,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x0069A3C0,CSWCAnimBase::RemoveAnimationFlag(int),vtable,1/2,,,nwcanimbase.o,debug map
 0x0069A3E0,,,,,,nwcanimbasewield.o,neighbours
 0x0069A650,"CSWCAnimBaseWield::GetItemAurObject(unsigned long, unsigned char)",calls1,1/2,,,nwcanimbasewield.o,neighbours
-0x0069A680,,,,,,nwcanimbasewield.o,neighbours
+0x0069A680,CSWCAnimBaseWield::ItemIsValid(unsigned long),calls1,2/2,,,nwcanimbasewield.o,debug map
 0x0069A6B0,"CSWCAnimBaseWield::HideWieldedItems(CResRef const&, CResRef const&)",strings,2/2,,,nwcanimbasewield.o,debug map
 0x0069A8F0,,,,,,nwcanimbasewield.o,neighbours
 0x0069A980,,,,,,nwcanimbasewield.o,neighbours
@@ -7361,7 +7375,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x006A6E00,CSWGuiDialogComputer::OnPanelRemoved(),name,2/2,,exact,swguidialog.o,debug map
 0x006A6E20,CSWGuiDialogComputer::GetFullScreenBG(),name,2/2,,exact,swguidialog.o,debug map
 0x006A6F20,,,,,,swguidialog.o,neighbours
-0x006A6F30,CSWGuiDialog::~CSWGuiDialog(),name,1/2,,exact,swguidialog.o,debug map
+0x006A6F30,,,conflict,CSWGuiDialog::~CSWGuiDialog() | __cxa_vec_cleanup,,swguidialog.o,debug map
 0x006A6FC0,,,,,,swguidialog.o,neighbours
 0x006A6FE0,,,,,,swguidialog.o,neighbours
 0x006A7010,CSWGuiDialog::SetDialogMessage(CExoString const&),name,2/2,,exact,swguidialog.o,debug map
@@ -7371,7 +7385,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x006A7230,"CSWGuiDialog::HandleInputEvent(int, int)",name,2/2,,exact,swguidialog.o,debug map
 0x006A7390,CSWGuiDialog::HandleSelectReply(CSWGuiControl*),vtable,1/2,,,swguidialog.o,debug map
 0x006A73B0,CSWGuiDialogLetterbox::SetExtentSpecial(CSWGuiExtent),calls1,1/2,,,swguidialog.o,debug map
-0x006A7440,,,,,,swguidialog.o,neighbours
+0x006A7440,CSWGuiDialogLetterbox::SetExtent(CSWGuiExtent const&),calls1,1/2,,,swguidialog.o,neighbours
 0x006A74B0,,,,,,swguidialog.o,neighbours
 0x006A7540,,,,,,swguidialog.o,neighbours
 0x006A75E0,,,,,,swguidialog.o,neighbours
@@ -7408,7 +7422,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x006A94C0,CSWGuiDialogComputer::~CSWGuiDialogComputer(),vtable,2/2,,,swguidialog.o,debug map
 0x006A94E0,"CSWGuiDialogComputer::SetReplies(int, CExoString*, unsigned long*, int, int)",vtable,2/2,,,swguidialog.o,debug map
 0x006A9520,CSWGuiDialogComputer::SetDialogMessage(CExoString const&),name,2/2,,exact,swguidialog.o,debug map
-0x006A95F0,CSWGuiDialogComputerCamera::CSWGuiDialogComputerCamera(CSWGuiManager*),strings,1/2,,,swguidialog.o,debug map
+0x006A95F0,CSWGuiDialogComputerCamera::CSWGuiDialogComputerCamera(CSWGuiManager*),strings,2/2,,,swguidialog.o,debug map
 0x006A9750,CSWGuiDialogComputerCamera::~CSWGuiDialogComputerCamera(),vtable,2/2,,,swguidialog.o,debug map
 0x006A9770,CSWGuiBarkBubble::CSWGuiBarkBubble(CSWGuiManager*),name,2/2,,exact,swguibarkbubble.o,debug map
 0x006A9890,CSWGuiBarkBubble::~CSWGuiBarkBubble(),name,2/2,,exact,swguibarkbubble.o,debug map
@@ -7723,6 +7737,7 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x006E4360,CPazaakPlayer::GetTotal(),calls1,1/2,,,,
 0x006E4580,CPazaakPlayer::ChooseSidedeck(CPazaakCard*),calls1,1/2,,,swpazaak.o,debug map
 0x006E4A40,"CSWPazaak::LoadInitialSideDeck(int, CPazaakCard*)",strings,2/2,,,swpazaak.o,debug map
+0x006E4E50,CSWCAnimBasePlaceable::CSWCAnimBasePlaceable(),calls1,1/2,,,,
 0x006E4E70,"CSWCAnimBasePlaceable::LoadModel(CResRef const&, unsigned char)",strings,2/2,,,nwcanimbaseplaceable.o,debug map
 0x006E56C0,"CSWCAnimBaseDoor::LoadModel(CResRef const&, unsigned char)",strings,2/2,,,nwcanimbasedoor.o,debug map
 0x006E69A0,CSWGuiInGameGameplay::CSWGuiInGameGameplay(CSWGuiManager*),strings,2/2,,,swguiingamegameplay.o,debug map
@@ -7832,7 +7847,6 @@ address,mac_name,method,builds,conflict,signature,source,source_how
 0x006F9BF0,CSWGuiNameChargen::HandleRandomName(),calls1,2/2,,,swguinamechargen.o,debug map
 0x006F9E70,"CSWGuiNameChargen::CSWGuiNameChargen(CSWGuiManager*, CSWCCreature*)",strings,2/2,,,swguinamechargen.o,debug map
 0x006FA390,CSWSCombatRoundAction::~CSWSCombatRoundAction(),calls,1/2,,,,
-0x006FB766,__msl_GetThreadLocalData,calls,1/2,,,,
 0x006FC750,CSWCCreatureStats::CalcStatModifier(unsigned char),calls1,1/2,,,,
 0x0070C170,CExoMoviePlayer::CExoMoviePlayer(),calls1,2/2,,,exomovieplayer.o,debug map
 0x0070C1E0,"CExoMoviePlayer::CancelMovie(int, int)",calls1,2/2,,,exomovieplayer.o,debug map

@@ -55,6 +55,18 @@ class Signatures(unittest.TestCase):
             with self.subTest(windows=windows, mac=mac):
                 self.assertEqual(pn.signature_match(windows, mac), "compatible")
 
+    def test_template_arguments_are_not_indirection(self):
+        self.assertIsNone(pn.signature_match("Box<int*>", "Box<int&>"))
+        self.assertIsNone(pn.signature_match("Box<int*>*", "Box<int&>*"))
+        self.assertEqual(pn.signature_match("Box<int>*", "Box<int> const&"), "compatible")
+
+    def test_operators_keep_their_class(self):
+        self.assertEqual(pn.split_name("Foo::operator int()"), ("Foo::operator int", ""))
+        self.assertEqual(pn.split_name("public: __thiscall Foo::operator int(void)"), ("Foo::operator int", ""))
+        self.assertEqual(pn.split_name("public: class CResRef & __thiscall CResRef::operator=(class CResRef const &)"),
+                         pn.split_name("CResRef::operator=(CResRef const&)"))
+        self.assertEqual(pn.split_name("Foo::operator()(int) const"), ("Foo::operator()", "int|const"))
+
     def test_parameter_count_must_match(self):
         self.assertIsNone(pn.signature_match("int,int", "int"))
         self.assertIsNone(pn.signature_match("int", ""))
@@ -102,6 +114,11 @@ class Agreement(unittest.TestCase):
         builds = [self.build({0x10: "Foo::bar(int)"}), self.build({0x30: "Foo::bar(float)"})]
         out = pn.combine({0x1000}, builds, [self.pairs({0x1000: 0x10}), self.pairs({0x1000: 0x30})])
         self.assertEqual(out[0x1000], ("", "", "conflict", "Foo::bar(float) | Foo::bar(int)"))
+
+    def test_conversion_operators_of_two_classes_conflict(self):
+        builds = [self.build({0x10: "Foo::operator int()"}), self.build({0x30: "Bar::operator int()"})]
+        out = pn.combine({0x1000}, builds, [self.pairs({0x1000: 0x10}), self.pairs({0x1000: 0x30})])
+        self.assertEqual(out[0x1000][2], "conflict")
 
     def test_same_signature_agrees(self):
         builds = [self.build({0x10: "Foo::bar(int)"}), self.build({0x30: "Foo::bar(int)"})]
@@ -215,10 +232,33 @@ BCTRL = 0x4E800421
 BL_NEXT = 0x48000005  # bl $+4
 
 
+def memory(code, table=b"", table_at=0x8000):
+    """A Mac build stub: code at 0x1000, a table at table_at."""
+    def bytes_at(a, n):
+        for start, data in ((0x1000, code), (table_at, table)):
+            if start <= a < start + len(data):
+                return data[a - start:a - start + n]
+        return b""
+    word = lambda a: struct.unpack(">I", bytes_at(a, 4))[0] if len(bytes_at(a, 4)) == 4 else None
+    return SimpleNamespace(bytes_at=bytes_at, word=word)
+
+
+MTCTR0 = 0x7C0903A6  # mtctr r0
+BCTR = 0x4E800420
+BLR = 0x4E800020
+
+
+def lwzx(rd, ra, rb):
+    return (31 << 26) | (rd << 21) | (ra << 16) | (rb << 11) | (23 << 1)
+
+
+def add(rd, ra, rb):
+    return (31 << 26) | (rd << 21) | (ra << 16) | (rb << 11) | (266 << 1)
+
+
 class PPCScanner(unittest.TestCase):
-    def texts(self, code, strings):
-        mac = SimpleNamespace(bytes_at=lambda a, n: code[a - 0x1000:a - 0x1000 + n])
-        return pn.scan_ppc(mac, {0x1000: 0x1000 + len(code)}, strings)[0x1000][1]
+    def texts(self, code, strings, table=b""):
+        return pn.scan_ppc(memory(code, table), {0x1000: 0x1000 + len(code)}, strings)[0x1000][1]
 
     def test_bctrl_forgets_volatile_registers(self):
         code = ppc(lis(3, 1), BCTRL, addi(5, 3, 0x20))
@@ -247,6 +287,67 @@ class PPCScanner(unittest.TestCase):
         # lis r3,1; beq +8; li r4,0; addi r5,r3,32: r3 is the same on both paths
         code = ppc(lis(3, 1), 0x41820008, addi(4, 0, 0), addi(5, 3, 32))
         self.assertEqual(self.texts(code, {0x10020: "kept"}), {"kept"})
+
+    def scan(self, code, ends=None):
+        return pn.scan_ppc(memory(code), ends or {0x1000: 0x1000 + len(code)}, {})[0x1000]
+
+    def switch(self, relative):
+        """lis r31,1; lis r9,0 / addi r9,r9,0x8000 (the table); lwzx r0,r9,r3;
+        [add r0,r0,r9;] mtctr r0; bctr; case 1: addi r4,r31,0x20; blr; not a
+        case: lis r31,2; b case 1... ; case 2: addi r5,r31,0x30; blr"""
+        body = [lis(31, 1), lis(9, 0), addi(9, 9, 0x8000), lwzx(0, 9, 3)]
+        body += [add(0, 0, 9)] if relative else []
+        body += [MTCTR0, BCTR]
+        case1 = 0x1000 + 4 * len(body)
+        body += [addi(4, 31, 0x20), BLR, lis(31, 2), addi(6, 31, 0x40), BLR]
+        case2 = 0x1000 + 4 * (len(body) - 3)
+        entries = [case1, case2] if not relative else [case1 - 0x8000, case2 - 0x8000]
+        return ppc(*body), b"".join(struct.pack(">i", e) for e in entries) + struct.pack(">I", 0xFFFFFFF0)
+
+    def test_jump_table_cases_keep_the_switch_state(self):
+        for relative in (False, True):
+            with self.subTest(relative=relative):
+                code, table = self.switch(relative)
+                # case 2 is the lis r31,2 block: its own value, not the switch's
+                self.assertEqual(self.texts(code, {0x10020: "case 1", 0x20040: "case 2", 0x10040: "wrong"}, table),
+                                 {"case 1", "case 2"})
+                words = [struct.unpack_from(">I", code, i)[0] for i in range(0, len(code), 4)]
+                bctr = words.index(BCTR)
+                _, succ = pn.ppc_analyse(words, 0x1000, memory(code, table).word)
+                self.assertEqual(succ[bctr], [bctr + 1, bctr + 3])  # the two cases, not every block
+
+    def test_unreached_code_does_not_erase_reached_values(self):
+        # lis r3,1; b +8; nop (nothing reaches it); addi r4,r3,32; blr
+        code = ppc(lis(3, 1), 0x48000008, 0x60000000, addi(4, 3, 32), 0x4E800020)
+        self.assertEqual(self.texts(code, {0x10020: "real"}), {"real"})
+
+    def test_landing_pad_keeps_what_calls_keep(self):
+        # lis r31,1; lis r3,2; bl $+4... ; blr; then an unreached pad using r31 and r3
+        code = ppc(lis(31, 1), lis(3, 2), BL_NEXT, 0x4E800020, addi(4, 31, 32), addi(5, 3, 32))
+        self.assertEqual(self.texts(code, {0x10020: "kept", 0x20020: "volatile"}), {"kept"})
+
+    def test_bctr_may_reach_a_case_that_is_also_reached_directly(self):
+        # lis r3,1; beq case; lis r3,2; bctr; case: addi r4,r3,32; blr
+        code = ppc(0x3C600001, 0x4182000C, 0x3C600002, 0x4E800420, 0x38830020, 0x4E800020)
+        self.assertEqual(self.texts(code, {0x10020: "one path", 0x20020: "other path"}), frozenset())
+
+    def test_bctr_does_not_undo_the_pic_base(self):
+        # bcl 20,31,$+4; mflr r3; ... bctr; case: addi r4,r3,0x10
+        code = ppc(0x429F0005, MFLR3, 0x41820008, 0x4E800420, addi(4, 3, 0x10), 0x4E800020)
+        self.assertEqual(self.texts(code, {0x1004 + 0x10: "pic"}), {"pic"})
+
+    def test_mr_keeps_its_source(self):
+        # lis r31,1; loop: addi r4,r31,32; mr r3,r31; b loop
+        mr = (31 << 26) | (31 << 21) | (3 << 16) | (31 << 11) | (444 << 1)
+        code = ppc(lis(31, 1), addi(4, 31, 32), mr, 0x4BFFFFF8)
+        self.assertEqual(self.texts(code, {0x10020: "real"}), {"real"})
+
+    def test_conditional_tail_call_is_a_callee(self):
+        code = ppc(0x41821000, 0x4E800020)  # beq 0x2000; blr
+        self.assertEqual(self.scan(code, {0x1000: 0x1008, 0x2000: 0x2004})[0], [0x2000])
+
+    def test_empty_body(self):
+        self.assertEqual(self.scan(b"", {0x1000: 0x1000}), ([], frozenset()))
 
     def test_lswi_forgets_every_register_it_loads(self):
         lswi = (31 << 26) | (4 << 21) | (1 << 16) | (8 << 11) | (597 << 1)  # r4, r5
