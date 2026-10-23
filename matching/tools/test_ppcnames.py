@@ -375,6 +375,18 @@ class PPCScanner(unittest.TestCase):
             with self.subTest(label):
                 self.assertIsNone(self.recovered(ppc(first, *words[1:]), table, bctr))
 
+    def test_a_branch_to_the_next_instruction_is_no_guard(self):
+        code, table, bctr, _ = self.switch(False, count=1)
+        words = [struct.unpack_from(">I", code, i)[0] for i in range(0, len(code), 4)]
+        self.assertIsNone(self.recovered(ppc(*words[:2], 0x40810004, *words[3:]), table, bctr))  # ble $+4
+
+    def test_the_chain_stops_at_the_function_entry(self):
+        # the compare is reached only by a back-edge; the first call runs without it
+        words = [lis(9, 1), addi(9, 9, -0x8000), slwi(0, 3, 2), lwzx(0, 9, 0), MTCTR0, BCTR, BLR,
+                 cmplwi(3, 0), 0x41810008, 0x4BFFFFDC, BLR]
+        table = struct.pack(">II", 0x1018, 0x1028)
+        self.assertIsNone(self.recovered(ppc(*words), table, 5))
+
     def test_a_bound_no_branch_enforces_is_not_proven(self):
         code, table, bctr, _ = self.switch(False, count=1)
         words = [struct.unpack_from(">I", code, i)[0] for i in range(0, len(code), 4)]

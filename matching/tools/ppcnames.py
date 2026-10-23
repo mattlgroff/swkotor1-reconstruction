@@ -811,13 +811,14 @@ def ppc_chain(flow, j, limit=48):
     """The instructions every path to j runs through, in order, ending at j:
     walking back while an instruction has a single predecessor (through
     fallthrough, an unconditional b, or one edge of a conditional branch),
-    so whatever reaches j has run all of them."""
+    so whatever reaches j has run all of them. It stops at the function's
+    first instruction, which the caller also enters."""
     preds = defaultdict(set)
     for i, out in enumerate(flow):
         for s in out:
             preds[s].add(i)
     chain, i = [j], j
-    while len(preds[i]) == 1 and len(chain) < limit:
+    while i != 0 and len(preds[i]) == 1 and len(chain) < limit:
         i = next(iter(preds[i]))
         if i in chain:
             break
@@ -890,6 +891,8 @@ def ppc_jump_table(words, fn, before, j, read, flow=None):
         op, bo, bi = w >> 26, (w >> 21) & 31, (w >> 16) & 31
         if op in (16, 19) and bi == 4 * field + 1 and not w & 1 and (op == 16 or (w >> 1) & 0x3FF == 16):
             target = (ppc_branch_target(w, fn + 4 * chain[g]) - fn) // 4 if op == 16 else None
+            if target == chain[g] + 1:
+                return None  # both outcomes go on to the same instruction: no bound
             taken = chain[g + 1] == target  # the path goes on through the branch
             above = bo & 0x1C == 0x0C  # branch when above (bgt, bgtlr) or when not (ble)
             if bo & 0x1C not in (0x0C, 0x04) or taken == above:
