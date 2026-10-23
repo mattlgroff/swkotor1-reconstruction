@@ -40,7 +40,9 @@ checkout, since the names they hold come from the Mac binaries:
 
 Writes DIR/pairs.csv (every Windows game function, paired or not),
 DIR/link_order.csv (with a debug map), DIR/mac_unpaired.csv (Mac functions
-with no Windows partner, by category) and prints a summary.
+with no Windows partner, by category) and prints a summary. --repo also
+refreshes matching/mac_names.csv and matching/link_order.csv, the copies
+this repository keeps; run it with both builds.
 """
 import argparse
 import csv
@@ -640,6 +642,27 @@ def link_order(sources):
     return order
 
 
+def write_link_order(path, order):
+    with open(path, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["order", "first", "last", "object", "functions"])
+        for i, (first, last, obj, n) in enumerate(order, 1):
+            writer.writerow([i, f"0x{first:08X}", f"0x{last:08X}", obj, n])
+
+
+def write_mac_names(path, game, combined, sources, inferred):
+    """The repository's copy: each game function with a Mac name or a source file."""
+    with open(path, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["address", "mac_name", "method", "builds", "conflict", "source", "source_how"])
+        for x in sorted(game):
+            name, method, agree, conflict = combined.get(x, ("", "", "", ""))
+            source = sources.get(x) or inferred.get(x, "")
+            if agree or source:
+                how = "paired" if x in sources else "inside run" if x in inferred else ""
+                writer.writerow([f"0x{x:08X}", name, method, agree, conflict, source, how])
+
+
 def category(demangled):
     if re.search(r"_Mac\b|Aspyr|^agl|^DSp|Miles|Carbon|Mac[A-Z]", demangled):
         return "mac platform layer"
@@ -662,6 +685,8 @@ def main():
     parser.add_argument("--holdout", type=float, default=0.0,
                         help="share of name pairs to hide to measure the other signals")
     parser.add_argument("--seed", type=int, default=1)
+    parser.add_argument("--repo", action="store_true",
+                        help="also write matching/mac_names.csv and matching/link_order.csv")
     args = parser.parse_args()
     if not args.exe or not args.ppc or not args.cxxfilt:
         parser.error("--exe, --ppc and a c++filt (--cxxfilt) are required")
@@ -709,12 +734,11 @@ def main():
                              status.get(x, "todo"), where[0].relative_to(ROOT).as_posix() if where else "",
                              w.names.get(x, (None, None, None, ""))[3], name, method, agree, conflict,
                              source, how, macs])
-    if order:
-        with open(out / "link_order.csv", "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["order", "first", "last", "object", "functions"])
-            for i, (first, last, obj, n) in enumerate(order, 1):
-                writer.writerow([i, f"0x{first:08X}", f"0x{last:08X}", obj, n])
+    for where in [out] + ([MATCHING] if args.repo else []):
+        if order:
+            write_link_order(where / "link_order.csv", order)
+    if args.repo:
+        write_mac_names(MATCHING / "mac_names.csv", w.game, combined, sources, inferred)
     unpaired = Counter()
     with open(out / "mac_unpaired.csv", "w", newline="") as f:
         writer = csv.writer(f)

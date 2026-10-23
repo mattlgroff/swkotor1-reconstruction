@@ -150,17 +150,18 @@ GCC emitted in a different file than MSVC did.
 
 ## Using the names
 
-The paired names, file names and link order come from Aspyr's binaries, so
-`ppcnames.py` writes them outside the checkout and they are not committed
-here. Use them as leads:
+`matching/mac_names.csv` and `matching/link_order.csv` hold the results;
+`todo.py` reads the first by default:
 
-```bash
-python matching/tools/ppcnames.py --exe swkotor.exe --ppc "<2004 app>/Contents/MacOS/Knights of the Old Republic" "<2009 app>/Contents/MacOS/XKOTOR" --out ../ppcnames-01
-python matching/tools/todo.py --names ../ppcnames-01/pairs.csv
+```
+0x004A23B0  16 B  todo  src/units/1470/...-scene3d.cpp  AurVertexProgramMakeCurrent() [name, 2/2] (aurvertexprog.o)
 ```
 
-`todo.py` then shows, for example,
-`CExoTimersInternal::GetLowResolutionTimer() [name, 2/2] (exotimersinternal.o)`.
 Prefer names both builds agree on (`2/2`), and confirm any name against the
 code before annotating. Once a function matches, its name is in this
-project's own records like any other.
+project's own records like any other. To refresh both files from your own
+copies of the Mac executables:
+
+```bash
+python matching/tools/ppcnames.py --exe swkotor.exe --ppc "<2004 app>/Contents/MacOS/Knights of the Old Republic" "<2009 app>/Contents/MacOS/XKOTOR" --out ../ppcnames-01 --repo
+```

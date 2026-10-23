@@ -204,16 +204,18 @@ Mac builds, each is paired separately; a function they name differently is
 left unnamed. Names both builds agree on (`2/2`) were about 99% correct
 under `--holdout`; single-build names 87–96%. Treat a paired name as a
 strong lead, not proof: confirm it against the code before annotating.
-`todo.py --names DIR/pairs.csv` shows the name and source file next to
-each unclaimed function. [research/mac-ppc-names.md](research/mac-ppc-names.md)
+`todo.py` shows the name and source file next to each unclaimed function. [research/mac-ppc-names.md](research/mac-ppc-names.md)
 has the method, results and what the pairing found about this repository.
 
-The output comes from the Mac binaries, so it goes to a directory outside
-the checkout. `pairs.csv` lists every game function with its status here,
+`matching/mac_names.csv` holds, for each game function, the Mac name, the
+signal, how many builds agree and the original source file;
+`matching/link_order.csv` holds the runs of one source file's functions in
+address order: the inferred original link order. `--repo` refreshes both
+(run it with both builds after `status.csv` or `symbols.csv` change).
+`--out` gets the full working set: `pairs.csv` lists every game function with its status here,
 its playable `src/` file, the repo's name, the Mac name, the signal, how
-many builds agree and the original source file. With the 2009 build,
-`link_order.csv` lists the runs of one source file's functions in address
-order: the inferred original link order. `mac_unpaired.csv` lists Mac
+many builds agree, the original source file and the Mac addresses, and
+`mac_unpaired.csv` lists Mac
 functions without a Windows partner. The starts come from `functions.csv`
 plus the addresses `status.csv` and `symbols.csv` name and the exe's
 direct call targets; the summary counts the starts `functions.csv` lacks.

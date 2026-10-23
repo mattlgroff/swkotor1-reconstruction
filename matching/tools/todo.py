@@ -9,7 +9,7 @@ Compiler-generated EH funclets and stock LIBCMT functions are never listed.
     python matching/tools/todo.py --near               NONMATCH attempts, closest first
     python matching/tools/todo.py --range 0x5E0000 0x620000 -n 50
     python matching/tools/todo.py --address 0x005B2EF0 print the playable definition
-    python matching/tools/todo.py --names DIR/pairs.csv  add the Mac name and source file, if known
+    python matching/tools/todo.py --names none       hide the Mac names and source files
 
 Columns: address, size in bytes, status (todo or NONMATCH with diff count),
 and the src/ file that defines kotor_<cc>_<address>, if any. That file is
@@ -17,8 +17,9 @@ behaviour-equivalent C++, play-tested, with original instruction addresses
 in its comments: read it for semantics and offsets, then write 2002-style
 classes. Its raw-offset style never compiles to the original bytes.
 
---names (or KOTOR_PPC_NAMES) reads the pairs.csv that ppcnames.py wrote and
-shows each function's name in Aspyr's Mac builds, with the signal that
+Each function is shown with its name in Aspyr's Mac builds, from
+matching/mac_names.csv (or --names / KOTOR_PPC_NAMES: another file
+ppcnames.py wrote, or "none"), with the signal that
 paired it and how many builds agree (2/2 is the most reliable), then its
 original source file. A function with no name may still have a source file
 from its neighbours. Confirm a name against the code before using it.
@@ -66,7 +67,7 @@ def body(path: Path, line: int) -> str:
 
 def mac_names(path: str | None) -> dict[int, str]:
     """address -> "name [signal, builds] (source file)" from a ppcnames.py pairs.csv."""
-    if not path:
+    if not path or path == "none" or not Path(path).exists():
         return {}
     found = {}
     with open(path, encoding="utf-8") as source:
@@ -88,8 +89,9 @@ def main() -> None:
     parser.add_argument("--min-size", type=int, default=16,
                         help="skip functions smaller than this many bytes (default 16)")
     parser.add_argument("--address", help="print the playable definition of one function")
-    parser.add_argument("--names", default=os.environ.get("KOTOR_PPC_NAMES"),
-                        help="pairs.csv from ppcnames.py, to show Mac PowerPC names")
+    parser.add_argument("--names", default=os.environ.get("KOTOR_PPC_NAMES",
+                                                          str(ROOT / "matching" / "mac_names.csv")),
+                        help='Mac names from ppcnames.py (default matching/mac_names.csv; "none" to hide)')
     args = parser.parse_args()
     names = mac_names(args.names)
 
