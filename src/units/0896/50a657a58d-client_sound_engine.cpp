@@ -41,7 +41,7 @@ volatile float listener_blend_007a22a0 = 0.75f;   // .data 007A22A0 = 3F400000h
 namespace {
 constexpr float k_zero_0073d700 = 0.0f, k_one_0073d764 = 1.0f, k_minus_one_00740cbc = -1.0f;
 using VecSlot = Vec* (__thiscall*)(void*, Vec*);
-using QuatSlot = Quat* (__thiscall*)(void*, Vec*);
+using QuatSlot = Quat* (__thiscall*)(void*, Quat*);   // 0045C470 copies 16 bytes (cam+88h..97h) into the out buffer
 using ObjectSlot = void* (__thiscall*)(void*, U32);
 using FloatSlot = double (__thiscall*)(void*);     // ST0 result kept at full width (fadd at 005F5566 consumes ST0)
 template <class F> F slot(void* object, U32 offset) { return reinterpret_cast<F>(w(pw(object, 0), offset)); } // r4_lowers vcall precedent
@@ -97,17 +97,18 @@ extern "C" void __fastcall frame_UpdateSound_005f5370(menu_continuation::Client*
             creature = at(found);
         }
         if (camera) {                                                   // 005F53BB..005F53BD
-            Vec scratch;                                                // [esp+30h]
+            union { Vec v; Quat q; } scratch;                           // [esp+30h..3Fh], 16 bytes (next local at [esp+40h]);
+                                                                        // camera slot +24h writes a 16-byte quaternion here
             void* minigame = kotor_fastcall_00641980(module, nullptr);  // 005F53C3..005F53C6
             void* follower = minigame ? pw(minigame, 0x24) : nullptr;   // 005F53CB..005F53D4
             bool proceed = true;
-            if (follower) kotor_fastcall_0066d5d0(follower, nullptr, &scratch); // 005F53D6..005F53DD (result overwritten below)
+            if (follower) kotor_fastcall_0066d5d0(follower, nullptr, &scratch.v); // 005F53D6..005F53DD (result overwritten below)
             else if (!creature) proceed = false;                        // 005F53E4..005F53E6
             if (proceed) {
                 Vec position{0.0f, 0.0f, 0.0f};                         // 005F53F5..005F5405 ([esp+0C..14])
                 Vec front{0.0f, 0.0f, 0.0f};                            // 005F540D..005F541D ([esp+18..20])
-                position = *slot<VecSlot>(camera, 0x20)(camera, &scratch); // 005F53EC..005F5435
-                const Quat orientation = *slot<QuatSlot>(camera, 0x24)(camera, &scratch); // 005F5438..005F5470 ([esp+40..4C])
+                position = *slot<VecSlot>(camera, 0x20)(camera, &scratch.v); // 005F53EC..005F5435
+                const Quat orientation = *slot<QuatSlot>(camera, 0x24)(camera, &scratch.q); // 005F5438..005F5470 ([esp+40..4C])
                 const float blend = listener_blend_007a22a0;            // 005F5448
                 if (static_cast<double>(blend) < k_zero_0073d700) {     // 005F5450..005F5474 (jp not taken: below, ordered)
                     listener_blend_007a22a0 = 0.0f;                     // 005F5476
@@ -116,7 +117,7 @@ extern "C" void __fastcall frame_UpdateSound_005f5370(menu_continuation::Client*
                 }
                 Vec offset;                                             // [esp+24..2C]
                 if (void* stick = slot<ObjectSlot>(camera, 0x80)(camera, 0x106a)) { // 005F549F..005F54B0
-                    const Vec head = *kotor_fastcall_005f5180(stick, nullptr, &scratch); // 005F54B2..005F54E2
+                    const Vec head = *kotor_fastcall_005f5180(stick, nullptr, &scratch.v); // 005F54B2..005F54E2
                     const double dx = static_cast<double>(head.x) - position.x;  // 005F54C7..005F54CB
                     const double dy = static_cast<double>(head.y) - position.y;  // 005F54D6..005F54DA
                     const float dz = static_cast<float>(static_cast<double>(head.z) - position.z); // 005F54E2..005F54F3 fstp dword
@@ -141,17 +142,17 @@ extern "C" void __fastcall frame_UpdateSound_005f5370(menu_continuation::Client*
                     if (w(at(frame_R4_005ed690(app, nullptr)), 0xb4) != 0 &&                 // 005F55AE..005F55C3
                         w(at(frame_R4_005ed690(pw(menu_continuation::app_manager_007a39fc, 4), nullptr)), 0xe4) != 0) { // 005F55C5..005F55DB
                         const float distance = f(at(frame_R4_005ed690(pw(menu_continuation::app_manager_007a39fc, 4), nullptr)), 0xf4); // 005F55DD..005F55F6
-                        const Vec* forward = quaternion_zdir_0043e250(&orientation, nullptr, &scratch); // 005F55F9..005F55FE
+                        const Vec* forward = quaternion_zdir_0043e250(&orientation, nullptr, &scratch.v); // 005F55F9..005F55FE
                         const Vec* scaled = vector_component_mult_00423bf0(&offset, forward, distance); // 005F5603..005F560E
                         vector_subtract_assign_004a9770(&position, nullptr, scaled); // 005F5611..005F5616
                     }
                 }
                 kotor_fastcall_005d5df0(kotor_cell_sound_007a39ec, nullptr, &position); // 005F561B..005F5626
-                const Vec dir = *quaternion_zdir_0043e250(&orientation, nullptr, &scratch); // 005F562B..005F5650
+                const Vec dir = *quaternion_zdir_0043e250(&orientation, nullptr, &scratch.v); // 005F562B..005F5650
                 front.x = static_cast<float>(static_cast<double>(dir.x) * k_minus_one_00740cbc); // 005F563F..005F5653
                 front.y = static_cast<float>(static_cast<double>(dir.y) * k_minus_one_00740cbc); // 005F565B..005F566E
                 front.z = static_cast<float>(static_cast<double>(dir.z) * k_minus_one_00740cbc); // 005F5672..005F567C
-                Vec* up = quaternion_ydir_0044f420(&orientation, nullptr, &scratch); // 005F565F..005F5680
+                Vec* up = quaternion_ydir_0044f420(&orientation, nullptr, &scratch.v); // 005F565F..005F5680
                 kotor_fastcall_005d5de0(kotor_cell_sound_007a39ec, nullptr, &front, up); // 005F5685..005F5691
             }
         }
