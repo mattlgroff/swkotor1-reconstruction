@@ -51,8 +51,8 @@ PLAYABLE = [
     ("Builds", "done"),
     ("Endar Spire", "done"),
     ("Taris", "open"),
-    ("Minigames", "todo"),
-    ("Rest", "todo"),
+    ("Minigames", "open"),
+    ("Full game", "open"),
 ]
 
 BG, BORDER, PANEL = "#090909", "#343434", "#111214"
@@ -271,6 +271,8 @@ def render(functions, units: int, complete: bool, old_status: dict[int, str] | N
     text(add, right + 16, y + 30, f"+{library:,} identical to stock LIBCMT.LIB (no source needed) · "
          f"{near:,} attempts", 10.5, DIM)
 
+    text(add, left + 16, top + h - 39,
+         "Play reported, as far as we know; public retest pending. See STATUS.md.", 10, DIM)
     steps(add, left + 16, top + h - 20, w - 32, PLAYABLE, PLAY_COLOR)
     steps(add, right + 16, top + h - 20, w - 32, [
         ("Toolchain", "done"),

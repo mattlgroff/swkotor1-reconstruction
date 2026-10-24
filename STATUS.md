@@ -1,8 +1,23 @@
 # Project status
 
-Manual play has completed the Endar Spire and reached the apartment on Taris. Minigames and progression beyond the Endar Spire are untested; reaching the apartment does not establish compatibility throughout Taris or the rest of the game.
+The game is reported playable end to end **as far as we know**. This is a qualified report from manual play, not exhaustive full-game verification. Known math discrepancies remain under investigation. Function-matching statistics do not measure gameplay coverage.
 
-Current work focuses on the remaining minigames. These are unfinished work, not intentional omissions. Other remaining functions include unused Neverwinter multiplayer remnants, debug tools and cheats; their classifications and any intentional omissions still need confirmation.
+The private reconstruction checkpoints reported these results on 24 October 2026:
+
+- **Swoop, candidate c64:** three Taris races, including a win and story progression. Tatooine and Manaan races were not covered. Reloading saves created during this session was not tested.
+- **Ebon Hawk turret, c64:** boarding, the escape cutscene, turret combat, a win followed by the Leviathan cutscene and onward travel to Dantooine; a loss produced the expected game-over behavior. Random hyperspace turret encounters were not covered.
+- **Pazaak, c65:** Garouk deck purchase (96 to 46 credits), the lesson, side-deck and card controls, AI turns, set/match completion, Niklos wagered losses, a mid-match forfeit, cancellation at the wager popup without charge, reload, and a wagered win (46 to 51 credits). The report recorded no traps or crashes in these runs.
+- **Lip sync, c65:** the user confirmed Canderous's mouth animation after the launcher bound the LIPS resource alias.
+
+These results belong to the private candidates, not a fresh test of this public integration. The integrated public source rebuilt successfully on 24 October 2026 from public base `7be96d85d95a5296770f7445c82b83f62731ca79` with this patch, using the toolchain in [BUILDING.md](BUILDING.md) and four compiler jobs. All 1,921 units compiled and linked (exit 0). There were no linker warnings; one unused-function compiler warning came from an unchanged public source file and recipe.
+
+The resulting executable SHA-256 is `daec6bf0399d0986cbc55a82ef9bdceb65b53070b2cf61efef32afd6515f4a99`. Linked-image checks passed 12 minigame tables, 28 SWMG bindings and seven Pazaak tables with zero mismatches; removing the Pazaak provider made the link fail as expected. These checks do not establish gameplay behavior.
+
+This exact public binary was launched under a debugger from an isolated runtime copy on 24 October 2026. Process/window metadata and the loader report confirmed window creation and middleware loading. It was subsequently launched normally and handed over for manual testing. Automated menu, Pazaak, swoop, turret and lip-sync checks remain **UNRUN**; manual gameplay results have not been reported. No public minigame smoke-test pass or full playthrough is claimed.
+
+Known math defects include loss of x87 intermediate precision and double rounding in trigonometric helpers used by camera, animation, particle and other engine code, including turret orientation. Reviewed x87 angle-math tiers remain **unbuilt in any playable candidate**. They cover 68 audited transcendental sites (36 changed and 32 reported already exact), plus replacement of modern `std::acos` in particle motion and correction of its pi/2 constant. Their isolated comparison tests and reviews do not establish gameplay correctness. Those inline-assembly tiers are reference material for the requested plain-C++ math work and are not included in this runtime integration. The checkpoint records the C++ math lane as paused; the discrepancies remain open work.
+
+Other remaining functions include unused Neverwinter multiplayer remnants, debug tools and cheats; their classifications and any intentional omissions still need confirmation.
 
 The source builds with the Windows toolchain in [BUILDING.md](BUILDING.md). 
 

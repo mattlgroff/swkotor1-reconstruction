@@ -1,4 +1,4 @@
-#include "204dd0dafe410413_area_reference.hpp"
+#include "../../units/1530/ae2b8bbe38-area_reference.hpp"
 namespace kotor::server_mainloop {
 void area_reference_00506c30(Memory& m,AreaReferencePorts& p,Word self,Word ref,Word demand,Word scratch){
  Word own=self+0xc;
@@ -15,7 +15,11 @@ void area_reference_00506c30(Memory& m,AreaReferencePorts& p,Word self,Word ref,
  }
  Word resource=p.lookup_004074d0(m.read(0x7a39e8),ref,0x7dc);
  if(!resource){
-  Word allocated=p.allocate(0xa0);resource=allocated?p.construct_00504830(allocated):0;
+  Word allocated=p.allocate(0xa0);
+  if(allocated){
+   try{resource=p.construct_00504830(allocated);}
+   catch(...){p.free_006fa390(allocated);throw;}
+  }else resource=0;
   p.insert_00407680(m.read(0x7a39e8),ref,0x7dc,resource);
   if(!resource)return;
  }

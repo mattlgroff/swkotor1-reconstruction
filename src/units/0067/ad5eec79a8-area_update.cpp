@@ -12,6 +12,7 @@ std::uint32_t __fastcall StreamIsPlaying_005d5af0(void*, void*);                
 namespace sound_fade29 { void __fastcall Begin005d5b90(void* source, void*, std::uint32_t duration); }  // FadeAndStop
 namespace kotor_sound_internal { std::uint32_t __fastcall SoundGetMode005d6490(void* sound, void*); }  // CExoSound::GetSoundMode
 extern "C" {
+void __fastcall kotor_fastcall_006735d0(void*,void*,float delta) noexcept(false); // CSWMiniGame::Update, RET4
 void __fastcall object_ambient_0068db30(void*, void*, kotor_reconstruction::StartupString*); // PlayStinger, RET4
 void __fastcall kotor_fastcall_00606490(void*, void*, float); // complete day/night cycle, RET4
 void* __fastcall client_get_player_creature_005ed540(void* app, void*);              // CClientExoApp::GetPlayerCreature
@@ -265,9 +266,9 @@ extern "C" void __fastcall kotor_fastcall_006097f0(void* area, void*, float delt
     const float scene_delta = static_cast<float>(static_cast<double>(ticks) * menu_continuation::scale_007439bc); // 0060A0AB..0060A0BC
     vcall<void, float>(lp(area, 0x184), 0x1C, scene_delta);                                  // 0060A0B0..0060A0BF Scene vtable +1Ch
 
-    if (lw(area, 0x264) != 0)                                                                // 0060A0C2..0060A0CA
-        kotor_unreachable_trap(0x0060A0D6u, "CSWCArea::Update@0060A0D6 CSWMiniGame::Update (006735D0) not reconstructed");
-    (void)delta_arg;                                                                         // only the minigame arm reads it
+    void* mini = lp(area, 0x264);                                           // 0060A0C2 single load
+    if (mini != nullptr)                                                     // 0060A0C8..0060A0CA
+        kotor_fastcall_006735d0(mini, nullptr, delta_arg);                     // 0060A0CC..0060A0D6
 }
 
 // 006053C0 CSWCArea::SetLightningDone() (thiscall, RET 0).

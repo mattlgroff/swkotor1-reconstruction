@@ -47,6 +47,12 @@ extern "C" void __fastcall kotor_fastcall_006200e0(void* client, void*, int inpu
 extern "C" void __fastcall kotor_fastcall_006222f0(void* client, void*, U32 id, const void* position, U32 flag);  // HandleMouseOver, RET 0Ch (W5 picking)
 namespace kotor_input_cells_required { extern volatile int camera_restore_007a2288; }                          // [007A2288] (W1 b7)
 
+extern "C" double __fastcall kotor_fastcall_005df4d0(void*,void*,U32 event,U32 input_class) noexcept(false);
+extern "C" unsigned __fastcall kotor_fastcall_005f2df0(void*,void*) noexcept(false);
+extern "C" void __fastcall kotor_fastcall_00670fb0(void*,void*,void* axis,float delta) noexcept(false);
+extern "C" void __fastcall kotor_fastcall_00671020(void*,void*,float x,float y,float delta) noexcept(false);
+extern "C" void __fastcall kotor_fastcall_006710e0(void*,void*,float delta) noexcept(false);
+
 namespace {
 float f32(U32 bits) { float f; std::memcpy(&f, &bits, 4); return f; }
 template<class T> T at(const void* base, U32 off) { T v; std::memcpy(&v, static_cast<const unsigned char*>(base) + off, sizeof(T)); return v; }
@@ -54,6 +60,127 @@ template<class T> void put(void* base, U32 off, T v) { std::memcpy(static_cast<u
 ClientApp* app() { return static_cast<AppManager*>(kotor_menu_window_cells::manager_007a39fc)->client; }  // *(007A39FC)+4
 Input* input() { return static_cast<Input*>(kotor_menu_window_cells::input_007a39e4); }                   // *(007A39E4)
 OptionsView* options() { return reinterpret_cast<OptionsView*>(app()->GetClientOptions()); }             // 005ED700
+bool fl_less(double a,double b) { return a < b; }
+bool fl_c0_or_c3(double a,double b) { return !(a > b); }
+// input-a2 (INPUT-PRECISION-PLAN): the two minigame poll sequences keep the original x87 data flow. The polled sum and the
+// mouse quotient/product stay in the x87 register (no 64-bit spill, no SSE reciprocal) until the original FSTP32.
+// Ordinary MSVC inline-assembly helpers (not naked, normal prologue/nonvolatile handling, noexcept(false)). The input cell
+// [007A39E4] is reloaded before every poll, as the original does; PollInput 005DF4D0 is the selected typed double export
+// (fastcall: ECX = input, EDX unused, stack = event, class; RET 8; result in ST0). Constants are the original words
+// (-1.0f [00740CBC], 1.0f [0073D764], 20.0f [007A232C], which the original only ever reads).
+//
+// Axis pair, original 00623FAA..0062409D (Type2 x), 0062409D..00624190 (Type2 y), 006242FD..006243E8 (Type1):
+//   each test = poll(first) FSTP32 s; poll(second) FADD s; then
+//   T1: FCOMP -1; FNSTSW; TEST AH,5; JNP -> T3            (ordered sum < -1 goes to T3)
+//   T2: FLD 1; FCOMP ST(1); FNSTSW; FSTP ST(0); TEST AH,5; JP -> T3; result = 1.0
+//   T3: FCOMP -1; FNSTSW; TEST AH,5; JP -> T4; result = -1.0
+//   T4: FSTP32 result (the unclamped sum, rounded once)
+// Every test polls again (no caching), exactly 2..6 polls per axis as the original.
+__declspec(noinline) void axis_pair_00623faa(U32 first_event, U32 second_event, float* result) noexcept(false) {
+    void* volatile* const cell = &kotor_menu_window_cells::input_007a39e4;
+    const float minus_one = f32(ids::minus_one_00740cbc), one = f32(ids::one_0073d764);
+    float first;                                                        // original scratch [esp+18h]
+    __asm {
+        mov eax, cell
+        mov ecx, [eax]
+        push 1
+        push first_event
+        call kotor_fastcall_005df4d0
+        fstp dword ptr first
+        mov eax, cell
+        mov ecx, [eax]
+        push 1
+        push second_event
+        call kotor_fastcall_005df4d0
+        fadd dword ptr first
+        fcomp dword ptr minus_one
+        fnstsw ax
+        test ah, 5
+        jnp test3
+        mov eax, cell
+        mov ecx, [eax]
+        push 1
+        push first_event
+        call kotor_fastcall_005df4d0
+        fstp dword ptr first
+        mov eax, cell
+        mov ecx, [eax]
+        push 1
+        push second_event
+        call kotor_fastcall_005df4d0
+        fadd dword ptr first
+        fld dword ptr one
+        fcomp st(1)
+        fnstsw ax
+        fstp st(0)
+        test ah, 5
+        jp test3
+        mov eax, result
+        mov dword ptr [eax], 0x3F800000
+        jmp done
+    test3:
+        mov eax, cell
+        mov ecx, [eax]
+        push 1
+        push first_event
+        call kotor_fastcall_005df4d0
+        fstp dword ptr first
+        mov eax, cell
+        mov ecx, [eax]
+        push 1
+        push second_event
+        call kotor_fastcall_005df4d0
+        fadd dword ptr first
+        fcomp dword ptr minus_one
+        fnstsw ax
+        test ah, 5
+        jp test4
+        mov eax, result
+        mov dword ptr [eax], 0xBF800000
+        jmp done
+    test4:
+        mov eax, cell
+        mov ecx, [eax]
+        push 1
+        push first_event
+        call kotor_fastcall_005df4d0
+        fstp dword ptr first
+        mov eax, cell
+        mov ecx, [eax]
+        push 1
+        push second_event
+        call kotor_fastcall_005df4d0
+        fadd dword ptr first
+        mov eax, result
+        fstp dword ptr [eax]
+    done:
+    }
+}
+// Mouse, original 006241E2..00624218: poll(17h) FDIV 20 -> FSTP32 x; poll(18h); FLD -1; FDIV 20; FMULP ST(1) -> FSTP32 y.
+__declspec(noinline) void mouse_pair_006241e2(float* x, float* y) noexcept(false) {
+    void* volatile* const cell = &kotor_menu_window_cells::input_007a39e4;
+    const float minus_one = f32(ids::minus_one_00740cbc), divisor = f32(ids::mouse_divisor_007a232c);
+    __asm {
+        mov eax, cell
+        mov ecx, [eax]
+        push 1
+        push 0x17
+        call kotor_fastcall_005df4d0
+        fdiv dword ptr divisor
+        mov eax, x
+        fstp dword ptr [eax]
+        mov eax, cell
+        mov ecx, [eax]
+        push 1
+        push 0x18
+        call kotor_fastcall_005df4d0
+        fld dword ptr minus_one
+        fdiv dword ptr divisor
+        fmulp st(1), st
+        mov eax, y
+        fstp dword ptr [eax]
+    }
+}
 void* module_of(ClientInternal* self) { return self->get<void*>(0x18); }                                // 00644760 GetProperty0x18 (mov eax,[ecx+18h])
 U32 snapshot_seconds_div() {                                       // GetWorldTimer / GetSnapshotTime / __aulldiv(.,1000)
     void* timer = req::get_world_timer_005ed4f0(app(), nullptr);
@@ -122,7 +249,7 @@ int RawInput::GetJoystickBuffer(U32 joystick, DeviceBuffer* out) {
     kotor_unreachable_trap(0x005E30E0ul, "CExoRawInputInternal::GetJoystickBuffer@005E30E0 (joystick count is always 0)");
 }
 
-// ======== frame entry ABI adapter (consumer frame-gui/source/entry_providers.h:8) — no address credit ========
+// ======== frame entry ABI adapter (consumer frame-gui/source/entry_providers.h:8) â€” no address credit ========
 extern "C" void __fastcall frame_R4_006227e0(void* self, void*, float delta) {
     static_cast<ClientInternal*>(self)->ProcessInput(delta);
 }
@@ -307,15 +434,47 @@ void ClientInternal::ProcessInput(float delta) {
         if (!drive_module) return;                                         // 00623F44..46
         void* drive_area = at<void*>(drive_module, 0x48);                  // 00623F4C
         if (!drive_area) return;                                           // 00623F4F..51
-        if (!at<void*>(drive_area, 0x264)) return;                         // 00623F57..5F
-        kotor_unreachable_trap(0x00623F65ul, "CClientExoAppInternal::ProcessInput@00623F65 CSWMiniGame::Control 006710E0 (minigame present)");
+        void* mini = at<void*>(drive_area, 0x264);                       // 00623F57 single load
+        if (!mini) return;
+        kotor_fastcall_006710e0(mini, nullptr, delta);                     // 00623F65 -> 0062440C
+        return;
     }
     void* module = get<void*>(0x18);                                       // 00623F6B
     if (!module) return;
     void* area = at<void*>(module, 0x48);                                  // 00623F76
     if (!area) return;                                                     // 00623F7B -> 00624411
-    // T-PI-7: CSWCModule+48h (area) is 0 on the menu: ctor 0064400F; written only by CSWCModule::LoadModule
-    // 0063F6C3/0063F6F7/0063F8C3/0063F9B0 and ~CSWCModule 00641D27.
-    if (!at<void*>(area, 0x264)) return;                                   // 00623F81..89 -> 00624411 (no minigame)
-    kotor_unreachable_trap(0x00623F8Ful, "CClientExoAppInternal::ProcessInput@00623F8F mini-game input (minigame present)");
+    void* mini = at<void*>(area, 0x264);                                  // 00623F81 single load
+    if (!mini) return;
+    const int kind = at<int>(mini, 0x80);                                  // 00623F8F
+    const double minus_one = f32(ids::minus_one_00740cbc), one = f32(ids::one_0073d764);
+    if (kind == 2) {                                                       // 00623FA3
+        float x;                                                           // [esp+14h]
+        axis_pair_00623faa(0x11E, 0x11B, &x);                              // 00623FAA..0062409D
+        float y;                                                           // [esp+10h]
+        axis_pair_00623faa(0x11D, 0x11A, &y);                              // 0062409D..00624190
+        float y_axis = y;                                                  // 00624190..C1
+        if (app()->GetClientOptions() && (options()->flags08 & 8u)) y_axis = -y;  // 00624199..B9 (FCHS)
+        Vector3 axis{x, 0.0f, y_axis};                                     // [esp+4Ch] 006241C1..D5
+        kotor_fastcall_00670fb0(mini, nullptr, &axis, delta);            // 006241C9..DD
+        float mx, my;                                                      // [esp+14h], [esp+10h]
+        mouse_pair_006241e2(&mx, &my);                                     // 006241E2..00624218
+        if (!fl_c0_or_c3(minus_one, mx)) mx = -1.0f;                       // 0062421C..2B / 00624248
+        else if (fl_less(one, mx)) mx = 1.0f;                              // 0062422D..3E
+        if (!fl_c0_or_c3(minus_one, my)) my = -1.0f;                       // 00624250..5F / 0062427C
+        else if (fl_less(one, my)) my = 1.0f;                              // 00624261..72
+        if (app()->GetClientOptions() && (options()->flags08 & 8u)) my = -my;  // 0062428D..AE
+        kotor_fastcall_00671020(mini, nullptr, mx, my, delta);          // 006242B2..BF
+        if (!kotor_fastcall_005f2df0(this, nullptr)) {          // 006242C4..CD
+            Manager* m = get<Manager*>(0x274);                             // 006242D3
+            const int half_h = static_cast<int>(m->height) / 2;            // 006242D9..E6 (CDQ/SUB/SAR)
+            const int half_w = static_cast<int>(m->width) / 2;             // 006242E9..F0
+            reinterpret_cast<kotor_menu20::Input*>(input())->set_mouse_005df5d0(half_w, half_h);  // 006242DD..F3
+        }
+    } else if (kind == 1) {                                                // 00623F9D -> 006242FD
+        float v;                                                           // FSTP32 [esp+30h] at 006243E9
+        axis_pair_00623faa(0x11E, 0x11B, &v);                              // 006242FD..006243E8 (FLD 1 / FLD -1 / sum -> FSTP32)
+        Vector3 axis{v, 0.0f, 0.0f};                                       // [esp+30h] 006243E8..FC
+        kotor_fastcall_00670fb0(mini, nullptr, &axis, delta);            // 006243ED..404
+    }
+    kotor_fastcall_006710e0(mini, nullptr, delta);                           // 00624409..0C
 }                                                                          // 00624411..37 ~CExoString x2

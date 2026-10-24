@@ -1,3 +1,13 @@
+#include "../../minigames/47f8a19c96b1-claude_minigame_vm_a.hpp"
+#include "../../minigames/04eec24501dc-claude_minigame_vm_b.hpp"
+#include "../../minigames/a6c59fb9bb1b-claude_minigame_vm_c.hpp"
+#include "../../minigames/538b4ff5e119-claude_minigame_vm_d.hpp"
+#include "../../minigames/b1b3ba66e348-claude_minigame_vm_e.hpp"
+#include "../../minigames/61e916c4d432-claude_minigame_vm_f.hpp"
+#include "../../minigames/78deac106104-claude_minigame_vm_g.hpp"
+#include "../../minigames/65501125d829-claude_minigame_vm_position.hpp"
+#include "../../minigames/6d08ac356b32-claude_minigame_vm_h.hpp"
+#include "../../minigames/c76a5786c4ff-claude_minigame_vm_h2.hpp"
 extern "C" unsigned __fastcall kotor_fastcall_005cb350(void*,void*,unsigned,unsigned); // claude-build effects (VM-aurpost)
 extern "C" unsigned __fastcall kotor_fastcall_00543990(void*,void*,unsigned,unsigned); // claude-build effects (VM-upgrade)
 extern "C" unsigned __fastcall kotor_fastcall_00542760(void*,void*,unsigned,unsigned); // claude-build effects (VM-encounter)
@@ -39,6 +49,7 @@ extern "C" unsigned __fastcall kotor_fastcall_0053a000(void*,void*,unsigned,unsi
 extern "C" unsigned __fastcall kotor_fastcall_0053a0a0(void*,void*,unsigned,unsigned); // claude-build effects (VM-vmA)
 extern "C" unsigned __fastcall kotor_fastcall_0053a130(void*,void*,unsigned,unsigned); // claude-build effects (VM-vmA)
 extern "C" unsigned __fastcall kotor_fastcall_0053b1e0(void*,void*,unsigned,unsigned); // claude-build effects (VM-vmA)
+extern "C" unsigned __fastcall kotor_fastcall_00540fd0(void*,void*,unsigned,unsigned); // pazaak PZ-A a1 (ExecuteCommandPlayPazaak, routine 364)
 extern "C" unsigned __fastcall kotor_fastcall_0053b960(void*,void*,unsigned,unsigned); // claude-build effects (VM-vmA)
 extern "C" unsigned __fastcall kotor_fastcall_0053bd80(void*,void*,unsigned,unsigned); // claude-build effects (VM-vmA)
 extern "C" unsigned __fastcall kotor_fastcall_0053c1b0(void*,void*,unsigned,unsigned); // claude-build effects (VM-vmA)
@@ -478,7 +489,6 @@ __declspec(noreturn) void __fastcall vm_required_0053ffb0(void*,void*){recovered
 __declspec(noreturn) void __fastcall vm_required_005400c0(void*,void*){recovered_vm_action_unimplemented(0x005400c0);}
 __declspec(noreturn) void __fastcall vm_required_00540170(void*,void*){recovered_vm_action_unimplemented(0x00540170);}
 __declspec(noreturn) void __fastcall vm_required_00540ed0(void*,void*){recovered_vm_action_unimplemented(0x00540ed0);}
-__declspec(noreturn) void __fastcall vm_required_00540fd0(void*,void*){recovered_vm_action_unimplemented(0x00540fd0);}
 __declspec(noreturn) void __fastcall vm_required_00541120(void*,void*){recovered_vm_action_unimplemented(0x00541120);}
 __declspec(noreturn) void __fastcall vm_required_005417c0(void*,void*){recovered_vm_action_unimplemented(0x005417c0);}
 __declspec(noreturn) void __fastcall vm_required_00541b40(void*,void*){recovered_vm_action_unimplemented(0x00541b40);}
@@ -531,47 +541,6 @@ __declspec(noreturn) void __fastcall vm_required_00549b50(void*,void*){recovered
 __declspec(noreturn) void __fastcall vm_required_0054a260(void*,void*){recovered_vm_action_unimplemented(0x0054a260);}
 __declspec(noreturn) void __fastcall vm_required_0054b090(void*,void*){recovered_vm_action_unimplemented(0x0054b090);}
 __declspec(noreturn) void __fastcall vm_required_0054b550(void*,void*){recovered_vm_action_unimplemented(0x0054b550);}
-__declspec(noreturn) void __fastcall vm_required_005cb480(void*,void*){recovered_vm_action_unimplemented(0x005cb480);}
-__declspec(noreturn) void __fastcall vm_required_005cb560(void*,void*){recovered_vm_action_unimplemented(0x005cb560);}
-__declspec(noreturn) void __fastcall vm_required_005cb650(void*,void*){recovered_vm_action_unimplemented(0x005cb650);}
-__declspec(noreturn) void __fastcall vm_required_005cb730(void*,void*){recovered_vm_action_unimplemented(0x005cb730);}
-__declspec(noreturn) void __fastcall vm_required_005cb870(void*,void*){recovered_vm_action_unimplemented(0x005cb870);}
-__declspec(noreturn) void __fastcall vm_required_005cb930(void*,void*){recovered_vm_action_unimplemented(0x005cb930);}
-__declspec(noreturn) void __fastcall vm_required_005cb990(void*,void*){recovered_vm_action_unimplemented(0x005cb990);}
-__declspec(noreturn) void __fastcall vm_required_005cba20(void*,void*){recovered_vm_action_unimplemented(0x005cba20);}
-__declspec(noreturn) void __fastcall vm_required_005cbb00(void*,void*){recovered_vm_action_unimplemented(0x005cbb00);}
-__declspec(noreturn) void __fastcall vm_required_005cbb80(void*,void*){recovered_vm_action_unimplemented(0x005cbb80);}
-__declspec(noreturn) void __fastcall vm_required_005cbc80(void*,void*){recovered_vm_action_unimplemented(0x005cbc80);}
-__declspec(noreturn) void __fastcall vm_required_005cbd60(void*,void*){recovered_vm_action_unimplemented(0x005cbd60);}
-__declspec(noreturn) void __fastcall vm_required_005cbdb0(void*,void*){recovered_vm_action_unimplemented(0x005cbdb0);}
-__declspec(noreturn) void __fastcall vm_required_005cbe90(void*,void*){recovered_vm_action_unimplemented(0x005cbe90);}
-__declspec(noreturn) void __fastcall vm_required_005cbf00(void*,void*){recovered_vm_action_unimplemented(0x005cbf00);}
-__declspec(noreturn) void __fastcall vm_required_005cbf70(void*,void*){recovered_vm_action_unimplemented(0x005cbf70);}
-__declspec(noreturn) void __fastcall vm_required_005cbfb0(void*,void*){recovered_vm_action_unimplemented(0x005cbfb0);}
-__declspec(noreturn) void __fastcall vm_required_005cc000(void*,void*){recovered_vm_action_unimplemented(0x005cc000);}
-__declspec(noreturn) void __fastcall vm_required_005cc0a0(void*,void*){recovered_vm_action_unimplemented(0x005cc0a0);}
-__declspec(noreturn) void __fastcall vm_required_005cc190(void*,void*){recovered_vm_action_unimplemented(0x005cc190);}
-__declspec(noreturn) void __fastcall vm_required_005cc1e0(void*,void*){recovered_vm_action_unimplemented(0x005cc1e0);}
-__declspec(noreturn) void __fastcall vm_required_005cc280(void*,void*){recovered_vm_action_unimplemented(0x005cc280);}
-__declspec(noreturn) void __fastcall vm_required_005cc330(void*,void*){recovered_vm_action_unimplemented(0x005cc330);}
-__declspec(noreturn) void __fastcall vm_required_005cc3c0(void*,void*){recovered_vm_action_unimplemented(0x005cc3c0);}
-__declspec(noreturn) void __fastcall vm_required_005cc450(void*,void*){recovered_vm_action_unimplemented(0x005cc450);}
-__declspec(noreturn) void __fastcall vm_required_005cc580(void*,void*){recovered_vm_action_unimplemented(0x005cc580);}
-__declspec(noreturn) void __fastcall vm_required_005cc640(void*,void*){recovered_vm_action_unimplemented(0x005cc640);}
-__declspec(noreturn) void __fastcall vm_required_005cc700(void*,void*){recovered_vm_action_unimplemented(0x005cc700);}
-__declspec(noreturn) void __fastcall vm_required_005cc7f0(void*,void*){recovered_vm_action_unimplemented(0x005cc7f0);}
-__declspec(noreturn) void __fastcall vm_required_005cc920(void*,void*){recovered_vm_action_unimplemented(0x005cc920);}
-__declspec(noreturn) void __fastcall vm_required_005cc9d0(void*,void*){recovered_vm_action_unimplemented(0x005cc9d0);}
-__declspec(noreturn) void __fastcall vm_required_005ccaa0(void*,void*){recovered_vm_action_unimplemented(0x005ccaa0);}
-__declspec(noreturn) void __fastcall vm_required_005ccbb0(void*,void*){recovered_vm_action_unimplemented(0x005ccbb0);}
-__declspec(noreturn) void __fastcall vm_required_005ccc60(void*,void*){recovered_vm_action_unimplemented(0x005ccc60);}
-__declspec(noreturn) void __fastcall vm_required_005ccd20(void*,void*){recovered_vm_action_unimplemented(0x005ccd20);}
-__declspec(noreturn) void __fastcall vm_required_005cce70(void*,void*){recovered_vm_action_unimplemented(0x005cce70);}
-__declspec(noreturn) void __fastcall vm_required_005ccf30(void*,void*){recovered_vm_action_unimplemented(0x005ccf30);}
-__declspec(noreturn) void __fastcall vm_required_005cd0a0(void*,void*){recovered_vm_action_unimplemented(0x005cd0a0);}
-__declspec(noreturn) void __fastcall vm_required_005cd160(void*,void*){recovered_vm_action_unimplemented(0x005cd160);}
-__declspec(noreturn) void __fastcall vm_required_005cd230(void*,void*){recovered_vm_action_unimplemented(0x005cd230);}
-__declspec(noreturn) void __fastcall vm_required_005cd280(void*,void*){recovered_vm_action_unimplemented(0x005cd280);}
 const void* vm_resolve(unsigned target){switch(target){
 case 0x00409eb0:return reinterpret_cast<const void*>(&gui_load_slot_zero8_00409eb0);
 case 0x0052c6a0:return reinterpret_cast<const void*>(&kotor_fastcall_0052c6a0);
@@ -911,7 +880,7 @@ case 0x005404f0:return reinterpret_cast<const void*>(&kotor_fastcall_005404f0);
 case 0x00540550:return reinterpret_cast<const void*>(&recovered_vm_play_animation_00540550);
 case 0x00540dd0:return reinterpret_cast<const void*>(&kotor_fastcall_00540dd0);
 case 0x00540ed0:return reinterpret_cast<const void*>(&vm_required_00540ed0);
-case 0x00540fd0:return reinterpret_cast<const void*>(&vm_required_00540fd0);
+case 0x00540fd0:return reinterpret_cast<const void*>(&kotor_fastcall_00540fd0);
 case 0x00541120:return reinterpret_cast<const void*>(&vm_required_00541120);
 case 0x00541170:return reinterpret_cast<const void*>(&kotor_fastcall_00541170);
 case 0x00541280:return reinterpret_cast<const void*>(&kotor_fastcall_00541280);
@@ -1098,45 +1067,45 @@ case 0x0054b550:return reinterpret_cast<const void*>(&vm_required_0054b550);
 case 0x0054c0e0:return reinterpret_cast<const void*>(&kotor_fastcall_0054c0e0);
 case 0x0054c830:return reinterpret_cast<const void*>(&kotor_fastcall_0054c830);
 case 0x005cb350:return reinterpret_cast<const void*>(&kotor_fastcall_005cb350);
-case 0x005cb480:return reinterpret_cast<const void*>(&vm_required_005cb480);
-case 0x005cb560:return reinterpret_cast<const void*>(&vm_required_005cb560);
-case 0x005cb650:return reinterpret_cast<const void*>(&vm_required_005cb650);
-case 0x005cb730:return reinterpret_cast<const void*>(&vm_required_005cb730);
-case 0x005cb870:return reinterpret_cast<const void*>(&vm_required_005cb870);
-case 0x005cb930:return reinterpret_cast<const void*>(&vm_required_005cb930);
-case 0x005cb990:return reinterpret_cast<const void*>(&vm_required_005cb990);
-case 0x005cba20:return reinterpret_cast<const void*>(&vm_required_005cba20);
-case 0x005cbb00:return reinterpret_cast<const void*>(&vm_required_005cbb00);
-case 0x005cbb80:return reinterpret_cast<const void*>(&vm_required_005cbb80);
-case 0x005cbc80:return reinterpret_cast<const void*>(&vm_required_005cbc80);
-case 0x005cbd60:return reinterpret_cast<const void*>(&vm_required_005cbd60);
-case 0x005cbdb0:return reinterpret_cast<const void*>(&vm_required_005cbdb0);
-case 0x005cbe90:return reinterpret_cast<const void*>(&vm_required_005cbe90);
-case 0x005cbf00:return reinterpret_cast<const void*>(&vm_required_005cbf00);
-case 0x005cbf70:return reinterpret_cast<const void*>(&vm_required_005cbf70);
-case 0x005cbfb0:return reinterpret_cast<const void*>(&vm_required_005cbfb0);
-case 0x005cc000:return reinterpret_cast<const void*>(&vm_required_005cc000);
-case 0x005cc0a0:return reinterpret_cast<const void*>(&vm_required_005cc0a0);
-case 0x005cc190:return reinterpret_cast<const void*>(&vm_required_005cc190);
-case 0x005cc1e0:return reinterpret_cast<const void*>(&vm_required_005cc1e0);
-case 0x005cc280:return reinterpret_cast<const void*>(&vm_required_005cc280);
-case 0x005cc330:return reinterpret_cast<const void*>(&vm_required_005cc330);
-case 0x005cc3c0:return reinterpret_cast<const void*>(&vm_required_005cc3c0);
-case 0x005cc450:return reinterpret_cast<const void*>(&vm_required_005cc450);
-case 0x005cc580:return reinterpret_cast<const void*>(&vm_required_005cc580);
-case 0x005cc640:return reinterpret_cast<const void*>(&vm_required_005cc640);
-case 0x005cc700:return reinterpret_cast<const void*>(&vm_required_005cc700);
-case 0x005cc7f0:return reinterpret_cast<const void*>(&vm_required_005cc7f0);
-case 0x005cc920:return reinterpret_cast<const void*>(&vm_required_005cc920);
-case 0x005cc9d0:return reinterpret_cast<const void*>(&vm_required_005cc9d0);
-case 0x005ccaa0:return reinterpret_cast<const void*>(&vm_required_005ccaa0);
-case 0x005ccbb0:return reinterpret_cast<const void*>(&vm_required_005ccbb0);
-case 0x005ccc60:return reinterpret_cast<const void*>(&vm_required_005ccc60);
-case 0x005ccd20:return reinterpret_cast<const void*>(&vm_required_005ccd20);
-case 0x005cce70:return reinterpret_cast<const void*>(&vm_required_005cce70);
-case 0x005ccf30:return reinterpret_cast<const void*>(&vm_required_005ccf30);
-case 0x005cd0a0:return reinterpret_cast<const void*>(&vm_required_005cd0a0);
-case 0x005cd160:return reinterpret_cast<const void*>(&vm_required_005cd160);
-case 0x005cd230:return reinterpret_cast<const void*>(&vm_required_005cd230);
-case 0x005cd280:return reinterpret_cast<const void*>(&vm_required_005cd280);
+case 0x005cb480:return reinterpret_cast<const void*>(&kotor_fastcall_005cb480);
+case 0x005cb560:return reinterpret_cast<const void*>(&kotor_fastcall_005cb560);
+case 0x005cb650:return reinterpret_cast<const void*>(&kotor_fastcall_005cb650);
+case 0x005cb730:return reinterpret_cast<const void*>(&kotor_fastcall_005cb730);
+case 0x005cb870:return reinterpret_cast<const void*>(&kotor_fastcall_005cb870);
+case 0x005cb930:return reinterpret_cast<const void*>(&kotor_fastcall_005cb930);
+case 0x005cb990:return reinterpret_cast<const void*>(&kotor_fastcall_005cb990);
+case 0x005cba20:return reinterpret_cast<const void*>(&kotor_fastcall_005cba20);
+case 0x005cbb00:return reinterpret_cast<const void*>(&kotor_fastcall_005cbb00);
+case 0x005cbb80:return reinterpret_cast<const void*>(&kotor_fastcall_005cbb80);
+case 0x005cbc80:return reinterpret_cast<const void*>(&kotor_fastcall_005cbc80);
+case 0x005cbd60:return reinterpret_cast<const void*>(&kotor_fastcall_005cbd60);
+case 0x005cbdb0:return reinterpret_cast<const void*>(&kotor_fastcall_005cbdb0);
+case 0x005cbe90:return reinterpret_cast<const void*>(&kotor_fastcall_005cbe90);
+case 0x005cbf00:return reinterpret_cast<const void*>(&kotor_fastcall_005cbf00);
+case 0x005cbf70:return reinterpret_cast<const void*>(&kotor_fastcall_005cbf70);
+case 0x005cbfb0:return reinterpret_cast<const void*>(&kotor_fastcall_005cbfb0);
+case 0x005cc000:return reinterpret_cast<const void*>(&kotor_fastcall_005cc000);
+case 0x005cc0a0:return reinterpret_cast<const void*>(&kotor_fastcall_005cc0a0);
+case 0x005cc190:return reinterpret_cast<const void*>(&kotor_fastcall_005cc190);
+case 0x005cc1e0:return reinterpret_cast<const void*>(&kotor_fastcall_005cc1e0);
+case 0x005cc280:return reinterpret_cast<const void*>(&kotor_fastcall_005cc280);
+case 0x005cc330:return reinterpret_cast<const void*>(&kotor_fastcall_005cc330);
+case 0x005cc3c0:return reinterpret_cast<const void*>(&kotor_fastcall_005cc3c0);
+case 0x005cc450:return reinterpret_cast<const void*>(&kotor_fastcall_005cc450);
+case 0x005cc580:return reinterpret_cast<const void*>(&kotor_fastcall_005cc580);
+case 0x005cc640:return reinterpret_cast<const void*>(&kotor_fastcall_005cc640);
+case 0x005cc700:return reinterpret_cast<const void*>(&kotor_fastcall_005cc700);
+case 0x005cc7f0:return reinterpret_cast<const void*>(&kotor_fastcall_005cc7f0);
+case 0x005cc920:return reinterpret_cast<const void*>(&kotor_fastcall_005cc920);
+case 0x005cc9d0:return reinterpret_cast<const void*>(&kotor_fastcall_005cc9d0);
+case 0x005ccaa0:return reinterpret_cast<const void*>(&kotor_fastcall_005ccaa0);
+case 0x005ccbb0:return reinterpret_cast<const void*>(&kotor_fastcall_005ccbb0);
+case 0x005ccc60:return reinterpret_cast<const void*>(&kotor_fastcall_005ccc60);
+case 0x005ccd20:return reinterpret_cast<const void*>(&kotor_fastcall_005ccd20);
+case 0x005cce70:return reinterpret_cast<const void*>(&kotor_fastcall_005cce70);
+case 0x005ccf30:return reinterpret_cast<const void*>(&kotor_fastcall_005ccf30);
+case 0x005cd0a0:return reinterpret_cast<const void*>(&kotor_fastcall_005cd0a0);
+case 0x005cd160:return reinterpret_cast<const void*>(&kotor_fastcall_005cd160);
+case 0x005cd230:return reinterpret_cast<const void*>(&kotor_fastcall_005cd230);
+case 0x005cd280:return reinterpret_cast<const void*>(&kotor_fastcall_005cd280);
 default:required(target);}}

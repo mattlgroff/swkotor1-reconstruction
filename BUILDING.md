@@ -91,13 +91,14 @@ CURRENTGAME=.\currentgame
 GAMEINPROGRESS=.\gameinprogress
 TEXTUREPACKS=.\texturepacks
 STREAMWAVES=.\StreamWaves
+LIPS=.\lips
 
 [Graphics Options]
 AllowWindowedMode=1
 FullScreen=0
 ```
 
-For fullscreen instead, set `FullScreen=1` in the same `[Graphics Options]` section. Keep these changes in the runtime copy, not the original installation.
+The `LIPS` alias points to the copied lip-animation resources; missing resources can leave mouths still while voiced dialogue continues. For fullscreen instead, set `FullScreen=1` in the same `[Graphics Options]` section. Keep these changes in the runtime copy, not the original installation.
 
 From the source checkout, create the required empty runtime directories:
 

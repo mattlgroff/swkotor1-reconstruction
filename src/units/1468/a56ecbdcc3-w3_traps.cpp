@@ -171,11 +171,16 @@ void* __fastcall recovered_client_area_scalar_destructor_0060a2e0(void* self, vo
     return self;                                                                    // 0060A2F8
 }
 // 00604C90 is the unique real area provider under this same retained W3 symbol.
-// ---- mini-game areas (not Endar)
-void* __fastcall recovered_client_minigame_construct_00671c40(void*, void*, void*) { W3_TRAP(0x00671C40, "CSWMiniGame::CSWMiniGame"); }
-std::uint32_t __fastcall recovered_client_minigame_load_006723d0(void*, void*) { W3_TRAP(0x006723D0, "CSWMiniGame::Load"); }
-void __fastcall recovered_client_minigame_add_track_006720c0(void*, void*, void*, void*) { W3_TRAP(0x006720C0, "CSWMiniGame::AddTrack"); }
-void __fastcall recovered_client_minigame_add_obstacle_00672240(void*, void*, void*, void*) { W3_TRAP(0x00672240, "CSWMiniGame::AddObstacle"); }
+// ---- mini-game areas (not Endar). integration w3-a1 (mg_integration): the four former W3 stoppers are retired.
+// 1204-02 CSWCArea::LoadArea keeps its recorded W3 import names; each is bound BY NAME to the selected t3 export
+// (t3 e1 / e3load1 / d1 / e3builders3). /alternatename applies only while the W3 name has no definition, and this
+// file no longer defines one. RET checked against swkotor.exe: 00671C40 RET 4, 006723D0 RET 0, 006720C0 RET 8,
+// 00672240 RET 8. Call sites 00607789..8C (push area; ECX = new 0xF0 block), 0060872B..34 / 006087BB..C4
+// (push position; push &ref; ECX = [area+264h]) and 006087DA..E5 (ECX = [area+264h]; TEST EAX).
+#pragma comment(linker, "/alternatename:@recovered_client_minigame_construct_00671c40@12=@kotor_fastcall_00671c40@12")   // CSWMiniGame::CSWMiniGame (t3 e1)
+#pragma comment(linker, "/alternatename:@recovered_client_minigame_load_006723d0@8=@kotor_fastcall_006723d0@8")          // CSWMiniGame::Load (t3 e3load1)
+#pragma comment(linker, "/alternatename:@recovered_client_minigame_add_track_006720c0@16=@kotor_fastcall_006720c0@16")   // CSWMiniGame::AddTrack (t3 d1)
+#pragma comment(linker, "/alternatename:@recovered_client_minigame_add_obstacle_00672240@16=@kotor_fastcall_00672240@16") // CSWMiniGame::AddObstacle (t3 e3builders3)
 // closeC: the CLYT minigame-track accessors (thiscall(out, index) RET 8, EAX = out) and the [+28] track-count getter
 // are leaves; transcribed from swkotor.exe. Track/obstacle names are 16-byte CResRefs, positions 12-byte Vectors.
 void* __fastcall recovered_bridge_layout_track_name_005de4d0(void* self, void*, void* out, std::uint32_t index) {

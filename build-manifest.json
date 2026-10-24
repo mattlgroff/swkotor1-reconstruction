@@ -17952,9 +17952,8 @@
         },
         {
           "source": "src/units/0954/ed62d36f80-process_input.cpp",
-          "compiler": "clang-cl",
+          "compiler": "msvc",
           "flags": [
-            "--target=i686-pc-windows-msvc",
             "/nologo",
             "/O2",
             "/Ob0",
@@ -17965,9 +17964,7 @@
             "/W4",
             "/WX",
             "/std:c++17",
-            "/D_CRT_SECURE_NO_WARNINGS",
-            "/clang:-fms-compatibility-version=19.44",
-            "/clang:-Wno-invalid-offsetof"
+            "/D_CRT_SECURE_NO_WARNINGS"
           ]
         },
         {
@@ -38155,6 +38152,1454 @@
           "alias_headers": {
             "m15a_gui.h": "src/generated/class-choice/523fcf42472a3b45_m15a_gui.h"
           }
+        },
+        {
+          "source": "src/minigames/claude_turret_t1_leaves.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/minigame_player_leaves.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_t3_a.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_turret_t4_leaves.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_vm_a.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/minigame_planeproject.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/minigame_tunnel_offset.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/quaternion_xdir_0044f3d0.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_vm_b.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_vm_c.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_vm_d.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_turret_t1_scripts.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_turret_t1_records.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_turret_t1_lifecycle.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_turret_t1_events.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/minigame_t1_load.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_turret_t1_f1a.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_turret_t1_objects.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/minigame_inertia.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off"
+          ]
+        },
+        {
+          "source": "src/minigames/minigame_player_storage.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off"
+          ]
+        },
+        {
+          "source": "src/minigames/minigame_camera_hook.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off"
+          ]
+        },
+        {
+          "source": "src/minigames/minigame_control.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off"
+          ]
+        },
+        {
+          "source": "src/minigames/minigame_player_banks.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHs",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/minigame_player_lifecycle.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHs",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/minigame_player_load.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHs",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/minigame_player_loadgun.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHs",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/minigame_player_adjust.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/minigame_player_collision.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_t3_b.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_t3_c1.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_t3_c2.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_t3_d.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_t3_e1.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_t3_load.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_t3_e2.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "/showIncludes",
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_t3_hit.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_t3_builders.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_t3_f1.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_t3_f2.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_turret_t4_refs.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_turret_t4_behavior.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_turret_t4_teardown.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_turret_t4_track.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_turret_t4_setup.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_turret_t4_callbacks.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_vm_e.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_vm_f.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHs",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_vm_g.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHs",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_vm_position.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_vm_h.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_vm_h_string.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHs",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_vm_h2.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_vm_h2_string.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHs",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_minigame_vm_h2_f14.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHs",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_pazaak_pza_core.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHs",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_pazaak_pza_app.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHs",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_pazaak_b_controls.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_pazaak_b_panels.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
+        },
+        {
+          "source": "src/minigames/claude_pazaak_game.cpp",
+          "compiler": "clang-cl",
+          "flags": [
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/nologo",
+            "/O2",
+            "/Ob0",
+            "/Oy-",
+            "/GS",
+            "/EHsc",
+            "/MT",
+            "/W4",
+            "/WX",
+            "/std:c++17",
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/showIncludes"
+          ]
         }
       ],
       "files": [
@@ -39824,7 +41269,7 @@
         },
         {
           "path": "src/units/0067/ad5eec79a8-area_update.cpp",
-          "sha256": "1cea08b2171cc25e893fc2e036d98b3e92786ee751c747f5b600151ff3555bda"
+          "sha256": "c571fe3a28731e786ad7c0457467e98b102186a3e3a8ca3c9489fe922e2ffb58"
         },
         {
           "path": "src/units/0068/71fea83a2b-daynight.cpp",
@@ -42592,7 +44037,7 @@
         },
         {
           "path": "src/units/0205/c7026f3d03-vm_commands_native_entering.inc",
-          "sha256": "cc806a9e1da8c25e3bfdddd38f0a71b64247142ae16950d0420c3619a51c021a"
+          "sha256": "e31c85a6f49e86273fef07417101f230237f3cda7dd4a7216a21e7f12985313e"
         },
         {
           "path": "src/units/0205/cadde52d92-ai_dispatch.hpp",
@@ -69272,7 +70717,7 @@
         },
         {
           "path": "src/units/0954/ed62d36f80-process_input.cpp",
-          "sha256": "897f0321f0bb157b5d51f5ab0956098d2bae8f68d2660d65360a77e6ec1568f8"
+          "sha256": "018772f89000a61ebc9e579ada63ffb8aca6b0e7078f6228b6d5af3ab702dc68"
         },
         {
           "path": "src/units/0954/eddb76278d-allocator_live.h",
@@ -74824,7 +76269,7 @@
         },
         {
           "path": "src/units/1468/a56ecbdcc3-w3_traps.cpp",
-          "sha256": "cbfe87622eb03ed105995c9ea3a7d016dd8ec9ef82b7b4d180ddb501080350b4"
+          "sha256": "e658445eeae25d1dbcc5337c0ddd143051ea6250344a9181a9be994e69c36e4b"
         },
         {
           "path": "src/units/1468/fa114a50b4-w3_client_area.h",
@@ -77876,7 +79321,7 @@
         },
         {
           "path": "src/units/1530/6c0a1f211f-area_native_load_numeric.inc",
-          "sha256": "6a161892b22a1fe9fdf9daa5e50e35c522667eef4f7b4fbedaf87298e33a75da"
+          "sha256": "070a83f9d31bba6685d2aab7be9bd0af1037210311a3f9018ac93c2ba40ff4ab"
         },
         {
           "path": "src/units/1530/6d9535057e-area_properties_load.hpp",
@@ -78240,7 +79685,7 @@
         },
         {
           "path": "src/units/1530/ae2b8bbe38-area_reference.hpp",
-          "sha256": "a057469e8d34dfbad92cb186677b23cb011c226bc0ad7238a19dda2adf464af7"
+          "sha256": "2174650a1b3921fb2324089ba31546c3d611b7ec2ccda8a27bc8a35bcbcafdfd"
         },
         {
           "path": "src/units/1530/afe64ebd37-creature_stats_health_native_feats.inc",
@@ -87156,7 +88601,7 @@
         },
         {
           "path": "src/derived/0902-area_reference/2cc61ddf21f4f54e_area_reference.cpp",
-          "sha256": "84fd82ca8066b20cc2335507f551ff00b2b9bb85f089c0f18f087a57c1562514"
+          "sha256": "79e3d16aafb99ac52c6a7664c67738bcfc3ccbd65792a06a270c6778e4b5523b"
         },
         {
           "path": "src/derived/0902-area_reference/4f727ab50b1551ae_server_mainloop.hpp",
@@ -91181,6 +92626,598 @@
         {
           "path": "local_generators/warning_locale.py",
           "sha256": "113436047e2acb283eb736b9210b12513a7c9c3db2f2a1cd218027c74c198797"
+        },
+        {
+          "path": "src/minigames/claude_turret_t1_leaves.cpp",
+          "sha256": "dd2715533a5ba946592b5edeefe0ad24416d71e3716b3255180208f90c11ff5a"
+        },
+        {
+          "path": "src/minigames/d1c462888f42-claude_turret_t1_leaves.hpp",
+          "sha256": "c77c80249ff24d45256dd7f87f3b910498ef19dbba7c5edd239f4710c872facc"
+        },
+        {
+          "path": "src/minigames/minigame_player_leaves.cpp",
+          "sha256": "55d6d5b8d534fd0fd5c72e3e2d15abefe2beaee233d422239e1fdd62548eff95"
+        },
+        {
+          "path": "src/minigames/5f558436913e-minigame_player_leaves.hpp",
+          "sha256": "5f558436913e100cc0684dc2bc58f95f55c478c52bcc499282f09a181422324a"
+        },
+        {
+          "path": "src/minigames/claude_minigame_t3_a.cpp",
+          "sha256": "cd60a20bc3bd61cab5adc78faefd638ff046cbd2e9e80e27ddbd31616a72a747"
+        },
+        {
+          "path": "src/minigames/4f65a6036765-claude_minigame_t3_a.hpp",
+          "sha256": "f2f2c38d695de5f4d37bc886f0b29d1a0a15adb6e4dc48860826937dae709932"
+        },
+        {
+          "path": "src/minigames/claude_turret_t4_leaves.cpp",
+          "sha256": "0cf6778fba680f100f13c75fc99d74d08f95dd395649fe571c7efebeaef4dd31"
+        },
+        {
+          "path": "src/minigames/be4e236340a2-claude_turret_t4_leaves.hpp",
+          "sha256": "d895ebb54775f89a334a80fabc0cef7923c25a8477f80f5a87667e3a8f3a214d"
+        },
+        {
+          "path": "src/minigames/claude_minigame_vm_a.cpp",
+          "sha256": "71a0a99274104b5dd22474bc5d34d324c28e5f8ed957df56f66dcaaa58135f53"
+        },
+        {
+          "path": "src/minigames/47f8a19c96b1-claude_minigame_vm_a.hpp",
+          "sha256": "ac8e52f593a8550193969c4f69fcdca80c5624fc4d8e6e569cb015a47aeb8416"
+        },
+        {
+          "path": "src/minigames/617feb9cb553-claude_vm_actions_common.hpp",
+          "sha256": "c9891f116c7267100a8a212f2e4866428f5972bf4a49a015fda158dbb60cf8ec"
+        },
+        {
+          "path": "src/minigames/25ffbc410ea0-w5_t3.hpp",
+          "sha256": "738e3cbddb4d2b611e44e95f6ae89d1674d1b97a42e5c2ab4c540aa2a91c5dd0"
+        },
+        {
+          "path": "src/minigames/524ad07f85b0-w5_t2.hpp",
+          "sha256": "f511b8d40ad5f86ad8edb75766d1e3ec9d6e60961552f6d2bc9df20f32a9a4e9"
+        },
+        {
+          "path": "src/minigames/4122183abfad-w5_types.hpp",
+          "sha256": "4122183abfad62b419fe19057802ea79d26ab32b94397e3585bb18e3b67cb3bb"
+        },
+        {
+          "path": "src/minigames/45d56fc7dd30-w5_server_env.hpp",
+          "sha256": "a4848d08103811e41b6f65e2b2856211312da57c5082b1b0ac028ad3841d899d"
+        },
+        {
+          "path": "src/minigames/cb251177a109-w5_foreign.hpp",
+          "sha256": "cb4a13c7467aab7e53e7a2154fc0603ae00683afafef6c129f72c5a476a8304e"
+        },
+        {
+          "path": "src/minigames/050dfb64d53e-w5_action_queue.hpp",
+          "sha256": "cdba06f04ef02cbfa3034296e14aac77f353a21305879378d7b9601f2f6b6922"
+        },
+        {
+          "path": "src/minigames/9c49a8c0ad27-w5_walkmesh.hpp",
+          "sha256": "a2863647b425d7774d2a9996ec804559c6df575986e2cb5c11068c2283854a64"
+        },
+        {
+          "path": "src/minigames/minigame_planeproject.cpp",
+          "sha256": "56b3e0ce17a0334b5f626febbebe8807952bb70b34ce2e06d851c6c40dd23af9"
+        },
+        {
+          "path": "src/minigames/d69b5cbffe54-minigame_planeproject.hpp",
+          "sha256": "d69b5cbffe54d83b42e0c0ac702a25af216a0493228af34e28fa772ddb83685b"
+        },
+        {
+          "path": "src/minigames/minigame_tunnel_offset.cpp",
+          "sha256": "9d8708a83556cfeae6e4eef4a4b7312d98b5c327564f976554cceba80ad8d96b"
+        },
+        {
+          "path": "src/minigames/0a911a07647c-minigame_tunnel_offset.hpp",
+          "sha256": "0a911a07647c6b582dff42523c823ff708b687ff74653876d7ae2f635b880c9e"
+        },
+        {
+          "path": "src/minigames/quaternion_xdir_0044f3d0.cpp",
+          "sha256": "409a3c6c19c09a8515daf08ff74a5d0e427e472527844fb5ea891b1ae2b0c713"
+        },
+        {
+          "path": "src/minigames/claude_minigame_vm_b.cpp",
+          "sha256": "9cc505c59c19f0931d1f55199077abbea7de08d96c0dec3f7953b29affcf8b8f"
+        },
+        {
+          "path": "src/minigames/04eec24501dc-claude_minigame_vm_b.hpp",
+          "sha256": "ab1268b07d400248040782e243e5308d9e15721aab81ee230d2ee249f230f79c"
+        },
+        {
+          "path": "src/minigames/claude_minigame_vm_c.cpp",
+          "sha256": "4a79511e1e8ac58db688069a35686f14db48fbc03b5930e878d5c07e902aa890"
+        },
+        {
+          "path": "src/minigames/a6c59fb9bb1b-claude_minigame_vm_c.hpp",
+          "sha256": "7f2b331e40c64e947f36be9a5340d4b8016a645361aee11ce5f25cc354d6b520"
+        },
+        {
+          "path": "src/minigames/claude_minigame_vm_d.cpp",
+          "sha256": "260c8e58a6acb6b7d570e66b8d1fa815509b95872e4dd5ff66e78b3e2ebb1d3b"
+        },
+        {
+          "path": "src/minigames/538b4ff5e119-claude_minigame_vm_d.hpp",
+          "sha256": "8f84993cfde39a42534702aef725bcf5700fdad748109b5c397afc189d774156"
+        },
+        {
+          "path": "src/minigames/claude_turret_t1_scripts.cpp",
+          "sha256": "cd9789e096a6570234be16219396da0ebbcac7f1b07ebc75509844d1e2bd4203"
+        },
+        {
+          "path": "src/minigames/a0dd4ae6243e-claude_turret_t1_scripts.hpp",
+          "sha256": "3342e08f70c9a08b6bbd2ba1aebd80a3d39f50f740c6ebfc09f739c95b78e5ea"
+        },
+        {
+          "path": "src/minigames/d8f703239b61-resources.h",
+          "sha256": "09ee274c744bdfbead2a501243ea4ee6aa576cbe5798db3bd8f1362f11745c59"
+        },
+        {
+          "path": "src/minigames/75d9d34323f7-startup_string.h",
+          "sha256": "75d9d34323f72937085b2f0d7abc851fb10da6f23dc6db1057cf3bb85c58df80"
+        },
+        {
+          "path": "src/minigames/claude_turret_t1_records.cpp",
+          "sha256": "b1c9d0aa15a8143971b81f58ace8d018efb0c75191b5c4a88845156dece2624e"
+        },
+        {
+          "path": "src/minigames/1be3d11e3161-claude_turret_t1_records.hpp",
+          "sha256": "cd016ff0e8b951a142a342f4c48d96240f5fdb122c0218f30ed5b1453b66c7bc"
+        },
+        {
+          "path": "src/minigames/claude_turret_t1_lifecycle.cpp",
+          "sha256": "011fbbbbb324525ddf3ff5dbb36def1f58e94b5e6f3a308a70ca4c0df04ec6c5"
+        },
+        {
+          "path": "src/minigames/97980543594d-claude_turret_t1_lifecycle.hpp",
+          "sha256": "cbd86161a2a08583f15be7ce69e17dc97a5a491819b877788f243f4bd0972030"
+        },
+        {
+          "path": "src/minigames/2cc88caf3267-growth.h",
+          "sha256": "174c9748f0658854b2c005a7955c17b7eaf59cec5b2511e8834bf64e46c96612"
+        },
+        {
+          "path": "src/minigames/68d07cacdc29-array_mutations.h",
+          "sha256": "68d07cacdc295d957eac91d8c9f8c17f3d05e59efccc6fb693d5c5410e4d9b54"
+        },
+        {
+          "path": "src/minigames/claude_turret_t1_events.cpp",
+          "sha256": "7f5cd3da91fff5467d40fe39ea7aeb0be0d105a8cc796de8ff5495a735a01283"
+        },
+        {
+          "path": "src/minigames/aafac7614c0f-claude_turret_t1_events.hpp",
+          "sha256": "aafac7614c0f45893fc9ddde0f4712d2ee140556070d78023fc2f1ee4808d74f"
+        },
+        {
+          "path": "src/minigames/e999d224bc23-m15_l0.h",
+          "sha256": "e999d224bc23e7f192da0d48b64cddeba50db61c690a76ce745b344ed529c6cb"
+        },
+        {
+          "path": "src/minigames/minigame_t1_load.cpp",
+          "sha256": "6d7381f867c625f54878f5dcb5123bcdd3fb347ad02d5587c8415fcabd1c6691"
+        },
+        {
+          "path": "src/minigames/368380493698-minigame_t1_load.hpp",
+          "sha256": "36838049369821ab283c0128f523330d556a9a408dea40cba5a08356a192fadb"
+        },
+        {
+          "path": "src/minigames/d1ffedc48c11-gff_readers.h",
+          "sha256": "ba3f092605008e25cb7a70c98e284f8a08094073e2fff215de1fdb3423c909c7"
+        },
+        {
+          "path": "src/minigames/0088952307f9-gff_menu_lists.h",
+          "sha256": "b751c7d56739f77bf24a4a316479035a7ed71bab975d5797250b2dc8f3b37c94"
+        },
+        {
+          "path": "src/minigames/6b82d9553186-gff_views.h",
+          "sha256": "6b82d955318621e8310c67c168d6277b480266a93b27a3a40bf68273886b2595"
+        },
+        {
+          "path": "src/minigames/claude_turret_t1_f1a.cpp",
+          "sha256": "1a96b078612e5cfd191085dc8c7f0aeeab395a7b2662746765470780b1e054b5"
+        },
+        {
+          "path": "src/minigames/4a3c1e98bb80-claude_turret_t1_f1a.hpp",
+          "sha256": "4a3c1e98bb80151846d85e81e55f0a2cc69e0ef2d0c4428bb2aa165470aabcc0"
+        },
+        {
+          "path": "src/minigames/322371ce1803-m46_cells_storage.h",
+          "sha256": "a1060b0475acf9980d8f4b8e074bc7d2e22fe433843baed2b9303836bab65c0b"
+        },
+        {
+          "path": "src/minigames/2933b71fe68c-scene3d.h",
+          "sha256": "4746accf4e6233382938b7d08df80c9c834d58559d34ee5c5c5127e2f22d0cc5"
+        },
+        {
+          "path": "src/minigames/a4c4a08645ec-vtables_gen.h",
+          "sha256": "a4c4a08645ec374a0cb010a0d43eb094727b109ae2e8f39b86db96a0a37916ea"
+        },
+        {
+          "path": "src/minigames/5973f18f4e22-vtables2_gen.h",
+          "sha256": "5973f18f4e22641e3d7c9a8d3c15441053ea933f1934c73bec080df3ba9a542f"
+        },
+        {
+          "path": "src/minigames/claude_turret_t1_objects.cpp",
+          "sha256": "3ac004e2e369f953075a63e5edf2c4055816b2bcfbfe3e6bb2d642ca582b8858"
+        },
+        {
+          "path": "src/minigames/060407249b58-claude_turret_t1_objects.hpp",
+          "sha256": "dae3f8767c92ee81d3d78abc6cc9b8c1972f0fc040c7af70b6652f708d105bb2"
+        },
+        {
+          "path": "src/minigames/minigame_inertia.cpp",
+          "sha256": "465cd3fc7db5871eabc55bede729a68a3f623988242989d29119ca51a6f406c0"
+        },
+        {
+          "path": "src/minigames/3f9b90578d96-minigame_inertia.hpp",
+          "sha256": "3f9b90578d961cd2da837f1f9a1de7c17aa3f086cf04b9b16cadaf0a4eac32be"
+        },
+        {
+          "path": "src/minigames/da6c2cf73dcd-minigame_player_storage.hpp",
+          "sha256": "da6c2cf73dcd1a75d83f2481b76fcdd7caa63840f002b48786db57fe7871a3d7"
+        },
+        {
+          "path": "src/minigames/minigame_player_storage.cpp",
+          "sha256": "67a7a06add829f14a35b1937556ad0241c43ff2068cee90d9c135d2628767e13"
+        },
+        {
+          "path": "src/minigames/minigame_camera_hook.cpp",
+          "sha256": "5b806be559ffbf745f9cc32d9a0cf1cf229bb3bdf9981f14c70375c185707cfd"
+        },
+        {
+          "path": "src/minigames/0720af487ac1-minigame_camera_hook.hpp",
+          "sha256": "0720af487ac11fc82e2efcef626edf7b3e64a9b02f42df56f4916c67f5155d19"
+        },
+        {
+          "path": "src/minigames/minigame_control.cpp",
+          "sha256": "023d78eee1f3398e3b44a84052695013a17b62fc3925b00c7c2b4e14b36517f0"
+        },
+        {
+          "path": "src/minigames/4c7790600889-minigame_control.hpp",
+          "sha256": "4c7790600889b9c459306b3167562ca07363f5a517e5fa05cc150b07fa6ed08b"
+        },
+        {
+          "path": "src/minigames/minigame_player_banks.cpp",
+          "sha256": "24fd31afce1cfe147541bbaf34e430fa9ed13e065082164bcb3aa630d0688aee"
+        },
+        {
+          "path": "src/minigames/7314e5f55d64-player_internal.hpp",
+          "sha256": "64c9585f1183d88b608ad27f38b416ab1fa858558adf4054139b5f4da86e16ef"
+        },
+        {
+          "path": "src/minigames/80a83b1dd998-assignment.h",
+          "sha256": "5ce8ae8a4b93403247c5b26690b4f501bb90a0b3bafbc1a562da806c10572eee"
+        },
+        {
+          "path": "src/minigames/8f16c687f108-minigame_player_lifecycle.hpp",
+          "sha256": "86991b1be7a9fff182d58512d35e52951633d3f185c045fc1c04a1c90b5af3cc"
+        },
+        {
+          "path": "src/minigames/9b7fd0ec1b5a-claude_turret_t4_setup.hpp",
+          "sha256": "9b7fd0ec1b5a5868eb71b5cc807ffb003bf3feadc152e546e321a96ffb87a342"
+        },
+        {
+          "path": "src/minigames/minigame_player_lifecycle.cpp",
+          "sha256": "fb5796bd9a50a7f8e1a1743215e6b25f4066ad8e32f95849413aa6429139c018"
+        },
+        {
+          "path": "src/minigames/0ae13273b4e7-claude_turret_t1_lifecycle.hpp",
+          "sha256": "c35de84f15d4544244121440b8935ba652a39094916c1397bc84930a47ea993c"
+        },
+        {
+          "path": "src/minigames/minigame_player_load.cpp",
+          "sha256": "27362d514ec4638ee3f71dd666cf4175d5e761efb05eb551e70e0055cfd3f054"
+        },
+        {
+          "path": "src/minigames/minigame_player_loadgun.cpp",
+          "sha256": "ddc4764b764603698753828b0a6102eee9aa756b41e9b2051404e4794a472227"
+        },
+        {
+          "path": "src/minigames/minigame_player_adjust.cpp",
+          "sha256": "2225888c3a845860ee209a634bc8a27562a2c5c928d1689dcfc3f91743510303"
+        },
+        {
+          "path": "src/minigames/1297bf7da380-minigame_player_adjust.hpp",
+          "sha256": "1297bf7da3808045d7349307ec2d05915a4ae4d84e38fc3883c1d59fc9aa9347"
+        },
+        {
+          "path": "src/minigames/minigame_player_collision.cpp",
+          "sha256": "58e339213a1a0202f36f63a693dda9ed9b486b4c9ca57cd2e2ff0fc45d7eb7c9"
+        },
+        {
+          "path": "src/minigames/dd5618d9ad7a-minigame_player_collision.hpp",
+          "sha256": "dd5618d9ad7a18c318ba8a49f2f21a2899f220021750abaadb117bb68e695173"
+        },
+        {
+          "path": "src/minigames/b89d92983330-claude_minigame_t3_c2.hpp",
+          "sha256": "b89d9298333054aea9d3c2f7458b6bae4f9b3cd42050ad6043ed08ee6ed17aa9"
+        },
+        {
+          "path": "src/minigames/c6d94c22e2d8-claude_turret_t4_teardown.hpp",
+          "sha256": "c6d94c22e2d8c81730ddd7548e412b801584df6caf7064013ae3e8bcb5ef31af"
+        },
+        {
+          "path": "src/minigames/167f30dacee0-collision_math.hpp",
+          "sha256": "167f30dacee05745ec1837649670a4d0b09e0ea61a3d94c50730bd65e7bbf48d"
+        },
+        {
+          "path": "src/minigames/claude_minigame_t3_b.cpp",
+          "sha256": "012e795db5ffa4d64bddf52d467063bc7ed7f5d41a8333c960ffe0e404f1a2bf"
+        },
+        {
+          "path": "src/minigames/38c85fc5232c-claude_minigame_t3_b.hpp",
+          "sha256": "38c85fc5232c3f4b78efad47ed8bc5992b470508004768c89a647d7a42234aa6"
+        },
+        {
+          "path": "src/minigames/claude_minigame_t3_c1.cpp",
+          "sha256": "ef121056db2eda72dd7c3f7712e7147dedb93923bc8c598117cfcceafd1f1e51"
+        },
+        {
+          "path": "src/minigames/fe8a6c6d9ecf-claude_minigame_t3_c1.hpp",
+          "sha256": "fe8a6c6d9ecfb04232c7add49de75984469b4a61238ef0cc0957b9d7ff9919db"
+        },
+        {
+          "path": "src/minigames/claude_minigame_t3_c2.cpp",
+          "sha256": "928d75127efe41079b69bcb23aa1a145952d897f6e34e7063adc74b0e2f0a412"
+        },
+        {
+          "path": "src/minigames/claude_minigame_t3_d.cpp",
+          "sha256": "af4d4ba3191d23e66f8358902050b28bf0ab69bf931adee559e3d17786c352b9"
+        },
+        {
+          "path": "src/minigames/3d80a7486eda-claude_minigame_t3_d.hpp",
+          "sha256": "3d80a7486edad7012a1431bc0ba3c97223d7d95cd15558f06f33b948e4d8ac13"
+        },
+        {
+          "path": "src/minigames/claude_minigame_t3_e1.cpp",
+          "sha256": "a4a6d6463f8fff897d9cbbfc2ac29e668a7b74e7d72fe7366e8afc3b5a144d70"
+        },
+        {
+          "path": "src/minigames/fd7e4d92f22b-claude_minigame_t3_e1.hpp",
+          "sha256": "fd7e4d92f22bf8965334e3b4b2b7edc33312fa951c3c146f8926fea563f0b402"
+        },
+        {
+          "path": "src/minigames/claude_minigame_t3_load.cpp",
+          "sha256": "cbfd15da40437c4a3751e91c8a4c603c658c937ae3cd660f950aa5ab98529063"
+        },
+        {
+          "path": "src/minigames/dd882c43ac6f-claude_minigame_t3_load.hpp",
+          "sha256": "dd882c43ac6f0f633ca7e6b4ac57701aab6e9c3de8124f3af461b0ceb2e408dd"
+        },
+        {
+          "path": "src/minigames/bee7e40f00df-native_string_deps.h",
+          "sha256": "d4f2e4da96e4e5b9b5d72d648939e3701ef4f06b7f567d56bca0fb523a3993e5"
+        },
+        {
+          "path": "src/minigames/claude_minigame_t3_e2.cpp",
+          "sha256": "fe5297e1e02d80b97f6364cd335ad086ed8a56bf5180ff38a9ede13eaa493dc9"
+        },
+        {
+          "path": "src/minigames/e86a2bc3654d-claude_minigame_t3_e2.hpp",
+          "sha256": "e86a2bc3654d4f149e5608f2d128f967151d7d7a452d86fa461e9cba5b629354"
+        },
+        {
+          "path": "src/minigames/daf54a60b23e-texture.hpp",
+          "sha256": "a2b56eff930d376297bdc93c19eade01ef48aaac67be869c47ea31ea9351aaa2"
+        },
+        {
+          "path": "src/minigames/af0b40299bf1-font.hpp",
+          "sha256": "17c6ae601737d89d1fc353a3aced0a0555ff0b7366d296f37bcf030753882b8e"
+        },
+        {
+          "path": "src/minigames/4f4bcdec53ed-allocator_live.h",
+          "sha256": "4f4bcdec53ed025fa2915bf63ffe6ba2bcf3fc998313269c9c483fd1396532d8"
+        },
+        {
+          "path": "src/minigames/claude_minigame_t3_hit.cpp",
+          "sha256": "329afaa1d57b6b505e656a2527fdca6a911b8b1ff12e9a843a60cc41de5d7970"
+        },
+        {
+          "path": "src/minigames/73427a97cdda-claude_minigame_t3_hit.hpp",
+          "sha256": "73427a97cdda09d1549a3f6b6e2728015566309259293596d62610a1f21b80ab"
+        },
+        {
+          "path": "src/minigames/claude_minigame_t3_builders.cpp",
+          "sha256": "378c1a9b0900c3370998631414805b1c13c6e77241dd11e2eb93e2dec2ea82fa"
+        },
+        {
+          "path": "src/minigames/e3e5e5154161-claude_minigame_t3_builders.hpp",
+          "sha256": "e3e5e515416191d61494062fe87ecfd546bb56c6a0464a7951b5ef878758b796"
+        },
+        {
+          "path": "src/minigames/claude_minigame_t3_f1.cpp",
+          "sha256": "75d3d650c91c7b79864d2673e4088000b6ab1b1a14e9df6337c74e232a47352d"
+        },
+        {
+          "path": "src/minigames/f1bcb74583b6-claude_minigame_t3_f1.hpp",
+          "sha256": "f1bcb74583b626fa69e7d047e29f0532db2b97e5a6bc1dff0f69091537bed4bd"
+        },
+        {
+          "path": "src/minigames/claude_minigame_t3_f2.cpp",
+          "sha256": "ca45c089ab06163c763085077375062801d2ce56c06e199a115ee4502d023be3"
+        },
+        {
+          "path": "src/minigames/4744cea60f0e-claude_minigame_t3_f2.hpp",
+          "sha256": "4744cea60f0e322254e1cf4d4b6524480a58e5c17c70d3953a8676f93e1d60ee"
+        },
+        {
+          "path": "src/minigames/54d1f1f44326-camera_stick.hpp",
+          "sha256": "6be0c06e4e8530581d10fe1bb4ea9586c1d9f5c7eb53df28d315ec1dce8245b4"
+        },
+        {
+          "path": "src/minigames/5617985d0456-camera.hpp",
+          "sha256": "d1733051ee97768c705e8eb37ebc3d8ddb6cf40ec49ad2a17430cab7e09a37b0"
+        },
+        {
+          "path": "src/minigames/fe91ac507a49-w4_frame.hpp",
+          "sha256": "442a142adeb2aa56c4c526e85125948eb67781cc6c2661ed4466c38fd95e1fb6"
+        },
+        {
+          "path": "src/minigames/3d9f1bbdade6-w4_providers.hpp",
+          "sha256": "c2d60213b4c2becebe7c3bd318314b08f08e97b2137b35bc51809e838f44e909"
+        },
+        {
+          "path": "src/minigames/554bccf21783-w4_native.hpp",
+          "sha256": "554bccf2178358d7589f66a1ab41542c15211b111518ab60a4db9cde559030f9"
+        },
+        {
+          "path": "src/minigames/cb476bd89101-w5_physics_types.hpp",
+          "sha256": "cb476bd891012449143151b6cb87ac207a1ed1251554dd2c804c41cf44f043b5"
+        },
+        {
+          "path": "src/minigames/claude_turret_t4_refs.cpp",
+          "sha256": "8fc2b7b74a3766fddffb9d59a2bb788c0084441a9744959fe73cde018764af23"
+        },
+        {
+          "path": "src/minigames/3522bb9da858-claude_turret_t4_refs.hpp",
+          "sha256": "3522bb9da858299500aa1f72f3fa7e2858565944913fc177549af7f9965aa1bf"
+        },
+        {
+          "path": "src/minigames/8c7ada52dac9-gui_rt.hpp",
+          "sha256": "494920a826d4f1c391f0175f0e8f71bbaafeb7f6e0458662b28008309832d93e"
+        },
+        {
+          "path": "src/minigames/claude_turret_t4_behavior.cpp",
+          "sha256": "8b42d47163d392545e9b709bc7843f0afd3d4b041bbec96aed921b3fcecbb7e5"
+        },
+        {
+          "path": "src/minigames/43846f2ecdea-claude_turret_t4_behavior.hpp",
+          "sha256": "43846f2ecdeaafb7da09757934210c6bf2044b30cfddce97b826d5f1d3cc8ad6"
+        },
+        {
+          "path": "src/minigames/claude_turret_t4_teardown.cpp",
+          "sha256": "f4727492325843db1e58187ff37d0d5a95f2c60c8fe6eaa824e60d72545c7ef6"
+        },
+        {
+          "path": "src/minigames/claude_turret_t4_track.cpp",
+          "sha256": "fe5cce95a2d37a05488a9367b4fd47ffe21641b8eaef2b6259fab69d57572eba"
+        },
+        {
+          "path": "src/minigames/e28b94877d18-claude_turret_t4_track.hpp",
+          "sha256": "e28b94877d1899d2c8ec99e314f80a0bb982cc973e5e7166a1da91c68e15495e"
+        },
+        {
+          "path": "src/minigames/claude_turret_t4_setup.cpp",
+          "sha256": "c508986e8acebd252fc1c82b66598dc09c53798caec5aab5a480553567fbb6f5"
+        },
+        {
+          "path": "src/minigames/claude_turret_t4_callbacks.cpp",
+          "sha256": "abdfb2abb8b60d315425a236b616e740de118cd417bf2ad50fe5be22ff8d2a2c"
+        },
+        {
+          "path": "src/minigames/63c4971a535b-claude_turret_t4_callbacks.hpp",
+          "sha256": "63c4971a535b98aeb90b8d8fe51226f8fdae16849d0d184833785577e196e420"
+        },
+        {
+          "path": "src/minigames/claude_minigame_vm_e.cpp",
+          "sha256": "757cf7aeb02034111ecd29fa018535298d48c48ab1372c00733fcb56841ffd23"
+        },
+        {
+          "path": "src/minigames/b1b3ba66e348-claude_minigame_vm_e.hpp",
+          "sha256": "b1b3ba66e348a33acd15801bfa68b05b1f822be0ae3cc8d8006238e1217d2455"
+        },
+        {
+          "path": "src/minigames/claude_minigame_vm_f.cpp",
+          "sha256": "7025b6db967fc58d1d44f7564fce3a42d0a402f59ad374d67b00515ad2901fe5"
+        },
+        {
+          "path": "src/minigames/61e916c4d432-claude_minigame_vm_f.hpp",
+          "sha256": "61e916c4d43222a005d16f75930a91d47b0148911034517e2b39c5583d5324e9"
+        },
+        {
+          "path": "src/minigames/claude_minigame_vm_g.cpp",
+          "sha256": "c19d331e67c684f9ce90d823254b60e30f49706a75da82b5f8c96f27b1d97cdb"
+        },
+        {
+          "path": "src/minigames/78deac106104-claude_minigame_vm_g.hpp",
+          "sha256": "78deac10610416ae920019d65fc05e8aa9fb672c422c4fe3d21328cf7bb45f29"
+        },
+        {
+          "path": "src/minigames/7202c2a448bc-claude_minigame_vm_g_pending.hpp",
+          "sha256": "7202c2a448bc51722a3768ee96cc775e5a1eef4b2860d315bc8595461c8612d1"
+        },
+        {
+          "path": "src/minigames/claude_minigame_vm_position.cpp",
+          "sha256": "225199d1be3ef71bd18c3feeac9fa592701c0994a571e854c261ff865521ccaa"
+        },
+        {
+          "path": "src/minigames/65501125d829-claude_minigame_vm_position.hpp",
+          "sha256": "65501125d829c8ddf9278a8aa34dc72c99bfc2d8f1e9167df182cd8a02e60a13"
+        },
+        {
+          "path": "src/minigames/claude_minigame_vm_h.cpp",
+          "sha256": "374f093fce19e7536c79df0cfedc8dc30e8c9aade63154d1c05f43d72876809b"
+        },
+        {
+          "path": "src/minigames/6d08ac356b32-claude_minigame_vm_h.hpp",
+          "sha256": "6d08ac356b328c1490230f1701500441be40f3df53a26f4f1f1a80d0c972e20f"
+        },
+        {
+          "path": "src/minigames/6f32deb42978-claude_minigame_vm_h_pending.hpp",
+          "sha256": "6f32deb4297853e102fe0ef6fba1d51cf74ec165a3db346c7c1f3caa87dd9570"
+        },
+        {
+          "path": "src/minigames/claude_minigame_vm_h_string.cpp",
+          "sha256": "8e81823082ee9162a73768dae20b4ca72669e0db265a22210808d364f86c4d04"
+        },
+        {
+          "path": "src/minigames/claude_minigame_vm_h2.cpp",
+          "sha256": "3d68cfe5c9c4129a7aee0b5c77f745f0448463eb08448134730039211232dd4b"
+        },
+        {
+          "path": "src/minigames/c76a5786c4ff-claude_minigame_vm_h2.hpp",
+          "sha256": "c76a5786c4ff7fd8f0b4c088c2f529081fbca95f324ebc9e1bb1a555694ab641"
+        },
+        {
+          "path": "src/minigames/5f7023825481-claude_minigame_vm_h2_pending.hpp",
+          "sha256": "5f7023825481432e46132333551da4fb2bd238673de334b40ba05628b9a884d1"
+        },
+        {
+          "path": "src/minigames/claude_minigame_vm_h2_string.cpp",
+          "sha256": "43786fb5e646be8724e0db5d85dc1aefef76bf82c48bc5f6fc3808787f393afc"
+        },
+        {
+          "path": "src/minigames/claude_minigame_vm_h2_f14.cpp",
+          "sha256": "6200208d553afdf65e2b070f43d13baf8130d5bb50639bb4511eacd4ccad18bd"
+        },
+        {
+          "path": "src/minigames/claude_pazaak_pza_core.cpp",
+          "sha256": "0c7513529b2249c51dc0e59885c8d01defb24cdce7eeef9d2d12f995ef55b94f"
+        },
+        {
+          "path": "src/minigames/4b9fe8db02e2-claude_pazaak_pza.hpp",
+          "sha256": "9020828fdbe6f3fa9f65d48579849b1a61905ff6172491902ce39fe5fb3ad64d"
+        },
+        {
+          "path": "src/minigames/602f99a6ff9a-claude_pazaak_decls.hpp",
+          "sha256": "602f99a6ff9a4f41ead43b6f6a66cdd56140ad4dad65e126e01bda239865361d"
+        },
+        {
+          "path": "src/minigames/claude_pazaak_pza_app.cpp",
+          "sha256": "bcb591c497d070fa6482a875ad49bbd53e569383a82520b207ae42ca82b01905"
+        },
+        {
+          "path": "src/minigames/claude_pazaak_b_controls.cpp",
+          "sha256": "1f4cc35a6077b2bd118fdf819501a8bc653ec53f2ccdf930e348943d21c4d95f"
+        },
+        {
+          "path": "src/minigames/0fa9be42e331-claude_gui_char.hpp",
+          "sha256": "f10af16994305a711ceff2ed6aaa35a8723de644da930d1c4abb558684626ec2"
+        },
+        {
+          "path": "src/minigames/d796cdfe6547-gui_panels.hpp",
+          "sha256": "99ca268beced9be62b2b54b339e503f057ba24b5d83ee485eea6e6191ce8be4b"
+        },
+        {
+          "path": "src/minigames/claude_pazaak_b_panels.cpp",
+          "sha256": "47af568f6eedbadaef33d7b11cf45cc20003da0a0aa177243dba3a56bcf06575"
+        },
+        {
+          "path": "src/minigames/claude_pazaak_game.cpp",
+          "sha256": "8623c08dee8f36dd34239dd31d0f6b437d566ab833eff174d2171ebd636f237a"
         }
       ],
       "generation": {

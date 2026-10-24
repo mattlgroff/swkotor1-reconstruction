@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="604" viewBox="0 0 960 604" role="img" aria-labelledby="card-title card-desc">
   <title id="card-title">KOTOR decompilation progress</title>
-  <desc id="card-desc">Decompiled with Visual Studio 2022: 8,819 of 9,252 functions (95.3%: 7,232 with their own definition, 1,323 folded into others, 264 C runtime from the VS2022 library), builds the full game. Decompiled with the original Visual Studio .NET 2002 (MSVC 7.0), byte-identical: 5,252 functions (56.8%) compile to the original bytes, plus 368 identical to the stock LIBCMT.LIB.</desc>
+  <desc id="card-desc">Decompiled with Visual Studio 2022: 9,012 of 9,252 functions (97.4%: 7,327 with their own definition, 1,421 folded into others, 264 C runtime from the VS2022 library), builds the full game. Decompiled with the original Visual Studio .NET 2002 (MSVC 7.0), byte-identical: 5,252 functions (56.8%) compile to the original bytes, plus 368 identical to the stock LIBCMT.LIB.</desc>
   <rect x="1" y="1" width="958" height="602" rx="14" fill="#090909" stroke="#343434" stroke-width="1.5"/>
   <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif">
     <text x="23" y="34" font-size="15" fill="#dedede" font-weight="600">Star Wars: Knights of the Old Republic — two decompilations of swkotor.exe 1.0.3.0 (GOG)</text>
@@ -12,7 +12,7 @@
     <text x="39" y="98" font-size="11" fill="#6ba8ff" font-weight="700">① MODERN TOOLCHAIN</text>
     <text x="457" y="98" font-size="11" fill="#c9c9c9" font-weight="600" text-anchor="end">by mattlgroff</text>
     <text x="39" y="118" font-size="15" fill="#f4f4f5" font-weight="650">Decompiled with Visual Studio 2022</text>
-    <text x="39" y="136" font-size="11.5" fill="#8a8a8a">src/ · VS2022 MSVC + clang-cl · C++17 · 1,862 units</text>
+    <text x="39" y="136" font-size="11.5" fill="#8a8a8a">src/ · VS2022 MSVC + clang-cl · C++17 · 1,921 units</text>
     <text x="39" y="154" font-size="12" fill="#c9c9c9">Modern compiler and libraries: same behaviour, different bytes.</text>
     <rect x="489" y="72" width="450" height="236" rx="10" fill="#111214" stroke="#343434"/>
     <rect x="489" y="72" width="450" height="4" rx="2" fill="#5be3a8"/>
@@ -21,24 +21,25 @@
     <text x="505" y="118" font-size="15" fill="#f4f4f5" font-weight="650">Decompiled with Visual Studio .NET 2002</text>
     <text x="505" y="136" font-size="11.5" fill="#8a8a8a">matching/ · MSVC 7.0 (cl 13.00.9466) + original LIBCMT.LIB</text>
     <text x="505" y="154" font-size="12" fill="#c9c9c9">The compiler and libraries BioWare used: identical bytes.</text>
-    <text x="39" y="204" font-size="34" fill="#6ba8ff" font-weight="700">95.3%</text>
+    <text x="39" y="204" font-size="34" fill="#6ba8ff" font-weight="700">97.4%</text>
     <text x="173" y="188" font-size="12.5" fill="#c9c9c9">of functions decompiled · builds the full game</text>
-    <text x="173" y="204" font-size="11.5" fill="#8a8a8a">8,819 / 9,252 · 433 not there yet</text>
+    <text x="173" y="204" font-size="11.5" fill="#8a8a8a">9,012 / 9,252 · 240 not there yet</text>
     <text x="505" y="204" font-size="34" fill="#5be3a8" font-weight="700">56.8%</text>
     <text x="639" y="188" font-size="12.5" fill="#c9c9c9">of functions decompiled byte-identical</text>
     <text x="639" y="204" font-size="11.5" fill="#8a8a8a">5,252 / 9,252 · 22.8% of code bytes</text>
     <rect x="39" y="220" width="418" height="12" rx="6.0" fill="#272727"/>
-    <rect x="39.00" y="220" width="346.27" height="12" fill="#6ba8ff"/>
-    <rect x="385.27" y="220" width="52.60" height="12" fill="#4c74ad"/>
-    <rect x="437.87" y="220" width="5.42" height="12" fill="#354e72"/>
+    <rect x="39.00" y="220" width="348.97" height="12" fill="#6ba8ff"/>
+    <rect x="387.97" y="220" width="56.81" height="12" fill="#4c74ad"/>
+    <rect x="444.78" y="220" width="5.42" height="12" fill="#354e72"/>
     <rect x="39" y="220" width="418" height="12" rx="6.0" fill="none" stroke="#111214" stroke-width="2"/>
     <rect x="505" y="220" width="418" height="12" rx="6.0" fill="#272727"/>
     <rect x="505.00" y="220" width="95.25" height="12" fill="#5be3a8"/>
     <rect x="600.25" y="220" width="9.14" height="12" fill="#9aa5b1"/>
     <rect x="609.39" y="220" width="22.72" height="12" fill="#c9963a"/>
     <rect x="505" y="220" width="418" height="12" rx="6.0" fill="none" stroke="#111214" stroke-width="2"/>
-    <text x="39" y="250" font-size="10.5" fill="#8a8a8a">7,232 own definitions · 1,323 folded into callers · 264 runtime (VS2022 library)</text>
+    <text x="39" y="250" font-size="10.5" fill="#8a8a8a">7,327 own definitions · 1,421 folded into callers · 264 runtime (VS2022 library)</text>
     <text x="505" y="250" font-size="10.5" fill="#8a8a8a">+368 identical to stock LIBCMT.LIB (no source needed) · 504 attempts</text>
+    <text x="39" y="269" font-size="10" fill="#8a8a8a">Play reported, as far as we know; public retest pending. See STATUS.md.</text>
     <circle cx="45.0" cy="288" r="6" fill="#6ba8ff"/>
     <text x="45.0" y="291.5" font-size="8" fill="#090909" font-weight="700" text-anchor="middle">✓</text>
     <text x="55.0" y="292" font-size="10.5" fill="#f4f4f5">Builds</text>
@@ -48,12 +49,12 @@
     <circle cx="212.2" cy="288" r="6" fill="#c9963a"/>
     <text x="212.2" y="291.5" font-size="8" fill="#090909" font-weight="700" text-anchor="middle">…</text>
     <text x="222.2" y="292" font-size="10.5" fill="#f4f4f5">Taris</text>
-    <circle cx="295.8" cy="288" r="6" fill="#3a3a3a"/>
-    <text x="295.8" y="291.5" font-size="8" fill="#090909" font-weight="700" text-anchor="middle"></text>
-    <text x="305.8" y="292" font-size="10.5" fill="#8a8a8a">Minigames</text>
-    <circle cx="379.4" cy="288" r="6" fill="#3a3a3a"/>
-    <text x="379.4" y="291.5" font-size="8" fill="#090909" font-weight="700" text-anchor="middle"></text>
-    <text x="389.4" y="292" font-size="10.5" fill="#8a8a8a">Rest</text>
+    <circle cx="295.8" cy="288" r="6" fill="#c9963a"/>
+    <text x="295.8" y="291.5" font-size="8" fill="#090909" font-weight="700" text-anchor="middle">…</text>
+    <text x="305.8" y="292" font-size="10.5" fill="#f4f4f5">Minigames</text>
+    <circle cx="379.4" cy="288" r="6" fill="#c9963a"/>
+    <text x="379.4" y="291.5" font-size="8" fill="#090909" font-weight="700" text-anchor="middle">…</text>
+    <text x="389.4" y="292" font-size="10.5" fill="#f4f4f5">Full game</text>
     <circle cx="511.0" cy="288" r="6" fill="#5be3a8"/>
     <text x="511.0" y="291.5" font-size="8" fill="#090909" font-weight="700" text-anchor="middle">✓</text>
     <text x="521.0" y="292" font-size="10.5" fill="#f4f4f5">Toolchain</text>
@@ -349,7 +350,7 @@
     <rect x="644.0" y="408" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="662.6" y="408" width="16.6" height="10" rx="2" fill="#679ff1"/>
     <rect x="681.2" y="408" width="16.6" height="10" rx="2" fill="#5b8acd"/>
-    <rect x="699.8" y="408" width="16.6" height="10" rx="2" fill="#68a3f7"/>
+    <rect x="699.8" y="408" width="16.6" height="10" rx="2" fill="#69a5fa"/>
     <rect x="718.4" y="408" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="737.0" y="408" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="755.6" y="408" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
@@ -589,7 +590,7 @@
     <rect x="737.0" y="468" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="755.6" y="468" width="16.6" height="10" rx="2" fill="#5e90d7"/>
     <rect x="774.2" y="468" width="16.6" height="10" rx="2" fill="#5f92da"/>
-    <rect x="792.8" y="468" width="16.6" height="10" rx="2" fill="#6094dd"/>
+    <rect x="792.8" y="468" width="16.6" height="10" rx="2" fill="#67a0f2"/>
     <rect x="811.4" y="468" width="16.6" height="10" rx="2" fill="#5e90d7"/>
     <rect x="830.0" y="468" width="16.6" height="10" rx="2" fill="#669eee"/>
     <rect x="848.6" y="468" width="16.6" height="10" rx="2" fill="#6298e4"/>
@@ -721,7 +722,7 @@
     <rect x="569.6" y="504" width="16.6" height="10" rx="2" fill="#4fb98b"/>
     <rect x="588.2" y="504" width="16.6" height="10" rx="2" fill="#5d8dd2"/>
     <rect x="606.8" y="504" width="16.6" height="10" rx="2" fill="#5be3a8"/>
-    <rect x="625.4" y="504" width="16.6" height="10" rx="2" fill="#48a07a"/>
+    <rect x="625.4" y="504" width="16.6" height="10" rx="2" fill="#5782c0"/>
     <rect x="644.0" y="504" width="16.6" height="10" rx="2" fill="#659eed"/>
     <rect x="662.6" y="504" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="681.2" y="504" width="16.6" height="10" rx="2" fill="#52c493"/>
@@ -729,13 +730,13 @@
     <rect x="718.4" y="504" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="737.0" y="504" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="755.6" y="504" width="16.6" height="10" rx="2" fill="#69a4f8"/>
-    <rect x="774.2" y="504" width="16.6" height="10" rx="2" fill="#5b8acd"/>
-    <rect x="792.8" y="504" width="16.6" height="10" rx="2" fill="#272727"/>
-    <rect x="811.4" y="504" width="16.6" height="10" rx="2" fill="#425a7c"/>
-    <rect x="830.0" y="504" width="16.6" height="10" rx="2" fill="#272727"/>
-    <rect x="848.6" y="504" width="16.6" height="10" rx="2" fill="#272727"/>
-    <rect x="867.2" y="504" width="16.6" height="10" rx="2" fill="#272727"/>
-    <rect x="885.8" y="504" width="16.6" height="10" rx="2" fill="#649bea"/>
+    <rect x="774.2" y="504" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
+    <rect x="792.8" y="504" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
+    <rect x="811.4" y="504" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
+    <rect x="830.0" y="504" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
+    <rect x="848.6" y="504" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
+    <rect x="867.2" y="504" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
+    <rect x="885.8" y="504" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="904.4" y="504" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="923.0" y="504" width="16.6" height="10" rx="2" fill="#67a0f1"/>
     <text x="78" y="525" font-size="10" text-anchor="end" fill="#8a8a8a" font-family="Consolas, Menlo, monospace">0x00685000</text>
@@ -825,8 +826,8 @@
     <rect x="755.6" y="528" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="774.2" y="528" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="792.8" y="528" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
-    <rect x="811.4" y="528" width="16.6" height="10" rx="2" fill="#659ded"/>
-    <rect x="830.0" y="528" width="16.6" height="10" rx="2" fill="#5a87c8"/>
+    <rect x="811.4" y="528" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
+    <rect x="830.0" y="528" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="848.6" y="528" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="867.2" y="528" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="885.8" y="528" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
@@ -836,7 +837,7 @@
     <rect x="86.0" y="540" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="104.6" y="540" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="123.2" y="540" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
-    <rect x="141.8" y="540" width="16.6" height="10" rx="2" fill="#4d6f9f"/>
+    <rect x="141.8" y="540" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="160.4" y="540" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="179.0" y="540" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
     <rect x="197.6" y="540" width="16.6" height="10" rx="2" fill="#6ba8ff"/>
@@ -926,6 +927,6 @@
     <rect x="885.8" y="552" width="16.6" height="10" rx="2" fill="#4a3f6b"/>
     <rect x="904.4" y="552" width="16.6" height="10" rx="2" fill="#4a3f6b"/>
     <rect x="923.0" y="552" width="16.6" height="10" rx="2" fill="#4a3f6b"/>
-    <text x="23" y="586" font-size="11.5" fill="#8a8a8a">Together the two cover 98.0% of the 9,252 functions. Byte-identical code replaces modern-toolchain code function by function (STRUCTURE.md). 11,730 EH funclets excluded.</text>
+    <text x="23" y="586" font-size="11.5" fill="#8a8a8a">Together the two cover 99.0% of the 9,252 functions. Byte-identical code replaces modern-toolchain code function by function (STRUCTURE.md). 11,730 EH funclets excluded.</text>
   </g>
 </svg>

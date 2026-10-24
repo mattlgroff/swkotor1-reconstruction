@@ -16,6 +16,7 @@ struct AreaReferencePorts {
  virtual void insert_00407680(Word,Word,Word,Word)=0;
  virtual void demand_00408620(Word)=0;
  virtual void assign_00406120(Word,Word,Word)=0;
+ virtual void free_006fa390(Word) noexcept=0;
 };
 void area_reference_00506c30(Memory&,AreaReferencePorts&,Word,Word,Word,Word);
 }
