@@ -1072,8 +1072,11 @@ address,name,status,diff_insns,file
 0x0044BD50,AurResFreeDataBytes,MATCH,0,matching/src/g/console.cpp
 0x0044BD70,AurResFind,MATCH,0,matching/src/g/console.cpp
 0x0044BDC0,AurResRemove,MATCH,0,matching/src/g/console.cpp
+0x0044BE20,AurResGetNextLineFile,MATCH,0,matching/src/g/console.cpp
+0x0044BE70,AurResGetNextLineData,MATCH,0,matching/src/g/console.cpp
 0x0044BEE0,AurResReadFile,MATCH,0,matching/src/g/console.cpp
-0x0044BF30,AurResReadData,NONMATCH,14,matching/src/g/console.cpp
+0x0044BF30,AurResReadData,MATCH,0,matching/src/g/console.cpp
+0x0044BFA0,AurResGetNextLine,MATCH,0,matching/src/g/console.cpp
 0x0044BFD0,AurResGetData,MATCH,0,matching/src/g/console.cpp
 0x0044C000,funcholder_void::Query,MATCH,0,matching/src/g/console.cpp
 0x0044C010,??_Gfuncholder_void@@UAEPAXI@Z,MATCH,0,matching/src/g/console.cpp
@@ -1082,6 +1085,8 @@ address,name,status,diff_insns,file
 0x0044C560,??0ConsoleFunc@@QAE@PADP6AXXZ@Z,MATCH,0,matching/src/g/console_reg.cpp
 0x0044C5C0,??0ConsoleFunc@@QAE@PADP6AX0@Z@Z,MATCH,0,matching/src/g/console_reg.cpp
 0x0044C620,??0ConsoleFunc@@QAE@PADP6AXH@Z@Z,MATCH,0,matching/src/g/console_reg.cpp
+0x0044C680,AurResGetResource,MATCH,0,matching/src/g/console_reg.cpp
+0x0044C740,AurResGet,NONMATCH,30,matching/src/g/console_reg.cpp
 0x0044C870,AurResPushFile,MATCH,0,matching/src/g/console_reg.cpp
 0x0044C8F0,AurResClose,MATCH,0,matching/src/g/console_reg.cpp
 0x0044C980,AurResDoFile,MATCH,0,matching/src/pilot4/a/aurres_dofile.cpp
@@ -1203,6 +1208,7 @@ address,name,status,diff_insns,file
 0x00459190,AurSetColor,MATCH,0,matching/src/h/gui.cpp
 0x004591B0,AurGUIStartLayer,MATCH,0,matching/src/h/gui.cpp
 0x004592B0,AurGUIStopLayer,MATCH,0,matching/src/h/gui.cpp
+0x00459580,AurGUICloseViewport,NONMATCH,16,matching/src/h/gui.cpp
 0x00459610,CAurGUIStringInternal::GetFontScale,MATCH,0,matching/src/h/guivirt.cpp
 0x00459630,CAurGUIStringInternal::DrawBounds,MATCH,0,matching/src/h/guivirt.cpp
 0x00459790,??0CAurGUIImageInternal@@QAE@XZ,MATCH,0,matching/src/h/guivirt.cpp
@@ -1349,7 +1355,7 @@ address,name,status,diff_insns,file
 0x00463B30,ParseGenericKey,MATCH,0,matching/src/h/keys.cpp
 0x00463F80,CullUnnecessaryKeys,MATCH,0,matching/src/h/keys.cpp
 0x00464090,BinarySearchModel,MATCH,0,matching/src/h/keys.cpp
-0x004640F0,BinaryFindModel,NONMATCH,3,matching/src/h/keys.cpp
+0x004640F0,BinaryFindModel,MATCH,0,matching/src/h/keys.cpp
 0x00464110,?FindModel@@YAPAVModel@@PAD@Z,NONMATCH,13,matching/src/h/keys.cpp
 0x00464200,LoadModel,NONMATCH,11,matching/src/h/keys.cpp
 0x004642B0,??4?$CExoArrayList@UNewController@@@@QAEAAV0@ABV0@@Z,MATCH,0,matching/src/h/keys.cpp
@@ -2907,6 +2913,7 @@ address,name,status,diff_insns,file
 0x00550C00,CSWRules::GetFeat,MATCH,0,matching/src/b/sw_rules.cpp
 0x00550C30,CSWRules::GetDifficultyValue,MATCH,0,matching/src/b/sw_rules.cpp
 0x00550C50,CSWRules::LoadDifficultyInfo,MATCH,0,matching/src/b/sw_rules.cpp
+0x00550D10,CSWRules::GetWeightedDamageAmount,NONMATCH,3,matching/src/b/sw_rules.cpp
 0x00550E00,CCombatInformation::~CCombatInformation,MATCH,0,matching/src/b/combat_info.cpp
 0x005512D0,CCombatInformation::operator!=,NONMATCH,10,matching/src/b/combat_info.cpp
 0x00552280,CCombatInformation::CCombatInformation,MATCH,0,matching/src/b/combat_info.cpp
@@ -3207,6 +3214,7 @@ address,name,status,diff_insns,file
 0x00579740,CSWSRoom::SetRoomAdjacency,MATCH,0,matching/src/b/sws_room.cpp
 0x005797A0,CSWSRoom::ClearLineOfSight,MATCH,0,matching/src/b/sws_room.cpp
 0x00579840,CSWSRoom::GetFaceNormal,NONMATCH,9,matching/src/b/sws_room.cpp
+0x00579890,CSWSMessage::SendServerToServerAdminMessage,NONMATCH,9,matching/src/b/sws_admin.cpp
 0x0057A1F0,CSWSRules::CSWSRules,MATCH,0,matching/src/b/sws_rules.cpp
 0x0057A210,CSWSRules::~CSWSRules,MATCH,0,matching/src/b/sws_rules.cpp
 0x0057A220,??_GCSWSRules@@UAEPAXI@Z,MATCH,0,matching/src/b/sws_rules.cpp
@@ -4718,6 +4726,9 @@ address,name,status,diff_insns,file
 0x005F1490,CClientExoAppInternal::SetUnknown194,MATCH,0,matching/src/c/client_exo_app_internal.cpp
 0x005F1A90,CClientExoAppInternal::SetCharacterFile,MATCH,0,matching/src/c/client_exo_app_internal.cpp
 0x005F1B90,CClientExoAppInternal::StopLoadMusic,MATCH,0,matching/src/c/client_exo_app_internal.cpp
+0x005F29F0,ShutDownLoadGameLoadBar,MATCH,0,matching/src/c/client_loadbar.cpp
+0x005F2A20,TogglePartyFollow,MATCH,0,matching/src/c/client_party_follow.cpp
+0x005F2AC0,ServerToClientObjectId,MATCH,0,matching/src/c/client_loadbar.cpp
 0x005F2AE0,CClientExoAppInternal::LoadScreenExists,MATCH,0,matching/src/c/client_exo_app_internal.cpp
 0x005F2B00,CClientExoAppInternal::SetPlayerCharacterName,MATCH,0,matching/src/c/client_exo_app_internal_r5.cpp
 0x005F2B30,CClientExoAppInternal::GetPlayerCharacterName,MATCH,0,matching/src/c/client_exo_app_internal.cpp
@@ -5007,6 +5018,7 @@ address,name,status,diff_insns,file
 0x00641DB0,CSWCSoundObject::AsSWCSoundObject,MATCH,0,matching/src/m/sw_c_sound_object.cpp
 0x00644150,??_GCSWCModule@@UAEPAXI@Z,MATCH,0,matching/src/c/sw_c_module.cpp
 0x006450E0,??_GCSWGuiInGameJournal@@UAEPAXI@Z,MATCH,0,matching/src/c/sw_gui_in_game_journal.cpp
+0x00646600,CSWCItem::SetEquippedBy,MATCH,0,matching/src/m/sw_c_item_leaves.cpp
 0x00646C90,CSWCItem::GetServerItem,MATCH,0,matching/src/c/sw_c_item.cpp
 0x006474B0,??_GCSWCItem@@UAEPAXI@Z,MATCH,0,matching/src/c/sw_c_item.cpp
 0x00647660,CSWCCreatureStats::GetRaceName,MATCH,0,matching/src/pilot4/b/f00647660.cpp
@@ -5408,6 +5420,9 @@ address,name,status,diff_insns,file
 0x0068F790,CSWGuiInGameCredits::UpdateFading,MATCH,0,matching/src/k/sw_gui_in_game_credits.cpp
 0x0068F880,CSWGuiInGameCredits::Draw,MATCH,0,matching/src/k/sw_gui_in_game_credits.cpp
 0x0068F8D0,CSWGuiInGameCredits::CSWGuiInGameCredits,NONMATCH,21,matching/src/k/sw_gui_in_game_credits.cpp
+0x00690910,UnloadCachedVFX,MATCH,0,matching/src/k/client_area_vfx.cpp
+0x00690940,CSWBehaviorAttachSound::AnnounceAreaVFX,MATCH,0,matching/src/k/client_area_vfx.cpp
+0x00690960,area_vfx_scalar_delete_00690960,MATCH,0,matching/src/k/client_area_vfx.cpp
 0x00698E00,CAnimBase::CAnimBase,MATCH,0,matching/src/k/anim_base.cpp
 0x00698E20,CAnimBase::~CAnimBase,MATCH,0,matching/src/k/anim_base.cpp
 0x00698E30,CAnimBase::SetValue,MATCH,0,matching/src/k/anim_base.cpp
@@ -5720,6 +5735,7 @@ address,name,status,diff_insns,file
 0x006ABD20,CSWGuiInGameAbilities::UpdateDescriptionListBox,MATCH,0,matching/src/l/sw_gui_in_game_abilities.cpp
 0x006ABDC0,CSWGuiInGameAbilities::SetDescription,MATCH,0,matching/src/l/sw_gui_in_game_abilities.cpp
 0x006ABE70,CSWGuiInGameAbilities::CanShowPowers,NONMATCH,6,matching/src/l/sw_gui_in_game_abilities.cpp
+0x006AC930,CSWGuiInGameSkillEntryV::SetStyle,NONMATCH,70,matching/src/l/sw_gui_skill_entry_style.cpp
 0x006ACB40,CSWGuiInGameSkillEntry::SetSkill,MATCH,0,matching/src/l/sw_gui_in_game_abilities.cpp
 0x006ACC30,??_GCSWGuiInGameAbilities@@UAEPAXI@Z,MATCH,0,matching/src/l/sw_gui_in_game_abilities.cpp
 0x006ACC50,CSWGuiInGameSkillEntry::CSWGuiInGameSkillEntry,MATCH,0,matching/src/l/sw_gui_in_game_abilities.cpp
@@ -5733,6 +5749,8 @@ address,name,status,diff_insns,file
 0x006ADB00,CSWGuiInGameAbilities::SetCharacter,NONMATCH,11,matching/src/l/sw_gui_in_game_abilities.cpp
 0x006ADC20,CSWGuiInGameAbilities::OnPanelAdded,MATCH,0,matching/src/l/sw_gui_in_game_abilities.cpp
 0x006ADC80,CSWGuiInGameAbilities::OnChangeCharacter,MATCH,0,matching/src/l/sw_gui_in_game_abilities.cpp
+0x006AF940,kotor_fastcall_006af940,MATCH,0,matching/src/l/sw_gui_character_leaves.cpp
+0x006AF950,kotor_fastcall_006af950,MATCH,0,matching/src/l/sw_gui_character_leaves.cpp
 0x006B28C0,CSWGuiCharacterPanel::UpdateCharacter,MATCH,0,matching/src/pilot4/b/f006b28c0.cpp
 0x006CCB80,CSWGuiAbilityNode::CSWGuiAbilityNode,MATCH,0,matching/src/l/sw_gui_ability_chain.cpp
 0x006CCBE0,CSWGuiAbilityNode::~CSWGuiAbilityNode,MATCH,0,matching/src/l/sw_gui_ability_chain.cpp

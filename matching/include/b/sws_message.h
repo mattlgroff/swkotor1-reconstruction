@@ -84,6 +84,7 @@ public:
     int SendServerToPlayerCCMessage(unsigned long nPlayerId, unsigned char nMinor,
                                     class CSWCCMessageData* pData,
                                     class CSWSCombatAttackData* pAttackData); // 0x00568570
+    int SendServerToServerAdminMessage(unsigned long nPlayerId, const CExoString& sMessage); // 0x00579890
 
     // Player-to-server handlers.
     int HandlePlayerToServerQuickChatMessage(CSWSPlayer* pPlayer, unsigned char nMinor);

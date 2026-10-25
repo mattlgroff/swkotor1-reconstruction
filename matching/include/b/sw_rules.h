@@ -74,6 +74,7 @@ public:
     class CSWFeat* GetFeat(unsigned short nFeat);            // 0x00550C00
     int GetDifficultyValue(int nColumn, int nRow);          // 0x00550C30 (name guessed)
     void LoadDifficultyInfo();                              // 0x00550C50
+    unsigned long GetWeightedDamageAmount(unsigned long nRoll, unsigned long nMax, unsigned long bAttackerPC, unsigned long bDefenderPC, unsigned long nPercent); // 0x00550D10
 
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
     class CSWBaseItemArray* GetBaseItemArray() { return m_pBaseItemArray; }

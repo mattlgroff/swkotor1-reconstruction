@@ -123,7 +123,8 @@ Model* BinarySearchModel(char* szName, int nLow, int nHigh)
 // FUNCTION: SWKOTOR 0x004640F0
 Model* BinaryFindModel(char* szName)
 {
-    return BinarySearchModel(szName, 0, g_lModels.num - 1);
+    int nHigh = g_lModels.num - 1;
+    return BinarySearchModel(szName, 0, nHigh);
 }
 
 // NONMATCH (13 insns): the ReadSync / AsModel / g_pLoadingModel merge goes

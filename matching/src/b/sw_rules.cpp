@@ -61,3 +61,44 @@ void CSWRules::LoadDifficultyInfo()
         delete p2DA;
     }
 }
+
+// FUNCTION: SWKOTOR 0x00550D10
+unsigned long CSWRules::GetWeightedDamageAmount(unsigned long nRoll, unsigned long nMax, unsigned long bAttackerPC, unsigned long bDefenderPC, unsigned long nPercent)
+{
+    int nPercentSigned = (int)nPercent;
+    int nMaxSigned = (int)nMax;
+    int nRollSigned = (int)nRoll;
+    if (bAttackerPC == 1) {
+        if (nPercent != 0) {
+            int nFloor = (int)(nMax * nPercent) / 100;
+            if (nFloor == nMaxSigned) {
+                return nMax;
+            }
+            int nSpread = rand() % (100 - nPercentSigned);
+            int nWeighted = nRollSigned;
+            nWeighted += (int)((nSpread + nPercentSigned) * nMax) / 100;
+            if (nWeighted < nMaxSigned) {
+                return (unsigned long)nWeighted;
+            }
+            return nMax;
+        }
+        goto return_roll;
+    }
+    if (bDefenderPC != 1 || nPercent == 0) {
+        goto return_roll;
+    }
+    if (nPercentSigned < 100) {
+        int nWeighted = nRollSigned - (int)((100 - nPercent) * nMax) / 100;
+        if (nWeighted >= 1) {
+            return (unsigned long)nWeighted;
+        }
+        return 1;
+    }
+    if (nPercentSigned == 100) {
+        goto return_roll;
+    }
+    int nSpread = rand() % (nPercentSigned - 100);
+    return (unsigned long)(nRollSigned + (int)(nSpread * nMax) / 100);
+return_roll:
+    return nRoll;
+}

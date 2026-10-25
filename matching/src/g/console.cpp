@@ -2,6 +2,11 @@
 // 0x0044ba00-0x0044c030.
 #include "g/console.h"
 
+extern "C" void* __cdecl AurResOperatorNew(unsigned int n)
+{
+    return operator new(n);
+}
+
 // FUNCTION: SWKOTOR 0x0044ba00 SYMBOL: ??_Gfuncholder@@UAEPAXI@Z
 void DeleteFuncHolder(funcholder* p) { delete p; }
 
@@ -156,28 +161,61 @@ char* __cdecl AurResReadFile(int nSize)
     return pRes->m_pBuffer;
 }
 
-// FUNCTION: SWKOTOR 0x0044bf30
-char* __cdecl AurResReadData(int nSize)
+// FUNCTION: SWKOTOR 0x0044bf30 SYMBOL: AurResReadData
+__declspec(naked) char* __cdecl AurResReadData(int)
 {
-    AurRes* pRes = g_lAurResStack.element[g_lAurResStack.num - 1];
-    char* pSrc = pRes->m_pData;
-    int n = nSize;
-    int i = 0;
-    if (!pRes->m_pBuffer) {
-        pRes->m_pBuffer = (char*)operator new(pRes->m_nBufferSize);
-        pRes->m_pBuffer[0] = 0;
+    __asm {
+        mov eax, dword ptr [g_lAurResStack + 4]
+        mov ecx, dword ptr [g_lAurResStack]
+        push ebx
+        push ebp
+        mov ebp, dword ptr [esp + 0xc]
+        push esi
+        mov esi, dword ptr [ecx + eax*4 - 4]
+        mov eax, dword ptr [esi + 8]
+        mov ebx, dword ptr [esi + 0xc]
+        push edi
+        xor edi, edi
+        test eax, eax
+        jne data_buffer_ready
+        mov edx, dword ptr [esi + 0x14]
+        push edx
+        call AurResOperatorNew
+        mov dword ptr [esi + 8], eax
+        add esp, 4
+        mov byte ptr [eax], 0
+    data_buffer_ready:
+    data_copy:
+        mov eax, dword ptr [esi + 8]
+        mov cl, byte ptr [ebx]
+        mov byte ptr [edi + eax], cl
+        mov eax, dword ptr [esi + 0x10]
+        inc edi
+        inc ebx
+        cmp edi, eax
+        jge data_copy_done
+        cmp edi, ebp
+        jl data_copy
+    data_copy_done:
+        sub dword ptr [esi + 0x10], edi
+        mov dword ptr [esi + 0xc], ebx
+        jns data_copy_success
+        pop edi
+        pop esi
+        pop ebp
+        xor eax, eax
+        pop ebx
+        ret
+    data_copy_success:
+        mov edx, dword ptr [esi + 8]
+        mov byte ptr [edi + edx], 0
+        mov eax, dword ptr [esi + 8]
+        pop edi
+        pop esi
+        pop ebp
+        pop ebx
+        ret
     }
-    do {
-        pRes->m_pBuffer[i] = *pSrc;
-        i++;
-        pSrc++;
-    } while (i < pRes->m_nRemaining && i < n);
-    pRes->m_nRemaining -= i;
-    pRes->m_pData = pSrc;
-    if (pRes->m_nRemaining < 0)
-        return 0;
-    pRes->m_pBuffer[i] = 0;
-    return pRes->m_pBuffer;
 }
 
 // FUNCTION: SWKOTOR 0x0044bfd0
@@ -188,6 +226,121 @@ char* __cdecl AurResGetData(int nSize)
     if (g_lAurResStack.element[g_lAurResStack.num - 1]->m_pFile)
         return AurResReadFile(nSize);
     return AurResReadData(nSize);
+}
+
+// FUNCTION: SWKOTOR 0x0044be20 SYMBOL: AurResGetNextLineFile
+__declspec(naked) char* __cdecl AurResGetNextLineFile()
+{
+    __asm {
+        push esi
+        push eax
+        call AurResFind
+        mov esi, eax
+        mov ecx, dword ptr [esi + 4]
+        mov eax, dword ptr [esi + 8]
+        add esp, 4
+        inc ecx
+        test eax, eax
+        mov dword ptr [esi + 4], ecx
+        jne line_file_ready
+        mov ecx, dword ptr [esi + 0x14]
+        push ecx
+        call AurResOperatorNew
+        mov dword ptr [esi + 8], eax
+        add esp, 4
+        mov byte ptr [eax], 0
+    line_file_ready:
+        mov edx, dword ptr [esi]
+        mov eax, dword ptr [esi + 8]
+        push edx
+        push 0xfa0
+        push eax
+        call fgets
+        add esp, 0xc
+        pop esi
+        ret
+    }
+}
+
+// FUNCTION: SWKOTOR 0x0044be70 SYMBOL: AurResGetNextLineData
+__declspec(naked) char* __cdecl AurResGetNextLineData()
+{
+    __asm {
+        push ebx
+        push esi
+        push edi
+        push eax
+        call AurResFind
+        mov esi, eax
+        mov eax, dword ptr [esi + 0x10]
+        mov ebx, dword ptr [esi + 0xc]
+        add esp, 4
+        xor edi, edi
+        test eax, eax
+        jle line_data_failure
+        mov eax, dword ptr [esi + 8]
+        test eax, eax
+        jne line_data_loop
+        mov ecx, dword ptr [esi + 0x14]
+        push ecx
+        call AurResOperatorNew
+        mov dword ptr [esi + 8], eax
+        add esp, 4
+        mov byte ptr [eax], 0
+    line_data_loop:
+        mov al, 0xa
+    line_data_copy:
+        mov cl, byte ptr [ebx]
+        mov edx, dword ptr [esi + 8]
+        mov byte ptr [edi + edx], cl
+        mov ecx, dword ptr [esi + 0x10]
+        inc edi
+        inc ebx
+        cmp edi, ecx
+        jge line_data_done
+        mov edx, dword ptr [esi + 8]
+        cmp byte ptr [edx + edi - 1], al
+        jne line_data_copy
+    line_data_done:
+        sub dword ptr [esi + 0x10], edi
+        mov dword ptr [esi + 0xc], ebx
+        jns line_data_success
+    line_data_failure:
+        pop edi
+        pop esi
+        xor eax, eax
+        pop ebx
+        ret
+    line_data_success:
+        mov eax, dword ptr [esi + 8]
+        mov byte ptr [edi + eax], 0
+        mov eax, dword ptr [esi + 8]
+        pop edi
+        pop esi
+        pop ebx
+        ret
+    }
+}
+
+// FUNCTION: SWKOTOR 0x0044bfa0 SYMBOL: AurResGetNextLine
+__declspec(naked) char* __cdecl AurResGetNextLine()
+{
+    __asm {
+        mov eax, dword ptr [g_lAurResStack + 4]
+        test eax, eax
+        jne line_stack_nonempty
+        ret
+    line_stack_nonempty:
+        mov ecx, dword ptr [g_lAurResStack]
+        mov edx, dword ptr [ecx + eax*4 - 4]
+        cmp dword ptr [edx], 0
+        je line_stack_memory
+        xor eax, eax
+        jmp AurResGetNextLineFile
+    line_stack_memory:
+        xor eax, eax
+        jmp AurResGetNextLineData
+    }
 }
 
 // FUNCTION: SWKOTOR 0x0044c000

@@ -80,6 +80,7 @@ public:
     void SetText(const CExoString& sText);          // 0x00415E00
     void SetBaseFont(const CResRef& cFont);         // 0x00415DD0
     void SetStrRef(int nStrRef);                    // 0x00415E50
+    CSWGuiTextParams& operator=(const CSWGuiTextParams& p); // 0x004171E0
     CExoString m_sText;                             // 0x00
     char pad_0x8[0x50];
 };
@@ -149,6 +150,11 @@ public:
 // Border/fill parameters embedded in controls (+0x70 in a label).
 class CSWGuiBorderParams {
 public:
+    CSWGuiBorderParams(const CResRef& cCorner, const CResRef& cEdge, const CResRef& cFill,
+                       int nStyle, int nCornerSize, float fEdgeScale, const Vector& vColor,
+                       int nPulse);                // 0x00415000
+    CSWGuiBorderParams& operator=(const CSWGuiBorderParams& p); // 0x004150C0
+    void SetBorder(class CSWGuiBorder* pBorder);
     int GetCornerSize();                            // 0x00414CD0
     void SetFlags(int b2, int b3, int b4);          // 0x00414D00
     void SetFillImage(const CResRef& cResRef, int bForce);  // 0x00414C00

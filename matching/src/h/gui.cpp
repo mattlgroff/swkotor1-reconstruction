@@ -47,6 +47,7 @@ struct GUIRect {
 
 extern unsigned int g_aPrimitiveModes[];        // 0x0073F334
 extern short g_nGUILayer;                       // 0x007B9460
+extern int g_bAurNoGUIDraw;                     // 0x007BB4D0
 extern float g_afGUIAlpha[];                    // 0x007B9248
 extern GUIRect g_aGUIRects[];                   // 0x007B9468
 extern unsigned int g_nGLProjection;            // 0x0073F290
@@ -158,4 +159,27 @@ void AurGUIStopLayer()
     glMatrixMode(g_nGLModelView);
     glEnable(g_nGLDepthTest);
     glEnable(g_nGLLighting);
+}
+
+// NONMATCH (16 insns): MSVC folds the frame index into scaled field loads;
+// original materializes the 10-byte frame offset before reading its fields.
+// FUNCTION: SWKOTOR 0x00459580
+void AurGUICloseViewport()
+{
+    if (g_bAurNoGUIDraw)
+        return;
+
+    g_nGUILayer--;
+    GUIRect* previous = &g_aGUIRects[g_nGUILayer];
+    int h = previous->h;
+    int w = previous->w;
+    int y = g_aGUIRects[0].h - previous->y - h;
+    int x = previous->x;
+    glViewport(x, y, w, h);
+
+    previous = &g_aGUIRects[g_nGUILayer];
+    if (previous->bClear)
+        glEnable(g_nGLLighting);
+    else
+        glDisable(g_nGLLighting);
 }
