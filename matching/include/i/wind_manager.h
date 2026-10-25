@@ -12,7 +12,21 @@ template <class T>
 class PointerList {
 public:
     void AddUnique(T value);
+    void Remove(T value);
     T* element;
+    int num;
+    int array_size;
+};
+
+struct PointSourceWind {
+    unsigned int words[6];
+};
+
+class PointSourceWindList {
+public:
+    void Add(PointSourceWind value);
+    void Allocate(int count);
+    PointSourceWind* element;
     int num;
     int array_size;
 };
@@ -22,8 +36,11 @@ public:
     void SetMaximumDeviation(float fMinimum, float fMaximum); // 0x004A57A0
     void SetGlobalWind(Vector vWind);                          // 0x004A5900
     void RegisterWindyEmitter(PartEmitter* pEmitter);          // 0x004A6470
+    void DeregisterWindyEmitter(PartEmitter* pEmitter);        // 0x004A6480
+    void AddPointSourceWind(Vector position, unsigned int a, unsigned int b, unsigned int c); // 0x004A6510
 
-    char pad_0x00[0x18];
+    char pad_0x00[0x0c];
+    PointSourceWindList m_lPointSourceWinds;                   // +0x0c
     Vector m_vGlobalWind;                                      // +0x18
     char pad_0x24[0x814];
     float m_fMinimumDeviation;                                 // +0x838

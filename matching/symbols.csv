@@ -2172,7 +2172,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?Control@CAurBehaviorAttach@@UAEHM@Z,public: virtual int __thiscall CAurBehaviorAttach::Control(float),0x0049F3B0,calls,2
 ?Control@CAurBehaviorAttachRotate@@UAEHM@Z,public: virtual int __thiscall CAurBehaviorAttachRotate::Control(float),0x0049F5F0,defines,1
 ?Control@CAurBehaviorAttachNoOrientation@@UAEHM@Z,public: virtual int __thiscall CAurBehaviorAttachNoOrientation::Control(float),0x0049F670,defines,1
-??1CAurBehavior@@UAE@XZ,public: virtual __thiscall CAurBehavior::~CAurBehavior(void),0x0049FA70,defines,5
+??1CAurBehavior@@UAE@XZ,public: virtual __thiscall CAurBehavior::~CAurBehavior(void),0x0049FA70,defines,6
 ??0CAurBehaviorAttach@@QAE@PAVCAurObject@@0PAVCAurPart@@@Z,"public: __thiscall CAurBehaviorAttach::CAurBehaviorAttach(class CAurObject *,class CAurObject *,class CAurPart *)",0x0049FB10,calls,2
 ??0CAurBehaviorAttach@@QAE@PAVGob@@0PAVAttachHook@@@Z,"public: __thiscall CAurBehaviorAttach::CAurBehaviorAttach(class Gob *,class Gob *,class AttachHook *)",0x0049FB10,defines,4
 ?GetType@CAurBehaviorAttach@@UAEHXZ,public: virtual int __thiscall CAurBehaviorAttach::GetType(void),0x0049FCD0,defines,1
@@ -2218,10 +2218,16 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?ReadSync@IODispatcher@@QAEPAVMaxTree@@PAU_iobuf@@0@Z,"public: class MaxTree * __thiscall IODispatcher::ReadSync(struct _iobuf *,struct _iobuf *)",0x004A15D0,defines,1
 ?Draw@CAurFontRender@@QAEXPADH@Z,"public: void __thiscall CAurFontRender::Draw(char *,int)",0x004A1770,calls,1
 ?AurFreeScenes@@YAXXZ,void __cdecl AurFreeScenes(void),0x004A22E0,calls,1
+?FindNumberOfAllowedLights@VertexProgram@@QAEHXZ,public: int __thiscall VertexProgram::FindNumberOfAllowedLights(void),0x004A2320,calls,1
 ?AurVertexProgramMakeCurrent@@YAXXZ,void __cdecl AurVertexProgramMakeCurrent(void),0x004A23B0,defines,2
+?LoadVertexProgram_004a23c0@@YAXIIPBDPAI@Z,"void __cdecl LoadVertexProgram_004a23c0(unsigned int,unsigned int,char const *,unsigned int *)",0x004A23C0,defines,1
+?ResetVertexPrograms_004a2470@@YAXXZ,void __cdecl ResetVertexPrograms_004a2470(void),0x004A2470,defines,1
 ?Bind@VertexProgram@@QAEXPAXH@Z,"public: void __thiscall VertexProgram::Bind(void *,int)",0x004A24D0,calls,5
+?AddVertexProgramToManager_004a2770@@YAXPAUVertexProgram@@@Z,void __cdecl AddVertexProgramToManager_004a2770(struct VertexProgram *),0x004A2770,calls,1
+?AddVertexProgramToManager_004a2770@@YAXPAX@Z,void __cdecl AddVertexProgramToManager_004a2770(void *),0x004A2770,defines,1
 ??0VertexProgram@@QAE@PADH@Z,"public: __thiscall VertexProgram::VertexProgram(char *,int)",0x004A27D0,calls,3
 ??0VertexProgram@@QAE@PBDH@Z,"public: __thiscall VertexProgram::VertexProgram(char const *,int)",0x004A27D0,calls,4
+?VertexProgram_construct_004a27d0@@YIPAUVertexProgram@@PAU1@PAX11@Z,"struct VertexProgram * __fastcall VertexProgram_construct_004a27d0(struct VertexProgram *,void *,void *,void *)",0x004A27D0,defines,1
 ?GetBumpMapLights@LightManager@@QAEPAXXZ,public: void * __thiscall LightManager::GetBumpMapLights(void),0x004A28A0,defines,1
 ?GetLensFlareLights@LightManager@@QAEPAXXZ,public: void * __thiscall LightManager::GetLensFlareLights(void),0x004A28B0,defines,1
 ??1LightManager@@QAE@XZ,public: __thiscall LightManager::~LightManager(void),0x004A2BC0,calls,1
@@ -2230,8 +2236,11 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SetVariation@WindManager@@QAEXMM@Z,"public: void __thiscall WindManager::SetVariation(float,float)",0x004A57A0,calls,1
 ?SetGlobalWind@WindManager@@QAEXVVector@@@Z,public: void __thiscall WindManager::SetGlobalWind(class Vector),0x004A5900,defines,1
 ?SetWind@WindManager@@QAEXVVector@@@Z,public: void __thiscall WindManager::SetWind(class Vector),0x004A5900,calls,1
+?Allocate@PointSourceWindList@@QAEXH@Z,public: void __thiscall PointSourceWindList::Allocate(int),0x004A5F80,calls,1
 ?RegisterWindyEmitter@WindManager@@QAEXPAVPartEmitter@@@Z,public: void __thiscall WindManager::RegisterWindyEmitter(class PartEmitter *),0x004A6470,defines,1
 ?DeregisterWindyEmitter@WindManager@@QAEXPAVPartEmitter@@@Z,public: void __thiscall WindManager::DeregisterWindyEmitter(class PartEmitter *),0x004A6480,calls,1
+?Add@PointSourceWindList@@QAEXUPointSourceWind@@@Z,public: void __thiscall PointSourceWindList::Add(struct PointSourceWind),0x004A64C0,defines,2
+?AddPointSourceWind@WindManager@@QAEXVVector@@III@Z,"public: void __thiscall WindManager::AddPointSourceWind(class Vector,unsigned int,unsigned int,unsigned int)",0x004A6510,defines,1
 ??1WindManager@@QAE@XZ,public: __thiscall WindManager::~WindManager(void),0x004A6710,calls,1
 ?AurGrassClearInfo@@YAXXZ,void __cdecl AurGrassClearInfo(void),0x004A67A0,defines,1
 ??1RmBin@@QAE@XZ,public: __thiscall RmBin::~RmBin(void),0x004A8350,calls,1
@@ -2937,8 +2946,8 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ??0CSWSCombatRound@@QAE@PAVCSWSCreature@@@Z,public: __thiscall CSWSCombatRound::CSWSCombatRound(class CSWSCreature *),0x004D5CB0,defines,1
 ??1CSWSCombatRound@@QAE@XZ,public: __thiscall CSWSCombatRound::~CSWSCombatRound(void),0x004D5E60,defines,1
 ?StartCombatRound@CSWSCombatRound@@QAEXKHHGH@Z,"public: void __thiscall CSWSCombatRound::StartCombatRound(unsigned long,int,int,unsigned short,int)",0x004D5F70,defines,1
-??0CNWMessage@@QAE@XZ,public: __thiscall CNWMessage::CNWMessage(void),0x004D60F0,defines,2
-??1CNWMessage@@UAE@XZ,public: virtual __thiscall CNWMessage::~CNWMessage(void),0x004D6130,defines,2
+??0CNWMessage@@QAE@XZ,public: __thiscall CNWMessage::CNWMessage(void),0x004D60F0,defines,3
+??1CNWMessage@@UAE@XZ,public: virtual __thiscall CNWMessage::~CNWMessage(void),0x004D6130,defines,3
 ?SetReadPositionToEnd@CNWMessage@@QAEXXZ,public: void __thiscall CNWMessage::SetReadPositionToEnd(void),0x004D6170,defines,1
 ?SkipMessage@CSWCMessage@@QAEXXZ,public: void __thiscall CSWCMessage::SkipMessage(void),0x004D6170,calls,1
 ?ReadCResRef@CSWCMessage@@QAE?AVCResRef@@H@Z,public: class CResRef __thiscall CSWCMessage::ReadCResRef(int),0x004D6180,calls,1
@@ -5174,6 +5183,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?Allocate@?$CExoArrayListL@H@@QAEXH@Z,public: void __thiscall CExoArrayListL<int>::Allocate(int),0x005E03C0,calls,1
 ?Allocate@AurResStackAllocateHelper@@QAEXH@Z,public: void __thiscall AurResStackAllocateHelper::Allocate(int),0x005E03C0,calls,1
 ?Allocate@CSoundArray@@QAEXH@Z,public: void __thiscall CSoundArray::Allocate(int),0x005E03C0,calls,1
+?Allocate@VertexProgramArray@@QAEXH@Z,public: void __thiscall VertexProgramArray::Allocate(int),0x005E03C0,calls,1
 ?Allocate@?$CExoArrayList@UCExoInputEvent@@@@QAEXH@Z,public: void __thiscall CExoArrayList<struct CExoInputEvent>::Allocate(int),0x005E0410,defines,3
 ?IsControlUsed@CExoInputInternal@@QAEPAVCExoInputEventDesc@@KHH@Z,"public: class CExoInputEventDesc * __thiscall CExoInputInternal::IsControlUsed(unsigned long,int,int)",0x005E0480,defines,3
 ?SetEventRepeatable@CExoInputInternal@@QAEHKKK@Z,"public: int __thiscall CExoInputInternal::SetEventRepeatable(unsigned long,unsigned long,unsigned long)",0x005E0520,defines,2
@@ -6119,7 +6129,10 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SetSWGuiStatus@CGuiInGame@@QAEXHH@Z,"public: void __thiscall CGuiInGame::SetSWGuiStatus(int,int)",0x0062AA00,defines,5
 ?ShowBarkBubble@CGuiInGame@@QAEXHHHH@Z,"public: void __thiscall CGuiInGame::ShowBarkBubble(int,int,int,int)",0x0062AB30,defines,1
 ?ShowBarkString@CGuiInGame@@QAEHKHHH@Z,"public: int __thiscall CGuiInGame::ShowBarkString(unsigned long,int,int,int)",0x0062AB30,calls,1
+?IsLoopingDialogStuntAnimation@CGuiInGame@@QAEHG@Z,public: int __thiscall CGuiInGame::IsLoopingDialogStuntAnimation(unsigned short),0x0062AB70,defines,1
+?DialogGuiDoneScroll@CGuiInGame@@QAEXXZ,public: void __thiscall CGuiInGame::DialogGuiDoneScroll(void),0x0062AB90,defines,1
 ?HideLetterbox@CGuiInGame@@QAEXXZ,public: void __thiscall CGuiInGame::HideLetterbox(void),0x0062AB90,calls,1
+?IsCameraDialog@CGuiInGame@@QAEHXZ,public: int __thiscall CGuiInGame::IsCameraDialog(void),0x0062ABD0,defines,1
 ?IsDialogForced@CGuiInGame@@QAEHXZ,public: int __thiscall CGuiInGame::IsDialogForced(void),0x0062ABD0,calls,1
 ?StartGlobalFade@CGuiInGame@@QAEXHHHH@Z,"public: void __thiscall CGuiInGame::StartGlobalFade(int,int,int,int)",0x0062ABF0,defines,1
 ?StartGlobalFade@CGuiInGame@@QAEXHHMPAUVector@@@Z,"public: void __thiscall CGuiInGame::StartGlobalFade(int,int,float,struct Vector *)",0x0062ABF0,calls,2
@@ -6215,12 +6228,15 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?GetAnimBase@CSWCCreatureAnim@@QAEPAUCCreatureAnimBase@@XZ,public: struct CCreatureAnimBase * __thiscall CSWCCreatureAnim::GetAnimBase(void),0x0063C070,calls,1
 ?GetAnimationBase@CSWCCreature@@QAEPAVCAnimationBase@@XZ,public: class CAnimationBase * __thiscall CSWCCreature::GetAnimationBase(void),0x0063C070,calls,14
 ?GetAnimationBase@CSWCObject@@QAEPAVCAnimBase@@XZ,public: class CAnimBase * __thiscall CSWCObject::GetAnimationBase(void),0x0063C070,calls,1
+?GetAnimationBase@CSWCObject@@QAEPAVCAurAnimationBase@@XZ,public: class CAurAnimationBase * __thiscall CSWCObject::GetAnimationBase(void),0x0063C070,defines,1
 ?ReplaceTextures@CSWCObject@@QAEXABVCResRef@@0H@Z,"public: void __thiscall CSWCObject::ReplaceTextures(class CResRef const &,class CResRef const &,int)",0x0063C0C0,calls,3
 ?GetAnimationLength@CSWCObject@@QAEMK@Z,public: float __thiscall CSWCObject::GetAnimationLength(unsigned long),0x0063C0E0,defines,1
 ?IsAnimationBlocked@CSWCCreature@@QAEHG@Z,public: int __thiscall CSWCCreature::IsAnimationBlocked(unsigned short),0x0063C4A0,calls,1
 ?IsAnimationPlaying@CSWCCreature@@QAEHG@Z,public: int __thiscall CSWCCreature::IsAnimationPlaying(unsigned short),0x0063C4A0,calls,1
 ?SetAlpha@CSWCObject@@QAEXME@Z,"public: void __thiscall CSWCObject::SetAlpha(float,unsigned char)",0x0063CB50,calls,4
+?ClearSelfIllumination@CSWCObject@@QAEIXZ,public: unsigned int __thiscall CSWCObject::ClearSelfIllumination(void),0x0063CE10,defines,1
 ?ClearSelfIllumination@CSWCObject@@QAEXXZ,public: void __thiscall CSWCObject::ClearSelfIllumination(void),0x0063CE10,calls,1
+?RefreshSelfIllumination@CSWCObject@@QAEIXZ,public: unsigned int __thiscall CSWCObject::RefreshSelfIllumination(void),0x0063CE30,defines,1
 ?RefreshSelfIllumination@CSWCObject@@QAEXXZ,public: void __thiscall CSWCObject::RefreshSelfIllumination(void),0x0063CE30,calls,3
 ?Fade@CSWCPlaceable@@QAEXHHKK@Z,"public: void __thiscall CSWCPlaceable::Fade(int,int,unsigned long,unsigned long)",0x0063CE60,calls,1
 ?PlayAnimation@CSWCObject@@QAEXHHHH@Z,"public: void __thiscall CSWCObject::PlayAnimation(int,int,int,int)",0x0063CE60,calls,2
@@ -6236,8 +6252,8 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?AttachmentFromServerObject@CSWCObject@@QAEXPAVCSWSObject@@@Z,public: void __thiscall CSWCObject::AttachmentFromServerObject(class CSWSObject *),0x0063D520,defines,1
 ?FUN_0063d520@CSWCObject@@QAEXPAVCSWSObject@@@Z,public: void __thiscall CSWCObject::FUN_0063d520(class CSWSObject *),0x0063D520,calls,1
 ?DetachFromServerObject@CSWCObject@@QAEXXZ,public: void __thiscall CSWCObject::DetachFromServerObject(void),0x0063D530,defines,1
-?StartFlash@CSWCObject@@QAEXXZ,public: void __thiscall CSWCObject::StartFlash(void),0x0063D540,calls,1
-?StopFlash@CSWCObject@@QAEXXZ,public: void __thiscall CSWCObject::StopFlash(void),0x0063D550,calls,1
+?StartFlash@CSWCObject@@QAEXXZ,public: void __thiscall CSWCObject::StartFlash(void),0x0063D540,defines,2
+?StopFlash@CSWCObject@@QAEXXZ,public: void __thiscall CSWCObject::StopFlash(void),0x0063D550,defines,2
 ?AttachToScene@CSWCObject@@QAEXPAVCAurScene@@@Z,public: void __thiscall CSWCObject::AttachToScene(class CAurScene *),0x0063D820,defines,1
 ?SetTransitionMode@CSWCCreature@@QAEXH@Z,public: void __thiscall CSWCCreature::SetTransitionMode(int),0x0063D820,calls,2
 ?SetCorpseState@CSWCCreature@@QAEXH@Z,public: void __thiscall CSWCCreature::SetCorpseState(int),0x0063E220,calls,1
@@ -6272,6 +6288,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ??0CSWCModule@@QAE@XZ,public: __thiscall CSWCModule::CSWCModule(void),0x00643F40,calls,1
 ??_GCSWCModule@@UAEPAXI@Z,public: virtual void * __thiscall CSWCModule::`scalar deleting destructor'(unsigned int),0x00644150,defines,1
 ?SetJournalOption@CGuiInGame@@QAEXK@Z,public: void __thiscall CGuiInGame::SetJournalOption(unsigned long),0x00644740,defines,1
+?GetAsyncFile@CExoPackedFile@@UAEPAXXZ,public: virtual void * __thiscall CExoPackedFile::GetAsyncFile(void),0x00644760,defines,1
 ?GetModule@CClientExoAppInternal@@QAEPAVCSWCModule@@XZ,public: class CSWCModule * __thiscall CClientExoAppInternal::GetModule(void),0x00644760,calls,5
 ?GetSize@CERFRawResource@@QAEKXZ,public: unsigned long __thiscall CERFRawResource::GetSize(void),0x00644760,calls,3
 ?ClearActiveListChanged@CSWCJournal@@QAEXXZ,public: void __thiscall CSWCJournal::ClearActiveListChanged(void),0x00644770,defines,1
@@ -6364,7 +6381,8 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SetClass@CSWCLevelUpStats@@QAEXEE@Z,"public: void __thiscall CSWCLevelUpStats::SetClass(unsigned char,unsigned char)",0x0064A1F0,defines,1
 ?SetClassLevel@CSWCLevelUpStats@@QAEXEE@Z,"public: void __thiscall CSWCLevelUpStats::SetClassLevel(unsigned char,unsigned char)",0x0064A2A0,defines,1
 ?FeatRequirementsMet@CSWCLevelUpStats@@QAEHGPAV?$CExoArrayList@G@@@Z,"public: int __thiscall CSWCLevelUpStats::FeatRequirementsMet(unsigned short,class CExoArrayList<unsigned short> *)",0x0064A2E0,defines,1
-??1CSWCMessage@@UAE@XZ,public: virtual __thiscall CSWCMessage::~CSWCMessage(void),0x0064B530,calls,1
+??0CSWCMessage@@QAE@XZ,public: __thiscall CSWCMessage::CSWCMessage(void),0x0064B510,defines,1
+??1CSWCMessage@@UAE@XZ,public: virtual __thiscall CSWCMessage::~CSWCMessage(void),0x0064B530,defines,2
 ?HandleServerToPlayerCreatureUpdate_Add@CSWCMessage@@QAEHXZ,public: int __thiscall CSWCMessage::HandleServerToPlayerCreatureUpdate_Add(void),0x0064C0A0,calls,1
 ?HandleServerToPlayerDoorUpdate_Add@CSWCMessage@@QAEHXZ,public: int __thiscall CSWCMessage::HandleServerToPlayerDoorUpdate_Add(void),0x0064CF30,calls,1
 ?HandleServerToPlayerDoorUpdate_Update@CSWCMessage@@QAEHKK@Z,"public: int __thiscall CSWCMessage::HandleServerToPlayerDoorUpdate_Update(unsigned long,unsigned long)",0x0064D420,defines,2
@@ -6667,7 +6685,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?HandleMessage@CClientMessageHandler1c0@@QAEXPAEK@Z,"public: void __thiscall CClientMessageHandler1c0::HandleMessage(unsigned char *,unsigned long)",0x00675710,calls,1
 ?EnableSort@CSWCJournal@@QAEXXZ,public: void __thiscall CSWCJournal::EnableSort(void),0x00675DB0,defines,1
 ?DisableSort@CSWCJournal@@QAEXXZ,public: void __thiscall CSWCJournal::DisableSort(void),0x00675DC0,defines,1
-?GetCount@CExoStringList@@QAEHXZ,public: int __thiscall CExoStringList::GetCount(void),0x00675DD0,calls,2
+?GetCount@CExoStringList@@QAEHXZ,public: int __thiscall CExoStringList::GetCount(void),0x00675DD0,defines,3
 ?Allocate@?$CExoArrayList@UCSWCJournalPendingUpdate@@@@QAEXH@Z,public: void __thiscall CExoArrayList<struct CSWCJournalPendingUpdate>::Allocate(int),0x00675DE0,defines,2
 ?SortItemsByDate@CSWCSortedJournalArrayList@@QAEHHH@Z,"public: int __thiscall CSWCSortedJournalArrayList::SortItemsByDate(int,int)",0x00675ED0,defines,1
 ?GetActiveEntryAt@CSWCJournal@@QAEPAUCSWCJournalEntry@@H@Z,public: struct CSWCJournalEntry * __thiscall CSWCJournal::GetActiveEntryAt(int),0x00676310,defines,1
@@ -7288,6 +7306,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ??0CAurGunEmitter@@QAE@PAVCAurObject@@0PAVCAurPart@@@Z,"public: __thiscall CAurGunEmitter::CAurGunEmitter(class CAurObject *,class CAurObject *,class CAurPart *)",0x006DADF0,calls,1
 ?SetBirthrateA@CAurEmitter@@QAEXM@Z,public: void __thiscall CAurEmitter::SetBirthrateA(float),0x006DAF60,calls,2
 ?SetBirthrateB@CAurEmitter@@QAEXM@Z,public: void __thiscall CAurEmitter::SetBirthrateB(float),0x006DAFA0,calls,2
+?DestroyBaseAlias@CAurBehavior@@QAEXXZ,public: void __thiscall CAurBehavior::DestroyBaseAlias(void),0x006DB4E0,defines,1
 ??0CAurTargettingEmitter@@QAE@PAVCAurObject@@0PAVCAurPart@@0@Z,"public: __thiscall CAurTargettingEmitter::CAurTargettingEmitter(class CAurObject *,class CAurObject *,class CAurPart *,class CAurObject *)",0x006DB590,calls,1
 ??0CSWGuiOptionsCheckbox@@QAE@XZ,public: __thiscall CSWGuiOptionsCheckbox::CSWGuiOptionsCheckbox(void),0x006E00D0,defines,1
 ??1CSWGuiOptionsCheckbox@@UAE@XZ,public: virtual __thiscall CSWGuiOptionsCheckbox::~CSWGuiOptionsCheckbox(void),0x006E00F0,defines,2
@@ -7592,6 +7611,7 @@ __real@4f800000,__real@4f800000,0x0073D770,data,6
 ??_7CSWGuiObject@@6B@,const CSWGuiObject::`vftable',0x0073DF20,data,4
 ??_C@_0M@OFIDNKMI@soundresref?$AA@,`string',0x0073DF54,data,1
 ??_C@_09NPPLGEPF@guisounds?$AA@,`string',0x0073DF60,data,1
+??_C@_07DLHCIBDH@default?$AA@,`string',0x0073DF6C,data,14
 ??_C@_06BBLOAEEI@center?$AA@,`string',0x0073DF74,data,1
 ??_C@_07IHCDBFLB@800x600?$AA@,`string',0x0073DF7C,data,2
 ??_C@_09DBPOMMCL@1600x1200?$AA@,`string',0x0073DF84,data,1
@@ -7718,11 +7738,13 @@ __real@3c010204,__real@3c010204,0x0073EE00,data,5
 ?g_nGLTex2DConst@@3IB,unsigned int const g_nGLTex2DConst,0x0073F23C,data,2
 ?g_aFogModes@@3PAHA,int * g_aFogModes,0x0073F25C,data,2
 ?g_eMaxTextureUnits@@3IA,unsigned int g_eMaxTextureUnits,0x0073F26C,data,1
+?g_aGLBlendFactors@@3PAIA,unsigned int * g_aGLBlendFactors,0x0073F270,data,6
 ?g_nBlendSrcAlpha@@3IB,unsigned int const g_nBlendSrcAlpha,0x0073F270,data,2
 ?g_nGLSrcAlpha@@3IA,unsigned int g_nGLSrcAlpha,0x0073F270,data,1
 ?g_nBlendOneMinusSrcAlpha@@3IB,unsigned int const g_nBlendOneMinusSrcAlpha,0x0073F274,data,2
 ?g_nGLOneMinusSrcAlpha@@3IA,unsigned int g_nGLOneMinusSrcAlpha,0x0073F274,data,1
 ?g_nBlendOne@@3IB,unsigned int const g_nBlendOne,0x0073F278,data,1
+?g_aGLMatrixModes@@3PAIA,unsigned int * g_aGLMatrixModes,0x0073F290,data,2
 ?g_nGLProjection@@3IA,unsigned int g_nGLProjection,0x0073F290,data,2
 ?g_eModelviewMatrix@@3IA,unsigned int g_eModelviewMatrix,0x0073F298,data,2
 ?g_nGLModelView@@3IA,unsigned int g_nGLModelView,0x0073F298,data,2
@@ -7785,6 +7807,7 @@ __real@42200000,__real@42200000,0x00740A0C,data,1
 __real@40400000,__real@40400000,0x00740C84,data,3
 ??_C@_0O@NMINFAJG@cutscenedummy?$AA@,`string',0x00740C8C,data,1
 ??_C@_01KDCPPGHE@r?$AA@,`string',0x00740CA4,data,1
+??_C@_04IPGPBAO@?4mdl?$AA@,`string',0x00740CA8,data,2
 __real@bf800000,__real@bf800000,0x00740CBC,data,32
 ??_C@_05BMGBEOOC@?$CFs?2?$CFs?$AA@,`string',0x00740CCC,data,1
 ??_C@_05KDNLHNC@?$CFs?5?$CFf?$AA@,`string',0x00740CD4,data,1
@@ -7844,6 +7867,7 @@ __real@42340000,__real@42340000,0x00741874,data,1
 ??_7CAurCamera@@6B@,const CAurCamera::`vftable',0x007418F8,data,3
 ??_7Camera@@6BGob@@@,const Camera::`vftable'{for `Gob'},0x00741988,data,2
 ??_7Camera@@6BCAurCamera@@@,const Camera::`vftable'{for `CAurCamera'},0x00741B20,data,2
+??_C@_04CCEEKGEF@?44pc?$AA@,`string',0x00741BC0,data,2
 ??_C@_06PDNJPBCN@?$CFs?4dds?$AA@,`string',0x00741BC8,data,1
 ??_C@_06NJHCGIDI@?$CFs?4tga?$AA@,`string',0x00741BD0,data,1
 ??_C@_06GNPAPGJK@?$CFs?4plt?$AA@,`string',0x00741BD8,data,1
@@ -8896,6 +8920,7 @@ __real@3fe3333340000000,__real@3fe3333340000000,0x0074D300,data,1
 ?GUID_SysMouse@@3U_GUID@@B,struct _GUID const GUID_SysMouse,0x0074D6A4,data,1
 ?c_dfDIMouse@@3UDIDATAFORMAT@@B,struct DIDATAFORMAT const c_dfDIMouse,0x0074DB04,data,1
 ??_C@_0BK@GDGNLBHK@?4?8?0?$NP?i?I?h?H?G?g?y?Y?q?Q?$OA?$MA?D?d?$NM?$PM?V?v_?9?5?$AA@,`string',0x0074DB1C,data,1
+??_C@_02HLCDKCAB@?$EA?4?$AA@,`string',0x0074DB38,data,2
 ??_C@_0DP@EFDPGBGM@ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef@,`string',0x0074DB3C,data,1
 ??_C@_0DL@INBFNPJK@abcdefghijklmnopqrstuvwxyz012345@,`string',0x0074DB7C,data,1
 ??_C@_05NNNCCOHC@Alias?$AA@,`string',0x0074DDB0,data,1
@@ -8931,6 +8956,7 @@ __real@42100000,__real@42100000,0x0074F348,data,1
 ??_C@_08OOCEFHIB@BTN_EXIT?$AA@,`string',0x0074FCCC,data,1
 ??_C@_0M@FENLBMOM@LBL_JOURNAL?$AA@,`string',0x0074FF48,data,1
 ??_C@_09LBCFDCBC@LBL_TITLE?$AA@,`string',0x00751A20,data,1
+??_7CSWCMessage@@6B@,const CSWCMessage::`vftable',0x00751C6C,data,2
 ??_C@_0M@CEHHGHBF@handconjure?$AA@,`string',0x00751D74,data,2
 ??_7CSWCSoundObject@@6B@,const CSWCSoundObject::`vftable',0x007522A8,data,2
 ??_C@_0M@CIIGNPGL@OnAnimEvent?$AA@,`string',0x007523F0,data,1
@@ -9165,6 +9191,7 @@ __TI3?AVout_of_range@std@@,__TI3?AVout_of_range@std@@,0x00764310,data,1
 ?g_fGuiPulseTimer@@3MA,float g_fGuiPulseTimer,0x0078D3D0,data,4
 ?g_fGuiPulse@@3MA,float g_fGuiPulse,0x0078D3D4,data,1
 ?g_fGuiPulseAlpha@@3MA,float g_fGuiPulseAlpha,0x0078D3D4,data,2
+?g_vGuiSceneAmbient@@3VVector@@A,class Vector g_vGuiSceneAmbient,0x0078D3D8,data,3
 ?g_vGuiViewportColor@@3VVector@@A,class Vector g_vGuiViewportColor,0x0078D3D8,data,1
 ?g_fGuiHilightAlpha@@3MA,float g_fGuiHilightAlpha,0x0078D3E4,data,1
 ?g_fGuiHilightTimer@@3MA,float g_fGuiHilightTimer,0x0078D3E8,data,4
@@ -9209,8 +9236,11 @@ __TI3?AVout_of_range@std@@,__TI3?AVout_of_range@std@@,0x00764310,data,1
 ?g_bUseViewMatrix@@3HA,int g_bUseViewMatrix,0x0078D494,data,1
 ?g_aFontBitmaps@@3PAEA,unsigned char * g_aFontBitmaps,0x0078D498,data,1
 ?g_bFrameBufferEffects@@3HA,int g_bFrameBufferEffects,0x0078D98C,data,2
+?g_vFogColor@@3PAMA,float * g_vFogColor,0x0078DB24,data,3
 ?g_ImposterManager@@3VImposterManager@@A,class ImposterManager g_ImposterManager,0x0078DB30,data,1
 ?g_nNextTriMeshId@@3HA,int g_nNextTriMeshId,0x0078E328,data,2
+?g_vDefaultDiffuse@@3VVector@@A,class Vector g_vDefaultDiffuse,0x0078E33C,data,3
+?g_vDefaultAmbient@@3VVector@@A,class Vector g_vDefaultAmbient,0x0078E348,data,3
 _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_nCurrentFont@@3HA,int g_nCurrentFont,0x0078E358,data,2
 ?g_bFontFlag@@3DA,char g_bFontFlag,0x0078E35C,data,3
@@ -9227,6 +9257,8 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_bSoftShadows@@3HA,int g_bSoftShadows,0x0078E420,data,4
 ?g_fGrassBinSize@@3MA,float g_fGrassBinSize,0x0078E428,data,2
 ?g_fGUIFlushAlpha@@3MA,float g_fGUIFlushAlpha,0x0078E43C,data,1
+?g_aLowpassKernel@@3PAY02MA,float (* g_aLowpassKernel)[3],0x0078E450,data,6
+?g_aLowpassShift@@3PAY02EA,unsigned char (* g_aLowpassShift)[3],0x0078E474,data,6
 ?g_nExt490@@3HA,int g_nExt490,0x0078E484,data,1
 ?g_nExt49C@@3HA,int g_nExt49C,0x0078E49C,data,1
 ?g_nExt4A0@@3HA,int g_nExt4A0,0x0078E4A0,data,1
@@ -9260,6 +9292,7 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_bARBVertexProgram@@3HA,int g_bARBVertexProgram,0x0078E5EC,data,11
 ?g_bUseARBVertexProgram@@3HA,int g_bUseARBVertexProgram,0x0078E5EC,data,1
 ?g_bUseHardwareSkin@@3HA,int g_bUseHardwareSkin,0x0078E5EC,data,2
+?g_programs_arb_0078e5ec@@3HA,int g_programs_arb_0078e5ec,0x0078E5EC,data,1
 ?g_bTransformParts@@3HA,int g_bTransformParts,0x0078E5F0,data,4
 ?g_bUseLightMapTexture@@3HA,int g_bUseLightMapTexture,0x0078E5FC,data,1
 ?g_bRenderFlat@@3HA,int g_bRenderFlat,0x0078E614,data,5
@@ -9274,6 +9307,7 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_bBeamStencil@@3HA,int g_bBeamStencil,0x0078E69C,data,1
 ?g_fBeamAlpha@@3MA,float g_fBeamAlpha,0x0078E6A0,data,1
 ?g_fFogDensity@@3MA,float g_fFogDensity,0x0078E6A0,data,4
+?g_aWalkMeshColors@@3PAVVector@@A,class Vector * g_aWalkMeshColors,0x0078E6A8,data,4
 ?g_bDrawPreparedParts@@3HA,int g_bDrawPreparedParts,0x0078E844,data,1
 ?g_vWhite@@3VVector@@A,class Vector g_vWhite,0x0078E894,data,1
 ?g_vBeamColor@@3VVector@@A,class Vector g_vBeamColor,0x0078E8A0,data,1
@@ -9292,6 +9326,8 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_szSkinVPSw@@3PADA,char * g_szSkinVPSw,0x0079B5A8,data,1
 ?g_szSkinSphereMapVP@@3PADA,char * g_szSkinSphereMapVP,0x0079E958,data,1
 ?g_szSkinCubeMapVPSw@@3PADA,char * g_szSkinCubeMapVPSw,0x0079F128,data,1
+?g_vZAxis@@3UVector@@A,struct Vector g_vZAxis,0x007A19B0,data,3
+?g_nNextEffectID@@3_KA,unsigned __int64 g_nNextEffectID,0x007A1B40,data,6
 ?g_nReputationOverride@@3HA,int g_nReputationOverride,0x007A2068,data,1
 ?g_nAppearanceCol_ABORTONPARRY@@3HA,int g_nAppearanceCol_ABORTONPARRY,0x007A20C0,data,1
 ?g_nAppearanceCol_BACKUPHEAD@@3HA,int g_nAppearanceCol_BACKUPHEAD,0x007A20C4,data,1
@@ -9413,7 +9449,10 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_fFarClipOverride2@@3MA,float g_fFarClipOverride2,0x007A2324,data,4
 ?g_fFarClipOverride3@@3MA,float g_fFarClipOverride3,0x007A2328,data,4
 ?g_bGuiFlag@@3HA,int g_bGuiFlag,0x007A2370,data,4
+?g_vAbilityColorGranted@@3VVector@@A,class Vector g_vAbilityColorGranted,0x007A23C0,data,6
 ?g_vDefaultReplyColor@@3VVector@@A,class Vector g_vDefaultReplyColor,0x007A23C0,data,1
+?g_vAbilityColorAvailable@@3VVector@@A,class Vector g_vAbilityColorAvailable,0x007A23D8,data,3
+?g_vAbilityColorLocked@@3VVector@@A,class Vector g_vAbilityColorLocked,0x007A23E4,data,6
 ?g_fCreditsScrollRate@@3MA,float g_fCreditsScrollRate,0x007A2670,data,1
 ?g_bQuitRequested@@3HA,int g_bQuitRequested,0x007A39B8,data,1
 ?g_hInstance@@3PAXA,void * g_hInstance,0x007A39C0,data,3
@@ -9436,6 +9475,7 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_pVirtualMachine@@3PAVCVirtualMachine@@A,class CVirtualMachine * g_pVirtualMachine,0x007A3A00,data,308
 ?g_pTlkTable@@3PAVCTlkTable@@A,class CTlkTable * g_pTlkTable,0x007A3A08,data,31
 ?g_pTlkTableAlt@@3PAVCTlkTable@@A,class CTlkTable * g_pTlkTableAlt,0x007A3A0C,data,1
+?g_nSessionStartTime@@3_KA,unsigned __int64 g_nSessionStartTime,0x007A3A20,data,4
 ?g_pRules@@3PAVCSWRules@@A,class CSWRules * g_pRules,0x007A3A28,data,226
 ?g_pUnknown7A3A28@@3PAVCDeletable@@A,class CDeletable * g_pUnknown7A3A28,0x007A3A28,data,2
 ?g_nActivateState@@3HA,int g_nActivateState,0x007A3A2C,data,2
@@ -9450,12 +9490,14 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_sWindowSubTitle@@3VCExoString@@A,class CExoString g_sWindowSubTitle,0x007A3CCC,data,2
 ?g_sWindowTitle@@3VCExoString@@A,class CExoString g_sWindowTitle,0x007A3CDC,data,1
 ?g_hMovieWnd@@3PAXA,void * g_hMovieWnd,0x007A3CF8,data,1
+?g_aResRefStr@@3PAY0BB@DA,char (* g_aResRefStr)[17],0x007A3D00,data,2
 ?g_nResRefStr@@3HA,int g_nResRefStr,0x007A3D48,data,2
 ?g_bDrawSafeRegion@@3HA,int g_bDrawSafeRegion,0x007A3D4C,data,1
 ?g_aResolutionSuffixes@@3PAVCExoString@@A,class CExoString * g_aResolutionSuffixes,0x007A3D50,data,2
 ?g_sComputerBGPrefix@@3VCExoString@@A,class CExoString g_sComputerBGPrefix,0x007A3D70,data,1
 ?g_bGuiPulseRising@@3HA,int g_bGuiPulseRising,0x007A4578,data,3
 ?g_bGuiHilightRising@@3_NA,bool g_bGuiHilightRising,0x007A457C,data,3
+_s_szEditChar,_s_szEditChar,0x007A4580,data,3
 ?g_nBindCountPeak@@3HA,int g_nBindCountPeak,0x007A46B0,data,1
 ?g_nAurTextureMaxTexID@@3HA,int g_nAurTextureMaxTexID,0x007A46BC,data,1
 ?g_nMaxGLName@@3IA,unsigned int g_nMaxGLName,0x007A46BC,data,6
@@ -9477,7 +9519,12 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_nStatPeak758@@3HA,int g_nStatPeak758,0x007A4758,data,2
 ?g_nStatPeak75c@@3HA,int g_nStatPeak75c,0x007A475C,data,2
 ?g_nStatPeak760@@3HA,int g_nStatPeak760,0x007A4760,data,2
+?g_lTextures@@3V?$CExoArrayList@PAVCAurTextureBasic@@@@A,class CExoArrayList<class CAurTextureBasic *> g_lTextures,0x007A4770,data,12
 ?g_pNullTexture@@3V?$SafePointer@VCAurTexture@@@@A,class SafePointer<class CAurTexture> g_pNullTexture,0x007A477C,data,7
+?g_lOrderedA@@3V?$CExoArrayList@PAVCAurTextureBasic@@@@A,class CExoArrayList<class CAurTextureBasic *> g_lOrderedA,0x007A4780,data,8
+?g_lGLNameOrdering@@3V?$CExoArrayList@H@@A,class CExoArrayList<int> g_lGLNameOrdering,0x007A478C,data,27
+?g_lHashed@@3V?$CExoArrayList@PAVCAurTextureBasic@@@@A,class CExoArrayList<class CAurTextureBasic *> g_lHashed,0x007A4798,data,11
+?g_lOrderedB@@3V?$CExoArrayList@PAVCAurTextureBasic@@@@A,class CExoArrayList<class CAurTextureBasic *> g_lOrderedB,0x007A47A4,data,16
 ?g_nFontListBase@@3IA,unsigned int g_nFontListBase,0x007A47C0,data,4
 ?g_pfnCombiner@@3P6AXIPAVCAurTexture@@000@ZA,"void (__cdecl* g_pfnCombiner)(unsigned int,class CAurTexture *,class CAurTexture *,class CAurTexture *,class CAurTexture *)",0x007A47E0,data,11
 ?g_hGLDC@@3PAXA,void * g_hGLDC,0x007A47E4,data,2
@@ -9504,6 +9551,7 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_nBloomTexture@@3IA,unsigned int g_nBloomTexture,0x007A68C0,data,1
 ?g_hBloomPbuffer@@3PAXA,void * g_hBloomPbuffer,0x007A68C4,data,2
 ?g_nFilmNoiseTexture@@3HA,int g_nFilmNoiseTexture,0x007A68D0,data,1
+?g_aRenderSquares@@3V?$CExoArrayList@H@@A,class CExoArrayList<int> g_aRenderSquares,0x007A693C,data,12
 _s_nVBOBytesRequested,_s_nVBOBytesRequested,0x007A6984,data,2
 _s_nPoolBytesRequested,_s_nPoolBytesRequested,0x007A6988,data,2
 ?g_nModelMemory@@3HA,int g_nModelMemory,0x007A6990,data,15
@@ -9516,18 +9564,25 @@ _s_nPoolBytesRequested,_s_nPoolBytesRequested,0x007A6988,data,2
 ?g_nPartTriMeshCount@@3HA,int g_nPartTriMeshCount,0x007A8A14,data,2
 ?g_nGobCount@@3HA,int g_nGobCount,0x007A8A18,data,2
 ?g_pTextureLog@@3PAU_iobuf@@A,struct _iobuf * g_pTextureLog,0x007A8A3C,data,3
-?g_lModels@@3V?$CExoArrayList@PAX@@A,class CExoArrayList<void *> g_lModels,0x007A8A68,data,1
-?g_lSkinScratch0@@3V?$CExoArrayList@H@@A,class CExoArrayList<int> g_lSkinScratch0,0x007A8A74,data,1
-?g_lSkinScratch1@@3V?$CExoArrayList@H@@A,class CExoArrayList<int> g_lSkinScratch1,0x007A8A80,data,1
-?g_lSkinScratch2@@3V?$CExoArrayList@H@@A,class CExoArrayList<int> g_lSkinScratch2,0x007A8A8C,data,1
+?g_lGobs@@3V?$CExoArrayList@PAVGob@@@@A,class CExoArrayList<class Gob *> g_lGobs,0x007A8A58,data,11
+?g_lModels@@3V?$CExoArrayList@PAVModel@@@@A,class CExoArrayList<class Model *> g_lModels,0x007A8A64,data,9
+?g_lModels@@3V?$CExoArrayList@PAX@@A,class CExoArrayList<void *> g_lModels,0x007A8A64,data,1
+?g_lSkinScratch0@@3V?$CExoArrayList@H@@A,class CExoArrayList<int> g_lSkinScratch0,0x007A8A70,data,1
+?g_lSkinScratch1@@3V?$CExoArrayList@H@@A,class CExoArrayList<int> g_lSkinScratch1,0x007A8A7C,data,1
+?g_lSkinScratch2@@3V?$CExoArrayList@H@@A,class CExoArrayList<int> g_lSkinScratch2,0x007A8A88,data,1
+?g_apConsoleFuncs@@3PAPAVConsoleFunc@@A,class ConsoleFunc * * g_apConsoleFuncs,0x007A8AB8,data,12
 ?g_nConsoleFuncs@@3HA,int g_nConsoleFuncs,0x007B8FB8,data,9
 ?g_bConsoleEcho@@3DA,char g_bConsoleEcho,0x007B8FC0,data,3
 ?g_pfnAurResGet@@3P6APAEPBD0PAH@ZA,"unsigned char * (__cdecl* g_pfnAurResGet)(char const *,char const *,int *)",0x007B8FC4,data,1
 ?g_pfnAurResFree@@3P6AXPAXH@ZA,"void (__cdecl* g_pfnAurResFree)(void *,int)",0x007B8FC8,data,1
+?g_AurResOpenFiles@@3UAurResFileList@@A,struct AurResFileList g_AurResOpenFiles,0x007B8FD8,data,2
+?g_lAurResStack@@3V?$CExoArrayList@PAVAurRes@@@@A,class CExoArrayList<class AurRes *> g_lAurResStack,0x007B8FD8,data,32
 ?g_szAurResDoFileMessage@@3PADA,char * g_szAurResDoFileMessage,0x007B8FE8,data,4
 ?g_pFont@@3PAVCAurFont@@A,class CAurFont * g_pFont,0x007B90EC,data,2
 ?g_bAuroraInitialised@@3HA,int g_bAuroraInitialised,0x007B90F0,data,1
 ?g_bFontInitialised@@3HA,int g_bFontInitialised,0x007B90F0,data,6
+?g_aPostStrings@@3V?$CExoArrayList@PAVCAurPostString@@@@A,class CExoArrayList<class CAurPostString *> g_aPostStrings,0x007B90FC,data,9
+?g_aConsoleVars@@3V?$CExoArrayList@PAUAurConsoleVar@@@@A,class CExoArrayList<struct AurConsoleVar *> g_aConsoleVars,0x007B9108,data,11
 ?g_nAuroraRefs@@3HA,int g_nAuroraRefs,0x007B9218,data,4
 ?g_pAurora@@3PAVCAurInternalGL@@A,class CAurInternalGL * g_pAurora,0x007B921C,data,5
 ?g_nColorBits@@3FA,short g_nColorBits,0x007B9220,data,1
@@ -9542,6 +9597,8 @@ _s_nPoolBytesRequested,_s_nPoolBytesRequested,0x007A6988,data,2
 ?g_bBinaryModel@@3EA,unsigned char g_bBinaryModel,0x007B927C,data,5
 ?g_bDisableVBO@@3DA,char g_bDisableVBO,0x007B927D,data,1
 ?g_bNoVBO@@3EA,unsigned char g_bNoVBO,0x007B927D,data,1
+?g_nAnimEndTime@@3_JA,__int64 g_nAnimEndTime,0x007B9288,data,2
+?g_nAnimStartTime@@3_JA,__int64 g_nAnimStartTime,0x007B9298,data,3
 ?g_bRegisterCombiners@@3HA,int g_bRegisterCombiners,0x007B92A0,data,5
 ?g_nChunkVisible@@3HA,int g_nChunkVisible,0x007B92A0,data,2
 ?g_pAnimatingScene@@3PAVScene@@A,class Scene * g_pAnimatingScene,0x007B92A0,data,2
@@ -9554,11 +9611,14 @@ _s_nPoolBytesRequested,_s_nPoolBytesRequested,0x007A6988,data,2
 ?g_bForceFog@@3HA,int g_bForceFog,0x007B930C,data,1
 ?g_bShowAllPersonalSpace@@3HA,int g_bShowAllPersonalSpace,0x007B9314,data,1
 ?g_nImageDecodeCalls@@3HA,int g_nImageDecodeCalls,0x007B9334,data,2
+?g_aScenes@@3V?$CExoArrayList@PAVScene@@@@A,class CExoArrayList<class Scene *> g_aScenes,0x007B9398,data,4
 ?g_lScenes@@3V?$CExoArrayList@PAVScene@@@@A,class CExoArrayList<class Scene *> g_lScenes,0x007B9398,data,1
 ?g_vMiniHitPoint@@3UVector@@A,struct Vector g_vMiniHitPoint,0x007B93A8,data,2
+?g_vMiniHitPos@@3UVector@@A,struct Vector g_vMiniHitPos,0x007B93C4,data,6
 ?g_vMiniHitNormal@@3UVector@@A,struct Vector g_vMiniHitNormal,0x007B93E8,data,1
 ?g_szMiniHitPart@@3PADA,char * g_szMiniHitPart,0x007B93F4,data,1
 ?g_nGUILayer@@3FA,short g_nGUILayer,0x007B9460,data,15
+?g_aGUIRects@@3PAUGUIRect@@A,struct GUIRect * g_aGUIRects,0x007B9468,data,19
 ?g_aGUIVertexBuffer@@3PADA,char * g_aGUIVertexBuffer,0x007B94D0,data,2
 ?g_bAurNoGUIDraw@@3HA,int g_bAurNoGUIDraw,0x007BB4D0,data,3
 ?g_nGUIBufferCount@@3HA,int g_nGUIBufferCount,0x007BB4D4,data,4
@@ -9574,8 +9634,10 @@ _s_nPoolBytesRequested,_s_nPoolBytesRequested,0x007A6988,data,2
 ?wglCreatePbufferARB@@3P6GPAXPAXHHHPBH@ZA,"void * (__stdcall* wglCreatePbufferARB)(void *,int,int,int,int const *)",0x007BB530,data,1
 ?g_pfnSwapInterval@@3P6GXH@ZA,void (__stdcall* g_pfnSwapInterval)(int),0x007BB538,data,1
 ?glBufferDataARB@@3P6GXIHPBXI@ZA,"void (__stdcall* glBufferDataARB)(unsigned int,int,void const *,unsigned int)",0x007BB544,data,5
+?gl_program_string_arb_007bb580@@3P6GXIIHPBD@ZA,"void (__stdcall* gl_program_string_arb_007bb580)(unsigned int,unsigned int,int,char const *)",0x007BB580,data,1
 ?glGetBufferParameterivARB@@3P6GXIIPAH@ZA,"void (__stdcall* glGetBufferParameterivARB)(unsigned int,unsigned int,int *)",0x007BB5A4,data,3
 ?glGenBuffersARB@@3P6GXHPAI@ZA,"void (__stdcall* glGenBuffersARB)(int,unsigned int *)",0x007BB5B4,data,4
+?gl_load_program_nv_007bb5e4@@3P6GXIIHPBE@ZA,"void (__stdcall* gl_load_program_nv_007bb5e4)(unsigned int,unsigned int,int,unsigned char const *)",0x007BB5E4,data,1
 ?glMapBufferARB@@3P6GPAXII@ZA,"void * (__stdcall* glMapBufferARB)(unsigned int,unsigned int)",0x007BB634,data,5
 ?g_pfnGetPixelFormatAttribivARB@@3P6GHPAXHHIPBHPAH@ZA,"int (__stdcall* g_pfnGetPixelFormatAttribivARB)(void *,int,int,unsigned int,int const *,int *)",0x007BB63C,data,1
 ?g_pfnActiveTexture@@3P6GXI@ZA,void (__stdcall* g_pfnActiveTexture)(unsigned int),0x007BB6B0,data,1
@@ -9584,6 +9646,7 @@ _s_nPoolBytesRequested,_s_nPoolBytesRequested,0x007A6988,data,2
 ?glUnmapBufferARB@@3P6GEI@ZA,unsigned char (__stdcall* glUnmapBufferARB)(unsigned int),0x007BB6E0,data,3
 ?glMultiTexCoord2fARB@@3P6GXIMM@ZA,"void (__stdcall* glMultiTexCoord2fARB)(unsigned int,float,float)",0x007BB6E8,data,2
 ?glCombinerStageParameterfvNV@@3P6GXIIPBM@ZA,"void (__stdcall* glCombinerStageParameterfvNV)(unsigned int,unsigned int,float const *)",0x007BB6F8,data,2
+?gl_delete_programs_arb_007bb724@@3P6GXHPBI@ZA,"void (__stdcall* gl_delete_programs_arb_007bb724)(int,unsigned int const *)",0x007BB724,data,1
 ?g_pfnChoosePixelFormatARB@@3P6GHPAXPBHPBMIPAHPAI@ZA,"int (__stdcall* g_pfnChoosePixelFormatARB)(void *,int const *,float const *,unsigned int,int *,unsigned int *)",0x007BB730,data,1
 ?wglChoosePixelFormatARB@@3P6GHPAXPBHPBMIPAHPAI@ZA,"int (__stdcall* wglChoosePixelFormatARB)(void *,int const *,float const *,unsigned int,int *,unsigned int *)",0x007BB730,data,1
 ?glBufferSubDataARB@@3P6GXIHHPBX@ZA,"void (__stdcall* glBufferSubDataARB)(unsigned int,int,int,void const *)",0x007BB75C,data,1
@@ -9605,25 +9668,38 @@ _s_nPoolBytesRequested,_s_nPoolBytesRequested,0x007A6988,data,2
 ?g_bATISoftShadowsUnlocked@@3HA,int g_bATISoftShadowsUnlocked,0x007BB860,data,1
 ?g_bGLExtension860@@3HA,int g_bGLExtension860,0x007BB860,data,1
 _g_szWord,_g_szWord,0x007FBAF8,data,3
+?vAxis@?4??ParseGenericKey@@YAXPADPAUAurGenericKey@@@Z@4VVector@@A,"class Vector `void __cdecl ParseGenericKey(char *,struct AurGenericKey *)'::`5'::vAxis",0x007FBEF8,data,9
 ?$S1@?4??ParseGenericKey@@YAXPADPAUAurGenericKey@@@Z@4IA,S1,0x007FBF04,data,2
 ?g_bNoGobCulling@@3HA,int g_bNoGobCulling,0x007FBF20,data,1
 ?g_n7FBF28@@3HA,int g_n7FBF28,0x007FBF28,data,1
 ?g_n7FBF2C@@3HA,int g_n7FBF2C,0x007FBF2C,data,3
 ?g_n7FBF30@@3HA,int g_n7FBF30,0x007FBF30,data,1
-?g_l7FBF6C@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBF6C,0x007FBF70,data,1
-?g_l7FBF78@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBF78,0x007FBF7C,data,1
-?g_l7FBF84@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBF84,0x007FBF88,data,1
-?g_l7FBF90@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBF90,0x007FBF94,data,1
-?g_l7FBFA8@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBFA8,0x007FBFAC,data,1
-?g_l7FBFC0@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBFC0,0x007FBFC4,data,1
-?g_l7FBFCC@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBFCC,0x007FBFD0,data,1
-?g_l7FBFD8@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBFD8,0x007FBFDC,data,1
-?g_l7FBFE4@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBFE4,0x007FBFE8,data,1
-?g_l7FBFF0@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBFF0,0x007FBFF4,data,1
-?g_aBucketsA@@3PAV?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> * g_aBucketsA,0x007FC00C,data,1
-?g_l80AA68@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l80AA68,0x0080AA6C,data,1
-?g_l80AA74@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l80AA74,0x0080AA78,data,1
-?g_aBucketsC@@3PAV?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> * g_aBucketsC,0x0080AA84,data,1
+?g_l7FBF6C@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBF6C,0x007FBF6C,data,1
+?g_l7FBF78@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBF78,0x007FBF78,data,1
+?g_lSceneLights@@3V?$CExoArrayList@PAX@@A,class CExoArrayList<void *> g_lSceneLights,0x007FBF78,data,3
+?g_l7FBF84@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBF84,0x007FBF84,data,1
+?g_l7FBF90@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBF90,0x007FBF90,data,1
+?g_lActiveBins@@3V?$CExoArrayList@PAVBin@@@@A,class CExoArrayList<class Bin *> g_lActiveBins,0x007FBF9C,data,9
+?g_lActiveBins@@3V?$CExoArrayList@PAVLightBin@@@@A,class CExoArrayList<class LightBin *> g_lActiveBins,0x007FBF9C,data,6
+?g_l7FBFA8@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBFA8,0x007FBFA8,data,1
+?g_lAllMeshParts@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_lAllMeshParts,0x007FBFB4,data,7
+?g_l7FBFC0@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBFC0,0x007FBFC0,data,1
+?g_l7FBFCC@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBFCC,0x007FBFCC,data,1
+?g_lSceneObjects@@3V?$CExoArrayList@PAX@@A,class CExoArrayList<void *> g_lSceneObjects,0x007FBFCC,data,3
+?g_l7FBFD8@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBFD8,0x007FBFD8,data,1
+?g_l7FBFE4@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBFE4,0x007FBFE4,data,1
+?g_lLightTiles@@3V?$CExoArrayList@PAVBSPNode@@@@A,class CExoArrayList<class BSPNode *> g_lLightTiles,0x007FBFE4,data,4
+?g_l7FBFF0@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l7FBFF0,0x007FBFF0,data,1
+?g_lPrevActiveBins@@3V?$CExoArrayList@PAVBin@@@@A,class CExoArrayList<class Bin *> g_lPrevActiveBins,0x007FBFFC,data,5
+?g_aBucketsA@@3PAV?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> * g_aBucketsA,0x007FC008,data,1
+?g_aCapBuckets@@3PAV?$CExoArrayList@PAVCapPart@@@@A,class CExoArrayList<class CapPart *> * g_aCapBuckets,0x007FC008,data,8
+?g_l80AA68@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l80AA68,0x0080AA68,data,1
+?g_l80AA74@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_l80AA74,0x0080AA74,data,1
+?g_lSceneEmitters@@3V?$CExoArrayList@PAX@@A,class CExoArrayList<void *> g_lSceneEmitters,0x0080AA74,data,3
+?g_aBucketsC@@3PAV?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> * g_aBucketsC,0x0080AA80,data,1
+?g_aMeshBuckets@@3PAV?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> * g_aMeshBuckets,0x008194E0,data,4
+?g_aSceneTileSlots@@3PAUSceneTileSlot@@A,struct SceneTileSlot * g_aSceneTileSlots,0x008194E4,data,2
+?g_lTransparentParts@@3V?$CExoArrayList@PAVPart@@@@A,class CExoArrayList<class Part *> g_lTransparentParts,0x00827F40,data,7
 ?g_nPartPlane@@3HA,int g_nPartPlane,0x00827F4C,data,3
 ?g_nLightPlane@@3HA,int g_nLightPlane,0x00827F50,data,2
 ?g_nEmitterPlane@@3HA,int g_nEmitterPlane,0x00827F54,data,2
@@ -9654,6 +9730,7 @@ _g_szWord,_g_szWord,0x007FBAF8,data,3
 ?s_pProgram@?1??RenderEMLMVP@@YAXPAVPartRenderer@@PAVMdlNodeTriMesh@@@Z@4PAVVertexProgram@@A,"class VertexProgram * `void __cdecl RenderEMLMVP(class PartRenderer *,class MdlNodeTriMesh *)'::`2'::s_pProgram",0x00828108,data,2
 ?$S4@?1??RenderEMLMVP@@YAXPAVPartRenderer@@PAVMdlNodeTriMesh@@@Z@4IA,S4,0x0082810C,data,2
 ?g_nNodeVertexBytes@@3HA,int g_nNodeVertexBytes,0x00830238,data,2
+?g_lMaterials@@3V?$CExoArrayList@PAVMaterial@@@@A,class CExoArrayList<class Material *> g_lMaterials,0x00830298,data,8
 ?g_bNvStripBadEdge@@3_NA,bool g_bNvStripBadEdge,0x008302A4,data,1
 ?g_bReportKeys@@3HA,int g_bReportKeys,0x008302CC,data,1
 ?s_pVP@?1??GetSkinVP@@YAPAVVertexProgram@@XZ@4PAV2@A,class VertexProgram * `class VertexProgram * __cdecl GetSkinVP(void)'::`2'::s_pVP,0x00830390,data,3
@@ -9672,11 +9749,17 @@ _g_szWord,_g_szWord,0x007FBAF8,data,3
 ?g_nSkinVPType@@3HA,int g_nSkinVPType,0x00830578,data,1
 ?g_nSkinSphereMapVPType@@3HA,int g_nSkinSphereMapVPType,0x0083058C,data,1
 ?g_nSkinCubeMapVPType@@3HA,int g_nSkinCubeMapVPType,0x00830590,data,1
+?g_vertex_program_data_008305cc@@3RAPAUVertexProgramData@@A,struct VertexProgramData * * g_vertex_program_data_008305cc,0x008305CC,data,3
+?g_vertex_programs_008305cc@@3UVertexProgramArray@@A,struct VertexProgramArray g_vertex_programs_008305cc,0x008305CC,data,8
+?g_vertex_program_size_008305d0@@3HC,int volatile g_vertex_program_size_008305d0,0x008305D0,data,2
 ?g_bBlackFog@@3HA,int g_bBlackFog,0x008305E0,data,1
 ?g_bDisableTexCoordArray@@3HA,int g_bDisableTexCoordArray,0x008305E0,data,1
 ?g_aur_grass_info_count@@3IA,unsigned int g_aur_grass_info_count,0x00831E48,data,1
+?s_vDir@?1??lineproject@@YA?AVVector@@ABV2@00@Z@4V2@A,"class Vector `class Vector __cdecl lineproject(class Vector const &,class Vector const &,class Vector const &)'::`2'::s_vDir",0x00831EE8,data,6
 ?$S1@?1??lineproject@@YA?AVVector@@ABV2@00@Z@4IA,S1,0x00831EF4,data,2
+?s_vAxis@?1??FUN_004aa020@@YAMABVQuaternion@@@Z@4VVector@@A,class Vector `float __cdecl FUN_004aa020(class Quaternion const &)'::`2'::s_vAxis,0x00831F08,data,6
 ?$S2@?1??FUN_004aa020@@YAMABVQuaternion@@@Z@4IA,S2,0x00831F14,data,2
+?s_plane@?1??FUN_004aaab0@@YAPAUPlane@@ABVVector@@ABM@Z@4PAMA,"float * `struct Plane * __cdecl FUN_004aaab0(class Vector const &,float const &)'::`2'::s_plane",0x00831F18,data,5
 ?g_nCombatAnimationTime@@3HA,int g_nCombatAnimationTime,0x008327DC,data,1
 ?g_nDamageIndex@@3HA,int g_nDamageIndex,0x008327E0,data,4
 ?g_nScriptVar@@3HA,int g_nScriptVar,0x00832828,data,1
@@ -9688,6 +9771,7 @@ _g_szWord,_g_szWord,0x007FBAF8,data,3
 ?g_sExoEmptyString@@3PADA,char * g_sExoEmptyString,0x008328A4,data,2
 ?g_pExoStringFormatBuffer@@3PADA,char * g_pExoStringFormatBuffer,0x008328A8,data,5
 ?g_nExoStringFormatBufferSize@@3KA,unsigned long g_nExoStringFormatBufferSize,0x008328AC,data,7
+?g_cExoFileThread@@3VCExoFileThread@@A,class CExoFileThread g_cExoFileThread,0x008328B0,data,8
 ?g_bAsyncReadComplete@@3HA,int g_bAsyncReadComplete,0x008328BC,data,1
 ?g_bModuleLoadEnabled@@3HA,int g_bModuleLoadEnabled,0x008328FC,data,1
 ?g_fLightningAmbient@@3MA,float g_fLightningAmbient,0x00832C70,data,1
@@ -9702,6 +9786,7 @@ _g_szWord,_g_szWord,0x007FBAF8,data,3
 ?g_nDriveStrafe@@3HA,int g_nDriveStrafe,0x008338F8,data,1
 ?g_pUnknown8338FC@@3PAVCDeletable@@A,class CDeletable * g_pUnknown8338FC,0x008338FC,data,2
 ?g_bLetterbox@@3HA,int g_bLetterbox,0x0083390C,data,1
+?g_vBlack@@3VVector@@A,class Vector g_vBlack,0x00833910,data,3
 ?g_bUpdateCreatureOnMove@@3HA,int g_bUpdateCreatureOnMove,0x0083395C,data,1
 ?g_nJournalSortOrder@@3HA,int g_nJournalSortOrder,0x00833A90,data,3
 ?g_nCreditsSavedScreenHeight@@3HA,int g_nCreditsSavedScreenHeight,0x00833BB8,data,1

@@ -12,6 +12,7 @@ public:
 class CSWCObject {
 public:
     unsigned short GetCurrentAnimation();
+    CAurAnimationBase* GetAnimationBase();
     float GetAnimationLength(unsigned long nAnimation);
 
     char pad_0x0[0x48];
@@ -24,6 +25,12 @@ public:
 unsigned short CSWCObject::GetCurrentAnimation()
 {
     return m_nCurrentAnimation;
+}
+
+// FUNCTION: SWKOTOR 0x0063C070
+CAurAnimationBase* CSWCObject::GetAnimationBase()
+{
+    return m_pAnimationBase;
 }
 
 // FUNCTION: SWKOTOR 0x0063C0E0

@@ -39,14 +39,14 @@ REL32, DIR32 = 0x14, 0x06
 
 
 def relocated_functions(obj):
-    """{function symbol: [(offset, type, target symbol, target is code)]}."""
+    """{function symbol: [(offset, type, target, target is code, addend)]}."""
     data = obj.read_bytes()
     _, nsect, _, symptr, nsyms, opt, _ = struct.unpack_from("<HHIIIHH", data, 0)
     sections = []
     for i in range(nsect):
         off = 20 + opt + i * 40
-        _, _, rel_ptr, _, nrel, _, flags = struct.unpack_from("<IIIIHHI", data, off + 16)
-        sections.append((rel_ptr, nrel, flags))
+        _, raw_ptr, rel_ptr, _, nrel, _, flags = struct.unpack_from("<IIIIHHI", data, off + 16)
+        sections.append((raw_ptr, rel_ptr, nrel, flags))
     strtab = symptr + nsyms * 18
     names, kinds, defined = {}, {}, []
     i = 0
@@ -65,12 +65,13 @@ def relocated_functions(obj):
         i += 1 + naux
     result = {}
     for name, secnum, value in defined:
-        rel_ptr, nrel, _ = sections[secnum - 1]
+        raw_ptr, rel_ptr, nrel, _ = sections[secnum - 1]
         relocs = []
         for r in range(nrel):
             vaddr, index, rtype = struct.unpack_from("<IIH", data, rel_ptr + r * 10)
             if rtype in (REL32, DIR32) and vaddr >= value:
-                relocs.append((vaddr - value, rtype, names[index], kinds[index]))
+                addend = struct.unpack_from("<I", data, raw_ptr + vaddr)[0]
+                relocs.append((vaddr - value, rtype, names[index], kinds[index], addend))
         result[name] = relocs
     return result
 
@@ -92,14 +93,16 @@ def scan(src, flags, matched, pe):
             continue
         symbol = hits[0]
         out.append((symbol, address, "defines"))
-        for offset, rtype, target, is_code in funcs[symbol]:
+        for offset, rtype, target, is_code, addend in funcs[symbol]:
             if target.startswith("$") or target == "__except_list":
                 continue  # file-local labels and the fs:[0] SEH head
             value = struct.unpack("<I", pe.get_data(address - base + offset, 4))[0]
+            # COFF keeps member/element offsets in the relocation field. The
+            # linked address includes that addend; map the named symbol's base.
             if rtype == REL32:
-                out.append((target, (address + offset + 4 + value) & 0xFFFFFFFF, "calls"))
+                out.append((target, (address + offset + 4 + value - addend) & 0xFFFFFFFF, "calls"))
             else:
-                out.append((target, value, "calls" if is_code else "data"))
+                out.append((target, (value - addend) & 0xFFFFFFFF, "calls" if is_code else "data"))
     return out
 
 
