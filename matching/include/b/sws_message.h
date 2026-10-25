@@ -12,6 +12,7 @@
 class CSWSPlayer;
 class CSWSItem;
 class CSWSCreature;
+class CSWSObject;
 
 class CResRef;
 class CGameObject;
@@ -161,6 +162,21 @@ public:
     void AddTriggerGeometryToMessage(CSWSTrigger* pTrigger);            // 0x00567C20
     void UpdateLastUpdateObjectAppearance(CGameObject* pObject, CLastUpdateObject* pLast,
                                           unsigned long nFlags);        // 0x00568480
+    void UpdateLastUpdateObject(CSWSPlayer* pPlayer, CSWSObject* pObject,
+                                 CLastUpdateObject* pLast, unsigned long nFlags); // 0x00575C80
+    void StoreValuesInLastUpdateObject(CSWSPlayer* pPlayer, CLastUpdateObject* pLast,
+                                        CSWSObject* pObject, unsigned long nFlags,
+                                        unsigned long nAppearanceFlags); // 0x00576FC0
+    void WriteGameObjUpdate_CharacterSheet(CSWSPlayer* pPlayer, unsigned long nFlags); // 0x0056F490
+    void WriteGameObjUpdate_MinorGUIPanels(CSWSPlayer* pPlayer); // 0x00572990
+    unsigned long ComputeUpdateRequired(CSWSPlayer* pPlayer, CSWSObject* pObject,
+                                         CLastUpdateObject* pLast, int bSelf); // 0x0056B950
+    CLastUpdateObject* CreateNewLastUpdateObject(CSWSPlayer* pPlayer, CSWSObject* pObject,
+                                                 unsigned long* pFlags,
+                                                 unsigned long* pAppearanceFlags); // 0x00577000
+    void TestObjectUpdateDifferences(CSWSPlayer* pPlayer, CSWSObject* pObject,
+                                      CLastUpdateObject** ppLast, unsigned long* pFlags,
+                                      unsigned long* pAppearanceFlags); // 0x00577FA0
     int CompareObjectIdLists(CExoArrayList<unsigned long>* pList1,
                              CExoArrayList<unsigned long>* pList2); // 0x0056B830 (name guessed)
     int ComputeVisibilityLists(CSWSCreature* pCreature,

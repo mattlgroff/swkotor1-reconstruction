@@ -43,7 +43,8 @@ public:
     ~CLastUpdateObject();                                       // 0x005CA6A0
 
     CSWSCreatureAppearanceInfo m_cAppearance;                   // 0x0
-    char pad_0x24[0x2a - 0x24];
+    int m_bUpdated;                                             // 0x24
+    char pad_0x28[0x2a - 0x28];
     unsigned short m_n2A;                                       // 0x2a
     unsigned long m_nId;                                        // 0x2c
     char pad_0x30[0x90 - 0x30];

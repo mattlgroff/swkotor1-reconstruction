@@ -1804,6 +1804,8 @@ address,name,status,diff_insns,file
 0x004A23B0,AurVertexProgramMakeCurrent,MATCH,0,matching/src/i/vertex_program.cpp
 0x004A28A0,LightManager::GetBumpMapLights,MATCH,0,matching/src/i/light_manager_lists.cpp
 0x004A28B0,LightManager::GetLensFlareLights,MATCH,0,matching/src/i/light_manager_lists.cpp
+0x004A57A0,WindManager::SetMaximumDeviation,MATCH,0,matching/src/i/wind_manager_deviation.cpp
+0x004A5900,WindManager::SetGlobalWind,MATCH,0,matching/src/i/wind_manager_global.cpp
 0x004A5950,CAurWind::GetGlobalWindNoPoint,NONMATCH,45,matching/src/pilot4/b/f004a5950.cpp
 0x004A6470,WindManager::RegisterWindyEmitter,MATCH,0,matching/src/i/wind_manager_register.cpp
 0x004A67A0,AurGrassClearInfo,MATCH,0,matching/src/i/aur_grass_clear_info.cpp
@@ -1846,6 +1848,7 @@ address,name,status,diff_insns,file
 0x004AB180,NormalizeVector,NONMATCH,15,matching/src/i/vector_normalize.cpp
 0x004AB1E0,FUN_004ab1e0,MATCH,0,matching/src/i/vector_math.cpp
 0x004AB210,FUN_004ab210,MATCH,0,matching/src/i/vector_math.cpp
+0x004ACEA0,BSPTraverse,MATCH,0,matching/src/i/bsp_traverse.cpp
 0x004ADBA0,CWorldTimer::SetMinutesPerHour,MATCH,0,matching/src/i/world_timer.cpp
 0x004ADBD0,CWorldTimer::SetSnapshotTime,MATCH,0,matching/src/i/world_timer.cpp
 0x004ADC70,CWorldTimer::GetSnapshotTime,MATCH,0,matching/src/i/world_timer.cpp
@@ -2030,6 +2033,7 @@ address,name,status,diff_insns,file
 0x004B1580,CServerExoAppInternal::GetModuleName,MATCH,0,matching/src/i/server_exo_app_internal.cpp
 0x004B1650,CServerExoAppInternal::Initialize,MATCH,0,matching/src/i/server_exo_app_internal.cpp
 0x004B1680,CServerExoAppInternal::CopyModuleToCurrentGame,MATCH,0,matching/src/i/server_exo_app_internal.cpp
+0x004B16E0,??_GCSWVirtualMachineCommands@@UAEPAXI@Z,MATCH,0,matching/src/i/virtual_machine_commands_dtor.cpp
 0x004B1700,CServerExoAppInternal::GetGameObject,MATCH,0,matching/src/i/server_exo_app_internal.cpp
 0x004B1740,CServerExoAppInternal::GetItemByGameObjectID,MATCH,0,matching/src/i/server_exo_app_internal.cpp
 0x004B1790,CServerExoAppInternal::GetCreatureByGameObjectID,MATCH,0,matching/src/i/server_exo_app_internal.cpp
@@ -3186,6 +3190,9 @@ address,name,status,diff_insns,file
 0x005706F0,CSWSMessage::AssignCreatureLists,MATCH,0,matching/src/b/sws_message_helpers.cpp
 0x005707A0,CSWSMessage::UpdateLastUpdateVisibilityList,NONMATCH,4,matching/src/pilot3/message.cpp
 0x00570BA0,CSWSMessage::ComputeLastUpdate_StoreUpdateSpellLikeAbility,NONMATCH,13,matching/src/b/sws_message_helpers.cpp
+0x00572990,CSWSMessage::WriteGameObjUpdate_MinorGUIPanels,MATCH,0,matching/src/b/sws_message_object_update.cpp
+0x00576FC0,CSWSMessage::StoreValuesInLastUpdateObject,MATCH,0,matching/src/b/sws_message_object_update.cpp
+0x00577FA0,CSWSMessage::TestObjectUpdateDifferences,NONMATCH,6,matching/src/b/sws_message_object_update.cpp
 0x00578520,CSWSMessage::SendGameObjectUpdate,MATCH,0,matching/src/b/sws_message_misc.cpp
 0x00578540,CSWSMessage::ReadOBJECTIDServer,MATCH,0,matching/src/b/sws_message_misc.cpp
 0x00578570,CSWSMessage::WriteOBJECTIDServer,MATCH,0,matching/src/b/sws_message_misc.cpp
@@ -5028,7 +5035,12 @@ address,name,status,diff_insns,file
 0x00637630,CSWParty::Reset,NONMATCH,68,matching/src/pilot4/a/sw_party_reset.cpp
 0x006383B0,CSWCameraOnAStick::ClearTarget,MATCH,0,matching/src/n/camera_stick_clear_target.cpp
 0x006386D0,camera_navigate_destructor_006386d0,MATCH,0,matching/src/n/camera_navigate_destructor.cpp
+0x0063C060,CSWCObject::GetCurrentAnimation,MATCH,0,matching/src/n/object_animation_state.cpp
+0x0063C0E0,CSWCObject::GetAnimationLength,MATCH,0,matching/src/n/object_animation_state.cpp
 0x0063D460,ObjectWithAnimation::GetVfxValue,MATCH,0,matching/src/n/object_vfx_lower.cpp
+0x0063D520,CSWCObject::AttachmentFromServerObject,MATCH,0,matching/src/n/object_server_attachment.cpp
+0x0063D530,CSWCObject::DetachFromServerObject,MATCH,0,matching/src/n/object_server_attachment.cpp
+0x0063D820,CSWCObject::AttachToScene,MATCH,0,matching/src/n/object_scene_attachment.cpp
 0x00641DB0,CSWCSoundObject::AsSWCSoundObject,MATCH,0,matching/src/m/sw_c_sound_object.cpp
 0x00644150,??_GCSWCModule@@UAEPAXI@Z,MATCH,0,matching/src/c/sw_c_module.cpp
 0x006450E0,??_GCSWGuiInGameJournal@@UAEPAXI@Z,MATCH,0,matching/src/c/sw_gui_in_game_journal.cpp
@@ -5335,6 +5347,10 @@ address,name,status,diff_insns,file
 0x00677F30,CSWCMessage::SendPlayerToServer_0C_01,MATCH,0,matching/src/m/sw_c_message_send.cpp
 0x00677FA0,CSWCMessage::SendPlayerToServerLogin_LoginLocalCharacter,MATCH,0,matching/src/m/sw_c_message_send.cpp
 0x00678030,CSWCMessage::SendPlayerToServer_02_0F,MATCH,0,matching/src/m/sw_c_message_send.cpp
+0x00682E00,CSWCPlaceable::GetServerPlaceable,MATCH,0,matching/src/k/sw_c_placeable_door_server.cpp
+0x00683CC0,CSWCDoor::SetIsAreaTransition,MATCH,0,matching/src/k/sw_c_door_misc.cpp
+0x00683EE0,CSWCDoor::GetServerDoor,MATCH,0,matching/src/k/sw_c_placeable_door_server.cpp
+0x006843F0,??_GCSWCDoor@@UAEPAXI@Z,MATCH,0,matching/src/k/sw_c_door_deleting_dtor.cpp
 0x00684DF0,CSWGuiMainInterfaceAction::HitCheckMouse,NONMATCH,25,matching/src/k/sw_gui_target_action_menu.cpp
 0x00684E70,CSWGuiTargetActionMenu::UpdateTimers,MATCH,0,matching/src/k/sw_gui_target_action_menu.cpp
 0x00684ED0,CSWGuiTargetActionMenu::GetControlType,MATCH,0,matching/src/k/sw_gui_target_action_menu.cpp
@@ -5437,6 +5453,9 @@ address,name,status,diff_insns,file
 0x00690910,UnloadCachedVFX,MATCH,0,matching/src/k/client_area_vfx.cpp
 0x00690940,CSWBehaviorAttachSound::AnnounceAreaVFX,MATCH,0,matching/src/k/client_area_vfx.cpp
 0x00690960,area_vfx_scalar_delete_00690960,MATCH,0,matching/src/k/client_area_vfx.cpp
+0x00695160,??_GCSWGuiMapHider@@UAEPAXI@Z,MATCH,0,matching/src/k/sw_gui_panel_deleting_dtors.cpp
+0x006958A0,??_GCSWGuiInGameGalaxyMap@@UAEPAXI@Z,MATCH,0,matching/src/k/sw_gui_panel_deleting_dtors.cpp
+0x00695BD0,??_GCSWGuiInGameMap@@UAEPAXI@Z,MATCH,0,matching/src/k/sw_gui_panel_deleting_dtors.cpp
 0x00698E00,CAnimBase::CAnimBase,MATCH,0,matching/src/k/anim_base.cpp
 0x00698E20,CAnimBase::~CAnimBase,MATCH,0,matching/src/k/anim_base.cpp
 0x00698E30,CAnimBase::SetValue,MATCH,0,matching/src/k/anim_base.cpp

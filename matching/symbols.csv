@@ -2113,7 +2113,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?RemoveIndex@?$CExoArrayList@UCActiveRumble@@@@QAEXH@Z,public: void __thiscall CExoArrayList<struct CActiveRumble>::RemoveIndex(int),0x0048DDE0,calls,1
 ??_GParticle@@UAEPAXI@Z,public: virtual void * __thiscall Particle::`scalar deleting destructor'(unsigned int),0x0048DE30,defines,1
 ??_GChunkyParticle@@UAEPAXI@Z,public: virtual void * __thiscall ChunkyParticle::`scalar deleting destructor'(unsigned int),0x0048E190,defines,1
-?CalculateRadius@PartEmitter@@QAEXXZ,public: void __thiscall PartEmitter::CalculateRadius(void),0x0048E1B0,calls,1
+?CalculateRadius@PartEmitter@@QAEXXZ,public: void __thiscall PartEmitter::CalculateRadius(void),0x0048E1B0,calls,2
 ?updateParticleFrame@PartEmitter@@QAEXM@Z,public: void __thiscall PartEmitter::updateParticleFrame(float),0x0048E460,defines,1
 ?DrawDebug@PartEmitter@@QAEXXZ,public: void __thiscall PartEmitter::DrawDebug(void),0x0048EF10,defines,2
 ?StartEmitterLayer@PartEmitter@@SAXXZ,public: static void __cdecl PartEmitter::StartEmitterLayer(void),0x0048EFA0,defines,1
@@ -2225,7 +2225,9 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?GetLensFlareLights@LightManager@@QAEPAXXZ,public: void * __thiscall LightManager::GetLensFlareLights(void),0x004A28B0,defines,1
 ??1LightManager@@QAE@XZ,public: __thiscall LightManager::~LightManager(void),0x004A2BC0,calls,1
 ?GetNearestLights@LightManager@@QAEXPAVScene@@VVector@@MH@Z,"public: void __thiscall LightManager::GetNearestLights(class Scene *,class Vector,float,int)",0x004A3770,calls,1
+?SetMaximumDeviation@WindManager@@QAEXMM@Z,"public: void __thiscall WindManager::SetMaximumDeviation(float,float)",0x004A57A0,defines,1
 ?SetVariation@WindManager@@QAEXMM@Z,"public: void __thiscall WindManager::SetVariation(float,float)",0x004A57A0,calls,1
+?SetGlobalWind@WindManager@@QAEXVVector@@@Z,public: void __thiscall WindManager::SetGlobalWind(class Vector),0x004A5900,defines,1
 ?SetWind@WindManager@@QAEXVVector@@@Z,public: void __thiscall WindManager::SetWind(class Vector),0x004A5900,calls,1
 ?RegisterWindyEmitter@WindManager@@QAEXPAVPartEmitter@@@Z,public: void __thiscall WindManager::RegisterWindyEmitter(class PartEmitter *),0x004A6470,defines,1
 ?DeregisterWindyEmitter@WindManager@@QAEXPAVPartEmitter@@@Z,public: void __thiscall WindManager::DeregisterWindyEmitter(class PartEmitter *),0x004A6480,calls,1
@@ -2302,7 +2304,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?EulerToQuaternion@@YA?AUQuaternion@@MMM@Z,"struct Quaternion __cdecl EulerToQuaternion(float,float,float)",0x004ACAC0,calls,3
 ?EulerToQuaternion@@YA?AVQuaternion@@MMM@Z,"class Quaternion __cdecl EulerToQuaternion(float,float,float)",0x004ACAC0,calls,1
 ?DirectionToQuaternion@@YA?AUQuaternion@@ABUVector@@@Z,struct Quaternion __cdecl DirectionToQuaternion(struct Vector const &),0x004ACCA0,calls,1
-?BSPTraverse@@YAXPAVBSPNode@@P6AX0PAVLightScene@@@Z1@Z,"void __cdecl BSPTraverse(class BSPNode *,void (__cdecl*)(class BSPNode *,class LightScene *),class LightScene *)",0x004ACEA0,calls,1
+?BSPTraverse@@YAXPAVBSPNode@@P6AX0PAVLightScene@@@Z1@Z,"void __cdecl BSPTraverse(class BSPNode *,void (__cdecl*)(class BSPNode *,class LightScene *),class LightScene *)",0x004ACEA0,defines,3
 ?BSPTraverse@@YAXPAVBSPNodeBase@@P6AX0@ZPAX@Z,"void __cdecl BSPTraverse(class BSPNodeBase *,void (__cdecl*)(class BSPNodeBase *),void *)",0x004ACEA0,calls,1
 ??1BSPNodeBase@@QAE@XZ,public: __thiscall BSPNodeBase::~BSPNodeBase(void),0x004ACED0,calls,2
 ?FindTile@@YAPAVBSPNode@@PAX0H@Z,"class BSPNode * __cdecl FindTile(void *,void *,int)",0x004AD060,calls,4
@@ -2552,6 +2554,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?GetModuleName@CServerExoAppInternal@@QAE?AVCExoString@@XZ,public: class CExoString __thiscall CServerExoAppInternal::GetModuleName(void),0x004B1580,defines,2
 ?Initialize@CServerExoAppInternal@@QAEHXZ,public: int __thiscall CServerExoAppInternal::Initialize(void),0x004B1650,defines,2
 ?CopyModuleToCurrentGame@CServerExoAppInternal@@QAEHAAVCExoString@@0H@Z,"public: int __thiscall CServerExoAppInternal::CopyModuleToCurrentGame(class CExoString &,class CExoString &,int)",0x004B1680,defines,1
+??_GCSWVirtualMachineCommands@@UAEPAXI@Z,public: virtual void * __thiscall CSWVirtualMachineCommands::`scalar deleting destructor'(unsigned int),0x004B16E0,defines,1
 ?GetGameObject@CServerExoAppInternal@@QAEPAVCGameObject@@K@Z,public: class CGameObject * __thiscall CServerExoAppInternal::GetGameObject(unsigned long),0x004B1700,defines,2
 ?GetItemByGameObjectID@CServerExoAppInternal@@QAEPAVCSWSItem@@K@Z,public: class CSWSItem * __thiscall CServerExoAppInternal::GetItemByGameObjectID(unsigned long),0x004B1740,defines,2
 ?GetCreatureByGameObjectID@CServerExoAppInternal@@QAEPAVCSWSCreature@@K@Z,public: class CSWSCreature * __thiscall CServerExoAppInternal::GetCreatureByGameObjectID(unsigned long),0x004B1790,defines,5
@@ -3462,6 +3465,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?CreateDefaultFactions@CFactionManager@@QAEXXZ,public: void __thiscall CFactionManager::CreateDefaultFactions(void),0x0052BCE0,defines,1
 ?Equals@CScriptLocation@@QAEHPAV1@@Z,public: int __thiscall CScriptLocation::Equals(class CScriptLocation *),0x0052BF80,defines,1
 ?AppendToScriptsRun@CServerAIMaster@@QAEXABVCExoString@@@Z,public: void __thiscall CServerAIMaster::AppendToScriptsRun(class CExoString const &),0x0052BFC0,defines,1
+??1CSWVirtualMachineCommands@@UAE@XZ,public: virtual __thiscall CSWVirtualMachineCommands::~CSWVirtualMachineCommands(void),0x0052C070,calls,1
 ?ExecuteCommandEffectBeam@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandEffectBeam(int,int)",0x00531260,defines,1
 ?ExecuteCommandEffectDamageImmunity@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandEffectDamageImmunity(int,int)",0x00531EF0,defines,1
 ?ExecuteCommandEffectImmunity@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandEffectImmunity(int,int)",0x00532D00,defines,1
@@ -3668,13 +3672,14 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SetAreaTransitionBMP@CSWSPlayer@@QAEXHABVCExoString@@@Z,"public: void __thiscall CSWSPlayer::SetAreaTransitionBMP(int,class CExoString const &)",0x00560CD0,defines,1
 ?GetCharacterInfoFromIFO@CSWSPlayer@@QAEXPAEPA_KPAK2@Z,"public: void __thiscall CSWSPlayer::GetCharacterInfoFromIFO(unsigned char *,unsigned __int64 *,unsigned long *,unsigned long *)",0x00560D00,calls,1
 ?LoadCreatureData@CSWSPlayer@@QAEHVCResRef@@PAVCSWSCreature@@@Z,"public: int __thiscall CSWSPlayer::LoadCreatureData(class CResRef,class CSWSCreature *)",0x00560E60,defines,2
-?GetGameObject@CSWSPlayer@@QAEPAVCGameObject@@XZ,public: class CGameObject * __thiscall CSWSPlayer::GetGameObject(void),0x00561080,defines,56
+?GetGameObject@CSWSPlayer@@QAEPAVCGameObject@@XZ,public: class CGameObject * __thiscall CSWSPlayer::GetGameObject(void),0x00561080,defines,57
 ?GetGameObject@CSWSPlayer@@QAEPAVCSWSCreature@@XZ,public: class CSWSCreature * __thiscall CSWSPlayer::GetGameObject(void),0x00561080,calls,1
 ?GetGameObject@CSWSPlayer@@QAEPAVCSWSObject@@XZ,public: class CSWSObject * __thiscall CSWSPlayer::GetGameObject(void),0x00561080,calls,7
 ?GetPlayerName@CSWSPlayer@@QAE?AVCExoString@@XZ,public: class CExoString __thiscall CSWSPlayer::GetPlayerName(void),0x005610B0,defines,1
 ?CreateNewPlayerLastUpdateObject@CSWSPlayer@@QAEPAVCSWSPlayerLastUpdateObject@@XZ,public: class CSWSPlayerLastUpdateObject * __thiscall CSWSPlayer::CreateNewPlayerLastUpdateObject(void),0x00561100,defines,1
 ?PermittedToDisplayCharacterSheet@CSWSPlayer@@QAEHK@Z,public: int __thiscall CSWSPlayer::PermittedToDisplayCharacterSheet(unsigned long),0x00561190,defines,2
 ??0?$CExoLinkedList@VCLastUpdateObject@@@@QAE@XZ,public: __thiscall CExoLinkedList<class CLastUpdateObject>::CExoLinkedList<class CLastUpdateObject>(void),0x005611F0,defines,3
+?ComputeCharacterSheetUpdateRequired@CSWSPlayerCharSheetGUI@@QAEKPAVCSWSPlayer@@@Z,public: unsigned long __thiscall CSWSPlayerCharSheetGUI::ComputeCharacterSheetUpdateRequired(class CSWSPlayer *),0x00561260,calls,1
 ?GetLastUpdateObject@CSWSPlayer@@QAEPAVCLastUpdateObject@@K@Z,public: class CLastUpdateObject * __thiscall CSWSPlayer::GetLastUpdateObject(unsigned long),0x00561820,defines,1
 ?PackCreatureIntoMessage@CSWSPlayer@@QAEHXZ,public: int __thiscall CSWSPlayer::PackCreatureIntoMessage(void),0x00561870,calls,2
 ?SetGameObject@CSWSPlayer@@QAEXPAVCGameObject@@@Z,public: void __thiscall CSWSPlayer::SetGameObject(class CGameObject *),0x00561C40,defines,3
@@ -3760,7 +3765,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SendServerToPlayerPlayerList_Delete@CSWSMessage@@QAEHKPAVCSWSPlayer@@@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerPlayerList_Delete(unsigned long,class CSWSPlayer *)",0x005682B0,defines,1
 ?SendServerToPlayerServerStatus_Status@CSWSMessage@@QAEHK@Z,public: int __thiscall CSWSMessage::SendServerToPlayerServerStatus_Status(unsigned long),0x00568310,defines,2
 ?UpdateLastUpdateInventory@CSWSMessage@@QAEXPAVCSWSPlayer@@K@Z,"public: void __thiscall CSWSMessage::UpdateLastUpdateInventory(class CSWSPlayer *,unsigned long)",0x005683D0,defines,1
-?UpdateLastUpdateObjectAppearance@CSWSMessage@@QAEXPAVCGameObject@@PAVCLastUpdateObject@@K@Z,"public: void __thiscall CSWSMessage::UpdateLastUpdateObjectAppearance(class CGameObject *,class CLastUpdateObject *,unsigned long)",0x00568480,defines,1
+?UpdateLastUpdateObjectAppearance@CSWSMessage@@QAEXPAVCGameObject@@PAVCLastUpdateObject@@K@Z,"public: void __thiscall CSWSMessage::UpdateLastUpdateObjectAppearance(class CGameObject *,class CLastUpdateObject *,unsigned long)",0x00568480,defines,2
 ?SendServerToPlayerCCMessage@CSWSMessage@@QAEHKEPAVCSWCCMessageData@@PAX@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerCCMessage(unsigned long,unsigned char,class CSWCCMessageData *,void *)",0x00568570,calls,10
 ?SendServerToPlayerCheatNasty@CSWSMessage@@QAEHKK@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerCheatNasty(unsigned long,unsigned long)",0x00569B80,defines,1
 ?SendServerToPlayerCheatDebugMode@CSWSMessage@@QAEHH@Z,public: int __thiscall CSWSMessage::SendServerToPlayerCheatDebugMode(int),0x00569BE0,defines,1
@@ -3859,6 +3864,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SendServerToPlayerExamineGui_DoorData@CSWSMessage@@QAEHPAVCSWSPlayer@@K@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerExamineGui_DoorData(class CSWSPlayer *,unsigned long)",0x0056F370,defines,1
 ?SendServerToPlayerGameObjUpdate_ObjControl@CSWSMessage@@QAEHKK@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerGameObjUpdate_ObjControl(unsigned long,unsigned long)",0x0056F430,defines,1
 ?SendServerToPlayerSetObject@CSWSMessage@@QAEXKK@Z,"public: void __thiscall CSWSMessage::SendServerToPlayerSetObject(unsigned long,unsigned long)",0x0056F430,calls,2
+?WriteGameObjUpdate_CharacterSheet@CSWSMessage@@QAEXPAVCSWSPlayer@@K@Z,"public: void __thiscall CSWSMessage::WriteGameObjUpdate_CharacterSheet(class CSWSPlayer *,unsigned long)",0x0056F490,calls,1
 ?SendServerToPlayerInventory_Drop@CSWSMessage@@QAEHKK@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerInventory_Drop(unsigned long,unsigned long)",0x0056FB10,defines,1
 ?SendServerToPlayerInventory_DropCancel@CSWSMessage@@QAEHKK@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerInventory_DropCancel(unsigned long,unsigned long)",0x0056FB70,defines,1
 ?SendServerToPlayerInventory_EquipCancel@CSWSMessage@@QAEHKKH@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerInventory_EquipCancel(unsigned long,unsigned long,int)",0x0056FBD0,defines,1
@@ -3874,7 +3880,10 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?ChatStrRefMessage@CSWSMessage@@QAEHKKK@Z,"public: int __thiscall CSWSMessage::ChatStrRefMessage(unsigned long,unsigned long,unsigned long)",0x00571760,calls,1
 ?ChatMessage@CSWSMessage@@QAEHKKVCExoString@@KABV2@@Z,"public: int __thiscall CSWSMessage::ChatMessage(unsigned long,unsigned long,class CExoString,unsigned long,class CExoString const &)",0x00571960,calls,1
 ?QuickChatMessage@CSWSMessage@@QAEHKG@Z,"public: int __thiscall CSWSMessage::QuickChatMessage(unsigned long,unsigned short)",0x00571EC0,calls,1
+?WriteGameObjUpdate_MinorGUIPanels@CSWSMessage@@QAEXPAVCSWSPlayer@@@Z,public: void __thiscall CSWSMessage::WriteGameObjUpdate_MinorGUIPanels(class CSWSPlayer *),0x00572990,defines,1
+?UpdateLastUpdateObject@CSWSMessage@@QAEXPAVCSWSPlayer@@PAVCSWSObject@@PAVCLastUpdateObject@@K@Z,"public: void __thiscall CSWSMessage::UpdateLastUpdateObject(class CSWSPlayer *,class CSWSObject *,class CLastUpdateObject *,unsigned long)",0x00575C80,calls,1
 ?SendServerToPlayerCharList@CSWSMessage@@QAEHPAVCSWSPlayer@@@Z,public: int __thiscall CSWSMessage::SendServerToPlayerCharList(class CSWSPlayer *),0x00576360,calls,1
+?StoreValuesInLastUpdateObject@CSWSMessage@@QAEXPAVCSWSPlayer@@PAVCLastUpdateObject@@PAVCSWSObject@@KK@Z,"public: void __thiscall CSWSMessage::StoreValuesInLastUpdateObject(class CSWSPlayer *,class CLastUpdateObject *,class CSWSObject *,unsigned long,unsigned long)",0x00576FC0,defines,1
 ?SendServerToPlayerGameObjUpdate@CSWSMessage@@QAEHKK@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerGameObjUpdate(unsigned long,unsigned long)",0x00578200,calls,1
 ?SendGameObjectUpdate@CSWSMessage@@QAEXK@Z,public: void __thiscall CSWSMessage::SendGameObjectUpdate(unsigned long),0x00578520,defines,1
 ?SendServerToPlayerUpdate@CSWSMessage@@QAEXPAVCSWSPlayer@@@Z,public: void __thiscall CSWSMessage::SendServerToPlayerUpdate(class CSWSPlayer *),0x00578520,calls,1
@@ -6186,10 +6195,12 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SetTargetFollow@CSWCCamera@@QAEXXZ,public: void __thiscall CSWCCamera::SetTargetFollow(void),0x006383B0,calls,1
 ?camera_navigate_destructor_006386d0@@YIXPAX0@Z,"void __fastcall camera_navigate_destructor_006386d0(void *,void *)",0x006386D0,defines,1
 ?Reset@CSWGuiInterfaceAction@@QAEXXZ,public: void __thiscall CSWGuiInterfaceAction::Reset(void),0x0063C000,calls,1
+?GetCurrentAnimation@CSWCObject@@QAEGXZ,public: unsigned short __thiscall CSWCObject::GetCurrentAnimation(void),0x0063C060,defines,1
 ?GetAnimBase@CSWCCreatureAnim@@QAEPAUCCreatureAnimBase@@XZ,public: struct CCreatureAnimBase * __thiscall CSWCCreatureAnim::GetAnimBase(void),0x0063C070,calls,1
 ?GetAnimationBase@CSWCCreature@@QAEPAVCAnimationBase@@XZ,public: class CAnimationBase * __thiscall CSWCCreature::GetAnimationBase(void),0x0063C070,calls,14
 ?GetAnimationBase@CSWCObject@@QAEPAVCAnimBase@@XZ,public: class CAnimBase * __thiscall CSWCObject::GetAnimationBase(void),0x0063C070,calls,1
 ?ReplaceTextures@CSWCObject@@QAEXABVCResRef@@0H@Z,"public: void __thiscall CSWCObject::ReplaceTextures(class CResRef const &,class CResRef const &,int)",0x0063C0C0,calls,3
+?GetAnimationLength@CSWCObject@@QAEMK@Z,public: float __thiscall CSWCObject::GetAnimationLength(unsigned long),0x0063C0E0,defines,1
 ?IsAnimationBlocked@CSWCCreature@@QAEHG@Z,public: int __thiscall CSWCCreature::IsAnimationBlocked(unsigned short),0x0063C4A0,calls,1
 ?IsAnimationPlaying@CSWCCreature@@QAEHG@Z,public: int __thiscall CSWCCreature::IsAnimationPlaying(unsigned short),0x0063C4A0,calls,1
 ?SetAlpha@CSWCObject@@QAEXME@Z,"public: void __thiscall CSWCObject::SetAlpha(float,unsigned char)",0x0063CB50,calls,4
@@ -6205,10 +6216,13 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?ClearTargetActions@CSWCCreature@@QAEXXZ,public: void __thiscall CSWCCreature::ClearTargetActions(void),0x0063D470,calls,1
 ?StartPersonalAction@CSWCCreature@@QAEXXZ,public: void __thiscall CSWCCreature::StartPersonalAction(void),0x0063D490,calls,1
 ?GetServerObject@CSWCCreature@@QAEPAVCGameObject@@XZ,public: class CGameObject * __thiscall CSWCCreature::GetServerObject(void),0x0063D4B0,calls,4
-?GetServerObject@CSWCObjectServerLink@@QAEPAVCSWSObject@@XZ,public: class CSWSObject * __thiscall CSWCObjectServerLink::GetServerObject(void),0x0063D4B0,calls,2
+?GetServerObject@CSWCObjectServerLink@@QAEPAVCSWSObject@@XZ,public: class CSWSObject * __thiscall CSWCObjectServerLink::GetServerObject(void),0x0063D4B0,calls,6
+?AttachmentFromServerObject@CSWCObject@@QAEXPAVCSWSObject@@@Z,public: void __thiscall CSWCObject::AttachmentFromServerObject(class CSWSObject *),0x0063D520,defines,1
 ?FUN_0063d520@CSWCObject@@QAEXPAVCSWSObject@@@Z,public: void __thiscall CSWCObject::FUN_0063d520(class CSWSObject *),0x0063D520,calls,1
+?DetachFromServerObject@CSWCObject@@QAEXXZ,public: void __thiscall CSWCObject::DetachFromServerObject(void),0x0063D530,defines,1
 ?StartFlash@CSWCObject@@QAEXXZ,public: void __thiscall CSWCObject::StartFlash(void),0x0063D540,calls,1
 ?StopFlash@CSWCObject@@QAEXXZ,public: void __thiscall CSWCObject::StopFlash(void),0x0063D550,calls,1
+?AttachToScene@CSWCObject@@QAEXPAVCAurScene@@@Z,public: void __thiscall CSWCObject::AttachToScene(class CAurScene *),0x0063D820,defines,1
 ?SetTransitionMode@CSWCCreature@@QAEXH@Z,public: void __thiscall CSWCCreature::SetTransitionMode(int),0x0063D820,calls,2
 ?SetCorpseState@CSWCCreature@@QAEXH@Z,public: void __thiscall CSWCCreature::SetCorpseState(int),0x0063E220,calls,1
 ?SetFadeState@CSWCCreature@@QAEXH@Z,public: void __thiscall CSWCCreature::SetFadeState(int),0x0063E220,calls,1
@@ -6662,7 +6676,12 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?Destroy@CSWGuiPanelR5@@QAEXXZ,public: void __thiscall CSWGuiPanelR5::Destroy(void),0x0067AA80,calls,1
 ?ActionMenuOpen@CSWCPlaceable@@QAEXHPAVCSWCCreature@@@Z,"public: void __thiscall CSWCPlaceable::ActionMenuOpen(int,class CSWCCreature *)",0x006826A0,calls,1
 ?GetAppearance@CSWCPlaceable@@QAEPAUCSWCPlaceableAppearance@@XZ,public: struct CSWCPlaceableAppearance * __thiscall CSWCPlaceable::GetAppearance(void),0x00682E00,calls,1
+?GetServerPlaceable@CSWCPlaceable@@QAEPAVCSWSPlaceable@@XZ,public: class CSWSPlaceable * __thiscall CSWCPlaceable::GetServerPlaceable(void),0x00682E00,defines,1
+?SetIsAreaTransition@CSWCDoor@@QAEXH@Z,public: void __thiscall CSWCDoor::SetIsAreaTransition(int),0x00683CC0,defines,1
 ?ActionMenuOpen@CSWCDoor@@QAEXHPAVCSWCCreature@@@Z,"public: void __thiscall CSWCDoor::ActionMenuOpen(int,class CSWCCreature *)",0x00683E90,calls,1
+?GetServerDoor@CSWCDoor@@QAEPAVCSWSDoor@@XZ,public: class CSWSDoor * __thiscall CSWCDoor::GetServerDoor(void),0x00683EE0,defines,1
+??1CSWCDoor@@UAE@XZ,public: virtual __thiscall CSWCDoor::~CSWCDoor(void),0x00683F90,calls,1
+??_GCSWCDoor@@UAEPAXI@Z,public: virtual void * __thiscall CSWCDoor::`scalar deleting destructor'(unsigned int),0x006843F0,defines,1
 ?HitCheckMouse@CSWGuiMainInterfaceAction@@QAEPAVCSWGuiControl@@HH@Z,"public: class CSWGuiControl * __thiscall CSWGuiMainInterfaceAction::HitCheckMouse(int,int)",0x00684DF0,calls,1
 ?UpdateTimers@CSWGuiTargetActionMenu@@QAEXM@Z,public: void __thiscall CSWGuiTargetActionMenu::UpdateTimers(float),0x00684E70,defines,2
 ?GetControlType@CSWGuiTargetActionMenu@@QAEDPAVCSWGuiControl@@@Z,public: char __thiscall CSWGuiTargetActionMenu::GetControlType(class CSWGuiControl *),0x00684ED0,defines,1
@@ -6778,7 +6797,13 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?ReadOBJECTIDClient@CSWCMessage@@QAEKXZ,public: unsigned long __thiscall CSWCMessage::ReadOBJECTIDClient(void),0x00692630,calls,18
 ?ReadCExoLocStringClient@CSWCMessage@@QAE?AVCExoString@@AAVCResRef@@PAK@Z,"public: class CExoString __thiscall CSWCMessage::ReadCExoLocStringClient(class CResRef &,unsigned long *)",0x00692660,calls,1
 ?OnXButton@CSWGuiInGameMap@@QAEXXZ,public: void __thiscall CSWGuiInGameMap::OnXButton(void),0x00692BC0,calls,1
+??1CSWGuiMapHider@@UAE@XZ,public: virtual __thiscall CSWGuiMapHider::~CSWGuiMapHider(void),0x006942D0,calls,1
 ??0CSWGuiInGamePanel6@@QAE@PAVCSWGuiManagerPanels@@@Z,public: __thiscall CSWGuiInGamePanel6::CSWGuiInGamePanel6(class CSWGuiManagerPanels *),0x00694D50,calls,1
+??_GCSWGuiMapHider@@UAEPAXI@Z,public: virtual void * __thiscall CSWGuiMapHider::`scalar deleting destructor'(unsigned int),0x00695160,defines,1
+??_GCSWGuiInGameGalaxyMap@@UAEPAXI@Z,public: virtual void * __thiscall CSWGuiInGameGalaxyMap::`scalar deleting destructor'(unsigned int),0x006958A0,defines,1
+??1CSWGuiInGameGalaxyMap@@UAE@XZ,public: virtual __thiscall CSWGuiInGameGalaxyMap::~CSWGuiInGameGalaxyMap(void),0x006958C0,calls,1
+??_GCSWGuiInGameMap@@UAEPAXI@Z,public: virtual void * __thiscall CSWGuiInGameMap::`scalar deleting destructor'(unsigned int),0x00695BD0,defines,1
+??1CSWGuiInGameMap@@UAE@XZ,public: virtual __thiscall CSWGuiInGameMap::~CSWGuiInGameMap(void),0x00695BF0,calls,1
 ?SetHead@CCreatureAppearanceX@@QAEXPAX@Z,public: void __thiscall CCreatureAppearanceX::SetHead(void *),0x00696F60,calls,1
 ?GetCameraOffset@CCreatureAppearanceX@@QAEMXZ,public: float __thiscall CCreatureAppearanceX::GetCameraOffset(void),0x00697580,calls,1
 ?SetAlignment@CCreatureAppearanceX@@QAEXF@Z,public: void __thiscall CCreatureAppearanceX::SetAlignment(short),0x00698150,calls,1
