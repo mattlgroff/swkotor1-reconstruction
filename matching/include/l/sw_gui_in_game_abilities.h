@@ -106,8 +106,20 @@ class CSWCCreatureStats {
 public:
     unsigned char GetClass(unsigned char nIndex);   // 0x00647730
     int HasFeat(unsigned short nFeat);              // 0x00649340
+    void ClearFeats();                              // 0x00648320
+    unsigned short GetFeat(unsigned short nIndex);  // 0x006486E0
+    void ClearSpells();                             // 0x00649520
+    unsigned short GetNumberKnownSpells(unsigned char nClass, unsigned char nLevel); // 0x006487D0
+    unsigned long GetKnownSpell(unsigned char nClass, unsigned char nLevel,
+                                unsigned char nIndex); // 0x006495A0
+    void AddKnownSpell(unsigned char nClass, unsigned long nSpell); // 0x00649F90
     char pad_0x0[0x32];
     unsigned char m_nNumClasses;                    // 0x32
+    char pad_0x33[0x7d];
+    unsigned short* m_pFeats;                       // 0xB0
+    unsigned short m_nNumFeats;                     // 0xB4
+    char pad_0xb6[2];
+    int m_nFeatCapacity;                            // 0xB8
 
     unsigned char GetLastClass() { return GetClass(m_nNumClasses - 1); }
 };
@@ -256,6 +268,7 @@ public:
         element[num] = t;
         num++;
     }
+    int AddUnique(T t);                           // <unsigned short>: 0x005A7670
     ~CExoArrayList()
     {
         delete[] element;

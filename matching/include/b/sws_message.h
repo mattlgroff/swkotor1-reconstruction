@@ -20,6 +20,7 @@ class CSWSDoor;
 class CSWSPlaceable;
 class CLastUpdateObject;
 class CSWSPlayerLastUpdateObject;
+class CSWSPlayerLUOSortedObjectList;
 class CLoopingVisualEffect;
 class CSWSTrigger;
 template <class T> class CExoArrayList;
@@ -75,6 +76,7 @@ public:
 
 class CSWMessage : public CNWMessage {
 public:
+    unsigned long PeekAtWriteMessageSize();                             // 0x00405040
     void CreateWriteMessage(unsigned long nSize, unsigned long nPlayerId,
                             int bArg);                                  // 0x004D68A0
     CResRef ReadCResRef(int nBits);                                     // 0x004D6180
@@ -188,6 +190,15 @@ public:
     void TestObjectUpdateDifferences(CSWSPlayer* pPlayer, CSWSObject* pObject,
                                       CLastUpdateObject** ppLast, unsigned long* pFlags,
                                       unsigned long* pAppearanceFlags); // 0x00577FA0
+    int TestObjectVisible(CSWSObject* pObject, CSWSObject* pObserver); // 0x0056DC60
+    void DeleteLastUpdateObjectsForObject(CSWSPlayer* pPlayer, unsigned long oidObject); // 0x0056E190
+    void WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer, CSWSObject* pObject,
+        CLastUpdateObject* pLast, unsigned long nFlags, unsigned long nAppearanceFlags); // 0x00574A10
+    void ComputeGameObjectUpdateForObject(CSWSPlayer* pPlayer, CSWSObject* pObserver,
+        CGameObjectArray* pArray, unsigned long oidObject); // 0x00578060
+    int ComputeGameObjectUpdateForCategory(unsigned long nCategory, unsigned long nLimit,
+        CSWSPlayer* pPlayer, CSWSObject* pObserver, CGameObjectArray* pArray,
+        CSWSPlayerLUOSortedObjectList* pObjects, int nCount); // 0x00578130
     int CompareObjectIdLists(CExoArrayList<unsigned long>* pList1,
                              CExoArrayList<unsigned long>* pList2); // 0x0056B830 (name guessed)
     int ComputeVisibilityLists(CSWSCreature* pCreature,

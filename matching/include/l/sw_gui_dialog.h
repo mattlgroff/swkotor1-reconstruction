@@ -66,6 +66,7 @@ public:
     short m_nHeight;                                // 0x6e
 
     void PlayGuiSound(char nSound);                 // 0x0040A140
+    CSWGuiPanel* PopModalPanel();                    // 0x0040BE00
     void GetSafeMargins(int* pX, int* pY);          // 0x00409EE0
     static CExoString GetScreenResolutionString(int nWidth, int nHeight);  // 0x0040A3E0
     void AddPanel(CSWGuiPanel* pPanel, int nFlags, int bPlaySound);   // 0x0040BC70
@@ -100,7 +101,9 @@ public:
     virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
     virtual void v30(); virtual void v34(); virtual void v38();
     virtual void HandleInputEvent(int nEvent, int bDown);   // 0x3c
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
+    virtual void v40();
+    virtual CSWGuiControl* HitCheckMouse(int x, int y); // 0x44 (0x004187C0)
+    virtual void v48(); virtual void v4C();
     virtual CSWGuiLabel* GetLabel();                // 0x50
     virtual CSWGuiLabelHilight* GetLabelHilight();          // 0x54
     virtual int IsSelectable();                     // 0x58
@@ -111,7 +114,10 @@ public:
     virtual void v90(); virtual void v94();
 
     CSWGuiExtent m_extent;                          // 0x04
-    char pad_0x14[0x30];
+    CSWGuiControl* m_pParentControl;               // 0x14
+    char pad_0x18[0x1c];
+    void* m_pOwner;                                // 0x34
+    char pad_0x38[0xc];
     union {
         unsigned long m_nFlags;                     // 0x44
         struct {
@@ -130,6 +136,7 @@ public:
     int GetUserData() { return m_n50; }
     void AddEvent(int nEvent, CSWGuiPanel* pObject,
                   void (CSWGuiPanel::*pfnCallback)(CSWGuiControl*));   // 0x0041AB20
+    void AddChildControl(CSWGuiControl* pControl);                    // 0x0041ACC0
 };
 
 // The dialog clears its controls' visible bit through a control pointer
