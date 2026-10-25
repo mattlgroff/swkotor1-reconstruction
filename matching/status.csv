@@ -3152,6 +3152,7 @@ address,name,status,diff_insns,file
 0x0056C8B0,CSWSMessage::SendServerToPlayerLoadBar_StartStallEvent,MATCH,0,matching/src/b/sws_message_send.cpp
 0x0056C910,CSWSMessage::SendServerToPlayerLoadBar_UpdateStallEvent,MATCH,0,matching/src/b/sws_message_send.cpp
 0x0056C980,CSWSMessage::SendServerToPlayerLoadBar_EndStallEvent,MATCH,0,matching/src/b/sws_message_send.cpp
+0x0056C9F0,CSWSMessage::SendServerToPlayerModule_SetPauseState,MATCH,0,matching/src/b/sws_message_pause_state.cpp
 0x0056CAC0,CSWSMessage::SendServerToPlayerModule_ExportReply,MATCH,0,matching/src/b/sws_message_send.cpp
 0x0056CB10,CSWSMessage::SendServerToPlayerModule_Loading,MATCH,0,matching/src/b/sws_message_send.cpp
 0x0056CB80,CSWSMessage::SendServerToPlayerSaveLoad_Status,MATCH,0,matching/src/b/sws_message_send.cpp
@@ -3186,6 +3187,7 @@ address,name,status,diff_insns,file
 0x0056FD10,CSWSMessage::SendServerToPlayerInventory_Unequip,MATCH,0,matching/src/b/sws_message_send.cpp
 0x0056FD80,CSWSMessage::SendServerToPlayerInventory_UnequipCancel,MATCH,0,matching/src/b/sws_message_send.cpp
 0x0056FDE0,CSWSMessage::SendServerToPlayerLogin_Confirm,MATCH,0,matching/src/b/sws_message_send.cpp
+0x00570180,CSWSMessage::SendServerToAllPlayersCreatureUpdate_StripEquippedItems,MATCH,0,matching/src/b/sws_message_strip_equipment.cpp
 0x005704F0,?Add@?$CExoArrayList@E@@QAEXE@Z,MATCH,0,matching/src/b/sws_message_helpers.cpp
 0x005706F0,CSWSMessage::AssignCreatureLists,MATCH,0,matching/src/b/sws_message_helpers.cpp
 0x005707A0,CSWSMessage::UpdateLastUpdateVisibilityList,NONMATCH,4,matching/src/pilot3/message.cpp
@@ -4926,7 +4928,9 @@ address,name,status,diff_insns,file
 0x00613DA0,CSWCCreature::GetMeleeAnimation,NONMATCH,171,matching/src/pilot4/a/sw_c_creature_melee_anim.cpp
 0x00614670,CSWCCreature::ShowEquippedItems,MATCH,0,matching/src/c/sw_c_creature_r6.cpp
 0x00614AA0,CSWCCreature::GetCreatureLight,NONMATCH,5,matching/src/c/sw_c_creature_misc.cpp
+0x00614B60,CSWCCreature::IsInjured,NONMATCH,4,matching/src/c/sw_c_creature_menu_leafs.cpp
 0x00616140,CSWCCreature::CheckFeat,NONMATCH,7,matching/src/c/sw_c_creature_r6.cpp
+0x00616200,CSWCCreature::ForceMenuHostileAction,MATCH,0,matching/src/c/sw_c_creature_menu_leafs.cpp
 0x00616800,CSWCCreature::ActionMenuAttack,NONMATCH,14,matching/src/c/sw_c_creature_r6.cpp
 0x00616890,CSWCCreature::GetForceShield,NONMATCH,17,matching/src/c/sw_c_creature_r6.cpp
 0x00617330,CSWCCreature::UpdateAttackData,MATCH,0,matching/src/c/sw_c_creature_r6.cpp
@@ -4934,6 +4938,9 @@ address,name,status,diff_insns,file
 0x00618280,??_GCSWCCreature@@UAEPAXI@Z,MATCH,0,matching/src/c/sw_c_creature.cpp
 0x006197D0,CSWCCreature::GetUsableItems,NONMATCH,37,matching/src/c/sw_c_creature_r6.cpp
 0x006198E0,CSWCCreature::GetHostileItems,MATCH,0,matching/src/c/sw_c_creature_r6.cpp
+0x0061B6F0,CClientOptions::SetCameraMode,MATCH,0,matching/src/c/client_options_setters.cpp
+0x0061B710,CClientOptions::SetFullScreenEnabled,NONMATCH,15,matching/src/c/client_options_setters.cpp
+0x0061B740,CClientOptions::SetAutoLevelUpNPCs,MATCH,0,matching/src/c/client_options_setters.cpp
 0x0061D1C0,CClientOptions::ApplySoundOptions,MATCH,0,matching/src/c/client_options_r10.cpp
 0x0061D230,CClientOptions::SetTexturePackBit,MATCH,0,matching/src/c/client_options_r10.cpp
 0x0061D3D0,CClientOptions::GetTexturePackBit,MATCH,0,matching/src/c/client_options_r10.cpp
@@ -4966,6 +4973,8 @@ address,name,status,diff_insns,file
 0x0061F7C0,CClientExoAppInternal::DisableInput,MATCH,0,matching/src/c/client_input_state.cpp
 0x0061F7D0,CClientExoAppInternal::EnableInput,MATCH,0,matching/src/c/client_input_state.cpp
 0x0061F880,CClientExoAppInternal::PerformLButtonDownAction,NONMATCH,19,matching/src/c/client_exo_app_internal_r5.cpp
+0x0061F940,CClientExoAppInternal::PerformRButtonDownAction,MATCH,0,matching/src/c/client_exo_app_internal_rbutton.cpp
+0x0061F960,CClientExoAppInternal::PerformRButtonUpAction,MATCH,0,matching/src/c/client_exo_app_internal_rbutton.cpp
 0x00620530,CClientExoAppInternal::PerformLButtonUpAction,NONMATCH,21,matching/src/c/client_exo_app_internal_r5.cpp
 0x00625AC0,CSWGuiStatusSummary::HandleInputEvent,MATCH,0,matching/src/pilot4/a/sw_gui_status_summary.cpp
 0x00625B50,CSWGuiStatusSummary::UpdateStatusFlashes,MATCH,0,matching/src/pilot4/a/sw_gui_status_summary.cpp
@@ -5041,6 +5050,8 @@ address,name,status,diff_insns,file
 0x0063D520,CSWCObject::AttachmentFromServerObject,MATCH,0,matching/src/n/object_server_attachment.cpp
 0x0063D530,CSWCObject::DetachFromServerObject,MATCH,0,matching/src/n/object_server_attachment.cpp
 0x0063D820,CSWCObject::AttachToScene,MATCH,0,matching/src/n/object_scene_attachment.cpp
+0x00640640,CSWCModule::SetTimeOfDayState,MATCH,0,matching/src/m/sw_c_module_accessors.cpp
+0x00641980,CSWCModule::GetMiniGame,MATCH,0,matching/src/m/sw_c_module_accessors.cpp
 0x00641DB0,CSWCSoundObject::AsSWCSoundObject,MATCH,0,matching/src/m/sw_c_sound_object.cpp
 0x00644150,??_GCSWCModule@@UAEPAXI@Z,MATCH,0,matching/src/c/sw_c_module.cpp
 0x006450E0,??_GCSWGuiInGameJournal@@UAEPAXI@Z,MATCH,0,matching/src/c/sw_gui_in_game_journal.cpp
@@ -5048,9 +5059,15 @@ address,name,status,diff_insns,file
 0x00646C90,CSWCItem::GetServerItem,MATCH,0,matching/src/c/sw_c_item.cpp
 0x006474B0,??_GCSWCItem@@UAEPAXI@Z,MATCH,0,matching/src/c/sw_c_item.cpp
 0x00647660,CSWCCreatureStats::GetRaceName,MATCH,0,matching/src/pilot4/b/f00647660.cpp
+0x00647720,CSWCCreatureStats::GetArmorClass,MATCH,0,matching/src/m/sw_c_creature_stats_small.cpp
+0x00647730,CSWCCreatureStats::GetClass,MATCH,0,matching/src/m/sw_c_creature_stats_small.cpp
+0x00647750,CSWCCreatureStats::GetClassLevel,MATCH,0,matching/src/m/sw_c_creature_stats_small.cpp
+0x00647770,CSWCCreatureStats::SetClass,MATCH,0,matching/src/m/sw_c_creature_stats_small.cpp
+0x00647790,CSWCCreatureStats::SetClassLevel,MATCH,0,matching/src/m/sw_c_creature_stats_small.cpp
 0x006477E0,CSWCCreatureStats::GetCanUseSkill,MATCH,0,matching/src/k/sw_c_creature_stats.cpp
 0x00647900,CSWCLevelUpStats::GetSkillPointCostForSkillRank,MATCH,0,matching/src/k/sw_c_level_up_stats.cpp
 0x006479F0,CSWCLevelUpStats::GetBaseAttackBonus,MATCH,0,matching/src/k/sw_c_level_up_stats.cpp
+0x00647A80,CSWCCreatureStats::GetMaxHitPoints,MATCH,0,matching/src/m/sw_c_creature_stats_small.cpp
 0x00647A90,CSWCCreatureStats::SetCombatInformation,MATCH,0,matching/src/c/sw_c_creature_stats.cpp
 0x00647AE0,CSWCCreatureStats::CalculateNumAttacks,MATCH,0,matching/src/k/sw_c_creature_stats.cpp
 0x00648100,?DelIndex@?$CExoArrayList@VCResRef@@@@QAEXH@Z,MATCH,0,matching/src/m/sw_c_sound_object.cpp
@@ -5321,7 +5338,11 @@ address,name,status,diff_insns,file
 0x00674990,CSWMGGunBank::Die,MATCH,0,matching/src/m/sw_mg_gun_bank.cpp
 0x00674A10,CSWMGTargettingGunBank::Die,NONMATCH,8,matching/src/m/sw_mg_gun_bank.cpp
 0x006754D0,CScriptParser::SplitName,MATCH,0,matching/src/pilot4/b/f006754d0.cpp
+0x00675DB0,CSWCJournal::EnableSort,MATCH,0,matching/src/m/sw_c_journal_sort.cpp
+0x00675DC0,CSWCJournal::DisableSort,MATCH,0,matching/src/m/sw_c_journal_sort.cpp
 0x00675ED0,CSWCSortedJournalArrayList::SortItemsByDate,MATCH,0,matching/src/c/sw_c_sorted_journal_array_list.cpp
+0x00676BC0,CSWCJournal::SetActiveSortBy,MATCH,0,matching/src/m/sw_c_journal_sort.cpp
+0x00676BF0,CSWCJournal::SetDoneSortBy,MATCH,0,matching/src/m/sw_c_journal_sort.cpp
 0x00677410,CSWCMessage::SendPlayerToServerMessage,MATCH,0,matching/src/m/sw_c_message_send.cpp
 0x00677490,CSWCMessage::SendPlayerToServer_03_02,MATCH,0,matching/src/m/sw_c_message_send.cpp
 0x006774E0,CSWCMessage::SendPlayerToServer_03_04,MATCH,0,matching/src/m/sw_c_message_send.cpp
@@ -5785,6 +5806,11 @@ address,name,status,diff_insns,file
 0x006AF940,kotor_fastcall_006af940,MATCH,0,matching/src/l/sw_gui_character_leaves.cpp
 0x006AF950,kotor_fastcall_006af950,MATCH,0,matching/src/l/sw_gui_character_leaves.cpp
 0x006B28C0,CSWGuiCharacterPanel::UpdateCharacter,MATCH,0,matching/src/pilot4/b/f006b28c0.cpp
+0x006C1330,CSWGuiStore::DeleteItemEntries,MATCH,0,matching/src/l/sw_gui_store_panel_lifecycle.cpp
+0x006C1650,CSWGuiStore::OnPanelRemoved,MATCH,0,matching/src/l/sw_gui_store_panel_lifecycle.cpp
+0x006C2170,CSWGuiStore::OnPanelAdded,MATCH,0,matching/src/l/sw_gui_store_panel_lifecycle.cpp
+0x006C9D50,CSWGuiSaveNamePanel::HandleOkButton,MATCH,0,matching/src/l/sw_gui_save_name_panel.cpp
+0x006C9DD0,CSWGuiSaveGameEditBox::DestroyBase,MATCH,0,matching/src/l/sw_gui_save_name_panel.cpp
 0x006CCB80,CSWGuiAbilityNode::CSWGuiAbilityNode,MATCH,0,matching/src/l/sw_gui_ability_chain.cpp
 0x006CCBE0,CSWGuiAbilityNode::~CSWGuiAbilityNode,MATCH,0,matching/src/l/sw_gui_ability_chain.cpp
 0x006CCC40,CSWGuiAbilityChain::Draw,MATCH,0,matching/src/l/sw_gui_ability_chain.cpp
@@ -5847,3 +5873,5 @@ address,name,status,diff_insns,file
 0x006D05E0,CSWGuiItemCreateMenu::OnItemSelected,MATCH,0,matching/src/l/sw_gui_debug_menu.cpp
 0x006D09C0,??_GCSWGuiItemCreateMenu@@UAEPAXI@Z,MATCH,0,matching/src/l/sw_gui_debug_menu.cpp
 0x006D09E0,??1CSWGuiItemCreateMenu@@UAE@XZ,MATCH,0,matching/src/l/sw_gui_debug_menu.cpp
+0x006D2C00,??_GCSWGuiQuestItem@@UAEPAXI@Z,MATCH,0,matching/src/l/sw_gui_quest_item_lifecycle.cpp
+0x006D2C20,CSWGuiQuestItem::OnPanelAdded,MATCH,0,matching/src/l/sw_gui_quest_item_lifecycle.cpp

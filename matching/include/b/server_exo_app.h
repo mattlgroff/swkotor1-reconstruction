@@ -52,6 +52,7 @@ public:
     void Shutdown(int bArg1, int bArg2);                                // 0x004AE890
     void MovePlayerToArea(class CSWSPlayer* pPlayer);                   // 0x004AE940
     int GetPauseState(unsigned char nState);                            // 0x004AE980
+    CExoLinkedList<unsigned long>* GetActiveExclusionList();             // 0x004AE9D0
     class CSWGlobalVariableTable* GetGlobalVariableTable();             // 0x004AEE60
     void SetExportAllCharactersPending(int bPending);                   // 0x004AECE0
     class CSWSDoor* GetDoorByGameObjectID(unsigned long nId);           // 0x004AE7C0
@@ -106,6 +107,8 @@ public:
     int IsMoviePlaying();                                               // 0x005EDB40
     void AddMovieToMovieQueue(const CExoString& sMovie, int bSkippable); // 0x005EE210
     void ResetDriveAcceleration();                                      // 0x005EDBA0
+    void SetPauseState(unsigned char nType, int nState,
+                        CExoLinkedList<unsigned long>* pExcludedObjects); // 0x005ED650
     void HideLoadScreen(int a1, int a2);                                // 0x005EDA90
     void PlayMovie(const CExoString& sMovie, int* pResult, int a3, int a4); // 0x005EDB30
     void StartPazaakGame(int nOpponentDeck, const CExoString& sEndScript, int nMaxWager,

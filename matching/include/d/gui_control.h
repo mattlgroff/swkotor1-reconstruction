@@ -150,6 +150,7 @@ public:
     void ReleaseCapture(CSWGuiControl* pControl);   // 0x0040a200
     void ResetToolTipTimer();                       // 0x0040b4d0
     void RemoveToolTip();                           // 0x0040c150
+    CSWGuiPanel* PopModalPanel();                    // 0x0040be00
 };
 
 extern CSWGuiManager* g_pGuiManager;            // 0x007a39f4

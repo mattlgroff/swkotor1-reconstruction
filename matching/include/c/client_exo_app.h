@@ -174,6 +174,8 @@ public:
     void PopModalPanel();                           // 0x0040BE00
     int RemovePanel(CSWGuiPanel* pPanel);           // 0x0040C830
     void PlayGuiSound(int nSound);                  // 0x0040A140
+    int HandleRMouseUp();                           // 0x0040A1A0
+    int HandleRMouseDown();                         // 0x0040C610
 };
 
 class CSWGuiPanel {
@@ -282,7 +284,12 @@ public:
     void SetCorpseState(int b);                     // 0x0063E220
     void GetCreatureLight(int b);                   // 0x00614AA0
     int IsDead();                                   // 0x004EF890
+    int IsInjured();                                // 0x00614B60
     void SetLockOrientation(unsigned long oid, int b);   // 0x00610950
+    void SetAttackTarget(int b);                    // 0x00610A10
+    void ForceMenuAction(unsigned long nAction, CSWCCreature* pCreature); // 0x0060F330
+    void ForceMenuHostileAction(unsigned long nAction, CSWCCreature* pCreature); // 0x00616200
+    CGameObject* GetServerObject();                 // 0x0063D4B0
 };
 
 class CGameObjectArray {
@@ -308,6 +315,17 @@ public:
     int IsLoaded();                                 // 0x0061DBE0
     void SetDefaults();                             // 0x0061DA60
     int SetOption(int nOption, int nValue);         // 0x004AE170
+
+    void SetCameraMode(unsigned char nMode);        // 0x0061B6F0 (reference name)
+    void SetFullScreenEnabled(int bEnabled);         // 0x0061B710 (reference name; ownership conflict noted)
+    void SetAutoLevelUpNPCs(int bEnabled);           // 0x0061B740 (Mac name)
+
+    unsigned long m_nFlags;                         // +0x00
+    char pad_0x04[0x04];
+    unsigned long m_nGameplayFlags;                 // +0x08
+    char pad_0x0c[0x61];
+    unsigned char m_nCameraMode;                    // +0x6d
+    unsigned char m_nCameraModeCurrent;              // +0x6e
 };
 
 class CClientUnknown700 {
@@ -333,6 +351,12 @@ public:
     unsigned long GetPlayerCreatureID();            // 0x004AEA40
     CWorldTimer* GetWorldTimer();                   // 0x004AEDE0
     CWorldTimer* GetPauseTimer();                   // 0x004AEE00
+    class CSWPartyTable* GetPartyTable();            // 0x004AEE70
+};
+
+class CSWPartyTable {
+public:
+    void AutoLevelUpNPCs();                          // 0x00563B90
 };
 
 struct CAppPad {
@@ -358,6 +382,9 @@ public:
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
 extern CExoBase* g_pExoBase;                        // 0x007A39E0
 extern CExoSound* g_pExoSound;                      // 0x007A39EC
+extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
+extern int g_bSwapMouseButtons;                     // 0x008338F0
+extern unsigned long g_bReinitializeVideoMode;      // 0x007A3A2C
 
 struct CClientResRefSlot {
     char m_resRef[16];
@@ -702,6 +729,8 @@ public:
     void EmptyMethod();                                             // 0x004015A0 (shared empty body)
     void PerformLButtonDownAction(int bDouble);                     // 0x0061F880
     void PerformLButtonUpAction();                                  // 0x00620530
+    int PerformRButtonDownAction();                                  // 0x0061F940
+    int PerformRButtonUpAction();                                    // 0x0061F960
     void HandleMouseClickInWorld();                                 // 0x00620350
     CSWCCreature* LookUpCreature(unsigned long oid);                // inline in client_exo_app_internal_r5.cpp
     int PlayMovieList(CExoArrayList<CResRef>* pList, int a, int b, int c, int d);   // 0x00602AF0

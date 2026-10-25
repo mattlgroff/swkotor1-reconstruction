@@ -17,6 +17,7 @@ public:
     void* GetAtPos(void* pPos);                                 // 0x005E9B60
     void* GetNext(void*& pPos);                                 // 0x005E9B90
     void* RemoveHead();                                         // 0x005E9C80
+    void* AddTail(void* pObject);                               // 0x005E9DC0
     void* GetHead() { return m_pHead == NULL ? NULL : m_pHead->pObject; }
 
     CExoLinkedListNode* m_pHead;

@@ -86,6 +86,7 @@ public:
                                     class CSWCCMessageData* pData,
                                     class CSWSCombatAttackData* pAttackData); // 0x00568570
     int SendServerToServerAdminMessage(unsigned long nPlayerId, const CExoString& sMessage); // 0x00579890
+    int SendServerToAllPlayersCreatureUpdate_StripEquippedItems(unsigned long oidCreature); // 0x00570180 (name inferred)
 
     // Player-to-server handlers.
     int HandlePlayerToServerQuickChatMessage(CSWSPlayer* pPlayer, unsigned char nMinor);
