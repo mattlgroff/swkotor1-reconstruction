@@ -38,6 +38,8 @@ public:
     void RegisterWindyEmitter(PartEmitter* pEmitter);          // 0x004A6470
     void DeregisterWindyEmitter(PartEmitter* pEmitter);        // 0x004A6480
     void AddPointSourceWind(Vector position, unsigned int a, unsigned int b, unsigned int c); // 0x004A6510
+    Vector* GetGlobalPointWind(Vector* out, const Vector* point, float time); // 0x004A6440
+    Vector* PointSourceWindVector(Vector* out, Vector point); // 0x004A5C80
 
     char pad_0x00[0x0c];
     PointSourceWindList m_lPointSourceWinds;                   // +0x0c
