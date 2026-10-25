@@ -192,8 +192,15 @@ public:
     char pad_0x8[0x10];
     double m_fScale;                                // 0x18
 
+    unsigned long GetLowResolutionTimer();
     unsigned __int64 GetHighResolutionTimer();
 };
+
+// FUNCTION: SWKOTOR 0x005EC200
+unsigned long CExoTimersInternal::GetLowResolutionTimer()
+{
+    return GetTickCount();
+}
 
 // FUNCTION: SWKOTOR 0x005EC210
 unsigned __int64 CExoTimersInternal::GetHighResolutionTimer()

@@ -461,6 +461,7 @@ CExoString CSWSDialog::GetExoStringFromLocString(const CExoLocString &cLoc, unsi
     return sText;
 }
 
+// FUNCTION: SWKOTOR 0x005A4860 SYMBOL: ??_GCSWSDialog@@UAEPAXI@Z
 // FUNCTION: SWKOTOR 0x005A4880
 CSWSDialog::~CSWSDialog()
 {
