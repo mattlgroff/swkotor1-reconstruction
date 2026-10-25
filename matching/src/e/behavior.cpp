@@ -491,6 +491,21 @@ CAurBehaviorAttach::~CAurBehaviorAttach()
     }
 }
 
+// FUNCTION: SWKOTOR 0x004A0030
+void __fastcall thunk_FUN_0049fce0(void* pThis, void*)
+{
+	((CAurBehaviorAttach*)pThis)->CAurBehaviorAttach::~CAurBehaviorAttach();
+}
+
+// FUNCTION: SWKOTOR 0x004A0010
+void* __fastcall behavior_attach_scalar_delete_004a0010(void* pThis, void*, unsigned int flags)
+{
+    thunk_FUN_0049fce0(pThis, 0);
+    if ((flags & 1) != 0)
+        ::operator delete(pThis);
+    return pThis;
+}
+
 // FUNCTION: SWKOTOR 0x0049FDC0
 CAurBehaviorAttachTranslate::CAurBehaviorAttachTranslate(Gob* pGob, Gob* pTarget, AttachHook* pHook)
     : CAurBehaviorAttach(pGob, pTarget, pHook), m_vTranslation(0.0f, 0.0f, 0.0f)
@@ -562,6 +577,16 @@ int CAurBehaviorCameraFollow::GetType()
 // FUNCTION: SWKOTOR 0x0049FFA0
 CAurBehaviorCameraFollow::~CAurBehaviorCameraFollow()
 {
+}
+
+// FUNCTION: SWKOTOR 0x004A0040
+void* __fastcall behavior_camera_follow_scalar_delete_004a0040(void* pThis, void*, unsigned int flags)
+{
+    CAurBehaviorCameraFollow* pBehavior = (CAurBehaviorCameraFollow*)pThis;
+    pBehavior->CAurBehaviorCameraFollow::~CAurBehaviorCameraFollow();
+    if ((flags & 1) != 0)
+        ::operator delete(pThis);
+    return pThis;
 }
 
 // FUNCTION: SWKOTOR 0x0049FFD0 SYMBOL: ??_GCAurBehavior@@UAEPAXI@Z

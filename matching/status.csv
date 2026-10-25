@@ -1769,6 +1769,9 @@ address,name,status,diff_insns,file
 0x0049FFA0,CAurBehaviorCameraFollow::~CAurBehaviorCameraFollow,MATCH,0,matching/src/e/behavior.cpp
 0x0049FFD0,??_GCAurBehavior@@UAEPAXI@Z,MATCH,0,matching/src/e/behavior.cpp
 0x0049FFF0,??_GCAurBehaviorAttach@@UAEPAXI@Z,MATCH,0,matching/src/e/behavior.cpp
+0x004A0010,behavior_attach_scalar_delete_004a0010,MATCH,0,matching/src/e/behavior.cpp
+0x004A0030,thunk_FUN_0049fce0,MATCH,0,matching/src/e/behavior.cpp
+0x004A0040,behavior_camera_follow_scalar_delete_004a0040,MATCH,0,matching/src/e/behavior.cpp
 0x004A0060,InputBinary::ResetAnim,MATCH,0,matching/src/i/input_binary.cpp
 0x004A0100,InputBinary::ResetDangly,MATCH,0,matching/src/i/input_binary.cpp
 0x004A0160,InputBinary::ResetMdlNodePartsLite,MATCH,0,matching/src/i/input_binary.cpp
@@ -1787,6 +1790,7 @@ address,name,status,diff_insns,file
 0x004A0FB0,InputBinary::ResetAnimation,MATCH,0,matching/src/i/input_binary.cpp
 0x004A1030,InputBinary::Reset,MATCH,0,matching/src/i/input_binary.cpp
 0x004A11B0,InputBinary::ResetLite,MATCH,0,matching/src/i/input_binary.cpp
+0x004A23B0,AurVertexProgramMakeCurrent,MATCH,0,matching/src/i/vertex_program.cpp
 0x004A5950,CAurWind::GetGlobalWindNoPoint,NONMATCH,45,matching/src/pilot4/b/f004a5950.cpp
 0x004A9680,VertexCache::VertexCache,MATCH,0,matching/src/i/vector_math.cpp
 0x004A96C0,VertexCache::~VertexCache,MATCH,0,matching/src/i/vector_math.cpp
