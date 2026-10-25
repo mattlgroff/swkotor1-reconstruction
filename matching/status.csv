@@ -4745,6 +4745,7 @@ address,name,status,diff_insns,file
 0x005EEAB0,CClientExoAppInternal::SendLoadGameRequest,MATCH,0,matching/src/c/client_exo_app_internal.cpp
 0x005EEAD0,CClientExoAppInternal::ServerModeChange,MATCH,0,matching/src/c/client_exo_app_internal_r5.cpp
 0x005EEAE0,CClientExoAppInternal::SetUnknown94,MATCH,0,matching/src/c/client_exo_app_internal.cpp
+0x005F0C60,CClientExoAppInternal::IsValidResolution,MATCH,0,matching/src/c/client_exo_app_valid_resolution.cpp
 0x005F10F0,CClientExoAppInternal::GetGameObject,MATCH,0,matching/src/c/client_exo_app_internal_r5.cpp
 0x005F1130,CClientExoAppInternal::GetItemByGameObjectID,MATCH,0,matching/src/c/client_exo_app_internal_r5.cpp
 0x005F1180,CClientExoAppInternal::GetCreatureByGameObjectID,MATCH,0,matching/src/c/client_exo_app_internal_r5.cpp
@@ -4790,6 +4791,7 @@ address,name,status,diff_insns,file
 0x005F3950,CClientExoAppInternal::EndPazaakGame,NONMATCH,8,matching/src/c/client_exo_app_internal_r5.cpp
 0x005F3A80,CClientExoAppInternal::SetCombatMode,MATCH,0,matching/src/c/client_exo_app_internal.cpp
 0x005F40E0,CClientExoAppInternal::DisableVideoEffect,MATCH,0,matching/src/c/client_exo_app_internal.cpp
+0x005F4100,CClientExoAppInternal::DelayNextEnemyAutoPause,MATCH,0,matching/src/c/client_exo_app_internal_small.cpp
 0x005F4120,CClientExoAppInternal::ShowTutorialWindow,MATCH,0,matching/src/c/client_exo_app_internal_r5.cpp
 0x005F46F0,CClientExoAppInternal::ForwardUnknown46f0,MATCH,0,matching/src/c/client_exo_app_internal.cpp
 0x005F4710,CClientExoAppInternal::LoadOptions,MATCH,0,matching/src/c/client_exo_app_internal_r5.cpp
@@ -4830,6 +4832,7 @@ address,name,status,diff_insns,file
 0x005F8470,CClientExoAppInternal::Uninitialize,MATCH,0,matching/src/c/client_exo_app_internal.cpp
 0x005F9780,CClientExoAppInternal::RestartMoviesIfNecessary,MATCH,0,matching/src/c/client_exo_app_internal.cpp
 0x005F99F0,CClientExoAppInternal::AddItemModelDirectlyToIgnoreList,NONMATCH,4,matching/src/c/client_exo_app_internal.cpp
+0x005F9AA0,CClientExoAppInternal::AddOtherModelToIgnoreList,MATCH,0,matching/src/c/client_exo_app_internal_small.cpp
 0x005FB490,CClientExoAppInternal::PlayRumblePattern,MATCH,0,matching/src/c/client_exo_app_internal.cpp
 0x005FBF50,CClientExoAppInternal::AddMovieToMovieQueue,MATCH,0,matching/src/c/client_exo_app_internal_r5.cpp
 0x005FBFB0,CSWGuiInterfaceAction>,MATCH,0,matching/src/pilot3/arraylist.cpp
@@ -4938,6 +4941,9 @@ address,name,status,diff_insns,file
 0x0060FB80,CSWCCreature::SetOverrideLightsaberState,NONMATCH,8,matching/src/c/sw_c_creature_misc.cpp
 0x0060FC00,CSWCCreature::GetTargetInterfaceTargetType,NONMATCH,21,matching/src/c/sw_c_creature_misc.cpp
 0x00610AC0,CSWCCreature::IsStealthCapable,NONMATCH,14,matching/src/c/sw_c_creature_misc.cpp
+0x00610E10,HitClashEvent,MATCH,0,matching/src/c/sw_c_creature_hit_events.cpp
+0x00610E90,HitContactEvent,MATCH,0,matching/src/c/sw_c_creature_hit_events.cpp
+0x00610EC0,HitParryEvent,MATCH,0,matching/src/c/sw_c_creature_hit_events.cpp
 0x006116A0,CSWCCreature::BlurWeapon,NONMATCH,5,matching/src/c/sw_c_creature_misc.cpp
 0x00611700,CSWCCreature::ComputeWeaponOverlays,MATCH,0,matching/src/c/sw_c_creature_r6.cpp
 0x00613850,CSWCCreature::UpdateVisibleWeapons,NONMATCH,9,matching/src/c/sw_c_creature_misc.cpp
@@ -4950,8 +4956,10 @@ address,name,status,diff_insns,file
 0x00616140,CSWCCreature::CheckFeat,NONMATCH,7,matching/src/c/sw_c_creature_r6.cpp
 0x00616200,CSWCCreature::ForceMenuHostileAction,MATCH,0,matching/src/c/sw_c_creature_menu_leafs.cpp
 0x00616230,CSWCCreature::GetSelfForcePowers,NONMATCH,34,matching/src/c/sw_c_creature_self_force_powers.cpp
+0x006167D0,CSWCCreature::PerformFeat,MATCH,0,matching/src/c/sw_c_creature_perform_actions.cpp
 0x00616800,CSWCCreature::ActionMenuAttack,NONMATCH,14,matching/src/c/sw_c_creature_r6.cpp
 0x00616890,CSWCCreature::GetForceShield,NONMATCH,17,matching/src/c/sw_c_creature_r6.cpp
+0x00616900,CSWCCreature::PerformSkill,MATCH,0,matching/src/c/sw_c_creature_perform_actions.cpp
 0x00617330,CSWCCreature::UpdateAttackData,MATCH,0,matching/src/c/sw_c_creature_r6.cpp
 0x006179C0,CSWCCreature::GetModel,MATCH,0,matching/src/c/sw_c_creature_r6.cpp
 0x00618280,??_GCSWCCreature@@UAEPAXI@Z,MATCH,0,matching/src/c/sw_c_creature.cpp
@@ -5000,6 +5008,8 @@ address,name,status,diff_insns,file
 0x00625AC0,CSWGuiStatusSummary::HandleInputEvent,MATCH,0,matching/src/pilot4/a/sw_gui_status_summary.cpp
 0x00625B50,CSWGuiStatusSummary::UpdateStatusFlashes,MATCH,0,matching/src/pilot4/a/sw_gui_status_summary.cpp
 0x00626D90,CSWGuiInGameMessages::OnPanelAdded,MATCH,0,matching/src/c/sw_gui_in_game_messages.cpp
+0x00627130,CSWGuiMessageBox::SetAllowCancel,MATCH,0,matching/src/n/gui_message_box_controls.cpp
+0x00627160,CSWGuiMessageBox::SetImage,MATCH,0,matching/src/n/gui_message_box_controls.cpp
 0x00627910,??_GCSWGuiToolTipPanel@@UAEPAXI@Z,MATCH,0,matching/src/c/sw_gui_tool_tip_panel.cpp
 0x006285B0,CGuiInGameDialogMessage::CGuiInGameDialogMessage,MATCH,0,matching/src/c/gui_in_game_dialog_message.cpp
 0x00628650,CGuiInGame::SetLevelUpMode,MATCH,0,matching/src/n/gui_mode_target_helpers.cpp
@@ -5071,14 +5081,20 @@ address,name,status,diff_insns,file
 0x0062FA30,CGuiInGame::UpdateDialogLipSync,MATCH,0,matching/src/c/gui_in_game_dialog.cpp
 0x0062FB90,CGuiInGame::FadeAndStopDialogAmbientTrack,MATCH,0,matching/src/c/gui_in_game.cpp
 0x00632180,CGuiInGame::UpdateAreaTransitionGUI,NONMATCH,7,matching/src/c/gui_in_game_dialog.cpp
+0x006346C0,CSWParty::GetCharacter,MATCH,0,matching/src/n/sw_party_lookup.cpp
+0x006349C0,CSWParty::IsPartyMember,MATCH,0,matching/src/n/sw_party_lookup.cpp
+0x00635460,CSWParty::GetPlayerCharacter,MATCH,0,matching/src/n/sw_party_lookup.cpp
 0x00637630,CSWParty::Reset,NONMATCH,68,matching/src/pilot4/a/sw_party_reset.cpp
 0x006383B0,CSWCameraOnAStick::ClearTarget,MATCH,0,matching/src/n/camera_stick_clear_target.cpp
 0x006386D0,camera_navigate_destructor_006386d0,MATCH,0,matching/src/n/camera_navigate_destructor.cpp
 0x0063C060,CSWCObject::GetCurrentAnimation,MATCH,0,matching/src/n/object_animation_state.cpp
 0x0063C070,CSWCObject::GetAnimationBase,MATCH,0,matching/src/n/object_animation_state.cpp
+0x0063C0C0,CSWCObject::ReplaceTextures,NONMATCH,3,matching/src/n/object_visual_texture_forwards.cpp
 0x0063C0E0,CSWCObject::GetAnimationLength,MATCH,0,matching/src/n/object_animation_state.cpp
+0x0063CB50,CSWCObject::SetAlpha,NONMATCH,4,matching/src/n/object_visual_texture_forwards.cpp
 0x0063CE10,CSWCObject::ClearSelfIllumination,MATCH,0,matching/src/n/object_visual_effect_helpers.cpp
 0x0063CE30,CSWCObject::RefreshSelfIllumination,MATCH,0,matching/src/n/object_visual_effect_helpers.cpp
+0x0063D440,CSWCObject::ReplaceTexture,NONMATCH,6,matching/src/n/object_visual_texture_forwards.cpp
 0x0063D460,ObjectWithAnimation::GetVfxValue,MATCH,0,matching/src/n/object_vfx_lower.cpp
 0x0063D470,CSWCObject::ClearAllActions,MATCH,0,matching/src/n/object_server_action_clear.cpp
 0x0063D490,CSWCObject::ClearAllQueuedCombatActions,MATCH,0,matching/src/n/object_server_action_clear.cpp
@@ -5107,6 +5123,7 @@ address,name,status,diff_insns,file
 0x00646C90,CSWCItem::GetServerItem,MATCH,0,matching/src/c/sw_c_item.cpp
 0x006474B0,??_GCSWCItem@@UAEPAXI@Z,MATCH,0,matching/src/c/sw_c_item.cpp
 0x00647560,CSWCCreatureStats::SetSkillRank,MATCH,0,matching/src/m/sw_c_creature_skill_ranks.cpp
+0x006475C0,??0CSWSStats_SpellLikeAbility@@QAE@XZ,MATCH,0,matching/src/m/sw_stats_spell_like_ctor.cpp
 0x006475E0,CSWCCreatureStats::ClearSkills,MATCH,0,matching/src/m/sw_c_creature_skill_ranks.cpp
 0x00647660,CSWCCreatureStats::GetRaceName,MATCH,0,matching/src/pilot4/b/f00647660.cpp
 0x00647720,CSWCCreatureStats::GetArmorClass,MATCH,0,matching/src/m/sw_c_creature_stats_small.cpp
@@ -5194,8 +5211,13 @@ address,name,status,diff_insns,file
 0x00651AF0,CSWCMessage::HandleServerToPlayerCreatureUpdate_StripEquippedItems,MATCH,0,matching/src/c/sw_c_message.cpp
 0x00651B30,CSWCMessage::HandleServerToPlayerItemUpdate_DestroyItem,NONMATCH,5,matching/src/c/sw_c_message.cpp
 0x00651BA0,CSWCMessage::HandleServerToPlayerVoiceChatMessage,MATCH,0,matching/src/c/sw_c_message.cpp
+0x00652290,?HandleServerToPlayerJournal_Type3@CSWCMessage@@QAEHXZ,MATCH,0,matching/src/m/sw_c_message_journal_delete.cpp
+0x006522E0,?HandleServerToPlayerJournal_Type4@CSWCMessage@@QAEHXZ,MATCH,0,matching/src/m/sw_c_message_journal_delete.cpp
+0x00652330,?HandleServerToPlayerJournal_Type5@CSWCMessage@@QAEHXZ,MATCH,0,matching/src/m/sw_c_message_journal_delete.cpp
 0x006526E0,CSWCMessage::HandleServerToPlayerJournalUpdated,MATCH,0,matching/src/pilot4/a/sw_c_message_journal_updated.cpp
 0x006527E0,CSWCMessage::HandleServerToPlayerLevelUpMessage,MATCH,0,matching/src/c/sw_c_message.cpp
+0x00652840,?HandleServerToPlayerModule_Type11@CSWCMessage@@QAEHXZ,MATCH,0,matching/src/m/sw_c_message_module_start.cpp
+0x00652860,?HandleServerToPlayerModule_Type12@CSWCMessage@@QAEHXZ,MATCH,0,matching/src/m/sw_c_message_module_start.cpp
 0x006528B0,CSWCMessage::HandleServerToPlayerModuleUpdate_Time,MATCH,0,matching/src/c/sw_c_message_update.cpp
 0x00654900,CSWCMessage::HandleServerToPlayerSaveLoad,MATCH,0,matching/src/c/sw_c_message.cpp
 0x00654970,CSWCMessage::HandlePlayerToServerShutDownServer,MATCH,0,matching/src/pilot4/a/sw_c_message_shutdown.cpp
@@ -5882,6 +5904,7 @@ address,name,status,diff_insns,file
 0x006C1330,CSWGuiStore::DeleteItemEntries,MATCH,0,matching/src/l/sw_gui_store_panel_lifecycle.cpp
 0x006C1650,CSWGuiStore::OnPanelRemoved,MATCH,0,matching/src/l/sw_gui_store_panel_lifecycle.cpp
 0x006C2170,CSWGuiStore::OnPanelAdded,MATCH,0,matching/src/l/sw_gui_store_panel_lifecycle.cpp
+0x006C2A40,?IndexOf@?$CExoArrayList@PAVCSWGuiControl@@@@QAEHPAVCSWGuiControl@@@Z,MATCH,0,matching/src/l/gui_control_array_index.cpp
 0x006C9D50,CSWGuiSaveNamePanel::HandleOkButton,MATCH,0,matching/src/l/sw_gui_save_name_panel.cpp
 0x006C9DD0,CSWGuiSaveGameEditBox::DestroyBase,MATCH,0,matching/src/l/sw_gui_save_name_panel.cpp
 0x006CCB80,CSWGuiAbilityNode::CSWGuiAbilityNode,MATCH,0,matching/src/l/sw_gui_ability_chain.cpp

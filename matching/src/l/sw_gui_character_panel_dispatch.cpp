@@ -3,6 +3,7 @@
 
 class CSWGuiInGameCharacter : public CSWGuiPanel {
 public:
+    CSWGuiInGameCharacter();
     __declspec(noinline) virtual ~CSWGuiInGameCharacter();
     virtual void Draw(float fDelta);
     virtual void OnPanelAdded();
@@ -46,7 +47,8 @@ void CSWGuiInGameCharacter::OnPanelAdded()
     CSWGuiPanel::OnPanelAdded();
 }
 
-// Keep the destructor out of line to emit the annotated deleting wrapper.
-// Its full body at 0x006AF970 is a separate, unannotated target here.
+// This unannotated constructor emits the class vtable and its deleting
+// wrapper.  The regular destructor at 0x006AF970 remains an external
+// declaration; its body is not reconstructed by this translation unit.
 // FUNCTION: SWKOTOR 0x006B2200 SYMBOL: ??_GCSWGuiInGameCharacter@@UAEPAXI@Z
-CSWGuiInGameCharacter::~CSWGuiInGameCharacter() {}
+CSWGuiInGameCharacter::CSWGuiInGameCharacter() {}

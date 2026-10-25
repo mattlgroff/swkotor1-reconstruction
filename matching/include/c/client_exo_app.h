@@ -30,6 +30,8 @@ class CServerExoApp;
 class CSWParty;
 class CGuiInGame;
 class CSWSCreature;
+class CSWCCombatAttackData;
+class CSWCMessage;
 class CSWCAreaOfEffectObject;
 class CExoStreamingSoundSource;
 class CSWCMiniGame;
@@ -292,6 +294,11 @@ public:
     void ForceMenuHostileAction(unsigned long nAction, CSWCCreature* pCreature); // 0x00616200
     void GetSelfForcePowers(CExoArrayList<CSWGuiInterfaceAction>& actions); // 0x00616230
     CGameObject* GetServerObject();                 // 0x0063D4B0
+    void PlaySwingSound(const CExoString& sEvent, CSWCCombatAttackData* pData, int nCount); // 0x0060DC50
+    int ShowLightSaberContactVisual(int nUnused);   // 0x0060DE20
+    void PartyMenuUseItem(unsigned long oidItem, CGameObject* pTarget); // 0x0060F590
+    void PerformFeat(int nFeat, CSWCCreature* pTarget); // 0x006167D0
+    void PerformSkill(unsigned short nSkill, CSWCCreature* pTarget); // 0x00616900
 };
 
 class CGameObjectArray {
@@ -528,7 +535,10 @@ public:
     int                                m_bPausedByCombat; // 0x380
     unsigned long                      m_bAutoPaused : 1; // 0x384
     unsigned char                      m_nPausedByCombatFlag; // 0x388
-    char pad_0x389[0x1f];
+    char pad_0x389[0x3];
+    float m_fUnknown38c;
+    float m_fUnknown390;
+    char pad_0x394[0x14];
     int                                m_nVideoEffect; // 0x3a8
     int                                m_nTutorialWindowA; // 0x3ac
     int                                m_nTutorialWindowB; // 0x3b0
@@ -807,6 +817,7 @@ public:
     CClientPlayer* GetPlayerByGameObjectID(unsigned long oid);
     CSWCItem* GetItemByGameObjectID(unsigned long oid);
     CSWCCreature* GetCreatureByGameObjectID(unsigned long oid);
+    CSWCMessage* GetSWCMessage();                  // 0x005ED6F0
     CSWCArea* GetAreaByGameObjectID(unsigned long oid);
     CSWCTrigger* GetTriggerByGameObjectID(unsigned long oid);
     CSWCProjectile* GetProjectileByGameObjectID(unsigned long oid);
