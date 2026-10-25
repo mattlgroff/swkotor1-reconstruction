@@ -41909,7 +41909,7 @@
         },
         {
           "path": "src/units/0095/3b685312f2-module_camera.cpp",
-          "sha256": "dac3cded47cadace9cb66bc0191b593f0e32a98b757bc930810c61b0086a0b89"
+          "sha256": "c8dfb484e273ceb8a407bb50ac62644f43bfdfd2127c5934183b99f12e1e0e92"
         },
         {
           "path": "src/units/0095/65f181dde8-w4_frame.hpp",
@@ -61969,7 +61969,7 @@
         },
         {
           "path": "src/units/0679/beedd0bd1c-anim_contested.cpp",
-          "sha256": "d5599573c85dc490d7802267ca1479bfed80e21636315c8586b9541961c0ac0b"
+          "sha256": "46c6170721468056355c285f569997b34ed02b865e4d7a410860d640edad1515"
         },
         {
           "path": "src/units/0680/05d1437c75-growth.h",
@@ -62073,7 +62073,7 @@
         },
         {
           "path": "src/units/0682/c2373a91cd-particle_motion.cpp",
-          "sha256": "7bdd7510c3d6bf84791eb8eee50ec3ae2d49e15a8bc1e61f713acf4cfcbb25fb"
+          "sha256": "4e90c1bbc7593d378eb813092f299735697b5053dbf370fb4abe173f09866158"
         },
         {
           "path": "src/units/0683/05d1437c75-growth.h",
@@ -62613,7 +62613,7 @@
         },
         {
           "path": "src/units/0695/931e9b2576-triangle_bin.cpp",
-          "sha256": "7af92c11fe3f38ff9dc2da441bce7d783afbd3c5cbfdaacca905dd967d82daf7"
+          "sha256": "5a7e29742da6938ea7dfa805cedfc1def7e89d39f02e786541658aa46c2528ef"
         },
         {
           "path": "src/units/0695/b313dbc5e8-vtables2_gen.h",
@@ -63873,7 +63873,7 @@
         },
         {
           "path": "src/units/0719/adf4db38c9-m46_camera.cpp",
-          "sha256": "0a13723f5b56bd5604697a2176b9a5f38205594b3329d4bb3f5382f1d1e16329"
+          "sha256": "cffe60e543d0fe4aa12b359bdd9ef5b77401b7e1a212403abaef724beee17ffb"
         },
         {
           "path": "src/units/0719/b313dbc5e8-vtables2_gen.h",
@@ -70465,7 +70465,7 @@
         },
         {
           "path": "src/units/0944/2046a6faf2-mdl_parse_helpers.cpp",
-          "sha256": "f12672ebdd8e0b014d58fc7aec207f493b88c3024c9ca0f16f5a71e32975a55e"
+          "sha256": "4adbc12d403fc9a8a93685db6831f59afe073079c073fd790d63cec74a921e3f"
         },
         {
           "path": "src/units/0944/21e45d1112-growth.h",
@@ -74081,7 +74081,7 @@
         },
         {
           "path": "src/units/1393/9b95e6b1aa-camera_stick.cpp",
-          "sha256": "5542daf69c242ba034c70648288fe2bc42369eb2ca96d57baef5d8daff650682"
+          "sha256": "fa2c786bc027633ea1295bae2aa3da61388dc7d186edf83278ef8ef16c2b8053"
         },
         {
           "path": "src/units/1394/097d96e71e-camera.hpp",
@@ -74569,7 +74569,7 @@
         },
         {
           "path": "src/units/1419/d1421e702a-w5_drive.cpp",
-          "sha256": "ec2cf40854f0abe00d2e0a9905cce0882f046e2cd92d79b10daf283338654950"
+          "sha256": "6c34326efc049ccc5641a760a49c81998666440c69f1243aaedd5f5d737adcd8"
         },
         {
           "path": "src/units/1419/e5e3766b7c-w5_subarea.hpp",
@@ -76313,7 +76313,7 @@
         },
         {
           "path": "src/units/1470/5ac096f97b-scene3d.cpp",
-          "sha256": "867f8a18e0e6da38ab1ef182dcc19bad1d31544d6cd5dd4dbcfb1ebebeb3f08c"
+          "sha256": "bd29d0f4ce1e3e1b7b2442dd8e424dc5fa3871fd536b10b31df42e05d89e01f0"
         },
         {
           "path": "src/units/1470/6ce15fd005-crt_acos_scene_adapter.h",
@@ -76545,7 +76545,7 @@
         },
         {
           "path": "src/units/1476/56e80822a0-creature_anim.cpp",
-          "sha256": "5843ff5312ff198ce423cae4aec9ced9ae67abed26b876a51da0f5901dae458b"
+          "sha256": "51442633f6460ba23b090a4c8b26476fbea6db4ca927692ac0bcb6069d3d8e2a"
         },
         {
           "path": "src/units/1476/6a3402d64b-w4_native.hpp",
@@ -82269,7 +82269,7 @@
         },
         {
           "path": "src/units/1656/131d670f91-claude_w5_movement_actions.cpp",
-          "sha256": "76b4953f2784416c3ffce6d5a0045ebfd79203bfde1dd0c223e0686a1958e8f6"
+          "sha256": "778312c83d6f61821ad614e5e57d793c39192a0505f6a7e4ff086d1a0cf8a167"
         },
         {
           "path": "src/units/1656/1a370ea669-w5_foreign.hpp",
@@ -86101,7 +86101,7 @@
         },
         {
           "path": "src/units/1809/f6e11e2b51-claude_closec_srv.cpp",
-          "sha256": "3e51d868579eabcebf7df9e7e4476f3452266722bbccdf6fafafc1bc989dbbab"
+          "sha256": "280ea8d8188cdda34f5f01f235771766082079a64b1222ea5c259fa9ba67dc80"
         },
         {
           "path": "src/units/1810/715bf8f5d5-claude_closec_gui.cpp",
@@ -86217,7 +86217,7 @@
         },
         {
           "path": "src/units/1815/4af68391d8-claude_encounter_spawn.cpp",
-          "sha256": "463524e6c8ae5fc8531e0e7173059035d3165fde08ecf55b4de045e008a8fe00"
+          "sha256": "9eb8f859faf423cf73c1356efa8af1237db6cda1641a31ac37691a70f8b570b8"
         },
         {
           "path": "src/units/1815/4f99fc5850-w5_walkmesh.hpp",
@@ -93218,6 +93218,38 @@
         {
           "path": "src/minigames/claude_pazaak_game.cpp",
           "sha256": "8623c08dee8f36dd34239dd31d0f6b437d566ab833eff174d2171ebd636f237a"
+        },
+        {
+          "path": "local_math/build_math.py",
+          "sha256": "c7ec21f1fad401ddc56341943e2618e62e0746d646b6d31f4706b54a25287fa1"
+        },
+        {
+          "path": "local_math/gen_l1_asm.py",
+          "sha256": "7ee932e49657f68ce07a004891a76063c6ba5d38139c4df9eec19f69600cb5b3"
+        },
+        {
+          "path": "local_math/l1_bytegate.py",
+          "sha256": "dd611be84e8a3f08cd92aefa0ec00a3bc38dd3e734625dc4b03ab45aca6f7eb1"
+        },
+        {
+          "path": "local_math/providers.json",
+          "sha256": "41cf17eed138b65efbfbd84098e31df4855b32b51cc8a747a459dc5819c01622"
+        },
+        {
+          "path": "src/math/kotor_math.h",
+          "sha256": "6a7cddf1d247280828dd1df1a6a54aa84fe6be36090144d13d30e64c909f8814"
+        },
+        {
+          "path": "src/math/kotor_math_x87.asm",
+          "sha256": "57a73f219a5dbc3357822af6f68b491ca9886fb765130b38d8549e65ce0dfe68"
+        },
+        {
+          "path": "src/math/kotor_vc7_math_init.cpp",
+          "sha256": "018eacb533134f1cf045a842ec914ab301b921bde41a75cefb0715b48f1c7430"
+        },
+        {
+          "path": "src/math/kotor_x87.h",
+          "sha256": "406af86158e280ce9c257fc8c7e11b85b0306edd69f046ecc514403315ea0920"
         }
       ],
       "generation": {

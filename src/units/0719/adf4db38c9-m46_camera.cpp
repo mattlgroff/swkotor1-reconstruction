@@ -31,35 +31,14 @@ inline U word(const void* p) { return static_cast<U>(reinterpret_cast<std::uintp
 template<class T> inline T* ptr(U w) { return reinterpret_cast<T*>(static_cast<std::uintptr_t>(w)); }
 inline float fl(void* o, U off) { return field<float>(o, off); }
 
-// D21: x87 transcendental instructions exactly as the original executes them on a wide operand.
-inline double x87_tan(double x) {   // fptan; fstp st(0)
-    double r;
-    __asm {
-        fld qword ptr x
-        fptan
-        fstp st(0)
-        fstp qword ptr r
-    }
-    return r;
-}
-inline double x87_cos(double x) {
-    double r;
-    __asm {
-        fld qword ptr x
-        fcos
-        fstp qword ptr r
-    }
-    return r;
-}
-inline double x87_sin(double x) {
-    double r;
-    __asm {
-        fld qword ptr x
-        fsin
-        fstp qword ptr r
-    }
-    return r;
-}
+// D21 / lane x87-trig (2026-10-24): the former x87_tan / x87_cos / x87_sin returned the 64-bit-significand results
+// rounded to double although the original keeps using them on the x87 stack (0045D288/0045D2A9/0045D2BE, 0045D179,
+// 0045CF92). Each site now runs one x87 sequence (x87trig_* after this namespace). Memory operands (image bits):
+const U kX87HalfDegToRad_00741bb4 = 0x3C0EFA35u;   // pi/360
+const U kX87HalfPi_00741bb8 = 0x3FC90FDBu;         // 1.5707964f
+const U kX87Pi_00741bbc = 0x40490FDBu;             // 3.1415927f
+const U kX87One_0073d764 = 0x3F800000u;            // 1.0f
+const U kX87Half_0073e9ac = 0x3F000000u;           // 0.5f
 
 // Viewport words at Camera+1E4..+1F0 copied to a local; if width or height is 0 the GL viewport is queried
 // (0045CF36..0045CF72 / 0045D046..0045D082 / 0045CDA5..0045CDDF).
@@ -78,6 +57,128 @@ inline const SceneVTable& scene_slots_of(void* scene) {
     return *static_cast<const SceneVTable*>(*static_cast<void* const volatile*>(scene));
 }
 } // namespace
+
+// ---- lane x87-trig (2026-10-24): original x87 sequences around fcos/fsin/fptan kept whole ----
+// fsin/fcos/fptan deliver a 64-bit significand whatever the precision control; each helper keeps the
+// transcendental with the original's consuming x87 instructions up to the original's dword stores, with the
+// original operand order. Precondition as in the original: PC = 53 bits, RC = nearest. No CALL inside the asm.
+extern "C" {
+// Camera::Animate view-angle record {+0 duration, +4 elapsed, +8 from, +C to, +10 mode}; result to Camera+1D0.
+// Common tail 0045D2C0..0045D2DA: (1 - t) * from + t * to.
+// mode 1: 0045D274..0045D296 t = 1 - (cos(e/d * pi) + 1) * 0.5
+__declspec(noinline) void __cdecl x87trig_0045d288(const void* rec, void* camera) {
+    __asm {
+        mov ecx, rec
+        mov eax, camera
+        fld dword ptr [ecx + 4]                // 0045D274
+        fdiv dword ptr [ecx]                   // 0045D279
+        fmul dword ptr kX87Pi_00741bbc         // 0045D282
+        fcos                                   // 0045D288
+        fadd dword ptr kX87One_0073d764        // 0045D28A
+        fmul dword ptr kX87Half_0073e9ac       // 0045D290
+        fsubr dword ptr kX87One_0073d764       // 0045D296
+        fld dword ptr kX87One_0073d764         // 0045D2C0
+        fsub st, st(1)                         // 0045D2CA D8 E1
+        fmul dword ptr [ecx + 8]               // 0045D2CD
+        fxch st(1)                             // 0045D2D0
+        fmul dword ptr [ecx + 0Ch]             // 0045D2D2
+        faddp st(1), st                        // 0045D2D8 DE C1
+        fstp dword ptr [eax + 1D0h]            // 0045D2DA
+    }
+}
+// mode 2: 0045D274..0045D2AB t = 1 - cos(e/d * pi/2)
+__declspec(noinline) void __cdecl x87trig_0045d2a9(const void* rec, void* camera) {
+    __asm {
+        mov ecx, rec
+        mov eax, camera
+        fld dword ptr [ecx + 4]                // 0045D274
+        fdiv dword ptr [ecx]                   // 0045D279
+        fmul dword ptr kX87HalfPi_00741bb8     // 0045D2A3
+        fcos                                   // 0045D2A9
+        fsubr dword ptr kX87One_0073d764       // 0045D2AB
+        fld dword ptr kX87One_0073d764         // 0045D2C0
+        fsub st, st(1)                         // 0045D2CA
+        fmul dword ptr [ecx + 8]               // 0045D2CD
+        fxch st(1)                             // 0045D2D0
+        fmul dword ptr [ecx + 0Ch]             // 0045D2D2
+        faddp st(1), st                        // 0045D2D8
+        fstp dword ptr [eax + 1D0h]            // 0045D2DA
+    }
+}
+// mode 3: 0045D274..0045D2BE t = sin(e/d * pi/2)
+__declspec(noinline) void __cdecl x87trig_0045d2be(const void* rec, void* camera) {
+    __asm {
+        mov ecx, rec
+        mov eax, camera
+        fld dword ptr [ecx + 4]                // 0045D274
+        fdiv dword ptr [ecx]                   // 0045D279
+        fmul dword ptr kX87HalfPi_00741bb8     // 0045D2B8
+        fsin                                   // 0045D2BE
+        fld dword ptr kX87One_0073d764         // 0045D2C0
+        fsub st, st(1)                         // 0045D2CA
+        fmul dword ptr [ecx + 8]               // 0045D2CD
+        fxch st(1)                             // 0045D2D0
+        fmul dword ptr [ecx + 0Ch]             // 0045D2D2
+        faddp st(1), st                        // 0045D2D8
+        fstp dword ptr [eax + 1D0h]            // 0045D2DA
+    }
+}
+// Camera::MouseDir 0045CF78..0045CFEF: t = tan(view * pi/360) stays on the stack for both components.
+// vp = the viewport words {x, y, w, h}; xa = x - vp.x, ya = y - vp.y ([esp+34h] / EDX).
+__declspec(noinline) void __cdecl x87trig_0045cf92(const void* camera, const I* vp, const I* xa, const I* ya,
+                                                   float* vx, float* vy) {
+    __asm {
+        mov eax, camera
+        mov ecx, vp
+        fld dword ptr [eax + 1D0h]             // 0045CF78
+        fmul dword ptr kX87HalfDegToRad_00741bb4  // 0045CF82
+        fptan                                  // 0045CF92
+        fstp st(0)                             // 0045CFB7
+        fild dword ptr [ecx + 0Ch]             // 0045CFB9 h
+        fmul dword ptr kX87Half_0073e9ac       // 0045CFBD
+        mov eax, xa
+        fild dword ptr [eax]                   // 0045CFC3
+        fild dword ptr [ecx + 8]               // 0045CFCB w
+        fmul dword ptr kX87Half_0073e9ac       // 0045CFCF
+        fsubp st(1), st                        // 0045CFD5 DE E9
+        fmul st, st(2)                         // 0045CFD7 D8 CA
+        fdiv st, st(1)                         // 0045CFD9 D8 F1
+        mov eax, vx
+        fstp dword ptr [eax]                   // 0045CFDB [esp+10h]
+        mov eax, ya
+        fild dword ptr [eax]                   // 0045CFDF
+        fsub st, st(1)                         // 0045CFE3 D8 E1
+        fmul st, st(2)                         // 0045CFE5
+        fdiv st, st(1)                         // 0045CFE7
+        mov eax, vy
+        fstp dword ptr [eax]                   // 0045CFE9 [esp+14h]
+        fstp st(0)                             // 0045CFED
+        fstp st(0)                             // 0045CFEF
+    }
+}
+// Camera::MapToScreen 0045D164..0045D195: h_f = (float)h ([esp+0Ch]), half_h = (float)(h * 0.5) ([esp+4]),
+// k = (float)(h * 0.5 / tan(view * pi/360)) ([esp+50h]).
+__declspec(noinline) void __cdecl x87trig_0045d179(const void* camera, const I* vp, float* h_f, float* half_h, float* k) {
+    __asm {
+        mov eax, camera
+        mov ecx, vp
+        fld dword ptr [eax + 1D0h]             // 0045D164
+        fmul dword ptr kX87HalfDegToRad_00741bb4  // 0045D16A
+        fptan                                  // 0045D179
+        fstp st(0)                             // 0045D17B
+        fild dword ptr [ecx + 0Ch]             // 0045D17D h
+        mov eax, h_f
+        fst dword ptr [eax]                    // 0045D181
+        fmul dword ptr kX87Half_0073e9ac       // 0045D185
+        mov eax, half_h
+        fst dword ptr [eax]                    // 0045D18B
+        fdiv st, st(1)                         // 0045D18F D8 F1
+        mov eax, k
+        fstp dword ptr [eax]                   // 0045D191
+        fstp st(0)                             // 0045D195
+    }
+}
+}  // extern "C"
 
 extern "C" {
 
@@ -211,12 +312,14 @@ U __fastcall camera_animate_0045d220(void* self, void*, U delta_bits) {
     if (mode == 0u) {
         // 0045D27B je 0045D2C0: linear
     } else if (mode == 1u) {                               // 0045D27D
-        t = static_cast<double>(kOne) - (x87_cos(t * static_cast<double>(kPi)) + static_cast<double>(kOne)) *
-                                            static_cast<double>(kHalf);  // 0045D282..0045D296 fmul/fcos/fadd/fmul/fsubr
+        x87trig_0045d288(rec, self);                       // 0045D274..0045D296 + 0045D2C0..0045D2DA (x87)
+        return gob_animate_00486670(gob, nullptr, delta_bits);   // 0045D2E0
     } else if (mode == 2u) {                               // 0045D29E
-        t = static_cast<double>(kOne) - x87_cos(t * static_cast<double>(kHalfPi));   // 0045D2A3..0045D2AB
+        x87trig_0045d2a9(rec, self);                       // 0045D274..0045D2AB + 0045D2C0..0045D2DA (x87)
+        return gob_animate_00486670(gob, nullptr, delta_bits);   // 0045D2E0
     } else if (mode == 3u) {                               // 0045D2B3
-        t = x87_sin(t * static_cast<double>(kHalfPi));     // 0045D2B8..0045D2BE
+        x87trig_0045d2be(rec, self);                       // 0045D274..0045D2BE + 0045D2C0..0045D2DA (x87)
+        return gob_animate_00486670(gob, nullptr, delta_bits);   // 0045D2E0
     } else {
         return gob_animate_00486670(gob, nullptr, delta_bits);   // 0045D2E9 fstp st(0) -> 0045D2EB
     }
@@ -231,12 +334,8 @@ U __fastcall camera_mouse_dir_0045cf30(void* self, void*, U out, U x, U y) {
     const Viewport vp = camera_viewport(self);             // 0045CF36..0045CF72
     const I xa = static_cast<I>(x - static_cast<U>(vp.x)); // 0045CF7E..0045CF8C
     const I ya = static_cast<I>(y - static_cast<U>(vp.y)); // 0045CF94..0045CF9C
-    const double t = x87_tan(static_cast<double>(fl(self, 0x1D0)) * static_cast<double>(kHalfDegToRad));   // 0045CF78..0045CF92
-    const double half_h = static_cast<double>(vp.h) * static_cast<double>(kHalf);   // 0045CFB9..0045CFBD
-    const double half_w = static_cast<double>(vp.w) * static_cast<double>(kHalf);   // 0045CFCB..0045CFCF
     Vector v;
-    v.x = static_cast<float>((static_cast<double>(xa) - half_w) * t / half_h);       // 0045CFC3..0045CFDB
-    v.y = static_cast<float>((static_cast<double>(ya) - half_h) * t / half_h);       // 0045CFDF..0045CFE9
+    x87trig_0045cf92(self, &vp.x, &xa, &ya, &v.x, &v.y);   // 0045CF78..0045CFEF (x87: tan kept on the stack)
     v.z = -1.0f;                                           // 0045CFAF mov [esp+18h],0BF800000h
     Vector rotated;
     const Vector* r = quaternion_rotate_004a9bb0(&rotated, &field<Quaternion>(self, 0x88), &v);   // 0045CFF1
@@ -267,11 +366,8 @@ U __fastcall camera_map_to_screen_0045d040(void* self, void*, U out, U px, U py,
     const Vector normal{0.0f, 0.0f, 1.0f};                 // 0045D147..0045D157
     Vector p;
     plane_line_intersection_004ab250(&p, &normal, 1.0f, &origin, &r);   // 0045D120 push 3F800000h / 0045D15F
-    const double t = x87_tan(static_cast<double>(fl(self, 0x1D0)) * static_cast<double>(kHalfDegToRad));   // 0045D164..0045D17B
-    const float h_f = static_cast<float>(static_cast<double>(vp.h));                        // 0045D17D fild / 0045D181 fst
-    const double half_h_wide = static_cast<double>(vp.h) * static_cast<double>(kHalf);      // 0045D185
-    const float half_h = static_cast<float>(half_h_wide);                                   // 0045D18B fst [esp+4]
-    const float k = static_cast<float>(half_h_wide / t);                                    // 0045D18F..0045D191
+    float h_f, half_h, k;                                                                   // [esp+0Ch] [esp+4] [esp+50h]
+    x87trig_0045d179(self, &vp.x, &h_f, &half_h, &k);                                       // 0045D164..0045D195 (x87)
     const float w_f = static_cast<float>(static_cast<double>(vp.w));                        // 0045D197..0045D19B
     double sx = static_cast<double>(k) * static_cast<double>(p.x) +
                 static_cast<double>(w_f) * static_cast<double>(kHalf);                      // 0045D19F..0045D1B1

@@ -290,6 +290,40 @@ extern "C" void __fastcall kotor_fastcall_00640240(void* module, void*, W4Vector
     sw(module, 0x80, 1);                                                                   // 006402DD
 }
 
+// ---- lane x87-trig (2026-10-24): 00641890..006418C8 kept whole ----
+// The fcos (006418A2) and fsin (006418B4) results feed fadd / fmulp with their 64-bit significands; the former
+// w4::x87_fcos / x87_fsin rounded them to double first. One x87 sequence from the two fild through the dword store
+// [esp+10h], with the original operand order (fdivr st,st(1); fdivp st(2),st; the fxch pair). Memory operands:
+// k_two_pi_00751840 (qword 401921FB4D12D84A), k_one_0073d764, k_deg_to_rad_007415f8 (bits 3C8EFA35), and the two
+// tunables [007A246C] / [007A2470] by address. Precondition as in the original: PC = 53 bits, RC = nearest.
+// No CALL inside the asm; extern "C" __cdecl.
+extern "C" __declspec(noinline) void __cdecl x87trig_00641890(const I32* remaining, const void* module,
+                                                             const float* period, const float* degrees, float* dst) {
+    __asm {
+        mov eax, remaining
+        fild dword ptr [eax]                   // 00641890 ([esp+28h] = [module+DCh])
+        fmul qword ptr k_two_pi_00751840       // 00641894
+        mov eax, module
+        fild dword ptr [eax + 0E8h]            // 0064189A
+        fdivr st, st(1)                        // 006418A0 D8 F9
+        fcos                                   // 006418A2
+        fadd dword ptr k_one_0073d764          // 006418A4
+        mov eax, period
+        fld dword ptr [eax]                    // 006418AA [007A246C]
+        fdivp st(2), st                        // 006418B0 DE FA
+        fxch st(1)                             // 006418B2
+        fsin                                   // 006418B4
+        fxch st(1)                             // 006418B6
+        fxch st(1)                             // 006418B8
+        fmulp st(1), st                        // 006418BA DE C9
+        mov eax, degrees
+        fmul dword ptr [eax]                   // 006418BC [007A2470]
+        fmul dword ptr k_deg_to_rad_007415f8   // 006418C2
+        mov eax, dst
+        fstp dword ptr [eax]                   // 006418C8 [esp+10h]
+    }
+}
+
 // 00641760 CSWCModule::UpdateCameraBumpAndShake(float delta) (thiscall, RET 4).
 extern "C" void __fastcall kotor_fastcall_00641760(void* module, void*, float delta) {
     void* b_stick = behavior(lp(module, 0x40), 0x106A);                                    // 00641768..00641773 ebx
@@ -320,10 +354,8 @@ extern "C" void __fastcall kotor_fastcall_00641760(void* module, void*, float de
         sw(module, 0xDC, 0);                                                               // 00641880
         first_bits = 0;                                                                    // 00641886
     } else {
-        const double t = static_cast<double>(remaining) * k_two_pi_00751840;              // 00641890..00641894
-        const double c = x87_fcos(t / static_cast<double>(li(module, 0xE8))) + k_one_0073d764; // 0064189A..006418A4
-        const double s = x87_fsin(t / shake_period_007a246c);                              // 006418AA..006418B4 (fdivp st(2))
-        const float amplitude = static_cast<float>(((s * c) * shake_degrees_007a2470) * k_deg_to_rad_007415f8); // 006418BA..006418C8
+        float amplitude;                                                                   // [esp+10h]
+        x87trig_00641890(&remaining, module, &shake_period_007a246c, &shake_degrees_007a2470, &amplitude); // 00641890..006418C8 (x87)
         const I32 r1 = ((crt_rand_006fc447() + 1) % 2) - 1;     // 006418CC..006418DE ((rand+1)%2)-1
         first_bits = f_bits(static_cast<float>(static_cast<double>(r1) * amplitude));     // 006418DF..006418EB
         const I32 r2 = ((crt_rand_006fc447() + 1) % 2) - 1;     // 006418EF..00641901

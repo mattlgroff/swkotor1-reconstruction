@@ -48,21 +48,12 @@ void x87_cos_sin(double angle, float* c, float* s) {
     *c = static_cast<float>(std::cos(angle)); *s = static_cast<float>(std::sin(angle));
 #endif
 }
-// x87 fpatan(y, x) (0051F46E)
-double x87_atan2(double y, double x) {
-#if defined(_M_IX86)
-    double r;
-    __asm {
-        fld y
-        fld x
-        fpatan
-        fstp r
-    }
-    return r;
-#else
-    return std::atan2(y, x);
-#endif
-}
+// (0051F46E: see x87trig_0051f46e)
+// lane x87-trig (2026-10-24): 0051F462..0051F489 as one x87 sequence. The fpatan result (64-bit significand)
+// feeds the fmul qword [00743888] directly; the former x87_atan2 rounded it to double first. The product, the
+// compare with [0073EDF8] and the conditional fadd qword [00747DF0] are PC-53 results; the double returned is
+// the value 006FAE8C (__ftol) receives. Precondition as in the original: PC = 53 bits, RC = nearest.
+const double kX87Zero_0073edf8 = 0.0;
 double clamp_rate(float factor) {                       // 004F1BEC..004F1C1E (fcom 0.125 / 1.5)
     if (factor < k_rate_min_0073f400) return k_rate_min_0073f400;           // test ah,5; jp -> below
     if (factor <= k_rate_max_0073f414 || factor != factor) return factor;   // test ah,41h; jne keep (<=, unordered)
@@ -238,6 +229,24 @@ U __fastcall w5_creature_drive_update_location_0051cd20(void* creature, void*, U
 // 0051E6A0 CSWSCreature::AIActionDrive(node). Node parameters (AddDriveAction 004EB510): +38 client x,
 // +3C client y, +40 heading*10, +44 a, +48 key flags (1 fwd, 2 back, 4/8 strafe, 10h/20h turn), +4C repeat,
 // +50 first-run (cleared here).
+__declspec(noinline) double __cdecl x87trig_0051f46e(const void* creature) {
+    double r;
+    __asm {
+        mov eax, creature
+        fld dword ptr [eax + 0A0h]             // 0051F462
+        fld dword ptr [eax + 9Ch]              // 0051F468
+        fpatan                                 // 0051F46E
+        fmul qword ptr k_rad2deg_00743888      // 0051F470
+        fcom qword ptr kX87Zero_0073edf8       // 0051F476
+        fnstsw ax                              // 0051F47C
+        test ah, 5                             // 0051F47E
+        jp x87trig_keep                        // 0051F481
+        fadd qword ptr k_full_turn_00747df0    // 0051F483
+    x87trig_keep:
+        fstp qword ptr r                       // (ST0 is __ftol's operand at 0051F498; exact under PC 53)
+    }
+    return r;
+}
 U __fastcall w5_action_drive_0051e6a0(void* creature, void*, void* node) {
     if (vcall<U>(creature, 0x94) == 1) return 3;                          // 0051E6AE..0051E6B7
     if (kotor_m15e_slot010_zero_0063e7f0(creature, nullptr) == 1) return 3;
@@ -453,8 +462,7 @@ U __fastcall w5_action_drive_0051e6a0(void* creature, void*, void* node) {
     const U result = w5_creature_drive_update_location_0051cd20(creature, nullptr, run);
     if (result == 1) return 1;
     if (repeat > 1 && result == 2) {                                      // 0051F44E..0051F4C8: chain the next step
-        double angle = x87_atan2(at<float>(creature, 0xa0), at<float>(creature, 0x9c)) * k_rad2deg_00743888;
-        if (angle < 0.0) angle += k_full_turn_00747df0;                   // fcom 0; test ah,5; jp skip
+        const double angle = x87trig_0051f46e(creature);                  // 0051F462..0051F489 (x87, incl. fcom 0 / +360)
         const I degrees = static_cast<I>(static_cast<std::int64_t>(angle));   // __ftol2 (truncate)
         const U heading = static_cast<U16>(static_cast<U>(degrees) * 10u);
         w5_add_drive_action_004eb510(creature, nullptr, at<U16>(node, 0x6c), p, heading, arg_a, flags, static_cast<U>(repeat - 1));

@@ -125,15 +125,79 @@ extern "C" void __fastcall kotor_fastcall_0049f1f0(void* behavior, void*, void* 
     }
 }
 
+// ---- lane x87-trig (2026-10-24): original x87 sequences around fpatan/fptan kept whole ----
+// fsin/fcos/fptan/fpatan always deliver a 64-bit significand (precision control does not apply to them). The
+// helpers below therefore keep each transcendental together with the original's consuming x87 instructions and
+// end at the original's store, with the original's operand order and store width. Precondition (as in the
+// original, 006FAE75 -> _controlfp(_PC_53, _MCW_PC)): x87 PC = 53 bits, RC = nearest; in the rebuilt image the
+// CRT's __initialize_default_precision sets the same. Under PC = 53 every non-transcendental x87 result fits a
+// double, so a helper that must hand an ST0 result back to C++ (Roll's ST0 return) stores it to a qword exactly.
+// No CALL inside any asm block; extern "C" __cdecl so the calling convention cannot be changed by the optimizer.
+// Memory operands use this unit's constants: k_one = [0073D764] 1.0f, k_rad_to_deg_00742ef8 (bits 42652EE1),
+// k_half_deg_to_rad_00741bb4 (bits 3C0EFA35).
+// 004ACC55..004ACC96 (Roll tail): q = the product quaternion words [0],[4],[8],[C] (copied to [esp+40h..4Ch] by
+// the original). ST0 = fpatan(-(2(q3 q1 - q2 q0)), 1 - 2(q2 q2 + q3 q3)) * 57.29578f, returned in ST0 by Roll.
+extern "C" __declspec(noinline) double __cdecl x87trig_roll_004acc55(const W4CamQuaternion* q) {
+    double result;
+    __asm {
+        mov eax, q
+        fld dword ptr [eax + 0Ch]                 // 004ACC55
+        fmul dword ptr [eax + 4]                  // 004ACC59
+        fld dword ptr [eax + 8]                   // 004ACC68
+        fmul dword ptr [eax]                      // 004ACC6C
+        fsubp st(1), st                           // 004ACC70 DE E9
+        fadd st, st                               // 004ACC72
+        fld dword ptr [eax + 8]                   // 004ACC74
+        fmul dword ptr [eax + 8]                  // 004ACC78
+        fld dword ptr [eax + 0Ch]                 // 004ACC7C
+        fmul dword ptr [eax + 0Ch]                // 004ACC80
+        faddp st(1), st                           // 004ACC84 DE C1
+        fadd st, st                               // 004ACC86
+        fsubr dword ptr k_one        // 004ACC88
+        fxch st(1)                                // 004ACC8E
+        fchs                                      // 004ACC90
+        fxch st(1)                                // 004ACC92
+        fpatan                                    // 004ACC94
+        fmul dword ptr k_rad_to_deg_00742ef8         // 004ACC96
+        fstp qword ptr result                     // (exact under PC 53: the fmul result has a 53-bit significand)
+    }
+    return result;
+}
+// 0063BCC3..0063BCDE: [esp+10h] = (float)(tan([s+8C] * 0.008726646f) * [s+88]).
+extern "C" __declspec(noinline) void __cdecl x87trig_0063bcc3(const void* s, float* scaled) {
+    __asm {
+        mov eax, s
+        fld dword ptr [eax + 8Ch]                 // 0063BCC3
+        fmul dword ptr k_half_deg_to_rad_00741bb4         // 0063BCCC
+        fptan                                     // 0063BCD4
+        fstp st(0)                                // 0063BCD6
+        fmul dword ptr [eax + 88h]                // 0063BCD8
+        mov eax, scaled
+        fstp dword ptr [eax]                      // 0063BCDE
+    }
+}
+// 0063BCEC..0063BCFA: ST0 = Camera::GetViewAngle (0045C4D0: fld dword [ecx+1D0h]; the double carries it exactly);
+// [s+110h] = (float)([esp+10h] / tan(view * 0.008726646f)).
+extern "C" __declspec(noinline) void __cdecl x87trig_0063bcec(double view, const float* scaled, void* s) {
+    __asm {
+        fld qword ptr view
+        fmul dword ptr k_half_deg_to_rad_00741bb4         // 0063BCEC
+        fptan                                     // 0063BCF2
+        fstp st(0)                                // 0063BCF4
+        mov eax, scaled
+        fdivr dword ptr [eax]                     // 0063BCF6
+        mov eax, s
+        fstp dword ptr [eax + 110h]               // 0063BCFA
+    }
+}
+
 // 004ACB90 Roll(Quaternion) (cdecl; the by-value argument is overwritten in place by the original).
 extern "C" double __cdecl kotor_cdecl_004acb90(W4CamQuaternion q) {
     const float yaw = static_cast<float>(quaternion_yaw_004a9f40(&q) * k_minus_deg_to_rad_00744100); // 004ACB9D..004ACBB3
     q = qmul(axis_angle(up_axis(), yaw), q);                                               // 004ACBB6..004ACC00
     const float pitch = static_cast<float>(quaternion_pitch_004aa020(&q) * k_minus_deg_to_rad_00744100); // 004ACC04..004ACC1B
     const W4CamQuaternion r = qmul(axis_angle(x_axis(), pitch), q);                           // 004ACC1E..004ACC40
-    const double a = (static_cast<double>(r.z) * r.x - static_cast<double>(r.y) * r.w) * 2.0;   // 004ACC55..004ACC72
-    const double b = k_one - (static_cast<double>(r.y) * r.y + static_cast<double>(r.z) * r.z) * 2.0; // 004ACC74..004ACC88
-    return x87_fpatan(-a, b) * k_rad_to_deg_00742ef8;                                      // 004ACC8E..004ACC96
+    return x87trig_roll_004acc55(&r);                                                      // 004ACC45..004ACC96 (x87)
 }
 
 // 00639FC0 CSWCameraOnAStick::CSWCameraOnAStick(CAurObject* owner, CAurObject* part) (thiscall, RET 8).
@@ -565,11 +629,11 @@ extern "C" U32 __fastcall kotor_fastcall_00637cc0(void*, void*, float) {
 // 0063BCB0 CSWCameraOnAStick::Control(float delta) (slot 08h, RET 4).
 extern "C" U32 __fastcall kotor_fastcall_0063bcb0(void* s, void*, float delta) {
     if (lw(s, 0x84) != 0) {                                                                // 0063BCB8..0063BCC1
-        const float scaled = static_cast<float>(
-            x87_fptan(static_cast<double>(lf(s, 0x8C)) * k_half_deg_to_rad_00741bb4) * lf(s, 0x88)); // 0063BCC3..0063BCDE
+        float scaled;                                                                      // [esp+10h]
+        x87trig_0063bcc3(s, &scaled);                                                      // 0063BCC3..0063BCDE (x87)
         void* camera = vcall<void*>(lp(s, 0x1C), 0x04);                                    // 0063BCC9..0063BCE2
         const double view = vcall<double>(camera, 0x48);                                   // 0063BCE5..0063BCE9 GetViewAngle
-        sf(s, 0x110, static_cast<float>(scaled / x87_fptan(view * k_half_deg_to_rad_00741bb4))); // 0063BCEC..0063BCFA
+        x87trig_0063bcec(view, &scaled, s);                                                // 0063BCEC..0063BCFA (x87)
     }
     kotor_fastcall_00638f60(s, nullptr);                                                   // 0063BD00..0063BD02
     if (behavior_control_0049f270(s, nullptr, delta) == 0) return 1;                       // 0063BD07..0063BD18

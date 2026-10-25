@@ -12,8 +12,10 @@ Install these separately from their official sources:
 - [pefile 2024.8.26](https://pypi.org/project/pefile/2024.8.26/) in the Python environment used to run the build:
 
 ```powershell
-python -m pip install pefile==2024.8.26
+python -m pip install pefile==2024.8.26 capstone==5.0.7
 ```
+
+The c67 local math generator also requires [Capstone 5.0.7](https://pypi.org/project/capstone/5.0.7/) to decode the supported executable.
 
 Toolchains and Python packages retain their own licenses. The build does not download or install them, or download game files.
 
@@ -31,6 +33,12 @@ The supported input hashes are SHA-256:
 
 These identify the inputs; they do not identify a GOG installer build. Do not place original files or extracted data in the source checkout.
 
+## Local original-derived math dependency
+
+The c67 build combines authored reconstruction with a local dependency generated from the supported original executable. Its L1 math generator decodes the original VC7 CRT implementation of `pow`, `acos`, `asin`, `floor`, `ceil` and their support routines, and extracts the lookup tables they require. This is original-derived code, not an independently reconstructed source implementation. The authored x87 intrinsic adapters and generator are distributed; generated assembly, original byte encodings, tables and compiled objects are not.
+
+Generation reads only the hash-validated installation and writes into the fresh private build output. Keep those outputs out of Git and do not redistribute them. A checkout alone cannot supply this dependency. The existing reconstructed acos/asin/pow wrappers retain their own callers; the L1 addition does not mean every game math call has moved away from the modern CRT. See [STATUS.md](STATUS.md) for coverage and verification limits.
+
 ## Build
 
 Run from the checkout root in PowerShell. Replace the example paths with your installation and toolchain locations. Choose a new output directory outside both the checkout and the game installation; an existing output directory is rejected.
@@ -41,9 +49,9 @@ python .\build.py --target game --game-dir "D:\Games\Star Wars - KotOR" --clang-
 
 If Build Tools is installed elsewhere, add `--vs-root "C:\Path\To\VisualStudio2022\BuildTools"`. `--jobs` accepts 1 through 16. The script configures the x86 compiler environment itself.
 
-The build validates the source manifest, generates required original-backed data under `kotor_generated`, compiles the reconstructed sources and links `swkotor-reconstructed.exe`. The output directory also contains object files, compiler logs, `link.log`, `link.map`, and a `build-receipt.json` after successful completion. A failed build leaves its logs for diagnosis; use another new output directory for the next attempt.
+The build validates the source manifest, generates required original-backed data under `kotor_generated`, and automatically generates the L1 math dependency under `local_math` in the output directory using the same `--game-dir`. No separate generation command is needed. It assembles the math code with the installed MSVC MASM, compiles the authored sources, and links `swkotor-reconstructed.exe`. Before accepting the result it checks the generated math code/data against the original and verifies the required linked math providers. Missing inputs or incorrect providers cause a build failure rather than acceptance of a modern-CRT fallback. The output directory also contains object files, compiler logs, `link.log`, `link.map`, and a `build-receipt.json` after successful completion. A failed build leaves its logs for diagnosis; use another new output directory for the next attempt. There is no reused math cache: every build uses a fresh output directory, regenerates the dependency, and records its file hashes in the build receipt.
 
-Keep the entire output directory private. Its generated constants, resource data and import libraries are local build inputs, not distributable project source. The output directory receives a `.gitignore`; do not upload it or its executable as part of a source contribution. The game build does not launch the resulting game.
+Keep the entire output directory private. Its generated original-derived math code and tables, constants, resource data and import libraries are local build inputs, not distributable project source. The output directory receives a `.gitignore`; do not upload it or its executable as part of a source contribution. The game build does not launch the resulting game.
 
 See [STATUS.md](STATUS.md) for build and runtime results and their limits.
 

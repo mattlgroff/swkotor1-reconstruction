@@ -90,27 +90,14 @@ inline aurora_model::Gob* as_gob(void* gob) { return static_cast<aurora_model::G
 inline const CameraVTable* camera_vt(void* camera) { return *static_cast<const CameraVTable* const volatile*>(camera); }
 inline const GuiSceneVTable* gui_scene_vt(void* gui_scene) { return *static_cast<const GuiSceneVTable* const volatile*>(gui_scene); }
 inline U word(const void* p) { return static_cast<U>(reinterpret_cast<std::uintptr_t>(p)); }
-// D52/D30-FINAL: x87 transcendental instructions of the original, executed on the x87 unit (D21 inline asm,
-// same sequences as lane-3d-anim). Under the original CW 027F (PC_53, RC nearest) results match the original.
-inline double x87_tan(double x) {          // fptan; fstp st(0) (0045C72B/0045C74D/0045C76D/0045C78B)
-    double result;
-    __asm {
-        fld qword ptr x
-        fptan
-        fstp st(0)
-        fstp qword ptr result
-    }
-    return result;
-}
-inline double x87_sin(double x) {          // fsin (00423C9F)
-    double result;
-    __asm {
-        fld qword ptr x
-        fsin
-        fstp qword ptr result
-    }
-    return result;
-}
+// D52/D30-FINAL: x87 transcendental instructions of the original, executed on the x87 unit (D21 inline asm).
+// lane x87-trig (2026-10-24): the fptan (0045C72B/0045C74D/0045C76D/0045C78B) and fsin (004567B3) results are
+// consumed by further x87 instructions in the original with their full 64-bit significand; the former x87_tan /
+// x87_sin returned them rounded to double. Those sites now use the x87trig_* sequences below (after this
+// namespace). 00423C9F (fsin) is the scene_acos::axis_scale sequence, unchanged.
+// Memory operands of the x87trig_* sequences (bits from the pinned image).
+const U kX87Half_0073e9ac = 0x3F000000;               // 0.5f
+const U kX87One_0073d764 = 0x3F800000;                // 1.0f
 // frndint; fistp dword under the original CW (RC nearest-even) - D30-FINAL explicit round-to-nearest port.
 inline I x87_round(float value) {
     I result;
@@ -131,6 +118,79 @@ inline void scene_child_detach_attach(void* gob, void* scene) {
     gob_vt(gob)->do_event(as_gob(gob), nullptr, "UpdateScenes", 0);                     // 00740AD8, Gob::DoEvent
 }
 } // namespace
+
+// ---- lane x87-trig (2026-10-24): original x87 sequences around fptan/fsin kept whole ----
+// fsin/fcos/fptan/fpatan always deliver a 64-bit significand (precision control does not apply to them). Each
+// helper keeps the transcendental together with the original's consuming x87 instructions and ends at the
+// original's dword store. Precondition as in the original: PC = 53 bits, RC = nearest (CRT
+// __initialize_default_precision in the rebuilt image). No CALL inside the asm; extern "C" __cdecl.
+// fptan operand: 004A96D0's ST0 (fld dword; fmul dword [007415F8]): a float x float product, exact in the double
+// that deg_to_rad_004a96d0 returns.
+extern "C" {
+// 0045C72B..0045C735: [esp+1Ch] = (float)-(tan(x) * [esp+18h])
+__declspec(noinline) void __cdecl x87trig_0045c72b(double x, const float* aspect, float* dst) {
+    __asm {
+        fld qword ptr x
+        fptan                                  // 0045C72B
+        fstp st(0)                             // 0045C72D
+        mov eax, aspect
+        fmul dword ptr [eax]                   // 0045C72F
+        fchs                                   // 0045C733
+        mov eax, dst
+        fstp dword ptr [eax]                   // 0045C735
+    }
+}
+// 0045C74D..0045C755: [esp+18h] = (float)(tan(x) * [esp+18h])
+__declspec(noinline) void __cdecl x87trig_0045c74d(double x, const float* aspect, float* dst) {
+    __asm {
+        fld qword ptr x
+        fptan                                  // 0045C74D
+        fstp st(0)                             // 0045C74F
+        mov eax, aspect
+        fmul dword ptr [eax]                   // 0045C751
+        mov eax, dst
+        fstp dword ptr [eax]                   // 0045C755
+    }
+}
+// 0045C76D..0045C773: [esp+20h] = (float)-tan(x)
+__declspec(noinline) void __cdecl x87trig_0045c76d(double x, float* dst) {
+    __asm {
+        fld qword ptr x
+        fptan                                  // 0045C76D
+        fstp st(0)                             // 0045C76F
+        fchs                                   // 0045C771
+        mov eax, dst
+        fstp dword ptr [eax]                   // 0045C773
+    }
+}
+// 0045C78B fptan .. 0045C7DF fstp st(0) .. 0045C7E1 fst dword [esp+34h] / 0045C7E5 fstp dword [esp+48h]: both
+// stores take the same ST0, so one dword result.
+__declspec(noinline) void __cdecl x87trig_0045c78b(double x, float* dst) {
+    __asm {
+        fld qword ptr x
+        fptan                                  // 0045C78B
+        fstp st(0)                             // 0045C7DF
+        mov eax, dst
+        fstp dword ptr [eax]                   // 0045C7E1 / 0045C7E5
+    }
+}
+// 00456793..004567DD (Scene::DoHighlightTriggers pulse): [esp+1Ch] =
+//   (float)((sin([t+C8h] * [scene+B4h]) + 1.0f) * [t+C0h] * 0.5f)
+__declspec(noinline) void __cdecl x87trig_004567b3(const void* trigger, const void* scene, float* dst) {
+    __asm {
+        mov eax, trigger
+        mov ecx, scene
+        fld dword ptr [eax + 0C8h]             // 00456793
+        fmul dword ptr [ecx + 0B4h]            // 0045679D
+        fsin                                   // 004567B3
+        fadd dword ptr kX87One_0073d764        // 004567CB
+        fmul dword ptr [eax + 0C0h]            // 004567D1
+        fmul dword ptr kX87Half_0073e9ac       // 004567D7
+        mov eax, dst
+        fstp dword ptr [eax]                   // 004567DD
+    }
+}
+}  // extern "C"
 
 // 0045F640 AurATIValidate: provided by lane-upload (D52); declaration in scene3d.h.
 
@@ -586,17 +646,14 @@ void __fastcall camera_render_scene_0045c540(void* camera, void*) {
         glu_perspective_0045c300(static_cast<double>(fov), static_cast<double>(aspect),             // 0045C70F
                                  static_cast<double>(near_clip), static_cast<double>(far_clip));
         const float half_fov = static_cast<float>(static_cast<double>(f(field<U>(camera, 0x1D0))) * static_cast<double>(f(kHalf_0073e9ac)));
-        const double t1 = x87_tan(static_cast<double>(deg_to_rad_004a96d0(half_fov)));          // 0045C726 fptan
-        const float a = static_cast<float>(-(t1 * static_cast<double>(aspect)));                // [esp+1Ch] after shift
-        const double t2 = x87_tan(static_cast<double>(deg_to_rad_004a96d0(
-            static_cast<float>(static_cast<double>(f(field<U>(camera, 0x1D0))) * static_cast<double>(f(kHalf_0073e9ac))))));
-        const float b = static_cast<float>(t2 * static_cast<double>(aspect));                    // overwrites aspect slot
-        const double t3 = x87_tan(static_cast<double>(deg_to_rad_004a96d0(
-            static_cast<float>(static_cast<double>(f(field<U>(camera, 0x1D0))) * static_cast<double>(f(kHalf_0073e9ac))))));
-        const float c = static_cast<float>(-t3);
-        const double t4 = x87_tan(static_cast<double>(deg_to_rad_004a96d0(
-            static_cast<float>(static_cast<double>(f(field<U>(camera, 0x1D0))) * static_cast<double>(f(kHalf_0073e9ac))))));
-        const float d = static_cast<float>(t4);                        // fst [esp+34h] / fstp [esp+48h]
+        float a, b, c, d;
+        x87trig_0045c72b(deg_to_rad_004a96d0(half_fov), &aspect, &a);  // 0045C726..0045C735 [esp+1Ch] after shift
+        x87trig_0045c74d(deg_to_rad_004a96d0(                           // 0045C739..0045C755 overwrites aspect slot
+            static_cast<float>(static_cast<double>(f(field<U>(camera, 0x1D0))) * static_cast<double>(f(kHalf_0073e9ac)))), &aspect, &b);
+        x87trig_0045c76d(deg_to_rad_004a96d0(                           // 0045C759..0045C773
+            static_cast<float>(static_cast<double>(f(field<U>(camera, 0x1D0))) * static_cast<double>(f(kHalf_0073e9ac)))), &c);
+        x87trig_0045c78b(deg_to_rad_004a96d0(                           // 0045C777..0045C7E5 fst [esp+34h] / fstp [esp+48h]
+            static_cast<float>(static_cast<double>(f(field<U>(camera, 0x1D0))) * static_cast<double>(f(kHalf_0073e9ac)))), &d);
         const Vector origin{0.0f, 0.0f, 0.0f};
         Vector normal;
         Vector p{a, d, -1.0f}, q{a, c, -1.0f};
@@ -2617,9 +2674,9 @@ U __fastcall scene_do_highlight_triggers_00456300(void* scene, void*, U flag) {
             glStencilOp(kGlKeep_0073f2c8, kGlKeep_0073f2c8, kGlKeep_0073f2c8);              // 00456778
             void* t = reinterpret_cast<void**>(static_cast<std::uintptr_t>(triggers.data))[k];
             if (field<U8>(t, 0xC4) != 0) {                             // 00456789 pulsing alpha
-                const double pulse = (x87_sin(W(field<float>(t, 0xC8)) * W(field<float>(scene, 0xB4))) + W(f(kOne))) *
-                                     W(field<float>(t, 0xC0)) * W(f(kHalf_0073e9ac));   // 00456793..004567D7
-                glColor4f(field<float>(t, 0xB4), field<float>(t, 0xB8), field<float>(t, 0xBC), S(pulse));   // 004567ED
+                float pulse;                                           // [esp+1Ch]
+                x87trig_004567b3(t, scene, &pulse);                    // 00456793..004567DD (x87)
+                glColor4f(field<float>(t, 0xB4), field<float>(t, 0xB8), field<float>(t, 0xBC), pulse);   // 004567ED
             } else {
                 glColor4fv(&field<float>(t, 0xB4));                    // 004567FB
             }

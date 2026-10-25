@@ -18,3 +18,8 @@ kotor_generated/
 *.mod
 *.tlk
 *.key
+
+# Local original-derived math outputs; never source contributions.
+kotor_vc7_math.asm
+kotor_vc7_pow_tables.inc
+l1_layout.json

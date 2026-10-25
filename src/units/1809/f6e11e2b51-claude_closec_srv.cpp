@@ -166,20 +166,98 @@ struct ExoLocString {                                      // CExoLocString loca
     explicit ExoLocString(const void* src) { kotor_fastcall_005e9f80(s, nullptr, src); }
     ~ExoLocString() { exo_locstring_destroy_005ea000(s, nullptr); }
 };
-// x87 helpers (no inline-asm CALL outside a dedicated noinline function)
-__declspec(noinline) double x87_atan2(double y, double x) { double r; __asm { fld y
-    fld x
-    fpatan
-    fstp r } return r; }
-__declspec(noinline) double x87_cos(double v) { double r; __asm { fld v
-    fcos
-    fstp r } return r; }
-__declspec(noinline) double x87_sin(double v) { double r; __asm { fld v
-    fsin
-    fstp r } return r; }
-__declspec(noinline) double x87_asin(double v) { double r; __asm { fld v
-    call pointto_fasin_006fcff0
-    fstp r } return r; }
+// lane x87-trig (2026-10-24): the former x87_atan2 / x87_asin / x87_cos / x87_sin rounded every transcendental
+// result to double. In the original (005B5928..005B59E6) the fpatan and asin results stay on the x87 stack through
+// fadd st,st / fsubp|faddp / fcom / fadd|fsubr, and fcos/fsin store straight to dwords. See x87trig_005b5930.
+}  // namespace
+namespace x87trig {
+#pragma pack(push, 1)
+struct X80 { unsigned char bytes[10]; };   // FSTP TBYTE image (64-bit significand, sign/exponent)
+#pragma pack(pop)
+const float kTwoPi_00740c88 = 6.2831855f;  // bits 40C90FDB
+const float kZero_0073d700 = 0.0f;
+}
+extern "C" {
+// 005B5928..005B5932 / 005B5995..005B599F: fld [dir.y]; fld [dir.x]; fpatan; fst dword [esp+54h].
+__declspec(noinline) void __cdecl x87trig_005b5930(const float* dir, x87trig::X80* angle, float* slot54) {
+    __asm {
+        mov eax, dir
+        fld dword ptr [eax + 4]                // 005B5928 [esp+30h]
+        fld dword ptr [eax]                    // 005B592C [esp+2Ch]
+        fpatan                                 // 005B5930
+        mov eax, slot54
+        fst dword ptr [eax]                    // 005B5932
+        mov eax, angle
+        fstp tbyte ptr [eax]
+    }
+}
+// 005B5940 / 005B59AD: call 006FCFF0 (asin, ST0 -> ST0; the selected provider pointto_fasin_006fcff0). The operand
+// (005B5936 fld [0073E320]; 005B593C fdiv dword [esp+10h]) is a PC-53 quotient, carried exactly by the double.
+// The CALL sits alone in this noinline function; nothing is kept in a register across it.
+__declspec(noinline) void __cdecl x87trig_asin_006fcff0(double operand, x87trig::X80* result) {
+    __asm {
+        fld qword ptr operand
+        call pointto_fasin_006fcff0
+        mov eax, result
+        fstp tbyte ptr [eax]
+    }
+}
+// 005B5945..005B597B (mode 4, 0x272A): a = A - 2B; if (a < 0) a += 2pi; ux = cos(a), uy = sin(a) (dwords).
+__declspec(noinline) void __cdecl x87trig_005b5966(const x87trig::X80* fpatan_a, const x87trig::X80* asin_b, float* slot54,
+                                                   float* ux, float* uy) {
+    __asm {
+        mov eax, fpatan_a
+        fld tbyte ptr [eax]
+        mov eax, asin_b
+        fld tbyte ptr [eax]
+        mov eax, slot54
+        fst dword ptr [eax]                    // 005B5945
+        fadd st, st                            // 005B5949
+        fsubp st(1), st                        // 005B594B DE E9
+        fcom dword ptr x87trig::kZero_0073d700 // 005B594D
+        fnstsw ax                              // 005B5953
+        test ah, 5                             // 005B5955
+        jp x87trig_skip4                       // 005B5958
+        fadd dword ptr x87trig::kTwoPi_00740c88  // 005B595A
+    x87trig_skip4:
+        fld st(0)                              // 005B5960
+        fcos                                   // 005B5966
+        mov eax, ux
+        fstp dword ptr [eax]                   // 005B5973 [esp+2Ch] (unit.x)
+        fsin                                   // 005B5977
+        mov eax, uy
+        fstp dword ptr [eax]                   // 005B5979 [esp+30h] (unit.y)
+    }
+}
+// 005B59B2..005B59E8 (mode 5, 0x272B): a = A + 2B; if (a > 2pi) a = 2pi - a (original quirk); cos/sin to dwords.
+__declspec(noinline) void __cdecl x87trig_005b59d3(const x87trig::X80* fpatan_a, const x87trig::X80* asin_b, float* slot54,
+                                                   float* ux, float* uy) {
+    __asm {
+        mov eax, fpatan_a
+        fld tbyte ptr [eax]
+        mov eax, asin_b
+        fld tbyte ptr [eax]
+        mov eax, slot54
+        fst dword ptr [eax]                    // 005B59B2
+        fadd st, st                            // 005B59B6
+        faddp st(1), st                        // 005B59B8 DE C1
+        fcom dword ptr x87trig::kTwoPi_00740c88  // 005B59BA
+        fnstsw ax                              // 005B59C0
+        test ah, 41h                           // 005B59C2
+        jne x87trig_skip5                      // 005B59C5
+        fsubr dword ptr x87trig::kTwoPi_00740c88 // 005B59C7
+    x87trig_skip5:
+        fld st(0)                              // 005B59CD
+        fcos                                   // 005B59D3
+        mov eax, ux
+        fstp dword ptr [eax]                   // 005B59E0
+        fsin                                   // 005B59E4
+        mov eax, uy
+        fstp dword ptr [eax]                   // 005B59E6
+    }
+}
+}  // extern "C"
+namespace {
 U send_reply(void* message, U player_id, U major, U minor) {
     void* data; U size;
     if (kotor_fastcall_004d6440(message, nullptr, &data, &size) == 0) return 0;
@@ -590,19 +668,15 @@ void __fastcall kotor_fastcall_005b56e0(void* self, void*, U step_arg, U, U targ
     else if (step == 4) { mode = 4; } else if (step == 5) { mode = 5; }
     else { fail(); return; }                                                     // 005B57E6..800
     if (mode == 4 || mode == 5) {                                                // 005B5928 / 005B5995
-        const double angle = x87_atan2(dir.y, dir.x);                            // fpatan (fst [esp+54] copy unused)
-        const double half = x87_asin(static_cast<double>(0.4f) / static_cast<double>(distance)); // [0073E320] / dist
-        double a;
-        if (mode == 4) {
-            a = angle - (half + half);                                           // 005B5949..4B
-            if (a < 0.0) a += static_cast<double>(6.2831855f);                   // 005B594D..5A [00740C88] (ordered <)
-        } else {
-            a = angle + (half + half);                                           // 005B59B6..B8
-            if (a > static_cast<double>(6.2831855f)) a = static_cast<double>(6.2831855f) - a; // 005B59BA..C7 quirk: fsubr
-        }
+        x87trig::X80 angle, half;                                                // fpatan / asin results (80-bit)
+        float slot54_copy;                                                       // [esp+54] copies (not read later)
+        x87trig_005b5930(&dir.x, &angle, &slot54_copy);                          // 005B5928..32 / 005B5995..9F
+        x87trig_asin_006fcff0(static_cast<double>(0.4f) / static_cast<double>(distance), &half); // [0073E320] / dist
         Vector unit;                                                             // [esp+20..28]
-        unit.x = static_cast<float>(x87_cos(a));                                 // fcos -> fstp dword
-        unit.y = static_cast<float>(x87_sin(a));                                 // fsin -> fstp dword
+        if (mode == 4)
+            x87trig_005b5966(&angle, &half, &slot54_copy, &unit.x, &unit.y);     // 005B5945..7B (x87)
+        else
+            x87trig_005b59d3(&angle, &half, &slot54_copy, &unit.x, &unit.y);     // 005B59B2..E8 (x87, fsubr quirk kept)
         unit.z = destination.z;                                                  // [esp+28] still 0
         Vector scaled; vector_component_mult_00423bf0(&scaled, &unit, distance); // 005B597D / 005B59EA
         Vector sum; const Vector* r = vector_sum_00423b90(&sum, other_pos, &scaled); // 005B5AE6 / 005B59F6

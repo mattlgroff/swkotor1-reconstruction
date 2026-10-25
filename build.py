@@ -188,6 +188,11 @@ def main() -> None:
         receipt["commands"].append(command)
         receipt["generated_files"] = {p.relative_to(generated).as_posix(): digest(p)
                                       for p in generated.rglob("*") if p.is_file()}
+    from local_math import build_math
+    math_recipe = next(u['flags'] for u in selected['units'] if u['source'].endswith('claude_w5_movement_actions.cpp'))
+    math_objects, math_receipt = build_math.build(ROOT, out, args.game_dir.resolve() / 'swkotor.exe',
+        tool_dir, args.clang_cl, env, run, digest, pinned_paths, math_recipe)
+    receipt['local_math'] = math_receipt
     objects = []
     def compile_unit(index_unit):
         index, unit = index_unit
@@ -261,7 +266,7 @@ def main() -> None:
     executable.parent.mkdir(parents=True, exist_ok=True)
     link_arguments = ["/nologo", "/MACHINE:X86", "/INCREMENTAL:NO", "/OUT:" + str(executable),
                       "/MAP:" + str(out / "link.map"), *link_flags, *alias_flags,
-                      *map(str, objects), *libraries, *generated_inputs]
+                      *map(str, objects), *map(str, math_objects), *libraries, *generated_inputs]
     response = out / "link.rsp"
     if any(any(c in argument for c in '\r\n"') for argument in link_arguments):
         raise ValueError("Unsupported character in linker argument.")
@@ -269,6 +274,10 @@ def main() -> None:
     command = [str(linker), "@" + str(response)]
     run(command, env, out / "link.log")
     receipt["commands"].append(command)
+    receipt['math_providers'] = build_math.validate_providers(ROOT, out)
+    for relative, expected in math_receipt['files'].items():
+        if digest(inside(out, relative)) != expected:
+            raise ValueError('Local math input changed during build')
     receipt["executable_sha256"] = digest(executable)
     for entry in selected["files"]:
         if digest(inside(ROOT, entry["path"])) != entry["sha256"]:

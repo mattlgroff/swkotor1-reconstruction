@@ -8,35 +8,88 @@ using namespace kotor_anim3d;
 
 namespace {
 inline float f32(double value) { return static_cast<float>(value); }
-// x87 transcendental steps of the original, executed on the x87 unit (D21 inline asm; D30-FINAL: original CRT port).
-// Under the original CW 0x027F (PC_53, RC nearest) these produce the original results bit for bit.
-// facos 006FC0E0 -> _acos main path 006FC118..006FC126 for |x| < 1: fpatan(sqrt((1+x)(1-x)), x).
-inline double x87_acos(double x) {
-    double result;
+}
+
+// ---- lane x87-trig (2026-10-24): slerp's x87 sequences kept whole ----
+// The former x87_acos (main path of 006FC0E0 only) and x87_sin returned their results rounded to double; the
+// original stores the 64-bit-significand acos/fsin results straight to dword (004A9E74, 004A9EB6) or divides them
+// first (004A9EC8, 004A9EED). acos now runs through the accepted t11b replica of 006FC0E0 (_CIacos, ST0 in/out,
+// transported as 80-bit images); each fsin stays with its consuming x87 instructions and ends at the original's
+// dword store. Precondition as in the original: PC = 53 bits, RC = nearest. No CALL inside the asm.
+namespace x87trig {
+#pragma pack(push, 1)
+struct X80 { unsigned char bytes[10]; };   // FSTP TBYTE image (same layout as crt_x87::Extended)
+#pragma pack(pop)
+const unsigned kZero_0073d700 = 0u;        // 0.0f
+}
+extern "C" {
+// 006FC0E0 _CIacos: t11b provider (t11b-crt_acos_006fc0e0-observed.obj), ST0 at entry -> ST0 at RET.
+void __cdecl crt_acos_x87_006fc0e0(const x87trig::X80* st0_in, x87trig::X80* st0_out);
+// 004A9E6B: fld dword ptr [esp+4] (the 80-bit operand image handed to 006FC0E0).
+__declspec(noinline) void __cdecl x87trig_004a9e6b(const float* c, x87trig::X80* st0) {
     __asm {
-        fld qword ptr x
-        fld1
-        fadd st, st(1)
-        fld1
-        fsub st, st(2)
-        fmulp st(1), st
-        fsqrt
-        fxch st(1)
-        fpatan
-        fstp qword ptr result
+        mov eax, c
+        fld dword ptr [eax]                    // 004A9E6B
+        mov eax, st0
+        fstp tbyte ptr [eax]
     }
-    return result;
 }
-inline double x87_sin(double x) {   // fsin (004A9EB0 / 004A9EC6 / 004A9EE3)
-    double result;
+// 004A9E74..004A9E7E: fst dword ptr [esp+4] (angle); fcomp dword ptr [0073D700]; fnstsw ax -> returned in AX.
+__declspec(noinline) unsigned __cdecl x87trig_004a9e74(const x87trig::X80* st0, float* angle) {
+    unsigned short status;
     __asm {
-        fld qword ptr x
-        fsin
-        fstp qword ptr result
+        mov eax, st0
+        fld tbyte ptr [eax]
+        mov eax, angle
+        fst dword ptr [eax]                    // 004A9E74
+        fcomp dword ptr x87trig::kZero_0073d700  // 004A9E78
+        fnstsw ax                              // 004A9E7E
+        mov status, ax
     }
-    return result;
+    return status;
 }
+// 004A9EAB..004A9EB6: [esp+0Ch] = (float)sin(angle)
+__declspec(noinline) void __cdecl x87trig_004a9eb0(const float* angle, float* sine) {
+    __asm {
+        mov eax, angle
+        fld dword ptr [eax]                    // 004A9EAB
+        fsin                                   // 004A9EB0
+        mov eax, sine
+        fstp dword ptr [eax]                   // 004A9EB6
+    }
 }
+// 004A9EBA..004A9ECC: [esp+8] = (float)(angle * t); scale = (float)(sin(angle * t) / sine)
+__declspec(noinline) void __cdecl x87trig_004a9ec6(const float* angle, const float* t, const float* sine, float* at,
+                                                   float* scale) {
+    __asm {
+        mov eax, angle
+        fld dword ptr [eax]                    // 004A9EBA
+        mov eax, t
+        fmul dword ptr [eax]                   // 004A9EBE
+        mov eax, at
+        fst dword ptr [eax]                    // 004A9EC2
+        fsin                                   // 004A9EC6
+        mov eax, sine
+        fdiv dword ptr [eax]                   // 004A9EC8
+        mov eax, scale
+        fstp dword ptr [eax]                   // 004A9ECC
+    }
+}
+// 004A9ED6..004A9EF1: scale = (float)(sin(angle - at) / sine)
+__declspec(noinline) void __cdecl x87trig_004a9ee3(const float* angle, const float* at, const float* sine, float* scale) {
+    __asm {
+        mov eax, angle
+        fld dword ptr [eax]                    // 004A9ED6
+        mov eax, at
+        fsub dword ptr [eax]                   // 004A9EDA
+        fsin                                   // 004A9EE3
+        mov eax, sine
+        fdiv dword ptr [eax]                   // 004A9EED
+        mov eax, scale
+        fstp dword ptr [eax]                   // 004A9EF1
+    }
+}
+}  // extern "C"
 
 extern "C" {
 // 00437CC0 CExoArrayList<Quaternion>::Allocate(int capacity), RET 4. New elements are identity quaternions (w = 1).
@@ -94,15 +147,21 @@ Quaternion* __cdecl quaternion_slerp_004a9e00(Quaternion* out, Quaternion from, 
     }
     const float c = f32(cosine);                                             // 004A9E5A fst [esp+4]
     if (cosine < kOneDouble_0073ede8 || cosine != cosine) {                  // 004A9E5E..004A9E69 (test ah,1; je)
-        const float angle = f32(x87_acos(c));                                // 004A9E6B..004A9E74 (fld [esp+4]; facos; fst)
-        if (!(angle == kZero_0073d700)) {                                    // 004A9E78..004A9E83 (test ah,44h; jp)
-            const float sine = f32(x87_sin(angle));                          // 004A9EAB..004A9EB6 [esp+0Ch]
-            const double scaled = static_cast<double>(angle) * t;            // 004A9EBA..004A9EBE
-            const float at = f32(scaled);                                    // 004A9EC2 fst [esp+8]
-            const float s1 = f32(x87_sin(scaled) / sine);                    // 004A9EC6..004A9ECC
+        x87trig::X80 operand, arc;
+        x87trig_004a9e6b(&c, &operand);                                      // 004A9E6B fld [esp+4]
+        crt_acos_x87_006fc0e0(&operand, &arc);                               // 004A9E6F call 006FC0E0
+        float angle;                                                         // [esp+4]
+        const unsigned status = x87trig_004a9e74(&arc, &angle);             // 004A9E74..004A9E7E fst; fcomp; fnstsw
+        const unsigned flags = (status >> 8) & 0x44u;                        // 004A9E80 test ah,44h
+        if (flags == 0u || flags == 0x44u) {                                 // 004A9E83 jp (even parity: > 0, < 0, unordered)
+            float sine;                                                      // [esp+0Ch]
+            x87trig_004a9eb0(&angle, &sine);                                 // 004A9EAB..004A9EB6
+            float at, s1;                                                    // [esp+8], call argument
+            x87trig_004a9ec6(&angle, &t, &sine, &at, &s1);                   // 004A9EBA..004A9ECC
             Quaternion toward;                                               // [esp+20h]
             const Quaternion* a = quaternion_scalar_multiply_004a9b80(&toward, to, s1);   // 004A9ECF..004A9ED1
-            const float s0 = f32(x87_sin(static_cast<double>(angle) - at) / sine);       // 004A9ED6..004A9EF1
+            float s0;                                                        // call argument
+            x87trig_004a9ee3(&angle, &at, &sine, &s0);                       // 004A9ED6..004A9EF1
             Quaternion away;                                                 // [esp+30h]
             const Quaternion* b = quaternion_scalar_multiply_004a9b80(&away, &from, s0); // 004A9EF4..004A9EF6
             Quaternion sum;                                                  // [esp+10h]

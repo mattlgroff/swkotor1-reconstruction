@@ -105,8 +105,43 @@ inline bool other_area(void* self, U area_id) {
 }
 inline double sq(float f) { return static_cast<double>(f) * f; }
 // x87 transcendental and __ftol2 exactly as the original executes them (ST0 in/out)
-inline double x87_fcos(double v) { double r; __asm { fld qword ptr v } __asm { fcos } __asm { fstp qword ptr r } return r; }
-inline double x87_fsin(double v) { double r; __asm { fld qword ptr v } __asm { fsin } __asm { fstp qword ptr r } return r; }
+// lane x87-trig (2026-10-24): the former x87_fcos / x87_fsin rounded the 64-bit-significand results to double;
+// 004BE05A/004BE060 feed them to fmul/fadd/fsub on the stack. Replaced by x87trig_004be041 (below).
+}  // namespace
+// 004BE041..004BE091 (one probe direction of the 8-way search): a = i * [00741C3C] (PC 53), [esp+20h] = (float)a,
+// c = cos(a) (the extended a), s = sin((float)a); rx = (float)(n.y*s + n.x*c) ([esp+A4h]); ry = n.y*c - n.x*s
+// stays on the stack in the original (a PC-53 result, carried exactly by the double). n = {[esp+80h], [esp+84h]}.
+// Precondition as in the original: PC = 53 bits, RC = nearest. No CALL inside the asm.
+extern "C" __declspec(noinline) void __cdecl x87trig_004be041(const int* i, const float* n, float* angle_f, float* rx,
+                                                             double* ry) {
+    __asm {
+        mov eax, i
+        mov ecx, n
+        fild dword ptr [eax]                   // 004BE041 [esp+24h]
+        fmul dword ptr k_quarter_pi_00741c3c       // 004BE050
+        mov eax, angle_f
+        fst dword ptr [eax]                    // 004BE056 [esp+20h]
+        fcos                                   // 004BE05A
+        fld dword ptr [eax]                    // 004BE05C
+        fsin                                   // 004BE060
+        fld dword ptr [ecx + 4]                // 004BE062 [esp+84h]
+        fmul st, st(1)                         // 004BE069 D8 C9
+        fld dword ptr [ecx]                    // 004BE06B [esp+80h]
+        fmul st, st(3)                         // 004BE072 D8 CB
+        faddp st(1), st                        // 004BE074 DE C1
+        mov eax, rx
+        fstp dword ptr [eax]                   // 004BE076 [esp+A4h]
+        fld dword ptr [ecx + 4]                // 004BE07D
+        fmulp st(2), st                        // 004BE084 DE CA
+        fld dword ptr [ecx]                    // 004BE086
+        fmul st, st(1)                         // 004BE08D
+        fsubp st(2), st                        // 004BE08F DE EA
+        fstp st(0)                             // 004BE091
+        mov eax, ry
+        fstp qword ptr [eax]                   // (ry stays on the stack in the original; exact under PC 53)
+    }
+}
+namespace {
 inline U ftol2(double v) { U r; __asm { fld qword ptr v } __asm { call unresolved_ftol2_006fae8c } __asm { mov r, eax } return r; }
 // AddActionToFront(type, group, pairs[13]) through W1's 004CCB00 export (shape helper from w5_open_door.cpp)
 inline void front(void* self, U type, U group, std::initializer_list<U> list) {
@@ -899,12 +934,9 @@ Vector* __fastcall kotor_fastcall_004bdf80(void* area, void*, Vector* out, const
     copy_vector(&result, from);                                                     // 004BE002..39
     Vector cand = vec(0, 0, 0);                                                     // [esp+10] (written before every read)
     for (I i = 0; i < 8; ++i) {                                                     // 004BE041..6A
-        const double angle = static_cast<double>(i) * k_quarter_pi_00741c3c;        // 004BE041..50
-        const float angle_f = static_cast<float>(angle);                            // 004BE056 [esp+20]
-        const double c = x87_fcos(angle);                                           // 004BE05A
-        const double s = x87_fsin(static_cast<double>(angle_f));                    // 004BE05C..60
-        const float rx = static_cast<float>(static_cast<double>(n.y) * s + static_cast<double>(n.x) * c); // 004BE062..76
-        const double ry = static_cast<double>(n.y) * c - static_cast<double>(n.x) * s; // 004BE07D..91
+        float angle_f, rx;                                                          // [esp+20] [esp+A4]
+        double ry;                                                                  // ST0 after 004BE091
+        x87trig_004be041(&i, &n.x, &angle_f, &rx, &ry);                             // 004BE041..91 (x87)
         const double rxd = static_cast<double>(rx) * dist;                          // 004BE093..9A
         const float rxd_f = static_cast<float>(rxd);                                // 004BE0A1 [esp+2C]
         const float ryd_f = static_cast<float>(ry * dist);                          // 004BE0A5..AE [esp+20]

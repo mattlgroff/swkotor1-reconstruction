@@ -15,6 +15,7 @@
 #include "f078693989-scene3d.h"   // kotor_scene3d::Vector {x,y,z} / Quaternion {w,x,y,z} (lane-3d-render canonical header)
 #include <cmath>
 #include <climits>
+#include "../../math/kotor_x87.h"   // FloatToInt: the original's inline-asm frndint/fistp helper (L1, PLAN-v3 6.12)
 
 using namespace aurora_model;
 using kotor_scene3d::Vector;
@@ -142,15 +143,6 @@ template <class Alloc> void header_resize(List* list, I n, Alloc allocate) {
         allocate(list, n);
     }
     list->size = n;
-}
-// Round-to-nearest-even of frndint under the original control word (RC nearest; D30-FINAL explicit rounding), then
-// fistp: NaN / out-of-range store the integer indefinite 80000000h (invalid masked).
-I fistp_nearest(double v) {
-    if (!(v == v) || v >= 2147483648.0 || v < -2147483648.0) return INT_MIN;
-    double f = std::floor(v);
-    const double d = v - f;
-    if (d > 0.5 || (d == 0.5 && std::fmod(f, 2.0) != 0.0)) f += 1.0;
-    return static_cast<I>(f);
 }
 // Inline CExoArrayList<float/DWORD>::Add growth (e.g. 00464F4F..00464F92): capacity = cap ? 2*cap : 8; new block;
 // copy `size` dwords (live size); free the old block when non-null.
@@ -769,9 +761,10 @@ void __cdecl mdl_compress_quaternion_keys_00464b50(List* keys) {
         const float xs = quantise(q.x, kXYScale_00741f1c, kXYRange_00741f18, kXYClamp); // 00464C4B..00464CA4 -> [esp+34h]
         const float ys = quantise(q.y, kXYScale_00741f1c, kXYRange_00741f18, kXYClamp); // 00464CA8..00464D01 -> [esp+2Ch]
         const float zs = quantise(q.z, kZScale_00741f14, kZRange_00741f10, kZClamp);    // 00464D05..00464D5E -> [esp+38h]
-        const I xi = fistp_nearest(xs);                                             // 00464D62..00464D6C -> [esp+14h]
-        const I yi = fistp_nearest(ys);                                             // 00464D6E..00464D78 -> [esp+10h]
-        const I zi = fistp_nearest(zs);                                             // 00464D7A..00464D84 -> [esp+18h]
+        I xi, yi, zi;                                                               // [esp+14h], [esp+10h], [esp+18h] (pointers [54h], [4Ch], [50h])
+        FloatToInt(&xi, xs);                                                        // 00464D62..00464D6C fld [esp+34h]; mov edx,[esp+54h]; frndint; fistp [edx]
+        FloatToInt(&yi, ys);                                                        // 00464D6E..00464D78 fld [esp+2Ch]; mov edx,[esp+4Ch]; frndint; fistp [edx]
+        FloatToInt(&zi, zs);                                                        // 00464D7A..00464D84 fld [esp+38h]; mov edx,[esp+50h]; frndint; fistp [edx]
         put<U>(key, 0x4, ((static_cast<U>(zi) << 11 | static_cast<U>(yi)) << 11) | static_cast<U>(xi)); // 00464D86..00464D9E
         if (local.size == local.capacity)                                           // 00464D9C..00464DA2
             aur_generic_key_list_allocate_00463950(&local, nullptr, grow_or(local.capacity, 8)); // 00464DA4..00464DB5

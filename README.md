@@ -25,7 +25,7 @@ Use this hash to identify the target executable. Other releases and modified exe
 
 ## Original game required
 
-You must separately purchase and lawfully possess the original game and supply its assets locally. This repository distributes no original game resources, proprietary binaries, middleware, or raw decompiler exports.
+You must separately purchase and lawfully possess the original game and supply its assets locally. This repository distributes no original game resources, proprietary binaries, middleware, or raw decompiler exports. The playable build also generates a local original-derived CRT math dependency from the supported executable; see [BUILDING.md](BUILDING.md#local-original-derived-math-dependency). Those generated code and table files are not distributed.
 
 See [BUILDING.md](BUILDING.md) for build instructions, [STATUS.md](STATUS.md) for current progress and [CONTRIBUTING.md](CONTRIBUTING.md) for bug reports and source contributions.
 

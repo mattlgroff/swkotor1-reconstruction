@@ -87,12 +87,26 @@ void ref_debug(void* ref) {
     (void)frame_LogCStr_005e5670(&s, nullptr);
     frame_LogStringDtor_005e5c20(&s, nullptr);
 }
-__declspec(noinline) double x87_sin(double v) { double r; __asm { fld v
-    fsin
-    fstp r } return r; }
-__declspec(noinline) double x87_cos(double v) { double r; __asm { fld v
-    fcos
-    fstp r } return r; }
+// lane x87-trig (2026-10-24): the former x87_sin / x87_cos returned double and the caller narrowed them to float
+// (80 -> 64 -> 32); the original stores both results straight to dwords (00591DFA / 00591DFE). See x87trig_00591deb.
+}  // namespace
+// 00591DE5..00591DFE: fld st(0); fsin; fxch st(1); fcos; fstp dword [esp+28h] (facing.x); fstp dword [esp+2Ch]
+// (facing.y). The angle (00591DBC fld [00741BB8]; 00591DDD fsub dword) is a PC-53 result the double carries exactly.
+// Precondition as in the original: PC = 53 bits, RC = nearest. No CALL inside the asm.
+extern "C" __declspec(noinline) void __cdecl x87trig_00591deb(double angle, float* facing_x, float* facing_y) {
+    __asm {
+        fld qword ptr angle
+        fld st(0)                              // 00591DE5
+        fsin                                   // 00591DEB
+        fxch st(1)                             // 00591DF6
+        fcos                                   // 00591DF8
+        mov eax, facing_x
+        fstp dword ptr [eax]                   // 00591DFA
+        mov eax, facing_y
+        fstp dword ptr [eax]                   // 00591DFE
+    }
+}
+namespace {
 // GetRoom + CSWSRoom::ComputeHeight(point by value, 0), 0.0 when no room (004BEEB5..E6 shape)
 float probe_height(void* area, Vector* v, int* room_index) {
     void* room = reinterpret_cast<void*>(static_cast<std::uintptr_t>(w2x_area_room_004bb600(area, nullptr, v, room_index)));
@@ -465,9 +479,7 @@ void __fastcall kotor_fastcall_00591ca0(void* self, void*) {
             const double angle = static_cast<double>(k_half_pi_00741bb8) - s[3];                  // 00591DBC..DD
             Vector facing;                                                                        // [B+20]
             facing.z = 0.0f;                                                                      // 00591DEE
-            const double sine = x87_sin(angle);                                                   // 00591DE5..EB
-            facing.x = static_cast<float>(x87_cos(angle));                                        // 00591DF6..FA
-            facing.y = static_cast<float>(sine);                                                  // 00591DFE
+            x87trig_00591deb(angle, &facing.x, &facing.y);                                        // 00591DE5..FE (x87)
             Vector normalized;                                                                    // [B+5C] (result never used)
             (void)normalize_004ab180(&normalized, &facing);                                       // 00591DE0..07
         }

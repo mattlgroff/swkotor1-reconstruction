@@ -25,18 +25,10 @@ constexpr U kHalf_0073e9ac = 0x3F000000;           // 0.5f
 constexpr U kTenThousandth_00741870 = 0x38D1B717;  // 0.0001f
 constexpr U kMinusHundred_0074186c = 0xC2C80000;   // -100.0f
 constexpr U kHalfPi_00741bb8 = 0x3FC90FDB;         // 1.5707964f
-constexpr double kHalfPi_007432f8 = 1.5707963267948966;   // qword 3FF921FB54442D18
-// The original's own x87 FCOS (0048E01A) on the double operand, at the process precision control (CW 027F, D30-FINAL);
-// D21: MSVC x86 inline __asm inside a pinned-cl unit. Avoids substituting the UCRT cos for the hardware instruction.
-__declspec(noinline) double x87_fcos(double operand) {
-    double result;
-    __asm {
-        fld qword ptr [operand]
-        fcos
-        fstp qword ptr [result]
-    }
-    return result;
-}
+// lane x87-trig (2026-10-24): the former kHalfPi_007432f8 = 1.5707963267948966 (bits 3FF921FB54442D18) was not
+// the image's qword. [007432F8] = 3FF921FB52713C02 (1.5707963259...). The former x87_fcos also rounded the
+// 64-bit-significand fcos result to double before the 0048E01C fcompp. Both are replaced by x87trig_0048e01a.
+const unsigned long long kX87HalfPi_007432f8 = 0x3FF921FB52713C02ull;   // qword [007432F8]
 constexpr U kOne_0073d764 = 0x3F800000;            // 1.0f
 constexpr U kMinusTwo_007432f0 = 0xC0000000;       // -2.0f
 constexpr U kGravity_007432f4 = 0x411CF5C3;        // 9.81f
@@ -140,6 +132,61 @@ void __fastcall particle_inherit_velocity_0048d9e0(void* self, void*, float dt) 
     fl(self, 0x1C) = nx; fl(self, 0x20) = ny; fl(self, 0x24) = nz;             // 0048DBDB..0048DBE8
 }
 
+// ---- lane x87-trig a2 (2026-10-24): 00492C10..00492C24 / 00492C40..00492C54 (moveParticleStandard stick test) ----
+// The former code called std::acos (the modern CRT) where the original calls 006FC0E0 (_CIacos) and compares its
+// 64-bit-significand ST0 result with fcomp qword [00743328]. Now: fld dword -> 80-bit operand image -> the accepted
+// t11b replica crt_acos_x87_006fc0e0 (80-bit in/out) -> fcomp qword / fnstsw ax. No CALL inside the asm.
+}  // extern "C"
+namespace x87trig {
+#pragma pack(push, 1)
+struct X80 { unsigned char bytes[10]; };   // FSTP TBYTE image (same layout as crt_x87::Extended)
+#pragma pack(pop)
+const unsigned long long kQuarterPi_00743328 = 0x3FE921FB54442D18ull;   // qword [00743328]
+}
+extern "C" {
+void __cdecl crt_acos_x87_006fc0e0(const x87trig::X80* st0_in, x87trig::X80* st0_out);   // t11b provider (006FC0E0)
+// 00492C10 / 00492C40: fld dword ptr [esp+14h] (the operand image handed to 006FC0E0)
+__declspec(noinline) void __cdecl x87trig_00492c10(const float* operand, x87trig::X80* st0) {
+    __asm {
+        mov eax, operand
+        fld dword ptr [eax]                    // 00492C10 / 00492C40
+        mov eax, st0
+        fstp tbyte ptr [eax]
+    }
+}
+// 00492C19..00492C1F / 00492C49..00492C4F: fcomp qword ptr [00743328]; fnstsw ax -> AX (the caller tests 41h; jne).
+__declspec(noinline) unsigned __cdecl x87trig_00492c19(const x87trig::X80* acos_result) {
+    unsigned short status;
+    __asm {
+        mov eax, acos_result
+        fld tbyte ptr [eax]
+        fcomp qword ptr x87trig::kQuarterPi_00743328   // 00492C19 / 00492C49
+        fnstsw ax                              // 00492C1F / 00492C4F
+        mov status, ax
+    }
+    return status;
+}
+
+// ---- lane x87-trig (2026-10-24): 0048E00D..0048E01E kept whole ----
+// Precondition as in the original: PC = 53 bits, RC = nearest. ST1 at 0048E00D is the |dot| copy made by
+// 0048DFFC fld st(0) / 0048E005 fchs; it is a sum of float x float products rounded under PC 53, which the double
+// `magnitude` carries exactly. fcos keeps its 64-bit significand into the fcompp. Returns the fnstsw AX image.
+// (Inside this file's extern "C" block.)
+__declspec(noinline) unsigned __cdecl x87trig_0048e01a(double magnitude, const void* node) {
+    unsigned short status;
+    __asm {
+        fld qword ptr magnitude                // ST1 (0048DFFC / 0048E005)
+        mov eax, node
+        fld dword ptr [eax + 50h]              // 0048E00D
+        fsubr qword ptr kX87HalfPi_007432f8    // 0048E014
+        fcos                                   // 0048E01A
+        fcompp                                 // 0048E01C
+        fnstsw ax                              // 0048E01E
+        mov status, ax
+    }
+    return status;
+}
+
 // ================================================================ 0048DE60 Particle::randomDirection(a, b), RET 8
 // Neither stack argument is read (frame 5Ch + 4 saves; [esp+70h]/[esp+74h] never referenced).
 void __fastcall particle_random_direction_0048de60(void* self, void*, I, I) {
@@ -183,8 +230,8 @@ void __fastcall particle_random_direction_0048de60(void* self, void*, I, I) {
         double magnitude = dot;                                                // 0048DFF6..0048E005 fcom/fld st0/fchs
         if (dot < 0.0) magnitude = -dot;
         void* const node = field<void*>(field<void*>(self, 4), 4);             // 0048E007..0048E010
-        const double limit = x87_fcos(kHalfPi_007432f8 - W(fl(node, 0x50)));  // 0048E00D..0048E01A fsubr qword / fcos
-        if (!(limit > magnitude)) {                                            // 0048E01C..0048E023 fcompp, jne on <= / unordered
+        const unsigned status = x87trig_0048e01a(magnitude, node);            // 0048E00D..0048E01E fsubr qword / fcos / fcompp
+        if ((status & 0x4100u) != 0) {                                         // 0048E020..0048E023 test ah,41h; jne (<= / unordered)
             copy_words(q, held, 4);                                            // 0048E178..0048E182
             return;
         }
@@ -448,13 +495,18 @@ void __fastcall part_emitter_move_particle_standard_00492450(void* emitter, void
             double ax_ = fl(info, 0x40);                                       // 00492BFA..00492C0A
             if (ax_ < 0.0) ax_ = -ax_;
             const float abs_x = S(ax_);                                        // 00492C0C
-            // D30 deviation: original CRT acos 006FC0E0 (_CIacos, x87) replaced by std::acos (compare-only use).
-            stick = std::acos(W(abs_x)) > kQuarterPi_00743328;                 // 00492C10..00492C24
+            // lane x87-trig a2: the original CRT acos 006FC0E0 (t11b replica, 80-bit in/out) and fcomp qword [00743328].
+            x87trig::X80 operand, arc;
+            x87trig_00492c10(&abs_x, &operand);                                // 00492C10
+            crt_acos_x87_006fc0e0(&operand, &arc);                             // 00492C14 call 006FC0E0
+            stick = (x87trig_00492c19(&arc) & 0x4100u) == 0;                   // 00492C19..00492C24 (jne on <=, unordered)
             if (stick) {
                 double ay_ = fl(info, 0x44);                                   // 00492C2A..00492C3A
                 if (ay_ < 0.0) ay_ = -ay_;
                 const float abs_y = S(ay_);                                    // 00492C3C
-                stick = std::acos(W(abs_y)) > kQuarterPi_00743328;             // 00492C40..00492C54
+                x87trig_00492c10(&abs_y, &operand);                            // 00492C40
+                crt_acos_x87_006fc0e0(&operand, &arc);                         // 00492C44 call 006FC0E0
+                stick = (x87trig_00492c19(&arc) & 0x4100u) == 0;               // 00492C49..00492C54
             }
             if (stick) stick = t * W(F(kStickRate_00743324)) > W(bounce_metric); // 00492C5A..00492C70
         }

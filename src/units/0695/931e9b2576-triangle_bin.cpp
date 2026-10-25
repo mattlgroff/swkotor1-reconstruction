@@ -2,15 +2,17 @@
 // Evidence: dumpbin /disasm of swkotor.exe (GOG K1, image base 00400000), lane-3d-bsp/d/<ADDR>.txt; every behavior
 // cites its instruction addresses. .rdata constants are the pinned image values (rd.py).
 // D30-FINAL: x87 values kept on the FPU stack are `double`, every `fstp dword` is a float rounding, operand order of
-// each fadd/fmul chain is the original one. frndint+fistp = explicit round-half-even to int32 (indefinite 80000000h
-// when out of range); __ftol2 006FAE8C (ST0 input, not expressible as a C ABI) = truncation with the same
-// indefinite result for NaN (only reachable input class here: values clamped to [0,255] or NaN).
+// each fadd/fmul chain is the original one. frndint+fistp = FloatToInt (kotor_x87.h), the original's own inline-asm
+// helper: rounds in the current x87 mode (CW 027F: nearest-even), indefinite 80000000h for NaN / out of range;
+// __ftol2 006FAE8C (ST0 input, not expressible as a C ABI) = truncation with the same indefinite result for NaN
+// (only reachable input class here: values clamped to [0,255] or NaN).
 // Unwind: 004A6D30 (handler 00718169: state 1 frees the 201Ch block if VertexProgram::VertexProgram throws) and
 // 004A8500 (handler 007182E8: local CExoArrayList<CAurTriangleListElem> destroyed) are cited, not emitted; the only
 // C++-linkage callees are VertexProgram::Construct_004a27d0 / Enable_004a24d0 (lane-renderer-bodies, no throw site)
 // and services_tail5::Seed; live_operator_new returns null rather than throwing.
 #include "ea549265b3-triangle_bin.h"
 #include <cmath>
+#include "../../math/kotor_x87.h"   // FloatToInt: the original's inline-asm frndint/fistp helper (L1, PLAN-v3 6.12)
 
 namespace {
 using namespace kotor_scene3d_bsp;
@@ -53,15 +55,6 @@ inline double fild_unsigned(U value) {
     double v = static_cast<double>(static_cast<I>(value));
     if (static_cast<I>(value) < 0) v += F(kTwo32_0073d770);
     return v;
-}
-// frndint (RC nearest-even) + fistp dword: 80000000h for NaN / out of range.
-inline I fistp_nearest(double value) {
-    if (!(value == value)) return static_cast<I>(0x80000000u);
-    double r = std::floor(value);
-    const double diff = value - r;
-    if (diff > 0.5 || (diff == 0.5 && std::fmod(r, 2.0) != 0.0)) r += 1.0;
-    if (!(r >= -2147483648.0 && r <= 2147483647.0)) return static_cast<I>(0x80000000u);
-    return static_cast<I>(r);
 }
 // __ftol2 006FAE8C (truncation toward zero, 64-bit result; indefinite for NaN), low byte taken by `mov [..],al`.
 inline U8 ftol2_low_byte(double value) {
@@ -402,7 +395,9 @@ void __fastcall triangle_bin_create_arrays_004a87c0(void* bin, void*) {
         const I blades = static_cast<I>(word_at(list_at(bin, 0x48)->data + element_offset + 0x14)); // 004A89B2..004A89BB
         if (blades == 0) continue;                                        // 004A89BF
         const float seed_sum = S((W(grass_corner2_00831ec0.z) + W(grass_corner1_00831ecc.y)) + W(grass_corner0_00831ed8.x)); // 004A89C5..004A89DF
-        services_tail5::Seed(static_cast<U>(fistp_nearest(W(seed_sum)))); // 004A89E3..004A89F4 (frndint; fistp; srand)
+        I seed;                                                           // [esp+6Ch] (pointer kept at [esp+4Ch])
+        FloatToInt(&seed, seed_sum);                                      // 004A89DF..004A89ED fstp dword; fld dword; mov edx; frndint; fistp [edx]
+        services_tail5::Seed(static_cast<U>(seed));                       // 004A89EF..004A89F4 push [esp+6Ch]; call srand 006FC43A
         const double height = W(float_at(grass_record(field<U>(bin, 0x10)) + 0x24)); // 004A89F9..004A8A0C
         const double low = F(kMinusHalf_00743884) * height;               // 004A8A1B..004A8A2C
         const double half = height * F(kHalf_0073e9ac);                   // 004A8A61..004A8A63

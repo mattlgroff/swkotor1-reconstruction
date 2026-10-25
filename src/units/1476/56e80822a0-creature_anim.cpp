@@ -172,6 +172,57 @@ extern "C" void __fastcall kotor_fastcall_0060bdf0(void* c, void*, W4Vector* tar
     }
 }
 
+// ---- lane x87-trig (2026-10-24): 00611E22..00611E70 kept as the original x87 sequences ----
+// The fcos results (00611E24, 00611E52) and the fsin result (00611E56) feed fcompp / fmul / fsub / fadd with their
+// 64-bit significands; w4::x87_fcos / x87_fsin rounded them to double first. The turn angle itself (00611E0A..
+// 00611E1C: fild/fadd 2^32, fmulp, fmul dword) is a PC-53 result that the double `angle` carries exactly.
+// Precondition as in the original: PC = 53 bits, RC = nearest. No CALL inside the asm; extern "C" __cdecl.
+// 00611E22..00611E2C: fld st(0); fcos; fld dword [esp+40h]; fcompp; fnstsw ax -> AX (the angle copy stays in ST0
+// in the original and is popped here; the caller keeps it as `angle`).
+extern "C" __declspec(noinline) unsigned __cdecl x87trig_00611e24(double angle, const float* dotf) {
+    unsigned short status;
+    __asm {
+        fld qword ptr angle
+        fld st(0)                              // 00611E22
+        fcos                                   // 00611E24
+        mov eax, dotf
+        fld dword ptr [eax]                    // 00611E26 [esp+40h]
+        fcompp                                 // 00611E2A
+        fnstsw ax                              // 00611E2C
+        mov status, ax
+        fstp st(0)
+    }
+    return status;
+}
+// 00611E4C..00611E70: a = angle * sign; x = cos(a) * o.x - sin(a) * [c+34h]; y = sin(a) * o.x + cos(a) * [c+34h].
+extern "C" __declspec(noinline) void __cdecl x87trig_00611e52(double angle, const float* sign, const float* orientation,
+                                                             const void* c, float* x, float* y) {
+    __asm {
+        fld qword ptr angle
+        mov eax, sign
+        fmul dword ptr [eax]                   // 00611E4C [esp+0Ch]
+        fld st(0)                              // 00611E50
+        fcos                                   // 00611E52
+        fxch st(1)                             // 00611E54
+        fsin                                   // 00611E56
+        mov eax, orientation
+        mov ecx, c
+        fld st(1)                              // 00611E58
+        fmul dword ptr [eax]                   // 00611E5A [edi]
+        fld st(1)                              // 00611E5C
+        fmul dword ptr [ecx + 34h]             // 00611E5E
+        fsubp st(1), st                        // 00611E61 DE E9
+        mov edx, x
+        fstp dword ptr [edx]                   // 00611E63 [esp+14h]
+        fmul dword ptr [eax]                   // 00611E67
+        fxch st(1)                             // 00611E69
+        fmul dword ptr [ecx + 34h]             // 00611E6B
+        faddp st(1), st                        // 00611E6E DE C1
+        mov edx, y
+        fstp dword ptr [edx]                   // 00611E70 [esp+18h]
+    }
+}
+
 // 00611850 CSWCCreature::RotateCreatureToOrientation(Vector* desired) (RET 4).
 extern "C" void __fastcall kotor_fastcall_00611850(void* c, void*, W4Vector* desired) {
     if (gso(c) != nullptr && vcall<void*>(gso(c), 0x30) != nullptr) {                        // 00611856..00611873
@@ -261,13 +312,10 @@ extern "C" void __fastcall kotor_fastcall_00611850(void* c, void*, W4Vector* des
     else if (!jcc_jne(rate, 1.0f, 0x01)) rate = 1.0;                                         // 00611DF5..00611E04
     const double angle = rate * u32_to_x87(lw(c, 0x44)) * static_cast<double>(0.004f);      // 00611E0A..00611E1C
     W4Vector out;                                                                            // [esp+14h]
-    if (!jcc_jne(dotf, x87_fcos(angle), 0x01)) {                                             // 00611E22..00611E31
+    if ((x87trig_00611e24(angle, &dotf) & 0x0100u) == 0) {                                  // 00611E22..00611E31 test ah,1; jne
         out = *desired;                                                                      // 00611E33..00611E46
     } else {
-        const double a = angle * static_cast<double>(sign);                                  // 00611E4C
-        const double co = x87_fcos(a), si = x87_fsin(a);                                     // 00611E50..00611E56
-        out.x = static_cast<float>(co * orientation->x - si * lf(c, 0x34));                  // 00611E58..00611E63
-        out.y = static_cast<float>(si * orientation->x + co * lf(c, 0x34));                  // 00611E67..00611E70
+        x87trig_00611e52(angle, &sign, &orientation->x, c, &out.x, &out.y);                  // 00611E4C..00611E70 (x87)
     }
     out.z = 0.0f;                                                                            // 00611E7E
     W4Vector norm;
