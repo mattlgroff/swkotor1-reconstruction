@@ -55,6 +55,7 @@ public:
     void WriteINT(int nValue, int nBits);                               // 0x004D6340
     void WriteDWORD(unsigned long nValue, int nBits);                   // 0x004D6340
     void WriteFLOAT(float fValue, float fScale, int nBits);             // 0x004D6920
+    void WriteVector(const Vector& vValue);                            // 0x004D71B0
     void WriteCExoString(const CExoString& sValue, int nBits);          // 0x004D6960
     void WriteCResRef(CResRef cResRef, int nBits);                      // 0x004D6380
     int GetWriteMessage(unsigned char** ppMessage, unsigned long* pnSize); // 0x004D6440
@@ -87,6 +88,15 @@ public:
                                     class CSWSCombatAttackData* pAttackData); // 0x00568570
     int SendServerToServerAdminMessage(unsigned long nPlayerId, const CExoString& sMessage); // 0x00579890
     int SendServerToAllPlayersCreatureUpdate_StripEquippedItems(unsigned long oidCreature); // 0x00570180 (name inferred)
+    int SendServerToPlayerSafeProjectileProjectile(CSWSPlayer* pPlayer,
+        unsigned long oidSource, unsigned long oidTarget, Vector vSource, Vector vTarget,
+        unsigned long nProjectile, unsigned char nType, int nTravelTime,
+        unsigned char nFlags, unsigned char nAttackType, int nExtra); // 0x0056E5F0
+    int SendServerToPlayerSafeProjectileSpell(CSWSPlayer* pPlayer,
+        unsigned long oidSource, unsigned long oidTarget, Vector vSource, Vector vTarget,
+        unsigned long nProjectile, unsigned char nType, int nExtra,
+        unsigned char nItem, unsigned char nFlags, unsigned char nAttackType,
+        int nExtra1, int nExtra2); // 0x0056E6E0 (name inferred)
 
     // Player-to-server handlers.
     int HandlePlayerToServerQuickChatMessage(CSWSPlayer* pPlayer, unsigned char nMinor);

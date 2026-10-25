@@ -19,6 +19,25 @@ public:
     CSWGuiTextParams m_cTextParams;                 // 0x16c (m_cText + 0x18)
 };
 
+// Toggle control family used by the options checkboxes (base size 0x2B4).
+class CSWGuiButtonToggle : public CSWGuiButton {
+public:
+    CSWGuiButtonToggle();                           // 0x0041CA30
+    virtual ~CSWGuiButtonToggle();                  // 0x0041CAD0
+    char pad_0x1c4[0xf0];
+};
+
+// Inferred CSWGuiOptionsCheckbox, vtable 0x00758258, size 0x2B4.
+#ifdef L_SWGUI_MATCHING_DESTRUCTOR_TU
+class __declspec(novtable) CSWGuiOptionsCheckbox : public CSWGuiButtonToggle {
+#else
+class CSWGuiOptionsCheckbox : public CSWGuiButtonToggle {
+#endif
+public:
+    CSWGuiOptionsCheckbox();                        // 0x006E00D0
+    __declspec(noinline) virtual ~CSWGuiOptionsCheckbox(); // 0x006E00F0
+};
+
 // Panels opened from the options menu (constructors only).
 class CSWGuiSaveLoad : public CSWGuiPanel {
 public:
@@ -38,10 +57,20 @@ public:
     char pad_0x64[0xc2c - 0x64];
 };
 
+#ifdef L_SWGUI_MATCHING_DESTRUCTOR_TU
+class __declspec(novtable) CSWGuiOptionsAutoPause : public CSWGuiPanel {
+#else
 class CSWGuiOptionsAutoPause : public CSWGuiPanel {
+#endif
 public:
     CSWGuiOptionsAutoPause(CSWGuiManager* pManager);    // 0x006E76A0
-    char pad_0x64[0x1984 - 0x64];
+    __declspec(noinline) virtual ~CSWGuiOptionsAutoPause(); // 0x006E7A90
+    CSWGuiOptionsCheckbox m_aCheckboxes[6];              // 0x64
+    CSWGuiLabel m_lblDescription;                        // 0x109C
+    CSWGuiLabel m_lblTitle;                              // 0x11DC
+    CSWGuiButton m_btnBack;                              // 0x131C
+    CSWGuiButton m_btnDefault;                           // 0x14E0
+    CSWGuiListBox m_lbDetails;                            // 0x16A4
 };
 
 class CSWGuiOptionsGraphics : public CSWGuiPanel {

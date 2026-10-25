@@ -197,8 +197,8 @@ symbol,demangled,address,role,uses
 ?ReleaseCapture@CSWGuiManager@@QAEXPAVCSWGuiControl@@@Z,public: void __thiscall CSWGuiManager::ReleaseCapture(class CSWGuiControl *),0x0040A200,defines,6
 ?DeactivateSoftwareMouse@CSWGuiManager@@QAEXXZ,public: void __thiscall CSWGuiManager::DeactivateSoftwareMouse(void),0x0040A230,defines,3
 ?HideMouse@CSWGuiManagerMouse@@QAEXXZ,public: void __thiscall CSWGuiManagerMouse::HideMouse(void),0x0040A230,calls,1
-?HideSoftwareMouse@CSWGuiManager@@QAEXXZ,public: void __thiscall CSWGuiManager::HideSoftwareMouse(void),0x0040A260,defines,1
-?SetSoftwareMouseCursor@CSWGuiManager@@QAEXHHH@Z,"public: void __thiscall CSWGuiManager::SetSoftwareMouseCursor(int,int,int)",0x0040A270,defines,1
+?HideSoftwareMouse@CSWGuiManager@@QAEXXZ,public: void __thiscall CSWGuiManager::HideSoftwareMouse(void),0x0040A260,defines,2
+?SetSoftwareMouseCursor@CSWGuiManager@@QAEXHHH@Z,"public: void __thiscall CSWGuiManager::SetSoftwareMouseCursor(int,int,int)",0x0040A270,defines,2
 ?ChangeToolTipText@CSWGuiManager@@QAEXH@Z,public: void __thiscall CSWGuiManager::ChangeToolTipText(int),0x0040A340,defines,1
 ?UpdateToolTip@CSWGuiManager@@QAEXPAVCExoString@@@Z,public: void __thiscall CSWGuiManager::UpdateToolTip(class CExoString *),0x0040A340,calls,1
 ?ReloadToolTipPanel@CSWGuiManager@@QAEXXZ,public: void __thiscall CSWGuiManager::ReloadToolTipPanel(void),0x0040A350,defines,1
@@ -254,7 +254,7 @@ symbol,demangled,address,role,uses
 ?InitControl@CSWGuiPanel@@QAEXPAVCSWGuiControl@@ABVCExoString@@H@Z,"public: void __thiscall CSWGuiPanel::InitControl(class CSWGuiControl *,class CExoString const &,int)",0x0040B930,calls,15
 ?InitControl@CSWGuiPanel@@QAEXPAVCSWGuiControl@@HH@Z,"public: void __thiscall CSWGuiPanel::InitControl(class CSWGuiControl *,int,int)",0x0040B930,defines,1
 ?AddControl@CSWGuiPanel@@QAEXPAVCSWGuiControl@@@Z,public: void __thiscall CSWGuiPanel::AddControl(class CSWGuiControl *),0x0040B9A0,defines,1
-?SetVisible@CSWGuiPanel@@QAEXH@Z,public: void __thiscall CSWGuiPanel::SetVisible(int),0x0040B9D0,defines,2
+?SetVisible@CSWGuiPanel@@QAEXH@Z,public: void __thiscall CSWGuiPanel::SetVisible(int),0x0040B9D0,defines,5
 ?SetVisible@CSWGuiPanelV@@QAEXH@Z,public: void __thiscall CSWGuiPanelV::SetVisible(int),0x0040B9D0,calls,1
 ?SetVisible@CSWGuiPanelX@@QAEXH@Z,public: void __thiscall CSWGuiPanelX::SetVisible(int),0x0040B9D0,calls,1
 ?GetControl@CSWGuiPanel@@QAEPAVCSWGuiControl@@H@Z,public: class CSWGuiControl * __thiscall CSWGuiPanel::GetControl(int),0x0040BA00,defines,2
@@ -289,7 +289,7 @@ symbol,demangled,address,role,uses
 ?RemovePanel@CSWGuiManagerPanels@@QAEXPAVCSWGuiPanel@@@Z,public: void __thiscall CSWGuiManagerPanels::RemovePanel(class CSWGuiPanel *),0x0040C830,calls,12
 ?Draw@CSWGuiManager@@QAEXM@Z,public: void __thiscall CSWGuiManager::Draw(float),0x0040CC50,defines,3
 ?Update@CSWGuiManager@@QAEXM@Z,public: void __thiscall CSWGuiManager::Update(float),0x0040CE70,defines,1
-??1CSWGuiPanel@@UAE@XZ,public: virtual __thiscall CSWGuiPanel::~CSWGuiPanel(void),0x0040CF70,defines,14
+??1CSWGuiPanel@@UAE@XZ,public: virtual __thiscall CSWGuiPanel::~CSWGuiPanel(void),0x0040CF70,defines,15
 ??_GCSWGuiPanel@@UAEPAXI@Z,public: virtual void * __thiscall CSWGuiPanel::`scalar deleting destructor'(unsigned int),0x0040D010,defines,1
 ??0CExoKeyTable@@QAE@XZ,public: __thiscall CExoKeyTable::CExoKeyTable(void),0x0040D030,defines,2
 ??1CExoKeyTable@@QAE@XZ,public: __thiscall CExoKeyTable::~CExoKeyTable(void),0x0040D0D0,defines,4
@@ -635,9 +635,9 @@ symbol,demangled,address,role,uses
 ??_GCSWGuiControl@@UAEPAXI@Z,public: virtual void * __thiscall CSWGuiControl::`scalar deleting destructor'(unsigned int),0x00419CC0,defines,1
 ??1CSWGuiNavigable@@UAE@XZ,public: virtual __thiscall CSWGuiNavigable::~CSWGuiNavigable(void),0x00419CE0,defines,2
 ??_GCSWGuiNavigable@@UAEPAXI@Z,public: virtual void * __thiscall CSWGuiNavigable::`scalar deleting destructor'(unsigned int),0x00419CF0,defines,1
-??1CSWGuiLabel@@UAE@XZ,public: virtual __thiscall CSWGuiLabel::~CSWGuiLabel(void),0x00419D10,defines,61
+??1CSWGuiLabel@@UAE@XZ,public: virtual __thiscall CSWGuiLabel::~CSWGuiLabel(void),0x00419D10,defines,63
 ??_GCSWGuiLabel@@UAEPAXI@Z,public: virtual void * __thiscall CSWGuiLabel::`scalar deleting destructor'(unsigned int),0x00419D80,defines,1
-??1CSWGuiButton@@UAE@XZ,public: virtual __thiscall CSWGuiButton::~CSWGuiButton(void),0x00419DA0,defines,33
+??1CSWGuiButton@@UAE@XZ,public: virtual __thiscall CSWGuiButton::~CSWGuiButton(void),0x00419DA0,defines,35
 ??_GCSWGuiButton@@UAEPAXI@Z,public: virtual void * __thiscall CSWGuiButton::`scalar deleting destructor'(unsigned int),0x00419E20,defines,1
 ??1CSWGuiScrollBar@@UAE@XZ,public: virtual __thiscall CSWGuiScrollBar::~CSWGuiScrollBar(void),0x00419E40,defines,3
 ??_GCSWGuiScrollBar@@UAEPAXI@Z,public: virtual void * __thiscall CSWGuiScrollBar::`scalar deleting destructor'(unsigned int),0x00419EC0,defines,1
@@ -670,7 +670,7 @@ symbol,demangled,address,role,uses
 ??_GCSWGuiProgressBar@@UAEPAXI@Z,public: virtual void * __thiscall CSWGuiProgressBar::`scalar deleting destructor'(unsigned int),0x0041AF50,defines,1
 ??1CSWGuiProgressBar@@UAE@XZ,public: virtual __thiscall CSWGuiProgressBar::~CSWGuiProgressBar(void),0x0041AF70,defines,5
 ??0CSWGuiScrollBar@@QAE@XZ,public: __thiscall CSWGuiScrollBar::CSWGuiScrollBar(void),0x0041AFE0,defines,1
-??1CSWGuiListBox@@UAE@XZ,public: virtual __thiscall CSWGuiListBox::~CSWGuiListBox(void),0x0041B060,defines,12
+??1CSWGuiListBox@@UAE@XZ,public: virtual __thiscall CSWGuiListBox::~CSWGuiListBox(void),0x0041B060,defines,13
 ?SetListFlag0@CSWGuiListBox@@UAEXH@Z,public: virtual void __thiscall CSWGuiListBox::SetListFlag0(int),0x0041B120,defines,1
 ?OrganizeControls@CSWGuiListBox@@QAEXXZ,public: void __thiscall CSWGuiListBox::OrganizeControls(void),0x0041B140,calls,6
 ??0CSWGuiLabelHilight@@QAE@XZ,public: __thiscall CSWGuiLabelHilight::CSWGuiLabelHilight(void),0x0041B5C0,defines,2
@@ -707,9 +707,9 @@ symbol,demangled,address,role,uses
 ?Load@CSWGuiEditbox@@UAEXPAVCResGFF@@PAUCResStruct@@@Z,"public: virtual void __thiscall CSWGuiEditbox::Load(class CResGFF *,struct CResStruct *)",0x0041C7D0,defines,1
 ?Load@CSWGuiNavigable@@UAEXPAVCResGFF@@PAUCResStruct@@@Z,"public: virtual void __thiscall CSWGuiNavigable::Load(class CResGFF *,struct CResStruct *)",0x0041C890,defines,2
 ?Load@CSWGuiButton@@UAEXPAVCResGFF@@PAUCResStruct@@@Z,"public: virtual void __thiscall CSWGuiButton::Load(class CResGFF *,struct CResStruct *)",0x0041C930,defines,2
-??0CSWGuiButtonToggle@@QAE@XZ,public: __thiscall CSWGuiButtonToggle::CSWGuiButtonToggle(void),0x0041CA30,defines,1
+??0CSWGuiButtonToggle@@QAE@XZ,public: __thiscall CSWGuiButtonToggle::CSWGuiButtonToggle(void),0x0041CA30,defines,2
 ??_GCSWGuiButtonToggle@@UAEPAXI@Z,public: virtual void * __thiscall CSWGuiButtonToggle::`scalar deleting destructor'(unsigned int),0x0041CAB0,defines,1
-??1CSWGuiButtonToggle@@UAE@XZ,public: virtual __thiscall CSWGuiButtonToggle::~CSWGuiButtonToggle(void),0x0041CAD0,defines,5
+??1CSWGuiButtonToggle@@UAE@XZ,public: virtual __thiscall CSWGuiButtonToggle::~CSWGuiButtonToggle(void),0x0041CAD0,defines,6
 ?Load@CSWGuiButtonToggle@@UAEXPAVCResGFF@@PAUCResStruct@@@Z,"public: virtual void __thiscall CSWGuiButtonToggle::Load(class CResGFF *,struct CResStruct *)",0x0041CB40,defines,1
 ?SetStyle@CSWGuiListBox@@UAEXABUCSWGuiExtent@@PAVCSWGuiBorderParams@@H@Z,"public: virtual void __thiscall CSWGuiListBox::SetStyle(struct CSWGuiExtent const &,class CSWGuiBorderParams *,int)",0x0041CD60,defines,1
 ??0CRes2DA@@QAE@XZ,public: __thiscall CRes2DA::CRes2DA(void),0x0041D730,defines,2
@@ -2949,15 +2949,15 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?MessageReadUnderflow@CSWCMessage@@QAEHH@Z,public: int __thiscall CSWCMessage::MessageReadUnderflow(int),0x004D6240,calls,6
 ?MoreDataToRead@CNWMessage@@QAEHXZ,public: int __thiscall CNWMessage::MoreDataToRead(void),0x004D6250,defines,1
 ?ExtendWriteBuffer@CNWMessage@@QAEXK@Z,public: void __thiscall CNWMessage::ExtendWriteBuffer(unsigned long),0x004D6260,defines,15
-?WriteBYTE@CNWMessage@@QAEXEH@Z,"public: void __thiscall CNWMessage::WriteBYTE(unsigned char,int)",0x004D62C0,defines,47
+?WriteBYTE@CNWMessage@@QAEXEH@Z,"public: void __thiscall CNWMessage::WriteBYTE(unsigned char,int)",0x004D62C0,defines,54
 ?WriteBYTE@CSWSMessage@@QAEXEH@Z,"public: void __thiscall CSWSMessage::WriteBYTE(unsigned char,int)",0x004D62C0,calls,1
 ?WriteWORD@CNWMessage@@QAEXGH@Z,"public: void __thiscall CNWMessage::WriteWORD(unsigned short,int)",0x004D6300,defines,10
-?WriteDWORD@CNWMessage@@QAEXKH@Z,"public: void __thiscall CNWMessage::WriteDWORD(unsigned long,int)",0x004D6340,defines,17
-?WriteINT@CNWMessage@@QAEXHH@Z,"public: void __thiscall CNWMessage::WriteINT(int,int)",0x004D6340,calls,46
+?WriteDWORD@CNWMessage@@QAEXKH@Z,"public: void __thiscall CNWMessage::WriteDWORD(unsigned long,int)",0x004D6340,defines,19
+?WriteINT@CNWMessage@@QAEXHH@Z,"public: void __thiscall CNWMessage::WriteINT(int,int)",0x004D6340,calls,52
 ?WriteCResRef@CNWMessage@@QAEXVCResRef@@H@Z,"public: void __thiscall CNWMessage::WriteCResRef(class CResRef,int)",0x004D6380,defines,2
 ?WriteCResRef@CSWSMessage@@QAEXUCResRef@@H@Z,"public: void __thiscall CSWSMessage::WriteCResRef(struct CResRef,int)",0x004D6380,calls,2
 ?WriteVOIDPtr@CNWMessage@@QAEXPAXK@Z,"public: void __thiscall CNWMessage::WriteVOIDPtr(void *,unsigned long)",0x004D63E0,defines,2
-?GetWriteMessage@CNWMessage@@QAEHPAPAEPAK@Z,"public: int __thiscall CNWMessage::GetWriteMessage(unsigned char * *,unsigned long *)",0x004D6440,calls,93
+?GetWriteMessage@CNWMessage@@QAEHPAPAEPAK@Z,"public: int __thiscall CNWMessage::GetWriteMessage(unsigned char * *,unsigned long *)",0x004D6440,calls,95
 ?GetInteger@CSWCCMessageData@@QAEHH@Z,public: int __thiscall CSWCCMessageData::GetInteger(int),0x004D6480,defines,1
 ?GetFloat@CSWCCMessageData@@QAEMH@Z,public: float __thiscall CSWCCMessageData::GetFloat(int),0x004D64A0,defines,1
 ?GetObjectID@CSWCCMessageData@@QAEKH@Z,public: unsigned long __thiscall CSWCCMessageData::GetObjectID(int),0x004D64C0,defines,1
@@ -2975,11 +2975,11 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?ReadFLOAT@CNWMessage@@QAEMMH@Z,"public: float __thiscall CNWMessage::ReadFLOAT(float,int)",0x004D67B0,defines,9
 ?ReadFLOAT@CSWCMessage@@QAEMMH@Z,"public: float __thiscall CSWCMessage::ReadFLOAT(float,int)",0x004D67B0,calls,9
 ?ReadCExoString@CNWMessage@@QAE?AVCExoString@@H@Z,public: class CExoString __thiscall CNWMessage::ReadCExoString(int),0x004D67E0,defines,3
-?CreateWriteMessage@CSWMessage@@QAEXKKH@Z,"public: void __thiscall CSWMessage::CreateWriteMessage(unsigned long,unsigned long,int)",0x004D68A0,calls,77
+?CreateWriteMessage@CSWMessage@@QAEXKKH@Z,"public: void __thiscall CSWMessage::CreateWriteMessage(unsigned long,unsigned long,int)",0x004D68A0,calls,79
 ?CreateWriteMessage@CSWMessage@@QAEXKKK@Z,"public: void __thiscall CSWMessage::CreateWriteMessage(unsigned long,unsigned long,unsigned long)",0x004D68A0,defines,16
 ?WriteBOOL@CNWMessage@@QAEXH@Z,public: void __thiscall CNWMessage::WriteBOOL(int),0x004D68E0,defines,46
 ?WriteOBJECTID@CNWMessage@@QAEXK@Z,public: void __thiscall CNWMessage::WriteOBJECTID(unsigned long),0x004D68E0,calls,16
-?WriteFLOAT@CNWMessage@@QAEXMMH@Z,"public: void __thiscall CNWMessage::WriteFLOAT(float,float,int)",0x004D6920,defines,52
+?WriteFLOAT@CNWMessage@@QAEXMMH@Z,"public: void __thiscall CNWMessage::WriteFLOAT(float,float,int)",0x004D6920,defines,58
 ?WriteCExoString@CNWMessage@@QAEXABVCExoString@@H@Z,"public: void __thiscall CNWMessage::WriteCExoString(class CExoString const &,int)",0x004D6960,defines,25
 ?WriteCExoString@CSWSMessage@@QAEXABVCExoString@@H@Z,"public: void __thiscall CSWSMessage::WriteCExoString(class CExoString const &,int)",0x004D6960,calls,1
 ??0CSWCCMessageData@@QAE@XZ,public: __thiscall CSWCCMessageData::CSWCCMessageData(void),0x004D69F0,defines,3
@@ -2987,7 +2987,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ??1CUnknown004d6a40@@QAE@XZ,public: __thiscall CUnknown004d6a40::~CUnknown004d6a40(void),0x004D6A40,calls,1
 ?SetString@CSWCCMessageData@@QAEXHABVCExoString@@@Z,"public: void __thiscall CSWCCMessageData::SetString(int,class CExoString const &)",0x004D6AE0,defines,2
 ?ReadVector@CNWMessage@@QAE?AUVector@@XZ,public: struct Vector __thiscall CNWMessage::ReadVector(void),0x004D7120,defines,1
-?WriteVector@CNWMessage@@QAEXABUVector@@@Z,public: void __thiscall CNWMessage::WriteVector(struct Vector const &),0x004D71B0,defines,1
+?WriteVector@CNWMessage@@QAEXABUVector@@@Z,public: void __thiscall CNWMessage::WriteVector(struct Vector const &),0x004D71B0,defines,3
 ??8CScriptEvent@@QAEHABV0@@Z,public: int __thiscall CScriptEvent::operator==(class CScriptEvent const &),0x004D7270,defines,1
 ?GetString@CSWCCMessageData@@QAE?AVCExoString@@H@Z,public: class CExoString __thiscall CSWCCMessageData::GetString(int),0x004D7360,defines,1
 ?SaveEvent@CScriptEvent@@QAEHPAVCResGFF@@PAUCResStruct@@@Z,"public: int __thiscall CScriptEvent::SaveEvent(class CResGFF *,struct CResStruct *)",0x004D73A0,defines,1
@@ -3757,7 +3757,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?ComputeLastUpdate_AssociateState@CSWSMessage@@QAEEPAVCSWSCreature@@@Z,public: unsigned char __thiscall CSWSMessage::ComputeLastUpdate_AssociateState(class CSWSCreature *),0x005676B0,defines,1
 ?WriteGameObjUpdate_WriteInventorySlotAdd@CSWSMessage@@QAEXPAVCSWSCreature@@PAVCSWSItem@@K@Z,"public: void __thiscall CSWSMessage::WriteGameObjUpdate_WriteInventorySlotAdd(class CSWSCreature *,class CSWSItem *,unsigned long)",0x00567710,defines,1
 ?WriteGameObjUpdate_WorkRemaining@CSWSMessage@@QAEXPAVCGameObject@@HHH@Z,"public: void __thiscall CSWSMessage::WriteGameObjUpdate_WorkRemaining(class CGameObject *,int,int,int)",0x00567BA0,defines,1
-?SendServerToPlayerMessage@CSWSMessage@@QAEHKEEPAEK@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerMessage(unsigned long,unsigned char,unsigned char,unsigned char *,unsigned long)",0x00567E60,defines,79
+?SendServerToPlayerMessage@CSWSMessage@@QAEHKEEPAEK@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerMessage(unsigned long,unsigned char,unsigned char,unsigned char *,unsigned long)",0x00567E60,defines,81
 ?SendServerToPlayerModule_Info@CSWSMessage@@QAEHK@Z,public: int __thiscall CSWSMessage::SendServerToPlayerModule_Info(unsigned long),0x00567EF0,defines,1
 ?SendServerToPlayerFactionUpdate@CSWSMessage@@QAEHKHPAKHK@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerFactionUpdate(unsigned long,int,unsigned long *,int,unsigned long)",0x00567F90,calls,4
 ?SendServerToPlayerParty_List@CSWSMessage@@QAEHKHPAKEK@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerParty_List(unsigned long,int,unsigned long *,unsigned char,unsigned long)",0x00567F90,defines,1
@@ -3860,6 +3860,8 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SendServerToPlayerChat_ServerTell@CSWSMessage@@QAEHKABVCExoString@@@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerChat_ServerTell(unsigned long,class CExoString const &)",0x0056D9C0,defines,1
 ?SendServerToPlayerChat_Shout@CSWSMessage@@QAEHKKABVCExoString@@@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerChat_Shout(unsigned long,unsigned long,class CExoString const &)",0x0056DA30,defines,1
 ?SendServerToPlayerChat_Whisper@CSWSMessage@@QAEHKKABVCExoString@@@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerChat_Whisper(unsigned long,unsigned long,class CExoString const &)",0x0056DBF0,defines,1
+?SendServerToPlayerSafeProjectileProjectile@CSWSMessage@@QAEHPAVCSWSPlayer@@KKUVector@@1KEHEEH@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerSafeProjectileProjectile(class CSWSPlayer *,unsigned long,unsigned long,struct Vector,struct Vector,unsigned long,unsigned char,int,unsigned char,unsigned char,int)",0x0056E5F0,defines,1
+?SendServerToPlayerSafeProjectileSpell@CSWSMessage@@QAEHPAVCSWSPlayer@@KKUVector@@1KEHEEEHH@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerSafeProjectileSpell(class CSWSPlayer *,unsigned long,unsigned long,struct Vector,struct Vector,unsigned long,unsigned char,int,unsigned char,unsigned char,unsigned char,int,int)",0x0056E6E0,defines,1
 ?SendServerToPlayerExamineGui_PlaceableData@CSWSMessage@@QAEHPAVCSWSPlayer@@K@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerExamineGui_PlaceableData(class CSWSPlayer *,unsigned long)",0x0056F0A0,defines,1
 ?SendServerToPlayerExamineGui_DoorData@CSWSMessage@@QAEHPAVCSWSPlayer@@K@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerExamineGui_DoorData(class CSWSPlayer *,unsigned long)",0x0056F370,defines,1
 ?SendServerToPlayerGameObjUpdate_ObjControl@CSWSMessage@@QAEHKK@Z,"public: int __thiscall CSWSMessage::SendServerToPlayerGameObjUpdate_ObjControl(unsigned long,unsigned long)",0x0056F430,defines,1
@@ -3889,7 +3891,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SendGameObjectUpdate@CSWSMessage@@QAEXK@Z,public: void __thiscall CSWSMessage::SendGameObjectUpdate(unsigned long),0x00578520,defines,1
 ?SendServerToPlayerUpdate@CSWSMessage@@QAEXPAVCSWSPlayer@@@Z,public: void __thiscall CSWSMessage::SendServerToPlayerUpdate(class CSWSPlayer *),0x00578520,calls,1
 ?ReadOBJECTIDServer@CSWSMessage@@QAEKXZ,public: unsigned long __thiscall CSWSMessage::ReadOBJECTIDServer(void),0x00578540,defines,3
-?WriteOBJECTIDServer@CSWSMessage@@QAEXK@Z,public: void __thiscall CSWSMessage::WriteOBJECTIDServer(unsigned long),0x00578570,defines,41
+?WriteOBJECTIDServer@CSWSMessage@@QAEXK@Z,public: void __thiscall CSWSMessage::WriteOBJECTIDServer(unsigned long),0x00578570,defines,45
 ?WriteCExoLocStringServer@CSWSMessage@@QAEXABVCExoLocString@@E@Z,"public: void __thiscall CSWSMessage::WriteCExoLocStringServer(class CExoLocString const &,unsigned char)",0x005785C0,calls,14
 ?GetLocStringServer@CSWSMessage@@SAXKABVCExoLocString@@0AAVCExoString@@E@Z,"public: static void __cdecl CSWSMessage::GetLocStringServer(unsigned long,class CExoLocString const &,class CExoLocString const &,class CExoString &,unsigned char)",0x00578870,calls,2
 ??0CSWSAreaMap@@QAE@XZ,public: __thiscall CSWSAreaMap::CSWSAreaMap(void),0x00578BE0,defines,1
@@ -4155,12 +4157,14 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ??1STR_TOKEN_CUSTOM@@QAE@XZ,public: __thiscall STR_TOKEN_CUSTOM::~STR_TOKEN_CUSTOM(void),0x0059EA20,calls,4
 ??1CExoStringHolder@@QAE@XZ,public: __thiscall CExoStringHolder::~CExoStringHolder(void),0x0059EA30,defines,1
 ??1CFileKey@@QAE@XZ,public: __thiscall CFileKey::~CFileKey(void),0x0059EA30,calls,1
+??1CSWCJournalPendingUpdate@@QAE@XZ,public: __thiscall CSWCJournalPendingUpdate::~CSWCJournalPendingUpdate(void),0x0059EA30,calls,2
 ??1CSWGuiInterfaceAction@@QAE@XZ,public: __thiscall CSWGuiInterfaceAction::~CSWGuiInterfaceAction(void),0x0059EA30,calls,3
 ??1CSWSModuleStringEntry@@QAE@XZ,public: __thiscall CSWSModuleStringEntry::~CSWSModuleStringEntry(void),0x0059EA30,calls,3
 ??1CSWSScriptVar@@QAE@XZ,public: __thiscall CSWSScriptVar::~CSWSScriptVar(void),0x0059EA30,calls,1
 ??1CScriptCompilerStructureEntry@@QAE@XZ,public: __thiscall CScriptCompilerStructureEntry::~CScriptCompilerStructureEntry(void),0x0059EA30,calls,1
 ??0CSWSDialogStuntModel@@QAE@XZ,public: __thiscall CSWSDialogStuntModel::CSWSDialogStuntModel(void),0x0059EA40,defines,1
 ??0CLiveContentStruct@@QAE@XZ,public: __thiscall CLiveContentStruct::CLiveContentStruct(void),0x0059EA90,defines,1
+??0CSWCJournalPendingUpdate@@QAE@XZ,public: __thiscall CSWCJournalPendingUpdate::CSWCJournalPendingUpdate(void),0x0059EA90,calls,1
 ??0CSWSModuleStringEntry@@QAE@XZ,public: __thiscall CSWSModuleStringEntry::CSWSModuleStringEntry(void),0x0059EA90,calls,1
 ?LoadDialogLinkedNode@CSWSDialog@@QAEXPAVCDialogLink@@PAVCResGFF@@PAVCResGFFStruct@@PAHK@Z,"public: void __thiscall CSWSDialog::LoadDialogLinkedNode(class CDialogLink *,class CResGFF *,class CResGFFStruct *,int *,unsigned long)",0x0059EC10,defines,1
 ?CheckScript@CSWSDialog@@QAEHPAVCGameObject@@ABVCResRef@@@Z,"public: int __thiscall CSWSDialog::CheckScript(class CGameObject *,class CResRef const &)",0x0059EC90,defines,3
@@ -5091,10 +5095,10 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SetMouseMode@CExoInput@@QAEHE@Z,public: int __thiscall CExoInput::SetMouseMode(unsigned char),0x005DF5A0,defines,1
 ?SetMouseMode@CExoInput@@QAEXE@Z,public: void __thiscall CExoInput::SetMouseMode(unsigned char),0x005DF5A0,calls,1
 ?RefreshMouseCursor@CExoInput@@QAEXH@Z,public: void __thiscall CExoInput::RefreshMouseCursor(int),0x005DF5B0,defines,1
-?SetMouseCursor@CExoInput@@QAEHHHH@Z,"public: int __thiscall CExoInput::SetMouseCursor(int,int,int)",0x005DF5C0,defines,1
+?SetMouseCursor@CExoInput@@QAEHHHH@Z,"public: int __thiscall CExoInput::SetMouseCursor(int,int,int)",0x005DF5C0,defines,2
 ?SetMousePos@CExoInput@@QAEXHH@Z,"public: void __thiscall CExoInput::SetMousePos(int,int)",0x005DF5D0,defines,1
 ?SetMousePosition@CExoInput@@QAEXHH@Z,"public: void __thiscall CExoInput::SetMousePosition(int,int)",0x005DF5D0,calls,2
-?HideMouse@CExoInput@@QAEXXZ,public: void __thiscall CExoInput::HideMouse(void),0x005DF5E0,defines,1
+?HideMouse@CExoInput@@QAEXXZ,public: void __thiscall CExoInput::HideMouse(void),0x005DF5E0,defines,2
 ?ShowMouse@CExoInput@@QAEXXZ,public: void __thiscall CExoInput::ShowMouse(void),0x005DF5F0,defines,1
 ?ClearAllInputEventDescriptions@CExoInput@@QAEXXZ,public: void __thiscall CExoInput::ClearAllInputEventDescriptions(void),0x005DF600,defines,1
 ?GetMouseDelta@CExoInput@@QAEXPAM0@Z,"public: void __thiscall CExoInput::GetMouseDelta(float *,float *)",0x005DF610,defines,1
@@ -5248,7 +5252,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ??1CSWGuiTextParams@@QAE@XZ,public: __thiscall CSWGuiTextParams::~CSWGuiTextParams(void),0x005E5C20,calls,1
 ??1STR_RES@@QAE@XZ,public: __thiscall STR_RES::~STR_RES(void),0x005E5C20,calls,1
 ?Destroy@CExoStringDtorHelper@@QAEXXZ,public: void __thiscall CExoStringDtorHelper::Destroy(void),0x005E5C20,calls,1
-??4CExoString@@QAEAAV0@ABV0@@Z,public: class CExoString & __thiscall CExoString::operator=(class CExoString const &),0x005E5C50,defines,172
+??4CExoString@@QAEAAV0@ABV0@@Z,public: class CExoString & __thiscall CExoString::operator=(class CExoString const &),0x005E5C50,defines,174
 ??HCExoString@@QBE?AV0@ABV0@@Z,public: class CExoString __thiscall CExoString::operator+(class CExoString const &)const ,0x005E5D10,defines,51
 ?Find@CExoString@@QBEHABV1@H@Z,"public: int __thiscall CExoString::Find(class CExoString const &,int)const ",0x005E5EB0,defines,4
 ?Find@CExoString@@QBEHDH@Z,"public: int __thiscall CExoString::Find(char,int)const ",0x005E5F20,defines,5
@@ -5487,7 +5491,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?GetPlayerByGameObjectID@CClientExoApp@@QAEPAVCClientPlayer@@K@Z,public: class CClientPlayer * __thiscall CClientExoApp::GetPlayerByGameObjectID(unsigned long),0x005ED590,defines,1
 ?GetItemByGameObjectID@CClientExoApp@@QAEPAVCGameObject@@K@Z,public: class CGameObject * __thiscall CClientExoApp::GetItemByGameObjectID(unsigned long),0x005ED5A0,calls,2
 ?GetItemByGameObjectID@CClientExoApp@@QAEPAVCSWCItem@@K@Z,public: class CSWCItem * __thiscall CClientExoApp::GetItemByGameObjectID(unsigned long),0x005ED5A0,defines,35
-?GetCreatureByGameObjectID@CClientExoApp@@QAEPAVCSWCCreature@@K@Z,public: class CSWCCreature * __thiscall CClientExoApp::GetCreatureByGameObjectID(unsigned long),0x005ED5B0,defines,19
+?GetCreatureByGameObjectID@CClientExoApp@@QAEPAVCSWCCreature@@K@Z,public: class CSWCCreature * __thiscall CClientExoApp::GetCreatureByGameObjectID(unsigned long),0x005ED5B0,defines,20
 ?GetAreaByGameObjectID@CClientExoApp@@QAEPAVCSWCArea@@K@Z,public: class CSWCArea * __thiscall CClientExoApp::GetAreaByGameObjectID(unsigned long),0x005ED5C0,defines,1
 ?GetTriggerByGameObjectID@CClientExoApp@@QAEPAVCSWCTrigger@@K@Z,public: class CSWCTrigger * __thiscall CClientExoApp::GetTriggerByGameObjectID(unsigned long),0x005ED5D0,defines,1
 ?GetProjectileByGameObjectID@CClientExoApp@@QAEPAVCGameObject@@K@Z,public: class CGameObject * __thiscall CClientExoApp::GetProjectileByGameObjectID(unsigned long),0x005ED5E0,calls,1
@@ -6072,7 +6076,8 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?EnableInput@CClientExoAppInternal@@QAEXXZ,public: void __thiscall CClientExoAppInternal::EnableInput(void),0x0061F7D0,defines,2
 ?PerformRButtonDownAction@CClientExoAppInternal@@QAEHXZ,public: int __thiscall CClientExoAppInternal::PerformRButtonDownAction(void),0x0061F940,defines,1
 ?PerformRButtonUpAction@CClientExoAppInternal@@QAEHXZ,public: int __thiscall CClientExoAppInternal::PerformRButtonUpAction(void),0x0061F960,defines,1
-?SetInputState@CClientExoAppInternal@@QAEXH@Z,public: void __thiscall CClientExoAppInternal::SetInputState(int),0x0061F9C0,calls,4
+?SetMouseCursor@CClientExoAppInternal@@QAEXHHH@Z,"public: void __thiscall CClientExoAppInternal::SetMouseCursor(int,int,int)",0x0061F980,defines,1
+?SetInputState@CClientExoAppInternal@@QAEXH@Z,public: void __thiscall CClientExoAppInternal::SetInputState(int),0x0061F9C0,defines,5
 ?ClearInputState@CClientExoAppInternal@@QAEXH@Z,public: void __thiscall CClientExoAppInternal::ClearInputState(int),0x0061FA00,calls,9
 ?SetInputClass@CClientExoAppInternal@@QAEHHH@Z,"public: int __thiscall CClientExoAppInternal::SetInputClass(int,int)",0x006200E0,calls,1
 ?DismissInGameGUI@CClientExoAppInternal@@QAEXXZ,public: void __thiscall CClientExoAppInternal::DismissInGameGUI(void),0x00620320,calls,1
@@ -6265,8 +6270,11 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?RestoreCamera@CSWCModule@@QAEXXZ,public: void __thiscall CSWCModule::RestoreCamera(void),0x00641DC0,calls,1
 ??0CSWCModule@@QAE@XZ,public: __thiscall CSWCModule::CSWCModule(void),0x00643F40,calls,1
 ??_GCSWCModule@@UAEPAXI@Z,public: virtual void * __thiscall CSWCModule::`scalar deleting destructor'(unsigned int),0x00644150,defines,1
+?SetJournalOption@CGuiInGame@@QAEXK@Z,public: void __thiscall CGuiInGame::SetJournalOption(unsigned long),0x00644740,defines,1
 ?GetModule@CClientExoAppInternal@@QAEPAVCSWCModule@@XZ,public: class CSWCModule * __thiscall CClientExoAppInternal::GetModule(void),0x00644760,calls,5
 ?GetSize@CERFRawResource@@QAEKXZ,public: unsigned long __thiscall CERFRawResource::GetSize(void),0x00644760,calls,3
+?ClearActiveListChanged@CSWCJournal@@QAEXXZ,public: void __thiscall CSWCJournal::ClearActiveListChanged(void),0x00644770,defines,1
+?ClearDoneListChanged@CSWCJournal@@QAEXXZ,public: void __thiscall CSWCJournal::ClearDoneListChanged(void),0x00644780,defines,1
 ??1CSWGuiInGameJournal@@UAE@XZ,public: virtual __thiscall CSWGuiInGameJournal::~CSWGuiInGameJournal(void),0x00644850,calls,1
 ?Add@CExoArrayListObjectId@@QAEXK@Z,public: void __thiscall CExoArrayListObjectId::Add(unsigned long),0x006449D0,calls,1
 ?AddInvisible@CVisibilityList@@QAEXK@Z,public: void __thiscall CVisibilityList::AddInvisible(unsigned long),0x006449D0,calls,1
@@ -6277,8 +6285,12 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SetEquippedBy@CSWCItem@@QAEXPAVCSWCCreature@@@Z,public: void __thiscall CSWCItem::SetEquippedBy(class CSWCCreature *),0x00646600,defines,1
 ?SetEquippedByMe@CSWCItem@@QAEXH@Z,public: void __thiscall CSWCItem::SetEquippedByMe(int),0x00646600,calls,1
 ?GetEquippedBy@CSWCItem@@QAEKXZ,public: unsigned long __thiscall CSWCItem::GetEquippedBy(void),0x00646630,calls,1
+?GetEquippedBy@CSWCItem@@QAEPAVCSWCCreature@@XZ,public: class CSWCCreature * __thiscall CSWCItem::GetEquippedBy(void),0x00646630,defines,1
 ?GetKeepAttached@CSWCItem@@QAEHXZ,public: int __thiscall CSWCItem::GetKeepAttached(void),0x00646630,calls,4
+?SetNumActiveProperties@CSWCItem@@QAEXK@Z,public: void __thiscall CSWCItem::SetNumActiveProperties(unsigned long),0x00646660,defines,1
 ?GetActiveProperty@CSWCItem@@QAEPAUCSWItemProperty@@H@Z,public: struct CSWItemProperty * __thiscall CSWCItem::GetActiveProperty(int),0x006466A0,calls,1
+?GetActiveProperty@CSWCItem@@QAEPAVCSWCItemProperty@@H@Z,public: class CSWCItemProperty * __thiscall CSWCItem::GetActiveProperty(int),0x006466A0,defines,1
+?GetPropertyByType@CSWCItem@@QAEHH@Z,public: int __thiscall CSWCItem::GetPropertyByType(int),0x006467E0,defines,1
 ?SetStackSize@CSWCItem@@QAEXH@Z,public: void __thiscall CSWCItem::SetStackSize(int),0x00646810,calls,2
 ?SetItemPropertyUsesLeft@CSWCItem@@QAEXHG@Z,"public: void __thiscall CSWCItem::SetItemPropertyUsesLeft(int,unsigned short)",0x006469B0,calls,1
 ?GetServerItem@CSWCItem@@QAEPAVCSWSItem@@XZ,public: class CSWSItem * __thiscall CSWCItem::GetServerItem(void),0x00646C90,defines,1
@@ -6652,7 +6664,9 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?EnableSort@CSWCJournal@@QAEXXZ,public: void __thiscall CSWCJournal::EnableSort(void),0x00675DB0,defines,1
 ?DisableSort@CSWCJournal@@QAEXXZ,public: void __thiscall CSWCJournal::DisableSort(void),0x00675DC0,defines,1
 ?GetCount@CExoStringList@@QAEHXZ,public: int __thiscall CExoStringList::GetCount(void),0x00675DD0,calls,2
+?Allocate@?$CExoArrayList@UCSWCJournalPendingUpdate@@@@QAEXH@Z,public: void __thiscall CExoArrayList<struct CSWCJournalPendingUpdate>::Allocate(int),0x00675DE0,defines,2
 ?SortItemsByDate@CSWCSortedJournalArrayList@@QAEHHH@Z,"public: int __thiscall CSWCSortedJournalArrayList::SortItemsByDate(int,int)",0x00675ED0,defines,1
+?Add@?$CExoArrayList@UCSWCJournalPendingUpdate@@@@QAEXUCSWCJournalPendingUpdate@@@Z,public: void __thiscall CExoArrayList<struct CSWCJournalPendingUpdate>::Add(struct CSWCJournalPendingUpdate),0x006764A0,defines,1
 ?SortList@CSWCJournalList@@QAEXXZ,public: void __thiscall CSWCJournalList::SortList(void),0x00676530,calls,2
 ?SetActiveSortBy@CSWCJournal@@QAEXK@Z,public: void __thiscall CSWCJournal::SetActiveSortBy(unsigned long),0x00676BC0,defines,1
 ?SetDoneSortBy@CSWCJournal@@QAEXK@Z,public: void __thiscall CSWCJournal::SetDoneSortBy(unsigned long),0x00676BF0,defines,1
@@ -7258,9 +7272,20 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SetBirthrateA@CAurEmitter@@QAEXM@Z,public: void __thiscall CAurEmitter::SetBirthrateA(float),0x006DAF60,calls,2
 ?SetBirthrateB@CAurEmitter@@QAEXM@Z,public: void __thiscall CAurEmitter::SetBirthrateB(float),0x006DAFA0,calls,2
 ??0CAurTargettingEmitter@@QAE@PAVCAurObject@@0PAVCAurPart@@0@Z,"public: __thiscall CAurTargettingEmitter::CAurTargettingEmitter(class CAurObject *,class CAurObject *,class CAurPart *,class CAurObject *)",0x006DB590,calls,1
+??0CSWGuiOptionsCheckbox@@QAE@XZ,public: __thiscall CSWGuiOptionsCheckbox::CSWGuiOptionsCheckbox(void),0x006E00D0,defines,1
+??1CSWGuiOptionsCheckbox@@UAE@XZ,public: virtual __thiscall CSWGuiOptionsCheckbox::~CSWGuiOptionsCheckbox(void),0x006E00F0,defines,2
+??_GCSWGuiOptionsAutoPause@@UAEPAXI@Z,public: virtual void * __thiscall CSWGuiOptionsAutoPause::`scalar deleting destructor'(unsigned int),0x006E7A70,defines,1
+??1CSWGuiOptionsAutoPause@@UAE@XZ,public: virtual __thiscall CSWGuiOptionsAutoPause::~CSWGuiOptionsAutoPause(void),0x006E7A90,defines,2
+?AbilitiesChanged@CSWGuiLevelUpCharGen@@QAEXXZ,public: void __thiscall CSWGuiLevelUpCharGen::AbilitiesChanged(void),0x006E7F70,calls,1
+?NewAbilityScores@CSWGuiLevelUpCharGen@@QAEXIIIIIII@Z,"public: void __thiscall CSWGuiLevelUpCharGen::NewAbilityScores(unsigned int,unsigned int,unsigned int,unsigned int,unsigned int,unsigned int,unsigned int)",0x006E8500,calls,1
+?NewAbilityScores@CSWGuiLevelUpPanel@@QAEXIIIIIII@Z,"public: void __thiscall CSWGuiLevelUpPanel::NewAbilityScores(unsigned int,unsigned int,unsigned int,unsigned int,unsigned int,unsigned int,unsigned int)",0x006EE0D0,defines,1
+?ChangeState@CSWGuiLevelUpPanel@@QAEXH@Z,public: void __thiscall CSWGuiLevelUpPanel::ChangeState(int),0x006EE0E0,calls,3
+?CancelledByChild@CSWGuiLevelUpPanel@@QAEXXZ,public: void __thiscall CSWGuiLevelUpPanel::CancelledByChild(void),0x006EE580,defines,1
+?AbilitySelectionCompleted@CSWGuiLevelUpPanel@@QAEXXZ,public: void __thiscall CSWGuiLevelUpPanel::AbilitySelectionCompleted(void),0x006EE5B0,defines,1
+?PowersSelectionCompleted@CSWGuiLevelUpPanel@@QAEXXZ,public: void __thiscall CSWGuiLevelUpPanel::PowersSelectionCompleted(void),0x006EE5D0,defines,1
 _AurResOperatorNew,_AurResOperatorNew,0x006FA7E6,calls,3
 _AurResResourceOperatorNew,_AurResResourceOperatorNew,0x006FA7E6,calls,1
-??_M@YGXPAXIHP6EX0@Z@Z,"void __stdcall `eh vector destructor iterator'(void *,unsigned int,int,void (__thiscall*)(void *))",0x006FA852,calls,107
+??_M@YGXPAXIHP6EX0@Z@Z,"void __stdcall `eh vector destructor iterator'(void *,unsigned int,int,void (__thiscall*)(void *))",0x006FA852,calls,109
 _time,_time,0x006FA8B2,calls,1
 _fread,_fread,0x006FA9D4,calls,17
 _fwrite,_fwrite,0x006FAB27,calls,2
@@ -7274,7 +7299,7 @@ _fprintf,_fprintf,0x006FAF01,calls,5
 _atoi,_atoi,0x006FAFE7,calls,1
 _atol,_atol,0x006FAFE7,calls,2
 _strncmp,_strncmp,0x006FAFF0,calls,10
-??_L@YGXPAXIHP6EX0@Z1@Z,"void __stdcall `eh vector constructor iterator'(void *,unsigned int,int,void (__thiscall*)(void *),void (__thiscall*)(void *))",0x006FB55F,calls,36
+??_L@YGXPAXIHP6EX0@Z1@Z,"void __stdcall `eh vector constructor iterator'(void *,unsigned int,int,void (__thiscall*)(void *),void (__thiscall*)(void *))",0x006FB55F,calls,37
 _strchr,_strchr,0x006FB5E0,calls,2
 _calloc,_calloc,0x006FB823,calls,3
 _ftell,_ftell,0x006FBA49,calls,3
@@ -9098,6 +9123,7 @@ __real@3edb6db7,__real@3edb6db7,0x00755788,data,3
 ??_7CSWGuiSkillInfo@@6B@,const CSWGuiSkillInfo::`vftable',0x00757940,data,1
 ??_7CSWGuiExamineBox@@6B@,const CSWGuiExamineBox::`vftable',0x007579C8,data,1
 ??_7CSWGuiPowersFeatsSkillsDebugMenu@@6B@,const CSWGuiPowersFeatsSkillsDebugMenu::`vftable',0x00757A78,data,1
+??_7CSWGuiOptionsCheckbox@@6B@,const CSWGuiOptionsCheckbox::`vftable',0x00758258,data,1
 ??_7runtime_error@std@@6B@,const std::runtime_error::`vftable',0x0075FAC4,data,3
 ??_7length_error@std@@6B@,const std::length_error::`vftable',0x0075FAD0,data,3
 ??_7out_of_range@std@@6B@,const std::out_of_range::`vftable',0x0075FADC,data,1
@@ -9372,7 +9398,7 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_nAppMode@@3EA,unsigned char g_nAppMode,0x007A39DC,data,2
 ?g_pExoBase@@3PAVCExoBase@@A,class CExoBase * g_pExoBase,0x007A39E0,data,44
 ?g_pExoBase@@3PAVCExoBaseTimers@@A,class CExoBaseTimers * g_pExoBase,0x007A39E0,data,2
-?g_pExoInput@@3PAVCExoInput@@A,class CExoInput * g_pExoInput,0x007A39E4,data,11
+?g_pExoInput@@3PAVCExoInput@@A,class CExoInput * g_pExoInput,0x007A39E4,data,13
 ?g_pExoResMan@@3PAVCExoResMan@@A,class CExoResMan * g_pExoResMan,0x007A39E8,data,47
 ?g_pExoSound@@3PAVCExoSound@@A,class CExoSound * g_pExoSound,0x007A39EC,data,32
 ?g_pExoSound@@3PAVCExoSoundInternal@@A,class CExoSoundInternal * g_pExoSound,0x007A39EC,data,1
@@ -9381,7 +9407,7 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_pRender@@3PAVCRender@@A,class CRender * g_pRender,0x007A39F8,data,2
 ?g_pRenderWindow@@3PAVCRenderWindow@@A,class CRenderWindow * g_pRenderWindow,0x007A39F8,data,3
 ?g_pAppManager@@3PAUCAppManager@@A,struct CAppManager * g_pAppManager,0x007A39FC,data,2
-?g_pAppManager@@3PAVCAppManager@@A,class CAppManager * g_pAppManager,0x007A39FC,data,978
+?g_pAppManager@@3PAVCAppManager@@A,class CAppManager * g_pAppManager,0x007A39FC,data,979
 ?g_pVirtualMachine@@3PAVCVirtualMachine@@A,class CVirtualMachine * g_pVirtualMachine,0x007A3A00,data,308
 ?g_pTlkTable@@3PAVCTlkTable@@A,class CTlkTable * g_pTlkTable,0x007A3A08,data,31
 ?g_pTlkTableAlt@@3PAVCTlkTable@@A,class CTlkTable * g_pTlkTableAlt,0x007A3A0C,data,1

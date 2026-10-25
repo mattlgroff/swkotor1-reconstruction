@@ -41,6 +41,7 @@ class CSWCDoor;
 class CSWCSoundObject;
 class CSWCPlaceable;
 class CGob;
+class CSWGuiInterfaceAction;
 
 struct CHostileHilite {
     unsigned long m_oidTarget;                      // 0x00
@@ -289,6 +290,7 @@ public:
     void SetAttackTarget(int b);                    // 0x00610A10
     void ForceMenuAction(unsigned long nAction, CSWCCreature* pCreature); // 0x0060F330
     void ForceMenuHostileAction(unsigned long nAction, CSWCCreature* pCreature); // 0x00616200
+    void GetSelfForcePowers(CExoArrayList<CSWGuiInterfaceAction>& actions); // 0x00616230
     CGameObject* GetServerObject();                 // 0x0063D4B0
 };
 

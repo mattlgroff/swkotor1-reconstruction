@@ -263,6 +263,7 @@ public:
     void InitControl(CSWGuiControl* pControl, const CExoString& sName, int bAdd);  // 0x0040B930
     void UnloadResource();                          // 0x0040B8F0
     void SetToDestroy(int bDestroy);                // 0x00624A00
+    void SetVisible(int bVisible);                   // 0x0040B9D0
     void SetCloseCallback(CSWGuiPanel* pObject, void (CSWGuiPanel::*pfnCallback)(CSWGuiControl*),
                           int nArg);                // 0x00624A40
 
