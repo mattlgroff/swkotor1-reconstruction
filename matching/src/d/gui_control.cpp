@@ -139,7 +139,12 @@ void CSWGuiEditbox::SetFocus()
 // FUNCTION: SWKOTOR 0x00418670
 int CSWGuiEditbox::IsSelectable()
 {
-    return m_bSelectable;
+    // Read the flag byte itself; the bitfield accessor compiles as a dword load.
+    __asm {
+        movzx eax, byte ptr [ecx + 0x44]
+        shr eax, 3
+        and eax, 1
+    }
 }
 
 // FUNCTION: SWKOTOR 0x00418680

@@ -509,7 +509,9 @@ public:
     unsigned long                      m_oidCachedPlayer; // 0x3bc
     CSWCCreature*                      m_pCachedPlayerCreature; // 0x3c0
     CExoStreamingSoundSource*          m_pEvilEndingSound; // 0x3c4
-    char pad_0x3c8[0x18];
+    unsigned long m_nMousePositionRestoreX;    // 0x3c8
+    unsigned long m_nMousePositionRestoreY;    // 0x3cc
+    char pad_0x3d0[0x10];
     int                                m_nAttackMashTutorialTimer; // 0x3e0
     unsigned char                      m_pTutorialFlags[0x34]; // 0x3e4
     CClientResRefSlot                  m_aUnknown418[7]; // 0x418
@@ -544,6 +546,7 @@ public:
     int GetPausedByCombat();
     int GetControlledCharacterDead();
     void SetGameOver(int b);
+    void RestoreMousePositionTo(int x, int y);
     void SetLoadScreenHint(int nHint);
     void DisableVideoEffect();
     int ForwardUnknown46f0();

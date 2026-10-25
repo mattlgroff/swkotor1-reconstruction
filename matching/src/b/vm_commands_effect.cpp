@@ -151,6 +151,19 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectForcePushed(int nCommandId, i
     return 0;
 }
 
+// FUNCTION: SWKOTOR 0x00534E90
+int CSWVirtualMachineCommands::ExecuteCommandEffectHorrified(int nCommandId, int nParameters)
+{
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_SETSTATE;
+    pEffect->SetInteger(0, 8);
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
 // FUNCTION: SWKOTOR 0x005351E0
 int CSWVirtualMachineCommands::ExecuteCommandEffectChoke(int nCommandId, int nParameters)
 {

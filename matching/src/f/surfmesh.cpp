@@ -62,6 +62,7 @@ public:
     float x, y, z;
 };
 Vector Normalize(const Vector &v);
+double PlaneHeightAtPoint(const Vector &vNormal, float fDistance, const Vector &vPoint);
 
 class CSWRoomSurfaceMeshAABBNode {
 public:
@@ -109,6 +110,12 @@ struct CSWCollisionResult {
 
 class C3DMatrix;
 
+struct CSWRoomTriangle {
+    int m_nVertexA;
+    int m_nVertexB;
+    int m_nVertexC;
+};
+
 class CSWCollisionMesh {
 public:
     void TransformToWorld(C3DMatrix *pMatrix);
@@ -117,6 +124,8 @@ public:
 class CSWRoomSurfaceMesh : public CSWCollisionMesh {
 public:
     int GetAdjacentSecond(int nIndex);
+    void GetTriangleIndices(int nUnused, int nFace, int *pA, int *pB, int *pC);
+    double ComputeHeight(int nFace, Vector vPoint);
     int CheckAABBNode(CSWRoomSurfaceMeshAABBNode *pNode, Vector *pStart, Vector *pEnd,
                       CSWCollisionResult *pResult);
     void TransformAABBNode(CSWRoomSurfaceMeshAABBNode *pNode, C3DMatrix *pMatrix);
@@ -126,7 +135,14 @@ public:
 
     char pad_0x0[0x4c];
     int m_bTransformed;                         // +0x4c
-    char pad_0x50[0x3c];
+    char pad_0x50[0x8];
+    int m_nFaceCount;                           // +0x58
+    char pad_0x5c[0x4];
+    CSWRoomTriangle *m_pFaceIndices;            // +0x60
+    char pad_0x64[0x4];
+    Vector *m_pFaceNormals;                     // +0x68
+    float *m_pFaceDistances;                    // +0x6c
+    char pad_0x70[0x1c];
     CSWRoomFacePair *m_pPairs;                  // +0x8c
     char pad_0x90[0x20];
     int m_bHasAABB;                             // +0xb0
@@ -141,6 +157,23 @@ public:
 int CSWRoomSurfaceMesh::GetAdjacentSecond(int nIndex)
 {
     return m_pPairs[nIndex].m_nSecond;
+}
+
+// FUNCTION: SWKOTOR 0x005806C0
+void CSWRoomSurfaceMesh::GetTriangleIndices(int nUnused, int nFace, int *pA, int *pB, int *pC)
+{
+    if (nFace < m_nFaceCount) {
+        *pA = m_pFaceIndices[nFace].m_nVertexA;
+        *pB = m_pFaceIndices[nFace].m_nVertexB;
+        *pC = m_pFaceIndices[nFace].m_nVertexC;
+    }
+}
+
+// FUNCTION: SWKOTOR 0x005805E0
+double CSWRoomSurfaceMesh::ComputeHeight(int nFace, Vector vPoint)
+{
+    Vector vLocal(vPoint.x, vPoint.y, -9.0f);
+    return PlaneHeightAtPoint(m_pFaceNormals[nFace], m_pFaceDistances[nFace], vLocal);
 }
 
 // FUNCTION: SWKOTOR 0x00581170

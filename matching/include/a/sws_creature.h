@@ -191,6 +191,9 @@ class CSWSFaction;
 
 class CFactionManager {
 public:
+    int IsValidFactionId(int nFaction);             // 0x0052B280
+    int GetNPCReputation(int nFaction1, int nFaction2); // 0x0052B420
+    void SetNPCReputation(int nFaction1, int nFaction2, int nReputation); // 0x0052B3D0
     CSWSFaction* GetFaction(int nFaction);          // 0x0052B3B0
 };
 
@@ -771,6 +774,8 @@ public:
     void SetDetectMode(unsigned char nMode);        // 0x0050EE30
     void SetStealthMode(unsigned char nMode, unsigned long nArg);  // 0x0050EE50
     CSWSFaction* GetFaction();                      // 0x00513FC0
+    int GetCreatureReputation(unsigned long oidCreature, int nFaction); // 0x00513FF0
+    void AdjustReputation(int nFaction, int nDelta);  // 0x00514070
     int FUN_005140d0(int nArg);                     // 0x005140D0
     int AIActionRest(int nArg);                     // 0x005140E0
     int RemoveEffectById(unsigned __int64 nID);     // 0x004D06C0 (CSWSObject)

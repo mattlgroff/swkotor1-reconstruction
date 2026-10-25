@@ -35,10 +35,16 @@ public:
                                  unsigned long nDefault);               // 0x00411C20
     int AddList(CResList* pList, CResStruct* pStruct, char* szLabel);               // 0x00412450
     int AddListElement(CResStruct* pStruct, CResList* pList, unsigned long nType);  // 0x004124E0
+    int AddStructToStruct(CResStruct* pOut, CResStruct* pStruct, char* szLabel,
+                          unsigned long nType);                         // 0x004125B0
     int WriteFieldDWORD(CResStruct* pStruct, unsigned long nValue, char* szLabel);  // 0x00412760
+    int WriteFieldINT(CResStruct* pStruct, int nValue, char* szLabel);              // 0x004127B0
+    int WriteFieldVOID(CResStruct* pStruct, void* pData, unsigned long nSize,
+                       char* szLabel);                                    // 0x00412C10
 };
 
 class CSWSObject;
+class CSWSModule;
 class CSWSCreature;
 class CSWSItem;
 class CSWSDoor;
@@ -83,7 +89,7 @@ class CSWSObject : public CGameObject {
 public:
     void SaveObjectState(CResGFF* pRes, CResStruct* pStruct);   // 0x004CEC50
 
-    char pad_0x9[0x78 - 0x9];
+    char pad_0xc[0x78 - 0xc];
     int m_nAILevel;                                 // 0x78 (placeholder name)
 };
 
@@ -181,6 +187,7 @@ public:
     CGameObjectArray* GetObjectArray();                         // 0x004AED70
     CServerAIMaster* GetServerAIMaster();                       // 0x004AED80
     CSWPartyTable* GetPartyTable();                             // 0x004AEE70
+    CSWSModule* GetModule();                                     // 0x004AE6B0
 };
 
 class CSWCArea {
@@ -215,9 +222,26 @@ public:
     int Load(CResGFF* pRes, CResStruct* pStruct);   // 0x005C95F0
 };
 
+class CSWSAreaMap {
+public:
+    unsigned long* GetExploredData(unsigned long* pWords, int* pGridWidth,
+                                   int* pGridHeight); // 0x00579090
+    unsigned long* m_pBits;
+    unsigned long m_nWords;
+};
+
+class CSWSModule {
+public:
+    char pad_0x0[0x218];
+    CSWSAreaMap* m_pAreaMap; // 0x218
+};
+
 // CSWArea at 0x0, CGameObject sub-object at 0x11c (only data placed here).
 class CSWSArea {
 public:
+    class CSWSRoom* GetRoom(Vector* pPosition, int* pRoomIndex); // 0x004BB600
+    int GetSurfaceMaterial(Vector vPosition);           // 0x005063C0
+    void SaveMaps(CResGFF* pRes, CResStruct* pStruct);  // 0x005061D0
     CSWCArea* GetClientArea();                                  // 0x00506A10 (placeholder name)
     void AttachmentFromClientArea(CSWCArea* pArea);             // 0x00506A60
     void DetachFromClientArea();                                // 0x00506A70

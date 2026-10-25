@@ -23,7 +23,7 @@ symbol,demangled,address,role,uses
 ??1CSWRoomSurfaceMeshAABBNode@@QAE@XZ,public: __thiscall CSWRoomSurfaceMeshAABBNode::~CSWRoomSurfaceMeshAABBNode(void),0x004015A0,calls,2
 ??1CSWSActionRecord@@QAE@XZ,public: __thiscall CSWSActionRecord::~CSWSActionRecord(void),0x004015A0,calls,2
 ??1CSWSCombatSubAttack@@QAE@XZ,public: __thiscall CSWSCombatSubAttack::~CSWSCombatSubAttack(void),0x004015A0,calls,4
-??1CScriptLocation@@QAE@XZ,public: __thiscall CScriptLocation::~CScriptLocation(void),0x004015A0,calls,15
+??1CScriptLocation@@QAE@XZ,public: __thiscall CScriptLocation::~CScriptLocation(void),0x004015A0,calls,17
 ??1CScriptTalent@@QAE@XZ,public: __thiscall CScriptTalent::~CScriptTalent(void),0x004015A0,calls,3
 ?AddAsyncRefs@CExoResourceImageFile@@UAEXXZ,public: virtual void __thiscall CExoResourceImageFile::AddAsyncRefs(void),0x004015A0,defines,1
 ?EmptyMethod@CClientExoAppInternal@@QAEXXZ,public: void __thiscall CClientExoAppInternal::EmptyMethod(void),0x004015A0,calls,1
@@ -113,7 +113,7 @@ symbol,demangled,address,role,uses
 ?CreateDirectory2@CExoResMan@@QAEHABVCExoString@@@Z,public: int __thiscall CExoResMan::CreateDirectory2(class CExoString const &),0x004068C0,defines,1
 ?FileCopy@CExoResMan@@QAEHABVCExoString@@0GG@Z,"public: int __thiscall CExoResMan::FileCopy(class CExoString const &,class CExoString const &,unsigned short,unsigned short)",0x00406990,defines,1
 ?CreateSignatureFile@CExoResMan@@QAEHABVCExoString@@0KK@Z,"public: int __thiscall CExoResMan::CreateSignatureFile(class CExoString const &,class CExoString const &,unsigned long,unsigned long)",0x00406C60,defines,1
-?CopyString@@YGPAVCExoString@@PAV1@0GPAG@Z,"class CExoString * __stdcall CopyString(class CExoString *,class CExoString *,unsigned short,unsigned short *)",0x00406C70,calls,1
+?CopyString@@YGPAVCExoString@@PAV1@0GPAG@Z,"class CExoString * __stdcall CopyString(class CExoString *,class CExoString *,unsigned short,unsigned short *)",0x00406C70,defines,2
 ??0?$CExoLinkedList@VCExoKeyTable@@@@QAE@XZ,public: __thiscall CExoLinkedList<class CExoKeyTable>::CExoLinkedList<class CExoKeyTable>(void),0x00406CF0,defines,5
 ??0?$CExoLinkedList@VCRes@@@@QAE@XZ,public: __thiscall CExoLinkedList<class CRes>::CExoLinkedList<class CRes>(void),0x00406CF0,calls,2
 ??0CResRef@@QAE@ABVCExoString@@@Z,public: __thiscall CResRef::CResRef(class CExoString const &),0x00406D60,defines,27
@@ -406,8 +406,8 @@ symbol,demangled,address,role,uses
 ?ReadFieldVector@CResGFF@@QAE?AUVector@@PAVCResStruct@@PADAAHABU2@@Z,"public: struct Vector __thiscall CResGFF::ReadFieldVector(class CResStruct *,char *,int &,struct Vector const &)",0x004122A0,calls,1
 ?ReadFieldVector@CResGFF@@QAE?AVVector@@PAUCResStruct@@PADAAHABV2@@Z,"public: class Vector __thiscall CResGFF::ReadFieldVector(struct CResStruct *,char *,int &,class Vector const &)",0x004122A0,defines,4
 ?ReadFieldVOID@CResGFF@@QAEHPAUCResStruct@@PAXKPADAAH1@Z,"public: int __thiscall CResGFF::ReadFieldVOID(struct CResStruct *,void *,unsigned long,char *,int &,void *)",0x00412380,calls,1
-?AddList@CResGFF@@QAEHPAUCResList@@PAUCResStruct@@PAD@Z,"public: int __thiscall CResGFF::AddList(struct CResList *,struct CResStruct *,char *)",0x00412450,defines,30
-?AddListElement@CResGFF@@QAEHPAUCResStruct@@PAUCResList@@K@Z,"public: int __thiscall CResGFF::AddListElement(struct CResStruct *,struct CResList *,unsigned long)",0x004124E0,defines,33
+?AddList@CResGFF@@QAEHPAUCResList@@PAUCResStruct@@PAD@Z,"public: int __thiscall CResGFF::AddList(struct CResList *,struct CResStruct *,char *)",0x00412450,defines,32
+?AddListElement@CResGFF@@QAEHPAUCResStruct@@PAUCResList@@K@Z,"public: int __thiscall CResGFF::AddListElement(struct CResStruct *,struct CResList *,unsigned long)",0x004124E0,defines,35
 ?AddStructToStruct@CResGFF@@QAEHPAUCResStruct@@0PADK@Z,"public: int __thiscall CResGFF::AddStructToStruct(struct CResStruct *,struct CResStruct *,char *,unsigned long)",0x004125B0,defines,5
 ?WriteFieldBYTE@CResGFF@@QAEHPAUCResStruct@@EPAD@Z,"public: int __thiscall CResGFF::WriteFieldBYTE(struct CResStruct *,unsigned char,char *)",0x00412620,defines,70
 ?WriteFieldBYTE@CResGFF@@QAEHPAVCResStruct@@EPBD@Z,"public: int __thiscall CResGFF::WriteFieldBYTE(class CResStruct *,unsigned char,char const *)",0x00412620,calls,2
@@ -415,7 +415,7 @@ symbol,demangled,address,role,uses
 ?WriteFieldCHAR@CResGFF@@QAEHPAUCResStruct@@EPAD@Z,"public: int __thiscall CResGFF::WriteFieldCHAR(struct CResStruct *,unsigned char,char *)",0x00412670,calls,1
 ?WriteFieldWORD@CResGFF@@QAEHPAUCResStruct@@GPAD@Z,"public: int __thiscall CResGFF::WriteFieldWORD(struct CResStruct *,unsigned short,char *)",0x004126C0,defines,20
 ?WriteFieldSHORT@CResGFF@@QAEHPAUCResStruct@@FPAD@Z,"public: int __thiscall CResGFF::WriteFieldSHORT(struct CResStruct *,short,char *)",0x00412710,defines,2
-?WriteFieldDWORD@CResGFF@@QAEHPAUCResStruct@@KPAD@Z,"public: int __thiscall CResGFF::WriteFieldDWORD(struct CResStruct *,unsigned long,char *)",0x00412760,defines,50
+?WriteFieldDWORD@CResGFF@@QAEHPAUCResStruct@@KPAD@Z,"public: int __thiscall CResGFF::WriteFieldDWORD(struct CResStruct *,unsigned long,char *)",0x00412760,defines,52
 ?WriteFieldINT@CResGFF@@QAEHPAUCResStruct@@HPAD@Z,"public: int __thiscall CResGFF::WriteFieldINT(struct CResStruct *,int,char *)",0x004127B0,defines,39
 ?WriteFieldDWORD64@CResGFF@@QAEHPAUCResStruct@@_KPAD@Z,"public: int __thiscall CResGFF::WriteFieldDWORD64(struct CResStruct *,unsigned __int64,char *)",0x00412800,defines,1
 ?WriteFieldFLOAT@CResGFF@@QAEHPAUCResStruct@@MPAD@Z,"public: int __thiscall CResGFF::WriteFieldFLOAT(struct CResStruct *,float,char *)",0x00412870,defines,39
@@ -595,6 +595,7 @@ symbol,demangled,address,role,uses
 ?SetEnabled@CSWGuiEditbox@@UAEXH@Z,public: virtual void __thiscall CSWGuiEditbox::SetEnabled(int),0x004184B0,defines,1
 ?HandleChar@CSWGuiEditbox@@UAEXH@Z,public: virtual void __thiscall CSWGuiEditbox::HandleChar(int),0x004184F0,defines,1
 ?SetFocus@CSWGuiEditbox@@QAEXXZ,public: void __thiscall CSWGuiEditbox::SetFocus(void),0x00418660,defines,1
+?IsSelectable@CSWGuiEditbox@@UAEHXZ,public: virtual int __thiscall CSWGuiEditbox::IsSelectable(void),0x00418670,defines,1
 ?HandleLMouseDown@CSWGuiRadioButton@@UAEXXZ,public: virtual void __thiscall CSWGuiRadioButton::HandleLMouseDown(void),0x00418680,defines,1
 ?HandleLMouseUp@CSWGuiEditbox@@UAEXXZ,public: virtual void __thiscall CSWGuiEditbox::HandleLMouseUp(void),0x004186B0,defines,1
 ?UpdateFont@CSWGuiEditbox@@UAEXXZ,public: virtual void __thiscall CSWGuiEditbox::UpdateFont(void),0x004186D0,defines,1
@@ -2244,6 +2245,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ??XVector@@QAEAAV0@M@Z,public: class Vector & __thiscall Vector::operator*=(float),0x004A97A0,defines,2
 ??_0Vector@@QAEAAV0@M@Z,public: class Vector & __thiscall Vector::operator/=(float),0x004A97D0,defines,1
 ?FUN_004a9810@@YAMABVVector@@M0@Z,"float __cdecl FUN_004a9810(class Vector const &,float,class Vector const &)",0x004A9810,defines,1
+?PlaneHeightAtPoint@@YANABVVector@@M0@Z,"double __cdecl PlaneHeightAtPoint(class Vector const &,float,class Vector const &)",0x004A9810,calls,1
 ?FUN_004a9850@@YA?AVVector@@ABV1@M0@Z,"class Vector __cdecl FUN_004a9850(class Vector const &,float,class Vector const &)",0x004A9850,defines,1
 ?lineproject@@YA?AVVector@@ABV1@00@Z,"class Vector __cdecl lineproject(class Vector const &,class Vector const &,class Vector const &)",0x004A98B0,defines,1
 ?FUN_004a9a60@@YA?AVVector@@ABUMatrix3@@ABV1@@Z,"class Vector __cdecl FUN_004a9a60(struct Matrix3 const &,class Vector const &)",0x004A9A60,defines,1
@@ -2356,11 +2358,11 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?LoadCharacterFinish@CServerExoApp@@QAEHPAVCSWSPlayer@@H@Z,"public: int __thiscall CServerExoApp::LoadCharacterFinish(class CSWSPlayer *,int)",0x004AE740,defines,1
 ?GetGameObject@CServerExoApp@@QAEPAVCGameObject@@K@Z,public: class CGameObject * __thiscall CServerExoApp::GetGameObject(unsigned long),0x004AE750,defines,29
 ?GetItemByGameObjectID@CServerExoApp@@QAEPAVCSWSItem@@K@Z,public: class CSWSItem * __thiscall CServerExoApp::GetItemByGameObjectID(unsigned long),0x004AE760,defines,19
-?GetCreatureByGameObjectID@CServerExoApp@@QAEPAVCSWSCreature@@K@Z,public: class CSWSCreature * __thiscall CServerExoApp::GetCreatureByGameObjectID(unsigned long),0x004AE770,defines,81
+?GetCreatureByGameObjectID@CServerExoApp@@QAEPAVCSWSCreature@@K@Z,public: class CSWSCreature * __thiscall CServerExoApp::GetCreatureByGameObjectID(unsigned long),0x004AE770,defines,82
 ?GetAreaByGameObjectID@CServerAreaLookup@@QAEPAVCSWSArea@@K@Z,public: class CSWSArea * __thiscall CServerAreaLookup::GetAreaByGameObjectID(unsigned long),0x004AE780,calls,1
 ?GetAreaByGameObjectID@CServerExoApp@@QAEPAVCGameObject@@K@Z,public: class CGameObject * __thiscall CServerExoApp::GetAreaByGameObjectID(unsigned long),0x004AE780,calls,1
 ?GetAreaByGameObjectID@CServerExoApp@@QAEPAVCSWSArea@@K@Z,public: class CSWSArea * __thiscall CServerExoApp::GetAreaByGameObjectID(unsigned long),0x004AE780,defines,6
-?GetTriggerByGameObjectID@CServerExoApp@@QAEPAVCSWSTrigger@@K@Z,public: class CSWSTrigger * __thiscall CServerExoApp::GetTriggerByGameObjectID(unsigned long),0x004AE790,defines,1
+?GetTriggerByGameObjectID@CServerExoApp@@QAEPAVCSWSTrigger@@K@Z,public: class CSWSTrigger * __thiscall CServerExoApp::GetTriggerByGameObjectID(unsigned long),0x004AE790,defines,2
 ?GetPlaceableByGameObjectID@CServerExoApp@@QAEPAVCSWSPlaceable@@K@Z,public: class CSWSPlaceable * __thiscall CServerExoApp::GetPlaceableByGameObjectID(unsigned long),0x004AE7A0,defines,1
 ?GetStoreByGameObjectID@CServerExoApp@@QAEPAVCSWSStore@@K@Z,public: class CSWSStore * __thiscall CServerExoApp::GetStoreByGameObjectID(unsigned long),0x004AE7B0,defines,1
 ?GetDoorByGameObjectID@CServerExoApp@@QAEPAVCSWSDoor@@K@Z,public: class CSWSDoor * __thiscall CServerExoApp::GetDoorByGameObjectID(unsigned long),0x004AE7C0,defines,3
@@ -2455,7 +2457,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SetMoveToModuleStartWaypoint@CServerExoApp@@QAEXABVCExoString@@@Z,public: void __thiscall CServerExoApp::SetMoveToModuleStartWaypoint(class CExoString const &),0x004AED30,defines,1
 ?GetMoveToModuleStartWaypoint@CServerExoApp@@QAE?AVCExoString@@XZ,public: class CExoString __thiscall CServerExoApp::GetMoveToModuleStartWaypoint(void),0x004AED40,defines,1
 ?FUN_004aed70@CServerExoApp@@QAEPAVCGameObjectArray@@XZ,public: class CGameObjectArray * __thiscall CServerExoApp::FUN_004aed70(void),0x004AED70,defines,1
-?GetObjectArray@CServerExoApp@@QAEPAVCGameObjectArray@@XZ,public: class CGameObjectArray * __thiscall CServerExoApp::GetObjectArray(void),0x004AED70,calls,47
+?GetObjectArray@CServerExoApp@@QAEPAVCGameObjectArray@@XZ,public: class CGameObjectArray * __thiscall CServerExoApp::GetObjectArray(void),0x004AED70,calls,50
 ?FUN_004aed80@CServerExoApp@@QAEKXZ,public: unsigned long __thiscall CServerExoApp::FUN_004aed80(void),0x004AED80,defines,1
 ?GetServerAIMaster@CServerExoApp@@QAEPAVCServerAIMaster@@XZ,public: class CServerAIMaster * __thiscall CServerExoApp::GetServerAIMaster(void),0x004AED80,calls,24
 ?FUN_004aed90@CServerExoApp@@QAEPAV?$CExoLinkedList@VCSWSPlayer@@@@XZ,public: class CExoLinkedList<class CSWSPlayer> * __thiscall CServerExoApp::FUN_004aed90(void),0x004AED90,defines,1
@@ -2644,6 +2646,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?FUN_004bb520@CPathfindInformation@@QAEXPAM@Z,public: void __thiscall CPathfindInformation::FUN_004bb520(float *),0x004BB520,defines,1
 ?Initialize@CWalkHitInfo@@QAEXHABUVector@@000H0@Z,"public: void __thiscall CWalkHitInfo::Initialize(int,struct Vector const &,struct Vector const &,struct Vector const &,struct Vector const &,int,struct Vector const &)",0x004BB570,defines,1
 ?GetRoom@CSWSArea@@QAEPAVCSWSRoom@@ABUVector@@PAH@Z,"public: class CSWSRoom * __thiscall CSWSArea::GetRoom(struct Vector const &,int *)",0x004BB600,defines,3
+?GetRoom@CSWSArea@@QAEPAVCSWSRoom@@PAUVector@@PAH@Z,"public: class CSWSRoom * __thiscall CSWSArea::GetRoom(struct Vector *,int *)",0x004BB600,calls,1
 ?GetRoomByIndex@CSWSArea@@QAEPAVCSWSRoom@@H@Z,public: class CSWSRoom * __thiscall CSWSArea::GetRoomByIndex(int),0x004BB700,defines,1
 ?GetRoomIndex@CSWSArea@@QAEHMM@Z,"public: int __thiscall CSWSArea::GetRoomIndex(float,float)",0x004BB730,calls,1
 ?ComputePathLength@CSWSArea@@QAEMHPAM@Z,"public: float __thiscall CSWSArea::ComputePathLength(int,float *)",0x004BB860,defines,1
@@ -2727,7 +2730,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?AddObjectToLimbo@CSWSModule@@QAEXK@Z,public: void __thiscall CSWSModule::AddObjectToLimbo(unsigned long),0x004C83B0,defines,1
 ??1?$CExoArrayList@VCSWSModuleStringEntry@@@@QAE@XZ,public: __thiscall CExoArrayList<class CSWSModuleStringEntry>::~CExoArrayList<class CSWSModuleStringEntry>(void),0x004C8470,defines,1
 ??_GCSWSModule@@UAEPAXI@Z,public: virtual void * __thiscall CSWSModule::`scalar deleting destructor'(unsigned int),0x004C8940,defines,1
-??0CScriptLocation@@QAE@XZ,public: __thiscall CScriptLocation::CScriptLocation(void),0x004CA7A0,defines,7
+??0CScriptLocation@@QAE@XZ,public: __thiscall CScriptLocation::CScriptLocation(void),0x004CA7A0,defines,8
 ?CopyScriptLocation@CScriptLocation@@QAEXPAV1@@Z,public: void __thiscall CScriptLocation::CopyScriptLocation(class CScriptLocation *),0x004CA7C0,defines,1
 ?LoadLocation@CScriptLocation@@QAEHPAVCResGFF@@PAUCResStruct@@@Z,"public: int __thiscall CScriptLocation::LoadLocation(class CResGFF *,struct CResStruct *)",0x004CA800,defines,1
 ?LoadLocation@CScriptLocation@@QAEXPAVCResGFF@@PAUCResStruct@@@Z,"public: void __thiscall CScriptLocation::LoadLocation(class CResGFF *,struct CResStruct *)",0x004CA800,calls,1
@@ -2824,7 +2827,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?AddAction@CSWSObject@@QAEHKGKPAXK0K0K0K0K0K0K0K0K0K0K0K0@Z,"public: int __thiscall CSWSObject::AddAction(unsigned long,unsigned short,unsigned long,void *,unsigned long,void *,unsigned long,void *,unsigned long,void *,unsigned long,void *,unsigned long,void *,unsigned long,void *,unsigned long,void *,unsigned long,void *,unsigned long,void *,unsigned long,void *,unsigned long,void *,unsigned long,void *)",0x004CEA20,calls,1
 ?AddAction@CSWSObject@@QAEXHGHPAXH0H0H0H0H0H0H0H0H0H0H0H0@Z,"public: void __thiscall CSWSObject::AddAction(int,unsigned short,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *)",0x004CEA20,calls,4
 ?AddAction@CSWSObject@@QAEXKGHPAXH0H0H0H0H0H0H0H0H0H0H0H0@Z,"public: void __thiscall CSWSObject::AddAction(unsigned long,unsigned short,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *,int,void *)",0x004CEA20,calls,4
-?SaveObjectState@CSWSObject@@QAEXPAVCResGFF@@PAUCResStruct@@@Z,"public: void __thiscall CSWSObject::SaveObjectState(class CResGFF *,struct CResStruct *)",0x004CEC50,defines,8
+?SaveObjectState@CSWSObject@@QAEXPAVCResGFF@@PAUCResStruct@@@Z,"public: void __thiscall CSWSObject::SaveObjectState(class CResGFF *,struct CResStruct *)",0x004CEC50,defines,9
 ?LoadActionQueue@CSWSObject@@QAEXPAVCResGFF@@PAUCResStruct@@@Z,"public: void __thiscall CSWSObject::LoadActionQueue(class CResGFF *,struct CResStruct *)",0x004CECB0,calls,1
 ?AddLoopingVisualEffect@CSWSObject@@QAEXGKE@Z,"public: void __thiscall CSWSObject::AddLoopingVisualEffect(unsigned short,unsigned long,unsigned char)",0x004CF390,defines,1
 ?RemoveEffectTarget@CSWSObject@@QAEXK@Z,public: void __thiscall CSWSObject::RemoveEffectTarget(unsigned long),0x004CF3F0,defines,3
@@ -3002,7 +3005,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?AddInternalObject@CGameObjectArray@@QAEEPAKPAVCGameObject@@H@Z,"public: unsigned char __thiscall CGameObjectArray::AddInternalObject(unsigned long *,class CGameObject *,int)",0x004D80E0,defines,1
 ?Delete@CGameObjectArray@@QAEEKPAPAVCGameObject@@@Z,"public: unsigned char __thiscall CGameObjectArray::Delete(unsigned long,class CGameObject * *)",0x004D81A0,defines,4
 ?GetGameObject@CGameObjectArray@@QAEDKPAPAVCGameObject@@@Z,"public: char __thiscall CGameObjectArray::GetGameObject(unsigned long,class CGameObject * *)",0x004D8230,calls,10
-?GetGameObject@CGameObjectArray@@QAEEKPAPAVCGameObject@@@Z,"public: unsigned char __thiscall CGameObjectArray::GetGameObject(unsigned long,class CGameObject * *)",0x004D8230,defines,73
+?GetGameObject@CGameObjectArray@@QAEEKPAPAVCGameObject@@@Z,"public: unsigned char __thiscall CGameObjectArray::GetGameObject(unsigned long,class CGameObject * *)",0x004D8230,defines,76
 ?Delete@CGameObjectArray@@QAEEK@Z,public: unsigned char __thiscall CGameObjectArray::Delete(unsigned long),0x004D8290,defines,1
 ??1CSWSEffectListHandler@@UAE@XZ,public: virtual __thiscall CSWSEffectListHandler::~CSWSEffectListHandler(void),0x004D82B0,defines,2
 ?OnApply8D4@CSWSEffectListHandler@@QAEHPAVCSWSObject@@PAVCGameEffect@@H@Z,"public: int __thiscall CSWSEffectListHandler::OnApply8D4(class CSWSObject *,class CGameEffect *,int)",0x004D83A0,defines,1
@@ -3287,7 +3290,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?unknown_scalar_delete_004fde20@@YIPAXPAX0I@Z,"void * __fastcall unknown_scalar_delete_004fde20(void *,void *,unsigned int)",0x004FDE20,defines,1
 ?MaxCleaveRange@CSWSCreature@@QAEMKHH@Z,"public: float __thiscall CSWSCreature::MaxCleaveRange(unsigned long,int,int)",0x004FFAD0,defines,1
 ?LoadFromGff@CSWSCreature@@QAEXPAVCResGFF@@PAUCResStruct@@HHH@Z,"public: void __thiscall CSWSCreature::LoadFromGff(class CResGFF *,struct CResStruct *,int,int,int)",0x004FFDA0,calls,1
-?SaveCreature@CSWSCreature@@QAEHPAVCResGFF@@PAUCResStruct@@@Z,"public: int __thiscall CSWSCreature::SaveCreature(class CResGFF *,struct CResStruct *)",0x00500610,calls,2
+?SaveCreature@CSWSCreature@@QAEHPAVCResGFF@@PAUCResStruct@@@Z,"public: int __thiscall CSWSCreature::SaveCreature(class CResGFF *,struct CResStruct *)",0x00500610,calls,3
 ?OnJoinParty@CSWSCreature@@QAEXXZ,public: void __thiscall CSWSCreature::OnJoinParty(void),0x00501C40,calls,1
 ?UpdateClassInfo@CSWSCreature@@QAEXXZ,public: void __thiscall CSWSCreature::UpdateClassInfo(void),0x00501D90,calls,1
 ?LoadFromTemplate@CSWSCreature@@QAEHABVCResRef@@H@Z,"public: int __thiscall CSWSCreature::LoadFromTemplate(class CResRef const &,int)",0x005026D0,calls,2
@@ -3295,7 +3298,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SaveData@CSWSActionTarget@@QAEHPAVCResGFF@@PAUCResStruct@@@Z,"public: int __thiscall CSWSActionTarget::SaveData(class CResGFF *,struct CResStruct *)",0x005034F0,defines,1
 ?SetNumIntegers@CGameEffect@@QAEXH@Z,public: void __thiscall CGameEffect::SetNumIntegers(int),0x00503630,defines,5
 ?GetInteger@CGameEffect@@QAEHH@Z,public: int __thiscall CGameEffect::GetInteger(int),0x00503690,defines,180
-?SetInteger@CGameEffect@@QAEXHH@Z,"public: void __thiscall CGameEffect::SetInteger(int,int)",0x005036A0,defines,136
+?SetInteger@CGameEffect@@QAEXHH@Z,"public: void __thiscall CGameEffect::SetInteger(int,int)",0x005036A0,defines,137
 ?GetFloat@CGameEffect@@QAEMH@Z,public: float __thiscall CGameEffect::GetFloat(int),0x005036C0,defines,4
 ?SetFloat@CGameEffect@@QAEXHM@Z,"public: void __thiscall CGameEffect::SetFloat(int,float)",0x005036D0,defines,7
 ?GetObjectID@CGameEffect@@QAEKH@Z,public: unsigned long __thiscall CGameEffect::GetObjectID(int),0x005036E0,defines,5
@@ -3307,7 +3310,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SaveGameEffect@CGameEffect@@QAEXPAVCResGFF@@PAUCResStruct@@@Z,"public: void __thiscall CGameEffect::SaveGameEffect(class CResGFF *,struct CResStruct *)",0x00503790,calls,1
 ?SetCreator@CGameEffect@@QAEXK@Z,public: void __thiscall CGameEffect::SetCreator(unsigned long),0x00503A00,defines,56
 ?GetScriptEffectType@CGameEffect@@QAEHXZ,public: int __thiscall CGameEffect::GetScriptEffectType(void),0x00503A70,defines,1
-??0CGameEffect@@QAE@H@Z,public: __thiscall CGameEffect::CGameEffect(int),0x00503E40,defines,77
+??0CGameEffect@@QAE@H@Z,public: __thiscall CGameEffect::CGameEffect(int),0x00503E40,defines,78
 ??0CGameEffect@@QAE@PAV0@@Z,public: __thiscall CGameEffect::CGameEffect(class CGameEffect *),0x00503F70,defines,7
 ?CopyEffect@CGameEffect@@QAEXPAV1@H@Z,"public: void __thiscall CGameEffect::CopyEffect(class CGameEffect *,int)",0x00504090,defines,7
 ?UpdateLinked@CGameEffect@@QAEXXZ,public: void __thiscall CGameEffect::UpdateLinked(void),0x00504240,defines,5
@@ -3317,7 +3320,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SetLinked@CGameEffect@@QAEXPAV1@0@Z,"public: void __thiscall CGameEffect::SetLinked(class CGameEffect *,class CGameEffect *)",0x00504810,defines,3
 ??0AreaGFF@@QAE@XZ,public: __thiscall AreaGFF::AreaGFF(void),0x00504830,defines,1
 ?initialize_unknown_00504860@@YIXPAX0@Z,"void __fastcall initialize_unknown_00504860(void *,void *)",0x00504860,defines,1
-?GetSurfaceMaterial@CSWSArea@@QAEHUVector@@@Z,public: int __thiscall CSWSArea::GetSurfaceMaterial(struct Vector),0x005063C0,calls,1
+?GetSurfaceMaterial@CSWSArea@@QAEHUVector@@@Z,public: int __thiscall CSWSArea::GetSurfaceMaterial(struct Vector),0x005063C0,defines,2
 ?AttachmentFromClientArea@CSWSArea@@QAEXPAVCSWCArea@@@Z,public: void __thiscall CSWSArea::AttachmentFromClientArea(class CSWCArea *),0x00506A60,defines,2
 ?DetachFromClientArea@CSWSArea@@QAEXXZ,public: void __thiscall CSWSArea::DetachFromClientArea(void),0x00506A70,defines,1
 ?SetStealthXPMax@CSWSArea@@QAEXK@Z,public: void __thiscall CSWSArea::SetStealthXPMax(unsigned long),0x00506A80,defines,1
@@ -3336,17 +3339,19 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?GetNextObjectIdInArea@CSWSArea@@QAEHPAK@Z,public: int __thiscall CSWSArea::GetNextObjectIdInArea(unsigned long *),0x005071E0,defines,1
 ?ActivateAI@CSWSArea@@QAEXXZ,public: void __thiscall CSWSArea::ActivateAI(void),0x00507220,calls,1
 ?DeactivateAI@CSWSArea@@QAEXXZ,public: void __thiscall CSWSArea::DeactivateAI(void),0x00507340,calls,1
+?SaveCreatures@CSWSArea@@QAEXPAVCResGFF@@PAUCResStruct@@PAV?$CExoArrayList@K@@@Z,"public: void __thiscall CSWSArea::SaveCreatures(class CResGFF *,struct CResStruct *,class CExoArrayList<unsigned long> *)",0x00507680,defines,1
 ?SaveDoors@CSWSArea@@QAEXPAVCResGFF@@PAUCResStruct@@PAV?$CExoArrayList@K@@@Z,"public: void __thiscall CSWSArea::SaveDoors(class CResGFF *,struct CResStruct *,class CExoArrayList<unsigned long> *)",0x00507810,defines,1
 ?SaveTriggers@CSWSArea@@QAEXPAVCResGFF@@PAUCResStruct@@PAV?$CExoArrayList@K@@@Z,"public: void __thiscall CSWSArea::SaveTriggers(class CResGFF *,struct CResStruct *,class CExoArrayList<unsigned long> *)",0x005078D0,defines,1
 ?SaveEncounters@CSWSArea@@QAEXPAVCResGFF@@PAUCResStruct@@PAV?$CExoArrayList@K@@@Z,"public: void __thiscall CSWSArea::SaveEncounters(class CResGFF *,struct CResStruct *,class CExoArrayList<unsigned long> *)",0x00507990,defines,1
 ?SaveWaypoints@CSWSArea@@QAEXPAVCResGFF@@PAUCResStruct@@PAV?$CExoArrayList@K@@@Z,"public: void __thiscall CSWSArea::SaveWaypoints(class CResGFF *,struct CResStruct *,class CExoArrayList<unsigned long> *)",0x00507A50,defines,1
 ?SaveSounds@CSWSArea@@QAEXPAVCResGFF@@PAUCResStruct@@PAV?$CExoArrayList@K@@@Z,"public: void __thiscall CSWSArea::SaveSounds(class CResGFF *,struct CResStruct *,class CExoArrayList<unsigned long> *)",0x00507B10,defines,1
+?SavePlaceables@CSWSArea@@QAEXPAVCResGFF@@PAUCResStruct@@PAV?$CExoArrayList@K@@@Z,"public: void __thiscall CSWSArea::SavePlaceables(class CResGFF *,struct CResStruct *,class CExoArrayList<unsigned long> *)",0x00507BD0,defines,1
 ?SaveStores@CSWSArea@@QAEXPAVCResGFF@@PAUCResStruct@@PAV?$CExoArrayList@K@@@Z,"public: void __thiscall CSWSArea::SaveStores(class CResGFF *,struct CResStruct *,class CExoArrayList<unsigned long> *)",0x00507CA0,defines,1
 ?SaveAreaEffects@CSWSArea@@QAEXPAVCResGFF@@PAUCResStruct@@PAV?$CExoArrayList@K@@@Z,"public: void __thiscall CSWSArea::SaveAreaEffects(class CResGFF *,struct CResStruct *,class CExoArrayList<unsigned long> *)",0x00507D60,defines,1
 ?PlaySoundAtLocation@CSWSArea@@QAEXHPAVCScriptLocation@@@Z,"public: void __thiscall CSWSArea::PlaySoundAtLocation(int,class CScriptLocation *)",0x00507E20,calls,1
 ?SetDoorState@CSWSAreaGlue@@QAEXPAVVector@@00KH@Z,"public: void __thiscall CSWSAreaGlue::SetDoorState(class Vector *,class Vector *,class Vector *,unsigned long,int)",0x00508180,calls,1
 ?DeleteAllObjects@CSWSArea@@QAEXXZ,public: void __thiscall CSWSArea::DeleteAllObjects(void),0x00508710,defines,1
-?GetNumMinesSetByPlayerParty@CSWSArea@@QAEEXZ,public: unsigned char __thiscall CSWSArea::GetNumMinesSetByPlayerParty(void),0x00508960,calls,1
+?GetNumMinesSetByPlayerParty@CSWSArea@@QAEEXZ,public: unsigned char __thiscall CSWSArea::GetNumMinesSetByPlayerParty(void),0x00508960,defines,2
 ?GetPlayerCanSetMines@CSWSArea@@QAEHXZ,public: int __thiscall CSWSArea::GetPlayerCanSetMines(void),0x005089D0,defines,1
 ?FUN_00508a30@CSWSArea@@QAEXXZ,public: void __thiscall CSWSArea::FUN_00508a30(void),0x00508A30,calls,1
 ?IncrementPlayersInArea@CSWSArea@@QAEXXZ,public: void __thiscall CSWSArea::IncrementPlayersInArea(void),0x00508C20,defines,2
@@ -3371,7 +3376,8 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?FUN_005111c0@CSWSCreature@@QAEMXZ,public: float __thiscall CSWSCreature::FUN_005111c0(void),0x005111C0,calls,2
 ?AIActionCheckFollow@CSWSCreature@@QAEKPAUCFollowNode@@PAVCSWFollowPath@@HH@Z,"public: unsigned long __thiscall CSWSCreature::AIActionCheckFollow(struct CFollowNode *,class CSWFollowPath *,int,int)",0x00512D00,defines,1
 ?GetFaction@CSWSCreature@@QAEPAVCSWSFaction@@XZ,public: class CSWSFaction * __thiscall CSWSCreature::GetFaction(void),0x00513FC0,defines,20
-?GetCreatureReputation@CSWSCreature@@QAEHKH@Z,"public: int __thiscall CSWSCreature::GetCreatureReputation(unsigned long,int)",0x00513FF0,calls,1
+?GetCreatureReputation@CSWSCreature@@QAEHKH@Z,"public: int __thiscall CSWSCreature::GetCreatureReputation(unsigned long,int)",0x00513FF0,defines,2
+?AdjustReputation@CSWSCreature@@QAEXHH@Z,"public: void __thiscall CSWSCreature::AdjustReputation(int,int)",0x00514070,defines,1
 ?FUN_005140d0@CSWSCreature@@QAEHH@Z,public: int __thiscall CSWSCreature::FUN_005140d0(int),0x005140D0,defines,1
 ?AIActionRest@CSWSCreature@@QAEHH@Z,public: int __thiscall CSWSCreature::AIActionRest(int),0x005140E0,defines,1
 ?AcquireItem@CSWSCreature@@QAEHPAPAVCSWSItem@@KKH@Z,"public: int __thiscall CSWSCreature::AcquireItem(class CSWSItem * *,unsigned long,unsigned long,int)",0x005158E0,calls,2
@@ -3438,13 +3444,13 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?ReadCatalogue@CSWGlobalVariableTable@@QAEXABUCResRef@@@Z,public: void __thiscall CSWGlobalVariableTable::ReadCatalogue(struct CResRef const &),0x0052AE50,calls,1
 ?ReadCatalogue@CSWGlobalVariableTable@@QAEXABVCResRef@@@Z,public: void __thiscall CSWGlobalVariableTable::ReadCatalogue(class CResRef const &),0x0052AE50,defines,1
 ??0CSWGlobalVariableTable@@QAE@XZ,public: __thiscall CSWGlobalVariableTable::CSWGlobalVariableTable(void),0x0052B170,defines,1
-?IsValidFactionId@CFactionManager@@QAEHH@Z,public: int __thiscall CFactionManager::IsValidFactionId(int),0x0052B280,defines,4
+?IsValidFactionId@CFactionManager@@QAEHH@Z,public: int __thiscall CFactionManager::IsValidFactionId(int),0x0052B280,defines,5
 ?ResolveFactionName@CFactionManager@@QAEXABVCExoString@@PAVCFaction@@@Z,"public: void __thiscall CFactionManager::ResolveFactionName(class CExoString const &,class CFaction *)",0x0052B2A0,defines,2
 ?DeleteFaction@CFactionManager@@QAEXH@Z,public: void __thiscall CFactionManager::DeleteFaction(int),0x0052B370,defines,1
 ?GetFaction@CFactionManager@@QAEPAVCFaction@@H@Z,public: class CFaction * __thiscall CFactionManager::GetFaction(int),0x0052B3B0,defines,1
 ?GetFaction@CFactionManager@@QAEPAVCSWSFaction@@H@Z,public: class CSWSFaction * __thiscall CFactionManager::GetFaction(int),0x0052B3B0,calls,1
-?SetNPCReputation@CFactionManager@@QAEXHHH@Z,"public: void __thiscall CFactionManager::SetNPCReputation(int,int,int)",0x0052B3D0,defines,1
-?GetNPCReputation@CFactionManager@@QAEHHH@Z,"public: int __thiscall CFactionManager::GetNPCReputation(int,int)",0x0052B420,defines,3
+?SetNPCReputation@CFactionManager@@QAEXHHH@Z,"public: void __thiscall CFactionManager::SetNPCReputation(int,int,int)",0x0052B3D0,defines,2
+?GetNPCReputation@CFactionManager@@QAEHHH@Z,"public: int __thiscall CFactionManager::GetNPCReputation(int,int)",0x0052B420,defines,5
 ?LoadFactions@CFactionManager@@QAEHH@Z,public: int __thiscall CFactionManager::LoadFactions(int),0x0052B490,calls,1
 ?LoadFactionsFromSaveGame@CFactionManager@@QAEHPAVCResGFF@@PAUCResList@@@Z,"public: int __thiscall CFactionManager::LoadFactionsFromSaveGame(class CResGFF *,struct CResList *)",0x0052B5C0,defines,1
 ?SaveFactions@CFactionManager@@QAEHPAVCResGFF@@PAUCResList@@@Z,"public: int __thiscall CFactionManager::SaveFactions(class CResGFF *,struct CResList *)",0x0052B790,defines,1
@@ -3472,6 +3478,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?ExecuteCommandEffectWhirlWind@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandEffectWhirlWind(int,int)",0x00534C20,defines,1
 ?ExecuteCommandEffectType5C@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandEffectType5C(int,int)",0x00534CD0,defines,1
 ?ExecuteCommandEffectType5D@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandEffectType5D(int,int)",0x00534DB0,defines,1
+?ExecuteCommandEffectHorrified@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandEffectHorrified(int,int)",0x00534E90,defines,1
 ?ExecuteCommandEffectType5F@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandEffectType5F(int,int)",0x00534F40,defines,1
 ?ExecuteCommandEffectType60@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandEffectType60(int,int)",0x00535020,defines,1
 ?ExecuteCommandEffectType5B@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandEffectType5B(int,int)",0x00535100,defines,1
@@ -3497,6 +3504,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?ExecuteCommandGetAreaValue@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandGetAreaValue(int,int)",0x0053C1B0,defines,1
 ?ExecuteCommandGetItemStackSize@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandGetItemStackSize(int,int)",0x0053C220,defines,1
 ?ExecuteCommandGetObjectByTag@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandGetObjectByTag(int,int)",0x0053C280,defines,1
+?ExecuteCommandGetSpellTargetLocation@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandGetSpellTargetLocation(int,int)",0x0053D400,defines,1
 ?ExecuteCommandGetStringLeft@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandGetStringLeft(int,int)",0x0053D720,defines,1
 ?ExecuteCommandGetStringLength@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandGetStringLength(int,int)",0x0053D860,defines,1
 ?ExecuteCommandGetStringLowerCase@CSWVirtualMachineCommands@@QAEHHH@Z,"public: int __thiscall CSWVirtualMachineCommands::ExecuteCommandGetStringLowerCase(int,int)",0x0053D920,defines,1
@@ -3932,6 +3940,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ??1CSWSSysAdmin@@UAE@XZ,public: virtual __thiscall CSWSSysAdmin::~CSWSSysAdmin(void),0x00580310,defines,2
 ??_GCSWSSysAdmin@@UAEPAXI@Z,public: virtual void * __thiscall CSWSSysAdmin::`scalar deleting destructor'(unsigned int),0x00580320,defines,1
 ?ComputeHeight@CSWRoomSurfaceMesh@@QAEMHUVector@@@Z,"public: float __thiscall CSWRoomSurfaceMesh::ComputeHeight(int,struct Vector)",0x005805E0,calls,1
+?ComputeHeight@CSWRoomSurfaceMesh@@QAENHVVector@@@Z,"public: double __thiscall CSWRoomSurfaceMesh::ComputeHeight(int,class Vector)",0x005805E0,defines,1
 ?SetOrientation@CSWRoomSurfaceMeshOrientation@@QAEXPBUQuaternion@@@Z,public: void __thiscall CSWRoomSurfaceMeshOrientation::SetOrientation(struct Quaternion const *),0x00580700,defines,1
 ??0CSWRoomSurfaceMeshAABBNode@@QAE@XZ,public: __thiscall CSWRoomSurfaceMeshAABBNode::CSWRoomSurfaceMeshAABBNode(void),0x00580720,calls,1
 ?ClearOutput@CSWRoomSurfaceMeshHitInfo@@QAEXXZ,public: void __thiscall CSWRoomSurfaceMeshHitInfo::ClearOutput(void),0x00580750,defines,1
@@ -3950,6 +3959,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?CheckAABBWalkable@CSWRoomSurfaceMesh@@QAEHUVector@@0PAVCSWCollisionResult@@@Z,"public: int __thiscall CSWRoomSurfaceMesh::CheckAABBWalkable(struct Vector,struct Vector,class CSWCollisionResult *)",0x00581530,calls,1
 ?CheckAABBWalkable@CSWRoomSurfaceMesh@@QAEHVVector@@0PAUCSWCollisionResult@@@Z,"public: int __thiscall CSWRoomSurfaceMesh::CheckAABBWalkable(class Vector,class Vector,struct CSWCollisionResult *)",0x00581530,defines,1
 ?CheckAABBAll@CSWRoomSurfaceMesh@@QAEHUVector@@0PAVCSWCollisionResult@@@Z,"public: int __thiscall CSWRoomSurfaceMesh::CheckAABBAll(struct Vector,struct Vector,class CSWCollisionResult *)",0x00581610,calls,1
+?GetSurfaceMaterial@CSWSRoomSurfaceMesh@@QAEHUVector@@@Z,public: int __thiscall CSWSRoomSurfaceMesh::GetSurfaceMaterial(struct Vector),0x00581930,calls,1
 ?TransformToWorld@CSWRoomSurfaceMesh@@QAEXPAVC3DMatrix@@@Z,public: void __thiscall CSWRoomSurfaceMesh::TransformToWorld(class C3DMatrix *),0x00581AF0,defines,1
 ?ComputeHeightAABB@CSWRoomSurfaceMesh@@QAEMUVector@@H@Z,"public: float __thiscall CSWRoomSurfaceMesh::ComputeHeightAABB(struct Vector,int)",0x00581B30,calls,1
 ??4?$CExoArrayList@VCSWRoomSurfaceMeshAABBNode@@@@QAEAAV0@ABV0@@Z,public: class CExoArrayList<class CSWRoomSurfaceMeshAABBNode> & __thiscall CExoArrayList<class CSWRoomSurfaceMeshAABBNode>::operator=(class CExoArrayList<class CSWRoomSurfaceMeshAABBNode> const &),0x00581BD0,defines,1
@@ -3975,6 +3985,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?GetConversation@CSWSPlaceable@@QAE?AVCResRef@@XZ,public: class CResRef __thiscall CSWSPlaceable::GetConversation(void),0x00585620,defines,1
 ?GetLastUsedBy@CSWSPlaceable@@QAEKXZ,public: unsigned long __thiscall CSWSPlaceable::GetLastUsedBy(void),0x00585650,defines,1
 ?SetLastUsedBy@CSWSPlaceable@@QAEXK@Z,public: void __thiscall CSWSPlaceable::SetLastUsedBy(unsigned long),0x00585660,defines,1
+?SavePlaceable@CSWSPlaceable@@QAEHPAVCResGFF@@PAUCResStruct@@@Z,"public: int __thiscall CSWSPlaceable::SavePlaceable(class CResGFF *,struct CResStruct *)",0x00586A70,calls,1
 ?CloseInventory@CSWSPlaceable@@QAEXKH@Z,"public: void __thiscall CSWSPlaceable::CloseInventory(unsigned long,int)",0x00587560,calls,3
 ?GetItemCount@CSWSPlaceable@@QAEHH@Z,public: int __thiscall CSWSPlaceable::GetItemCount(int),0x00587710,defines,1
 ?ClosePlaceableForAllPlayers@CSWSPlaceable@@QAEXXZ,public: void __thiscall CSWSPlaceable::ClosePlaceableForAllPlayers(void),0x00587770,defines,1
@@ -4231,10 +4242,11 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?GetDEXStat@CSWSCreatureStats@@QAEHXZ,public: int __thiscall CSWSCreatureStats::GetDEXStat(void),0x005A6550,defines,2
 ?GetExpNeededForLevelUp@CSWSCreatureStats@@QAEKXZ,public: unsigned long __thiscall CSWSCreatureStats::GetExpNeededForLevelUp(void),0x005A6610,defines,1
 ?GetFeatImmunity@CSWSCreatureStats@@QAEHG@Z,public: int __thiscall CSWSCreatureStats::GetFeatImmunity(unsigned short),0x005A6630,calls,3
-?HasFeat@CSWSCreatureStats@@QAEHG@Z,public: int __thiscall CSWSCreatureStats::HasFeat(unsigned short),0x005A6630,defines,12
+?HasFeat@CSWSCreatureStats@@QAEHG@Z,public: int __thiscall CSWSCreatureStats::HasFeat(unsigned short),0x005A6630,defines,13
 ?DecrementFeatRemainingUses@CSWSCreatureStats@@QAEXG@Z,public: void __thiscall CSWSCreatureStats::DecrementFeatRemainingUses(unsigned short),0x005A6720,defines,1
 ?GetKnownSpell@CSWSCreatureStats@@QAEKEEE@Z,"public: unsigned long __thiscall CSWSCreatureStats::GetKnownSpell(unsigned char,unsigned char,unsigned char)",0x005A6750,defines,1
 ?GetNumberKnownSpells@CSWSCreatureStats@@QAEGEE@Z,"public: unsigned short __thiscall CSWSCreatureStats::GetNumberKnownSpells(unsigned char,unsigned char)",0x005A67A0,defines,1
+?GetWeaponSpecialization@CSWSCreatureStats@@QAEHPAVCSWItem@@@Z,public: int __thiscall CSWSCreatureStats::GetWeaponSpecialization(class CSWItem *),0x005A67D0,defines,1
 ?CanLevelUp@CSWSCreatureStats@@QAEHXZ,public: int __thiscall CSWSCreatureStats::CanLevelUp(void),0x005A6810,defines,2
 ?DecrementSpellUses@CSWSCreatureStats@@QAEXKHE@Z,"public: void __thiscall CSWSCreatureStats::DecrementSpellUses(unsigned long,int,unsigned char)",0x005A6880,calls,1
 ?SetMemorizedSpellReady@CSWSCreatureStats@@QAEXKEE@Z,"public: void __thiscall CSWSCreatureStats::SetMemorizedSpellReady(unsigned long,unsigned char,unsigned char)",0x005A6880,defines,1
@@ -4300,7 +4312,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?GetNameText@CSWBaseItem@@QAE?AVCExoString@@XZ,public: class CExoString __thiscall CSWBaseItem::GetNameText(void),0x005B4690,defines,1
 ??1CSWBaseItemArray@@QAE@XZ,public: __thiscall CSWBaseItemArray::~CSWBaseItemArray(void),0x005B4730,defines,1
 ?GetBaseItem@CSWCItem@@QAEPAUCSWBaseItemData@@XZ,public: struct CSWBaseItemData * __thiscall CSWCItem::GetBaseItem(void),0x005B4790,calls,2
-?GetBaseItem@CSWItem@@QAEPAVCSWBaseItem@@XZ,public: class CSWBaseItem * __thiscall CSWItem::GetBaseItem(void),0x005B4790,defines,14
+?GetBaseItem@CSWItem@@QAEPAVCSWBaseItem@@XZ,public: class CSWBaseItem * __thiscall CSWItem::GetBaseItem(void),0x005B4790,defines,16
 ?GetBaseItem@CSWSItem@@QAEPAVCSWBaseItem@@XZ,public: class CSWBaseItem * __thiscall CSWSItem::GetBaseItem(void),0x005B4790,calls,7
 ?GetBaseItemData@CSWSItem@@QAEPAVCSWBaseItem@@XZ,public: class CSWBaseItem * __thiscall CSWSItem::GetBaseItemData(void),0x005B4790,calls,1
 ?IsCreature@CSWSCreature@@QAEHXZ,public: int __thiscall CSWSCreature::IsCreature(void),0x005B47C0,defines,1
@@ -4703,7 +4715,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?StackPopString@CVirtualMachine@@QAEHPAVCExoString@@@Z,public: int __thiscall CVirtualMachine::StackPopString(class CExoString *),0x005D1080,defines,38
 ?StackPushString@CVirtualMachine@@QAEHABVCExoString@@@Z,public: int __thiscall CVirtualMachine::StackPushString(class CExoString const &),0x005D1090,defines,18
 ?StackPopEngineStructure@CVirtualMachine@@QAEHHPAPAX@Z,"public: int __thiscall CVirtualMachine::StackPopEngineStructure(int,void * *)",0x005D10A0,defines,7
-?StackPushEngineStructure@CVirtualMachine@@QAEHHPAX@Z,"public: int __thiscall CVirtualMachine::StackPushEngineStructure(int,void *)",0x005D10B0,defines,30
+?StackPushEngineStructure@CVirtualMachine@@QAEHHPAX@Z,"public: int __thiscall CVirtualMachine::StackPushEngineStructure(int,void *)",0x005D10B0,defines,32
 ?StackPopObject@CVirtualMachine@@QAEHPAK@Z,public: int __thiscall CVirtualMachine::StackPopObject(unsigned long *),0x005D10C0,defines,49
 ?StackPushObject@CVirtualMachine@@QAEHK@Z,public: int __thiscall CVirtualMachine::StackPushObject(unsigned long),0x005D10D0,defines,7
 ?StackPopCommand@CVirtualMachine@@QAEHPAPAVCVirtualMachineScript@@@Z,public: int __thiscall CVirtualMachine::StackPopCommand(class CVirtualMachineScript * *),0x005D10E0,defines,1
@@ -5220,10 +5232,12 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?StripNonAlphaNumeric@CExoString@@QAEHHHH@Z,"public: int __thiscall CExoString::StripNonAlphaNumeric(int,int,int)",0x005E5950,defines,1
 ??0CExoString@@QAE@PBD@Z,public: __thiscall CExoString::CExoString(char const *),0x005E5A90,defines,344
 ??0CExoString@@QAE@ABV0@@Z,public: __thiscall CExoString::CExoString(class CExoString const &),0x005E5B00,defines,71
+?Construct@CExoStringCopyHelper@@QAEXPBVCExoString@@@Z,public: void __thiscall CExoStringCopyHelper::Construct(class CExoString const *),0x005E5B00,calls,2
 ??0CExoString@@QAE@PBDH@Z,"public: __thiscall CExoString::CExoString(char const *,int)",0x005E5B70,defines,8
 ??0CExoString@@QAE@H@Z,public: __thiscall CExoString::CExoString(int),0x005E5BC0,defines,9
 ??1CSWGuiTextParams@@QAE@XZ,public: __thiscall CSWGuiTextParams::~CSWGuiTextParams(void),0x005E5C20,calls,1
 ??1STR_RES@@QAE@XZ,public: __thiscall STR_RES::~STR_RES(void),0x005E5C20,calls,1
+?Destroy@CExoStringDtorHelper@@QAEXXZ,public: void __thiscall CExoStringDtorHelper::Destroy(void),0x005E5C20,calls,1
 ??4CExoString@@QAEAAV0@ABV0@@Z,public: class CExoString & __thiscall CExoString::operator=(class CExoString const &),0x005E5C50,defines,172
 ??HCExoString@@QBE?AV0@ABV0@@Z,public: class CExoString __thiscall CExoString::operator+(class CExoString const &)const ,0x005E5D10,defines,51
 ?Find@CExoString@@QBEHABV1@H@Z,"public: int __thiscall CExoString::Find(class CExoString const &,int)const ",0x005E5EB0,defines,4
@@ -5726,7 +5740,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?ResetDriveAcceleration@CClientExoAppInternal@@QAEXXZ,public: void __thiscall CClientExoAppInternal::ResetDriveAcceleration(void),0x005F1400,defines,2
 ?InitializeInGameGUI@CClientExoAppInternal@@QAEXXZ,public: void __thiscall CClientExoAppInternal::InitializeInGameGUI(void),0x005F1410,defines,2
 ?GetPlayerCreature@CClientExoAppInternal@@QAEPAVCSWCCreature@@XZ,public: class CSWCCreature * __thiscall CClientExoAppInternal::GetPlayerCreature(void),0x005F1420,defines,2
-?ClearCachedCreatures@CClientExoAppInternal@@QAEXH@Z,public: void __thiscall CClientExoAppInternal::ClearCachedCreatures(int),0x005F1460,calls,1
+?ClearCachedCreatures@CClientExoAppInternal@@QAEXH@Z,public: void __thiscall CClientExoAppInternal::ClearCachedCreatures(int),0x005F1460,defines,2
 ?SetDebugMode@CClientExoAppInternal@@QAEXH@Z,public: void __thiscall CClientExoAppInternal::SetDebugMode(int),0x005F1490,calls,1
 ?SetUnknown194@CClientExoAppInternal@@QAEXH@Z,public: void __thiscall CClientExoAppInternal::SetUnknown194(int),0x005F1490,defines,1
 ?SetCursorState@CClientExoAppInternal@@QAEXHH@Z,"public: void __thiscall CClientExoAppInternal::SetCursorState(int,int)",0x005F14A0,calls,1
@@ -5795,6 +5809,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?UpdateMovieState@CClientExoAppInternal@@QAEXXZ,public: void __thiscall CClientExoAppInternal::UpdateMovieState(void),0x005F4DB0,defines,1
 ?GetDisplayCharacterForKey@CClientExoAppInternal@@QAE?AVCExoString@@H@Z,public: class CExoString __thiscall CClientExoAppInternal::GetDisplayCharacterForKey(int),0x005F4DF0,defines,2
 ?SetEvilEndingHackInProgress@CClientExoAppInternal@@QAEXH@Z,public: void __thiscall CClientExoAppInternal::SetEvilEndingHackInProgress(int),0x005F4E50,defines,2
+?RestoreMousePositionTo@CClientExoAppInternal@@QAEXHH@Z,"public: void __thiscall CClientExoAppInternal::RestoreMousePositionTo(int,int)",0x005F4EA0,defines,1
 ?SetMousePosition@CClientExoAppInternal@@QAEXHH@Z,"public: void __thiscall CClientExoAppInternal::SetMousePosition(int,int)",0x005F4EA0,calls,1
 ?DontUseThisSetPlayerCreature@CClientExoAppInternal@@QAEHK@Z,public: int __thiscall CClientExoAppInternal::DontUseThisSetPlayerCreature(unsigned long),0x005F4EC0,calls,1
 ??0?$CExoLinkedList@VCSWCPlayer@@@@QAE@XZ,public: __thiscall CExoLinkedList<class CSWCPlayer>::CExoLinkedList<class CSWCPlayer>(void),0x005F4F40,defines,1
@@ -7879,7 +7894,7 @@ __real@40a2f983,__real@40a2f983,0x00744068,data,2
 ??_C@_04BGCMBJDA@Item?$AA@,`string',0x007442D0,data,2
 ??_C@_05EPLKDJMH@Field?$AA@,`string',0x007442E4,data,1
 ??_C@_05LPIJGKJ@Value?$AA@,`string',0x00744BFC,data,52
-??_C@_08LJPJCPLJ@ObjectId?$AA@,`string',0x00744C24,data,9
+??_C@_08LJPJCPLJ@ObjectId?$AA@,`string',0x00744C24,data,11
 ??_C@_0L@LDCKAKLO@EventQueue?$AA@,`string',0x00744C3C,data,2
 ??_C@_08KDKDEPAG@Interval?$AA@,`string',0x00744CB8,data,1
 ??_C@_07JLEMGGN@OnDeath?$AA@,`string',0x00744D0C,data,1
@@ -7936,7 +7951,7 @@ __real@41f00000,__real@41f00000,0x007455DC,data,1
 ??_7CGameObject@@6B@,const CGameObject::`vftable',0x007457A0,data,3
 ??_7CResIFO@@6B@,const CResIFO::`vftable',0x00745810,data,1
 ??_7?$CResHelper@VCResIFO@@$0HNO@@@6B@,"const CResHelper<class CResIFO,2014>::`vftable'",0x007458D4,data,1
-??_C@_0O@FLJHPLOG@Creature?5List?$AA@,`string',0x007458DC,data,1
+??_C@_0O@FLJHPLOG@Creature?5List?$AA@,`string',0x007458DC,data,2
 ??_C@_0N@JANKNLHP@XOrientation?$AA@,`string',0x00745D38,data,2
 ??_C@_0N@ENEMACPK@YOrientation?$AA@,`string',0x00745D48,data,2
 ??_C@_0N@PAIGGODE@ZOrientation?$AA@,`string',0x00745D58,data,2
@@ -8055,9 +8070,9 @@ __real@41c80000,__real@41c80000,0x00745E5C,data,1
 ?CLIENT_OBJECT_MASK@@3KB,unsigned long const CLIENT_OBJECT_MASK,0x0074665C,data,3
 ?GAME_OBJECT_ADD_OK@@3EB,unsigned char const GAME_OBJECT_ADD_OK,0x0074666C,data,1
 ?GAME_OBJECT_ARRAY_SUCCESS@@3EB,unsigned char const GAME_OBJECT_ARRAY_SUCCESS,0x0074666C,data,2
-?GAME_OBJECT_VALID@@3EB,unsigned char const GAME_OBJECT_VALID,0x0074666C,data,56
+?GAME_OBJECT_VALID@@3EB,unsigned char const GAME_OBJECT_VALID,0x0074666C,data,57
 ?g_cObjectArraySuccess@@3DA,char g_cObjectArraySuccess,0x0074666C,data,8
-?g_nGameObjectFound@@3EB,unsigned char const g_nGameObjectFound,0x0074666C,data,10
+?g_nGameObjectFound@@3EB,unsigned char const g_nGameObjectFound,0x0074666C,data,12
 ?g_nTRUE@@3HB,int const g_nTRUE,0x00746678,data,2
 ?EFFECT_TYPE_INVALIDEFFECT@@3GB,unsigned short const EFFECT_TYPE_INVALIDEFFECT,0x0074667C,data,2
 ?EFFECT_TYPE_INVALIDEFFECT_DWORD@@3HB,int const EFFECT_TYPE_INVALIDEFFECT_DWORD,0x0074667C,data,1
@@ -8071,7 +8086,7 @@ __real@41c80000,__real@41c80000,0x00745E5C,data,1
 ?g_nEffectTrueType746690@@3HB,int const g_nEffectTrueType746690,0x00746690,data,1
 ?EFFECT_TYPE_REGENERATE@@3HA,int EFFECT_TYPE_REGENERATE,0x00746698,data,2
 ?g_nEffectTrueType746698@@3HB,int const g_nEffectTrueType746698,0x00746698,data,1
-?EFFECT_TYPE_SETSTATE@@3GB,unsigned short const EFFECT_TYPE_SETSTATE,0x0074669C,data,3
+?EFFECT_TYPE_SETSTATE@@3GB,unsigned short const EFFECT_TYPE_SETSTATE,0x0074669C,data,4
 ?g_nEffectTrueType74669C@@3HB,int const g_nEffectTrueType74669C,0x0074669C,data,1
 ?g_nEffectType7466A0@@3HB,int const g_nEffectType7466A0,0x007466A0,data,1
 ?EFFECT_TYPE_ATTACK_INCREASE@@3HA,int EFFECT_TYPE_ATTACK_INCREASE,0x007466A4,data,3
@@ -8312,6 +8327,7 @@ __real@3727c5ac,__real@3727c5ac,0x00747504,data,2
 ??_C@_0P@NALGILLB@AreaEffectList?$AA@,`string',0x0074751C,data,1
 ??_C@_09LLKHGPDP@Door?5List?$AA@,`string',0x00747680,data,1
 ??_C@_0M@ILGKHBBG@TriggerList?$AA@,`string',0x0074768C,data,1
+??_C@_0P@HOKIPDKB@Placeable?5List?$AA@,`string',0x00747698,data,1
 ??_C@_06KCFDAKCE@RADIUS?$AA@,`string',0x007476A8,data,1
 __real@43dc0000,__real@43dc0000,0x00747748,data,1
 ??_C@_07LHLKDFLL@Looping?$AA@,`string',0x00747798,data,3
@@ -9306,8 +9322,8 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_pRender@@3PAVCRender@@A,class CRender * g_pRender,0x007A39F8,data,2
 ?g_pRenderWindow@@3PAVCRenderWindow@@A,class CRenderWindow * g_pRenderWindow,0x007A39F8,data,3
 ?g_pAppManager@@3PAUCAppManager@@A,struct CAppManager * g_pAppManager,0x007A39FC,data,2
-?g_pAppManager@@3PAVCAppManager@@A,class CAppManager * g_pAppManager,0x007A39FC,data,967
-?g_pVirtualMachine@@3PAVCVirtualMachine@@A,class CVirtualMachine * g_pVirtualMachine,0x007A3A00,data,306
+?g_pAppManager@@3PAVCAppManager@@A,class CAppManager * g_pAppManager,0x007A39FC,data,975
+?g_pVirtualMachine@@3PAVCVirtualMachine@@A,class CVirtualMachine * g_pVirtualMachine,0x007A3A00,data,308
 ?g_pTlkTable@@3PAVCTlkTable@@A,class CTlkTable * g_pTlkTable,0x007A3A08,data,31
 ?g_pTlkTableAlt@@3PAVCTlkTable@@A,class CTlkTable * g_pTlkTableAlt,0x007A3A0C,data,1
 ?g_pRules@@3PAVCSWRules@@A,class CSWRules * g_pRules,0x007A3A28,data,222

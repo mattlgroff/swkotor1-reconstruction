@@ -64,6 +64,19 @@ public:
     CSWSCreature *m_pBaseCreature;   // +0x24
     char pad_0x28[0x61];
     unsigned char m_nNumMultiClasses;  // +0x89
+    int GetWeaponSpecialization(class CSWItem* pItem);
+};
+
+class CSWBaseItem {
+public:
+    char pad_0x0[0xb0];
+    unsigned short m_nWeaponSpecialization;
+};
+
+class CSWItem {
+public:
+    virtual ~CSWItem();
+    CSWBaseItem* GetBaseItem();
 };
 
 // FUNCTION: SWKOTOR 0x005AAA30
@@ -106,6 +119,24 @@ int CSWSCreatureStats::GetCreatureHasTalent(int nType, int nId)
         if (!(g_pRules->m_pSkills[(unsigned short)nId].m_nFlags & 2))
             return 0;
         return 1;
+    }
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x005A67D0
+int CSWSCreatureStats::GetWeaponSpecialization(CSWItem* pItem)
+{
+    if (pItem != 0) {
+        if (pItem->GetBaseItem() != 0) {
+            CSWBaseItem* pBaseItem = pItem->GetBaseItem();
+            union {
+                unsigned long nFull;
+                unsigned short nWord;
+            } nFeat;
+            nFeat.nFull = pBaseItem->m_nWeaponSpecialization;
+            if (nFeat.nWord != 0)
+                return HasFeat(nFeat.nWord);
+        }
     }
     return 0;
 }
