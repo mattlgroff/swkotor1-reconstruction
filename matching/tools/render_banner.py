@@ -9,10 +9,11 @@ they are never confused:
   their original address (kotor_<cc>_<address>), functions it cites (folded
   into a caller or shared), and C runtime functions that VS2022's library
   supplies. Milestones restate STATUS.md; edit PLAYABLE when it changes.
-- Original-toolchain, byte-identical decompilation (matching/, MSVC 7.0): source that compiles
-  to the original's exact bytes, from matching/status.csv (matchcmp.py
-  --report). Functions identical to the stock LIBCMT.LIB come from
-  matching/crt_libcmt.csv.
+- Original-toolchain matching coverage (matching/, MSVC 7.0): the union of
+  source matches from matching/status.csv (matchcmp.py --report) and functions
+  identical to the stock LIBCMT.LIB from matching/crt_libcmt.csv. Each original
+  address counts once; source and library counts remain visible separately.
+  This measures function matches, not a byte-identical linked executable.
 
 Both are measured against matching/functions.csv, the exe's function starts
 ("kind" eh marks compiler-generated EH funclets, which are excluded), plus
@@ -211,8 +212,10 @@ def render(functions, units: int, complete: bool, old_status: dict[int, str] | N
     defined_bytes, folded_bytes = size(lambda f: f[3] == 2), size(lambda f: f[3] == 1)
     runtime_bytes = size(lambda f: f[3] == 3)
     matched, library = count(lambda f: f[2] == "M"), count(lambda f: f[2] == "L")
+    matching_coverage = matched + library  # categories are disjoint by original address
     near = count(lambda f: f[2] == "N")
     matched_bytes, library_bytes = size(lambda f: f[2] == "M"), size(lambda f: f[2] == "L")
+    matching_bytes = matched_bytes + library_bytes
     near_bytes = size(lambda f: f[2] == "N")
     either = count(lambda f: f[3] or f[2] in ("M", "L"))
     played = defined + folded + runtime
@@ -245,18 +248,18 @@ def render(functions, units: int, complete: bool, old_status: dict[int, str] | N
           f"src/ · VS2022 MSVC + clang-cl · C++17 · {units:,} units",
           "Modern compiler and libraries: same behaviour, different bytes.")
     panel(add, right, top, w, h, MATCH_COLOR, "② ORIGINAL TOOLCHAIN · BYTE-IDENTICAL", "by RayesDiyab",
-          "Decompiled with Visual Studio .NET 2002",
+          "Matched with Visual Studio .NET 2002",
           "matching/ · MSVC 7.0 (cl 13.00.9466) + original LIBCMT.LIB",
-          "The compiler and libraries BioWare used: identical bytes.")
+          "Matching coverage from source and original runtime.")
 
     y = top + 132
     text(add, left + 16, y, f"{played / total * 100:.1f}%", 34, PLAY_COLOR, 700)
     text(add, left + 150, y - 16, "of functions decompiled" + (" · builds the full game" if complete else ""),
          12.5, MUTED)
     text(add, left + 150, y, f"{played:,} / {total:,} · {total - played:,} not there yet", 11.5, DIM)
-    text(add, right + 16, y, f"{matched / total * 100:.1f}%", 34, MATCH_COLOR, 700)
-    text(add, right + 150, y - 16, "of functions decompiled byte-identical", 12.5, MUTED)
-    text(add, right + 150, y, f"{matched:,} / {total:,} · {matched_bytes / game_bytes * 100:.1f}% of code "
+    text(add, right + 16, y, f"{matching_coverage / total * 100:.1f}%", 34, MATCH_COLOR, 700)
+    text(add, right + 150, y - 16, "matching coverage: source + runtime", 12.5, MUTED)
+    text(add, right + 150, y, f"{matching_coverage:,} / {total:,} · {matching_bytes / game_bytes * 100:.1f}% of code "
          f"bytes", 11.5, DIM)
 
     y += 16
@@ -268,8 +271,11 @@ def render(functions, units: int, complete: bool, old_status: dict[int, str] | N
                                          (near_bytes / game_bytes, NEAR_COLOR)])
     text(add, left + 16, y + 30, f"{defined:,} own definitions · {folded:,} folded into callers · "
          f"{runtime:,} runtime (VS2022 library)", 10.5, DIM)
-    text(add, right + 16, y + 30, f"+{library:,} identical to stock LIBCMT.LIB (no source needed) · "
-         f"{near:,} attempts", 10.5, DIM)
+    text(add, right + 16, y + 24,
+         f"Source: {matched:,} ({matched / total * 100:.1f}%) · original runtime: "
+         f"{library:,} ({library / total * 100:.1f}%)", 10.5, DIM)
+    text(add, right + 16, y + 40,
+         f"{near:,} unmatched attempts · function matches; whole .exe pending", 10, DIM)
 
     text(add, left + 16, top + h - 39,
          "Play reported, as far as we know; public retest pending. See STATUS.md.", 10, DIM)
@@ -323,10 +329,13 @@ def render(functions, units: int, complete: bool, old_status: dict[int, str] | N
             f"{played:,} of {total:,} functions ({played / total * 100:.1f}%: {defined:,} with their own "
             f"definition, {folded:,} folded into others, {runtime:,} C runtime from the VS2022 library)"
             f"{', builds the full game' if complete else ''}. "
-            f"Decompiled with the original Visual Studio .NET 2002 (MSVC 7.0), byte-identical: "
-            f"{matched:,} functions "
-            f"({matched / total * 100:.1f}%) compile to the original bytes, plus {library:,} "
-            f"identical to the stock LIBCMT.LIB.")
+            f"Original Visual Studio .NET 2002 (MSVC 7.0) matching coverage: "
+            f"{matching_coverage:,} of {total:,} functions ({matching_coverage / total * 100:.1f}%), "
+            f"{matching_bytes / game_bytes * 100:.1f}% of code bytes. "
+            f"Source matches: {matched:,} ({matched / total * 100:.1f}%); "
+            f"original stock LIBCMT.LIB: {library:,} ({library / total * 100:.1f}%). "
+            f"Each address counts once. Relocation fields are masked during comparison; "
+            f"whole-executable identity is not established.")
     body = "\n    ".join(parts)
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="960" height="{height}" viewBox="0 0 960 {height}" role="img" aria-labelledby="card-title card-desc">
   <title id="card-title">KOTOR decompilation progress</title>
@@ -359,10 +368,12 @@ def main() -> None:
         args.out.write_bytes(content.encode("utf-8"))  # LF on every OS
     defined = sum(1 for f in functions if f[3] == 2 and f[2] != "CG")
     matched = sum(1 for f in functions if f[2] == "M")
+    library = sum(1 for f in functions if f[2] == "L")
     covered = sum(1 for f in functions if f[3] and f[2] != "CG")
     total = sum(1 for f in functions if f[2] != "CG")
     print(f"Tracker: modern toolchain {covered:,}/{total:,} ({defined:,} own definitions), "
-          f"{matched:,} byte-identical -> {args.out}")
+          f"matching coverage {matched + library:,}/{total:,} "
+          f"({matched:,} source + {library:,} original runtime) -> {args.out}")
 
 
 if __name__ == "__main__":

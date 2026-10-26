@@ -168,9 +168,19 @@ together), since they share headers.
 
 ## Reviewing a matching change
 
-- The diff touches only `matching/`, and `status.csv` and `symbols.csv` were
-  regenerated.
-- Re-run `matchcmp.py -q` on the changed folders. Every function the change
+Report new source matches separately from total matching coverage. The
+tracker's headline includes verified original-runtime functions; it must
+not inflate a batch's new-MATCH count or satisfy a publication threshold
+for source work. Use the current computed denominator and the disjoint
+address categories in [README.md](README.md#counting-matching-coverage),
+not raw CSV row counts or a hard-coded library total. Function coverage
+does not establish whole-executable identity. For a tracker-only change,
+check its counting and rendering with Python; recompiling game functions
+and regenerating `status.csv` or `symbols.csv` are unnecessary.
+
+- The diff touches only `matching/`. Source changes also regenerate
+  `status.csv` and `symbols.csv`.
+- For source changes, re-run `matchcmp.py -q` on the changed folders. Every function the change
   claims as matched must print `OK` with your own exe and compiler.
 - No address is annotated twice, the MATCH count did not drop, and
   `symbolmap.py` reports no new multi-address symbols.
