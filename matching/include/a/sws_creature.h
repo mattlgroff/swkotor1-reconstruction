@@ -127,6 +127,8 @@ public:
     }
     void Insert(T t, int nPos);
 
+    void DelIndex(int i) { num--; for (; i < num; i++) element[i] = element[i+1]; }
+
     T* element;
     int num;
     int array_size;
@@ -214,11 +216,22 @@ public:
                            unsigned long oidObject, unsigned long nEvent, void* pData);  // 0x004B08D0
 };
 
+class CSWSPlayerStore {
+public:
+    unsigned long m_aSlotItems[18];
+};
+class CSWSPlayerStoreGUI {
+public:
+    CSWSPlayerStore* m_pStore;
+};
+
 class CSWSPlayer {
 public:
     char pad_0x0[0x4];
     unsigned long m_nPlayerID;                      // 0x04
-    char pad_0x8[0x58 - 0x8];
+    char pad_0x8[0x54 - 0x8];
+    CSWSPlayerStoreGUI* m_pStoreGUI;                 // 0x54
+
     unsigned long* m_pControlled;                   // 0x58 (placeholder name)
 
     CSWSCreature* GetGameObject();                  // 0x00561080
@@ -237,6 +250,9 @@ class CSWSMessage {
 public:
     int SendServerToPlayerVoiceChat_Play(CSWSPlayer* pPlayer, unsigned long oid,
                                          unsigned long nArg);    // 0x00569EC0
+    int SendServerToPlayerCamera_ChangeLocation(CSWSPlayer* pPlayer, unsigned char nFlags, float x, float y, float z, unsigned char nMode); // 0x0056C610
+    int SendServerToPlayerInventory_EquipCancel(unsigned long oidPlayer, unsigned long oidItem, int nSlot); // 0x0056FBD0
+    int SendServerToPlayerInventory_UnequipCancel(unsigned long oidPlayer, unsigned long oidItem); // 0x0056FD80
     int SendServerToPlayerCCMessage(unsigned long nPlayerID, unsigned char nMinor,
                                     CSWCCMessageData* pData, void* pAttackData);   // 0x00568570
 };
@@ -262,14 +278,26 @@ public:
     void AddPazaakCards(int nIndex, int nCount) { m_nPazaakCards[nIndex] += nCount; }
 };
 
+class CWorldTimer {
+public:
+    void GetWorldTime(unsigned long* day, unsigned long* time); // 0x004ADE40
+    int SubtractWorldTimes(unsigned long day1, unsigned long time1, unsigned long day2, unsigned long time2, unsigned long* day, unsigned long* time); // 0x004AE460
+};
+
+class CSWSEncounter {
+public:
+    void RemoveFromActiveCreatureCount(float fCR, int bArg); // 0x00594310 (descriptive reference name, RET 8)
+};
 class CSWSModule;
 class CServerExoApp {
 public:
     CGameObject* GetGameObject(unsigned long oid);                  // 0x004AE750
+    CSWSEncounter* GetEncounterByGameObjectID(unsigned long oid); // 0x004AE7F0
     CSWSItem* GetItemByGameObjectID(unsigned long oid);             // 0x004AE760
     CSWSCreature* GetCreatureByGameObjectID(unsigned long oid);     // 0x004AE770
     unsigned long GetPlayerCreatureID();                            // 0x004AEA40
     CSWSPlayer* GetClientObjectByObjectId(unsigned long oid);       // 0x004AE910
+    CWorldTimer* GetWorldTimer();                    // 0x004AEDE0
     void* GetModule();                                              // 0x004AEC90
     CGameObjectArray* GetObjectArray();                             // 0x004AED70
     CSWSModule* GetModule6B0();                                     // 0x004AE6B0 (placeholder name)
@@ -318,9 +346,16 @@ public:
 
 class CSWBaseItem {
 public:
-    char pad_0x0[0x24];
+    unsigned short GetRequiredFeat(unsigned char nIndex); // 0x005B30C0
+    char pad_0x0[0x4];
+    unsigned long m_nEquipableSlots;                // 0x04
+    unsigned char m_nWeaponType;                    // 0x08
+    unsigned char m_nWeaponWield;                   // 0x09
+    char pad_0xa[0x24 - 0xa];
     unsigned short m_nStackSize;                    // 0x24 (placeholder name)
-    char pad_0x26[0x8a - 0x26];
+    char pad_0x26[0x80 - 0x26];
+    unsigned char m_nRequiredFeatCount;             // 0x80
+    char pad_0x81[0x8a - 0x81];
     unsigned char m_nArmorType;                     // 0x8a (placeholder name)
 };
 
@@ -329,12 +364,16 @@ class CResRef;
 struct CSWItemProperty {
     unsigned short m_nPropertyName;                 // 0x00
     unsigned short m_nSubType;                      // 0x02
+    char pad_0x4[0x11 - 0x4];
+    unsigned char m_nActivation;                    // 0x11
 };
 
 class CSWSItem {
 public:
     CSWSItem(unsigned long oid);                    // 0x005530A0
     virtual ~CSWSItem();                            // vtable slot 0
+    int GetPropertyByTypeExists(unsigned short nType, unsigned short nSubtype); // 0x00555C90
+    CSWItemProperty* GetPassiveProperty(int nIndex); // 0x00553990
     int MergeItem(CSWSItem* pOther);                // 0x00553F90
     CSWSItem* SplitItem(int nCount);                // 0x0055F280
     void AddToArea(CSWSArea* pArea, float x, float y, float z, int bArg);  // 0x00555720
@@ -353,7 +392,8 @@ public:
     int m_n108;                                     // 0x108 (placeholder name)
     char pad_0x10c[0x248 - 0x10c];
     int m_nActiveProperties;                        // 0x248 (placeholder name)
-    char pad_0x24c[0x264 - 0x24c];
+    int m_nPassiveProperties;                       // 0x24c
+    char pad_0x250[0x264 - 0x250];
     unsigned char m_nPazaakCard;                    // 0x264 (placeholder name)
     char pad_0x265[0x268 - 0x265];
     unsigned long m_oidPossessor;                   // 0x268 (placeholder name)
@@ -362,7 +402,9 @@ public:
     unsigned char m_n288;                           // 0x288 (placeholder name)
     char pad_0x289[0x28c - 0x289];
     int m_nStackSize;                               // 0x28c (placeholder name)
-    char pad_0x290[0x29c - 0x290];
+    char pad_0x290[0x294 - 0x290];
+    unsigned long m_nPropertyActivationMask;        // 0x294
+    char pad_0x298[0x29c - 0x298];
 };
 
 class CSWSInventory {
@@ -397,6 +439,9 @@ class CSWSCreatureStats {
 public:
     CExoString GetFullName();                       // 0x005A4C60 (placeholder name)
     unsigned char GetLevel(int bArg);               // 0x005A5FD0
+    float GetChallengeRating() { return m_fChallengeRating; }
+    unsigned char GetSimpleAlignmentGoodEvil();      // 0x005A5110
+    unsigned char GetFeatRemainingUses(unsigned short nFeat); // 0x005A6680
     int HasFeat(unsigned short nFeat);              // 0x005A6630
     int GetCanUseSkill(unsigned char nSkill);       // 0x005AF880
     struct CSWSLevelStats* GetLevelStats(unsigned char nLevel);  // 0x005A6170 (placeholder name)
@@ -419,7 +464,9 @@ public:
     int m_bIsPC;                                    // 0x6c (placeholder name)
     char pad_0x70[0x78 - 0x70];
     int m_nFactionId;                               // 0x78
-    char pad_0x7c[0x89 - 0x7c];
+    char pad_0x7c[0x84 - 0x7c];
+    float m_fChallengeRating;                       // 0x84
+    char pad_0x88;
     unsigned char m_nNumClasses;                    // 0x89 (placeholder name)
     char pad_0x8a[0xee - 0x8a];
     char m_nConMod;                                 // 0xee (placeholder name)
@@ -463,7 +510,11 @@ public:
     void* GetAttack(int nAttack);                   // 0x004D2B50 (placeholder name)
     CSWSItem* GetCurrentAttackWeapon(int nType);    // 0x004D4FF0
 
-    char pad_0x0[0x940];
+    int GetSpellActionPending();                    // 0x004D35C0
+
+    char pad_0x0[0x934];
+    int m_bRoundStarted;                            // 0x934
+    char pad_0x938[0x940 - 0x938];
     int m_n940;                                     // 0x940 (placeholder name)
     char pad_0x944[0x96c - 0x944];
     unsigned char m_nCurrentAttack;                 // 0x96c
@@ -688,14 +739,17 @@ public:
 
     unsigned long m_nActionId;                      // 0x00
     char pad_0x4[0x38 - 0x4];
-    unsigned long m_n38;                            // 0x38 (placeholder name)
-    unsigned long m_n3C;                            // 0x3c (placeholder name)
-    char pad_0x40[0x44 - 0x40];
+    union { unsigned long m_n38; float m_f38; };      // 0x38 (placeholder name)
+    union { unsigned long m_n3C; float m_f3C; };      // 0x3c (placeholder name)
+    unsigned long m_n40;                            // 0x40
+
     unsigned long m_n44;                            // 0x44 (placeholder name)
-    char pad_0x48[0x4c - 0x48];
+    unsigned long m_n48;                            // 0x48
+
     unsigned long m_n4C;                            // 0x4c (placeholder name)
     char pad_0x50[0x6c - 0x50];
     unsigned short m_nGroupId;                      // 0x6c
+    unsigned short m_nParameterCount;               // 0x6e
 };
 
 class CSWSCreature : public CGameObject {
@@ -801,6 +855,7 @@ public:
     void RemoveTargetActions4F61D0(CGameObject* pTarget);  // 0x004F61D0 (placeholder name)
     int ResetCombatState4F1250(int nTime);          // 0x004F1250 (placeholder name)
     void SendVoiceChat4F2520(unsigned long nArg);   // 0x004F2520 (placeholder name)
+    int GetIsPossessed();                           // 0x0063E7F0 (folded zero leaf)
     int Fn63E7F0();                                 // 0x0063E7F0 (placeholder name)
     int Fn4CAE60(unsigned long nArg);               // 0x004CAE60 (placeholder name)
     int IsDebilitated();                            // 0x005B4880
@@ -819,6 +874,29 @@ public:
     float ComputeSpellRange(CExoString sRange, unsigned long oidTarget);  // 0x004EB3A0
     int AddAction9(unsigned long oidItem, Vector* pV, unsigned long a3);    // 0x004F0840 (placeholder name)
     void Fn4F1460();                                // 0x004F1460 (placeholder name)
+    unsigned char CanUnEquipWeapon(CSWSItem* pItem); // 0x00513E30
+    int CheckProficiencies(CSWSItem* pItem, unsigned long nSlot); // 0x00510E30 (reference descriptive name)
+    int CheckItemAlignmentRestrictions(CSWSItem* pItem); // 0x005145A0 (reference descriptive name)
+    int CheckItemFeatRestrictions(CSWSItem* pItem);  // 0x00514650 (reference descriptive name)
+    int CheckItemClassRestrictions(CSWSItem* pItem); // 0x00518210 (reference descriptive name)
+    void ActivityManager(int nAction);              // 0x004F87D0
+    int RunEquip(unsigned long oidItem, unsigned long nSlot, int nValue); // 0x00501DE0
+    int RunUnequip(unsigned long oidItem, unsigned long oidRepository, int bUpdate, CSWSItem** ppItem, int nValue); // 0x005023A0
+    int AIActionEncounterCreatureDestroySelf();      // 0x00510C20 (RET 0, no stack argument)
+    unsigned char CheckWeaponSlot(CSWSItem* pItem, unsigned long* pSlot, int bFeedback, int bUpdate); // 0x00515860 (descriptive name)
+    int AIActionChangeFacingPoint(CSWSObjectActionNode* pNode); // 0x0050FC90
+    int AIActionChangeFacingObject(CSWSObjectActionNode* pNode); // 0x0050FB60
+    int AIActionEquipItem(CSWSObjectActionNode* pNode); // 0x00510FD0
+    int AIActionUnequipItem(CSWSObjectActionNode* pNode); // 0x00513EC0
+    int AIActionOrientCamera(CSWSObjectActionNode* pNode); // 0x005137C0 (descriptive reference name)
+    int AIActionAppear(CSWSObjectActionNode* pNode);  // 0x005140F0
+    int AIActionDisappear(CSWSObjectActionNode* pNode); // 0x005141B0
+    int AIActionWaitForEndOfRound(CSWSObjectActionNode* pNode); // 0x00513F60
+    int AIActionPartyFollowLeader(CSWSObjectActionNode* pNode);  // 0x00511130
+    int HasAction(unsigned long nType);              // 0x005188E0
+    CSWSObjectActionNode* GetAction(unsigned long nType); // 0x00518940
+    void ClearVisibleList();                        // 0x005178F0
+    void OnIdChanged(unsigned long oid);            // 0x00517960 (proven symbol name)
     void ClearAllActions(int bArg);                 // 0x004CCD80
 
     char pad_0x18[0x78 - 0x18];
@@ -827,11 +905,15 @@ public:
     unsigned long m_oidArea;                        // 0x8c
     Vector m_vPosition;                             // 0x90
     Vector m_vOrientation;                          // 0x9c
-    char pad_0xa8[0xcc - 0xa8];
+    char pad_0xa8[0xbc - 0xa8];
+    unsigned long m_nActionStartDay;                // 0xbc
+    unsigned long m_nActionStartTime;               // 0xc0
+    char pad_0xc4[0xcc - 0xc4];
     unsigned long m_nTimeDelta;                     // 0xcc (placeholder name)
     char pad_0xd0[0xd4 - 0xd0];
     unsigned long m_nD4;                            // 0xd4 (placeholder name)
-    char pad_0xd8[0xe0 - 0xd8];
+    float m_fAnimationSpeed;                        // 0xd8
+    char pad_0xdc[0xe0 - 0xdc];
     short m_nE0;                                    // 0xe0 (placeholder name)
     char pad_0xe2[0xe8 - 0xe2];
     int m_bE8;                                      // 0xe8 (placeholder name)
@@ -876,14 +958,19 @@ public:
     int m_b9D4;                                     // 0x9d4 (placeholder name)
     char pad_0x9d8[0x9da - 0x9d8];
     unsigned char m_nBodyBag;                       // 0x9da
-    char pad_0x9db[0x9f2 - 0x9db];
+    char pad_0x9db[0x9f0 - 0x9db];
+    unsigned char m_nPartyFollowFlags;              // 0x9f0
+    char pad_0x9f1;
     unsigned char m_n9F2;                           // 0x9f2 (placeholder name)
     char pad_0x9f3[0x9fc - 0x9f3];
     unsigned long m_n9FC;                           // 0x9fc (placeholder name)
     unsigned long m_nA00;                           // 0xa00 (placeholder name)
     char pad_0xa04[0xa08 - 0xa04];
     float m_fA08;                                   // 0xa08 (placeholder name)
-    char pad_0xa0c[0xa2c - 0xa0c];
+    char pad_0xa0c[0xa24 - 0xa0c];
+    unsigned long m_oidEncounter;                   // 0xa24
+    int m_bEncounterDestroyed;                      // 0xa28
+
     CSWSInventory* m_pInventory;                    // 0xa2c
     CItemRepository* m_pItemRepository;             // 0xa30
     char pad_0xa34[0xa50 - 0xa34];
@@ -893,7 +980,8 @@ public:
     CSWSCreatureStats* m_pStats;                    // 0xa74
     char pad_0xa78[0xa88 - 0xa78];
     int m_bA88;                                     // 0xa88 (placeholder name)
-    char pad_0xa8c[0xab0 - 0xa8c];
+    int m_nAIState;                                 // 0xa8c
+    char pad_0xa90[0xab0 - 0xa90];
     unsigned long m_nAB0;                           // 0xab0 (placeholder name)
     char pad_0xab4[0xabc - 0xab4];
     unsigned long m_nStealthArg;                    // 0xabc (placeholder name)

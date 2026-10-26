@@ -83,10 +83,13 @@ public:
     void SetStrRef(int nStrRef);                    // 0x00415E50
     CSWGuiTextParams& operator=(const CSWGuiTextParams& p); // 0x004171E0
     CExoString m_sText;                             // 0x00
-    char pad_0x8[0x50];
+    char pad_0x8[0x30];
+    unsigned long m_nFlags; // 0x38
+    char pad_0x3c[0x1c];
 };
 
 class CSWGuiControl;
+class CSWGuiSlider;
 class CSWGuiLabel;
 class CSWGuiLabelHilight;
 
@@ -108,7 +111,7 @@ public:
     virtual CSWGuiLabelHilight* GetLabelHilight();          // 0x54
     virtual int IsSelectable();                     // 0x58
     virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
+    virtual void v60(); virtual CSWGuiSlider* GetSlider(); virtual void v68(); virtual void v6C();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void SetEnabled(int bEnabled);  /* 0x88 */ virtual void v8C();
     virtual void v90(); virtual void v94();
@@ -270,6 +273,7 @@ public:
     void InitControl(CSWGuiControl* pControl, const CExoString& sName, int bAdd);  // 0x0040B930
     void UnloadResource();                          // 0x0040B8F0
     void SetToDestroy(int bDestroy);                // 0x00624A00
+    void CenterPanel(); // 0x0040A600
     void SetVisible(int bVisible);                   // 0x0040B9D0
     void SetCloseCallback(CSWGuiPanel* pObject, void (CSWGuiPanel::*pfnCallback)(CSWGuiControl*),
                           int nArg);                // 0x00624A40
@@ -297,6 +301,7 @@ public:
     char pad_0xbb4[0xc];
     unsigned char m_nAbilityMode;                   // 0xbc0
 
+    void InitializeMap(); // 0x0062B0A0
     void HideLetterbox();                           // 0x0062AB90
     int IsDialogForced();                           // 0x0062ABD0
     int HideSWInGameGui(int bHide);                 // 0x0062CBA0
@@ -309,8 +314,58 @@ public:
 
 class CClientOptions {
 public:
-    char pad_0x0[0x14];
-    unsigned long m_nFlags;                         // 0x14
+    void SetControlDefaults(); // 0x0061D500
+    void SetShadows(int bEnabled); // 0x0061D6B0
+    void SetSoftShadows(int bEnabled); // 0x0061D6D0
+    void SetGrass(int bEnabled); // 0x0061D6F0
+    void SetLargeFont(int bLarge); // 0x0061D910
+    void SetAutoLevelUpNPCs(int bAuto); // 0x0061B740
+    void SetGameDefaults(); // 0x0061D4E0
+    void SetGraphicsDefaults(); // 0x0061D520 (advanced graphics)
+    void SetSoundDefaults(); // 0x0061D540
+    void SetSoundQualityDefault(); // 0x0061D550
+    void SetFeedbackDefaults(); // 0x0061D950
+    void SetDisplayDefaults(); // 0x0061D9A0
+    void SetBrightnessDefaults(); // 0x0061D9D0 (mouse)
+
+    char pad_0x0[4];
+    unsigned char m_nDifficulty;
+    char pad_0x5[3];
+    union {
+        unsigned long m_nGameplayFlags;
+        struct {
+            unsigned long m_bGame0 : 1;
+            unsigned long m_bGame1 : 1;
+            unsigned long m_bGame2 : 1;
+            unsigned long m_bGame3 : 1;
+            unsigned long m_bGame4 : 1;
+            unsigned long m_bGameRemaining : 27;
+        };
+    };
+    char pad_0xc[8];
+    union {
+        unsigned long m_nFlags;
+        struct {
+            unsigned long m_bFeedback0 : 1;
+            unsigned long m_bFeedback1 : 1;
+            unsigned long m_bFeedback2 : 1;
+            unsigned long m_bFeedback3 : 1;
+            unsigned long m_bFeedback4 : 1;
+            unsigned long m_bFeedback5 : 1;
+            unsigned long m_bFeedback6 : 1;
+            unsigned long m_bFeedback7 : 1;
+            unsigned long m_bFeedback8 : 1;
+            unsigned long m_bFeedback9 : 1;
+            unsigned long m_bFeedback10 : 1;
+            unsigned long m_bFeedbackRemaining : 21;
+        };
+    };                         // 0x14
+    char pad_0x18[0xc];
+    int m_bShadows; // 0x24
+    char pad_0x28[4];
+    int m_bGrass; // 0x2c
+    char pad_0x30[0x20];
+    unsigned char m_nMouseSensitivity; // 0x50
 };
 
 class CClientExoAppInternal;

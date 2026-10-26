@@ -36,7 +36,7 @@ void CSWGuiOptionsInGame::OnGameplay(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        m_pManager->AddPanel(new CSWGuiOptionsGameplay(m_pManager), 3, 1);
+        m_pManager->AddPanel(new CSWGuiInGameGameplay(m_pManager), 3, 1);
     }
 }
 
@@ -55,7 +55,7 @@ void CSWGuiOptionsInGame::OnAutoPause(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        CSWGuiOptionsAutoPause* pPanel = new CSWGuiOptionsAutoPause(m_pManager);
+        CSWGuiInGameAutoPause* pPanel = new CSWGuiInGameAutoPause(m_pManager);
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }
