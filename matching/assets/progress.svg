@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="604" viewBox="0 0 960 604" role="img" aria-labelledby="card-title card-desc">
   <title id="card-title">KOTOR decompilation progress</title>
-  <desc id="card-desc">Decompiled with Visual Studio 2022: 9,275 of 9,519 functions (97.4%: 7,573 with their own definition, 1,438 folded into others, 264 C runtime from the VS2022 library), builds the full game. Decompiled with the original Visual Studio .NET 2002 (MSVC 7.0), byte-identical: 6,290 functions (66.1%) compile to the original bytes, plus 368 identical to the stock LIBCMT.LIB.</desc>
+  <desc id="card-desc">Decompiled with Visual Studio 2022: 9,275 of 9,519 functions (97.4%: 7,573 with their own definition, 1,438 folded into others, 264 C runtime from the VS2022 library), builds the full game. Original Visual Studio .NET 2002 (MSVC 7.0) matching coverage: 6,658 of 9,519 functions (69.9%), 31.0% of code bytes. Source matches: 6,290 (66.1%); original stock LIBCMT.LIB: 368 (3.9%). Each address counts once. Relocation fields are masked during comparison; whole-executable identity is not established.</desc>
   <rect x="1" y="1" width="958" height="602" rx="14" fill="#090909" stroke="#343434" stroke-width="1.5"/>
   <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif">
     <text x="23" y="34" font-size="15" fill="#dedede" font-weight="600">Star Wars: Knights of the Old Republic — two decompilations of swkotor.exe 1.0.3.0 (GOG)</text>
@@ -18,15 +18,15 @@
     <rect x="489" y="72" width="450" height="4" rx="2" fill="#5be3a8"/>
     <text x="505" y="98" font-size="11" fill="#5be3a8" font-weight="700">② ORIGINAL TOOLCHAIN · BYTE-IDENTICAL</text>
     <text x="923" y="98" font-size="11" fill="#c9c9c9" font-weight="600" text-anchor="end">by RayesDiyab</text>
-    <text x="505" y="118" font-size="15" fill="#f4f4f5" font-weight="650">Decompiled with Visual Studio .NET 2002</text>
+    <text x="505" y="118" font-size="15" fill="#f4f4f5" font-weight="650">Matched with Visual Studio .NET 2002</text>
     <text x="505" y="136" font-size="11.5" fill="#8a8a8a">matching/ · MSVC 7.0 (cl 13.00.9466) + original LIBCMT.LIB</text>
-    <text x="505" y="154" font-size="12" fill="#c9c9c9">The compiler and libraries BioWare used: identical bytes.</text>
+    <text x="505" y="154" font-size="12" fill="#c9c9c9">Matching coverage from source and original runtime.</text>
     <text x="39" y="204" font-size="34" fill="#6ba8ff" font-weight="700">97.4%</text>
     <text x="173" y="188" font-size="12.5" fill="#c9c9c9">of functions decompiled · builds the full game</text>
     <text x="173" y="204" font-size="11.5" fill="#8a8a8a">9,275 / 9,519 · 244 not there yet</text>
-    <text x="505" y="204" font-size="34" fill="#5be3a8" font-weight="700">66.1%</text>
-    <text x="639" y="188" font-size="12.5" fill="#c9c9c9">of functions decompiled byte-identical</text>
-    <text x="639" y="204" font-size="11.5" fill="#8a8a8a">6,290 / 9,519 · 28.8% of code bytes</text>
+    <text x="505" y="204" font-size="34" fill="#5be3a8" font-weight="700">69.9%</text>
+    <text x="639" y="188" font-size="12.5" fill="#c9c9c9">matching coverage: source + runtime</text>
+    <text x="639" y="204" font-size="11.5" fill="#8a8a8a">6,658 / 9,519 · 31.0% of code bytes</text>
     <rect x="39" y="220" width="418" height="12" rx="6.0" fill="#272727"/>
     <rect x="39.00" y="220" width="349.30" height="12" fill="#6ba8ff"/>
     <rect x="388.30" y="220" width="56.42" height="12" fill="#4c74ad"/>
@@ -38,7 +38,8 @@
     <rect x="634.49" y="220" width="31.57" height="12" fill="#c9963a"/>
     <rect x="505" y="220" width="418" height="12" rx="6.0" fill="none" stroke="#111214" stroke-width="2"/>
     <text x="39" y="250" font-size="10.5" fill="#8a8a8a">7,573 own definitions · 1,438 folded into callers · 264 runtime (VS2022 library)</text>
-    <text x="505" y="250" font-size="10.5" fill="#8a8a8a">+368 identical to stock LIBCMT.LIB (no source needed) · 711 attempts</text>
+    <text x="505" y="244" font-size="10.5" fill="#8a8a8a">Source: 6,290 (66.1%) · original runtime: 368 (3.9%)</text>
+    <text x="505" y="260" font-size="10" fill="#8a8a8a">711 unmatched attempts · function matches; whole .exe pending</text>
     <text x="39" y="269" font-size="10" fill="#8a8a8a">Play reported, as far as we know; public retest pending. See STATUS.md.</text>
     <circle cx="45.0" cy="288" r="6" fill="#6ba8ff"/>
     <text x="45.0" y="291.5" font-size="8" fill="#090909" font-weight="700" text-anchor="middle">✓</text>
