@@ -38,7 +38,10 @@ void __fastcall kotor_fastcall_0070c1e0(void* player, void*, U32, U32);         
 void __fastcall kotor_fastcall_00405150(void* list, void*, I32 count);
 void __fastcall kotor_fastcall_00405d50(void* list, void*, U32 reallocate);
 void* __fastcall kotor_fastcall_00405a20(void* list, void*, void* source);
-void __fastcall kotor_fastcall_004059a0(void* list, void*, const StartupString* value) noexcept(false);
+// abi-a1: 004059A0 CExoArrayList<CExoString>::Add(CExoString) uses claude_0886_bodies_vars here, with the
+// original ABI: thiscall, the 8-byte CExoString by value in the two stack dwords, RET 8, callee destroys it.
+struct ExoStringArg { U32 data, length; };                                                 // CExoString by value
+void __fastcall claude_exo_string_list_add_004059a0(void* list, void*, ExoStringArg value) noexcept(false);
 void* __fastcall kotor_fastcall_00405d10(void* list, void*, void* source) noexcept(false);
 void __fastcall kotor_fastcall_00405e50(void* internal, void*, void* movies, U32 flags, void* skippable) noexcept(false);
 void __fastcall kotor_fastcall_00405a50(void* internal, void*) noexcept(false);
@@ -79,27 +82,14 @@ extern "C" void* __fastcall kotor_fastcall_00405a20(void* list, void*, void* sou
                                     w(pw(source, 0), static_cast<U32>(i) * 4)); // 00405A33..00405A3B
     return list;                                                        // 00405A48
 }
-// 004059A0 CExoArrayList<CExoString>::Add(CExoString by value), RET 8. The by-value argument is the caller's copy;
-// here the copy is made by the caller (00405D25..00405D32) into a local and destroyed after the store (004059FF).
-extern "C" void __fastcall kotor_fastcall_004059a0(void* list, void*, const StartupString* value) noexcept(false) {
-    frame_log::String copy;
-    WindowCopy005e5b00(reinterpret_cast<StartupString*>(&copy), nullptr, value); // 00405D2B..00405D32 (copy into arg slot)
-    struct Guard { frame_log::String* p; ~Guard() { frame_LogStringDtor_005e5c20(p, nullptr); } } guard{&copy}; // EH state 0 / 004059FF
-    const U32 alloc = w(list, 8);                                       // 004059B8
-    if (w(list, 4) == alloc)                                            // 004059BB..004059C6
-        kotor_fastcall_00405080(list, nullptr, static_cast<I32>(alloc ? alloc + alloc : 0x10u)); // 004059C8..004059D8
-    const U32 index = w(list, 4);                                       // 004059DD
-    unsigned char* slot = bytes(pw(list, 0)) + index * 8;               // 004059E0..004059E2
-    sw(list, 4, index + 1);                                             // 004059E9..004059EB
-    kotor_reconstruction::StartupAssign005e5c50(reinterpret_cast<StartupString*>(slot), nullptr,
-                                                reinterpret_cast<StartupString*>(&copy)); // 004059E5..004059EE
-}
 // 00405D10 CExoArrayList<CExoString> assignment from *source, RET 4, returns this.
 extern "C" void* __fastcall kotor_fastcall_00405d10(void* list, void*, void* source) noexcept(false) {
     sw(list, 4, 0);                                                     // 00405D1B
     for (I32 i = 0; i < static_cast<I32>(w(source, 4)); ++i) {          // 00405D1E..00405D44
         const StartupString* element = reinterpret_cast<const StartupString*>(bytes(pw(source, 0)) + static_cast<U32>(i) * 8); // 00405D23..00405D28
-        kotor_fastcall_004059a0(list, nullptr, element);                // 00405D25..00405D39
+        ExoStringArg value;                                             // 00405D25 sub esp,8: Add's by-value slot
+        WindowCopy005e5b00(reinterpret_cast<StartupString*>(&value), nullptr, element); // 00405D2B..00405D32 copy into the slot
+        claude_exo_string_list_add_004059a0(list, nullptr, value);      // 00405D37..00405D39 (Add destroys the slot)
     }
     return list;                                                        // 00405D48
 }

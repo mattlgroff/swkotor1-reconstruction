@@ -714,18 +714,7 @@ struct Native final:Ports {
  void publish_resource_manager(void*s)override{frame_control::resource_manager_007a39e8=static_cast<unsigned>(reinterpret_cast<std::uintptr_t>(s));}   // W6: cell owner 0151 (as 004B653A)
  void directory_00408800(void*m,String*s)override{static_cast<menu_resources::Manager*>(m)->directory_00408800(reinterpret_cast<kotor_reconstruction::StartupString*>(s));}
  void fixed_004087e0(void*m,String*s)override{static_cast<menu_resources::Manager*>(m)->fixed_004087e0(reinterpret_cast<kotor_reconstruction::StartupString*>(s));}
- void remove_file_00406b20(void*m,String*s,unsigned n)override{
-  // Harness-only storage boundary: HD0 is read-only game data. Preserve the
-  // real removal operation, but resolve its TEMP resource inside private TEMP.
-  // closeC: any other request is the original 00406B20 removal unchanged (the only original caller, 004B66F5,
-  // passes HD0:TEMP / 56h, so this path is not reached by the shipped flow).
-  if(n!=0x56 || std::strcmp(string_data(s),"HD0:TEMP")!=0){gui_load_resman_remove_file_00406b20(m,nullptr,s,n);return;}
-  String local;string_literal(&local,"TEMP:TEMP");
-
-  try { gui_load_resman_remove_file_00406b20(m,nullptr,&local,n); }
-  catch(...) { string_destroy(&local);throw; }
-  string_destroy(&local);
- }
+ void remove_file_00406b20(void*m,String*s,unsigned n)override{gui_load_resman_remove_file_00406b20(m,nullptr,s,n);}
  void create_directory_004068c0(void*m,String*s)override{gui_load_resman_create_directory_004068c0(m,nullptr,s);}
  void* talk_table()override{return kotor_cell_tlk_007a3a08;}
  void publish_talk_table(void*s)override{kotor_cell_tlk_007a3a08=s;}

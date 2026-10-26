@@ -80,14 +80,15 @@ extern "C" U32 __fastcall kotor_fastcall_00604bc0(void* area, void*, U32 id) {
         if (lw(area, 0x268 + 4 * i) == id) return 1;                                         // 00604BD0..00604BE2
     return 0;                                                                                // 00604BDD
 }
-// 005D5930 CExoSoundSource::Play() (thiscall, RET 0). The original returns the internal Play's EAX; every
-// W4 caller discards it (0061B179, 0061081B), and the runtime1115 provider is declared void.
-extern "C" void __fastcall kotor_fastcall_005d5930(void* source, void*);
-namespace kotor_sound_path_required { void __fastcall source_play_005db4d0(void*, void*, unsigned, unsigned); }
-extern "C" void __fastcall kotor_fastcall_005d5930(void* source, void*) {
+// 005D5930 CExoSoundSource::Play() (thiscall, RET 0): EAX = the internal Play's EAX, [internal+58h] (the play
+// length in ms), or 0 when [this+4] is null. CSWCSoundObject::AIUpdate stores it (0066BD1E / 0066BEA4); the W4
+// callers here discard it (0061B179, 0061081B).
+extern "C" unsigned __fastcall kotor_fastcall_005d5930(void* source, void*);
+namespace kotor_sound_path_required { unsigned __fastcall source_play_005db4d0(void*, void*, unsigned, unsigned); }
+extern "C" unsigned __fastcall kotor_fastcall_005d5930(void* source, void*) {
     void* internal = lp(source, 4);                                                          // 005D5930
-    if (internal == nullptr) return;                                                         // 005D5933..005D5935
-    kotor_sound_path_required::source_play_005db4d0(internal, nullptr, 0, 0);                // 005D5937..005D593B
+    if (internal == nullptr) return 0;                                                       // 005D5933..005D5935, 005D5941
+    return kotor_sound_path_required::source_play_005db4d0(internal, nullptr, 0, 0);         // 005D5937..005D5940
 }
 // 005D5A30 CExoSoundSource::SetFixedVariance(float) (thiscall, RET 4).
 extern "C" void __fastcall kotor_fastcall_005d5a30(void* source, void*, float variance) {

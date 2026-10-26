@@ -10,7 +10,7 @@
 //   005D5920 CExoSoundSource::IsHardwarePlayingSoundPleaseDontUseThis  005D61C0 CExoSoundSource::SetResRef
 //   005D5980 CExoSoundSource::SetPitchVariance  005D61A0 CExoSoundSource::SetDistance
 //   00648100 CExoArrayList<CResRef>::DelIndex
-// and a value-returning file-local form of 005D5930 CExoSoundSource::Play (see play_source below).
+// 005D5930 CExoSoundSource::Play is called through its single owner (w4-creature_ai), which returns the play length.
 //
 // Field map (this): +000 vptr, +004 id (CGameObject), CSWCObject base to +0FC;
 //   +0FC CExoSoundSource* (positional/non-stream) +100 CExoStreamingSoundSource* +104 active +108 volume
@@ -51,9 +51,7 @@ void __fastcall res_helper_set_ref_005d5e90(void* helper, void*, const void* ref
 }
 namespace sound_lower29 { U32 __fastcall ActorPlaying005db0e0(void* internal, void*); }        // 005DB0E0 internal IsPlaying
 namespace kotor_sound_internal { void __fastcall Render005d9590(void* sound, void*); }         // 005D9590 CExoSoundInternal::Render
-namespace kotor_sound_path_required {                                                          // 005DB4D0 internal Play RET 8
-void __fastcall source_play_005db4d0(void* internal, void*, U32, U32);
-}
+extern "C" U32 __fastcall kotor_fastcall_005d5930(void* source, void*) noexcept(false);      // 005D5930 CExoSoundSource::Play RET 0
 
 extern "C" {
 extern const unsigned char kotor_m15e_object_methods_007516c8[];                               // CSWCObject table (82 slots)
@@ -156,16 +154,8 @@ U32 is_looping(void* self, bool& any) {
     return 0;
 }
 
-// 005D5930 CExoSoundSource::Play(): mov ecx,[ecx+4]; null -> xor eax,eax; else call 005DB4D0(0,0) and return
-// its EAX. The rebuilt 005D5930 / 005DB4D0 providers are declared void; 005DB4D0's only exit (005DB7D3..005DB7EC)
-// returns the internal's +58h (the play length) re-read after its last callee, so re-reading +58h after the call
-// yields the same value. AIUpdate stores this return in +150h, so it cannot use the void provider.
-U32 play_source(void* source) {
-    void* const internal = lp(source, 4);                                                        // 005D5930
-    if (internal == nullptr) return 0;                                                           // 005D5933..5935, 5941
-    kotor_sound_path_required::source_play_005db4d0(internal, nullptr, 0, 0);                    // 005D5937..593B
-    return lw(internal, 0x58);                                                                   // 005DB7D3 / 005DB7EC
-}
+// 005D5930 CExoSoundSource::Play(): EAX = [[this+4]+58h] (the play length in ms) or 0; AIUpdate stores it in +150h.
+U32 play_source(void* source) { return kotor_fastcall_005d5930(source, nullptr); }             // 0066BCE4 / 0066BE6B
 
 // CExoArrayList<CResRef> { CResRef* data; int count; int capacity; } append (inline at 0066B79B..7DA, 0066BA0C..4B).
 void append_ref(void* list, const Ref* value) {

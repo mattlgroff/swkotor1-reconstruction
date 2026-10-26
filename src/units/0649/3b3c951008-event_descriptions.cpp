@@ -79,19 +79,21 @@ int float_entry(SS* row, const char* column, float* out) {
 }
 // The zero-filled 256-DWORD table at frame+E0h (005EF23A rep stosd 100h) is
 // only ever read (005EF5FC, 005EF715, 005EFD65, 005EFD6E); no store exists.
-// An index >= 256 makes the original read past the table into the frame's
-// saved-register/EH area; that is not representable, so it terminates
-// (fail-closed, never a value). Index < 0 is excluded by the original jl tests.
-[[noreturn]] void out_of_frame_index() noexcept {
-    static const char text[] = "KOTOR source host: 005EEB10 key index >= 256 reads outside its frame table.\r\n";
-    DWORD written = 0;
-    WriteFile(GetStdHandle(STD_ERROR_HANDLE), text, sizeof(text) - 1, &written, nullptr);
-    TerminateProcess(GetCurrentProcess(), 98u);
-    __fastfail(7);
+// Each read is 'cmp dword ptr [esp+reg*4+0E0h],ebp(0)': a scaled-index load with
+// no upper bound. Only the jl tests (005EF70F, 005EFD5F, 005EFD63) exclude a
+// negative index, and 005EF5F7 masks the INI key to 8 bits. An index >= 256
+// reads whatever lies past the table (the original's saved-register/EH words
+// and beyond) or faults if that address is unmapped. Kept as the same unchecked
+// read: table + index*4 in 32-bit address arithmetic (wrapping like the SIB
+// form), loaded through an integer address in a noinline helper so it is a real
+// load and not a C++ out-of-bounds subscript. The words past this build's table
+// are this frame's, not the original's.
+__declspec(noinline) Word frame_word(std::uintptr_t table, std::int32_t index) noexcept {
+    const std::uint32_t address = static_cast<std::uint32_t>(table) + static_cast<std::uint32_t>(index) * 4u;
+    return *reinterpret_cast<const volatile Word*>(static_cast<std::uintptr_t>(address));
 }
 Word used_at(const Word (&used)[256], std::int32_t index) noexcept {
-    if (static_cast<std::uint32_t>(index) >= 256u) out_of_frame_index();
-    return used[index];
+    return frame_word(reinterpret_cast<std::uintptr_t>(&used[0]), index);
 }
 }
 

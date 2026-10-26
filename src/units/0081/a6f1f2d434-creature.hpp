@@ -99,7 +99,7 @@ void __fastcall kotor_fastcall_00614a30(void* creature, void*);                 
 void __fastcall kotor_fastcall_0060e6c0(void* creature, void*);                              // ReAttachCamera
 void __fastcall kotor_fastcall_0063d270(void* object, void*, std::uint32_t on, std::uint32_t strength); // SetWind
 void* __fastcall kotor_fastcall_005ed570(void* app, void*);                                 // GetGameObjectArray
-void __fastcall kotor_fastcall_005d5930(void* source, void*);                                // CExoSoundSource::Play
+unsigned __fastcall kotor_fastcall_005d5930(void* source, void*);                            // CExoSoundSource::Play (EAX = ms)
 std::uint8_t __fastcall kotor_fastcall_005ed9f0(void* app, void*);                          // CClientExoApp::GetActivePauseState
 std::uint32_t __fastcall kotor_fastcall_0062d700(void* in_game, void*, std::uint32_t anim); // IsFireForgetDialogAnimation
 std::uint32_t __fastcall kotor_fastcall_0062d5e0(void* in_game, void*, std::uint32_t anim); // IsLoopingDialogAnimation

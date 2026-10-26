@@ -182,8 +182,9 @@ void __fastcall actor_obstruction_005daeb0(void* src, void*) {
 }
 
 namespace kotor_sound_path_required {
-// 005DB4D0 CExoSoundSourceInternal::Play(force, keep_restart), RET 8, EAX = [src+58].
-void __fastcall source_play_005db4d0(void* src, void*, U force, U keep_restart) {
+// 005DB4D0 CExoSoundSourceInternal::Play(force, keep_restart), RET 8, EAX = [src+58] (the play length in ms that
+// 005DB64F stores): every path joins 005DB7D3 `mov esi,[esi+58h]`, then ~CExoString(local), `mov eax,esi`.
+U __fastcall source_play_005db4d0(void* src, void*, U force, U keep_restart) {
     using kotor_sound_internal::SourceDemand005dae50; using kotor_sound_internal::SourceRelease005dae90;
     kotor_reconstruction::StartupString local;                       // 005DB4F3-005DB4F7 (EH state 0, ~ at 005DB7E2)
     void* sys = rp(src, 0x44);
@@ -274,5 +275,6 @@ void __fastcall source_play_005db4d0(void* src, void*, U force, U keep_restart) 
         else if (rb(src, 0x34) == 0) add_nonplaying_looping_005d7b80(sys, nullptr, src); // 005DB75D-005DB768
     }
     if (exit_path == Fail && rd(src, 0x28)) wr(src, 0x2c, 1);        // 005DB77F-005DB784
+    return rd(src, 0x58);                                            // 005DB7D3 (read before ~local), 005DB7EC
 }
 }

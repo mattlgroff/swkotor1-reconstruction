@@ -66,7 +66,7 @@ void __fastcall provider_preferences_005d66d0(void*, void*, std::uint32_t);     
 std::uint32_t __fastcall remove_playing_005d78f0(void*, void*, void*);          // RET 4, EAX = next position
 void __fastcall shutdown_source_005db210(void*, void*);                         // RET 0
 void __fastcall store_restart_005db380(void*, void*);                           // RET 0
-void __fastcall source_play_005db4d0(void*, void*, std::uint32_t, std::uint32_t); // RET 8
+std::uint32_t __fastcall source_play_005db4d0(void*, void*, std::uint32_t, std::uint32_t); // RET 8, EAX = [src+58h] (ms)
 }
 
 // Original Miles imports (mss32.dll; import library generated locally per D17).

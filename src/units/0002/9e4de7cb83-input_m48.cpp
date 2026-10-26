@@ -16,7 +16,7 @@
 using namespace kotor_input_hover;
 
 namespace kotor_sound_path_required {                      // lane-sound declaration (sound_internal.h)
-void __fastcall source_play_005db4d0(void*, void*, std::uint32_t, std::uint32_t);  // RET 8
+std::uint32_t __fastcall source_play_005db4d0(void*, void*, std::uint32_t, std::uint32_t);  // RET 8, EAX = [src+58h]
 }
 
 
@@ -195,10 +195,12 @@ int Control::GetIsChild(Control* control) {
 }
 
 // ---- 005D5930 CExoSoundSource::Play ----
+// abi-a3: single owner of 005D5930 is @kotor_fastcall_005d5930@8 (w4-creature_ai), which returns the play length.
+// This member is the C++ spelling the hover/object/anim callers (0040A165, 00647340, 0069A0D4) use; every one of
+// those original sites discards EAX, so the member stays void and forwards to the owner.
+extern "C" std::uint32_t __fastcall kotor_fastcall_005d5930(void* source, void*) noexcept(false);
 void SoundSource::Play() {
-    void* in = internal;                                                   // 005D5930
-    if (!in) return;                                                       // 005D5933..35
-    kotor_sound_path_required::source_play_005db4d0(in, nullptr, 0, 0);    // 005D5937..3B (tail value unused by callers here)
+    (void)kotor_fastcall_005d5930(this, nullptr);                         // 005D5930..005D5943 (owner)
 }
 
 

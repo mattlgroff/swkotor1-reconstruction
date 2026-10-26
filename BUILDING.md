@@ -80,7 +80,7 @@ Set-Content -LiteralPath (Join-Path $runtimeDir '.gitignore') -Value '*' -Encodi
 
 Keep empty directories when copying assets. Run the setup command below before launch: the menu queries free space using the `saves` directory, and a missing directory can produce a misleading insufficient-space warning.
 
-Create a fresh `swkotor.ini` in the runtime directory with these relative asset and output paths. Both graphics options below are needed to request windowed mode:
+Create a `swkotor.ini` in the runtime directory with these relative asset and output paths. You may copy your own configuration and change only the aliases below, preserving your Graphics Options (resolution, refresh rate, anti-aliasing and fullscreen preference). The example explicitly opts into windowed mode; both graphics options below are required for that choice:
 
 ```ini
 [Alias]
@@ -100,11 +100,14 @@ GAMEINPROGRESS=.\gameinprogress
 TEXTUREPACKS=.\texturepacks
 STREAMWAVES=.\StreamWaves
 LIPS=.\lips
+MOVIES=.\movies
 
 [Graphics Options]
 AllowWindowedMode=1
 FullScreen=0
 ```
+
+Keep `MOVIES` exactly `.\movies` and launch with the runtime directory as the working directory. The original dark-side ending music trigger compares the queued movie path with `.\movies\55.bik`; an absolute movies alias prevents that match. This setup uses a real copied movies directory, not a link to the installation.
 
 The `LIPS` alias points to the copied lip-animation resources; missing resources can leave mouths still while voiced dialogue continues. For fullscreen instead, set `FullScreen=1` in the same `[Graphics Options]` section. Keep these changes in the runtime copy, not the original installation.
 
@@ -114,7 +117,7 @@ From the source checkout, create the required empty runtime directories:
 python .\build.py --prepare-runtime $runtimeDir --game-dir "D:\Games\Star Wars - KotOR"
 ```
 
-This setup command creates `Override`, `Temp`, `Logs`, `LocalVault`, `DMVault`, `ServerVault`, `Tempclient`, `saves`, `currentgame` and `gameinprogress`. It is safe to repeat: existing directories and their contents are preserved. It rejects source/install destinations and linked runtime subdirectories. It does not copy assets, change the INI, build, or launch the game. Use the relative aliases shown above.
+This setup command creates `Override`, `Temp`, `Logs`, `LocalVault`, `DMVault`, `ServerVault`, `Tempclient`, `saves`, `currentgame` and `gameinprogress`. It is safe to repeat: existing directories and their contents are preserved. It rejects source/install destinations and linked runtime subdirectories. It does not copy assets, change the INI, build, or launch the game. Use the relative aliases shown above, especially `HD0=.\`: startup removes a file named `HD0:TEMP`, so never redirect HD0 to the original installation. The setup command rejects a runtime `Temp` file before creating any directories.
 
 Launch from that directory so relative resources, configuration and saves belong to the copy:
 

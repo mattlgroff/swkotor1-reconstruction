@@ -127,8 +127,8 @@ void __fastcall kotor_fastcall_004ca800(void* location, void*, void* gff, void* 
 // =====================================================================================================
 //   004059A0 CExoArrayList<CExoString>::Add(CExoString value) RET 8 -- exported with the original by-value ABI
 //   (@16: the 8-byte CExoString occupies the two argument dwords; the callee owns and destroys it).
-//   The existing 0705 export @kotor_fastcall_004059a0@12 takes a pointer and copies internally (caller keeps
-//   ownership), which does not fit the 0886 "append_owned_string" port contract.
+//   abi-a1: this is the selected by-value export for these 004059A0 callers. The former 0705 twin @kotor_fastcall_004059a0@12 (pointer
+//   argument, RET 4) is removed; its two callers (00405D10, 004B71E0) call this export with the original ABI.
 extern "C" {
 void __fastcall kotor_fastcall_00405080(void* list, void*, int capacity);       // 00405080 CExoArrayList<CExoString>::Allocate (0705)
 void* __fastcall async_assign_string_005e5c50(void* self, void*, const void* other); // 005E5C50 CExoString::operator= (0199)

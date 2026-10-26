@@ -12,13 +12,12 @@
 // D24 object views of method tables, D47 member event callback (AcceptButtonCallback 00624BA0 via m1-shared),
 // D30-FINAL: x87 wide intermediates mirrored as doubles, float only at the original fstp/fst dword stores,
 // __ftol2 through the original CRT port genuine_x87_ftol_006fae8c; D3 raw float<->word via memcpy.
-// D83: one branch trap at 005F4D1D (CSWCAmbientSound::StopSounds 0068E1B0 of the current area; no area exists
-// on the menu path - see PACKET-CREDITS.json traps_added).
+// credits-a1: the former D83 branch trap at 005F4D1D is replaced by the original branch: [[[this+18h]+48h]+1DCh]
+// CSWCAmbientSound -> StopSounds(0) 0068E1B0 (owner lane-w3 recovered_client_ambient_sound_stop_sounds_0068e1b0).
 #include "9bac6f8338-gui_objects.h"               // gui_load views, gui_lb::ListBox, kotor_input_hover, tlk/c2da/text/listbox owners
 #include "95913ca8e0-mainmenu.h"                  // kotor_fastcall_0040bc70 (AddPanel), kotor_fastcall_005ee180 (ShowMouse)
 #include "b976ed802d-m1_shared.h"                 // kotor_m1_shared::PanelEventThunks::AcceptButtonCallback_00624ba0 (L0-shared)
 #include "015caeaf6d-allocator_live.h"            // live_operator_new (006FA7E6) / live_free (006FA390)
-#include "d7b676191d-kotor_unreachable_trap.h"    // D83 shared fatal trap (lane-m48-traps)
 #include "cda8452790-gui_size.h"                  // gui_size::Gui::set_size_0040be70 (CSWGuiManager::SetSize owner)
 #include <cstddef>
 #include <cstdint>
@@ -59,6 +58,8 @@ int __fastcall c2da_current_load_004143b0(void* table, void*);
 std::int32_t __fastcall c2da_current_get_int_00413660(void* table, void*, std::int32_t row, StartupString* column, std::int32_t* value);
 StartupString* __fastcall GuiAssign005e5140(StartupString*, void*, const char*);   // ini-string-priority 005E5140
 void __cdecl genuine_x87_ftol_006fae8c();                                     // renderer-x87-ftol-alias owner (__ftol2)
+// lane-w3 sound unit (w3_client_area.h, verbatim): 0068E1B0 CSWCAmbientSound::StopSounds(BOOL), thiscall RET 4.
+void __fastcall recovered_client_ambient_sound_stop_sounds_0068e1b0(void* self, void*, std::uint32_t) noexcept(false);
 }
 
 // ---------------------------------------------------------------- cells owned here (no other original reader/writer)
@@ -223,10 +224,9 @@ void __fastcall kotor_fastcall_005f4c60(void* internal, void*, void* callback12,
     std::memcpy(&panel->color, callback12, 12);                                      // 005F4CF8..0C panel+50 = *arg1 (12 bytes)
     if (void* const module = word_ptr(internal, 0x18)) {                             // 005F4D0F..14
         if (void* const area = word_ptr(module, 0x48)) {                             // 005F4D16..1B
-            (void)area;
-            // D83 branch trap: [area+1DCh] CSWCAmbientSound -> StopSounds(0) 0068E1B0 (005F4D1D..2B). No area
-            // exists on the menu path (module+48h is written only by CSWCModule::LoadModule 0063F660, not linked).
-            kotor_unreachable_trap(0x005F4D1Du, "CClientExoAppInternal::StartCreditSequence@005F4D1D area ambient StopSounds");
+            if (void* const ambient = word_ptr(area, 0x1DC)) {                        // 005F4D1D..25 CSWCAmbientSound
+                recovered_client_ambient_sound_stop_sounds_0068e1b0(ambient, nullptr, 0);  // 005F4D27..2B StopSounds(0)
+            }
         }
     }
     put_word(internal, 0x4B8, 1);                                                    // 005F4D30

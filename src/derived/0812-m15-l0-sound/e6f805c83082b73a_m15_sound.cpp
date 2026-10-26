@@ -65,7 +65,7 @@ namespace kotor_sound_rev3_required { void __fastcall res_helper_set_ref_005d5e9
 namespace kotor_sound_path_required {
 void __fastcall shutdown_source_005db210(void*, void*);                               // CExoSoundSourceInternal::ShutDownSource
 void __fastcall source_set_volume_005db800(void*, void*, std::uint32_t, std::uint32_t, std::uint32_t);
-void __fastcall source_play_005db4d0(void*, void*, std::uint32_t, std::uint32_t);     // CExoSoundSourceInternal::Play RET 8
+std::uint32_t __fastcall source_play_005db4d0(void*, void*, std::uint32_t, std::uint32_t); // CExoSoundSourceInternal::Play RET 8, EAX = [src+58h]
 }
 namespace kotor_sound_internal { void __fastcall FixedVariance005db450(void*, void*); } // CalculateFixedVarianceFrequency (bound)
 namespace sound_lower29 { std::uint32_t __fastcall ActorPlaying005db0e0(void*, void*); } // IsPlaying
@@ -222,10 +222,7 @@ U __fastcall kotor_m15_sound_internal_play_3d_one_shot_005d7680(void* internal, 
         kotor_m15_source_internal_set_one_shot_delay_005db340(source, nullptr, delay); // 005D78B0..005D78B1
         return result;                                                        // 005D78B6 EDI = [esp+10h] = 0
     }
-    kotor_sound_path_required::source_play_005db4d0(source, nullptr, 0, 0);   // 005D78BC..005D78C0
-    // 005DB4D0 returns [source+58h] read at its single exit 005DB7D3 (every path joins there); the M60 port is
-    // void-typed, so the same field is read here immediately after the call, before any delete (005D78C5).
-    result = rd(source, 0x58);
+    result = kotor_sound_path_required::source_play_005db4d0(source, nullptr, 0, 0); // 005D78BC..005D78C5 mov edi,eax
     if (rd(source, 0x2C) != 0) virtual_delete(source, 1);                     // 005D78C7..005D78D4
     return result;                                                            // 005D78D6
 }

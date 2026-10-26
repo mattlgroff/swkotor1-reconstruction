@@ -18657,7 +18657,9 @@
             "/D_CRT_SECURE_NO_WARNINGS",
             "/clang:-fms-compatibility-version=19.44",
             "/clang:-Wno-invalid-offsetof",
-            "/clang:-Wno-unused-function"
+            "/clang:-Wno-unused-function",
+            "/clang:-march=i686",
+            "/clang:-mno-sse"
           ]
         },
         {
@@ -39721,7 +39723,7 @@
         },
         {
           "path": "src/units/0002/9e4de7cb83-input_m48.cpp",
-          "sha256": "a7527a20f3a76afd3cd528807a649d1f14c0e6a9be7bd4dd46963cab3d5002ce"
+          "sha256": "5eccba6ac44deeb4e9853cb0b8896968cb0c7a18c84a2364356dd8484487725b"
         },
         {
           "path": "src/units/0002/deeac869ec-hover_path.h",
@@ -41609,7 +41611,7 @@
         },
         {
           "path": "src/units/0081/a6f1f2d434-creature.hpp",
-          "sha256": "7124bea06539676a7e1dbb00c049d425c1e44c25bd070eddd455b85d829556ab"
+          "sha256": "e240a460ba8ca233960908e45c233031134badb6b326acdc2b2fd7b897947a45"
         },
         {
           "path": "src/units/0081/fd0a5d1eab-creature_vtable_t1b.cpp",
@@ -44061,7 +44063,7 @@
         },
         {
           "path": "src/units/0205/f8a096ef11-server_options_native_vm_entering.final-287.cpp",
-          "sha256": "c3441100f4dead282c1df301f82785bcf29b9d0d9f12fffe7dbef379c3ab3959"
+          "sha256": "b5ce9777b15c26f36d7de2036bc3985f6b622687d2bd341b877e883713a1924a"
         },
         {
           "path": "src/units/0205/fb62d9a6ef-options_leaf.hpp",
@@ -60853,7 +60855,7 @@
         },
         {
           "path": "src/units/0649/3b3c951008-event_descriptions.cpp",
-          "sha256": "eab9d0694bda154e2d8838a7e7b66a587935b31ece5b218e8f117a897e9c55eb"
+          "sha256": "de6bca2b8deaa795f6b6e0c55748526e9695b1eb6de1ae4b4d4903d0c4dfc08a"
         },
         {
           "path": "src/units/0649/66a5366142-menu_targets.h",
@@ -68389,7 +68391,7 @@
         },
         {
           "path": "src/units/0853/e2581310e3-sound_internal.h",
-          "sha256": "4050b58d216f1aaeda2ee88a6a99d585143104fdb555455da4f00f2e88bc9067"
+          "sha256": "0ab0d00abf7558bacdc7d5f949f127e4161501f391f91ae07c5516148a296f51"
         },
         {
           "path": "src/units/0853/fdf62edace-startup_string.h",
@@ -68397,7 +68399,7 @@
         },
         {
           "path": "src/units/0854/3a10bcdf21-sound_internal.h",
-          "sha256": "321ea6703a23b4ac160f60d1fbe370651aa4bc6e04064eb10cdfe3f92bada785"
+          "sha256": "b908f1d8eb825b2a93197726aa673649cea1c5b5e2eb1624bb06d6183ef141d1"
         },
         {
           "path": "src/units/0854/611882326c-sound_lists.cpp",
@@ -68505,7 +68507,7 @@
         },
         {
           "path": "src/units/0857/3a10bcdf21-sound_internal.h",
-          "sha256": "321ea6703a23b4ac160f60d1fbe370651aa4bc6e04064eb10cdfe3f92bada785"
+          "sha256": "b908f1d8eb825b2a93197726aa673649cea1c5b5e2eb1624bb06d6183ef141d1"
         },
         {
           "path": "src/units/0857/4e8680bda2-rand_constructor.h",
@@ -68553,7 +68555,7 @@
         },
         {
           "path": "src/units/0858/e2581310e3-sound_internal.h",
-          "sha256": "4050b58d216f1aaeda2ee88a6a99d585143104fdb555455da4f00f2e88bc9067"
+          "sha256": "0ab0d00abf7558bacdc7d5f949f127e4161501f391f91ae07c5516148a296f51"
         },
         {
           "path": "src/units/0858/fdf62edace-startup_string.h",
@@ -68561,11 +68563,11 @@
         },
         {
           "path": "src/units/0859/3a10bcdf21-sound_internal.h",
-          "sha256": "321ea6703a23b4ac160f60d1fbe370651aa4bc6e04064eb10cdfe3f92bada785"
+          "sha256": "b908f1d8eb825b2a93197726aa673649cea1c5b5e2eb1624bb06d6183ef141d1"
         },
         {
           "path": "src/units/0859/565521f361-sound_source.cpp",
-          "sha256": "36b040b7b47a2aee04f5e4679b19a951c63123a50d28e8c44d1babdd2c21ff22"
+          "sha256": "a2e0c9a5a8f48e080b1d058eefd3660996b1688544fdc5d3598cd0cf22b4819a"
         },
         {
           "path": "src/units/0859/65c9c926f6-constructors.h",
@@ -68589,7 +68591,7 @@
         },
         {
           "path": "src/units/0860/e2581310e3-sound_internal.h",
-          "sha256": "4050b58d216f1aaeda2ee88a6a99d585143104fdb555455da4f00f2e88bc9067"
+          "sha256": "0ab0d00abf7558bacdc7d5f949f127e4161501f391f91ae07c5516148a296f51"
         },
         {
           "path": "src/units/0860/fdf62edace-startup_string.h",
@@ -68609,7 +68611,7 @@
         },
         {
           "path": "src/units/0861/9e2ca73358-sound_internal.h",
-          "sha256": "3fc4ee7f30b40811ae10a5382f51ff23e0b0b838a079f9b33fec3cf30b5861ba"
+          "sha256": "8ab28db7d3cbf1efdca6b788747f7a1ed408920ed49e4510f9b1917defe6ef5d"
         },
         {
           "path": "src/units/0862/61b15cbd11-sound_source_object.cpp",
@@ -69141,7 +69143,7 @@
         },
         {
           "path": "src/units/0878/9e2ca73358-sound_internal.h",
-          "sha256": "3fc4ee7f30b40811ae10a5382f51ff23e0b0b838a079f9b33fec3cf30b5861ba"
+          "sha256": "8ab28db7d3cbf1efdca6b788747f7a1ed408920ed49e4510f9b1917defe6ef5d"
         },
         {
           "path": "src/units/0878/a0e855f1be-world_los.h",
@@ -69473,7 +69475,7 @@
         },
         {
           "path": "src/units/0886/b389e792f3-client_movie.cpp",
-          "sha256": "7df89928e25ae1afcb06ac676a6b6fffcf722685ac5050663ec1a38387584884"
+          "sha256": "1badcace08e1ee73db69428fd24cdd4494833926bcd7f88d1d34d2c70ebadcb3"
         },
         {
           "path": "src/units/0886/e6446a7354-r4_lowers.h",
@@ -72697,7 +72699,7 @@
         },
         {
           "path": "src/units/0989/a53808a429-credits.cpp",
-          "sha256": "286f5fd2a5f53afcd119b97967e543457d1147e28ab54d3e263bafdd33b2610c"
+          "sha256": "2167d31356dd5f992889ced5fb69314c527b5c3e3e0a2dcf78a5f68f479e9e6e"
         },
         {
           "path": "src/units/0989/b976ed802d-m1_shared.h",
@@ -76529,11 +76531,11 @@
         },
         {
           "path": "src/units/1475/a5e2cda8f5-creature.hpp",
-          "sha256": "9e825a2c9cf3874072ddf4292e8246f08ab0a0e06255e3dc052a06fa1a718879"
+          "sha256": "977c42e78a94f42713ccfc2bb46ac8ea7beb0fcaae3cd29e6fdbbc3ee09aa06c"
         },
         {
           "path": "src/units/1475/f72ef3ddbd-creature_ai.cpp",
-          "sha256": "818b58f116d3a1224ec9325b873a082f3ff0f554e1ec8d504a93238e1bdbab01"
+          "sha256": "fe6102075e34d165a105540d19b921c4a900ac37dcd87ea7de5bc4a03f095459"
         },
         {
           "path": "src/units/1476/32e9f0de14-w4_frame.hpp",
@@ -76553,7 +76555,7 @@
         },
         {
           "path": "src/units/1476/a5e2cda8f5-creature.hpp",
-          "sha256": "9e825a2c9cf3874072ddf4292e8246f08ab0a0e06255e3dc052a06fa1a718879"
+          "sha256": "977c42e78a94f42713ccfc2bb46ac8ea7beb0fcaae3cd29e6fdbbc3ee09aa06c"
         },
         {
           "path": "src/units/1477/02afe8a61c-vtables2_gen.h",
@@ -80545,7 +80547,7 @@
         },
         {
           "path": "src/units/1539/a5e2cda8f5-creature.hpp",
-          "sha256": "9e825a2c9cf3874072ddf4292e8246f08ab0a0e06255e3dc052a06fa1a718879"
+          "sha256": "977c42e78a94f42713ccfc2bb46ac8ea7beb0fcaae3cd29e6fdbbc3ee09aa06c"
         },
         {
           "path": "src/units/1539/b1751895fd-w4_conjure.h",
@@ -82221,7 +82223,7 @@
         },
         {
           "path": "src/units/1654/8037aa68fe-claude_client_sound_object.cpp",
-          "sha256": "2ed7196179e27d3c184ce4adddb29499b931bb9ea43fc4ea7e67a5f002dcc13f"
+          "sha256": "38f072857f06c1474e9e1aaa2a7d4467da4cbe91f155c4c3d0e571ef8d17b8f9"
         },
         {
           "path": "src/units/1654/b3988a3a83-w4_native.hpp",
@@ -82353,7 +82355,7 @@
         },
         {
           "path": "src/units/1657/f8bf5513b7-claude_w5_object_actions.cpp",
-          "sha256": "4bc4da81ec5652af1a857a163117321282270a5e0394bef70145b545ec3b60bf"
+          "sha256": "7e78d6c37316c10db154aca7600e52d71027d5d6612510a8d6473aac37ff0794"
         },
         {
           "path": "src/units/1658/1a370ea669-w5_foreign.hpp",
@@ -83369,7 +83371,7 @@
         },
         {
           "path": "src/units/1690/348d8cc11b-claude_w1_route_bodies.cpp",
-          "sha256": "bfceb1b200d643418e777e6e72a99931b8db5e61f53924cb6e8daee9a1b24f26"
+          "sha256": "fd706363c7fe824f4e4bb1f4d9348a1bef6f88fab073d6b6344b8375f51ba726"
         },
         {
           "path": "src/units/1690/4f99fc5850-w5_walkmesh.hpp",
@@ -83673,7 +83675,7 @@
         },
         {
           "path": "src/units/1705/49b9289816-claude_0886_bodies_vars.cpp",
-          "sha256": "ecd6e57b373575f75872579506dbe331a4afae858365fd4e1df918032672155f"
+          "sha256": "b3489c78edb509d09c88031dba0364ce944e32b8546837342c54b3f51b3842af"
         },
         {
           "path": "src/units/1706/294ff121b7-w5_server_env.hpp",
@@ -86797,7 +86799,7 @@
         },
         {
           "path": "src/derived/0812-m15-l0-sound/e6f805c83082b73a_m15_sound.cpp",
-          "sha256": "765bbeb32d0e0806b7f027d794c8f9d4bd3f7c2fba9c98f8b5fb033a9ac3531c"
+          "sha256": "35b20a5ea7ed8caa511e7895c6b7eaf975cd3d8ea956f22107b3f21cb9515c71"
         },
         {
           "path": "src/derived/0812-m15-l0-sound/f155d76cd432eed7_m15_l0.h",

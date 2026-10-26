@@ -26,7 +26,7 @@ void __fastcall InternalSetPitchVariance005dba40(void* self, void*, float varian
 namespace kotor_sound_rev3_required { void __fastcall res_helper_set_ref_005d5e90(void* self, void*, const void* ref, U flag); }
 namespace kotor_sound_path_required {
 void __fastcall source_set_volume_005db800(void* self, void*, U volume, U a, U b);
-void __fastcall source_play_005db4d0(void* self, void*, U a, U b);                    // original returns [self+58]
+U __fastcall source_play_005db4d0(void* self, void*, U a, U b);                       // RET 8, EAX = [self+58h] (ms)
 }
 
 extern "C" {
@@ -1255,10 +1255,7 @@ U __fastcall w5_sound_internal_play_one_shot_005d7550(void* internal, void*, voi
         kotor_m15_source_internal_set_one_shot_delay_005db340(source, nullptr, delay); // 005D7641..642
         return result;                                                              // 005D7647 -> 005D7663 (EBX = 0)
     }
-    kotor_sound_path_required::source_play_005db4d0(source, nullptr, 0, 0);         // 005D7649..64D
-    // 005DB4D0 returns [source+58h] at its single exit; the bound provider is void-typed, so the field is read here
-    // right after the call and before any delete (same as m15_sound.cpp for 005D7680).
-    result = at<U>(source, 0x58);                                                   // 005D7652
+    result = kotor_sound_path_required::source_play_005db4d0(source, nullptr, 0, 0); // 005D7649..005D7652 mov ebx,eax
     if (at<U>(source, 0x2c) != 0) vcall<void>(source, 0, 1u);                       // 005D7654..661 (scalar deleting dtor)
     return result;                                                                  // 005D7663..676
 }

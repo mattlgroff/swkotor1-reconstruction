@@ -229,7 +229,7 @@ def main() -> None:
             if relative not in receipt.get("generated_files", {}):
                 raise ValueError("Missing generated header.")
         flags = unit["flags"]
-        fixed_flags = {"/nologo", "/O1", "/O2", "/Od", "/Ob0", "/Ob2", "/Oy", "/Oy-", "/GS", "/EHsc", "/EHs", "/EHs-c-", "/MT", "/W3", "/W4", "/WX", "/showIncludes", "/std:c++17", "/std:c++20", "/fp:strict", "/fp:precise", "/arch:IA32", "/arch:SSE2", "/Brepro", "/Zc:sizedDealloc-", "--target=i686-pc-windows-msvc", "--no-default-config", "/clang:-fms-compatibility-version=19.44", "/clang:-Wno-invalid offsetof".replace(" ", "-"), "/clang:-Wno-nontrivial-memcall", "/clang:-Wno-uninitialized-const-pointer", "/clang:-Wno-unused-function", "/clang:-ffp-contract=off", "/clang:-mfpmath=387", "/clang:-mno-sse"}
+        fixed_flags = {"/nologo", "/O1", "/O2", "/Od", "/Ob0", "/Ob2", "/Oy", "/Oy-", "/GS", "/EHsc", "/EHs", "/EHs-c-", "/MT", "/W3", "/W4", "/WX", "/showIncludes", "/std:c++17", "/std:c++20", "/fp:strict", "/fp:precise", "/arch:IA32", "/arch:SSE2", "/Brepro", "/Zc:sizedDealloc-", "--target=i686-pc-windows-msvc", "--no-default-config", "/clang:-fms-compatibility-version=19.44", "/clang:-Wno-invalid offsetof".replace(" ", "-"), "/clang:-Wno-nontrivial-memcall", "/clang:-Wno-uninitialized-const-pointer", "/clang:-Wno-unused-function", "/clang:-ffp-contract=off", "/clang:-mfpmath=387", "/clang:-mno-sse", "/clang:-march=i686"}
         for flag in flags:
             if flag not in fixed_flags and not re.fullmatch(r"/D[A-Za-z_][A-Za-z0-9_]*(?:=[A-Za-z0-9_+-]+)?", flag):
                 raise ValueError(f"Unreviewed compiler flag: {flag}")

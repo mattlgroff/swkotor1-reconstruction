@@ -1703,7 +1703,13 @@ const char* __fastcall WindowCStr005e5670(void*, void*);                        
 // (declared by w5_t2.hpp / w5_t3.hpp) unsigned __fastcall unresolved_list_at_pos_005e9b60(void*, void*, void*);              // CExoLinkedListInternal::GetAtPos
 unsigned __fastcall unresolved_list_next_005e9b90(void*, void*, void**);               // CExoLinkedListInternal::GetNext
 void* __fastcall c2da_005e9d70(void*, void*, void*);                                  // CExoLinkedListInternal::AddHead
-void __fastcall kotor_fastcall_004059a0(void* list, void*, const kotor_reconstruction::StartupString* value) noexcept(false); // CExoArrayList<CExoString>::Add
+// abi-a1: 004059A0 CExoArrayList<CExoString>::Add(CExoString) - selected export claude_0886_bodies_vars, original ABI
+// (thiscall, the 8-byte CExoString by value in the two stack dwords, RET 8, callee destroys it).
+struct ClaudeExoStringArg { std::uint32_t data, length; };
+// Both can throw (the game allocator): noexcept(false) keeps 004B71E0 potentially throwing, as the former Add
+// declaration did, so callers such as 00602650 keep their unwind state around the call.
+void __fastcall claude_exo_string_list_add_004059a0(void* list, void*, ClaudeExoStringArg value) noexcept(false);
+void* __fastcall WindowCopy005e5b00(void* self, void*, void* other) noexcept(false);           // 0078 CExoString(const CExoString&)
 void __fastcall kotor_fastcall_00405920(void* list, void*);                           // CExoArrayList<CExoString>::~CExoArrayList
 // server / client
 void* __fastcall recovered_server_get_module_004b14f0(void*, void*);                  // CServerExoAppInternal::GetModule (W1)
@@ -1862,13 +1868,15 @@ extern "C" void __fastcall kotor_fastcall_005d5e70(void* self, void*) noexcept(f
 // 005EDB60 CClientExoApp::GetMoveToModuleMovies: [[ecx+4]] + 0x2D8 (address of the internal's movie list).
 extern "C" void* __fastcall kotor_fastcall_005edb60(void* self, void*) { return bytes(rp(self, 4)) + 0x2d8; }
 // 004B71E0 CExoArrayList<CExoString>::CExoArrayList(const CExoArrayList<CExoString>&): RET 4, EAX = this.
-// The original copy-constructs each element into Add's by-value slot; the linked Add (0705) takes the source and
-// makes that copy itself.
+// The original copy-constructs each element into Add's by-value slot (004B71FA..004B7207) and Add destroys it.
 extern "C" void* __fastcall kotor_fastcall_004b71e0(void* self, void*, void* source) noexcept(false) {
   wr(self, 4, 0); wr(self, 8, 0); wr(self, 0, 0);                                            // 004B71EB..004B71F1
   for (I i = 0; i < static_cast<I>(rd(source, 4)); ++i)                                       // 004B71F3..004B71F6, 004B7213..004B7219
-    kotor_fastcall_004059a0(self, nullptr, reinterpret_cast<const kotor_reconstruction::StartupString*>(
-                                              bytes(rp(source, 0)) + static_cast<U>(i) * 8)); // 004B71F8..004B720E
+  {
+    ClaudeExoStringArg value;                                                                 // 004B71FA sub esp,8 (by-value slot)
+    (void)WindowCopy005e5b00(&value, nullptr, bytes(rp(source, 0)) + static_cast<U>(i) * 8); // 004B71F8..004B7207
+    claude_exo_string_list_add_004059a0(self, nullptr, value);                                // 004B720C..004B720E
+  }
   return self;                                                                                // 004B721B
 }
 // 00602650 CClientExoAppInternal::PlayLoadModuleMovies: thiscall, RET 0, EAX = 1 when movies were started.

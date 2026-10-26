@@ -29,6 +29,24 @@ The public c67 integration rebuilt on 25 October 2026 from base `e1aaf19243b9355
 
 This public c67 executable has not been launched or gameplay-tested here. Camera, turret, animation, particle, model-loading and other live paths remain **UNRUN** for this binary. The source and build checks do not establish a full playthrough or universal numerical equivalence.
 
+## c68 integration
+
+The c68 checkpoint adds the end-credits `StopSounds` call, restores the sound-play length return through the reviewed callers, removes the wrong-ABI string-list Add duplicate and the added `SetEventDescriptions` exit guard, and restores the original startup `HD0:TEMP` removal operation. Much of the private harness cleanup was already unnecessary in the public build: its selected window, gamma, capture and event-creation providers already call the real APIs, and the private frame-capture and strict-window harness layers are absent. Those existing public behaviors are preserved rather than credited as new fixes. Remaining fatal binding checks are not silently removed. This is the faithful reconstruction track, not the separate Reforged modernization plan.
+
+The private c68 report records user checks of keyboard input after resolution changes, dialogue skip, Inventory, 3D combat sounds, fullscreen/resolution changes and Alt-Tab, and starting end credits without the former trap. Gamma could not be assessed with HDR enabled. The relative movie-path correction for dark-side ending music was made afterward and was **not rerun live** in that report. These are historical private-candidate observations, not tests of this public executable.
+
+The public runtime instructions retain the player's graphics preferences unless windowed mode is explicitly selected, and specify `MOVIES=.\movies` for the original ending-music path comparison. They continue to use an isolated runtime with copied resources and `HD0=.\`; no installation or saves are modified. The private launcher and its junction-based layout are not substituted for this public setup.
+
+The c67 x87 changes and automatic local original-derived CRT dependency remain in place. C68's L5 math harness is test infrastructure, not a new full-arithmetic runtime implementation or a byte-identical matching gain. Known NaN-only differences in the affected sound unit and previously documented ownership/exception-path limitations remain; this integration does not claim to close them.
+
+The public c68 integration rebuilt on 26 October 2026 from base `e6cd312e538be656fefdefe5dbf819e4506a29c5`, which retains the published c67 changes and subsequent matching work. The canonical `build.py --target game` build used the documented toolchain, a fresh output directory and four compiler jobs: all 1,921 units plus the local L1 math objects linked successfully (exit 0). Executable SHA-256: `1f52dd1d0d0d7869501df39116d8b36e5352cef7e0ace993e137baba6b522a91`. Source pins and original input hashes were unchanged by the build.
+
+Focused public checks passed: the obsolete string-list ABI export is absent, sound-play return providers are selected, and the credits call reaches the existing ambient StopSounds implementation. The affected sound unit emits x87 arithmetic without SSE-register instructions. Twelve minigame tables, 28 resolver bindings and seven Pazaak tables had no mismatches; removing the Pazaak provider failed the link. The same public per-symbol stopper census decreased from 373 to 372, with the credits trap removed; these counts differ from the private candidate's census and are not gameplay coverage. There were no linker warnings and one unchanged unused-function compiler warning.
+
+Regression checks passed 12 bounded math/initialization fixtures, 24 FloatToInt cases, local-math omission/provider/input rejection controls, 70 synthetic Python tests, and isolated runtime-directory preparation checks. All 22 affected unchanged c67 units first reproduced their prior executable COFF code and relocation counts. These checks do not repeat the private large-scale ABI differential suite or establish universal numerical equivalence.
+
+This public c68 executable has not been launched or gameplay-tested here. Credits, ending music, sound timing, input/resolution changes, gamma and other live paths remain **UNRUN** for this binary. Publication does not imply that the private results have been repeated publicly.
+
 ## Intentionally excluded
 
 Developer Tools, dead/unused Neverwinter multiplayer code, and Cheat Codes are intentionally outside this project's normal single-player gameplay scope. These are deliberate scope exclusions, not unfinished normal single-player gameplay features. This scope decision does not establish that every address in those categories is unreachable or correctly classified, and it does not remove unresolved functions from the recorded stopper census or matching metrics. No implemented code is removed by this documentation change.
