@@ -58,6 +58,9 @@ public:
     int CreateGFFFile(CResStruct* pTopLevelStruct, const CExoString& sFileType,
                       const CExoString& sVersion);                      // 0x00411260
     void GetTopLevelStruct(CResStruct* pStruct);                        // 0x00411240
+    int GetStructFromStruct(CResStruct* pDest, CResStruct* pSource, char* szLabel); // 0x00411A10
+    int AddStructToStruct(CResStruct* pDest, CResStruct* pSource, char* szLabel,
+                          unsigned long nType);                 // 0x004125B0
     int GetList(CResList* pList, CResStruct* pStruct, char* szLabel);   // 0x004118C0
     unsigned long GetListCount(CResList* pList);                        // 0x00411940
     int GetListElement(CResStruct* pStruct, CResList* pList, unsigned long nIndex); // 0x00411990

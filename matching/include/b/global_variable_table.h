@@ -10,6 +10,9 @@ public:
     CScriptLocation();      // 0x004CA7A0
     ~CScriptLocation();     // 0x004015A0 (shared empty function)
     int Equals(CScriptLocation* pOther);    // 0x0052BF80
+    void CopyScriptLocation(CScriptLocation* pOther);       // 0x004CA7C0
+    int LoadLocation(CResGFF* pRes, CResStruct* pStruct);   // 0x004CA800
+    int SaveLocation(CResGFF* pRes, CResStruct* pStruct);   // 0x004CA8E0
 
     float m_vPosition[3];
     float m_vOrientation[3];

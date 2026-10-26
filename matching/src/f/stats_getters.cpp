@@ -3,8 +3,26 @@
 #define __max(a, b) (((a) > (b)) ? (a) : (b))
 #define __min(a, b) (((a) < (b)) ? (a) : (b))
 
-class CSWSObject;
 class CGameEffect;
+class CExoString;
+class CSWSCreature;
+
+class CSWSObject {
+public:
+    virtual void v00();
+    virtual void v04();
+    virtual void v08();
+    virtual void v0c();
+    virtual void v10();
+    virtual void v14();
+    virtual void v18();
+    virtual void v1c();
+    virtual void v20();
+    virtual void v24();
+    virtual void v28();
+    virtual void v2c();
+    virtual CSWSCreature *AsSWSCreature();  // +0x30
+};
 
 double floor(double);
 
@@ -15,6 +33,14 @@ public:
     int num;
     int array_size;
 
+    int IndexOf(T t)
+    {
+        for (int i = 0; i < num; i++) {
+            if (element[i] == t)
+                return i;
+        }
+        return -1;
+    }
     int Contains(T t)
     {
         int n = 0;
@@ -53,6 +79,18 @@ class CSWFeat {
 public:
     char pad_0x0[0x33];
     unsigned char m_nUsesPerDay;     // +0x33
+    char pad_0x34[0x4];
+    unsigned short m_nRequiredFeat1;     // +0x38
+    unsigned short m_nRequiredFeat2;     // +0x3a
+    unsigned short m_lstOrReqFeat[5];    // +0x3c
+    unsigned short m_nRequiredSkill;     // +0x46
+
+    unsigned short GetOrReqFeat(unsigned char n)
+    {
+        if (n < 5)
+            return m_lstOrReqFeat[n];
+        return 0xffff;
+    }
 };
 
 class CSWSArea {
@@ -68,6 +106,8 @@ public:
     int IsClassSkill(unsigned short nSkill);
     int IsBonusFeat(unsigned short nFeat);
     char GetFortSaveBonus(unsigned char nLevel);
+    unsigned char GetAttackBonus(unsigned char nLevel);
+    CExoString GetNameText();
     char GetReflexSaveBonus(unsigned char nLevel);
     char GetWillSaveBonus(unsigned char nLevel);
     char pad_0x0[0x13c];
@@ -98,6 +138,54 @@ public:
 class CSWInventory;
 
 class CSWSCreatureStats;
+
+class CExoString {
+public:
+    CExoString();
+    CExoString(const char *s);
+    CExoString(const CExoString &s);
+    ~CExoString();
+    char *m_sString;
+    unsigned long m_nBufferLength;
+};
+
+class CExoLocString {
+public:
+    char pad_0x0[0x8];
+};
+
+class CSWSMessage {
+public:
+    static void GetLocStringServer(unsigned long nLanguage, const CExoLocString &lsFirst,
+                                   const CExoLocString &lsLast, CExoString &sOut,
+                                   unsigned char nGender);
+};
+
+class CServerExoApp {
+public:
+    int GetDifficultyOption(int nOption);
+};
+
+class CAppManager {
+public:
+    char pad_0x0[0x8];
+    CServerExoApp *m_pServerExoApp;  // +0x8
+};
+
+extern CAppManager *g_pAppManager;
+
+class CSWSCombatAttackData {
+public:
+    char pad_0x0[0x64];
+    unsigned short m_nAttackType;    // +0x64
+};
+
+class CSWSCombatRound {
+public:
+    CSWSCombatAttackData *GetAttack(int nAttack);
+    char pad_0x0[0x96c];
+    unsigned char m_nCurrentAttack;  // +0x96c
+};
 
 class CSWSCreature {
 public:
@@ -156,7 +244,11 @@ public:
 
     char pad_0x4[0x4f4];
     int m_nCreatureSize;             // +0x4f8
-    char pad_0x4fc[0xa2c - 0x4fc];
+    char pad_0x4fc[0x9c8 - 0x4fc];
+    CSWSCombatRound *m_pcCombatRound;  // +0x9c8
+    char pad_0x9cc[0x8];
+    int m_b9d4;                      // +0x9d4
+    char pad_0x9d8[0xa2c - 0x9d8];
     CSWInventory *m_pInventory;      // +0xa2c
     char pad_0xa30[0xa74 - 0xa30];
     CSWSCreatureStats *m_pStats;     // +0xa74
@@ -168,7 +260,11 @@ class CSWBaseItem {
 public:
     char pad_0x0[0x8];
     unsigned char m_nWeaponWield;    // +0x8
-    char pad_0x9[0xa4];
+    char pad_0x9[0x1a - 0x9];
+    unsigned char m_nRangedWeapon;   // +0x1a
+    char pad_0x1b[0x1f - 0x1b];
+    unsigned char m_nCritMultiplier; // +0x1f
+    char pad_0x20[0xad - 0x20];
     unsigned char m_nMaxDEXBonus;    // +0xad
 };
 
@@ -177,11 +273,24 @@ public:
     int ComputeArmorClass();
     CSWBaseItem *GetBaseItemData();
     int GetIsFinesseWeapon();
+    char pad_0x0[0xc];
+    int m_nBaseItem;                 // +0xc
+};
+
+class CSWBaseItemArray {
+public:
+    CSWBaseItem *GetBaseItem(int nBaseItem);
 };
 
 class CSWSpell {
 public:
     int GetAdjustedForcePoints(unsigned long nLevel, int bAdjust);
+    unsigned char GetSpellLevel(unsigned char nClass);
+    char pad_0x0[0x140];
+    unsigned char m_nUserType;           // +0x140
+    char pad_0x141[0x1f];
+    int m_lstPrereqSpells2[5];           // +0x160
+    int m_lstPrereqSpells[5];            // +0x174
 };
 
 class CSWSpellArray {
@@ -332,15 +441,28 @@ public:
     char GetReflexSavingThrow(int bExcludeEffects);
     unsigned char GetUnarmedDamageDice();
     unsigned char GetUnarmedDamageDie();
+    CExoString GetFullName();
+    unsigned short GetUnarmedDamageRoll(CSWSObject *pTarget);
+    int ResolveSpecialAttackAttackBonus(int nUnused);
+    int ResolveSpecialAttackDamageBonus(int nUnused);
+    int GetCriticalHitMultiplier(int bOffHand);
+    CExoString GetClassString(unsigned char nMultiClass);
+    int GetBaseAttackBonus();
+    int HasSpellPrereq(CSWSpell *pSpell, CExoArrayList<unsigned long> *pList);
+    int HasFeatPrereq(CSWFeat *pFeat, CExoArrayList<unsigned short> *pList);
+    int CanChooseSpell(unsigned long nSpell, unsigned char nKnownLeft,
+                       CExoArrayList<unsigned long> *pList);
 
     CExoArrayList<unsigned short> m_lFeats;            // +0x0
     CExoArrayList<CFeatUseListEntry *> m_lFeatUses;    // +0xc
     CExoArrayList<unsigned short> m_lBonusFeats;       // +0x18
     CSWSCreature *m_pBaseCreature;                     // +0x24
     CExoArrayList<CGameEffect *> m_lEffects;           // +0x28
-    char pad_0x34[0x34];
+    CExoLocString m_lsFirstName;     // +0x34
+    CExoLocString m_lsLastName;      // +0x3c
+    char pad_0x44[0x68 - 0x44];
     unsigned long m_nExperience;     // +0x68
-    int m_bEffectsValid;             // +0x6c
+    int m_bIsPC;                     // +0x6c
     char pad_0x70[0x19];
     unsigned char m_nNumMultiClasses;  // +0x89
     char pad_0x8a[0x2];
@@ -360,7 +482,9 @@ public:
     unsigned char m_nCHABase;        // +0xf3
     char m_nCHAMod;                  // +0xf4
     unsigned char m_nACNaturalBase;  // +0xf5
-    char pad_0xf6[0x29];
+    char pad_0xf6[0x102 - 0xf6];
+    unsigned char m_nBaseAttackBonusOverride;  // +0x102 (placeholder name)
+    char pad_0x103[0x11f - 0x103];
     unsigned char m_nForceResistance;         // +0x11f
     unsigned char m_nForceResistancePenalty;  // +0x120
     char pad_0x121[0x3];
@@ -382,13 +506,17 @@ public:
 
 class CSWRules {
 public:
-    char pad_0x0[0x38];
+    char pad_0x0[0x34];
+    CSWBaseItemArray *m_pBaseItemArray;  // +0x34
     unsigned long m_anExperienceTable[0x15];  // +0x38
     CSWSpellArray *m_pSpellArray;    // +0x8c
     char pad_0x90[0x1b];
     unsigned char m_nNumSkills;      // +0xab
     CSWClass *m_pClasses;            // +0xac
     CSWFeat *GetFeat(unsigned short nFeat);
+    unsigned short RollDice(unsigned char nNumDice, unsigned char nDieSize);
+    unsigned short GetWeightedDamageAmount(int nRoll, int nDie, int bAttackerPC, int bDefenderPC,
+                                           int nPercent);
     CSWRace *m_pRaces;               // +0xb0
     CSWSkill *m_pSkills;             // +0xb4
 };
@@ -722,8 +850,8 @@ unsigned char CSWSCreatureStats::GetUnarmedDamageDie()
 {
     int nSize = m_pBaseCreature->m_nCreatureSize;
     if (m_pBaseCreature->GetIsDroid() == 1)
-        return (nSize > 2) * 2 + 4;
-    return (nSize <= 2) + 1;
+        return nSize > 2 ? 6 : 4;
+    return nSize <= 2 ? 2 : 1;
 }
 
 // FUNCTION: SWKOTOR 0x005A5110
@@ -772,12 +900,12 @@ int CSWSCreatureStats::GetIsJedi()
     return 0;
 }
 
-// NONMATCH (4): original lays the !m_bEffectsValid `return 0` inline and jumps
+// NONMATCH (4): original lays the !m_bIsPC `return 0` inline and jumps
 // back to it from the bounds check; every if/ternary shape tried puts it last.
 // FUNCTION: SWKOTOR 0x005A6170
 CGameEffect *CSWSCreatureStats::GetEffect(unsigned char n)
 {
-    if (m_bEffectsValid) {
+    if (m_bIsPC) {
         if (n >= m_lEffects.num)
             return 0;
         return m_lEffects.element[n];
@@ -1199,7 +1327,7 @@ void CSWSCreatureStats::AddKnownSpell(unsigned char nMultiClass, unsigned long n
 {
     if (nMultiClass < m_nNumMultiClasses) {
         if (g_pRules->m_pSpellArray->GetSpell(nSpell)) {
-            if (m_bEffectsValid && !CSWClass::IsForceUserClass(GetClass(nMultiClass)))
+            if (m_bIsPC && !CSWClass::IsForceUserClass(GetClass(nMultiClass)))
                 return;
             m_ClassInfo[nMultiClass].AddKnownSpell(0, nSpell);
         }
@@ -1360,4 +1488,218 @@ int CSWSCreatureStats::HasSpell(unsigned char nSpellLevel, unsigned long nSpell,
         return 1;
     }
     return bFound;
+}
+
+// FUNCTION: SWKOTOR 0x005A4C60
+CExoString CSWSCreatureStats::GetFullName()
+{
+    CExoString sName;
+    CSWSMessage::GetLocStringServer(0xffffffff, m_lsFirstName, m_lsLastName, sName, 0);
+    return sName;
+}
+
+// FUNCTION: SWKOTOR 0x005A4D90
+unsigned short CSWSCreatureStats::GetUnarmedDamageRoll(CSWSObject *pTarget)
+{
+    int nPercent = 100;
+    int nDie = GetUnarmedDamageDie();
+    int nDice = GetUnarmedDamageDice();
+    int nRoll = g_pRules->RollDice(nDice, nDie);
+    int bDefenderPC = 0;
+    int bAttackerPC = 0;
+    if (pTarget && pTarget->AsSWSCreature()) {
+        if (m_bIsPC == 1 && pTarget->AsSWSCreature()->m_b9d4 == 0) {
+            bAttackerPC = 1;
+            nPercent = g_pAppManager->m_pServerExoApp->GetDifficultyOption(3);
+        } else if (m_bIsPC == 0 && pTarget->AsSWSCreature()->m_b9d4 == 1) {
+            bDefenderPC = 1;
+            nPercent = g_pAppManager->m_pServerExoApp->GetDifficultyOption(4);
+        }
+    }
+    return g_pRules->GetWeightedDamageAmount(nRoll, nDie, bAttackerPC, bDefenderPC, nPercent);
+}
+
+// FUNCTION: SWKOTOR 0x005A4EC0
+int CSWSCreatureStats::ResolveSpecialAttackAttackBonus(int nUnused)
+{
+    CSWSCombatRound *pRound = m_pBaseCreature->m_pcCombatRound;
+    CSWSCombatAttackData *pAttack = pRound->GetAttack(pRound->m_nCurrentAttack);
+    int nBonus = 0;
+    switch (pAttack->m_nAttackType) {
+    case 0x11:
+    case 0x12:
+    case 0x1c:
+    case 0x1d:
+    case 0x52:
+    case 0x53:
+        nBonus = -3;
+        break;
+    case 0x0b:
+    case 0x1e:
+        nBonus = -4;
+        break;
+    case 0x5b:
+    case 0x5c:
+        nBonus = -2;
+        break;
+    case 0x1a:
+    case 0x35:
+        nBonus = -1;
+        break;
+    case 0x65:
+        nBonus = 0;
+        break;
+    case 0x66:
+        nBonus = 2;
+        break;
+    case 0x67:
+        nBonus = 4;
+        break;
+    }
+    return nBonus;
+}
+
+// FUNCTION: SWKOTOR 0x005A4FB0
+int CSWSCreatureStats::ResolveSpecialAttackDamageBonus(int nUnused)
+{
+    CSWSCombatRound *pRound = m_pBaseCreature->m_pcCombatRound;
+    CSWSCombatAttackData *pAttack = pRound->GetAttack(pRound->m_nCurrentAttack);
+    int nBonus = 0;
+    switch (pAttack->m_nAttackType) {
+    case 0x1c:
+    case 0x1d:
+        nBonus = 5;
+        break;
+    case 0x11:
+    case 0x12:
+        nBonus = 8;
+        break;
+    case 0x52:
+    case 0x53:
+        nBonus = 10;
+        break;
+    case 0x65:
+        nBonus = 0;
+        break;
+    case 0x66:
+        nBonus = 2;
+        break;
+    case 0x67:
+        nBonus = 4;
+        break;
+    }
+    return nBonus;
+}
+
+// FUNCTION: SWKOTOR 0x005A52B0
+int CSWSCreatureStats::GetCriticalHitMultiplier(int bOffHand)
+{
+    int nMultiplier = 2;
+    CSWSItem *pWeapon;
+    if (bOffHand) {
+        pWeapon = m_pBaseCreature->m_pInventory->GetItemInSlot(0x10);
+        if (pWeapon) {
+            if (g_pRules->m_pBaseItemArray->GetBaseItem(pWeapon->m_nBaseItem)->m_nWeaponWield != 3)
+                pWeapon = m_pBaseCreature->m_pInventory->GetItemInSlot(0x20);
+        }
+    } else {
+        pWeapon = m_pBaseCreature->m_pInventory->GetItemInSlot(0x10);
+    }
+    if (pWeapon)
+        return g_pRules->m_pBaseItemArray->GetBaseItem(pWeapon->m_nBaseItem)->m_nCritMultiplier;
+    return nMultiplier;
+}
+
+// FUNCTION: SWKOTOR 0x005A53B0
+CExoString CSWSCreatureStats::GetClassString(unsigned char nMultiClass)
+{
+    if (nMultiClass >= m_nNumMultiClasses)
+        return CExoString("");
+    CSWClass *pClass = &g_pRules->m_pClasses[m_ClassInfo[nMultiClass].m_nClass];
+    if (pClass)
+        return pClass->GetNameText();
+    return CExoString("");
+}
+
+// FUNCTION: SWKOTOR 0x005A60D0
+int CSWSCreatureStats::GetBaseAttackBonus()
+{
+    int nBAB = 0;
+    for (int i = 0; i < m_nNumMultiClasses; i++) {
+        unsigned char nLevel = GetClassLevel(i, 0);
+        CSWClass *pClass = &g_pRules->m_pClasses[GetClass(i)];
+        if (pClass)
+            nBAB += pClass->GetAttackBonus(nLevel);
+    }
+    unsigned char nOverride = m_nBaseAttackBonusOverride;
+    if (nOverride == 0)
+        return nBAB;
+    return nOverride;
+}
+
+// FUNCTION: SWKOTOR 0x005A7110
+int CSWSCreatureStats::HasSpellPrereq(CSWSpell *pSpell, CExoArrayList<unsigned long> *pList)
+{
+    int nId;
+    int i;
+    for (i = 0; (nId = pSpell->m_lstPrereqSpells[i]) != -1; i++) {
+        if (!HasSpell(0, nId, 1)) {
+            if (pList->IndexOf(nId) == -1)
+                return 0;
+        }
+    }
+    for (i = 0; (nId = pSpell->m_lstPrereqSpells2[i]) != -1; i++) {
+        if (!HasSpell(0, nId, 1)) {
+            if (pList->IndexOf(nId) == -1)
+                return 0;
+        }
+    }
+    return pSpell->GetSpellLevel(GetClass(m_nNumMultiClasses - 1)) <= GetLevel(0);
+}
+
+// FUNCTION: SWKOTOR 0x005A7230
+int CSWSCreatureStats::HasFeatPrereq(CSWFeat *pFeat, CExoArrayList<unsigned short> *pList)
+{
+    if (pFeat->m_nRequiredFeat1 != 0xffff && !HasFeatInList(pFeat->m_nRequiredFeat1, pList))
+        return 0;
+    if (pFeat->m_nRequiredFeat2 != 0xffff && !HasFeatInList(pFeat->m_nRequiredFeat2, pList))
+        return 0;
+    int bHasOrReq = 0;
+    int bFound = 0;
+    for (int i = 0; !bFound && i < 5; i++) {
+        unsigned short nReq = pFeat->GetOrReqFeat(i);
+        if (nReq != 0xffff) {
+            bHasOrReq = 1;
+            if (HasFeatInList(nReq, pList))
+                bFound = 1;
+        }
+    }
+    if (bHasOrReq && !bFound)
+        return 0;
+    return 1;
+}
+
+// FUNCTION: SWKOTOR 0x005AC8F0
+int CSWSCreatureStats::CanChooseSpell(unsigned long nSpell, unsigned char nKnownLeft,
+                                      CExoArrayList<unsigned long> *pList)
+{
+    unsigned char n = m_nNumMultiClasses - 1;
+    CSWSpell *pSpell = g_pRules->m_pSpellArray->GetSpell(nSpell);
+    if (!pSpell)
+        return 0;
+    if (pSpell->m_nUserType != 1 && pSpell->m_nUserType != 5)
+        return 0;
+    if (!nKnownLeft)
+        return 0;
+    for (unsigned short i = 0; i < GetNumberKnownSpells(n, 0); i++) {
+        if (nSpell == GetKnownSpell(n, 0, (unsigned char)i))
+            return 0;
+    }
+    for (unsigned short j = 0; j < pList->num; j++) {
+        if (nSpell == pList->element[j])
+            return 0;
+    }
+    if (!HasSpellPrereq(pSpell, pList))
+        return 0;
+    return nKnownLeft - pList->num > 0;
 }

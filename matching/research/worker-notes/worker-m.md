@@ -244,3 +244,77 @@ item creation 0x0064B540 / active properties 0x0064E3D0, placeable add
 handler at 0x0064EC00 has two fixed stack arrays with an unbounded byte count;
 its native stack contract needs reconciliation before a safe typed attempt.
 Do not count disassembly-only screening of these queue addresses as attempts.
+
+## Completed Pazaak GUI batch, worker-m-s1 (2026-10-26)
+
+Family: the Pazaak minigame GUI cluster 0x0067CA50-0x0067FFA0 plus the
+folded button destructor 0x00644A30. Shared header `include/m/sw_gui_pazaak.h`
+(CSWGuiActivatedButton, CSWGuiPazaakCard, CSWGuiTutorial, CSWGuiSpeedButton,
+CSWGuiWagerPopup, CSWGuiPazaakStart, CSWGuiPazaakGame, CSWPazaak/CPazaakPlayer/
+CPazaakCard). Control/panel layouts follow d/gui_control.h and the message box
+from l/sw_gui_tutorial_box.h; all member offsets were checked against the
+playable reference (src/minigames/claude_pazaak_*).
+
+Result: **72 actual NEW attempts, 67 NEW exact, 5 retained NONMATCH.**
+Folder: 271/305 -> **338/377**. No duplicate annotations; no prior misses touched.
+
+Files: sw_gui_pazaak_card.cpp (15/15), sw_gui_pazaak_tutorial.cpp (8/8),
+sw_pazaak_turns.cpp (2/2), sw_gui_pazaak_wager.cpp (13/13, includes the
+speed button), sw_gui_pazaak_start.cpp (10/13), sw_gui_pazaak_game.cpp (19/21).
+Several exact functions are absent from functions.csv (e.g. 0x0067CAC0,
+0x0067CB70, 0x0067D260, 0x0067E860); annotations add them as extents.
+
+Retained NONMATCHs:
+- 0x0067E400 ShowDisabledButtons (42 diffs, 256/304): inline-copy register
+  choice (ebx sete / id CSE); four shapes.
+- 0x0067F750 Start::OnPanelAdded (9 diffs, 944/960): the first SetCard
+  argument is built in place (`sub esp,8; mov [$T],esp`) in the original; a
+  temporary ctor, inline returner, dtor or copy ctor did not reproduce it
+  without breaking the second SetCard call.
+- 0x0067FB10 AddChosenCard (7 diffs): final all-chosen loop counter/pointer
+  register swap only.
+- 0x0067EA10 HandleTutorialClose (18 diffs): the original keeps the
+  mgs_playside CResRef in its own slot above the help arrays; named-in-case,
+  temp and function-scope arrays all mis-order or overlap the slots.
+- 0x0067D4B0 RefreshDisplay (124 diffs, 1328/1408): card comparison copies and
+  induction variables; operator!= / GetBoardCard forms tried.
+
+Compiler lessons (all reproduced exactly here):
+- An inline accessor's result is materialised in EAX: `GetPazaak()->m_cPlayer.
+  GetTotal()` gives `mov eax,[..]; lea ecx,[eax+8]`, `pCreature->GetStats()->`
+  gives `mov eax,[eax+0xa74]`; the direct member path gives `mov ecx; add ecx`.
+- Virtual calls on member sub-objects (`m_btnSwitch.SetEnabled(x)`) are NOT
+  devirtualised by MSVC7 here; they read the member's vptr in place.
+- Tail merging keeps the copy from the earlier source case: order switch cases
+  so the case whose epilogue the original keeps comes first.
+- Strings: named block-scoped `{ CExoString sName("X"); InitControl(&c, sName,
+  1); }` and `{ CResRef cLayout("x"); StartLoadFromLayout(cLayout); }` give
+  `lea` argument pushes and the original frame size; temporaries push EAX.
+- `a + " " + n + "\n" + b` with implicit CExoString conversions reproduces the
+  original temporary construction order (all literal/int temps first), unlike
+  explicit CExoString(...) operands.
+- SEH-free ctor with frame: the dead-`new` sized CExoArrayList ctor again.
+  The wager popup's unused list needs an unconditional `delete[]; element = 0`
+  dtor (explicit specialisation for CExoArrayList<int>), the tutorial's uses
+  the `if (element)` form.
+- `CPazaakCard cTmp; cTmp.m_nValue = -1; cTmp.m_bFlag = 0; m_cCard = cTmp;`
+  gives the `or eax,-1 / xor ecx,ecx` register stores; `CPazaakCard(-1, 0)`
+  assigned gives the same; direct member stores give immediates.
+- Bitfield flag via an inline setter (`m_lblFace.SetFlag5(1)`,
+  `SetNavigable(0)`) keeps the member pointer register (load/or/store).
+- abs(): declare `extern "C" int __cdecl abs(int)` + `#pragma intrinsic(abs)`
+  for cdq/xor/sub. sin(): same with `#pragma intrinsic(sin)`; cast the fsin
+  result to float to keep dword constants in the following fadd/fmul.
+- Vector arithmetic: `m_vColor * s + vColor * (1 - s)` with inline
+  operator*/operator+ returning `Vector(x, y, z)` matches the x87 order.
+
+Naming: CSWGuiWagerPopup::OnLessButton/OnMoreButton/OnWagerButton and
+CSWGuiPazaakStart::IsAvailCard/IsChosenCard are descriptive. 0x00644A30 is
+annotated as ??1CSWGuiSpeedButton (folded identical ~CSWGuiButton thunk) and
+0x0067EFA0 as ??_GCSWGuiSpeedButton (also CSWGuiActivatedButton's slot 0).
+
+Next in-range queue: the CSWGuiPazaakGame tail and constructor live in bucket
+k (0x00680030+). In bucket m: journal2 CSWCJournal/CSWCWorldJournal cluster
+(0x006760F0, 0x00676260, 0x006763D0, 0x00676530, 0x00676610, 0x00676B00,
+0x00676C20, 0x00676E60, 0x00676F00, 0x00676FA0, 0x00677000, 0x00677130,
+0x00677300, 0x00675F10), then module camera (0x006401D0..0x00641760).

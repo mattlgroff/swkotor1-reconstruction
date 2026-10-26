@@ -424,3 +424,38 @@ Model* InputBinary::ResetLite(Model* pModel, int nRaw, void* pResource)
     InsertModel(pModel);
     return pModel;
 }
+
+// FUNCTION: SWKOTOR 0x004A1260
+MaxTree* InputBinary::Read(AurRes* pMdl, AurRes* pMdx, bool bLite)
+{
+    char* pData = AurResGetDataBytes(4, pMdl);
+    if (!pData)
+        return 0;
+    m_nMdlSize = *(unsigned int*)pData;
+    AurResFreeDataBytes(pMdl, pData);
+    pData = AurResGetDataBytes(4, pMdl);
+    m_nMdxSize = *(unsigned int*)pData;
+    AurResFreeDataBytes(pMdl, pData);
+    pData = AurResGetDataBytes(m_nMdlSize, pMdl);
+    char* pImage = new char[m_nMdlSize];
+    memcpy(pImage, pData, m_nMdlSize);
+    AurResFreeDataBytes(pMdl, pData);
+    char* pRaw = m_nMdxSize > 0 ? AurResGetDataBytes(m_nMdxSize, pMdx) : 0;
+    char* pRawCopy = 0;
+    if (m_nMdxSize) {
+        pRawCopy = new char[m_nMdxSize];
+        memcpy(pRawCopy, pRaw, m_nMdxSize);
+    }
+    AurResFreeDataBytes(pMdl, pRaw);
+    MaxTree* pTree;
+    if (!bLite)
+        pTree = Reset((Model*)pImage, (int)pRawCopy, pMdl);
+    else
+        pTree = ResetLite((Model*)pImage, (int)pRawCopy, pMdl);
+    pTree->AsModel()->m_pRawResource = pMdx;
+    pTree->AsModel()->m_pResource = pMdl;
+    AurResClose(pMdl, 0);
+    AurResRemove(pMdx);
+    delete[] pRawCopy;
+    return pTree;
+}

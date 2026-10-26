@@ -42,6 +42,8 @@ public:
 
     int ShowBarkString(unsigned long oid, int a, int b, int c);   // 0x0062AB30
     void UpdateCombatMode();                        // 0x0062B050
+    void AdjustHideCount(int n);                    // 0x0062B410
+    void ShutDown();                                // 0x0062C310
 };
 
 class CSWCCreatureBark {
@@ -730,5 +732,164 @@ void CClientExoAppInternal::RestartMoviesIfNecessary()
         ResumeTimers();
         ClearInputState(8);
         m_pMoviePlayer->HideFadePanel();
+    }
+}
+
+// Worker C s1 additions.
+
+extern int g_bCameraFollowFlag;                     // 0x007A2484
+
+class CSWPlayerControlCamRelative {
+public:
+    CSWPlayerControlCamRelative(unsigned long oidCreature, CSWCModuleScene* pCamera);  // 0x00679780
+    void SetCreature(unsigned long oidCreature);    // 0x00679340 (descriptive)
+    void SetCamera(CSWCModuleScene* pCamera);       // 0x006793B0 (descriptive)
+    void Reset();                                   // 0x006792D0 (descriptive)
+    char pad_0x0[0xcc];
+};
+
+class CSWGuiMainMenu : public CSWGuiPanel {
+public:
+    CSWGuiMainMenu(CSWGuiManager* pManager);        // 0x0067C4C0
+    char pad_0x4[0x40];
+    unsigned long m_nFlagsLow : 8;                  // 0x44
+    unsigned long m_bFlag8 : 1;
+    unsigned long m_bFlag9 : 1;
+    unsigned long m_bFlag10 : 1;
+    char pad_0x48[0x1414 - 0x48];
+};
+
+// FUNCTION: SWKOTOR 0x005F5CF0
+void CClientExoAppInternal::AttachPlayerGameObjectToArea()
+{
+    // NONMATCH (5 insns): the original loads the area-scene argument into ecx.
+    CSWCCreature* pCreature = GetPlayerCreature();
+    if (!pCreature) {
+        return;
+    }
+    pCreature->v94(m_pModule->GetArea()->m_pAreaScene);
+    if (g_bCameraFollowFlag) {
+        if (pCreature->m_nUnknown310 > 0) {
+            pCreature->m_bUnknown314 = 1;
+            pCreature->m_bUnknown318 = 1;
+        }
+    } else {
+        m_pModule->SetMapCharacter(pCreature->GetId(), 1);
+    }
+    if (m_pCharacterPanel) {
+        ((CSWPlayerControlCamRelative*)m_pCharacterPanel)->SetCreature(pCreature->GetId());
+        ((CSWPlayerControlCamRelative*)m_pCharacterPanel)->SetCamera(m_pModule->GetScene());
+    } else {
+        m_pCharacterPanel = (CSWGuiPanel*)new CSWPlayerControlCamRelative(pCreature->GetId(), m_pModule->GetScene());
+    }
+}
+
+// FUNCTION: SWKOTOR 0x005FCA30
+void CClientExoAppInternal::ResetGuis(int n)
+{
+    if (m_pMainMenu && m_pGuiManager->PanelExists(m_pMainMenu)) {
+        return;
+    }
+    if (m_pPreviousMainMenu) {
+        if (m_pGuiManager->PanelExists(m_pPreviousMainMenu)) {
+            CSWGuiMainMenu* pMenu = (CSWGuiMainMenu*)m_pPreviousMainMenu;
+            pMenu->m_bFlag8 = 0;
+            pMenu->m_bFlag9 = 0;
+            pMenu->m_bFlag10 = 1;
+        } else {
+            delete m_pPreviousMainMenu;
+        }
+        m_pPreviousMainMenu = 0;
+    }
+    m_pMainMenu = new CSWGuiMainMenu(m_pGuiManager);
+    SetInputClass(2, 1);
+    m_pGuiManager->AddPanel(m_pMainMenu, 2, 1);
+    SetMusic(1, 0x7f, 2);
+    if (m_nUnknown494 == 1) {
+        m_nUnknown494 = 0;
+    }
+    m_pGuiInGame->AdjustHideCount(0);
+}
+
+void SetClearColor(const char* sColor);             // 0x00401690
+extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
+
+// FUNCTION: SWKOTOR 0x005F8290
+void CClientExoAppInternal::UnloadModule()
+{
+    SetClearColor("0 0 0");
+    m_oidPlayer = OBJECT_INVALID_ID;
+    if (m_pParty) {
+        m_pParty->SetPlayerCreature(m_oidPlayer);
+    }
+    SetPausedByCombat(0, 0, 0);
+    SetPauseState(2, 0, 0);
+    SetPauseState(1, 0, 0);
+    ClearPauseExclusionList();
+    if (!m_pModule) {
+        return;
+    }
+    delete m_pModule;
+    m_pModule = 0;
+    g_pAppManager->GetObjectTableManager(0)->RemovePlayer(0);
+    delete m_pGameObjectArray;
+    m_nUnknown248 = 0;
+    if (m_pWorldJournal) {
+        m_pWorldJournal->DeleteAllEntries();
+    }
+    if (m_pQuestJournal) {
+        m_pQuestJournal->ClearQuests();
+    }
+    if (m_pGuiInGame) {
+        m_pGuiInGame->ShutDown();
+    }
+    if (m_pCharacterPanel) {
+        ((CSWPlayerControlCamRelative*)m_pCharacterPanel)->Reset();
+    }
+    m_pGameObjectArray = new CGameObjectArray(1);
+    g_pAppManager->GetClientExoApp()->SetAreaNotReadyToDisplay(1);
+    m_fUnknown38c = 0;
+    m_fUnknown390 = 0;
+    m_nUnknown394 = 0;
+    m_nUnknown3a0 = 0;
+    m_nAutoPauseFlag = 0xff;
+    m_bAutoPaused = 0;
+    m_bEnemySighted = 0;
+    m_bUnknown328 = 0;
+    m_bCombatMode = 0;
+}
+
+// FUNCTION: SWKOTOR 0x005F3F10
+void CClientExoAppInternal::SetAutoPaused(int bPaused, int nFlag)
+{
+    if (m_bAutoPaused == bPaused) {
+        return;
+    }
+    if (bPaused) {
+        if (GetPausedByCombat()) {
+            return;
+        }
+        if (m_fUnknown38c > 0.0f) {
+            m_fUnknown38c = 0;
+            m_fUnknown390 = 1.0f;
+            m_nAutoPauseFlag = (unsigned char)nFlag;
+            return;
+        }
+        if (m_pGuiInGame->m_nCombatPauseMode != 0) {
+            return;
+        }
+        if ((unsigned char)nFlag == 9) {
+            if (m_fUnknown39c > 0.0f) {
+                return;
+            }
+            m_fUnknown39c = 2.0f;
+        }
+        m_bAutoPaused = 1;
+        SetPausedByCombat(1, (unsigned char)nFlag, 0);
+    } else {
+        m_bAutoPaused = 0;
+        if (GetPausedByCombat()) {
+            SetPausedByCombat(0, 0, 0);
+        }
     }
 }

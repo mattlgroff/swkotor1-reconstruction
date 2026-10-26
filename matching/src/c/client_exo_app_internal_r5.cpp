@@ -76,14 +76,22 @@ struct COptionsFlags {
 extern int g_bMouseButtonDown;                      // 0x008338F4
 extern int g_bSwapMouseButtons;                     // 0x008338F0
 
+class CSWGuiModalWarningBox {
+public:
+    void OnPanelAdded();                            // 0x00627260
+};
+
 class CGuiInGame {
 public:
     char pad_0x0[0x90];
     CSWGuiToolTip* m_pToolTip;                      // 0x90
+    char pad_0x94[0x4];
+    CSWGuiModalWarningBox* m_pDeathPanel;           // 0x98
 
     void Initialize();                              // 0x00632860
     void IndicateObject(unsigned long oid);         // 0x0062B000
     void StartGlobalFade(int a, int b, float fTime, Vector* pColor);   // 0x0062ABF0
+    void StartGlobalFade(int nType, float fTime, float fAlpha, const Vector& vColor);   // 0x0062ABF0
     int CanShowTutorialWindow(int n);               // 0x0062F420
     int TestTutorialWindow(int n);                  // 0x0062B0D0
     void AddGoldMessage(int b, int nDelta);         // 0x0062EEB0
@@ -926,4 +934,47 @@ void CClientExoAppInternal::PerformLButtonUpAction()
             HandleMouseClickInWorld();
         }
     }
+}
+
+// Worker C s1 additions.
+
+class CSWCameraModeDeath {
+public:
+    CSWCameraModeDeath(void* pOwner, CGob* pTarget);    // 0x0063BBD0 (descriptive)
+    char pad_0x0[0x40];
+};
+
+class CSWCModuleCamera {
+public:
+    virtual void v00();
+    virtual void* GetOwner();                       // 0x04 (descriptive)
+    virtual void v08(); virtual void v0C();
+    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
+    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
+    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
+    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
+    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
+    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
+    virtual void v70(); virtual void v74(); virtual void v78();
+    virtual void SetCameraMode(CSWCameraModeDeath* pMode);  // 0x7c (descriptive)
+};
+
+// FUNCTION: SWKOTOR 0x005F7200
+void CClientExoAppInternal::RunDeathSequence()
+{
+    // NONMATCH (12 insns): same inlined creature lookup tie as
+    // DontUseThisSetPlayerCreature (array load before &pObject, type in al).
+    m_bGameOver = 1;
+    m_bGameOverSet = 1;
+    m_pGuiManager->HideAllPanels();
+    m_pGuiInGame->m_pDeathPanel->OnPanelAdded();
+    CSWCCreature* pCreature = LookUpCreature(m_oidPortraitCreature);
+    if (m_pModule && pCreature) {
+        CSWCModuleCamera* pCamera = (CSWCModuleCamera*)m_pModule->m_pScene;
+        if (pCamera) {
+            pCamera->SetCameraMode(new CSWCameraModeDeath(pCamera->GetOwner(), pCreature->vD0()));
+        }
+    }
+    Vector vColor(0.0f, 0.0f, 0.0f);
+    m_pGuiInGame->StartGlobalFade(0, 12.0f, 1.0f, vColor);
 }

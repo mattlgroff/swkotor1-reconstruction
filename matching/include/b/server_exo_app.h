@@ -34,6 +34,7 @@ public:
     class CSWSArea* GetAreaByGameObjectID(unsigned long nId);           // 0x004AE780
     class CSWSPlaceable* GetPlaceableByGameObjectID(unsigned long nId); // 0x004AE7A0
     class CServerAIMaster* GetServerAIMaster();                         // 0x004AED80
+    void SetAutoSavePending(int bPending);                              // 0x004AED10
     CGameObject* GetClientObjectByObjectId(unsigned long nId);          // 0x004AE910
     CSWPartyTable* GetPartyTable();                                     // 0x004AEE70
     class CSWSModule* GetModule();                                      // 0x004AE6B0
@@ -109,6 +110,7 @@ public:
     void ResetDriveAcceleration();                                      // 0x005EDBA0
     void SetPauseState(unsigned char nType, int nState,
                         CExoLinkedList<unsigned long>* pExcludedObjects); // 0x005ED650
+    void GetPazaakResult(int* pResult, int* pWager);                    // 0x005EDDE0 (second name guessed)
     void HideLoadScreen(int a1, int a2);                                // 0x005EDA90
     void PlayMovie(const CExoString& sMovie, int* pResult, int a3, int a4); // 0x005EDB30
     void StartPazaakGame(int nOpponentDeck, const CExoString& sEndScript, int nMaxWager,

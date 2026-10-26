@@ -1,5 +1,8 @@
-// CAurPostString (timed on-screen debug strings), 0x0044d010-0x0044d320.
+// CAurPostString (timed on-screen debug strings), 0x0044d010-0x0044d4f0.
+#include <stdarg.h>
+
 extern "C" {
+int __cdecl vsprintf(char* d, const char* fmt, va_list args);
 __declspec(dllimport) void __stdcall glColor4f(float r, float g, float b, float a);
 char* __cdecl strcpy(char* d, const char* s);
 unsigned int __cdecl strlen(const char* s);
@@ -118,4 +121,32 @@ CAurPostString::CAurPostString(const char* sz, int nX, int nY, float fLife)
     m_cEnd.g = g_cPostEnd.g;
     m_cEnd.b = g_cPostEnd.b;
     m_cEnd.a = g_cPostEnd.a;
+}
+
+extern int g_bAurPrintf;                // 0x007b90f8
+extern unsigned char g_bAurPrintfRight; // 0x0078e364
+extern int g_nAurPrintfColumn;          // 0x007b90f4
+extern int g_nAurPrintfRow;             // 0x007b90e8
+
+// FUNCTION: SWKOTOR 0x0044d4f0
+void AurPrintf(const char* szFormat, ...)
+{
+    if (!g_bAurPrintf)
+        return;
+    char szText[512];
+    va_list args;
+    va_start(args, szFormat);
+    vsprintf(szText, szFormat, args);
+    CAurPostString* p = new CAurPostString(
+        szText,
+        g_bAurPrintfRight ? 80 - strlen(szText) - g_nAurPrintfColumn : g_nAurPrintfColumn,
+        g_nAurPrintfRow = (g_nAurPrintfRow + 1) % 40, 10.0f);
+    p->m_cStart.r = 0.92f;
+    p->m_cStart.g = 0.91f;
+    p->m_cStart.b = 0.9f;
+    p->m_cStart.a = 0.75f;
+    p->m_cEnd.r = 0.35f;
+    p->m_cEnd.g = 0.3f;
+    p->m_cEnd.b = 0.4f;
+    p->m_cEnd.a = 0.3f;
 }

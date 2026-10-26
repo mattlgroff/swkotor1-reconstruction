@@ -110,3 +110,18 @@ int CSWVirtualMachineCommands::ExecuteCommandCreateItemOnObject(int nCommandId, 
     }
     return 0;
 }
+
+// FUNCTION: SWKOTOR 0x005369B0
+int CSWVirtualMachineCommands::ExecuteCommandGetBaseItemType(int nCommandId, int nParameters)
+{
+    unsigned long oidItem;
+    if (!g_pVirtualMachine->StackPopObject(&oidItem)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    int nResult = 0x100;
+    CSWSItem* pItem = g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(oidItem);
+    if (pItem) {
+        nResult = pItem->m_nBaseItem;
+    }
+    return g_pVirtualMachine->StackPushInteger(nResult) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+}

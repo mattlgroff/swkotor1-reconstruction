@@ -1,6 +1,7 @@
 // CSWVirtualMachineCommands: small effect builders, script events and dice.
 #include "b/vm_commands.h"
 #include "b/vm_effect.h"
+#include "b/sws_creature.h"
 #include "b/party_table.h"
 #include "b/global_variable_table.h"
 
@@ -802,6 +803,877 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsEffectValid(int nCommandId, in
         bValid = 0;
     }
     if (!g_pVirtualMachine->StackPushInteger(bValid)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+extern const unsigned short EFFECT_TYPE_ABILITY_INCREASE;   // 0x0074670C
+extern const unsigned short EFFECT_TYPE_ABILITY_DECREASE;   // 0x00746710
+extern const int ABILITY_STRENGTH;                          // 0x00746838 (0)
+extern const int ABILITY_CHARISMA;                          // 0x0074684C (5)
+
+// FUNCTION: SWKOTOR 0x00530680
+int CSWVirtualMachineCommands::ExecuteCommandEffectAbilityDecrease(int nCommandId, int nParameters)
+{
+    int nAbility;
+    int nModifyBy;
+    if (!g_pVirtualMachine->StackPopInteger(&nAbility)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nModifyBy)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (nAbility < 0 || nAbility > ABILITY_CHARISMA) {
+        nAbility = ABILITY_STRENGTH;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_ABILITY_DECREASE;
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetInteger(0, nAbility);
+    pEffect->SetInteger(1, nModifyBy);
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x005307F0
+int CSWVirtualMachineCommands::ExecuteCommandEffectAbilityIncrease(int nCommandId, int nParameters)
+{
+    int nAbility;
+    int nModifyBy;
+    if (!g_pVirtualMachine->StackPopInteger(&nAbility)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nModifyBy)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (nAbility < 0 || nAbility > ABILITY_CHARISMA) {
+        nAbility = ABILITY_STRENGTH;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_ABILITY_INCREASE;
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetInteger(0, nAbility);
+    pEffect->SetInteger(1, nModifyBy);
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+extern const unsigned short EFFECT_TYPE_ATTACK_INCREASE;    // 0x007466A4 (0xa)
+extern const unsigned short EFFECT_TYPE_ATTACK_DECREASE;    // 0x007466A8 (0xb)
+extern const unsigned short EFFECT_TYPE_AC_INCREASE;        // 0x0074673C
+extern const unsigned short EFFECT_TYPE_AC_DECREASE;        // 0x00746740
+extern const int AC_VS_DAMAGE_TYPE_ALL;                     // 0x0074688C (0x4007)
+extern const int AC_DEFLECTION_BONUS;                       // 0x007468C0 (4)
+extern const int ATTACK_BONUS_MISC;                         // 0x007468C4 (0)
+extern const int ATTACK_BONUS_LAST;                         // 0x007468DC (7, name guessed)
+
+// FUNCTION: SWKOTOR 0x00530960
+int CSWVirtualMachineCommands::ExecuteCommandEffectACDecrease(int nCommandId, int nParameters)
+{
+    int nValue;
+    int nModifyType;
+    int nDamageType;
+    if (!g_pVirtualMachine->StackPopInteger(&nValue)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nModifyType)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    nDamageType = AC_VS_DAMAGE_TYPE_ALL;
+    if (nParameters >= 3 && !g_pVirtualMachine->StackPopInteger(&nDamageType)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (nModifyType < 0 || nModifyType > AC_DEFLECTION_BONUS) {
+        nModifyType = 0;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_AC_DECREASE;
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetInteger(0, nModifyType);
+    pEffect->SetInteger(1, nValue);
+    pEffect->SetInteger(2, g_pRules->m_nAA);
+    pEffect->SetInteger(5, nDamageType);
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x00530B20
+int CSWVirtualMachineCommands::ExecuteCommandEffectACIncrease(int nCommandId, int nParameters)
+{
+    int nValue;
+    int nModifyType;
+    int nDamageType;
+    if (!g_pVirtualMachine->StackPopInteger(&nValue)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nModifyType)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    nDamageType = AC_VS_DAMAGE_TYPE_ALL;
+    if (nParameters >= 3 && !g_pVirtualMachine->StackPopInteger(&nDamageType)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (nModifyType < 0 || nModifyType > AC_DEFLECTION_BONUS) {
+        nModifyType = 0;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_AC_INCREASE;
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetInteger(0, nModifyType);
+    pEffect->SetInteger(1, nValue);
+    pEffect->SetInteger(2, g_pRules->m_nAA);
+    pEffect->SetInteger(5, nDamageType);
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x00530F60
+int CSWVirtualMachineCommands::ExecuteCommandEffectAttackDecrease(int nCommandId, int nParameters)
+{
+    int nBonus;
+    int nModifierType;
+    if (!g_pVirtualMachine->StackPopInteger(&nBonus)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nModifierType)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (nModifierType < 0 || nModifierType > ATTACK_BONUS_LAST) {
+        nModifierType = ATTACK_BONUS_MISC;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_ATTACK_DECREASE;
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetInteger(0, nBonus);
+    pEffect->SetInteger(1, nModifierType);
+    pEffect->SetInteger(2, g_pRules->m_nAA);
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x005310E0
+int CSWVirtualMachineCommands::ExecuteCommandEffectAttackIncrease(int nCommandId, int nParameters)
+{
+    int nBonus;
+    int nModifierType;
+    if (!g_pVirtualMachine->StackPopInteger(&nBonus)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nModifierType)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (nModifierType < 0 || nModifierType > ATTACK_BONUS_LAST) {
+        nModifierType = ATTACK_BONUS_MISC;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_ATTACK_INCREASE;
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetInteger(0, nBonus);
+    pEffect->SetInteger(1, nModifierType);
+    pEffect->SetInteger(2, g_pRules->m_nAA);
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+extern const unsigned short EFFECT_TYPE_DAMAGE_DECREASE;    // 0x007466B4
+extern const unsigned short EFFECT_TYPE_CONCEALMENT;        // 0x007467AC
+
+// FUNCTION: SWKOTOR 0x005319A0
+int CSWVirtualMachineCommands::ExecuteCommandEffectConcealment(int nCommandId, int nParameters)
+{
+    int nPercentage;
+    if (!g_pVirtualMachine->StackPopInteger(&nPercentage)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    if (nPercentage >= 1 && nPercentage <= 100) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+        pEffect->SetSubType_Supernatural();
+        pEffect->m_nType = EFFECT_TYPE_CONCEALMENT;
+        pEffect->SetInteger(0, nPercentage);
+        pEffect->SetInteger(1, g_pRules->m_nAA);
+    } else {
+        pEffect->m_nType = EFFECT_TYPE_INVALIDEFFECT;
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x00531D50
+int CSWVirtualMachineCommands::ExecuteCommandEffectDamageDecrease(int nCommandId, int nParameters)
+{
+    int nPenalty;
+    int nDamageType;
+    if (!g_pVirtualMachine->StackPopInteger(&nPenalty)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nDamageType)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (nPenalty <= 0 || nPenalty > 10) {
+        nPenalty = 0;
+    }
+    if (nDamageType < 0 || nDamageType > DAMAGE_TYPE_MAX) {
+        nDamageType = DAMAGE_TYPE_DEFAULT;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_DAMAGE_DECREASE;
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetInteger(0, nPenalty);
+    pEffect->SetInteger(1, nDamageType);
+    pEffect->SetInteger(2, g_pRules->m_nAA);
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+extern const unsigned short EFFECT_TYPE_DAMAGE_RESISTANCE;  // 0x00746684 (2)
+extern const unsigned short EFFECT_TYPE_DAMAGE_REDUCTION;   // 0x007466AC (0xc)
+extern const unsigned short EFFECT_TYPE_DAMAGE_INCREASE;    // 0x007466B0
+extern const unsigned short EFFECT_TYPE_DAMAGE_IMMUNITY;    // 0x007466BC
+extern const int DAMAGE_POWER_NORMAL;                       // 0x00746894 (0)
+extern const int DAMAGE_POWER_MAX;                          // 0x007468AC (6, name guessed)
+
+// FUNCTION: SWKOTOR 0x00532050
+int CSWVirtualMachineCommands::ExecuteCommandEffectDamageImmunityIncrease(int nCommandId, int nParameters)
+{
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_DAMAGE_IMMUNITY;
+    int nDamageType;
+    int nPercent;
+    if (!g_pVirtualMachine->StackPopInteger(&nDamageType)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nPercent)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (nPercent <= 100) {
+        if (nPercent < 0) {
+            nPercent = 0;
+        }
+    } else {
+        nPercent = 100;
+    }
+    if (nDamageType < 0 || nDamageType > DAMAGE_TYPE_MAX) {
+        nDamageType = DAMAGE_TYPE_DEFAULT;
+    }
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetCreator(m_oidObjectRunScript);
+    pEffect->SetInteger(0, nDamageType);
+    pEffect->SetInteger(1, nPercent);
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x005321B0
+int CSWVirtualMachineCommands::ExecuteCommandEffectDamageIncrease(int nCommandId, int nParameters)
+{
+    int nBonus;
+    int nDamageType;
+    if (!g_pVirtualMachine->StackPopInteger(&nBonus)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nDamageType)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (nBonus <= 0 || nBonus > 10) {
+        nBonus = 0;
+    }
+    if (nDamageType < 0 || nDamageType > DAMAGE_TYPE_MAX) {
+        nDamageType = DAMAGE_TYPE_DEFAULT;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_DAMAGE_INCREASE;
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetInteger(0, nBonus);
+    pEffect->SetInteger(1, nDamageType);
+    pEffect->SetInteger(2, g_pRules->m_nAA);
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x00532350
+int CSWVirtualMachineCommands::ExecuteCommandEffectDamageReduction(int nCommandId, int nParameters)
+{
+    int nAmount;
+    int nDamagePower;
+    int nLimit;
+    if (!g_pVirtualMachine->StackPopInteger(&nAmount)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nDamagePower)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nLimit)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (nDamagePower < 0 || nDamagePower > DAMAGE_POWER_MAX) {
+        nDamagePower = DAMAGE_POWER_NORMAL;
+    }
+    nAmount = nAmount < 0 ? 0 : nAmount;
+    nLimit = nLimit < 0 ? 0 : nLimit;
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_DAMAGE_REDUCTION;
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetInteger(0, nAmount);
+    pEffect->SetInteger(1, nDamagePower);
+    pEffect->SetInteger(2, nLimit);
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x00532500
+int CSWVirtualMachineCommands::ExecuteCommandEffectDamageResistance(int nCommandId, int nParameters)
+{
+    int nDamageType;
+    int nAmount;
+    int nLimit;
+    if (!g_pVirtualMachine->StackPopInteger(&nDamageType)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nAmount)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nLimit)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (nDamageType < 0 || nDamageType > DAMAGE_TYPE_MAX) {
+        nDamageType = DAMAGE_TYPE_DEFAULT;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_DAMAGE_RESISTANCE;
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetInteger(0, nDamageType);
+    pEffect->SetInteger(1, nAmount);
+    pEffect->SetInteger(2, nLimit);
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+extern const unsigned short EFFECT_TYPE_DAMAGE_SHIELD;      // 0x00746770
+extern const unsigned short EFFECT_TYPE_FORCE_SHIELD;       // 0x00746824
+
+// FUNCTION: SWKOTOR 0x00532690
+int CSWVirtualMachineCommands::ExecuteCommandEffectForceShield(int nCommandId, int nParameters)
+{
+    int nShield = 0;
+    if (!g_pVirtualMachine->StackPopInteger(&nShield)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->SetCreator(m_oidObjectRunScript);
+    pEffect->m_nType = EFFECT_TYPE_FORCE_SHIELD;
+    pEffect->SetInteger(0, nShield);
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x00532790
+int CSWVirtualMachineCommands::ExecuteCommandEffectDamageShield(int nCommandId, int nParameters)
+{
+    int nDamageAmount;
+    int nRandomAmount;
+    int nDamageType;
+    if (!g_pVirtualMachine->StackPopInteger(&nDamageAmount)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nRandomAmount)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nDamageType)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (nDamageAmount < 0 || nDamageAmount > 10000) {
+        nDamageAmount = 1;
+    }
+    if (nRandomAmount <= 0 || nRandomAmount > 10) {
+        nRandomAmount = 0;
+    }
+    if (nDamageType < 0 || nDamageType > DAMAGE_TYPE_MAX) {
+        nDamageType = DAMAGE_TYPE_DEFAULT;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_DAMAGE_SHIELD;
+    pEffect->SetCreator(m_oidObjectRunScript);
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetInteger(0, nDamageAmount);
+    pEffect->SetInteger(1, nRandomAmount);
+    pEffect->SetInteger(2, nDamageType);
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+extern const unsigned short EFFECT_TYPE_HEAL;               // 0x00746718
+extern const unsigned short EFFECT_TYPE_HITPOINT_CHANGE_WHEN_DYING; // 0x00746760
+extern const unsigned short EFFECT_TYPE_FORCE_DRAIN;        // 0x007467E0
+extern const unsigned short DURATION_TYPE_INSTANT;          // 0x007473B8 (0)
+
+// FUNCTION: SWKOTOR 0x00532920
+int CSWVirtualMachineCommands::ExecuteCommandEffectForceDrain(int nCommandId, int nParameters)
+{
+    int nDamage;
+    if (!g_pVirtualMachine->StackPopInteger(&nDamage)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->SetSubType_Supernatural();
+    if (nDamage > 0) {
+        pEffect->m_nType = EFFECT_TYPE_FORCE_DRAIN;
+        pEffect->SetNumIntegers(1);
+        pEffect->SetInteger(0, nDamage);
+    } else {
+        pEffect->m_nType = EFFECT_TYPE_INVALIDEFFECT;
+    }
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x00532A70
+int CSWVirtualMachineCommands::ExecuteCommandEffectHeal(int nCommandId, int nParameters)
+{
+    int nDamageToHeal;
+    if (nParameters != 1) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nDamageToHeal)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->SetSubType_Supernatural();
+    if (nDamageToHeal > 0) {
+        pEffect->m_nType = EFFECT_TYPE_HEAL;
+        pEffect->SetInteger(0, nDamageToHeal);
+    } else {
+        pEffect->m_nType = EFFECT_TYPE_INVALIDEFFECT;
+    }
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject->AsSWSCreature()) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x00532BD0
+int CSWVirtualMachineCommands::ExecuteCommandEffectHitPointChangeWhenDying(int nCommandId, int nParameters)
+{
+    float fHitPointChangePerRound;
+    if (!g_pVirtualMachine->StackPopFloat(&fHitPointChangePerRound)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    if (fHitPointChangePerRound == 0.0f) {
+        pEffect->m_nType = EFFECT_TYPE_INVALIDEFFECT;
+    } else {
+        pEffect->SetCreator(m_oidObjectRunScript);
+        pEffect->m_nType = EFFECT_TYPE_HITPOINT_CHANGE_WHEN_DYING;
+        pEffect->SetDurationType(DURATION_TYPE_INSTANT);
+        pEffect->SetFloat(0, fHitPointChangePerRound);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+extern const unsigned short EFFECT_TYPE_LINK;               // 0x0074671C
+extern const int MISS_CHANCE_TYPE_NORMAL;                   // 0x00746990 (0, name guessed)
+
+// Both pop failures return the overflow code (as the original does).
+// FUNCTION: SWKOTOR 0x00532F80
+int CSWVirtualMachineCommands::ExecuteCommandEffectLinkEffects(int nCommandId, int nParameters)
+{
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_LINK;
+    CGameEffect* pChildEffect;
+    CGameEffect* pParentEffect;
+    if (!g_pVirtualMachine->StackPopEngineStructure(ENGINE_STRUCTURE_EFFECT, (void**)&pChildEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopEngineStructure(ENGINE_STRUCTURE_EFFECT, (void**)&pParentEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    pEffect->SetLinked(pChildEffect, pParentEffect);
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetCreator(m_oidObjectRunScript);
+    pEffect->UpdateLinked();
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x00533090
+int CSWVirtualMachineCommands::ExecuteCommandEffectMissChance(int nCommandId, int nParameters)
+{
+    int nPercentage;
+    if (!g_pVirtualMachine->StackPopInteger(&nPercentage)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    if (nPercentage >= 1 && nPercentage <= 100) {
+        pEffect->SetSubType_Supernatural();
+        pEffect->SetCreator(m_oidObjectRunScript);
+        pEffect->m_nType = EFFECT_TYPE_CONCEALMENT;
+        pEffect->SetInteger(0, nPercentage);
+        pEffect->SetInteger(1, MISS_CHANCE_TYPE_NORMAL);
+    } else {
+        pEffect->m_nType = EFFECT_TYPE_INVALIDEFFECT;
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+extern const unsigned short EFFECT_TYPE_MOVEMENT_SPEED_INCREASE; // 0x007466EC
+extern const unsigned short EFFECT_TYPE_MOVEMENT_SPEED_DECREASE; // 0x007466F0
+extern const unsigned short EFFECT_TYPE_MODIFYNUMATTACKS;   // 0x0074672C
+
+// FUNCTION: SWKOTOR 0x005331C0
+int CSWVirtualMachineCommands::ExecuteCommandEffectModifyAttacks(int nCommandId, int nParameters)
+{
+    int nAttacks;
+    if (!g_pVirtualMachine->StackPopInteger(&nAttacks)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    if (nAttacks > 5) {
+        pEffect->m_nType = EFFECT_TYPE_INVALIDEFFECT;
+    } else {
+        pEffect->m_nType = EFFECT_TYPE_MODIFYNUMATTACKS;
+        pEffect->SetCreator(m_oidObjectRunScript);
+        pEffect->SetSubType_Supernatural();
+        pEffect->SetInteger(0, nAttacks);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x005332E0
+int CSWVirtualMachineCommands::ExecuteCommandEffectMovementSpeedDecrease(int nCommandId, int nParameters)
+{
+    int nPercentChange;
+    if (nParameters != 1) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nPercentChange)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_MOVEMENT_SPEED_DECREASE;
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetInteger(0, nPercentChange);
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x00533420
+int CSWVirtualMachineCommands::ExecuteCommandEffectMovementSpeedIncrease(int nCommandId, int nParameters)
+{
+    int nPercentChange;
+    if (nParameters != 1) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nPercentChange)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_MOVEMENT_SPEED_INCREASE;
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetInteger(0, nPercentChange);
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+extern const unsigned short EFFECT_TYPE_POISON;             // 0x00746708 (0x23)
+extern const unsigned short EFFECT_TYPE_SKILL_DECREASE;     // 0x0074675C
+extern const unsigned short EFFECT_TYPE_SEEINVISIBLE;       // 0x00746794
+
+// FUNCTION: SWKOTOR 0x00533560
+int CSWVirtualMachineCommands::ExecuteCommandEffectPoison(int nCommandId, int nParameters)
+{
+    int nPoisonType;
+    if (!g_pVirtualMachine->StackPopInteger(&nPoisonType)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->SetSubType_Supernatural();
+    pEffect->SetCreator(m_oidObjectRunScript);
+    pEffect->m_nType = EFFECT_TYPE_POISON;
+    pEffect->SetInteger(0, nPoisonType);
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x00533AC0
+int CSWVirtualMachineCommands::ExecuteCommandEffectSeeInvisible(int nCommandId, int nParameters)
+{
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_SEEINVISIBLE;
+    pEffect->SetCreator(m_oidObjectRunScript);
+    pEffect->SetSubType_Supernatural();
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// NONMATCH (15): the shared pop-fail block sits after the first pop in the
+// original (see AddPartyMember). The effect is not deleted after the push
+// (the original leaks it).
+// FUNCTION: SWKOTOR 0x00533B90
+int CSWVirtualMachineCommands::ExecuteCommandEffectSkillDecrease(int nCommandId, int nParameters)
+{
+    int nSkill;
+    int nValue;
+    if (!g_pVirtualMachine->StackPopInteger(&nSkill)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nValue)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_SKILL_DECREASE;
+    pEffect->SetSubType_Supernatural();
+    if ((nSkill > 0 && nSkill < g_pRules->m_nNumSkills) || nSkill == 0xff) {
+        pEffect->SetInteger(0, nSkill);
+        pEffect->SetInteger(1, nValue);
+        pEffect->SetInteger(2, g_pRules->m_nAA);
+    } else {
+        pEffect->m_nType = EFFECT_TYPE_INVALIDEFFECT;
+    }
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    return g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+}
+
+extern const unsigned short EFFECT_TYPE_SKILL_INCREASE;     // 0x00746758
+
+// NONMATCH: the shared pop-fail block sits after the first pop in the
+// original (see AddPartyMember). The effect is not deleted after the push
+// (the original leaks it).
+// FUNCTION: SWKOTOR 0x00533D00
+int CSWVirtualMachineCommands::ExecuteCommandEffectSkillIncrease(int nCommandId, int nParameters)
+{
+    int nSkill;
+    int nValue;
+    if (!g_pVirtualMachine->StackPopInteger(&nSkill)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nValue)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    pEffect->m_nType = EFFECT_TYPE_SKILL_INCREASE;
+    pEffect->SetSubType_Supernatural();
+    if ((nSkill > 0 && nSkill < g_pRules->m_nNumSkills) || nSkill == 0xff) {
+        pEffect->SetInteger(0, nSkill);
+        pEffect->SetInteger(1, nValue);
+        pEffect->SetInteger(2, g_pRules->m_nAA);
+    } else {
+        pEffect->m_nType = EFFECT_TYPE_INVALIDEFFECT;
+    }
+    CGameObject* pObject;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject) {
+        pEffect->SetCreator(m_oidObjectRunScript);
+    }
+    return g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+}
+
+extern const unsigned short EFFECT_TYPE_SPELL_IMMUNITY;     // 0x00746744
+extern const unsigned short EFFECT_TYPE_SPELLLEVELABSORPTION; // 0x00746780
+
+// FUNCTION: SWKOTOR 0x00533E70
+int CSWVirtualMachineCommands::ExecuteCommandEffectSpellImmunity(int nCommandId, int nParameters)
+{
+    int nImmunityToSpell;
+    if (!g_pVirtualMachine->StackPopInteger(&nImmunityToSpell)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    if (nImmunityToSpell >= -1 && nImmunityToSpell <= g_pRules->m_pSpellArray->m_nNumSpells) {
+        pEffect->m_nType = EFFECT_TYPE_SPELL_IMMUNITY;
+        pEffect->SetSubType_Supernatural();
+        pEffect->SetCreator(m_oidObjectRunScript);
+        pEffect->SetInteger(0, nImmunityToSpell);
+    } else {
+        pEffect->m_nType = EFFECT_TYPE_INVALIDEFFECT;
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    delete pEffect;
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x00533FA0
+int CSWVirtualMachineCommands::ExecuteCommandEffectSpellLevelAbsorption(int nCommandId, int nParameters)
+{
+    int nMaxSpellLevelAbsorbed;
+    int nTotalSpellLevelsAbsorbed;
+    int nSpellSchool;
+    if (!g_pVirtualMachine->StackPopInteger(&nMaxSpellLevelAbsorbed)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nTotalSpellLevelsAbsorbed)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nSpellSchool)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameEffect* pEffect = new CGameEffect(1);
+    if (nMaxSpellLevelAbsorbed <= 9 && nMaxSpellLevelAbsorbed >= -1) {
+        pEffect->m_nType = EFFECT_TYPE_SPELLLEVELABSORPTION;
+        pEffect->SetSubType_Supernatural();
+        pEffect->SetCreator(m_oidObjectRunScript);
+        pEffect->SetInteger(0, nMaxSpellLevelAbsorbed);
+        pEffect->SetInteger(1, nTotalSpellLevelsAbsorbed);
+        pEffect->SetInteger(2, nSpellSchool);
+    } else {
+        pEffect->m_nType = EFFECT_TYPE_INVALIDEFFECT;
+    }
+    if (nTotalSpellLevelsAbsorbed == 0) {
+        pEffect->SetInteger(3, 1);
+    } else {
+        pEffect->SetInteger(3, 0);
+    }
+    if (!g_pVirtualMachine->StackPushEngineStructure(ENGINE_STRUCTURE_EFFECT, pEffect)) {
         return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
     }
     delete pEffect;

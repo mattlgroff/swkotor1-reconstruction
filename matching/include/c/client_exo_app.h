@@ -19,6 +19,8 @@ class CSWCModule;
 class CSWCSaveLoad;
 class CSWGuiManager;
 class CSWGuiLoadScreen;
+struct Vector;
+class CSWCAmbientSound;
 class CMoviePlayer;
 class CExoSoundSource;
 class CSWCCreature;
@@ -44,6 +46,7 @@ class CSWCSoundObject;
 class CSWCPlaceable;
 class CGob;
 class CSWGuiInterfaceAction;
+class CSWGuiControl;
 
 struct CHostileHilite {
     unsigned long m_oidTarget;                      // 0x00
@@ -51,33 +54,60 @@ struct CHostileHilite {
 };
 
 struct CRumblePattern {
+    int GetIntensity(float fTime, float* pfLeft, float* pfRight);  // 0x0068FDD0 (descriptive)
     char pad_0x0[0x20];
     int m_bExclusive;                               // 0x20
 };
 
+// GUI string cache entry (0xc): strref and its parsed text.
+struct CGuiStringStruct {
+    unsigned long m_nStrRef;                        // 0x00
+    CExoString m_sString;                           // 0x04
+};
+
 struct CActiveRumble {
     int m_nPattern;                                 // 0x00
-    int m_nTime;                                    // 0x04
+    union {
+        int m_nTime;                                // 0x04
+        float m_fTime;                              // 0x04 (elapsed seconds)
+    };
     int m_bActive;                                  // 0x08
 };
 
+#pragma pack(push, 4)
 class CWorldTimer {
 public:
     void GetWorldTime(unsigned long* pDay, unsigned long* pTime);   // 0x004ADE40
+    void SetSnapshotTime();                         // 0x004ADBD0
+    void SyncTo(const CWorldTimer* pTimer);         // 0x004ADEF0 (descriptive)
+    void UnpauseWorldTimer();                       // 0x004AE030
+    void PauseWorldTimer();                         // 0x004ADFF0
     unsigned __int64 GetSnapshotTime();             // 0x004ADC70
+    unsigned __int64 GetSnapshotTimeDifference();   // 0x004ADC80
     void SetSnapshotScale(float fScale);            // 0x004AE190
     void SetFixedSnapshotRate(int bEnable, unsigned long nRate);   // 0x004AE170
+
+    char pad_0x0[0x14];
+    unsigned __int64 m_nLastSnapshotTime;           // 0x14
+
+    void ResetLastSnapshotTime() { m_nLastSnapshotTime = GetSnapshotTime(); }
 };
+#pragma pack(pop)
 
 class CExoTimers {
 public:
     unsigned __int64 GetHighResolutionTimer();      // 0x005E9260
+    unsigned long GetLowResolutionTimer();          // 0x005E9250
 };
+
+class CExoAliasList;
 
 class CExoBase {
 public:
     void* m_pUnknown00;
     CExoTimers* m_pcExoTimers;                      // 0x04
+    void* m_pUnknown08;                             // 0x08
+    CExoAliasList* m_pcExoAliasList;                // 0x0c
 };
 
 class CExoSound {
@@ -101,6 +131,7 @@ public:
     void Stop(int a, int b);                        // 0x0070C1E0
     int GetState();                                 // 0x0070C1F0
     void HideFadePanel();                           // 0x0070C220
+    void ShowFadePanel();                           // 0x0070C210
     int Initialize(int n);                          // 0x0063E7C0
     unsigned long GetFrameCount();                  // 0x0070C230
     void Play();                                    // 0x0070C240
@@ -110,6 +141,7 @@ public:
 class CSWCQuestJournal {
 public:
     CSWCQuestJournal();                             // 0x006770C0
+    void ClearQuests();                             // 0x00676B00 (descriptive)
     char pad_0x0[0x50];
     void JournalUpdated(int a, int b, int c);       // 0x00676C20
 };
@@ -117,6 +149,7 @@ public:
 class CSWCWorldJournal {
 public:
     CSWCWorldJournal();                             // 0x00676DA0
+    void DeleteAllEntries();                        // 0x00676FA0
     char pad_0x0[0x20];
 };
 
@@ -124,8 +157,14 @@ class CSWCModulePlayer {
 public:
     char pad_0x0[0x104];
     unsigned long m_idPlayerObject;                 // 0x104
+    char pad_0x108[0x7c];
+    void* m_pAreaScene;                             // 0x184
+    char pad_0x188[0x54];
+    CSWCAmbientSound* m_pAmbientSound;              // 0x1dc
 
     void Unknown609410();                           // 0x00609410
+    void Unknown605C40(int n);                      // 0x00605C40 (CSWCArea; this class is the client area)
+    void* GetAreaScene() { return m_pAreaScene; }
 };
 
 class CSWCModuleScene {
@@ -144,15 +183,18 @@ public:
 class CSWCModule {
 public:
     CSWCModule();                                   // 0x00643F40
+    virtual ~CSWCModule();                          // vtable slot 0 (deleting dtor)
     void InitializeShotCamera(unsigned long n);     // 0x006412F0
     void EnterCombatMode();                         // 0x00641540
     void ExitCombatMode();                          // 0x00641DC0
 
     CSWCMiniGame* GetMiniGame();                    // 0x00641980
     CSWCModuleScene* GetScene() { return m_pScene; }
+    CSWCModulePlayer* GetArea() { return m_pPlayer; }
     void SetMapCharacter(unsigned long oid, int b); // 0x0063F9D0
+    void Update(float fDeltaTime);                  // 0x00644650
 
-    char pad_0x0[0x40];
+    char pad_0x4[0x3c];
     CSWCModuleScene* m_pScene;                      // 0x40
     char pad_0x44[0x4];
     CSWCModulePlayer* m_pPlayer;                    // 0x48
@@ -161,6 +203,7 @@ public:
 
 class CSWCSaveLoad {
 public:
+    int SendPlayerToServer_06_21();                 // 0x00677E50 (CSWCMessage)
     int SendSaveGameRequest(int a, int b, int c);   // 0x006774E0
     int SendLoadGameRequest(int a, int b, int c);   // 0x00677560
     void HandleMessage(unsigned char* pData, unsigned long nSize);   // 0x0066A640
@@ -173,10 +216,13 @@ public:
 
 class CSWGuiManager {
 public:
+    int PanelExists(CSWGuiPanel* pPanel);           // 0x0040BD70
+    void AddPanel(CSWGuiPanel* pPanel, int nLayer, int bAnimate);   // 0x0040BC70
     int PanelExists(CSWGuiLoadScreen* pPanel);      // 0x0040BD70
     void PopModalPanel();                           // 0x0040BE00
     int RemovePanel(CSWGuiPanel* pPanel);           // 0x0040C830
     void PlayGuiSound(int nSound);                  // 0x0040A140
+    void HideAllPanels();                           // 0x0040C120
     int HandleRMouseUp();                           // 0x0040A1A0
     int HandleRMouseDown();                         // 0x0040C610
 };
@@ -235,6 +281,8 @@ public:
     virtual CItemModel* GetItemModel();             // 0x34
 
     unsigned long m_idSelf;                         // 0x04
+
+    unsigned long GetId() { return m_idSelf; }
     unsigned char m_nObjectType;                    // 0x08
 };
 
@@ -247,14 +295,16 @@ public:
     virtual void v58(); virtual void v5C(); virtual void v60(); virtual void v64();
     virtual void v68(); virtual CSWCSoundObject* AsSWCSoundObject(); virtual void v70(); virtual void v74();
     virtual void v78(); virtual void v7C(); virtual void v80(); virtual void v84();
-    virtual void v88(); virtual void v8C(); virtual void v90(); virtual void v94();
+    virtual void v88(); virtual void v8C(); virtual void v90();
+    virtual void v94(void* pAreaScene);             // 0x94 (attach to area scene; name unresolved)
     virtual CGob* FindPart(unsigned long nPart, int bRecurse);  // 0x98
     virtual void v9C(); virtual void vA0(); virtual void vA4();
     virtual void SetHostileHilite(int b);           // 0xa8
     virtual void vAC();
     virtual void vB0(); virtual void vB4(); virtual void vB8(); virtual void vBC();
     virtual void vC0(); virtual void vC4(); virtual void vC8(); virtual void vCC();
-    virtual void vD0(); virtual void vD4(); virtual void vD8(); virtual void vDC();
+    virtual CGob* vD0();                            // 0xd0 (camera target; name unresolved)
+    virtual void vD4(); virtual void vD8(); virtual void vDC();
     virtual void vE0(); virtual void vE4(); virtual void vE8(); virtual void vEC();
     virtual void vF0(); virtual void vF4(); virtual void vF8(); virtual void vFC();
     virtual void v100(); virtual void v104(); virtual void v108(); virtual void v10C();
@@ -280,9 +330,15 @@ public:
     unsigned short m_nAnimation;                    // 0x48
     char pad_0x4a[0x9a];
     int m_bCorpse;                                  // 0xe4
-    char pad_0xe8[0x20c];
+    char pad_0xe8[0x50];
+    void* m_pUnknown138;                            // 0x138
+    char pad_0x13c[0x1b8];
     unsigned long m_oidLockOrientation;             // 0x2f4
-    char pad_0x2f8[0xe4];
+    char pad_0x2f8[0x18];
+    unsigned long m_nUnknown310;                    // 0x310
+    int m_bUnknown314;                              // 0x314
+    int m_bUnknown318;                              // 0x318
+    char pad_0x31c[0xc0];
     unsigned long m_oidCorpseContainer;             // 0x3dc
 
     int IsAnimationPlaying(unsigned short nAnim);   // 0x0063C4A0
@@ -296,6 +352,7 @@ public:
     void ForceMenuHostileAction(unsigned long nAction, CSWCCreature* pCreature); // 0x00616200
     void GetSelfForcePowers(CExoArrayList<CSWGuiInterfaceAction>& actions); // 0x00616230
     CGameObject* GetServerObject();                 // 0x0063D4B0
+    CSWSCreature* AsServerCreature();               // 0x0060FB20
     void PlaySwingSound(const CExoString& sEvent, CSWCCombatAttackData* pData, int nCount); // 0x0060DC50
     int ShowLightSaberContactVisual(int nUnused);   // 0x0060DE20
     void PartyMenuUseItem(unsigned long oidItem, CGameObject* pTarget); // 0x0060F590
@@ -307,6 +364,9 @@ class CGameObjectArray {
 public:
     unsigned char GetGameObject(unsigned long id, CGameObject** ppObject);  // 0x004D8230
     unsigned char Delete(unsigned long id, CGameObject** ppObject);         // 0x004D81A0
+    CGameObjectArray(int nSize);                    // 0x004D7D80
+    ~CGameObjectArray();                            // 0x004D7E10
+    char pad_0x0[0x18];
 };
 
 class CSWPartyMember;
@@ -314,6 +374,9 @@ class CSWPartyMember;
 class CSWParty {
 public:
     CSWPartyMember* GetMember(int n);               // 0x006346C0
+    CSWCCreature* GetPC();                          // 0x00635460
+    void SetPlayerCreature(unsigned long oid);      // 0x006364C0 (CSWPartyClient)
+    int IsPartyMember(unsigned long oid);           // 0x006349C0
 };
 
 class CSWPartyMember {
@@ -334,7 +397,9 @@ public:
     unsigned long m_nFlags;                         // +0x00
     char pad_0x04[0x04];
     unsigned long m_nGameplayFlags;                 // +0x08
-    char pad_0x0c[0x61];
+    char pad_0x0c[0x3c];
+    unsigned char m_nMusicVolume;                   // +0x48
+    char pad_0x49[0x24];
     unsigned char m_nCameraMode;                    // +0x6d
     unsigned char m_nCameraModeCurrent;              // +0x6e
 };
@@ -373,8 +438,14 @@ public:
 struct CAppPad {
     int m_n00;                                      // 0x00
     int m_n04;                                      // 0x04
-    char pad_0x8[0xc];
+    char pad_0x8[0x8];
+    int m_n10;                                      // 0x10
     int m_n14;                                      // 0x14
+};
+
+class CObjectTableManager {
+public:
+    int RemovePlayer(unsigned long nPlayerId);      // 0x004AE650
 };
 
 class CAppManager {
@@ -386,6 +457,7 @@ public:
     CAppPad* m_pPad;                                // 0x14
 
     void Unknown401280();                           // 0x00401280
+    class CObjectTableManager* GetObjectTableManager(int n);    // 0x00401060
     CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
     CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
 };
@@ -443,7 +515,12 @@ public:
     char pad_0xa8[0x34];
     int                                m_bClientImeUI; // 0xdc
     CImeUI*                            m_pImeUI; // 0xe0
-    char pad_0xe4[0x48];
+    char pad_0xe4[0x10];
+    int                                m_nUnknownF4; // 0xf4
+    int                                m_nUnknownF8; // 0xf8
+    int                                m_nUnknownFC; // 0xfc
+    int                                m_anKeyboardModal[7]; // 0x100
+    char pad_0x11c[0x10];
     CMoviePlayer*                      m_pMoviePlayer; // 0x12c
     char pad_0x130[0xc];
     CExoString                         m_sClientName; // 0x13c
@@ -474,7 +551,7 @@ public:
     int                                m_bStartMenuMusicOnMovieEnd; // 0x1ec
     char pad_0x1f0[0x8];
     int                                m_bMovieQueueActive; // 0x1f8
-    char pad_0x1fc[0x4];
+    int                                m_bIntroStarted; // 0x1fc
     int                                m_bUnknown200; // 0x200
     int                                m_bClientInitialized; // 0x204
     char pad_0x208[0x18];
@@ -491,12 +568,15 @@ public:
     char pad_0x24c[0x4];
     int                                m_bUnknown250; // 0x250
     int                                m_bUnknown254; // 0x254
-    char pad_0x258[0x18];
+    char pad_0x258[0xc];
+    int                                m_bConnectionStalled; // 0x264
+    char pad_0x268[0x8];
     CSWParty*                          m_pParty; // 0x270
     CSWGuiManager*                     m_pGuiManager; // 0x274
     CSWGuiLoadScreen*                  m_pLoadScreen; // 0x278
     CSWGuiPanel*                       m_pUnknownPanel27c; // 0x27c
-    char pad_0x280[0x8];
+    CSWGuiPanel*                       m_pMainMenu; // 0x280
+    CSWGuiPanel*                       m_pPreviousMainMenu; // 0x284
     int                                m_bAreaNotReadyToDisplay; // 0x288
     int                                m_nUnknown28c; // 0x28c
     int                                m_nPlayerCharacterSet; // 0x290
@@ -509,27 +589,33 @@ public:
     char pad_0x2bc[0x4];
     int                                m_bGameOver; // 0x2c0
     int                                m_bGameOverSet; // 0x2c4
-    char pad_0x2c8[0xc];
+    unsigned long                      m_nDeathLastTime; // 0x2c8
+    float                              m_fDeathElapsed; // 0x2cc
+    float                              m_fDeathSpeedScale; // 0x2d0
     unsigned long                      m_oidPortraitCreature; // 0x2d4
     CExoArrayList<CResRef>             m_lstMoveToModuleMovies; // 0x2d8
     CExoArrayList<CResRef>             m_lstQueuedMovies; // 0x2e4
     CExoArrayList<int>                 m_lstQueuedMovieFlags; // 0x2f0
-    char pad_0x2fc[0x8];
+    CExoString                         m_sLoadScreenImage; // 0x2fc
     CExoString                         m_sLoadMusic; // 0x304
-    char pad_0x30c[0x4];
+    int                                m_bLoadScreenEnabled; // 0x30c
     int                                m_bLoadFromIFO; // 0x310
     CExoArrayList<CHostileHilite>      m_lstHostileHilites; // 0x314
     int                                m_bCombatMode; // 0x320
     int                                m_bEnemySighted; // 0x324
-    char pad_0x328[0x4];
+    int                                m_bUnknown328; // 0x328
     int                                m_bRunScript; // 0x32c
     CExoString                         m_sRunScript; // 0x330
     unsigned long                      m_oidFutureLeader; // 0x338
     int                                m_bLoadingSaveGame; // 0x33c
     CExoArrayList<CRumblePattern>      m_lstRumblePatterns; // 0x340
     CExoArrayList<CActiveRumble>       m_lstActiveRumbles; // 0x34c
-    char pad_0x358[0x1c];
-    int                                m_nUnknown374; // 0x374
+    CExoArrayList<CGuiStringStruct>    m_lstGuiStrings; // 0x358 (sorted strref cache)
+    char pad_0x364[0x10];
+    union {
+        int                            m_nUnknown374; // 0x374
+        float                          m_fUnknown374; // 0x374
+    };
     float                              m_fUnknown378; // 0x378
     unsigned long                      m_bUnknown37c_0 : 1; // 0x37c
     unsigned long                      m_bUnknown37c_1 : 1;
@@ -540,7 +626,12 @@ public:
     char pad_0x389[0x3];
     float m_fUnknown38c;
     float m_fUnknown390;
-    char pad_0x394[0x14];
+    int                                m_nUnknown394; // 0x394
+    unsigned char                      m_nAutoPauseFlag; // 0x398
+    char pad_0x399[0x3];
+    float                              m_fUnknown39c; // 0x39c
+    int                                m_nUnknown3a0; // 0x3a0
+    char pad_0x3a4[0x4];
     int                                m_nVideoEffect; // 0x3a8
     int                                m_nTutorialWindowA; // 0x3ac
     int                                m_nTutorialWindowB; // 0x3b0
@@ -556,11 +647,12 @@ public:
     int                                m_nAttackMashTutorialTimer; // 0x3e0
     unsigned char                      m_pTutorialFlags[0x34]; // 0x3e4
     CClientResRefSlot                  m_aUnknown418[7]; // 0x418
-    int                                m_nLoadScreenHintUpdateTimer; // 0x488
-    char pad_0x48c[0x4];
+    unsigned long                      m_nLoadScreenHintUpdateTimer; // 0x488
+    unsigned long                      m_nLoadScreenHintLastTime; // 0x48c
     unsigned char                      m_bGamePlayHint; // 0x490
     unsigned char                      m_bStoryHint; // 0x491
-    char pad_0x492[0x6];
+    char pad_0x492[0x2];
+    int                                m_nUnknown494; // 0x494
     unsigned char                      m_bModuleResourcesLoaded; // 0x498
     char pad_0x499[0x1b];
     int                                m_bCharacterChangeInProgress; // 0x4b4
@@ -666,6 +758,7 @@ public:
     int GetPauseState(unsigned char nType);                         // 0x005EE8F0
     int PauseState(unsigned char nType) { return m_nPauseFlags & nType; }
     void SetPauseState(int nType, int bPause, int bForce);          // 0x005F7FA0
+    void SetPauseState(unsigned char nState, int bPause, CExoLinkedList<unsigned long>* pList); // 0x005F7FA0 (real ABI)
     CClientPlayer* GetPlayerByPlayerID(unsigned long nPlayerId);    // 0x005F5C70
     void AttachPlayerGameObjectToArea();                            // 0x005F5CF0
     void InitializeInGameGUI();                                     // 0x005F1410
@@ -690,7 +783,7 @@ public:
     void ShowLoadScreen(int a, int b, int c);                       // 0x005F6C60
     void HideLoadScreen(int a, int b);                              // 0x005F6E20
     void SetPlayerCharacterName(const CExoString& sName);           // 0x005F2B00
-    void PlayLoadModuleMovies();                                    // 0x00602650
+    int PlayLoadModuleMovies();                                     // 0x00602650
     int PlayMovie(int a, int b, int c, int d);                      // 0x00602CF0
     void AddMoveToModuleMovie(const CResRef& cMovie);               // 0x006027A0
     void IndicateObject(CGameObject* pObject);                      // 0x005F2C60
@@ -722,13 +815,31 @@ public:
     int ShowTutorialWindow(int nWindow, int a, int b, int c);       // 0x005F4120
     void ClearCachedCreatures(int b);                               // 0x005F1460
     void LookUpAndPerformRumbleWithCutOff(int a, int b, int c);     // 0x005FB960
-    void ChangeCharacterToNextLivingPartyMember(int a, int b, int c); // 0x005F7960
+    int ChangeCharacterToNextLivingPartyMember(int a, int b, int c); // 0x005F7960
+    int ChangeCharacterToNextLivingPartyMember(int a, int b, unsigned char n); // 0x005F7960 (real ABI)
     int GetNextLoadScreenHintSTRREF(int a, int b);                  // 0x005F4760
+    int GetNextLoadScreenHintSTRREF(const CExoString& sModule, unsigned char nType); // 0x005F4760
     void SetMouseMode(unsigned char nMode);                         // 0x005F49B0
     void FadeAndStopStreamingSoundSource(CExoStreamingSoundSource* p, unsigned long nMs); // 0x005F1B20
     void StartCreditSequence(int a, int b);                         // 0x005F4C60
+    void StartCreditSequence(const Vector& vPosition, const CExoString& sMovie); // 0x005F4C60
     void EnableMouseAtEndOfLoadModuleMovie();                       // 0x005F4DB0
     void AddMovieToMovieQueue(int a, int b);                        // 0x005FBF50
+    void AddMovieToMovieQueue(const CExoString& sMovie, int nFlags); // 0x005FBF50
+
+    // worker C s1
+    CSWGuiLoadScreen* GetLoadScreen() { return m_pLoadScreen; }
+    void UpdateConnectionStall();                                   // 0x00602C90 (descriptive)
+    void DoQuickSave();                                             // 0x005F4B50
+    void UpdateLoadingScreenHint();                                 // 0x005F7B20
+    void TurnOffKeyboardModal();                                    // 0x005F2980 (= ResetInput)
+    void StartPazaakGame(int nDeck, const CExoString& sScript, int nWager, int a, unsigned long b); // 0x005F3810
+    void StartLoadMusic();                                          // 0x005F6480
+    void UpdateRumble(float fDelta);                                // 0x005F7500
+    void UpdateDeathSequence();                                     // 0x005F7330
+    void OnQuitGameConfirmed(CSWGuiControl* pControl);              // 0x005F1BD0 (descriptive)
+    int WaitForMovie(int bRestoreMusic);                            // 0x005F6F20 (= ShowLoadScreen(int))
+    int AddMovieToExoArrayList(const CExoString& sMovie, CExoArrayList<CExoString>& lstMovies); // 0x005FBBF0
     void PlayMovieQueue(int b);                                     // 0x00602D40
     int PlayMoviesInExoArrayList(CExoArrayList<CExoString>* pList, int* pResult,
                                  int bWait, unsigned long nFlags, CExoArrayList<int>* pMovieFlags); // 0x00602AF0
@@ -806,6 +917,7 @@ public:
     void RemoveMoveToModuleMovies();
 
     // forwarders (b005e_client_exo_app_accessors)
+    int SendSaveGameRequest(unsigned long nSlot, const CExoString& sA, const CExoString& sB); // 0x005ED670
     void BeginIntro();
     void JournalUpdated(int a, int b, int c);
     int GetObjectName(unsigned long oid, CExoString* pName);
@@ -969,6 +1081,7 @@ public:
     CSWCSaveLoad* GetSaveLoad();                    // 0x005ED6F0
     void* GetUnknown08();                           // 0x005ED710
     CSWGuiManager* GetGuiManager();                 // 0x005EDA40
+    CGuiInGame* GetGuiInGame();                     // 0x005ED690
     void* GetUnknown00();                           // 0x005EDAF0
     int IsNotUnknown28c(int n);                     // 0x005EDB80
     void GetPazaakResult(int* pWon, int* pWager);   // 0x005EDDE0

@@ -836,3 +836,17 @@ CAurTexture* AurTextureGet(char* szName, CAurTexture* pTarget, char* szFile,
     pTexture->m_pTarget = pTarget;
     return pTexture;
 }
+
+// FUNCTION: SWKOTOR 0x004233e0
+// Name not recorded; the shared normalization cube map texture.
+CAurTextureBasic* AurTextureGetNormalizationCubeMap()
+{
+    if (!AurHasCubeMaps())
+        return 0;
+    CAurTextureBasic* pBasic = AurTextureFind("NormCubeMap", "NormCubeMap", 0, 0);
+    if (pBasic)
+        return pBasic->AsBasic();
+    pBasic = new CAurTextureBasic("NormCubeMap", "NormCubeMap");
+    pBasic->AsNormalizeVectorCubeMap();
+    return pBasic;
+}

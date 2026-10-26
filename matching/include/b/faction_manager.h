@@ -10,6 +10,7 @@ class CFaction {
 public:
     CFaction();                 // 0x005BF860
     ~CFaction();                // 0x005BE8A0
+    void AddMember(unsigned long oidMember, int bArg);  // 0x005BFA70
 
     char pad_0x0[0x10];
     int m_nParentFactionId;     // 0x10

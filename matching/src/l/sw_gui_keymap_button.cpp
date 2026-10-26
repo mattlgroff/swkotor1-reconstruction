@@ -20,9 +20,8 @@ CSWGuiKeyMapButton::CSWGuiKeyMapButton(CSWGuiInGameOptKeyMappings* pOwner)
     AddChildControl(pChild);
 }
 
-CSWGuiKeyMapButton::~CSWGuiKeyMapButton()
-{
-}
+// The regular destructor 0x006ED570 is in sw_gui_keymap_button_dtor_novtable.cpp.
+// FUNCTION: SWKOTOR 0x006ED550 SYMBOL: ??_GCSWGuiKeyMapButton@@UAEPAXI@Z
 
 // FUNCTION: SWKOTOR 0x006EC380
 CSWGuiControl* CSWGuiKeyMapButton::HitCheckMouse(int x, int y)
@@ -38,23 +37,11 @@ CSWGuiControl* CSWGuiKeyMapButton::HitCheckMouse(int x, int y)
 void CSWGuiKeyMapButton::UpdateColor()
 {
     if (m_bChanged) {
-        unsigned long* pColor = (unsigned long*)&m_cBorderParams.m_vColor;
-        pColor[0] = *(unsigned long*)0x007A23FC;
-        pColor[1] = *(unsigned long*)0x007A2400;
-        pColor[2] = *(unsigned long*)0x007A2404;
-        unsigned long* pButtonColor = (unsigned long*)&m_cEventButton.m_cBorderParams.m_vColor;
-        pButtonColor[0] = *(unsigned long*)0x007A23FC;
-        pButtonColor[1] = *(unsigned long*)0x007A2400;
-        pButtonColor[2] = *(unsigned long*)0x007A2404;
+        m_cBorderParams.m_vColor = g_vKeyMapChangedColor;
+        m_cEventButton.m_cBorderParams.m_vColor = g_vKeyMapChangedColor;
     } else {
-        unsigned long* pColor = (unsigned long*)&m_cBorderParams.m_vColor;
-        pColor[0] = *(unsigned long*)0x007A2390;
-        pColor[1] = *(unsigned long*)0x007A2394;
-        pColor[2] = *(unsigned long*)0x007A2398;
-        unsigned long* pButtonColor = (unsigned long*)&m_cEventButton.m_cBorderParams.m_vColor;
-        pButtonColor[0] = *(unsigned long*)0x007A2390;
-        pButtonColor[1] = *(unsigned long*)0x007A2394;
-        pButtonColor[2] = *(unsigned long*)0x007A2398;
+        m_cBorderParams.m_vColor = g_vKeyMapNormalColor;
+        m_cEventButton.m_cBorderParams.m_vColor = g_vKeyMapNormalColor;
     }
 }
 
@@ -62,13 +49,7 @@ void CSWGuiKeyMapButton::UpdateColor()
 void CSWGuiKeyMapButton::SetUnchangable()
 {
     m_bUnchangeable = 1;
-    unsigned long* pColor = (unsigned long*)&m_cBorderParams.m_vColor;
-    pColor[0] = *(unsigned long*)0x007A2384;
-    pColor[1] = *(unsigned long*)0x007A2388;
-    pColor[2] = *(unsigned long*)0x007A238C;
-    m_cTextParams.SetColor(*(Vector*)0x007A2408);
-    unsigned long* pHilightColor = (unsigned long*)&m_cHilightParams.m_vColor;
-    pHilightColor[0] = *(unsigned long*)0x007A2384;
-    pHilightColor[1] = *(unsigned long*)0x007A2388;
-    pHilightColor[2] = *(unsigned long*)0x007A238C;
+    m_cBorderParams.m_vColor = g_vKeyMapLockedColor;
+    m_cTextParams.SetColor(g_vKeyMapLockedTextColor);
+    m_cHilightParams.m_vColor = g_vKeyMapLockedColor;
 }

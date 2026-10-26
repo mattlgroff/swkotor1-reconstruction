@@ -8,17 +8,34 @@
 
 class CSWGuiInGameOptKeyMappings;
 
+extern Vector g_vKeyMapLockedColor;                 // 0x007A2384
+extern Vector g_vKeyMapNormalColor;                 // 0x007A2390
+extern Vector g_vKeyMapChangedColor;                // 0x007A23FC
+extern Vector g_vKeyMapLockedTextColor;             // 0x007A2408
+
+#ifdef L_KEYMAP_BUTTON_NOVTABLE
+class __declspec(novtable) CSWGuiKeyMapButton : public CSWGuiButton {
+#else
 class CSWGuiKeyMapButton : public CSWGuiButton {
+#endif
 public:
     CSWGuiKeyMapButton(CSWGuiInGameOptKeyMappings* pOwner);
-    virtual ~CSWGuiKeyMapButton();
+    virtual ~CSWGuiKeyMapButton();                         // 0x006ED570
     virtual void SetExtent(const CSWGuiExtent& extent);    // 0x006EC250
     virtual void Draw(float fDelta);                       // 0x006EC350
     virtual CSWGuiControl* HitCheckMouse(int x, int y);    // 0x006EC380
     void UpdateColor();                                    // 0x006EC6E0
     void SetUnchangable();                                 // 0x006EC770
+    CExoString GetActionId(int nId, int nType);            // 0x006EC120
+    void SetDescription(const CExoString& sAction);        // 0x006EC7D0
+    void ResetToDefault();                                 // 0x006ECCC0
+    void PostChangeToEvent();                              // 0x006ECE60
+    int UpdateEvent(unsigned long nKey);                   // 0x006EDBD0
+    void OnControlEntered(CSWGuiControl* pControl);        // 0x006ED5C0
+    void OnEventClicked(CSWGuiControl* pControl);          // 0x006ED5E0
+    void OnNothing(CSWGuiControl* pControl);               // folded into 0x0060E760
 
-    unsigned short m_nDescriptionStrRef;                   // 0x1C4
+    int m_nDescriptionStrRef;                              // 0x1C4
     CSWGuiButton m_cEventButton;                           // 0x1C8
     CSWGuiInGameOptKeyMappings* m_pOwner;                  // 0x38C
     int m_nId;                                             // 0x390

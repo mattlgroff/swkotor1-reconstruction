@@ -6,3 +6,5 @@
 CSWGuiOptionsCheckbox::CSWGuiOptionsCheckbox()
 {
 }
+
+// FUNCTION: SWKOTOR 0x006E1640 SYMBOL: ??_GCSWGuiOptionsCheckbox@@UAEPAXI@Z

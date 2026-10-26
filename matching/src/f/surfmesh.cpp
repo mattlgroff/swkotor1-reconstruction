@@ -163,9 +163,10 @@ int CSWRoomSurfaceMesh::GetAdjacentSecond(int nIndex)
 void CSWRoomSurfaceMesh::GetTriangleIndices(int nUnused, int nFace, int *pA, int *pB, int *pC)
 {
     if (nFace < m_nFaceCount) {
-        *pA = m_pFaceIndices[nFace].m_nVertexA;
-        *pB = m_pFaceIndices[nFace].m_nVertexB;
-        *pC = m_pFaceIndices[nFace].m_nVertexC;
+        int i = nFace * 3;
+        *pA = ((int *)m_pFaceIndices)[i];
+        *pB = ((int *)m_pFaceIndices)[i + 1];
+        *pC = ((int *)m_pFaceIndices)[i + 2];
     }
 }
 

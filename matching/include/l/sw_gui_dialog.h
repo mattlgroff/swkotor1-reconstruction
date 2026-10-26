@@ -74,6 +74,7 @@ public:
     void AddPanel(CSWGuiPanel* pPanel, int nFlags, int bPlaySound);   // 0x0040BC70
     int PanelExists(CSWGuiPanel* pPanel);           // 0x0040BD70
     void RemovePanel(CSWGuiPanel* pPanel);          // 0x0040C830
+    void ReloadToolTipPanel();                      // 0x0040A350
 };
 
 // Text parameters embedded in labels/controls.
@@ -86,7 +87,15 @@ public:
     CSWGuiTextParams& operator=(const CSWGuiTextParams& p); // 0x004171E0
     CExoString m_sText;                             // 0x00
     char pad_0x8[0x30];
-    unsigned long m_nFlags; // 0x38
+    union {
+        unsigned long m_nFlags; // 0x38
+        struct {
+            unsigned long m_nFlagsLow : 6;
+            unsigned long m_bHighlighted : 1;       // bit 6
+            unsigned long m_nFlagsHigh : 25;
+        };
+    };
+    void SetHighlighted(int b) { m_bHighlighted = b; }
     char pad_0x3c[0x1c];
 };
 
@@ -94,6 +103,7 @@ class CSWGuiControl;
 class CSWGuiSlider;
 class CSWGuiLabel;
 class CSWGuiLabelHilight;
+class CSWGuiButtonToggle;
 
 class CSWGuiControl {
 public:
@@ -104,7 +114,12 @@ public:
     virtual void HandleMouseOver(int bOver);        // 0x0c
     virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
     virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual void v30(); virtual void v34(); virtual void v38();
+    virtual void v30(); virtual void v34();
+#ifdef L_GUI_CONTROL_DRAW_SLOT
+    virtual void Draw(float fDelta);                // 0x38
+#else
+    virtual void v38();
+#endif
     virtual void HandleInputEvent(int nEvent, int bDown);   // 0x3c
     virtual void v40();
     virtual CSWGuiControl* HitCheckMouse(int x, int y); // 0x44 (0x004187C0)
@@ -112,7 +127,7 @@ public:
     virtual CSWGuiLabel* GetLabel();                // 0x50
     virtual CSWGuiLabelHilight* GetLabelHilight();          // 0x54
     virtual int IsSelectable();                     // 0x58
-    virtual void v5C();
+    virtual CSWGuiButtonToggle* GetButtonToggle();  // 0x5c
     virtual void v60(); virtual CSWGuiSlider* GetSlider(); virtual void v68(); virtual void v6C();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void SetEnabled(int bEnabled);  /* 0x88 */ virtual void v8C();
@@ -120,7 +135,9 @@ public:
 
     CSWGuiExtent m_extent;                          // 0x04
     CSWGuiControl* m_pParentControl;               // 0x14
-    char pad_0x18[0x1c];
+    char pad_0x18[0xc];
+    unsigned long m_nToolTipStrRef;                 // 0x24
+    char pad_0x28[0xc];
     void* m_pOwner;                                // 0x34
     char pad_0x38[0xc];
     union {
@@ -147,6 +164,7 @@ public:
 // The dialog clears its controls' visible bit through a control pointer
 // (the original stores each flag word before loading the next one).
 inline void HideControl(CSWGuiControl* pControl) { pControl->m_bVisible = 0; }
+inline void ShowControl(CSWGuiControl* pControl) { pControl->m_bVisible = 1; }
 
 // Embedded text box with its own vtable (label +0xd0).
 class CSWGuiLabelText {
@@ -210,9 +228,12 @@ public:
         }
         return 0;
     }
+    virtual void v98(); virtual void v9C(); virtual void vA0();
+    virtual void SetListFlag0(int bFlag);           // 0xa4 (0x0041B120)
     CSWGuiControl* GetSelectedControl();            // 0x0041A5D0
     CSWGuiControl* GetControl(int nIndex);          // 0x0041A5A0
     void SelectControl(int nIndex) { SetActiveControlV(GetControl(nIndex), 0); }
+    void ClearListFlag40() { m_nListFlags &= ~0x40; }
     char pad_0x5c[0x24];
     CSWGuiPoint m_ptLocalMouse;                     // 0x80
     char pad_0x88[0x20c];
@@ -247,7 +268,7 @@ public:
     virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
     virtual void v30();
     virtual void Draw(float fDelta);                // 0x34 (0x0040B760)
-    virtual void v38();
+    virtual void Update(float fDelta);              // 0x38
     virtual void HandleInputEvent(int nEvent, int bDown);   // 0x3c (0x00409E60)
     virtual void v40();
     virtual CSWGuiControl* GetFocusControl();       // 0x44
@@ -330,6 +351,16 @@ public:
     void SetFeedbackDefaults(); // 0x0061D950
     void SetDisplayDefaults(); // 0x0061D9A0
     void SetBrightnessDefaults(); // 0x0061D9D0 (mouse)
+    void SetAntiAliasing(unsigned char nSamples); // 0x0061D710
+    void SetTexturePack(unsigned char nPack); // 0x0061D730
+    void SetFrameBuffer(int bEnabled); // 0x0061D750
+    void SetAnisotropy(int nLevel); // 0x0061D8C0
+    void SetVSync(int bEnabled); // 0x0061D8E0
+    unsigned char GetGamma() { return m_nGamma; }
+    int GetAnisotropy() { return m_nAnisotropy; }
+    unsigned char GetMouseSensitivity() { return m_nMouseSensitivity; }
+    void SetSoundQuality(unsigned char nQuality) { m_nSoundQuality = nQuality; }
+    void SetForceSoftware(int bForce) { m_bForceSoftware = bForce; }
 
     char pad_0x0[4];
     unsigned char m_nDifficulty;
@@ -360,15 +391,37 @@ public:
             unsigned long m_bFeedback8 : 1;
             unsigned long m_bFeedback9 : 1;
             unsigned long m_bFeedback10 : 1;
-            unsigned long m_bFeedbackRemaining : 21;
+            unsigned long m_bAutoPause0 : 1;    // bits 11-16: auto-pause
+            unsigned long m_bAutoPause1 : 1;
+            unsigned long m_bAutoPause2 : 1;
+            unsigned long m_bAutoPause3 : 1;
+            unsigned long m_bAutoPause4 : 1;
+            unsigned long m_bAutoPause5 : 1;
+            unsigned long m_bFeedbackRemaining : 15;
         };
     };                         // 0x14
-    char pad_0x18[0xc];
+    unsigned char m_nGamma; // 0x18
+    char pad_0x19[0xb];
     int m_bShadows; // 0x24
-    char pad_0x28[4];
+    int m_bSoftShadows; // 0x28
     int m_bGrass; // 0x2c
-    char pad_0x30[0x20];
+    int m_bFrameBuffer; // 0x30
+    int m_nAnisotropy; // 0x34
+    char pad_0x38[4];
+    unsigned char m_nTexturePack; // 0x3c
+    char pad_0x3d[3];
+    int m_bVSync; // 0x40
+    unsigned char m_nAntiAliasing; // 0x44
+    unsigned char m_nMusicVolume; // 0x45
+    unsigned char m_nVoiceVolume; // 0x46
+    unsigned char m_nSoundFXVolume; // 0x47
+    unsigned char m_nMovieVolume; // 0x48
+    unsigned char m_nSoundQuality; // 0x49 (EAX level)
+    char pad_0x4a[2];
+    int m_bForceSoftware; // 0x4c
     unsigned char m_nMouseSensitivity; // 0x50
+    char pad_0x51[3];
+    int m_bReverseMouseButtons; // 0x54
 };
 
 class CClientExoAppInternal;
@@ -404,7 +457,11 @@ public:
     void SetUnknown1a8(int a, int b, int c);        // 0x005EDE10
     void ShowTutorialWindow(int, int, int, int); // 0x005EDF40
     void SaveOptions();                             // 0x005EDF70
+    int SetVideoMode(int nMode);                    // 0x005ED8D0
+    int IsValidResolution(int nWidth, int nHeight); // 0x005EE2B0
+    int GetAllowHighMonitorFrequency();             // 0x005EE2C0
     CSWCCreature* GetPlayerCreature();              // 0x005ED540
+    CExoString GetDisplayCharacterForKey(int nKey); // 0x005EE280
     int ChangeCharacterToNextLivingPartyMember(int a, int b, int c);  // 0x005EDF80
 };
 

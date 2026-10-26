@@ -65,6 +65,7 @@ public:
     CExoLinkedListNode* pTail;                      // 0x04
     unsigned long nCount;                           // 0x08
 
+    ~CExoLinkedListInternal();                      // 0x005E9AB0
     void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
     void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
     void* Remove(CExoLinkedListPosition pos);       // 0x005E9C10
@@ -112,6 +113,8 @@ public:
         element[num++] = t;
     }
     void RemoveIndex(int i);                        // out of line (e.g. 0x0048DDE0)
+    void Insert(T t, int pos);                      // out of line
+    void AddUnique(T t);                            // out of line (CExoString: 0x005F7C10)
     void DelIndex(int i)
     {
         num--;

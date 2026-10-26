@@ -18,6 +18,10 @@ extern "C" __declspec(dllimport) void __stdcall glMaterialfv(unsigned int face, 
 extern "C" __declspec(dllimport) void* __stdcall GetDC(void* hWnd);
 extern "C" __declspec(dllimport) int __stdcall ReleaseDC(void* hWnd, void* hDC);
 extern "C" int __cdecl sprintf(char* d, const char* fmt, ...);
+extern "C" void* __cdecl memset(void* d, int c, unsigned int n);
+extern "C" double __cdecl pow(double x, double y);
+#pragma intrinsic(memset, pow)
+extern "C" __declspec(dllimport) int __stdcall SetDeviceGammaRamp(void* hDC, void* pRamp);
 
 class Vector {
 public:
@@ -81,6 +85,105 @@ void AurFreeConsoleVars();               // 0x0044d1e0
 void AurFreeFont();                      // 0x0044cc60
 void AurFreeScenes();                    // 0x004a22e0
 
+// Vertex / fragment program objects released at shutdown.
+class CAurProgram {
+public:
+    ~CAurProgram();                      // 0x004a2830
+};
+
+extern CAurProgram* g_pProgram83037c;    // 0x0083037c
+extern CAurProgram* g_pProgram830380;    // 0x00830380
+extern CAurProgram* g_pProgram830384;    // 0x00830384
+extern CAurProgram* g_pProgram827fec;    // 0x00827fec
+extern CAurProgram* g_pProgram827ff0;    // 0x00827ff0
+extern CAurProgram* g_pProgram827ff4;    // 0x00827ff4
+extern CAurProgram* g_pProgram827ff8;    // 0x00827ff8
+extern CAurProgram* g_pProgram827ffc;    // 0x00827ffc
+extern CAurProgram* g_pProgram830388;    // 0x00830388
+extern CAurProgram* g_pProgram83038c;    // 0x0083038c
+extern CAurProgram* g_pProgram828014;    // 0x00828014
+extern char* g_szProgramText83028c;      // 0x0083028c
+extern char* g_szProgramText830290;      // 0x00830290
+extern void* g_hWnd;                     // 0x007a39d8
+
+void ResetVertexPrograms_004a2470();     // 0x004a2470
+void AurReleaseNoOp();                   // 0x004015a0 (empty)
+void RenderShutdown(int bRelease);       // 0x00432180
+
+extern "C" __declspec(dllimport) int __stdcall wglDeleteContext(void* hRC);
+extern "C" __declspec(dllimport) int __stdcall DestroyWindow(void* hWnd);
+
+inline void ReleaseProgram(CAurProgram*& p)
+{
+    if (p) {
+        delete p;
+        p = 0;
+    }
+}
+
+inline void ReleaseText(char*& p)
+{
+    if (p) {
+        delete p;
+        p = 0;
+    }
+}
+
+// FUNCTION: SWKOTOR 0x0044d6d0
+int CAurInternalGL::GetDisplayStyle()
+{
+    return m_nUnknownAC;
+}
+
+inline void ClearDevMode(_devicemodeA* p)
+{
+    memset(p, 0, sizeof(*p));
+    p->dmSize = sizeof(*p);
+}
+
+// FUNCTION: SWKOTOR 0x0044d6e0
+bool CAurInternalGL::GetValidMode(unsigned long* pWidth, unsigned long* pHeight,
+                                           unsigned char* pBitsPerPel,
+                                           unsigned long* pFrequency,
+                                           unsigned char bApply)
+{
+    _devicemodeA dmBest;
+    _devicemodeA dm;
+    ClearDevMode(&dm);
+    ClearDevMode(&dmBest);
+    unsigned long nMode = 0;
+    unsigned char bFound = 0;
+    while (EnumDisplaySettingsA(0, nMode, &dm)) {
+        if (dm.dmPelsWidth <= *pWidth && dm.dmPelsHeight <= *pHeight
+            && dm.dmBitsPerPel <= *pBitsPerPel && dm.dmDisplayFrequency <= *pFrequency
+            && dm.dmPelsWidth >= dmBest.dmPelsWidth && dm.dmPelsHeight >= dmBest.dmPelsHeight
+            && dm.dmBitsPerPel >= dmBest.dmBitsPerPel
+            && (dm.dmDisplayFrequency >= dmBest.dmDisplayFrequency
+                || dm.dmPelsWidth != dmBest.dmPelsWidth
+                || dm.dmPelsHeight != dmBest.dmPelsHeight
+                || dm.dmBitsPerPel != dmBest.dmBitsPerPel)) {
+            dmBest = dm;
+            bFound = 1;
+        }
+        ClearDevMode(&dm);
+        nMode++;
+    }
+    if (!bFound)
+        return false;
+    if (ChangeDisplaySettingsA(&dmBest, CDS_TEST))
+        return false;
+    if (bApply) {
+        *pWidth = dmBest.dmPelsWidth;
+        *pHeight = dmBest.dmPelsHeight;
+        *pBitsPerPel = (unsigned char)dmBest.dmBitsPerPel;
+        *pFrequency = dmBest.dmDisplayFrequency;
+        return true;
+    }
+    return dmBest.dmPelsWidth == *pWidth && dmBest.dmPelsHeight == *pHeight
+           && dmBest.dmBitsPerPel == *pBitsPerPel
+           && dmBest.dmDisplayFrequency == *pFrequency;
+}
+
 // FUNCTION: SWKOTOR 0x0044d8d0
 void CAurInternal::RestoreDesktopDisplayMode()
 {
@@ -112,6 +215,37 @@ void AurReleaseInstance()
 }
 #pragma auto_inline(on)
 
+// FUNCTION: SWKOTOR 0x0044d970
+void* CAurInternalGL::GetContext()
+{
+    return (void*)m_nUnknownB4;
+}
+
+// FUNCTION: SWKOTOR 0x0044d980
+int CAurInternalGL::MakeCurrent(void* hDC, void* hRC)
+{
+    return wglMakeCurrent(hDC, hRC);
+}
+
+// FUNCTION: SWKOTOR 0x0044d990
+int CAurInternalGL::SetGamma(float fGamma, int bTemporary)
+{
+    if (!bTemporary)
+        m_fGamma = fGamma;
+    unsigned short aRamp[3][256];
+    for (int c = 0; c < 3; c++) {
+        for (int i = 0; i < 256; i++)
+            aRamp[c][i] = ((unsigned char)(pow(i * (1.0 / 255.0), fGamma) * 255.0) << 8) | i;
+    }
+    void* hDC = GetDC(g_hWnd);
+    if (!hDC)
+        return 0;
+    SetDeviceGammaRamp(hDC, aRamp);
+    return 1;
+}
+
+// FUNCTION: SWKOTOR 0x0044da40 SYMBOL: ??_GCAurora@@UAEPAXI@Z
+
 // FUNCTION: SWKOTOR 0x0044da60
 void AurEnableHeadLight()
 {
@@ -141,6 +275,45 @@ CAurInternalGL::~CAurInternalGL()
     AurFreeFont();
     AurFreeScenes();
     Shutdown(1, 1);
+}
+
+// FUNCTION: SWKOTOR 0x0044ea30
+void CAurInternalGL::Shutdown(int bRelease, int bRestore)
+{
+    ResetVertexPrograms_004a2470();
+    ReleaseProgram(g_pProgram83037c);
+    ReleaseProgram(g_pProgram830380);
+    ReleaseProgram(g_pProgram830384);
+    ReleaseProgram(g_pProgram827fec);
+    ReleaseProgram(g_pProgram827ff0);
+    ReleaseProgram(g_pProgram827ff4);
+    ReleaseProgram(g_pProgram827ff8);
+    ReleaseProgram(g_pProgram827ffc);
+    ReleaseProgram(g_pProgram830388);
+    ReleaseProgram(g_pProgram83038c);
+    ReleaseProgram(g_pProgram828014);
+    if (bRelease)
+        AurReleaseNoOp();
+    RenderShutdown(bRelease);
+    ReleaseText(g_szProgramText83028c);
+    ReleaseText(g_szProgramText830290);
+    if (m_nUnknownB4) {
+        wglMakeCurrent(0, 0);
+        wglDeleteContext((void*)m_nUnknownB4);
+        m_nUnknownB4 = 0;
+    }
+    if (m_bFullScreen) {
+        if (bRestore)
+            ChangeDisplaySettingsA(0, 0);
+        m_bFullScreen = 0;
+        m_nUnknownAC = 0;
+    }
+    if (bRelease)
+        SetGamma(1.0f, 0);
+    if (g_hWnd && bRestore) {
+        DestroyWindow(g_hWnd);
+        g_hWnd = 0;
+    }
 }
 
 inline CAurInternal::CAurInternal()

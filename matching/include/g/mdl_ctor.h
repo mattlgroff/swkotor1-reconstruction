@@ -235,6 +235,9 @@ public:
 
 class MdlNodeTriMesh_PostProcess {
 public:
+    char pad00[0x60];
+    CExoArrayList<void*> m_lTemporary;      // +0x60
+
     ~MdlNodeTriMesh_PostProcess();          // 0x004453b0
 };
 
@@ -283,6 +286,7 @@ public:
 
     MdlNodeTriMesh(char* szName);           // 0x0044a640
     ~MdlNodeTriMesh();                      // 0x00448bf0
+    void InternalRemoveTemporaryArrays();   // 0x0043c090
 };
 
 // Axis-aligned bounding box tree node; deleting a child goes through the
@@ -323,6 +327,7 @@ public:
 
     MdlNodeAnimMesh(char* szName);          // 0x0044abc0
     ~MdlNodeAnimMesh();                     // 0x00448da0
+    void InternalRemoveTemporaryArrays();   // 0x0043c320
 };
 
 class MdlNodeSkin : public MdlNodeTriMesh {
@@ -339,6 +344,7 @@ public:
 
     MdlNodeSkin(char* szName);              // 0x0044ac70
     ~MdlNodeSkin();                         // 0x00448e60
+    void InternalRemoveTemporaryArrays();   // 0x0043c1a0
     void InternalPostProcess();             // 0x0043b350
     void BuildBoneData();                   // 0x0043a120
 };
@@ -351,6 +357,7 @@ public:
 
     MdlNodeDanglyMesh(char* szName);        // 0x0044ae00
     ~MdlNodeDanglyMesh();                   // 0x004490f0
+    void InternalRemoveTemporaryArrays();   // 0x0043c130
 };
 
 class MdlNodeLightsaber : public MdlNodeTriMesh {

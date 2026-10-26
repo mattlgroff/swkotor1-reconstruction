@@ -11,6 +11,7 @@ public:
     CResRef(const char* s);                         // 0x00406D80
     CResRef(const CExoString& s);                   // 0x00406D60
     CResRef();                                      // 0x00405ED0
+    CResRef(const CResRef& cResRef);
     CResRef operator=(const CResRef& cResRef);      // 0x00406120
     CResRef operator=(const CExoString& sResRef);   // 0x004061F0
     CResRef operator=(const char* sResRef);         // 0x00406290

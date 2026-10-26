@@ -23,33 +23,7 @@ extern const unsigned short EFFECT_TYPE_FORCE_JUMP;         // 0x00746810 (0x66)
 extern const int DAMAGE_TYPE_MAX;                           // 0x00746884 (0x2000)
 extern const int DAMAGE_TYPE_DEFAULT;                       // 0x0074685C (8)
 
-#pragma pack(push, 4)
-class CGameEffect {
-public:
-    CGameEffect(int bCreateNewID);                          // 0x00503E40
-    ~CGameEffect();                                         // 0x00503590
-    void SetInteger(int nIndex, int nValue);                // 0x005036A0
-    void SetFloat(int nIndex, float fValue);                // 0x005036D0
-    void SetObjectID(int nIndex, unsigned long oid);        // 0x005036F0
-    void SetCreator(unsigned long oid);                     // 0x00503A00
-
-    unsigned short GetDurationType() { return m_nDurationType; }
-    void SetSubType_Supernatural() { m_nSubType = (m_nSubType & 0xffe7) | 0x8; }
-
-    unsigned __int64 m_nID;                                 // 0x00
-    unsigned short m_nType;                                 // 0x08
-    union {
-        unsigned short m_nSubType;                          // 0x0a
-        struct {
-            unsigned short m_nDurationType : 3;             // 0x0a (low 3 bits)
-            unsigned short m_nSubTypeHigh : 13;
-        };
-    };
-    char pad_0xc[0x20 - 0xc];
-    int m_n20;                                              // 0x20 (name guessed)
-    char pad_0x24[0x8c - 0x24];
-};
-#pragma pack(pop)
+#include "b/game_effect.h"
 
 class CScriptEvent {
 public:
@@ -58,6 +32,10 @@ public:
     void SetInteger(int nIndex, int nValue);                // 0x004D76B0
     void SetFloat(int nIndex, float fValue);                // 0x004D7720
     void SetObjectID(int nIndex, unsigned long oid);        // 0x004D7780
+    int operator==(const CScriptEvent& other);              // 0x004D7270
+    int SaveEvent(CResGFF* pRes, CResStruct* pStruct);      // 0x004D73A0
+    void CopyScriptEvent(CScriptEvent* pOther);             // 0x004D77F0
+    int LoadEvent(CResGFF* pRes, CResStruct* pStruct);      // 0x004D79B0
 
     unsigned short m_nType;                                 // 0x00
     char pad_0x2[0x34 - 0x2];

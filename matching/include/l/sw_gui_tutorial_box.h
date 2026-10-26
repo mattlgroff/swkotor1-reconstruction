@@ -8,15 +8,31 @@
 
 class C2DA {
 public:
+    C2DA(CResRef cResRef, int bLoad);               // 0x00413CC0
+    virtual ~C2DA();
+    int Load2DArray();                              // 0x004143B0
+    void Unload2DArray();                           // 0x004139E0
     int GetCExoStringEntry(int nRow, const CExoString& sColumn, CExoString* pValue);  // 0x00413270
     int GetINTEntry(int nRow, const CExoString& sColumn, int* pValue);   // 0x00413660
+    int GetINTEntry(const CExoString& sRow, const CExoString& sColumn, int* pValue);   // 0x00414110
+    char pad_0x4[0x20];
+    int m_nNumRows;                                 // 0x24
+    char pad_0x28[0x2c];
 };
 
 class CTwoDimArrays {
 public:
-    char pad_0x0[0x118];
+    char pad_0x0[0x68];
+    C2DA* m_pKeymapTable;                           // 0x68
+    C2DA* m_pBindableKeysTable;                     // 0x6c
+    char pad_0x70[0xc];
+    C2DA* m_pDifficultyTable;                       // 0x7c (difficultyopt)
+    char pad_0x80[0x98];
     C2DA* m_pTutorialTable;                         // 0x118
     C2DA* GetTutorialTable() { return m_pTutorialTable; }
+    C2DA* GetKeymapTable() { return m_pKeymapTable; }
+    C2DA* GetBindableKeysTable() { return m_pBindableKeysTable; }
+    C2DA* GetDifficultyTable() { return m_pDifficultyTable; }
 };
 
 class CSWSpellArray;

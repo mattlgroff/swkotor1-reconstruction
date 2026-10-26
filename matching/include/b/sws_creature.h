@@ -21,20 +21,7 @@ public:
     unsigned short m_nNumParams;                            // 0x6e
 };
 
-#pragma pack(push, 4)
-class CGameEffect {
-public:
-    CGameEffect(int bArg);                                  // 0x00503E40
-    void SetInteger(int nIndex, int nValue);                // 0x005036A0
-
-    unsigned __int64 m_nID;                                 // 0x0
-    unsigned short m_nType;                                 // 0x8
-    unsigned short m_nSubType;                              // 0xa (low 3 bits: duration type)
-
-    void SetDurationType(unsigned short nType) { m_nSubType = (m_nSubType & 0xfff8) | nType; }
-    char pad_0xc[0x8c - 0xc];
-};
-#pragma pack(pop)
+#include "b/game_effect.h"
 
 // CGameObject base of CSWSArea (at +0x11c, after CResHelperArea).
 class CSWSAreaGameObject {
@@ -53,9 +40,27 @@ public:
     char pad_0x0[0x14];
 };
 
-struct CSWSAreaProperties {
-    char pad_0x0[0x10];
-    int m_n10;                                              // 0x10
+// Area music / ambient sound state (vtable 0x0074C268, no destructor slot).
+class CSWSAmbientSound {
+public:
+    virtual void PlayMusic(int bPlay);                      // 0x00 0x005C9900
+    virtual void SetMusicDelay(int nDelay);                 // 0x04 0x005C99A0
+    virtual void SetMusicDayTrack(int nTrack);              // 0x08 0x005C9A40
+    virtual void SetMusicNightTrack(int nTrack);            // 0x0c 0x005C9AE0
+    virtual void PlayBattleMusic(int bPlay);                // 0x10 0x005C9B90
+    virtual void SetBattleMusicTrack(int nTrack);           // 0x14 0x005C9C30
+    virtual void PlayAmbientSound(int bPlay);               // 0x18 0x005C9CD0
+    virtual void SetAmbientDayTrack(int nTrack);            // 0x1c 0x005C9D70
+    virtual void SetAmbientNightTrack(int nTrack);          // 0x20 0x005C9E20
+    void SetAmbientDayVolume(int nVolume);                  // 0x005C9ED0
+    void SetAmbientNightVolume(int nVolume);                // 0x005C9F80
+
+    int m_bMusicPlaying;                                    // 0x04
+    int m_nMusicDelay;                                      // 0x08
+    int m_nMusicDay;                                        // 0x0c
+    int m_nMusicNight;                                      // 0x10
+    char pad_0x14[0x18 - 0x14];
+    int m_nMusicBattle;                                     // 0x18 (name guessed)
 };
 
 class CResHelperArea {
@@ -68,6 +73,9 @@ public:
     CSWSAreaGameObject& AsGameObject() { return *this; }
     void* GetRoom(const Vector& vPosition, int bArg);       // 0x004BB600
     void PlaySoundAtLocation(int nSound, class CScriptLocation* pLocation); // 0x00507E20 (name guessed)
+    void ApplyEffect(class CGameEffect* pEffect, const Vector& vPosition, const Vector& vOrientation); // 0x0050C6B0
+    Vector ComputeAwayVector(const Vector& vPosition, const Vector& vAwayFrom, float fRange,
+                             int nArg);                     // 0x004BDF80 (name guessed)
     int ComputeSafeLocation(const Vector& vPosition, float fRadius, int nArg,
                             int bArg, Vector* pResult);     // 0x004BE860
     void IncrementPlayersInArea();                          // 0x00508C20
@@ -77,11 +85,14 @@ public:
 
     char pad_0x124[0x158 - 0x124];
     CExoString m_sTag;                                      // 0x158
-    char pad_0x160[0x1dc - 0x160];
+    char pad_0x160[0x1d8 - 0x160];
+    unsigned long m_oidExitingObject;                       // 0x1d8 (name guessed)
     int m_n1DC;                                             // 0x1dc (name guessed)
     char pad_0x1e0[0x1f4 - 0x1e0];
     CSWVarTable m_VarTable;                                 // 0x1f4
-    CSWSAreaProperties* m_pProperties;                      // 0x208 (name guessed)
+    CSWSAmbientSound* m_pAmbientSound;                      // 0x208
+    char pad_0x20c[0x2ac - 0x20c];
+    int m_bUnescapable;                                     // 0x2ac (name guessed)
 };
 
 class CSWCCreature {
@@ -172,9 +183,23 @@ public:
     int m_bIsPC;                                            // 0x6c
     char pad_0x70[0x89 - 0x70];
     unsigned char m_nNumMultiClasses;                       // 0x89
-    char pad_0x8a[0x128 - 0x8a];
+    char pad_0x8a[0xea - 0x8a];
+    char m_nStrengthModifier;                               // 0xea (name guessed)
+    char pad_0xeb[0xee - 0xeb];
+    char m_nConstitutionModifier;                           // 0xee (name guessed)
+    char pad_0xef[0xf0 - 0xef];
+    char m_nIntelligenceModifier;                           // 0xf0 (name guessed)
+    char pad_0xf1[0xf2 - 0xf1];
+    char m_nWisdomModifier;                                 // 0xf2 (name guessed)
+    char pad_0xf3[0xf4 - 0xf3];
+    char m_nCharismaModifier;                               // 0xf4 (name guessed)
+    char pad_0xf5[0x128 - 0xf5];
     CExoArrayList<CSWSStats_SpellLikeAbility>* m_pSpellLikeAbilities; // 0x128
-    char pad_0x12c[0x194 - 0x12c];
+    char pad_0x12c[0x17e - 0x12c];
+    short m_nGoodEvil;                                      // 0x17e
+    char pad_0x180[0x186 - 0x180];
+    unsigned short m_nAppearanceType;                       // 0x186 (name guessed)
+    char pad_0x188[0x194 - 0x188];
     int m_n194;                                             // 0x194 (read by VM command 0x0053C010)
 
     unsigned short GetNumFeats() { return (unsigned short)m_lstFeats.num; }
@@ -192,6 +217,17 @@ public:
     void ReadSpellsFromGff(CResGFF* pRes, CResStruct* pStruct); // 0x005AEB30
     int CanLevelUp();                                       // 0x005A6810
     void AutoLevelUp(int bArg);                             // 0x005B27E0
+    unsigned long GetExpNeededForNextLevel();               // 0x005A5490
+    void AddClass(unsigned char nClass, unsigned char nArg); // 0x005A5D10
+    unsigned char GetSimpleAlignmentGoodEvil();             // 0x005A5110
+    unsigned char GetSTRStat();                             // 0x005A6190 (name guessed)
+    unsigned char GetDEXStat();                             // 0x005A6550 (name guessed)
+    unsigned char GetCONStat();                             // 0x005A6250 (name guessed)
+    unsigned char GetINTStat();                             // 0x005A6310 (name guessed)
+    unsigned char GetWISStat();                             // 0x005A63D0 (name guessed)
+    unsigned char GetCHAStat();                             // 0x005A6490 (name guessed)
+    char GetDEXMod(int bArmorDexCap);                       // 0x005A5330 (name guessed)
+    void ModifyAlignment(short nDelta);                     // 0x005AE610
 };
 
 class CResGFF;
@@ -301,7 +337,9 @@ public:
     CSWVarTable m_VarTable;                                 // 0x9c
     char pad_0xb0[0x148 - 0xb0];
     int m_n148;                                             // 0x148 (name guessed)
-    char pad_0x14c[0x1f8 - 0x14c];
+    char pad_0x14c[0x150 - 0x14c];
+    unsigned long m_oidExitingObject;                       // 0x150 (name guessed)
+    char pad_0x154[0x1f8 - 0x154];
     CExoString m_sTag;                                      // 0x1f8
 };
 
@@ -360,6 +398,9 @@ public:
     unsigned long AIActionBarkString(class CSWSObjectActionNode* pNode);
     unsigned long AIActionPlaySound(class CSWSObjectActionNode* pNode);
     int AddUseObjectAction(unsigned long oidObject);
+    int AddUnlockObjectAction(unsigned long oidDoor, unsigned long oidThievesTool, int bArg); // 0x004CFB80
+    int AddLockObjectAction(unsigned long oidDoor);          // 0x004CFC20
+    int AddCloseDoorAction(unsigned long oidDoor, int bArg); // 0x004CFB20
     int AddGiveItemActions(unsigned long oidItem, unsigned long oidGiveTo,
                            int nStackSize, int bArg);
     int AddTakeItemActions(unsigned long oidItem, unsigned long oidTakeFrom, int bArg);
@@ -375,6 +416,7 @@ public:
     int RemoveItem(class CSWSItem* pItem, int a2, int a3, int a4); // 0x00510EF0
     void AddExperience(int nXP);                            // 0x004EF930
     void SignalEvent(int nEvent, CSWSEvent* pEvent);        // 0x004EDE10
+    void SendFeedbackMessage(unsigned short nMessage, class CSWCCMessageData* pData); // 0x004EDE10
     void SetInParty(int bInParty, int bArg);                // 0x004FDB20
     void OnJoinParty();                                     // 0x00501C40
     CSWSCreature(unsigned long nId, int bArg);              // 0x004F7A10
@@ -395,6 +437,8 @@ public:
     void AddGold(int nGold, int bFeedback);                 // 0x004F3DB0
     void AddPazaakCard(class CSWSItem* pCard);              // 0x004EFB40
     int GetDeadTemp();                                      // 0x004EF890
+    short GetArmorClass();                                  // 0x004ED1D0 (name guessed)
+    void SetLastHostileActor(unsigned long oidActor, int bArg); // 0x004CC0C0
     void SetCombatState(int a, int b);                      // 0x0050EE80 (name guessed)
     void ClearActivityFlag(int nFlag);                      // 0x004F8770 (name guessed)
     void AddDriveAction(int nId, Vector* pPosition, int nAngle, int nA, int nB,
@@ -418,6 +462,27 @@ public:
     }
     void ActivityManager(int nActivity);                    // 0x004F87D0 (name guessed)
     void UpdateAppearanceForEquippedItems();                // 0x004ED620
+    void EquipMostEffectiveArmor();                         // 0x004F3A60
+    void AdjustReputation(int nFaction, int nAdjustment);   // 0x00514070
+    void AddAttackActions(unsigned long oidAttackee, int a2, int a3, int bPassive, int a5, int a6,
+                          int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14,
+                          int a15);                         // 0x004FDE40 (name guessed)
+    void AddCutsceneAttackActions(unsigned long oidTarget, int nAnimation, int nAttackResult,
+                                  int nDamage);             // 0x004F9FB0
+    void AddCutsceneMoveActions(unsigned long oidTarget, const Vector& vPosition, int bRun); // 0x004FA050
+    int UseFeat(unsigned short nFeat, unsigned short nSubFeat, unsigned long oidTarget,
+                unsigned long oidArea);                     // 0x004ECEE0
+    int UseSkill(unsigned char nSkill, unsigned char nSubSkill, unsigned long oidTarget,
+                 const Vector& vTarget, unsigned long oidArea, unsigned long oidItem,
+                 int bArg);                                 // 0x004FBE40
+    void UseTalentOnObject(int nType, int nId, unsigned long oidTarget, unsigned char nMultiClass,
+                           unsigned long oidItem, int nItemPropertyIndex, unsigned char nCasterLevel,
+                           unsigned char nMetaType);        // 0x00500CA0 (name guessed)
+    void UseTalentAtLocation(int nType, int nId, class CScriptLocation* pLocation,
+                             unsigned char nMultiClass, unsigned long oidItem, int nItemPropertyIndex,
+                             unsigned char nCasterLevel, unsigned char nMetaType); // 0x004FD070 (name guessed)
+    void EquipMostDamagingMeleeWeapon(unsigned long oidVersus, int bOffHand, int bArg); // 0x00500E50
+    int EquipMostDamagingRangedWeapon(unsigned long oidVersus); // 0x00501250
     unsigned char GetMode();                                // 0x004EDAE0 (name guessed)
     int GetWeaponSlotFlag(unsigned long nSlot);             // 0x004EFDD0 (name guessed)
     int CanUseItem(class CSWSItem* pItem, int bArg);        // 0x0051B440 (name guessed)
@@ -436,17 +501,29 @@ public:
     CSWSScriptVarTable m_ScriptVars;                        // 0x100
     CGameEffect** m_pAppliedEffects;                        // 0x124
     int m_nAppliedEffects;                                  // 0x128
-    char pad_0x12c[0x22c - 0x12c];
+    char pad_0x12c[0x164 - 0x12c];
+    unsigned long m_oidLastDisturbed;                       // 0x164 (name guessed)
+    char pad_0x168[0x16c - 0x168];
+    unsigned short m_nLastAttackType;                       // 0x16c (name guessed)
+    unsigned char m_nLastAttackMode;                        // 0x16e (name guessed)
+    char pad_0x16f[0x170 - 0x16f];
+    unsigned long m_oidLastWeaponUsed;                      // 0x170 (name guessed)
+    char pad_0x174[0x17c - 0x174];
+    unsigned long m_oidLastSpeaker;                         // 0x17c (name guessed)
+    char pad_0x180[0x22c - 0x180];
     int m_nXPDebt;                                          // 0x22c
     char pad_0x230[0x310 - 0x230];
     unsigned long m_oidLastArea;                            // 0x310
     Vector m_vLastPosition;                                 // 0x314
     int m_n320;                                             // 0x320
-    char pad_0x324[0x340 - 0x324];
+    char pad_0x324[0x33c - 0x324];
+    unsigned long m_oidBlockingDoor;                        // 0x33c (name guessed)
     int m_n340;                                             // 0x340
     char pad_0x344[0x348 - 0x344];
     int m_nCharSheetViewers;                                // 0x348 (name guessed)
-    char pad_0x34c[0x384 - 0x34c];
+    char pad_0x34c[0x370 - 0x34c];
+    unsigned long m_oidLastTrapDetected;                    // 0x370 (name guessed)
+    char pad_0x374[0x384 - 0x374];
     unsigned long m_n384;                                   // 0x384
     char pad_0x388[0x3a8 - 0x388];
     CSWSActionQueueEntry m_aActionQueue[10];                // 0x3a8
@@ -457,11 +534,39 @@ public:
     int m_n4E0;                                             // 0x4e0
     char pad_0x4e4[0x4f8 - 0x4e4];
     int m_nCreatureSize;                                    // 0x4f8
-    char pad_0x4fc[0x8e8 - 0x4fc];
+    char pad_0x4fc[0x504 - 0x4fc];
+    unsigned long m_oidAttackTarget;                        // 0x504 (name guessed)
+    unsigned long m_oidAttemptedMovementTarget;             // 0x508 (name guessed)
+    unsigned long m_oidAttemptedAttackTarget;               // 0x50c (name guessed)
+    char pad_0x510[0x524 - 0x510];
+    unsigned long m_oidAttemptedSpellTarget;                // 0x524 (name guessed)
+    unsigned long m_oidSpellTarget;                         // 0x528 (name guessed)
+    char pad_0x52c[0x53c - 0x52c];
+    unsigned long m_oidLastHostileTarget;                   // 0x53c (name guessed)
+    char pad_0x540[0x544 - 0x540];
+    int m_nLastAttackAction;                                // 0x544 (name guessed)
+    char pad_0x548[0x54c - 0x548];
+    int m_nLastForcePowerUsed;                              // 0x54c (name guessed)
+    char pad_0x550[0x554 - 0x550];
+    int m_nLastCombatFeatUsed;                              // 0x554 (name guessed)
+    char pad_0x558[0x55c - 0x558];
+    int m_nLastAttackResult;                                // 0x55c (name guessed)
+    char pad_0x560[0x564 - 0x560];
+    int m_bLastForcePowerSuccessful;                        // 0x564 (name guessed)
+    char pad_0x568[0x8e8 - 0x568];
     int m_n8E8;                                             // 0x8e8
-    char pad_0x8ec[0x920 - 0x8ec];
+    char pad_0x8ec[0x900 - 0x8ec];
+    unsigned long m_oidLastPerceived;                       // 0x900 (name guessed)
+    int m_bLastPerceptionHeard;                             // 0x904 (name guessed)
+    int m_bLastPerceptionSeen;                              // 0x908 (name guessed)
+    int m_bLastPerceptionInaudible;                         // 0x90c (name guessed)
+    int m_bLastPerceptionVanished;                          // 0x910 (name guessed)
+    char pad_0x914[0x920 - 0x914];
     CExoArrayList<CSWSCreatureVisibility*> m_aVisibility;  // 0x920
-    char pad_0x92c[0x9c8 - 0x92c];
+    char pad_0x92c[0x964 - 0x92c];
+    int m_n964;                                             // 0x964 (name guessed)
+    int m_n968;                                             // 0x968 (name guessed)
+    char pad_0x96c[0x9c8 - 0x96c];
     class CSWSCombatRound* m_pCombatRound;                  // 0x9c8
     char pad_0x9cc[0x9d4 - 0x9cc];
     int m_bIsPC;                                            // 0x9d4

@@ -173,7 +173,7 @@ public:
     char* m_pa8;                        // +0xa8
     int m_nVertexPool;                  // +0xac (raw offset until uploaded)
     int m_nVertexPoolSize;              // +0xb0
-    char padb4[0xb8 - 0xb4];
+    void* m_pRawResource;               // +0xb4
     CExoArrayList<char*> m_lNames;      // +0xb8
 
     int AddRef(Model* pRef);            // 0x0043e240
@@ -291,8 +291,17 @@ public:
     int m_nTexPool;                     // +0x1ac
 };
 
+class AurRes;
+
+char* AurResGetDataBytes(int nBytes, AurRes* pRes);     // 0x0044BD10
+void AurResFreeDataBytes(AurRes* pRes, char* pData);    // 0x0044BD50
+void AurResRemove(AurRes* pRes);                        // 0x0044BDC0
+void AurResClose(AurRes* pRes, int n);                  // 0x0044C8F0
+
 class InputBinary {
 public:
+    MaxTree* Read(AurRes* pMdl, AurRes* pMdx, bool bLite);   // 0x004A1260
+
     void ResetAnim(MdlNodeAnimMesh* pNode, int nBase, int nRaw);
     void ResetDangly(MdlNodeDanglyMesh* pNode, int nBase, int nRaw);
     void ResetMdlNodePartsLite(MdlNode* pNode, int nBase, int nRaw);
@@ -317,6 +326,9 @@ public:
     void ResetAnimation(Animation* pAnim, int nBase, int nRaw);
     Model* Reset(Model* pModel, int nRaw, void* pResource);
     Model* ResetLite(Model* pModel, int nRaw, void* pResource);
+
+    unsigned int m_nMdlSize;            // +0x00
+    unsigned int m_nMdxSize;            // +0x04
 };
 
 #endif

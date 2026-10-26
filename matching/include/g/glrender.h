@@ -33,6 +33,7 @@ double __cdecl sin(double x);
 #define GL_FLOAT 0x1406
 #define GL_UNSIGNED_BYTE 0x1401
 #define GL_UNSIGNED_SHORT 0x1403
+#define GL_QUADS 7
 #define GL_TEXTURE0_ARB 0x84c0
 
 // GL extension entry points (function-pointer globals).
@@ -42,6 +43,7 @@ extern PFNGLACTIVETEXTUREARB glActiveTextureARB;           // 0x007bb80c
 
 int HasMultiTexture();     // 0x0045f710
 int HasVertexBuffers();    // 0x0045fc90
+void ActivateTextureStage(int nStage);   // 0x00425250
 
 class Vector {
 public:
@@ -97,14 +99,17 @@ struct Imposter {
     void* m_hDC;             // +0x10
     void* m_pVertices;       // +0x14
     int m_nVertices;         // +0x18
+
+    Imposter() { m_bUsed = 0; }
 };
 
 class ImposterManager {
 public:
     Imposter* m_pImposters;  // +0x00
+    int m_nImposters;        // +0x04
 
     int AllocateImposter(int nIndex, int nVertices, const void* pVertices);
-    void SetUp(int a, int b);    // 0x00432090
+    int SetUp(int nVertices, const void* pVertices);    // 0x00432090
 };
 extern ImposterManager g_ImposterManager;          // 0x0078db30
 
@@ -118,5 +123,20 @@ extern void* g_hGLDC;                              // 0x007a47e4
 extern int g_n827fa0;                              // 0x00827fa0
 extern int g_n827fa4;                              // 0x00827fa4
 extern unsigned int g_aPrimitiveModes[];           // 0x0073f334
+
+// Just the texture-coordinate fields of a trimesh node.
+class MdlNodeTriMesh {
+public:
+    char pad00[0x14c];
+    int m_nVertexStride;                    // +0x14c
+    char pad150[0x160 - 0x150];
+    int m_nTVertOffset;                     // +0x160
+    int m_nTVertOffset1;                    // +0x164
+};
+
+void SetLightmapTexCoordToStage0(int a, int b, int nId, int nCount, MdlNodeTriMesh* pNode,
+                                 int nOffset);   // 0x00425280
+void SetDecalTexCoordToStage0(int a, int b, int nId, int nCount, MdlNodeTriMesh* pNode,
+                              int nOffset);      // 0x004253d0
 
 #endif

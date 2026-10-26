@@ -37,6 +37,8 @@ public:
 class CSWSpellArray {
 public:
     CSWSpell* GetSpell(int nSpell);                         // 0x0059B6D0
+
+    int m_nNumSpells;                                       // 0x00
 };
 
 class CSWFeat {
@@ -64,7 +66,8 @@ public:
     unsigned short m_nNumFeats; // 0xa4
     char pad_0xa6[0xaa - 0xa6];
     unsigned char m_nAA;        // 0xaa
-    char pad_0xab[0xb8 - 0xab];
+    unsigned char m_nNumSkills; // 0xab
+    char pad_0xac[0xb8 - 0xac];
     CTwoDimArrays* m_p2DArrays; // 0xb8
     unsigned char m_aDifficulty[5][6]; // 0xbc
     char pad_0xda[0x120 - 0xda];

@@ -38,6 +38,49 @@ public:
 
 class Part;
 
+// Model / animation trees (type byte at +0x4c, low seven bits).
+class Model;
+class Animation;
+
+class MaxTree {
+public:
+    char pad00[0x4c];
+    unsigned char m_nType;                  // +0x4c (low 7 bits)
+
+    Model* AsModel() { return (m_nType & 0x7f) == 2 ? (Model*)this : 0; }
+    Animation* AsAnimation() { return (m_nType & 0x7f) == 5 ? (Animation*)this : 0; }
+};
+
+class Model : public MaxTree {
+public:
+    char pad4d[0xb8 - 0x4d];
+    char** m_ppPartTextureNames;            // +0xb8
+};
+
+class Animation : public MaxTree {
+public:
+    char pad4d[0x84 - 0x4d];
+    Model* m_pModel;                        // +0x84
+};
+
+class PartNodeRef {
+public:
+    char pad00[0x04];
+    int m_nIndex;                           // +0x04
+    MaxTree* m_pOwner;              // +0x08
+};
+
+class PartTriMesh {
+public:
+    void* m_pVtbl;                          // +0x00
+    PartNodeRef* m_pNode;                   // +0x04
+    char pad08[0x44 - 0x08];
+    Material* m_pMaterial;                  // +0x44
+};
+
+void __cdecl findalltrimeshparts(Part* pRoot,
+                                 CExoArrayList<PartTriMesh*>* pList);  // 0x004461d0
+
 void __cdecl findallmaterials(Part* pRoot, CExoArrayList<Material*>* pList);  // 0x00445ec0
 Part* __cdecl FindPart(Part* pRoot, char* szName);                  // 0x0043fe00
 
@@ -51,6 +94,8 @@ public:
     SafePointerTexture m_pEnvironment;      // +0x1a8
 
     int ReplaceAllTextures(char* szName, int nStage);
+    int ReplaceTexture(char* szOld, char* szNew, int nIndices,
+                       unsigned short* pIndices, int nUnused);
     int ReplacePartTexture(char* szPart, char* szNew, int nIndices,
                            unsigned short* pIndices);
     int SetEnvironmentMap(char* szName);
@@ -81,6 +126,43 @@ int Gob::ReplaceAllTextures(char* szName, int nStage)
         lMaterials.element[i]->ReplaceTexture(szName, nStage);
         if (m_pEnvironment.m_p)
             lMaterials.element[i]->m_pTexture->SetIsEnvironmentMapped(1);
+    }
+    m_bDirty = 1;
+    return 1;
+}
+
+// FUNCTION: SWKOTOR 0x00446720
+// NONMATCH (68): the original keeps szFrom in ebx with a 0x410 frame (ours
+// spills it, 0x414), and expands the inline AsModel() twice with the
+// sub/neg/sbb/not mask where cl CSEs one setne mask (tried if/return and
+// bit-field forms of the checked casts, a ternary szFrom, loop-scoped i).
+int Gob::ReplaceTexture(char* szOld, char* szNew, int nIndices,
+                        unsigned short* pIndices, int nUnused)
+{
+    if (g_pTextureLog) {
+        fprintf(g_pTextureLog, "%s\n", szNew);
+        for (int i = 0; i < nIndices; i++)
+            fprintf(g_pTextureLog, "%i ", pIndices[i]);
+        fprintf(g_pTextureLog, "\n");
+    }
+    int anIndices[256];
+    for (int i = 0; i < nIndices; i++)
+        anIndices[i] = pIndices[i];
+    char* szFrom = (szOld && *szOld) ? szOld : 0;
+    CExoArrayList<PartTriMesh*> lParts;
+    findalltrimeshparts(m_pRoot, &lParts);
+    for (int i = 0; i < lParts.num; i++) {
+        PartTriMesh* pPart = lParts.element[i];
+        PartNodeRef* pRef = pPart->m_pNode;
+        MaxTree* pOwner = pRef->m_pOwner;
+        char* szPart;
+        if (pOwner->AsModel())
+            szPart = pOwner->AsModel()->m_ppPartTextureNames[pRef->m_nIndex];
+        else
+            szPart = pOwner->AsAnimation()->m_pModel->m_ppPartTextureNames[pRef->m_nIndex];
+        pPart->m_pMaterial->ReplaceTexture(szFrom, szNew, szPart, anIndices, nIndices);
+        if (m_pEnvironment.m_p)
+            lParts.element[i]->m_pMaterial->m_pTexture->SetIsEnvironmentMapped(1);
     }
     m_bDirty = 1;
     return 1;

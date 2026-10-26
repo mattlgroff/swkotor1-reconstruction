@@ -84,3 +84,26 @@ Part* PartTriMesh::FindNamedPart(char* szName)
         return m_pRoot;
     return FindPart(m_pRoot, szName);
 }
+
+// FUNCTION: SWKOTOR 0x0043ef70
+// Not in functions.csv; the base hit test finds nothing.
+int Part::HitCheck(const Vector& vStart, const Vector& vEnd, Vector* pHit,
+                   int nUnused, int nFlags)
+{
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x00441510
+// Not in functions.csv.
+int PartAnimMesh::HitCheck(const Vector& vStart, const Vector& vEnd, Vector* pHit,
+                           int nUnused, int nFlags)
+{
+    return HitCheckAnimMesh(this, m_pNode->AsMdlNodeAnimMesh(), vStart, vEnd, pHit, nFlags);
+}
+
+// FUNCTION: SWKOTOR 0x0043f5c0
+// Not in functions.csv.
+Vector Part::SetPartPosition(Vector v)
+{
+    return Vector(0, 0, 0);
+}

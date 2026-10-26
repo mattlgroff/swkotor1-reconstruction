@@ -7,8 +7,8 @@ CSWGuiInGameGameplay::~CSWGuiInGameGameplay() {}
 // FUNCTION: SWKOTOR 0x006E0020
 CSWGuiOptionsFeedback::~CSWGuiOptionsFeedback() {}
 
-// FUNCTION: SWKOTOR 0x006E12E0 SYMBOL: ??_GCSWGuiOptionsFeedback@@UAEPAXI@Z
-CSWGuiOptionsFeedback::CSWGuiOptionsFeedback(CSWGuiManager* pManager) : CSWGuiPanel(pManager) {}
+// The feedback panel's deleting wrapper (0x006E12E0) is emitted by its
+// constructor in sw_gui_options_feedback_ctor.cpp.
 
 // FUNCTION: SWKOTOR 0x006E3420 SYMBOL: ??_GCSWGuiOptionsGraphics@@UAEPAXI@Z
 CSWGuiOptionsGraphics::~CSWGuiOptionsGraphics() {}

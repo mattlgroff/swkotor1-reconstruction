@@ -146,6 +146,67 @@ void ActivateTextureStage(int nStage)
     }
 }
 
+// NONMATCH (18): the original pops edi/esi before the final stage store and
+// pops ebx after it; cl here pops all three before the tail test.
+// FUNCTION: SWKOTOR 0x00425280
+void SetLightmapTexCoordToStage0(int a, int b, int nId, int nCount, MdlNodeTriMesh* pNode,
+                                 int nOffset)
+{
+    if (HasVertexBuffers()) {
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, g_pRequestPoolManager->GetBuffer(nId));
+        char* pBase = (char*)nOffset;
+        if (HasMultiTexture())
+            glClientActiveTextureARB(GL_TEXTURE0_ARB);
+        g_nCurrentStage = 0;
+        glTexCoordPointer(2, GL_FLOAT, pNode->m_nVertexStride, pBase + pNode->m_nTVertOffset1);
+        if (HasMultiTexture())
+            glClientActiveTextureARB(GL_TEXTURE0_ARB + 1);
+        g_nCurrentStage = 1;
+        glTexCoordPointer(2, GL_FLOAT, pNode->m_nVertexStride, pBase + pNode->m_nTVertOffset);
+    } else {
+        char* pBase = (char*)g_pRequestPoolManager->GetBuffer(nId) + nOffset;
+        if (HasMultiTexture())
+            glClientActiveTextureARB(GL_TEXTURE0_ARB);
+        g_nCurrentStage = 0;
+        glTexCoordPointer(2, GL_FLOAT, pNode->m_nVertexStride, pBase + pNode->m_nTVertOffset1);
+        if (HasMultiTexture())
+            glClientActiveTextureARB(GL_TEXTURE0_ARB + 1);
+        g_nCurrentStage = 1;
+        glTexCoordPointer(2, GL_FLOAT, pNode->m_nVertexStride, pBase + pNode->m_nTVertOffset);
+    }
+    ActivateTextureStage(0);
+}
+
+// NONMATCH (18): same epilogue scheduling as 0x00425280.
+// FUNCTION: SWKOTOR 0x004253d0
+void SetDecalTexCoordToStage0(int a, int b, int nId, int nCount, MdlNodeTriMesh* pNode,
+                              int nOffset)
+{
+    if (HasVertexBuffers()) {
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, g_pRequestPoolManager->GetBuffer(nId));
+        char* pBase = (char*)nOffset;
+        if (HasMultiTexture())
+            glClientActiveTextureARB(GL_TEXTURE0_ARB);
+        g_nCurrentStage = 0;
+        glTexCoordPointer(2, GL_FLOAT, pNode->m_nVertexStride, pBase + pNode->m_nTVertOffset);
+        if (HasMultiTexture())
+            glClientActiveTextureARB(GL_TEXTURE0_ARB + 1);
+        g_nCurrentStage = 1;
+        glTexCoordPointer(2, GL_FLOAT, pNode->m_nVertexStride, pBase + pNode->m_nTVertOffset1);
+    } else {
+        char* pBase = (char*)g_pRequestPoolManager->GetBuffer(nId) + nOffset;
+        if (HasMultiTexture())
+            glClientActiveTextureARB(GL_TEXTURE0_ARB);
+        g_nCurrentStage = 0;
+        glTexCoordPointer(2, GL_FLOAT, pNode->m_nVertexStride, pBase + pNode->m_nTVertOffset);
+        if (HasMultiTexture())
+            glClientActiveTextureARB(GL_TEXTURE0_ARB + 1);
+        g_nCurrentStage = 1;
+        glTexCoordPointer(2, GL_FLOAT, pNode->m_nVertexStride, pBase + pNode->m_nTVertOffset1);
+    }
+    ActivateTextureStage(0);
+}
+
 // FUNCTION: SWKOTOR 0x00425900
 void SetVertexBuffer(int nStride, char* pOffset, int nId)
 {
@@ -310,6 +371,35 @@ void RenderSquares(int nId)
     }
 }
 
+// NONMATCH (24): the VBO path matches; in the client-memory path cl swaps
+// ebx/ebp (nQuads vs. the cached glTexCoordPointer import).
+// FUNCTION: SWKOTOR 0x00426230
+void DrawLightmappedGrass(char* pVertices, int nStride, char* pUnused, int nAttribStride,
+                          int nFirst, int nQuads)
+{
+    if (HasVertexBuffers()) {
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glVertexPointer(3, GL_FLOAT, nStride, pVertices);
+        pVertices += nQuads * 0x30;
+        glNormalPointer(GL_FLOAT, nAttribStride, pVertices);
+        glTexCoordPointer(2, GL_FLOAT, nAttribStride, pVertices + 0x0c);
+        ActivateTextureStage(1);
+        glTexCoordPointer(2, GL_FLOAT, nAttribStride, pVertices + 0x14);
+        ActivateTextureStage(0);
+        glDrawArrays(GL_QUADS, nFirst, nQuads * 4);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        return;
+    }
+    glVertexPointer(3, GL_FLOAT, nStride, pVertices);
+    pVertices += nQuads * 0x30;
+    glNormalPointer(GL_FLOAT, nAttribStride, pVertices);
+    glTexCoordPointer(2, GL_FLOAT, nAttribStride, pVertices + 0x0c);
+    ActivateTextureStage(1);
+    glTexCoordPointer(2, GL_FLOAT, nAttribStride, pVertices + 0x14);
+    ActivateTextureStage(0);
+    glDrawArrays(GL_QUADS, nFirst, nQuads * 4);
+}
+
 // FUNCTION: SWKOTOR 0x00426560
 void* CreatePBuffer(int nWidth, int nHeight)
 {
@@ -383,8 +473,30 @@ void FindSmallestPowerOf2WidthHeight(int nWidth, int nHeight, int* pWidth, int* 
     *pHeight = 1 << (HighestBit(nHeight) + 1);
 }
 
+// FUNCTION: SWKOTOR 0x00432090
+// Takes the first free imposter, doubling the table when all are used.
+int ImposterManager::SetUp(int nVertices, const void* pVertices)
+{
+    int nCount = m_nImposters;
+    int i;
+    for (i = 0; i < m_nImposters; i++) {
+        if (!m_pImposters[i].m_bUsed) {
+            AllocateImposter(i, nVertices, pVertices);
+            return i;
+        }
+    }
+    Imposter* pOld = m_pImposters;
+    m_pImposters = new Imposter[nCount * 2];
+    memset(m_pImposters, 0, m_nImposters * 2);
+    memcpy(m_pImposters, pOld, m_nImposters * sizeof(Imposter));
+    delete[] pOld;
+    AllocateImposter(i, nVertices, pVertices);
+    m_nImposters *= 2;
+    return m_nImposters >> 1;
+}
+
 // FUNCTION: SWKOTOR 0x00432160
 void SetUpImposters(int a, int b)
 {
-    g_ImposterManager.SetUp(a, b);
+    g_ImposterManager.SetUp(a, (const void*)b);
 }

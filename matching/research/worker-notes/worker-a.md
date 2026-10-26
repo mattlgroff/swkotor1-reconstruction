@@ -129,3 +129,62 @@ requeue calls, and party state writes follow the canonical instruction flow.
 UnsummonMyself 005149B0 retained at 8 diff after three event receiver forms;
 all EH, allocation, visual effect and destruction-event bytes match except
 the event/app-manager register selection.
+
+
+# Worker A, round s1 (2026-10-26)
+
+Branch claude/worker-a-s1 from main c47d071. Family: CSWSArea serialisation,
+GIT/ARE/PTH loading and object-array helpers (0x00504870-0x0050E190), all in
+nwsarea.o. 223 todo rows screened; 33 new addresses attempted.
+
+Folder `kotor-match -q -j 2 matching/src/a`: 453/528 -> **476/561**.
+0 prior MATCH regressions; old NONMATCH diff counts unchanged.
+
+NEW exact (22): 00504870 LoadRooms, 00504A10 ??_ECSWSRoom (vector deleting
+dtor COMDAT emitted after LoadRooms; produced by a helper doing delete[]),
+00504A70 LoadCreatures, 00504DE0 LoadItems, 00505060 LoadEncounters,
+00505360 LoadWaypoints, 00505560 LoadSounds, 005057A0 LoadStores,
+00505AF0 LoadAreaEffects, 00505EB0 LoadPlaceableCameras, 00506090
+SaveProperties, 00506910 AllocateRoomArrays (descriptive name), 00506BD0 /
+00506C30 CResHelper<AreaGFF,2012> dtor / SetResRef, 00506E20 / 005089E0
+CExoArrayList<CResRef>::Allocate / Add, 005073D0 LoadRoomInfo, 005086D0
+NoNonWalkPolys, 00508400 LoadPathPoints, 00508A30 AIUpdate, 0050A7B0
+LoadPlaceables, 0050DD80 LoadGIT.
+Prior NONMATCH promoted: 00507750 SaveItems (CSWItem needed a virtual dtor so
+CSWSItem keeps CSWItem at +0 and CSWSObject at +0x10).
+
+Retained NONMATCH (diff insns): 00505DA0 LoadMaps (10, return value kept in
+memory vs esi), 005062A0 SavePlaceableCameras (17, ebx/ebp swap), 00506400
+PositionWalkable (20, mesh/vector copy order), 00506F20
+GetFirstObjectIndiceByX (19, this vs last-index register), 00506FE0
+UpdatePositionInObjectsArray (16, IndexOf registers + base/index order),
+00507220 ActivateAI (25, loop counter vs AI master register), 00507490
+LoadProperties (41, all register naming; uses inline getters for the byte
+defaults), 0050A0E0 LoadDoors (9, bearing store scheduling), 0050DC40
+RemoveObjectFromArea (20) and 0050DFD0 AddObjectToArea (11) (event-argument
+register naming), 0050E190 LoadArea (8, both imul operands loaded to regs).
+
+Lessons:
+- GIT loaders share one shape: `new T(oid); if (!p) continue;` then
+  `if (bUseTemplates) { CResRef cDefault(""); CResRef c = ReadFieldCResRef(..,
+  cDefault); if (!bSuccess || !LoadFromTemplate(..)) { delete p; continue; } }
+  else if (!LoadX(..)) { delete p; continue; }`. A bLoaded flag or ternary
+  gives the right blocks but wrong registers.
+- Reads evaluated Z,Y,X are constructor/call arguments (`Vector(X,Y,Z)`,
+  `AddToArea(this, X, Y, Z, ..)`); reads X,Y,Z in order are member stores.
+- `ReadFieldBYTE(.., m_bInt)` zero-extends the byte; the original's full-dword
+  push came from inline getters returning int.
+- Orientation normalisation needs an inline `Vector::MagnitudeSquared()`;
+  the open-coded expression reassociates.
+- ObjectId/template/position success flags can be separate variables; their
+  slot sharing with parameter homes decides the frame size (LoadItems).
+- When several branches call the same setter with member values, the
+  original has one call site behind a change flag (AIUpdate weather).
+- CSWSArea + 0x100 is CResHelper<AreaGFF,2012>; the header's m_pGIT at 0x108
+  is really that helper's AreaGFF resource (name kept to avoid churn).
+
+Next in-range work: LoadTriggers 0050A350 (CExoLocString/CExoString temps,
+EH states 2-4), SetCurrentWeather 00508050 (needs the CGameObject-at-0x11c
+cast for GetArea()->m_idSelf), 00508820 (aligned frame, appearance 2DA),
+PlayVisualEffect 00507E20, BudgeCreatures 00508180, HandleTransparentDoors
+0050C0E0, CSWSArea ctor 0050CF80 and the 0x00506D90 list holder ctor.

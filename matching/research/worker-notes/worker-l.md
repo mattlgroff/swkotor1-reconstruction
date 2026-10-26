@@ -160,3 +160,51 @@ NONMATCH:
   buttons, nine labels, entry array, description/items listboxes and the
   final control/compare state. Shared panel padding now exposes the observed
   control pointer at +0x1c, without shifting any field.
+
+## Key-mapping options family (2026-10-26, worker-l-s1)
+
+- Batch: `CSWGuiInGameOptKeyMappings` (vtable 0x00759358, size 0xF34,
+  swguiinOPTKeyMapping.o) and the `CSWGuiKeyMapButton` methods it drives.
+  Full layout now lives in `l/sw_gui_keymappings.h`; the options header only
+  forward-declares the panel (Gameplay::OnKeyMap includes the new header).
+- Whole folder: 317/366 -> **340/395**. 31 attempted: **21 NEW exact**,
+  **2 prior NONMATCH promoted** (UpdateColor 0x006EC6E0, SetUnchangable
+  0x006EC770, now real Vector globals instead of raw address loads),
+  8 retained NONMATCH. Address-set comparison: no prior MATCH regression.
+- MATCH: 0x006EC120 GetActionId, 0x006EC350 Draw, 0x006EC3B0 SetEditing,
+  0x006EC510 HandleInputEvent, 0x006EC580 FixFilterColors, 0x006EC7D0
+  SetDescription, 0x006ECCC0 ResetToDefault, 0x006ECFB0 / 0x006ED550
+  deleting dtors, 0x006ED2D0 OnDefaultClick, 0x006ED310 OnAcceptClick,
+  0x006ED390/3E0/430 filter callbacks, 0x006ED480 SetCaptureEvent,
+  0x006ED570 button dtor (novtable TU), 0x006ED5C0 OnControlEntered,
+  0x006ED5E0 OnEventClicked, 0x006EDA80 panel UpdateEvent, 0x006EDC90 ctor,
+  0x006EE040 Update; promoted 0x006EC6E0, 0x006EC770.
+- NONMATCH kept (ties): 0x006EC250 SetExtent (1, store schedule),
+  0x006ED930 FillListWithEvents (1, num=0 store vs proto load order),
+  0x006EC3D0 dtor (10, index strength reduction), 0x006ED610 CreateOption
+  (12, ForceDisplay/SortPos stack slots swapped), 0x006ECE60
+  PostChangeToEvent (15, scratch-register rotation), 0x006ED1E0
+  IsKeyUsedAlready (18, eax/ecx rotation), 0x006EDBD0 button UpdateEvent
+  (21, ebx/edi swap for key/result), 0x006ECFD0 FillListBox (39, this in
+  edi vs ebx; structure matches).
+- functions.csv lacks starts 0x006EC250, 0x006EC350, 0x006EC510,
+  0x006ED5C0, 0x006ED5E0 (they were folded into the previous function).
+  Annotating them restores the boundaries for matchcmp; the coordinator
+  should add them to functions.csv when regenerating reports.
+- Lessons: (1) `g_pRules->Get2DArrays()->GetKeymapTable()->GetINTEntry(row,
+  "Column", &n)` with the implicit const char* -> CExoString conversion is
+  the original shape: an explicit `CExoString("Column")` temporary uses the
+  ctor's returned eax instead of lea and loses the table/ecx order.
+  (2) `bool bFailed = GetINTEntry(...) == 0;` in a block scope reproduces
+  neg/sbb/inc + temp destruction before the test. (3) `x && y != 0` gives
+  the setne/test materialisation. (4) A switch with separate identical
+  `case 1:`/`case 2:` bodies gives the sub/dec/dec chain. (5) Sorted insert:
+  `nPos = -1; for (j) { if (greater) { nPos = j; break; } nPos = j + 1; }`
+  then `if (nPos == -1) Add else insert`. (6) CSWGuiControl slot 0x38 Draw
+  is only declared under `L_GUI_CONTROL_DRAW_SLOT` to avoid changing other
+  classes that declare non-virtual Draw; use a separate TU. (7) Filter
+  buttons use local `CSWGuiButton*` pointers for AddEvent + nav-bit clear.
+- Next in-range queue: options settings/constructors (0x006DDF40,
+  0x006DED30, 0x006DFB60, 0x006DFAD0, 0x006DEFE0, 0x006DEF30, 0x006DFE70,
+  0x006E74C0 autopause), level-up panel 0x006EE5F0/0x006EEE70/0x006EEE90,
+  pazaak core 0x006E4580-0x006E4C60, upgrade selection 0x006C2A70-0x006C5B70.

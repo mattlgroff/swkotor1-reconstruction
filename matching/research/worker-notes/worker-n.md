@@ -199,3 +199,49 @@ slot argument; no short-argument ABI was invented to remove them.
   0x0063CE60/0x0063DE50/0x0063DEE0/0x0063DF60/0x0063E220 and area-fade
   0x0063E350. These are unattempted, not matches. GUI constructor/FixMessageLabel
   queue from r1 remains available for a fresh context.
+
+## s1 camera-behaviour family, 2026-10-26
+
+- Branch `claude/worker-n-s1` from `c47d071`. Screened the 171-address
+  eligible pool (`todo.py --range 0x620000 0x640000 --names
+  matching/mac_names.csv`); selected the swbehaviorcamera.o family
+  (CAurBehavior-derived navigate/on-a-stick/free-look/death cameras, vtables
+  0x007515F4/0x0075165C/0x0075167C/0x0075169C) plus the CSWCModule tilt
+  controls that drive them. New shared header `include/n/sw_behavior_camera.h`.
+- Folder result (`kotor-match -q -j 2 matching/src/n`): **128/145 -> 165/184**.
+  39 new annotations: **37 new exact**, 2 NONMATCH. The two old raw-offset
+  annotations 0x006386D0 (navigate dtor) and 0x006383B0 (ClearTarget) were
+  rewritten into the class files (still exact, not counted as new).
+- New exact: death 0x00638540 0x0063A730 0x0063A760 0x0063A770 0x0063BBD0
+  0x0063BC90(??_G); navigate 0x00638670 0x006386A0 0x006386B0(??_G)
+  0x006386E0; on-a-stick 0x00637A30 0x00637AF0 0x00637B80 0x00637C20
+  0x00638070 0x00638E80 0x00638F60 0x00638FE0 0x00639760 0x00639C30
+  0x00639FC0 0x0063A310 0x0063A320 0x0063A360 0x0063A380 0x0063AD40(??_G)
+  0x0063BA80 0x0063F600 0x0063F630; free look 0x006383C0 0x0063A5D0
+  0x0063A6B0 0x0063A6C0 0x0063BAD0(??_G); CSWCModule 0x0063FCC0 0x0063FDB0;
+  CSWCArea::GetEnvMap 0x0063BFA0 (descriptive).
+- NONMATCH (register-numbering ties, stop retrying): 0x0063BAF0 free-look
+  settings ctor 9 (eax vs ecx for the first settings load after the clip
+  ctor; reference/const/local-temp/statement-order variants all equal);
+  0x0063AD60 on-a-stick settings ctor 47 (same tie plus quaternion copy
+  scheduling).
+- Lessons: Vector must be POD here (no user copy ctor/assignment) for the
+  `lea ecx,[esi+off]` member-copy shape and by-value pushes; Quaternion
+  ZAxis/YAxis inline helpers in ctor form evaluate x first when returned.
+  `const Vector&` temporaries do not reproduce `fld [eax]` direct use; write
+  `Vector v = a->GetPosition() - b->GetPosition(); v.z = 0;` (dead z
+  computation dropped). Split `g_pRules->m_p2DArrays` and
+  `GetModule()->m_pArea` into named locals when the original loads the
+  first pointer before the prologue pushes. Death Message/ctor order: the
+  original interleaves assignments (write them in the scheduled order).
+  `m_q = Euler(...); m_pGob->SetOrientation(m_q);` forwards from the call
+  result; a named Quaternion temp adds 16 bytes of frame. GobRef dtor needs
+  the `CExoArrayList<Gob**>& l = m_p->m_lWatchers; l.Remove(&m_p);` form for
+  the free-look dtor scheduling. `vResult = vHead - vOffset` via a named
+  result reproduces the temp-then-copy return in ComputeDesiredPosition.
+- Next in-range queue (unattempted): camera Control/large helpers 0x00637CC0,
+  0x006391A0, 0x006398F0, 0x00639D00 (free-look Control), 0x0063A810 (death
+  Control), 0x0063B050 (hit check), 0x0063BCB0 (stick Control); CSWCModule
+  TurnCamera 0x0063FE10 and SetCameraFollow 0x0063F9D0 (use the header's
+  CSWCModuleCamera::GetBehavior slot +0x80). Then the GUI constructor queue
+  from r1 and the CSWCObject ctor/dtor/fade family from r2.

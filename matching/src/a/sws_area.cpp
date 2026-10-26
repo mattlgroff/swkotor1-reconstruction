@@ -108,6 +108,31 @@ int CSWSArea::GetNextObjectIdInArea(unsigned long* pOid)
     return 0;
 }
 
+// FUNCTION: SWKOTOR 0x00507220
+void CSWSArea::ActivateAI()
+{
+    CGameObjectArray* pArray = GetServerExoApp()->GetObjectArray();
+    CServerAIMaster* pAIMaster = GetServerExoApp()->GetServerAIMaster();
+    CGameObject* pObject;
+    for (int i = 0; i < m_aGameObjects.num; i++) {
+        if (pArray->GetGameObject(m_aGameObjects.element[i], &pObject) == g_nGameObjectFound &&
+            pObject->m_nObjectType > g_nObjectTypeArea) {
+            CSWSObject* pSWSObject = (CSWSObject*)pObject;
+            CSWSDoor* pDoor;
+            if (pSWSObject->m_nAILevel == 0 &&
+                (pObject->AsSWSCreature() || pObject->AsSWSAreaOfEffectObject() ||
+                 pObject->AsSWSTrigger() ||
+                 (pObject->AsSWSDoor()
+                      ? ((pDoor = pObject->AsSWSDoor())->m_sLinkedTo.GetLength() > 0 &&
+                         pDoor->m_bLocked3C0 == 0)
+                      : (pObject->AsSWSPlaceable() &&
+                         pObject->AsSWSPlaceable()->m_bStatic398 == 0)))) {
+                pAIMaster->SetAILevel(pSWSObject, 1);
+            }
+        }
+    }
+}
+
 // FUNCTION: SWKOTOR 0x00507340
 void CSWSArea::DeactivateAI()
 {
@@ -122,6 +147,41 @@ void CSWSArea::DeactivateAI()
             pAIMaster->SetAILevel((CSWSObject*)pObject, 0);
         }
     }
+}
+
+// FUNCTION: SWKOTOR 0x00507490
+int CSWSArea::LoadProperties(CResGFF* pRes, CResStruct* pStruct)
+{
+    CResStruct cProperties;
+    if (pRes->GetStructFromStruct(&cProperties, pStruct, "AreaProperties")) {
+        int bSuccess;
+        m_bUnescapable = pRes->ReadFieldBYTE(&cProperties, "Unescapable", bSuccess, GetUnescapable());
+        SetPlayerRestrictMode(m_pGIT->ReadFieldBYTE(pStruct, "RestrictMode", bSuccess, GetPlayerRestrictMode()));
+        unsigned long nStealthXPMax = pRes->ReadFieldDWORD(&cProperties, "StealthXPMax", bSuccess,
+                                                           m_nStealthXPMax);
+        if (m_nStealthXPCurrent > nStealthXPMax) {
+            m_nStealthXPCurrent = nStealthXPMax;
+        }
+        m_nStealthXPMax = nStealthXPMax;
+        unsigned long nStealthXPCurrent = pRes->ReadFieldDWORD(&cProperties, "StealthXPCurrent", bSuccess,
+                                                               m_nStealthXPMax);
+        if (nStealthXPCurrent > m_nStealthXPMax) {
+            nStealthXPCurrent = m_nStealthXPMax;
+        }
+        m_nStealthXPCurrent = nStealthXPCurrent;
+        m_nStealthXPLoss = pRes->ReadFieldDWORD(&cProperties, "StealthXPLoss", bSuccess, m_nStealthXPLoss);
+        m_bStealthXPEnabled = pRes->ReadFieldBYTE(&cProperties, "StealthXPEnabled", bSuccess,
+                                                  GetStealthXPEnabled());
+        m_bTransPending = pRes->ReadFieldBYTE(&cProperties, "TransPending", bSuccess,
+                                              (unsigned char)m_bTransPending);
+        m_nTransPendNextID = pRes->ReadFieldBYTE(&cProperties, "TransPendNextID", bSuccess,
+                                                 m_nTransPendNextID);
+        m_nTransPendCurrID = pRes->ReadFieldBYTE(&cProperties, "TransPendCurrID", bSuccess,
+                                                 m_nTransPendCurrID);
+        m_nSunFogColor = pRes->ReadFieldDWORD(&cProperties, "SunFogColor", bSuccess, m_nSunFogColor);
+        return m_pAmbientSound->Load(pRes, &cProperties);
+    }
+    return 0;
 }
 
 // FUNCTION: SWKOTOR 0x00507680
@@ -382,4 +442,27 @@ void CSWSArea::DecrementPlayersInArea()
     if (--m_nPlayersInArea == 0) {
         DeactivateAI();
     }
+}
+
+// FUNCTION: SWKOTOR 0x0050DC40
+int CSWSArea::RemoveObjectFromArea(unsigned long oidObject)
+{
+    if (m_aGameObjects.Contains(oidObject)) {
+        m_aGameObjects.Remove(oidObject);
+    }
+    CGameObjectArray* pArray = GetServerExoApp()->GetObjectArray();
+    CGameObject* pObject;
+    if (pArray->GetGameObject(oidObject, &pObject) == g_nGameObjectFound && pObject != NULL) {
+        if ((pObject->m_nObjectType <= g_nObjectTypeArea || !((CSWSObject*)pObject)->GetDead()) &&
+            pObject->AsSWSCreature()) {
+            if (GetServerExoApp()->GetClientObjectByObjectID(oidObject)) {
+                DecrementPlayersInArea();
+            }
+            CScriptEvent* pEvent = new CScriptEvent;
+            pEvent->m_nType = 0xd;
+            GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(0, 0, oidObject, m_idSelf,
+                                                                      EVENT_0x7441DC, pEvent);
+        }
+    }
+    return 1;
 }

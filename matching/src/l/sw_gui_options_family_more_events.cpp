@@ -1,5 +1,6 @@
 // Remaining related options panel-opening and toggle events.
 #include "l/sw_gui_options_in_game.h"
+#include "l/sw_gui_keymappings.h"
 
 // FUNCTION: SWKOTOR 0x006DE240
 void CSWGuiOptionsMain::OnGameplayOpt(CSWGuiControl* pControl)

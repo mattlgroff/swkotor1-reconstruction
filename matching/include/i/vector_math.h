@@ -36,6 +36,7 @@ public:
         y = fY;
         z = fZ;
     }
+    Quaternion(Vector vAxis, float fAngle);                 // 0x004AC960
 
     float w;
     float x;
@@ -101,6 +102,12 @@ Vector lineproject(const Vector& a, const Vector& b, const Vector& p);      // 0
 float FUN_004aa020(const Quaternion& q);                                    // 0x004AA020
 float FUN_004aaae0(float a, float b, float c, float d, float t);            // 0x004AAAE0
 Vector NormalizeVector(const Vector& v);                                    // 0x004AB180
+Vector NormalOf(const Vector& a, const Vector& b, const Vector& c);         // 0x004ACA00
+Quaternion YawPitchRoll(float fYaw, float fPitch, float fRoll);             // 0x004ACAC0
+
+extern Vector g_vXAxis;                             // 0x007A1998
+extern Vector g_vYAxis;                             // 0x007A19A4
+extern Vector g_vZAxis;                             // 0x007A19B0
 Quaternion normalize(Quaternion q);                                         // 0x004A9D60
 
 extern const float g_afSinTable[32];                // 0x00743FE8

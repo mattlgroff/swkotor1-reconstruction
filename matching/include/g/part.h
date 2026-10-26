@@ -20,6 +20,14 @@ public:
 
 class Part;
 
+class Vector {
+public:
+    float x, y, z;
+
+    Vector() {}
+    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
+};
+
 void __cdecl AurTextureRelease(int nTexture);      // 0x00423f50
 extern "C" int __cdecl _stricmp(const char* a, const char* b); // 0x0070acaf
 Part* __cdecl FindPart(Part* pRoot, char* szName);   // 0x0043fe00
@@ -43,11 +51,20 @@ public:
     PartModel* AsModel() { return (m_nType & 0x7f) == 2 ? this : 0; }
 };
 
+class MdlNodeAnimMesh;
+
 class PartNode {
 public:
     unsigned short m_nType;         // +0x00
     int m_nIndex;                   // +0x04
     PartModel* m_pModel;            // +0x08
+
+    MdlNodeAnimMesh* AsMdlNodeAnimMesh()
+    {
+        if ((m_nType & 0x0a1) == 0x0a1)
+            return (MdlNodeAnimMesh*)this;
+        return 0;
+    }
 };
 
 class Part : public CAurPart {
@@ -62,7 +79,10 @@ public:
     virtual ~Part();
     virtual void V04(); virtual void V08(); virtual void V0c();
     virtual void V10(); virtual void V14(); virtual void V18();
-    virtual void V1c(); virtual void V20(); virtual void V24();
+    virtual void V1c();
+    virtual int HitCheck(const Vector& vStart, const Vector& vEnd, Vector* pHit,
+                         int nUnused, int nFlags);   // +0x20
+    virtual void V24();
     virtual void V28(); virtual void V2c(); virtual void V30();
     virtual void V34(); virtual void V38(); virtual void V3c();
     virtual void V40(); virtual void V44(); virtual void V48();
@@ -70,6 +90,7 @@ public:
     virtual void V58(); virtual void V5c(); virtual void V60();
     virtual void V64(); virtual void V68();
     virtual void Propagate6c(int nArg);     // +0x6c
+    virtual Vector SetPartPosition(Vector v);   // +0x70 (no-op, returns 0,0,0)
 
     void PropagateToChildren(int nArg);
     CExoArrayList<Part*>* GetChildren();
@@ -93,6 +114,16 @@ public:
     float GetF94();
     Part* FindNamedPart(char* szName);
 };
+
+class PartAnimMesh : public PartTriMesh {
+public:
+    virtual int HitCheck(const Vector& vStart, const Vector& vEnd, Vector* pHit,
+                         int nUnused, int nFlags);   // +0x20
+};
+
+// The animated-mesh geometry test (name not recorded).
+int __cdecl HitCheckAnimMesh(Part* pPart, MdlNodeAnimMesh* pNode, Vector vStart,
+                             Vector vEnd, Vector* pHit, int nFlags);   // 0x00440cf0
 
 class PartSkin : public PartTriMesh {
 public:

@@ -5,12 +5,33 @@
 
 #include "l/sw_gui_tutorial_box.h"
 
+class CResGFF;
+struct CResStruct;
+
+class CExoIni {
+public:
+    CExoIni();                                      // 0x005E6750
+    ~CExoIni();                                     // 0x005E67E0
+    int ReadIniEntry(CExoString& sValue, const CExoString& sFile,
+                     const CExoString& sSection, const CExoString& sEntry);    // 0x005E67C0
+    int WriteIniEntry(const CExoString& sValue, const CExoString& sFile,
+                      const CExoString& sSection, const CExoString& sEntry);   // 0x005E67D0
+    void* m_pIniInternal;
+};
+
 // vtable 0x0073E8C8 family; ctor 0x0041C0F0, dtor 0x00419DA0 (0x1c4 bytes).
 class CSWGuiButton : public CSWGuiControl {
 public:
     CSWGuiButton();                                 // 0x0041C0F0
     ~CSWGuiButton();                                // 0x00419DA0
     virtual void CopyStyle(const CSWGuiExtent& extent, CSWGuiButton* pFrom);   // 0x98
+#ifdef L_GUI_CONTROL_DRAW_SLOT
+    void Draw(float fDelta);                        // 0x38 (0x00417AB0)
+#endif
+    // The border (0x6c) and hilight (0xe0) CSWGuiBorders are declared as
+    // padding + params.
+    CSWGuiBorder& GetBorder() { return *(CSWGuiBorder*)&pad_0x5c[0x10]; }
+    CSWGuiBorder& GetHilight() { return *(CSWGuiBorder*)pad_0xe0; }
     char pad_0x5c[0x24];
     CSWGuiBorderParams m_cBorderParams;             // 0x80 (m_cBorder + 0x14)
     char pad_0xe0[0x14];
@@ -24,7 +45,24 @@ class CSWGuiButtonToggle : public CSWGuiButton {
 public:
     CSWGuiButtonToggle();                           // 0x0041CA30
     virtual ~CSWGuiButtonToggle();                  // 0x0041CAD0
-    char pad_0x1c4[0xf0];
+    virtual void v9C();
+    virtual void CopyToggleStyle(const CSWGuiExtent& extent, CSWGuiControl* pFrom); // 0xa0
+    void SetSelected(int bSelected);                // 0x00685540
+    void SetToggleState(int bState) { m_bSelected = bState; }
+    void Draw(float fDelta);                        // 0x00417B10 (virtual)
+    void Load(CResGFF* pGFF, CResStruct* pStruct);  // 0x0041CB40 (virtual)
+    char pad_0x1c4[4];
+    union {
+        unsigned long m_nToggleFlags;               // 0x1c8
+        struct {
+            unsigned long m_bSelected : 1;
+            unsigned long m_nToggleFlagsRest : 31;
+        };
+    };
+    char pad_0x1cc[0x14];
+    CSWGuiBorderParams m_cSelectedBorderParams;     // 0x1e0
+    char pad_0x240[0x14];
+    CSWGuiBorderParams m_cSelectedHilightParams;    // 0x254
 };
 
 // Inferred CSWGuiOptionsCheckbox, vtable 0x00758258, size 0x2B4.
@@ -34,8 +72,14 @@ class __declspec(novtable) CSWGuiOptionsCheckbox : public CSWGuiButtonToggle {
 class CSWGuiOptionsCheckbox : public CSWGuiButtonToggle {
 #endif
 public:
+#ifdef L_OPTIONS_CHECKBOX_INLINE_CTOR
+    CSWGuiOptionsCheckbox() {}
+#else
     CSWGuiOptionsCheckbox();                        // 0x006E00D0
+#endif
     __declspec(noinline) virtual ~CSWGuiOptionsCheckbox(); // 0x006E00F0
+    void Draw(float fDelta);                        // 0x006DE0E0 (virtual 0x38)
+    void Load(CResGFF* pGFF, CResStruct* pStruct);  // 0x006DE160 (virtual)
 };
 
 struct CSWGuiSliderThumbParams {
@@ -56,7 +100,9 @@ class CSWGuiSlider : public CSWGuiControl {
 public:
     CSWGuiSlider();
     virtual ~CSWGuiSlider();
-    char pad_0x5c[0x18];
+    void SetValue(int nValue); // 0x00417EE0
+    char pad_0x5c[0x14];
+    int m_nMaxValue; // 0x70
     int m_nValue; // 0x74
     char pad_0x78[0x18c - 0x78];
     CSWGuiSliderThumbParams m_cThumbParams; // 0x18c
@@ -79,6 +125,7 @@ public:
     __declspec(noinline) virtual ~CSWGuiInGameGameplay(); // 0x006E7130
     virtual void HandleInputEvent(int nEvent, int bDown); // panel slot 0x3c
     void OnDifficultyLeft(CSWGuiControl* pControl);
+    void OnDifficultyRight(CSWGuiControl* pControl); // 0x006E6930
     void OnEnterDiff(CSWGuiControl* pControl);
     void OnExitDiff(CSWGuiControl* pControl);
     void OnCombatMovement(CSWGuiControl* pControl);
@@ -103,11 +150,11 @@ public:
     CSWGuiButton m_control_CD4; // 0xCD4
     CSWGuiButton m_control_E98; // 0xE98
     CSWGuiButton m_control_105C; // 0x105C
-    CSWGuiButtonToggle m_control_1220; // 0x1220
-    CSWGuiButtonToggle m_control_14D4; // 0x14D4
-    CSWGuiButtonToggle m_control_1788; // 0x1788
-    CSWGuiButtonToggle m_control_1A3C; // 0x1A3C
-    CSWGuiButtonToggle m_control_1CF0; // 0x1CF0
+    CSWGuiOptionsCheckbox m_control_1220; // 0x1220
+    CSWGuiOptionsCheckbox m_control_14D4; // 0x14D4
+    CSWGuiOptionsCheckbox m_control_1788; // 0x1788
+    CSWGuiOptionsCheckbox m_control_1A3C; // 0x1A3C
+    CSWGuiOptionsCheckbox m_control_1CF0; // 0x1CF0
     CSWGuiSlider m_control_1FA4; // 0x1FA4
     CSWGuiLabel m_control_215C; // 0x215C
     void SetDifficultyText(); // 0x006E6520
@@ -132,6 +179,7 @@ public:
     void OnDefault(CSWGuiControl* pControl);
     void SetUpOptions();
     void SetDescription(unsigned long nStrRef);
+    void PopulateOptionsListbox(); // 0x006E1300 (descriptive name)
     CSWGuiListBox m_control_64; // 0x64
     CSWGuiLabel m_control_344; // 0x344
     CSWGuiLabel m_control_484; // 0x484
@@ -152,6 +200,7 @@ public:
     void OnDefault(CSWGuiControl* pControl);
     void OnEnterSlot(CSWGuiControl* pControl);
     void SetUpOptions(); // 0x006E7280
+    void SetNewOptions(); // 0x006E73D0
     void SetDescription(unsigned long nStrRef); // 0x006E75A0
     CSWGuiOptionsCheckbox m_aCheckboxes[6];              // 0x64
     CSWGuiLabel m_lblDescription;                        // 0x109C
@@ -178,6 +227,7 @@ public:
     void OnAdvanced(CSWGuiControl* pControl);
     void OnEnterSlot(CSWGuiControl* pControl);
     void OnDefault(CSWGuiControl* pControl);
+    void OnMoveGammaSlider(CSWGuiControl* pControl); // 0x006DED30
     void SetUpOptions();
     void SetDescription(unsigned long nStrRef);
     CSWGuiSlider m_control_64; // 0x64
@@ -188,12 +238,12 @@ public:
     CSWGuiButton m_control_8BC; // 0x8BC
     CSWGuiButton m_control_A80; // 0xA80
     CSWGuiButton m_control_C44; // 0xC44
-    CSWGuiButtonToggle m_control_E08; // 0xE08
-    CSWGuiButtonToggle m_control_10BC; // 0x10BC
+    CSWGuiOptionsCheckbox m_control_E08; // 0xE08
+    CSWGuiOptionsCheckbox m_control_10BC; // 0x10BC
     CSWGuiButton m_control_1370; // 0x1370
     CSWGuiButton m_control_1534; // 0x1534
     CSWGuiButton m_control_16F8; // 0x16F8
-    char pad_0x18bc[0x4];
+    int m_bReinitPending; // 0x18BC
 };
 
 #ifdef L_OPTIONS_FAMILY_NOVTABLE
@@ -208,6 +258,8 @@ public:
     void OnEnterSlider(CSWGuiControl* pControl);
     void OnAdvanced(CSWGuiControl* pControl);
     void OnDefault(CSWGuiControl* pControl);
+    void OnMoveVolumeSlider(CSWGuiControl* pControl); // 0x006DF9B0
+    void OnExitSlider(CSWGuiControl* pControl); // folded into 0x006DED90
     void SetUpOptions();
     void SetDescription(unsigned long nStrRef);
     CSWGuiSlider m_control_64; // 0x64
@@ -239,7 +291,8 @@ public:
     CSWGuiListBox m_control_1A4; // 0x1A4
     CSWGuiButton m_control_484; // 0x484
     CSWGuiButton m_control_648; // 0x648
-    char pad_0x80c[0x4];
+    int m_bReinitPending; // 0x80C
+    void OnResolutionChosen(CSWGuiControl* pControl); // 0x006DF690
 };
 
 #ifdef L_OPTIONS_FAMILY_NOVTABLE
@@ -268,12 +321,13 @@ public:
     void SetAntiAliasText();
     void SetTexQualText();
     void SetAnisotropyText();
+    void SetNewOptions(); // 0x006DEFE0
     CSWGuiLabel m_control_64; // 0x64
     CSWGuiLabel m_control_1A4; // 0x1A4
     CSWGuiListBox m_control_2E4; // 0x2E4
-    CSWGuiButtonToggle m_control_5C4; // 0x5C4
-    CSWGuiButtonToggle m_control_878; // 0x878
-    CSWGuiButtonToggle m_control_B2C; // 0xB2C
+    CSWGuiOptionsCheckbox m_control_5C4; // 0x5C4
+    CSWGuiOptionsCheckbox m_control_878; // 0x878
+    CSWGuiOptionsCheckbox m_control_B2C; // 0xB2C
     CSWGuiButton m_control_DE0; // 0xDE0
     CSWGuiButton m_control_FA4; // 0xFA4
     CSWGuiButton m_control_1168; // 0x1168
@@ -313,11 +367,12 @@ public:
     void OnEAXLeft(CSWGuiControl* pControl);
     void OnForceSoftware(CSWGuiControl* pControl);
     void OnDefault(CSWGuiControl* pControl);
-    void SetUpOptions();
+    void SetUpOptions(); // 0x006DFC90
     void SetDescription(unsigned long nStrRef);
-    void SetEAXText();
+    void SetEAXText(); // 0x006DDD70
     void EnableEAXControls(unsigned long bEnabled);
-    CSWGuiButtonToggle m_control_64; // 0x64
+    void SetNewOptions(); // 0x006DFB60
+    CSWGuiOptionsCheckbox m_control_64; // 0x64
     int m_nEAX; // 0x318
     CSWGuiButton m_control_31C; // 0x31C
     CSWGuiButton m_control_4E0; // 0x4E0
@@ -345,6 +400,8 @@ public:
     void OnEnterSlider(CSWGuiControl* pControl);
     void OnEnterRevMouseButtons(CSWGuiControl* pControl);
     void OnMoveMouseSenSlider(CSWGuiControl* pControl);
+    void OnRevMouseButtons(CSWGuiControl* pControl); // 0x006DFD10
+    void OnExitSlider(CSWGuiControl* pControl); // folded into 0x006DED90
     void OnDefault(CSWGuiControl* pControl);
     void SetUpOptions();
     void SetDescription(unsigned long nStrRef);
@@ -355,7 +412,7 @@ public:
     CSWGuiButton m_control_788; // 0x788
     CSWGuiSlider m_control_94C; // 0x94C
     CSWGuiLabel m_control_B04; // 0xB04
-    CSWGuiButtonToggle m_control_C44; // 0xC44
+    CSWGuiOptionsCheckbox m_control_C44; // 0xC44
 };
 
 #ifdef L_OPTIONS_FAMILY_NOVTABLE
@@ -381,12 +438,8 @@ public:
     CSWGuiListBox m_control_F40; // 0xF40
 };
 
-// Keymapping panel layout used by Gameplay::OnKeyMap, ctor 0x006EDC90.
-class CSWGuiInGameOptKeyMappings : public CSWGuiPanel {
-public:
-    CSWGuiInGameOptKeyMappings(CSWGuiManager* pManager);
-    char pad_0x64[0xf34 - 0x64];
-};
+// Keymapping panel (ctor 0x006EDC90), defined in l/sw_gui_keymappings.h.
+class CSWGuiInGameOptKeyMappings;
 
 typedef void (CSWGuiPanel::*PFN_GUI_CALLBACK)(CSWGuiControl* pControl);
 

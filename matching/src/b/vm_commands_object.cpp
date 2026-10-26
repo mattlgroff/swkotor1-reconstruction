@@ -284,7 +284,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAreaValue(int nCommandId, int nP
     }
     CSWSArea* pArea = g_pAppManager->GetServerExoApp()->GetAreaByGameObjectID(oidArea);
     if (pArea) {
-        nResult = pArea->m_pProperties->m_n10;
+        nResult = pArea->m_pAmbientSound->m_nMusicNight;
     }
     return g_pVirtualMachine->StackPushInteger(nResult) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
 }
