@@ -208,3 +208,191 @@ NONMATCH:
   0x006DED30, 0x006DFB60, 0x006DFAD0, 0x006DEFE0, 0x006DEF30, 0x006DFE70,
   0x006E74C0 autopause), level-up panel 0x006EE5F0/0x006EEE70/0x006EEE90,
   pazaak core 0x006E4580-0x006E4C60, upgrade selection 0x006C2A70-0x006C5B70.
+
+## Pazaak rules + workbench upgrade family (2026-10-26, worker-l-s3)
+
+- Options settings/constructors from the s1 queue were already owned by
+  merged work, so this round took the next two queued families: the Pazaak
+  rules core (swpazaak.o) and the workbench upgrade screens (swguiupgrade.o).
+- Whole folder: **390/447 -> 427/488**. 41 attempted, **37 NEW exact**,
+  4 retained NONMATCH, 0 prior NONMATCH promotions. Misses went 57 -> 61
+  (only the four new ones); no prior MATCH regressed.
+- MATCH (Pazaak, `l/sw_pazaak.cpp`, header `l/sw_pazaak.h`): 0x006E4580
+  ChooseSidedeck, 0x006E45F0 AddGameCard, 0x006E4640 ClearGameBoard,
+  0x006E4730 ShuffleDeck, 0x006E4800 DrawCard, 0x006E4840
+  CanUsePlayerSidedeckCard, 0x006E4860 UsePlayerSidedeckCard, 0x006E48A0
+  DetermineWinner, 0x006E4910 FindPotentialSidecardTotal, 0x006E4A40
+  LoadInitialSideDeck, 0x006E4B50 CPazaakPlayer ctor, 0x006E4C00 CSWPazaak
+  ctor.
+- MATCH (upgrade, header `l/sw_gui_upgrade.h`): selection 0x006C4450 dtor,
+  0x006C5B50 ??_G, 0x006C2AB0 GetUpgradableItems, 0x006C2B10
+  HandleInputEvent, 0x006C2B60 OnTypeSelected, 0x006C2BD0 OnEnter; item
+  select 0x006C47A0 dtor, 0x006C5B70 ??_G, 0x006C2A70/0x006C2A90 selected
+  entry owner/slot, 0x006C2C80 SetDescription, 0x006C2D30
+  HandleInputEvent; entry 0x006C3E00 ctor, 0x006C5AB0 ??_G (from ctor TU),
+  0x006C5AD0 dtor (novtable TU), 0x006C27C0 Draw, 0x006C2830 Initialize;
+  panel 0x006C4AD0 dtor, 0x006C6100 ??_G, 0x006C25F0 OnPanelRemoved,
+  0x006C32E0 SetDescription, 0x006C4D30 CloseItems, 0x006C6190 OnAssemble,
+  0x006C61F0 CancelPanel, 0x006C6A80 HandleInputEvent.
+- NONMATCH kept: 0x006E4360 GetTotal (35, the fully unrolled 9x loop picks
+  its strength-reduced base one card later; three loop shapes tried),
+  0x006E4C60 PlayAITurn (33, cross-jumping keeps the later copy of the
+  play-card and stand tails where the original keeps the earlier; ||,
+  split-if and inverted forms all compile identically), 0x006C2650
+  entry SetExtent (5, border vptr load hoisted earlier in the original),
+  0x006C4880 item-select OnControlEntered (8, the original loads the
+  control argument after copying this; prologue tie).
+- functions.csv lacks the starts 0x006C2650, 0x006C2830, 0x006C2B60,
+  0x006C4880, 0x006C6190 (folded into the previous function). The
+  annotations restore the boundaries; the coordinator should add them.
+  0x006C33A0 (CSWGuiUpgrade::Draw) is also a missing start but is not yet
+  annotated; 0x006C32E0 still compares OK without it.
+- Shared-header changes (all verified by the whole-folder run):
+  `CSWGuiBorderParams` is really 0x54 bytes (the stack temporary in
+  Initialize proves it); the l header was 0x60 with the owner's trailing
+  0xC folded in. It is now 0x54 and every containing class (label, button,
+  toggle, both CSWGuiBorder copies) carries an explicit 0xC pad, so no
+  offset moved. CSWGuiControl slot 0x60 is now `GetRadioButton()`, +0x54
+  is `m_nSound`; CSWGuiText exposes `m_cParams` at +0x18; inventory
+  CSWGuiBorder exposes `m_cParams` and `GetInnerExtent`; Vector gained the
+  3-float ctor; CSWGuiBorderParams gained inline `SetColor`;
+  CServerExoApp::GetItemByGameObjectID and CSWPartyTable::GetPartyItems were
+  added.
+- Lessons: (1) Pazaak cards are assigned whole: `x = CPazaakCard(-1, 0)`
+  gives the `or eax,-1`/`xor` register stores and makes cl fully unroll
+  the 9- and 4-card loops; field-by-field stores give immediates and a
+  rolled loop. (2) An inline helper taking `const CPazaakCard&` gave the
+  re-read of the card value after the flag store in
+  FindPotentialSidecardTotal; a by-value helper did not. (3)
+  LoadInitialSideDeck: `if (!Load2DArray()) return;` (not a nested if)
+  fixes the CResRef-argument temp slot; `int nRows = m_nNumRows;` before
+  `rand()` keeps it in esi; a two-case switch on the sign char gives the
+  original branch layout. (4) A callback taking `const CExoString&` and
+  passed `""` must use the implicit conversion, not `CExoString("")`. (5)
+  Calls on embedded member objects stay virtual under MSVC 7 (no
+  devirtualisation), so `m_lbl.m_cTextBox.GetHeight()` is exact. (6)
+  `CSWGuiBorderParams& r = member; r = ...; r.SetColor(...)` reproduces the
+  original's address kept in edi across operator=; named CResRef locals
+  in a block reproduce construct-before-push, and scoping the final extent
+  lets it share the Vector temporary's slot. (7) Pointer-select ternaries
+  layout: `type != 1 ? &a : &b` gives the original `lea a; jne; lea b`.
+- Next in-range queue (upgrade family remainder): CSWGuiUpgrade Draw
+  0x006C33A0 (needs CSWGuiScene::GetModel 0x00416750, the do3dgui flag
+  0x0078D1E4, Quaternion helpers), ShowItems 0x006C2F80, UpdateItems
+  0x006C3AA0, OnEnterSlot 0x006C3C30, VerifyUpgrade 0x006C6120,
+  CreateItemEntry 0x006C58C0, InsertUpgrade 0x006C59A0, entry SetItem
+  0x006C3EA0, item select OnUpgradableSelected 0x006C2DF0 / BuildItemList
+  0x006C4960 / BuildUpgradeList 0x006C5B90 / FinishUpgrading 0x006C5E90 /
+  OnPanelAdded 0x006C6330, selection OnPanelAdded 0x006C4520, and the three
+  constructors 0x006C78D0 / 0x006C7630 / 0x006C6B60. Other open clusters:
+  level-up panel 0x006EE5F0/0x006EEE70/0x006EEE90, CSWCAnimBase*
+  0x006E4E50-0x006E6040, CSWMGBehavior 0x006DB4F0-0x006DBD30.
+
+## Level-up screens + client anim bases (2026-10-26, worker-l-s5)
+
+- s4 ended at the usage limit without notes; its upgrade work (items,
+  ctors, panel ctor attempt 0x006C6B60) was already merged. The remaining
+  upgrade members (Draw 0x006C33A0, ShowItems 0x006C2F80, Update3DView
+  0x006C3630, SetItem 0x006C3EA0, OnPanelAdded 0x006C4D70,
+  OnControlEntered 0x006C5370, OnSlotSelected 0x006C6500) are all large and
+  were left for later.
+- Whole folder: **438/503 -> 501/551**. 48 new functions annotated, **41 NEW
+  exact**, 7 retained NONMATCH, **22 prior NONMATCH promotions**.
+- MATCH, level-up summary (`l/sw_gui_levelup_chargen.cpp`, ctor TU
+  `l/sw_gui_levelup_chargen_ctor.cpp`): 0x006E7B40 OnPanelAdded, 0x006E7DD0
+  DetermineClass, 0x006E7EC0 SetNameString, 0x006E8500 NewAbilityScores,
+  0x006E85A0 ClearAbilities, 0x006E8730 ClearSkills, 0x006E9A50
+  HandleInputEvent, 0x006E7B70 dtor, 0x006E88A0 BeginPlayGame, 0x006E89F0
+  CopyCreatureStats, 0x006E89D0 ??_G.
+- MATCH, level-up step panel: 0x006EE7D0 ctor + 0x006EEE70 ??_G
+  (`sw_gui_levelup_panel_ctor.cpp`), 0x006EEE90 dtor (novtable TU
+  `sw_gui_levelup_panel_dtor.cpp`), 0x006EE350/0x006EE3D0/0x006EE480/
+  0x006EE500 OnSelect{Powers,Feats,Skills,Abilities}Button, 0x006EE5F0
+  OnCancelPressed, 0x006EE780 OnSelectAcceptButton.
+- MATCH, client anim bases (`l/sw_c_anim_base_objects.cpp`, header
+  `l/sw_c_anim_base_objects.h`, base layout copied from k's
+  sw_c_anim_base.h with slot 0xE0 = ServerToClientAnimation): placeable
+  0x006E4E50 ctor, 0x006E4E70 dtor, 0x006E4EC0 LoadModel, 0x006E5180 ??_G,
+  0x006E53F0 ServerToClientAnimation; door 0x006E56A0 ctor, 0x006E56C0
+  dtor, 0x006E5710 LoadModel, 0x006E59A0 ??_G, 0x006E59C0
+  GetAnimationName, 0x006E5AC0 ServerToClientAnimation; visual effect
+  (vtable 0x00758B68, named CSWCAnimBaseVisualEffect, descriptive)
+  0x006E5CE0 ctor, 0x006E5D00 dtor, 0x006E5D50 LoadModel, 0x006E5DC0
+  GetAnimationName, 0x006E5E60 PlayAnimOnModel; trigger 0x006E5F40 ctor,
+  0x006E5F60 dtor, 0x006E5FB0 LoadModel, 0x006E6020 ??_G, 0x006E6040
+  GetAnimationName.
+- Promotions: CSWGuiOptionsInGame::On{LoadGame,SaveGame,Gameplay,Feedback,
+  AutoPause,Graphics,Sound}, CSWGuiOptionsMain::On*Opt (5),
+  Sound/Graphics::OnAdvanced, InGameGameplay::OnMouse/OnKeyMap,
+  Graphics::OnResolution, GraphicsAdvanced::OnAntiAliasLeft, upgrade item
+  select OnControlEntered 0x006C4880, ClearPowers 0x006E87E0, level-up
+  panel SetCanCancel 0x006EE640 and HandleInputEvent 0x006EE720.
+- NONMATCH kept: 0x006E7F70 AbilitiesChanged (79; register rotation in the
+  ability-delta block), 0x006E8EF0 chargen ctor (126; ecx/edx/eax rotation
+  shifted by one from the SetClassLevel block on, code otherwise identical),
+  0x006EE0E0 ChangeState (56; original re-tests bBack and reloads m_nState,
+  loop not rotated; nested-if, for(;;), inline helper all compile alike),
+  0x006E4F30 placeable PlayAnimation (52; block order of the default and
+  once ranges), 0x006E51A0 placeable GetAnimationName (55; early copy-out
+  return when the 2DA name is non-empty), 0x006E57B0 door PlayAnimOnModel
+  (22; esi saved in the prologue instead of shrink-wrapped), 0x006E6100
+  trigger ServerToClientAnimation (11; default block placed first).
+- functions.csv lacks the starts 0x006E4EC0, 0x006E4F30, 0x006E5180,
+  0x006E53F0, 0x006E5710, 0x006E57B0, 0x006E5AC0, 0x006E5D50, 0x006E5DC0,
+  0x006E5E60, 0x006E5FB0, 0x006E6100, 0x006EE350, 0x006EE3D0, 0x006EE480,
+  0x006EE500, 0x006EE780 (all folded into the previous entry); the
+  annotations restore them.
+- Shared-header changes (whole folder verified, no MATCH regressed): l
+  CSWCCreatureStats gained names/fields up to 0x124 (names, race, bases,
+  HP/FP, saves, BAB, portrait, alignment, skill ranks) and accessors;
+  CSWSCreatureStats gained the ability modifiers 0xEE/0xF2/0xF4; CSWClass
+  hit/force die 0x54/0x55; CSWCCreature ctor, 0x440 flag, size 0x44C and
+  inline GetClientStats(); CSWCObject::GetId(); CSWCCreatureVirtuals slots
+  0x70/0x8C/0x94/0xD8 named (descriptive); CExoString Find/Left/Right;
+  CGuiInGame +0x14 and +0x9C (skill info box); CClientExoApp GetMessage/
+  GetInputClass; CSWGuiControl slot 0x40 SetFlag0(int) and inline
+  IsActivated(); CSWGuiPanel inline GetManager().
+- Lessons: (1) **Inline accessors change register colouring.** Replacing a
+  direct member chain with a trivial inline getter (GetManager(),
+  GetSnapshotStats(), GetLevelUpStats(), GetClientStats(),
+  Get2DArrays()->GetAnimations(), pCreature->GetId(),
+  pControl->IsActivated(), SetVisibleBit()) fixed eax/ecx/edx choices and
+  load order that no statement reshuffle could; this promoted the whole
+  3-diff `new Panel(m_pManager)` options family. Try it first on any
+  "same code, other register" tie. (2) `int n = byteOrWordExpr; if (n > 0)`
+  reproduces movzx/test/jle where `if (expr > 0)` folds to cmp/jbe. (3) A
+  separate `CExoString s(n); x.SetText(s);` (named local) passes the
+  variable's address; a temporary passes the ctor's eax. (4) Switch case
+  bodies are laid out in source order: read the jump table (script in the
+  s5 scratch dir) to recover the original case order. (5) Clamp
+  `if (n >= 0) { int v = n; if (v > 100) v = 100; return v; } return 0;`
+  gives the short-test-then-int-compare shape. (6) `if (p == 0) return 0;`
+  before an EH local vs wrapping the body in `if (p)` decides whether the
+  return-0 block is shared at the end.
+- Next in-range queue: the 7 NONMATCHes above; upgrade remainder listed at
+  the top of this section; CSWCAnimBaseDoor/Placeable tails; level-up chargen
+  pieces are now complete except the ctor/AbilitiesChanged ties; other
+  open clusters: CSWMGBehavior 0x006DB4F0-0x006DBD30, save/load GUI
+  0x006C8250-0x006CC680, projectile modes 0x006D4520-0x006D55F0.
+
+## Character-creation completion notifications, 2026-10-26
+
+- Seven exact matches: custom panel 0x006EF4C0/4E0/500/520/530 and quick
+  panel 0x006EFF60/FF80. They notify the parent for portrait, name or ability
+  updates and set the appropriate creation state. AbilityCreationCompleted
+  and AbilitiesChanged have Mac debug-map support; the remaining descriptive
+  names follow their native callers and character-creation flow.
+- The parent pointer is at +0x68. SetState callees are 0x006EEFD0 for custom
+  and 0x006EFC10 for quick; state values were checked against native code.
+- Four more exact matches in the same family: 0x006EEF60 SetParentPanel,
+  0x006EF540 ClearAbilities, 0x006EF570 CancelPanel and 0x006EFFA0
+  GetCurrentName. The caller retains the native double parent check after
+  SetVisiblePanel, and GetCurrentName returns a CExoString copy from +0x22D4.
+  ClearAbilities delegates to the Mac-supported parent method and resets the
+  ability-point byte at the creature stats +0xAC.
+- Four compiler-generated scalar deleting destructors match 32/32 bytes:
+  0x006C0580 Pause, 0x006C2540 SoloModeQuery, 0x006C8170 AreaTransition,
+  0x006BFF90 PartySelection. Native relative calls target their respective
+  real destructors 0x006C05A0/0x006C2560/0x006C8190/0x006BFFB0. Class
+  identities are supported by Mac debug names and the native vtable contexts.
+  The unannotated emitter constructors are not reconstructed constructors.

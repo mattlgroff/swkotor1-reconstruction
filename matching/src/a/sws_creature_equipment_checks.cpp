@@ -34,7 +34,6 @@ int CSWSCreature::CheckProficiencies(CSWSItem* pItem, unsigned long)
     return 1;
 }
 
-// NONMATCH: 23 diff: activation-byte AL/CL and mask/loop scheduling tie.
 // FUNCTION: SWKOTOR 0x005145A0
 int CSWSCreature::CheckItemAlignmentRestrictions(CSWSItem* pItem)
 {
@@ -42,12 +41,8 @@ int CSWSCreature::CheckItemAlignmentRestrictions(CSWSItem* pItem)
     if (m_pStats->HasFeat(0x5d)) return 1;
     short nAlignment = m_pStats->GetSimpleAlignmentGoodEvil();
     for (int i = 0; i < pItem->m_nPassiveProperties; i++) {
-        unsigned char nActivation = pItem->GetPassiveProperty(i)->m_nActivation;
-        if (nActivation != 0xff) {
-            unsigned long nMask = 1 << nActivation;
-            if (!(nMask & pItem->m_nPropertyActivationMask)) continue;
-        }
-        {
+        CSWItemProperty* pProperty = pItem->GetPassiveProperty(i);
+        if (pProperty->m_nActivation == 0xff || ((1 << pProperty->m_nActivation) & pItem->m_nPropertyActivationMask)) {
             if (pItem->GetPassiveProperty(i)->m_nPropertyName == 0x2b &&
                 pItem->GetPassiveProperty(i)->m_nSubType != nAlignment)
                 return 0;
@@ -56,7 +51,6 @@ int CSWSCreature::CheckItemAlignmentRestrictions(CSWSItem* pItem)
     return 1;
 }
 
-// NONMATCH: 7 diff: activation-byte AL/CL and mask scheduling tie.
 // FUNCTION: SWKOTOR 0x00514650
 int CSWSCreature::CheckItemFeatRestrictions(CSWSItem* pItem)
 {
@@ -64,21 +58,18 @@ int CSWSCreature::CheckItemFeatRestrictions(CSWSItem* pItem)
     CSWSCreatureStats* pStats = m_pStats;
     if (pStats->HasFeat(0x5d)) return 1;
     for (int i = 0; i < pItem->m_nPassiveProperties; i++) {
-        unsigned char nActivation = pItem->GetPassiveProperty(i)->m_nActivation;
-        if (nActivation != 0xff) {
-            unsigned long nMask = 1 << nActivation;
-            if (!(nMask & pItem->m_nPropertyActivationMask)) continue;
-        }
-        {
-            if (pItem->GetPassiveProperty(i)->m_nPropertyName == 0x39 &&
-                m_pStats->GetFeatRemainingUses(pItem->GetPassiveProperty(i)->m_nSubType) <= 0)
-                return 0;
+        CSWItemProperty* pProperty = pItem->GetPassiveProperty(i);
+        if (pProperty->m_nActivation == 0xff || ((1 << pProperty->m_nActivation) & pItem->m_nPropertyActivationMask)) {
+            if (pItem->GetPassiveProperty(i)->m_nPropertyName == 0x39) {
+                unsigned short nFeat = pItem->GetPassiveProperty(i)->m_nSubType;
+                if (m_pStats->GetFeatRemainingUses(nFeat) <= 0)
+                    return 0;
+            }
         }
     }
     return 1;
 }
 
-// NONMATCH: 17 diff: activation-byte and nested class-loop register tie.
 // FUNCTION: SWKOTOR 0x00518210
 int CSWSCreature::CheckItemClassRestrictions(CSWSItem* pItem)
 {
@@ -86,12 +77,8 @@ int CSWSCreature::CheckItemClassRestrictions(CSWSItem* pItem)
     CSWSCreatureStats* pStats = m_pStats;
     if (pStats->HasFeat(0x5d)) return 1;
     for (int i = 0; i < pItem->m_nPassiveProperties; i++) {
-        unsigned char nActivation = pItem->GetPassiveProperty(i)->m_nActivation;
-        if (nActivation != 0xff) {
-            unsigned long nMask = 1 << nActivation;
-            if (!(nMask & pItem->m_nPropertyActivationMask)) continue;
-        }
-        {
+        CSWItemProperty* pProperty = pItem->GetPassiveProperty(i);
+        if (pProperty->m_nActivation == 0xff || ((1 << pProperty->m_nActivation) & pItem->m_nPropertyActivationMask)) {
             if (pItem->GetPassiveProperty(i)->m_nPropertyName == 0x2c) {
                 unsigned short nClass = pItem->GetPassiveProperty(i)->m_nSubType;
                 for (int j = 0; j < m_pStats->m_nNumClasses; j++) {

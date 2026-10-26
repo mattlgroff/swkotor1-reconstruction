@@ -28,6 +28,9 @@ public:
     virtual CNetLayer* GetNetLayer();                                   // 0x10
 
     unsigned long GetPlayerCreatureId();                                // 0x004AEA40
+    unsigned long GetFirstPCObject();                                   // 0x004AEA10
+    unsigned long GetNextPCObject();                                    // 0x004AEA20
+    unsigned long ClientToServerObjectID(unsigned long nId);            // 0x004AEA30
     CGameObject* GetGameObject(unsigned long nId);                      // 0x004AE750
     class CSWSItem* GetItemByGameObjectID(unsigned long nId);           // 0x004AE760
     CSWSCreature* GetCreatureByGameObjectID(unsigned long nId);         // 0x004AE770
@@ -57,9 +60,22 @@ public:
     class CSWGlobalVariableTable* GetGlobalVariableTable();             // 0x004AEE60
     void SetExportAllCharactersPending(int bPending);                   // 0x004AECE0
     class CSWSDoor* GetDoorByGameObjectID(unsigned long nId);           // 0x004AE7C0
+    class CSWSEncounter* GetEncounterByGameObjectID(unsigned long nId); // 0x004AE7F0
+    class CSWSWaypoint* GetWaypointByGameObjectID(unsigned long nId);   // 0x004AE7E0
+    class CSWSSoundObject* GetSoundObjectByGameObjectID(unsigned long nId); // 0x004AE800
+    int GetPlayerLanguage(unsigned long nPlayerId);                     // 0x004AE810
     int GetModuleLanguage();                                            // 0x004AE820
+    class CServerInfo* GetServerInfo();                                 // 0x004AEC90
+    CExoString GetPlayerListString();                                  // 0x004AE8D0
+    CExoString GetModuleName();                                       // 0x004AE6C0
+    int GetButtonMashCheck();                                           // 0x004AF070
+    void SetButtonMashCheck(int bCheck);                                // 0x004AF080
     CExoString GetLastConversation();                                   // 0x004AEFE0 (name guessed)
+#ifdef B_OUT_OF_LINE_FACTION_MANAGER
+    CFactionManager* GetFactionManager();                   // 0x004AEFC0
+#else
     CFactionManager* GetFactionManager() { return m_pInternal->m_pFactionManager; }
+#endif
 
     CServerExoAppInternal* m_pInternal;                                 // 0x4
 };
@@ -70,13 +86,18 @@ public:
     unsigned char m_nDifficulty;                                        // 0x4
     char pad_0x5[0x3];
     unsigned char m_nFlags;                                             // 0x8
-    char pad_0x9[0x8c - 0x9];
+    char pad_0x9[0x14 - 0x9];
+    unsigned long m_bOption0 : 1;                                       // 0x14 bit 0
+    unsigned long m_bTutorialWindowsEnabled : 1;                        // 0x14 bit 1
+    char pad_0x18[0x8c - 0x18];
+    void SetTutorialWindowsEnabled(int bEnabled) { m_bTutorialWindowsEnabled = bEnabled; }
     int m_bInfiniteUses;                                                // 0x8c
 };
 
 class CWorldTimer {
 public:
     void GetWorldTime(unsigned long* pDay, unsigned long* pTime);       // 0x004ADE40
+    void AdvanceToTime(int nHour, int nMinute, int nSecond, int nMillisecond); // 0x004AE260
     unsigned long GetWorldTimeHour();                                   // 0x004AE090
     unsigned long GetWorldTimeMinute();                                 // 0x004AE0D0
     unsigned long GetWorldTimeSecond();                                 // 0x004AE110
@@ -116,9 +137,16 @@ public:
     void StartPazaakGame(int nOpponentDeck, const CExoString& sEndScript, int nMaxWager,
                          int bShowTutorial, unsigned long oidOpponent); // 0x005EDDC0
     int PlayRumblePattern(int nPattern);                                // 0x005EDE40
+    int StopRumblePattern(int nPattern);                                // 0x005EDE50
+    int SetPausedByCombat(int bPaused, int a2, int a3);                 // 0x005EDC20
+    void EnableVideoEffect(int nEffect);                                // 0x005EDF10
+    void DisableVideoEffect();                                          // 0x005EDF20
+    void ShowTutorialWindow(int nWindow, unsigned long oid1, unsigned long oid2, int nArg); // 0x005EDF40
+    int GetCreditSequenceInProgress();                                  // 0x005EE1E0
     void StartCreditSequence(const struct Vector& vColor,
                              const CExoString& sMovie);                 // 0x005EE1C0
     CGameObjectArray* GetObjectArray();                                 // 0x005ED570
+    CGameObject* GetGameObject(unsigned long nId);                     // 0x005ED580
     CSWCItem* GetItemByGameObjectID(unsigned long nId);                 // 0x005ED5A0
     CClientOptions* GetOptions();                                       // 0x005ED700
     unsigned long ServerToClientObjectId(unsigned long nId);            // 0x005EDA50

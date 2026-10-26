@@ -10,6 +10,17 @@ struct Vector {
     Vector() {}
     Vector(float fX, float fY, float fZ) : x(fX), y(fY), z(fZ) {}
     float MagnitudeSquared() const { return x * x + y * y + z * z; }
+    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
+    float Dot(const Vector& v) const { return x * v.x + y * v.y + z * v.z; }
+    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
+    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
+    Vector& operator+=(const Vector& v)
+    {
+        x += v.x;
+        y += v.y;
+        z += v.z;
+        return *this;
+    }
     float x, y, z;
 };
 
@@ -21,18 +32,46 @@ public:
     float w, x, y, z;
 };
 
+class CExoString;
+
 class CResRef {
 public:
+    CResRef();                                      // 0x00405ED0
     CResRef(const char* szResRef);                  // 0x00406D80
+    char* GetResRefStr() const;                     // 0x00405FE0
+    void CopyToString(CExoString& sOut) const;      // 0x00405F70
     char m_resRef[16];
 };
 
 template <class T> class CExoArrayList {
 public:
+    CExoArrayList(int nSize = 0)
+    {
+        num = 0;
+        array_size = nSize;
+        element = NULL;
+        if (array_size) {
+            element = new T[array_size];
+        }
+    }
+    ~CExoArrayList()
+    {
+        delete[] element;
+        element = NULL;
+    }
     void Add(T t);                                  // folded instantiation, e.g. 0x00671C00
     void Remove(T t);                               // folded instantiation, e.g. 0x0066DCC0
     void Insert(T t, int nIndex);                   // folded instantiation, e.g. 0x00616940
     void Allocate(int nSize);                       // folded instantiation, e.g. 0x005E03C0
+    // Inlined expansion of Add (the original header's inline body; other
+    // translation units call the folded out-of-line COMDAT instead).
+    void AddInline(T t)
+    {
+        if (num == array_size) {
+            Allocate(array_size ? array_size * 2 : 16);
+        }
+        element[num++] = t;
+    }
     int Contains(T t)
     {
         int n = 0;
@@ -75,9 +114,15 @@ public:
     int Release();                                  // 0x00409B80
 };
 
+class CExoString;
+class CExoLocString;
+
 class CResGFF : public CRes {
 public:
+    CResGFF();                                                              // 0x004105A0
     CResGFF(unsigned short nType, char* szFileType, const CResRef& cResRef); // 0x00410630
+    int CreateGFFFile(CResStruct* pStruct, const CExoString& sType,
+                      const CExoString& sVersion);                          // 0x00411260
     int GetTopLevelStruct(CResStruct* pStruct);                             // 0x00411240
     int GetList(CResList* pList, CResStruct* pStruct, char* szLabel);               // 0x004118C0
     unsigned long GetListCount(CResList* pList);                                    // 0x00411940
@@ -92,6 +137,10 @@ public:
     CResRef ReadFieldCResRef(CResStruct* pStruct, char* szLabel, int& bSuccess,
                              const CResRef& cDefault);                  // 0x00411E10
     unsigned long GetStructID(CResStruct* pStruct);                     // 0x004111C0
+    CExoString ReadFieldCExoString(CResStruct* pStruct, char* szLabel, int& bSuccess,
+                                   const CExoString& sDefault);         // 0x00411EC0
+    CExoLocString ReadFieldCExoLocString(CResStruct* pStruct, char* szLabel, int& bSuccess,
+                                         const CExoLocString& lsDefault); // 0x00411FD0
     Quaternion ReadFieldQuaternion(CResStruct* pStruct, char* szLabel, int& bSuccess,
                                    const Quaternion& qDefault);         // 0x004121B0
     Vector ReadFieldVector(CResStruct* pStruct, char* szLabel, int& bSuccess,
@@ -122,9 +171,23 @@ public:
     CExoString(const char* s);                      // 0x005E5A90
     int GetLength() const;                          // 0x005E5790
     ~CExoString();                                  // 0x005E5C20
+    CExoString& operator=(const CExoString& s);     // 0x005E5C50
+    CExoString& operator=(const char* s);           // 0x005E5140
+    char* CStr();                                   // 0x005E5670
+    int operator!=(const char* s) const;            // 0x005E5390
 
     char* m_sString;
     unsigned long m_nBufferLength;
+};
+
+class CExoLocString {
+public:
+    CExoLocString();                                // 0x005E9E10
+    ~CExoLocString();                               // 0x005EA000
+    CExoLocString& operator=(const CExoLocString& s); // 0x005E9E70
+
+    void* m_pList;                                  // 0x00
+    unsigned long m_nStrRef;                        // 0x04
 };
 
 // 8-byte value copied to CSWSArea +0x08 before the layout loads (unknown type).
@@ -139,12 +202,14 @@ Vector NormalizeVector(const Vector& vVector);      // 0x004AB180
 class CSWSScriptVarTable {
 public:
     void LoadVarTable(CResGFF* pRes, CResStruct* pStruct);  // 0x0059AA80
+    void SaveVarTable(CResGFF* pRes, CResStruct* pStruct);  // 0x0059ADB0
     char pad_0x0[0x10];
 };
 
 class CSWVarTable {
 public:
     void LoadVarTable(CResGFF* pRes, CResStruct* pStruct);  // 0x0059B0F0
+    void SaveVarTable(CResGFF* pRes, CResStruct* pStruct);  // 0x0059B250
     char pad_0x0[0x10];
 };
 
@@ -229,11 +294,16 @@ public:
     virtual void v7c(); virtual void v80(); virtual void v84(); virtual void v88();
     virtual void v8c(); virtual void v90();
     virtual int GetDead();                          // 0x94 (placeholder name)
+    virtual void v98(); virtual void v9c(); virtual void va0(); virtual void va4();
+    virtual void va8(); virtual void vac(); virtual void vb0(); virtual void vb4();
+    virtual void vb8();
+    virtual void SetEffectSpellId(unsigned long nSpellId);  // 0xbc (placeholder name)
 
     void SaveObjectState(CResGFF* pRes, CResStruct* pStruct);   // 0x004CEC50
     void LoadObjectState(CResGFF* pRes, CResStruct* pStruct);   // 0x004D1CF0
     void SetPosition(const Vector& vPosition, int bArg2, int bArg3, int bArg4); // 0x004CD1A0
     void SetOrientation(const Vector& vOrientation);            // 0x004CD170
+    CSWSArea* GetArea();                                        // 0x004CB120
 
     char pad_0xc[0x78 - 0xc];
     int m_nAILevel;                                 // 0x78 (placeholder name)
@@ -248,12 +318,21 @@ public:
     int LoadCreature(CResGFF* pRes, CResStruct* pStruct, int bArg3); // 0x00500350
     void AddToArea(CSWSArea* pArea, float fX, float fY, float fZ, int bArg5, int bArg6); // 0x004FA100
     int SaveCreature(CResGFF* pRes, CResStruct* pStruct);   // 0x00500610 (placeholder name)
+    unsigned short GetDisguiseAppearance() { return m_nDisguiseAppearance; }
 
     char pad_0x9c[0x340 - 0x9c];
     class CPathfindInformation* m_pPathfindInformation; // 0x340
     char pad_0x344[0x398 - 0x344];
     int m_n398;                                     // 0x398 (placeholder name)
-    char pad_0x39c[0xa88 - 0x39c];
+    char pad_0x39c[0xa48 - 0x39c];
+    int m_bDisguised;                               // 0xa48 (placeholder name)
+    unsigned short m_nDisguiseAppearance;           // 0xa4c (placeholder name)
+    char pad_0xa4e[0xa50 - 0xa4e];
+    unsigned long m_aEquippedAppearance[4];         // 0xa50 (placeholder name)
+    unsigned short m_nAppearanceType;               // 0xa60
+    char pad_0xa62[0xa6c - 0xa62];
+    int m_bHeadCloned;                              // 0xa6c (placeholder name)
+    char pad_0xa70[0xa88 - 0xa70];
     int m_bPartyMember;                             // 0xa88 (placeholder name)
     char pad_0xa8c[0xac8 - 0xa8c];
 };
@@ -281,14 +360,23 @@ public:
     CSWSDoor(unsigned long oidSelf);                        // 0x00589EE0
     int LoadDoorExternal(CResGFF* pRes, CResStruct* pStruct, int bArg3); // 0x0058C5F0
     void SetOrientation(Quaternion qOrientation);           // 0x005896E0
+    Vector GetNearestActionPoint(const Vector& vPosition, int bArg2); // 0x00589240
     void AddToArea(CSWSArea* pArea, float fX, float fY, float fZ, int bRunScripts); // 0x0058B6D0
     int SaveDoor(CResGFF* pRes, CResStruct* pStruct);       // 0x00588AD0
+    unsigned char GetAppearanceType() { return m_nAppearanceType; }
+    unsigned char GetGenericType() { return m_nGenericType; }
 
-    char pad_0x9c[0x250 - 0x9c];
+    Vector m_vOrientation;                          // 0x9c (door plane normal)
+    char pad_0xa8[0x250 - 0xa8];
     CExoString m_sLinkedTo;                         // 0x250 (placeholder name)
-    char pad_0x258[0x2b4 - 0x258];
+    char pad_0x258[0x2a0 - 0x258];
+    unsigned char m_nAppearanceType;                // 0x2a0 (doortypes row, 0 = generic)
+    unsigned char m_nGenericType;                   // 0x2a1 (genericdoors row)
+    char pad_0x2a2[0x2b4 - 0x2a2];
     float m_fBearing;                               // 0x2b4
-    char pad_0x2b8[0x2e8 - 0x2b8];
+    char pad_0x2b8[0x2cc - 0x2b8];
+    unsigned char m_bOpen;                          // 0x2cc (placeholder name)
+    char pad_0x2cd[0x2e8 - 0x2cd];
     int m_bTrapFlag2E8;                             // 0x2e8 (placeholder name)
     char pad_0x2ec[0x3c0 - 0x2ec];
     int m_bLocked3C0;                               // 0x3c0 (placeholder name)
@@ -297,11 +385,21 @@ public:
 
 class CSWSTrigger : public CSWSObject {
 public:
+    CSWSTrigger(unsigned long oidSelf);                     // 0x0058EAE0
     int SaveTrigger(CResGFF* pRes, CResStruct* pStruct);    // 0x0058E660
+    int LoadTrigger(CResGFF* pRes, CResStruct* pStruct);    // 0x0058DA80
+    int LoadFromTemplate(const CResRef& cResRef);           // 0x0058ED70
+    void LoadGeometry(CResGFF* pRes, CResList* pList);      // 0x0058D060 (placeholder name)
+    void AddToArea(CSWSArea* pArea, float fX, float fY, float fZ, int bRunScripts); // 0x0058F030
 
-    char pad_0x9c[0x2bc - 0x9c];
+    char pad_0x9c[0x230 - 0x9c];
+    CExoString m_sLinkedTo;                         // 0x230
+    CExoString m_sLinkedToModule;                   // 0x238
+    unsigned char m_nLinkedToFlags;                 // 0x240
+    char pad_0x241[0x2bc - 0x241];
     int m_bIsTrap;                                  // 0x2bc (placeholder name)
-    char pad_0x2c0[0x314 - 0x2c0];
+    char pad_0x2c0[0x30c - 0x2c0];
+    CExoLocString m_lsTransitionDestination;        // 0x30c
     int m_bCreatedByPlayer;                         // 0x314 (placeholder name)
 };
 
@@ -312,6 +410,7 @@ public:
     int LoadPlaceable(CResGFF* pRes, CResStruct* pStruct, int bArg3); // 0x00585670
     void SetOrientation(const Quaternion& qOrientation);    // 0x005853C0 (placeholder name)
     void AddToArea(CSWSArea* pArea, const Vector& vPosition, int bArg3); // 0x00587170
+    Vector GetNearestActionPoint(const Vector& vPosition);  // 0x00584C20
     int SavePlaceable(CResGFF* pRes, CResStruct* pStruct);  // 0x00586A70
 
     char pad_0x9c[0x25c - 0x9c];
@@ -331,8 +430,16 @@ public:
     int LoadEffect(CResGFF* pRes, CResStruct* pStruct);     // 0x00594B00
     void AddToArea(CSWSArea* pArea, float fX, float fY, float fZ, int bRunScripts); // 0x00595F30
     int SaveEffect(CResGFF* pRes, CResStruct* pStruct);     // 0x00594D80 (placeholder name)
+    void SetCreator(unsigned long oid);                     // 0x00594FF0 (placeholder name)
+    void SetShape(int nShape);                              // 0x005947B0 (placeholder name)
+    void SetDuration(unsigned char nType, float fDuration); // 0x00594770
 
-    char pad_0x9c[0x290 - 0x9c];
+    char pad_0x9c[0x260 - 0x9c];
+    CExoString m_sScriptOnExit;                     // 0x260 (placeholder name)
+    char pad_0x268[0x270 - 0x268];
+    CExoString m_sScriptOnEnter;                    // 0x270 (placeholder name)
+    CExoString m_sScriptHeartbeat;                  // 0x278 (placeholder name)
+    char pad_0x280[0x290 - 0x280];
 };
 
 class CSWSWaypoint : public CSWSObject {
@@ -413,11 +520,76 @@ public:
     void DistributeExperience(unsigned long nXP, int bShow);    // 0x005653A0
 };
 
+typedef void* CExoLinkedListPosition;
+
+struct CExoLinkedListNode {
+    CExoLinkedListNode* pPrev;
+    CExoLinkedListNode* pNext;
+    void* pObject;
+};
+
+class CExoLinkedListInternal {
+public:
+    CExoLinkedListInternal();                       // 0x005E9AA0
+    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
+    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
+    void* RemoveHead();                             // 0x005E9C80
+    void* GetHeadObject()
+    {
+        void* p = m_pHead;
+        if (p) {
+            p = ((CExoLinkedListNode*)p)->pObject;
+        }
+        return p;
+    }
+    CExoLinkedListNode* m_pHead;
+    CExoLinkedListNode* m_pTail;
+    unsigned long m_nCount;
+};
+
+template <class T>
+class CExoLinkedList {
+public:
+    CExoLinkedList();
+    CExoLinkedListPosition GetHeadPos() { return m_pList->m_pHead; }
+    T* GetHead() { return (T*)m_pList->GetHeadObject(); }
+    T* GetAtPosInline(CExoLinkedListPosition pos)
+    {
+        if (pos) {
+            pos = ((CExoLinkedListNode*)pos)->pObject;
+        }
+        return (T*)pos;
+    }
+    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pList->GetAtPos(pos); }
+    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pList->GetNext(pos); }
+    T* RemoveHead() { return (T*)m_pList->RemoveHead(); }
+    int IsEmpty() { return m_pList->m_pHead == NULL; }
+    CExoLinkedListInternal* m_pList;
+};
+
+class CSWSPlayer {
+public:
+    CSWSObject* GetGameObject();                    // 0x00561080
+};
+
+class CSWSMessage {
+public:
+    int SendServerToPlayerArea_VisualEffect(CSWSPlayer* pPlayer, unsigned short nEffect,
+                                            Vector vPosition); // 0x0056D140
+    int SendServerToPlayerArea_Weather(CSWSPlayer* pPlayer, unsigned char nWeather,
+                                       int bEnabled); // 0x0056D1E0
+};
+
 class CServerExoApp {
 public:
+    CExoLinkedList<CSWSPlayer>* GetPlayerList();                // 0x004AED90
+    CSWSMessage* GetSWSMessage();                               // 0x004AEDB0
     CSWSCreature* GetCreatureByGameObjectID(unsigned long oid); // 0x004AE770
     CSWSTrigger* GetTriggerByGameObjectID(unsigned long oid);   // 0x004AE790
-    class CSWSClient* GetClientObjectByObjectID(unsigned long oid); // 0x004AE910
+    CSWSDoor* GetDoorByGameObjectID(unsigned long oid);         // 0x004AE7C0
+    CGameObject* GetGameObject(unsigned long oid);              // 0x004AE750
+    CSWSPlaceable* GetPlaceableByGameObjectID(unsigned long oid); // 0x004AE7A0
+    CSWSPlayer* GetClientObjectByObjectID(unsigned long oid);  // 0x004AE910
     int GetLoadFromSaveGame();                                  // 0x004AF050
     CGameObjectArray* GetObjectArray();                         // 0x004AED70
     CServerAIMaster* GetServerAIMaster();                       // 0x004AED80
@@ -495,9 +667,81 @@ public:
     int AddObjectToLookupTable(const CExoString& sTag, unsigned long oid); // 0x004C7DE0
 };
 
+// Static door collision box: min and max corners.
+struct CSWSAreaDoorBox {
+    Vector vMin;
+    Vector vMax;
+};
+
+int BoxIntersect(Vector* pStart, Vector* pEnd, Vector* pMin, Vector* pMax); // 0x004AA610
+
 // CSWArea at 0x0, CGameObject sub-object at 0x11c (only data placed here).
+class C2DA {
+public:
+    int GetINTEntry(int nRow, const CExoString& sColumn, int* pValue);    // 0x00413660
+    int GetFLOATEntry(int nRow, const CExoString& sColumn, float* pValue); // 0x00413430
+};
+
+class C2DAs {
+public:
+    char pad_0x0[0xc];
+    C2DA* m_pAppearance;                            // 0x0c
+    char pad_0x10[0x14 - 0x10];
+    C2DA* m_pSurfaceMaterial;                       // 0x14 (placeholder name)
+    char pad_0x18[0x24 - 0x18];
+    C2DA* m_pDoorTypes;                             // 0x24 (placeholder name)
+    C2DA* m_pGenericDoors;                          // 0x28 (placeholder name)
+    char pad_0x2c[0x88 - 0x2c];
+    C2DA* m_pVisualEffects;                         // 0x88
+
+    C2DA* GetAppearance() { return m_pAppearance; }
+    C2DA* GetDoorTypes() { return m_pDoorTypes; }
+    C2DA* GetGenericDoors() { return m_pGenericDoors; }
+};
+
+class CSWRules {
+public:
+    char pad_0x0[0xb8];
+    C2DAs* m_p2DArrays;                             // 0xb8
+
+    C2DAs* Get2DArrays() { return m_p2DArrays; }
+};
+extern CSWRules* g_pRules;                          // 0x007A3A28
+
 class CSWSArea {
 public:
+    virtual void v00();                                         // 0x00
+    virtual int ListContainsObject(unsigned long oidObject,
+                                   CExoArrayList<CGameObject*>* pList); // 0x04 0x00508010 (placeholder name)
+    virtual void v08(); virtual void v0c(); virtual void v10(); virtual void v14();
+    virtual int HandleTransparentDoors(const Vector& vStart, const Vector& vEnd, float fRadius,
+                                       float fHeight, float fZ, unsigned long oidIgnore,
+                                       unsigned long& nHit, int bArg8,
+                                       CExoArrayList<CGameObject*>* pExclude,
+                                       int bArg10);             // 0x18 0x0050C1E0
+    int NoNoneWalkPolysInStaticObject(unsigned long oid, const Vector& vStart, const Vector& vEnd,
+                                      float fRadius, float fHeight, float fZ,
+                                      unsigned long oidIgnore, int bArg8,
+                                      class CWalkHitInfo* pHitInfo); // 0x004BBE20
+    int NoNonWalkPolysInDoors(const Vector& vStart, const Vector& vEnd, float fZMin, float fZMax,
+                              float fWidth, unsigned long oidIgnore, unsigned long& nHit,
+                              CExoArrayList<CGameObject*>* pExclude, int bArg9,
+                              int bHandleDoors);                // 0x0050CA10 (placeholder name)
+    int ClearLineOfSight(Vector* pFrom, Vector* pTo, Vector* pHit, unsigned long* pBlocker,
+                         unsigned long oidSource, unsigned long oidTarget, int bArg7,
+                         int bArg8);                            // 0x0050C330
+    int TestSafeLocationPoint(const Vector& vPosition,
+                              class CPathfindInformation* pPathfindInfo); // 0x004BE5E0
+    void BudgeCreatures(Vector* pOrigin, Vector* pMin, Vector* pMax, unsigned long oidDoor,
+                        int bUseActionPoints);          // 0x00508180 (placeholder name)
+    unsigned long GetDoorCrossed(Vector* pFrom, Vector* pTo);   // 0x005064D0 (placeholder name)
+    void UnloadArea();                                          // 0x0050C0E0
+    void SaveGIT(class CERFFile* pERF, CExoString* pName,
+                 CExoArrayList<unsigned long>* pPlayers);       // 0x0050BA00
+    void ApplyEffect(class CGameEffect* pEffect, Vector* pPosition,
+                     Vector* pOrientation);                     // 0x0050C6B0
+    void FlagCreaturesWithHead(int nHead);                      // 0x00508820 (placeholder name)
+    void PlayVisualEffect(unsigned short nEffect, Vector* pPosition);   // 0x00507E20
     class CSWSRoom* GetRoom(Vector* pPosition, int* pRoomIndex); // 0x004BB600
     int GetSurfaceMaterial(Vector vPosition);           // 0x005063C0
     void SaveMaps(CResGFF* pRes, CResStruct* pStruct);  // 0x005061D0
@@ -552,6 +796,7 @@ public:
     void ActivateAI();                                          // 0x00507220 (placeholder name)
     void DeactivateAI();                                        // 0x00507340 (placeholder name)
     int LoadProperties(CResGFF* pRes, CResStruct* pStruct);     // 0x00507490
+    CGameObject* AsGameObject() { return (CGameObject*)((char*)this + 0x11c); }
     int GetUnescapable() { return m_bUnescapable; }
     int GetPlayerRestrictMode() { return m_nRestrictMode; }
     int GetStealthXPEnabled() { return m_bStealthXPEnabled; }
@@ -574,10 +819,22 @@ public:
     void IncrementPlayersInArea();                              // 0x00508C20
     void DecrementPlayersInArea();                              // 0x00508C40
 
-    char pad_0x0[0x4];
     unsigned long m_nAreaFlags;                     // 0x04 (placeholder name)
     CSWSAreaValue8 m_cValue8;                       // 0x08 (placeholder name)
-    char pad_0x10[0x8c - 0x10];
+    char pad_0x10[0x1c - 0x10];
+    void* m_pAreaData1c;                            // 0x1c (placeholder name)
+    void* m_pAreaData20;                            // 0x20 (placeholder name)
+    void* m_pAreaData24;                            // 0x24 (placeholder name)
+    void* m_pAreaData28;                            // 0x28 (placeholder name)
+    char pad_0x2c[0x34 - 0x2c];
+    void* m_pAreaData34;                            // 0x34 (placeholder name)
+    char pad_0x38[0x40 - 0x38];
+    void* m_pAreaData40;                            // 0x40 (placeholder name)
+    char pad_0x44[0x48 - 0x44];
+    int m_nDoorBoxes;                               // 0x48 (placeholder name)
+    CSWSAreaDoorBox* m_pDoorBoxes;                  // 0x4c (placeholder name)
+    unsigned long* m_pDoorBoxIds;                   // 0x50 (placeholder name)
+    char pad_0x54[0x8c - 0x54];
     unsigned long m_nSunFogColor;                   // 0x8c
     char pad_0x90[0xa8 - 0x90];
     unsigned char m_nChanceRain;                    // 0xa8
@@ -593,9 +850,10 @@ public:
     char pad_0x138[0x13c - 0x138];
     unsigned long m_nLastHeartbeatDay;              // 0x13c
     unsigned long m_nLastHeartbeatTime;             // 0x140
-    char pad_0x144[0x158 - 0x144];
+    CExoLinkedList<CExoLocString> m_lNames;         // 0x144 (placeholder name)
+    char pad_0x148[0x158 - 0x148];
     CExoString m_sTag;                              // 0x158
-    char pad_0x160[0x164 - 0x160];
+    void* m_pAreaData160;                           // 0x160 (placeholder name)
     CExoString m_sScriptOnHeartbeat;                // 0x164
     char pad_0x16c[0x190 - 0x16c];
     CExoArrayList<unsigned long> m_aGameObjects;    // 0x190
@@ -612,7 +870,8 @@ public:
     unsigned long m_nLastWeatherDay;                // 0x218
     unsigned long m_nLastWeatherTime;               // 0x21c
     unsigned char m_nWeatherType;                   // 0x220 (placeholder name)
-    char pad_0x221[0x223 - 0x221];
+    unsigned char m_nWeatherTarget;                 // 0x221 (placeholder name)
+    char pad_0x222[0x223 - 0x222];
     unsigned char m_nMapGrid223;                    // 0x223 (placeholder name)
     char pad_0x224[0x22c - 0x224];
     int m_nRooms;                                   // 0x22c

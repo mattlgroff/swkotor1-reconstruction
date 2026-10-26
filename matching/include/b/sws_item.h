@@ -78,10 +78,13 @@ public:
     int RemoveItem(CSWSItem* pItem);                        // 0x00584AC0
     int AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor, int bFlag); // 0x00584B10
     void CloseInventory(unsigned long oidCloser, int bArg);  // 0x00587560
+    int GetLightIsOn();                                     // 0x00585130
+    void SetLightIsOn(int bOn);                             // 0x00585080
     unsigned char GetBodyBag() { return m_n230; }
     int GetD4() { return m_nD4; }
     int GetF8() { return m_nF8; }
     int Get260() { return m_n260; }
+    void SetLocked(int bLocked) { m_n260 = bLocked; }
     int Get280() { return m_n280; }
     int Get328() { return m_n328; }
     int Get32C() { return m_n32C; }
@@ -97,8 +100,15 @@ public:
     char pad_0x240[0x258 - 0x240];
     unsigned char m_nAppearance;                            // 0x258
     char pad_0x259[0x260 - 0x259];
-    int m_n260;                                             // 0x260
-    char pad_0x264[0x280 - 0x264];
+    int m_n260;                                             // 0x260 (locked)
+    CExoString m_sKeyName;                                  // 0x264
+    int m_bKeyRequired;                                     // 0x26c
+    char pad_0x270[0x274 - 0x270];
+    unsigned char m_nOpenLockDC;                            // 0x274 (GetLockUnlockDC)
+    unsigned char m_nCloseLockDC;                           // 0x275 (GetLockLockDC)
+    char pad_0x276[0x278 - 0x276];
+    int m_bTrapped;                                         // 0x278 (name guessed)
+    char pad_0x27c[0x280 - 0x27c];
     int m_n280;                                             // 0x280
     char pad_0x284[0x314 - 0x284];
     unsigned char m_nHardness;                              // 0x314
@@ -107,7 +117,7 @@ public:
     char pad_0x317[0x328 - 0x317];
     int m_n328;                                             // 0x328
     int m_n32C;                                             // 0x32c
-    int m_n330;                                             // 0x330
+    int m_n330;                                             // 0x330 (lockable)
     char pad_0x334[0x378 - 0x334];
     CResRef m_cOnUsed;                                      // 0x378
     char pad_0x388[0x398 - 0x388];
@@ -274,6 +284,10 @@ public:
         int nBaseItem = m_nBaseItem;
         return g_pRules->GetBaseItemArray()->GetBaseItem(nBaseItem);
     }
+#ifndef B_SWS_ITEM_OPAQUE_PROPERTY_GETTERS
+    // Defined in the item TU (inlined there, out of line at 0x00553960 and
+    // 0x00553990); other TUs define B_SWS_ITEM_OPAQUE_PROPERTY_GETTERS to
+    // see only the declarations, as the VM command TU did.
     CSWItemProperty* GetActiveProperty(int n)
     {
         if (n < 0 || n >= m_nActiveProperties) return NULL;
@@ -284,6 +298,10 @@ public:
         if (n < 0 || n >= m_nPassiveProperties) return NULL;
         return &m_pPassiveProperties[n];
     }
+#else
+    CSWItemProperty* GetActiveProperty(int n);              // 0x00553960
+    CSWItemProperty* GetPassiveProperty(int n);             // 0x00553990
+#endif
 
     char pad_0x10f4[0x108 - 0x10 - 0xf4];
     int m_bPlotItem;                                        // 0x108

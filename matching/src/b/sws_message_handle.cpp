@@ -16,7 +16,7 @@ int CSWSMessage::HandlePlayerToServerQuickChatMessage(CSWSPlayer* pPlayer, unsig
     if (!MessageReadOverflow(1) && !MessageReadUnderflow(1)) {
         CGameObject* pObject = pPlayer->GetGameObject();
         if (pObject) {
-            return QuickChatMessage(pObject->m_idSelf, nQuickChat);
+            return SendServerToPlayerQuickChatMessage(pObject->m_idSelf, nQuickChat);
         }
     }
     return 0;
@@ -364,7 +364,7 @@ int CSWSMessage::HandlePlayerToServerInputDriveControl(CSWSPlayer* pPlayer)
             return 0;
         }
         if (pCreature->m_bCommandable == 1) {
-            pCreature->SetCombatState(0, 1);
+            pCreature->SetCombatMode(0, 1);
             pCreature->m_pCombatRound->ClearAllSpecialAttacks();
             pCreature->ClearAllActions(1);
             pCreature->ClearActivityFlag(8);

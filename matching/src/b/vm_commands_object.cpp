@@ -53,13 +53,17 @@ int CSWVirtualMachineCommands::ExecuteCommandSavingThrow(int nCommandId, int nPa
     int nDC;
     int nSaveType;
     int nResult = 0;
-    if (!g_pVirtualMachine->StackPopObject(&oidTarget) ||
-        !g_pVirtualMachine->StackPopInteger(&nDC)) {
+    if (!g_pVirtualMachine->StackPopObject(&oidTarget)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nDC)) {
         return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
     }
     if (nParameters > 2) {
-        if (!g_pVirtualMachine->StackPopInteger(&nSaveType) ||
-            !g_pVirtualMachine->StackPopObject(&oidSaveVersus)) {
+        if (!g_pVirtualMachine->StackPopInteger(&nSaveType)) {
+            return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+        }
+        if (!g_pVirtualMachine->StackPopObject(&oidSaveVersus)) {
             return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
         }
     }
@@ -80,7 +84,10 @@ int CSWVirtualMachineCommands::ExecuteCommandSavingThrow(int nCommandId, int nPa
         }
         nResult = pObject->AsSWSCreature()->SavingThrowRoll(nSave, nDC, nSaveType, oidSaveVersus, 1, 0, 0);
     }
-    return g_pVirtualMachine->StackPushInteger(nResult) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    if (!g_pVirtualMachine->StackPushInteger(nResult)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    return 0;
 }
 
 // FUNCTION: SWKOTOR 0x00543F70
@@ -324,6 +331,47 @@ int CSWVirtualMachineCommands::ExecuteCommandSelfObjectAction(int nCommandId, in
     CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(m_oidObjectRunScript);
     if (pCreature) {
         pCreature->AddObjectAction(oidTarget, &pCreature->m_vPosition, 0);
+    }
+    return 0;
+}
+
+// Also GetLocalNumber.
+// FUNCTION: SWKOTOR 0x0053B760
+int CSWVirtualMachineCommands::ExecuteCommandGetLocalBoolean(int nCommandId, int nParameters)
+{
+    int nResult = 0;
+    unsigned long oidObject;
+    int nIndex;
+    if (!g_pVirtualMachine->StackPopObject(&oidObject)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nIndex)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameObject* pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidObject);
+    if (pObject) {
+        CSWVarTable* pVarTable;
+        int nObjectType = pObject->m_nObjectType;
+        if (nObjectType == OBJECT_TYPE_AREA) {
+            pVarTable = &pObject->AsSWSArea()->m_VarTable;
+        } else if (nObjectType == OBJECT_TYPE_MODULE) {
+            pVarTable = &pObject->AsSWSModule()->m_VarTable;
+        } else {
+            pVarTable = &((CSWSObjectVarTableView*)pObject)->m_VarTable;
+        }
+        if (pVarTable) {
+            switch (nCommandId) {
+            case 0x2a7:
+                nResult = pVarTable->GetBoolean(nIndex);
+                break;
+            case 0x2a9:
+                nResult = pVarTable->GetNumber(nIndex);
+                break;
+            }
+        }
+    }
+    if (!g_pVirtualMachine->StackPushInteger(nResult)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
     }
     return 0;
 }
@@ -605,6 +653,36 @@ int CSWVirtualMachineCommands::ExecuteCommandAddJournalQuestEntry(int nCommandId
     }
     if (nXP && g_pAppManager->GetServerExoApp()->GetPartyTable()) {
         g_pAppManager->GetServerExoApp()->GetPartyTable()->DistributeExperience(nXP, 1);
+    }
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x00549F30
+int CSWVirtualMachineCommands::ExecuteCommandGetJournalEntry(int nCommandId, int nParameters)
+{
+    CExoString sPlotID;
+    int nState = 0;
+    if (!g_pVirtualMachine->StackPopString(&sPlotID)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CExoLinkedList<CSWSClient>* pList = g_pAppManager->GetServerExoApp()->GetPlayerList();
+    if (!pList) {
+        return 1;
+    }
+    void* pos = pList->GetHeadPos();
+    while (pos) {
+        CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pos);
+        if (pPlayer && pPlayer->GetGameObject()) {
+            CSWSCreature* pCreature = pPlayer->GetGameObject()->AsSWSCreature();
+            if (pCreature) {
+                nState = pCreature->GetJournal()->GetState(sPlotID);
+                break;
+            }
+        }
+        pList->GetNext(pos);
+    }
+    if (!g_pVirtualMachine->StackPushInteger(nState)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
     }
     return 0;
 }

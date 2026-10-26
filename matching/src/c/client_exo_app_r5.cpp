@@ -13,9 +13,9 @@ void CClientExoApp::EmptyForwarder()
 }
 
 // FUNCTION: SWKOTOR 0x005ED460
-int CClientExoApp::GetUnknown88()
+CExoFile* CClientExoApp::GetCaptureFile()
 {
-    return m_pcInternal->m_nUnknown88;
+    return m_pcInternal->m_pCaptureFile;
 }
 
 // FUNCTION: SWKOTOR 0x005ED4C0

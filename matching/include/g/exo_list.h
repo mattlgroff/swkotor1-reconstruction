@@ -15,6 +15,7 @@ public:
 
     CExoArrayList() { num = 0; array_size = 0; element = 0; }
     ~CExoArrayList() { if (element) delete[] element; }
+    T& operator[](int i) { return element[i]; }
     void Allocate(int n);
     void SetSize(int n);
     void DelIndex(int i);                       // 0x006857a0

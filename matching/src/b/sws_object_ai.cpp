@@ -53,7 +53,7 @@ public:
 };
 
 // FUNCTION: SWKOTOR 0x0057A240
-int CSWSObject::GetIsActionTimed(unsigned long nActionId)
+int CSWSObject::GetAcceptableAction(unsigned long nActionId)
 {
     switch (nActionId) {
     case 1:
@@ -166,7 +166,7 @@ unsigned long CSWSObject::AIActionPauseDialog(CSWSObjectActionNode* pNode)
     if (AsSWSCreature()) {
         bDead = AsSWSCreature()->GetDeadTemp();
     }
-    if (GetIsInConversation() != 1 && GetIsPaused() != 1 && bDead != 1) {
+    if (GetObjectState94() != 1 && GetIsPaused() != 1 && bDead != 1) {
         m_bDialogPaused = 1;
         if (AsSWSCreature()) {
             AsSWSCreature()->SetAIStateFlag(4, 1);
@@ -184,7 +184,7 @@ unsigned long CSWSObject::AIActionResumeDialog(CSWSObjectActionNode* pNode)
     if (AsSWSCreature()) {
         bDead = AsSWSCreature()->GetDeadTemp();
     }
-    if (GetIsInConversation() != 1 && GetIsPaused() != 1 && bDead != 1) {
+    if (GetObjectState94() != 1 && GetIsPaused() != 1 && bDead != 1) {
         m_bDialogPaused = 0;
         if (AsSWSCreature()) {
             AsSWSCreature()->ActivityManager(2);
@@ -236,7 +236,7 @@ unsigned long CSWSObject::AIActionDoCommand(CSWSObjectActionNode* pNode)
     if (AsSWSCreature()) {
         bDead = AsSWSCreature()->GetDeadTemp();
     }
-    if (GetIsInConversation() != 1 && GetIsPaused() != 1 && bDead != 1) {
+    if (GetObjectState94() != 1 && GetIsPaused() != 1 && bDead != 1) {
         g_pVirtualMachine->RunScriptSituation(pNode->m_pParameter[0], m_idSelf, 1);
         pNode->m_pParameter[0] = 0;
         return ACTION_COMPLETE;
@@ -251,7 +251,7 @@ unsigned long CSWSObject::AIActionSetCommandable(CSWSObjectActionNode* pNode)
     if (AsSWSCreature()) {
         bDead = AsSWSCreature()->GetDeadTemp();
     }
-    if (GetIsInConversation() || GetIsPaused() || bDead) {
+    if (GetObjectState94() || GetIsPaused() || bDead) {
         return ACTION_FAILED;
     }
     m_bCommandable = (int)pNode->m_pParameter[0];

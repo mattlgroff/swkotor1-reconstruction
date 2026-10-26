@@ -260,7 +260,7 @@ void CSWCAmbientSound::PlayTruncated(int bPlay, int nKind)
 }
 
 // FUNCTION: SWKOTOR 0x0068DF40
-CSWCAmbientSound::CSWCAmbientSound(unsigned long oidArea)
+CSWCAmbientSound::CSWCAmbientSound(CSWCArea* pArea)
 {
     m_nTimer = 0;
     m_nMusicDelayMs = 30000;
@@ -272,7 +272,7 @@ CSWCAmbientSound::CSWCAmbientSound(unsigned long oidArea)
     m_bMusicEnabled = 1;
     m_bAmbientEnabled = 1;
     m_bDay = 1;
-    m_oidArea = oidArea;
+    m_pArea = pArea;
     m_bActive = 0;
     m_nMusicMode = 0;
     m_nPlayingKind = 0;

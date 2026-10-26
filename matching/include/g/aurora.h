@@ -15,6 +15,7 @@ __declspec(dllimport) int __stdcall EnumDisplaySettingsA(const char* szDevice,
                                                          unsigned long nMode,
                                                          _devicemodeA* pMode);
 __declspec(dllimport) int __stdcall wglMakeCurrent(void* hDC, void* hRC);
+__declspec(dllimport) void __stdcall glViewport(int x, int y, int w, int h);
 }
 
 #define GL_LIGHT0 0x4000
@@ -48,8 +49,10 @@ public:
                                        unsigned char* pBitsPerPel,
                                        unsigned long* pFrequency,
                                        unsigned char bApply);   // 0x0c
-    virtual void Slot4();                            // 0x10
-    virtual void Slot5();                            // 0x14
+    virtual int InitEditor(void* hTopWnd, void* hWnd, unsigned long nWidth,
+                           unsigned long nHeight, unsigned char nBitsPerPel,
+                           unsigned long nFrequency, int bFullScreen);  // 0x10
+    virtual void Reshape(int nWidth, int nHeight);  // 0x14
     virtual void Slot6();                            // 0x18
     virtual void Slot7();                            // 0x1c
     virtual void Slot8();                            // 0x20
@@ -65,7 +68,8 @@ public:
     static void DestroyCAuroraInstance();
 
     _devicemodeA m_devMode;      // +0x04
-    char pad_a0[0xa8 - 0xa0];
+    int m_nWidth;                // +0xa0
+    int m_nHeight;               // +0xa4
     int m_bFullScreen;           // +0xa8
     int m_nUnknownAC;            // +0xac
     float m_fGamma;              // +0xb0
@@ -81,6 +85,10 @@ public:
                                        unsigned char* pBitsPerPel,
                                        unsigned long* pFrequency,
                                        unsigned char bApply);   // 0x0c 0x0044d6e0
+    virtual int InitEditor(void* hTopWnd, void* hWnd, unsigned long nWidth,
+                           unsigned long nHeight, unsigned char nBitsPerPel,
+                           unsigned long nFrequency, int bFullScreen);  // 0x10 0x0044e3b0
+    virtual void Reshape(int nWidth, int nHeight);      // 0x14 0x0044e9e0
     virtual int SetGamma(float fGamma, int bTemporary); // 0x24 0x0044d990
     virtual void* GetContext();                         // 0x28 0x0044d970
     virtual int MakeCurrent(void* hDC, void* hRC);      // 0x2c 0x0044d980

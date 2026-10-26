@@ -22,15 +22,15 @@ CSWCModuleScene* CClientExoAppInternal::GetModuleScene()
 // FUNCTION: SWKOTOR 0x005EE700
 int CClientExoAppInternal::HandleMessage(unsigned long nPlayerId, unsigned char* pData, unsigned long nSize, int bRaw)
 {
-    if (g_pAppManager->GetClientExoApp()->GetCaptureEvents() && g_pAppManager->GetClientExoApp()->GetUnknown88()) {
+    if (g_pAppManager->GetClientExoApp()->GetCaptureEvents() && g_pAppManager->GetClientExoApp()->GetCaptureFile()) {
         CExoString s;
         s.Format("%d %c %d %d %d ",
                  (unsigned long)(g_pAppManager->GetClientExoApp()->GetWorldTimer()->GetSnapshotTime() / 1000),
                  'M', nPlayerId, bRaw, nSize);
-        ((CExoFile*)g_pAppManager->GetClientExoApp()->GetUnknown88())->Write(s);
-        ((CExoFile*)g_pAppManager->GetClientExoApp()->GetUnknown88())->Write(pData, nSize, 1);
+        g_pAppManager->GetClientExoApp()->GetCaptureFile()->Write(s);
+        g_pAppManager->GetClientExoApp()->GetCaptureFile()->Write(pData, nSize, 1);
         s.Format("\n");
-        ((CExoFile*)g_pAppManager->GetClientExoApp()->GetUnknown88())->Write(s);
+        g_pAppManager->GetClientExoApp()->GetCaptureFile()->Write(s);
     }
     if (bRaw == 0) {
         if (pData[0] == 'P') {

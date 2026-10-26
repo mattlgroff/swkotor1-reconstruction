@@ -245,7 +245,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionPauseConversation(int nComman
         if (pObject->AsSWSCreature()) {
             bDead = pObject->AsSWSCreature()->GetDeadTemp();
         }
-        if (pObject->AsSWSObject()->GetIsInConversation() == 1 || pObject->AsSWSObject()->GetIsPaused() == 1 || bDead == 1) {
+        if (pObject->AsSWSObject()->GetObjectState94() == 1 || pObject->AsSWSObject()->GetIsPaused() == 1 || bDead == 1) {
             pObject->AsSWSObject()->SetDialogOwner(OBJECT_INVALID);
         } else {
             pObject->AsSWSObject()->m_bDialogPaused = 1;
@@ -582,5 +582,110 @@ int CSWVirtualMachineCommands::ExecuteCommandFeetToMeters(int nCommandId, int nP
 int CSWVirtualMachineCommands::ExecuteCommandDoSinglePlayerAutoSave(int nCommandId, int nParameters)
 {
     g_pAppManager->GetServerExoApp()->SetAutoSavePending(1);
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x0052FE30
+int CSWVirtualMachineCommands::ExecuteCommandDelayCommand(int nCommandId, int nParameters)
+{
+    CVirtualMachineScript* pScript = NULL;
+    float fSeconds;
+    if (!g_pVirtualMachine->StackPopFloat(&fSeconds)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopCommand(&pScript)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameObject* pObject;
+    if (m_bValidObjectRunScript == 1 &&
+        g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID) {
+        unsigned long oidCaller = OBJECT_INVALID;
+        if (m_bValidObjectRunScript == 1) {
+            oidCaller = m_oidObjectRunScript;
+        }
+        g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+            0, (unsigned long)(fSeconds * 1000.0f), oidCaller, m_oidObjectRunScript, EVENT_TIMED_EVENT, pScript);
+    } else if (pScript) {
+        delete (void*)pScript;
+    }
+    return 0;
+}
+
+// NONMATCH: register swap only (the original keeps `this` in esi and
+// nParameters in edi).
+// FUNCTION: SWKOTOR 0x0053F990
+int CSWVirtualMachineCommands::ExecuteCommandActionMoveAwayFromObject(int nCommandId, int nParameters)
+{
+    int bRun = 0;
+    float fMoveAwayRange = MOVE_AWAY_DEFAULT_RANGE;
+    unsigned long oidFleeFrom;
+    if (!g_pVirtualMachine->StackPopObject(&oidFleeFrom)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (nParameters >= 2 && !g_pVirtualMachine->StackPopInteger(&bRun)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (nParameters >= 3 && !g_pVirtualMachine->StackPopFloat(&fMoveAwayRange)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameObject* pObject;
+    if (m_bValidObjectRunScript == 1 &&
+        g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject->AsSWSCreature() && pObject->AsSWSCreature()->m_bCommandable) {
+        CGameObject* pFleeFrom;
+        if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidFleeFrom, &pFleeFrom) == GAME_OBJECT_VALID) {
+            int nTen = 10;
+            ((CSWSObject*)pObject)->AddAction(3, 0xfffe, 3, &oidFleeFrom, 1, &bRun, 2, &fMoveAwayRange, 1, &nTen);
+        }
+    }
+    return 0;
+}
+
+// FUNCTION: SWKOTOR 0x00545800
+int CSWVirtualMachineCommands::ExecuteCommandActionWait(int nCommandId, int nParameters)
+{
+    float fSeconds;
+    if (!g_pVirtualMachine->StackPopFloat(&fSeconds)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameObject* pObject;
+    if (m_bValidObjectRunScript == 1 &&
+        g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject->AsSWSObject() && pObject->AsSWSObject()->m_bCommandable) {
+        pObject->AsSWSObject()->AddAction(0x1e, 0xffff, 2, &fSeconds);
+    }
+    return 0;
+}
+
+// NONMATCH (27): stack-slot allocation and shared branch placement.
+// FUNCTION: SWKOTOR 0x0053FE00
+int CSWVirtualMachineCommands::ExecuteCommandActionMoveToLocation(int nCommandId, int nParameters)
+{
+    int bRun = 0;
+    float fTimeout = 30.0f;
+    CScriptLocation* pLocation;
+    if (!g_pVirtualMachine->StackPopEngineStructure(ENGINE_STRUCTURE_LOCATION, (void**)&pLocation)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (nParameters > 1) {
+        if (!g_pVirtualMachine->StackPopInteger(&bRun)) return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+        if (nCommandId == 0x17e && nParameters > 2 && !g_pVirtualMachine->StackPopFloat(&fTimeout))
+            return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameObject* pObject;
+    if (m_bValidObjectRunScript == 1 &&
+        g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
+        pObject->AsSWSCreature()) {
+        CSWSArea* pArea = pObject->AsSWSCreature()->GetArea();
+        if (pArea) {
+            if (nCommandId == 0x15) fTimeout = 0.0f;
+            else if (nCommandId != 0x17e) return 0;
+            Vector vFacing(0.0f, 0.0f, 0.0f);
+            pObject->AsSWSCreature()->AddMoveToPointAction(0xffff, *(Vector*)pLocation->m_vPosition,
+                pArea->m_idSelf, OBJECT_INVALID, bRun, 0.0f, fTimeout, 0, 0, 0, 0, 0, 0, vFacing, 0, 0, 0);
+            return 0;
+        }
+    }
+    if (pLocation) delete pLocation;
     return 0;
 }

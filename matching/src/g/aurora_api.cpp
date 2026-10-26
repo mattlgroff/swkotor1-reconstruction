@@ -277,6 +277,25 @@ CAurInternalGL::~CAurInternalGL()
     Shutdown(1, 1);
 }
 
+extern int g_nScreenWidth;                  // 0x0078d1d4
+extern int g_nScreenHeight;                 // 0x0078d1d8
+
+// FUNCTION: SWKOTOR 0x0044e9e0
+void CAurInternalGL::Reshape(int nWidth, int nHeight)
+{
+    if (!m_nUnknownB4)
+        return;
+    m_nWidth = nWidth;
+    m_nHeight = nHeight;
+    g_nScreenWidth = nWidth;
+    g_nScreenHeight = nHeight;
+    if (!nHeight)
+        nHeight = 1;
+    if (!nWidth)
+        nWidth = 1;
+    glViewport(0, 0, nWidth, nHeight);
+}
+
 // FUNCTION: SWKOTOR 0x0044ea30
 void CAurInternalGL::Shutdown(int bRelease, int bRestore)
 {

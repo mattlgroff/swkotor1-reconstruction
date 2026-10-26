@@ -1363,7 +1363,7 @@ int CSWSMessage::SendServerToPlayerCharacterDownloadFail(CSWSPlayer* pPlayer)
 }
 
 // FUNCTION: SWKOTOR 0x0056B670
-int CSWSMessage::SendServerToPlayerItemScriptAdd(unsigned long nPlayerId, unsigned long oidArea,
+int CSWSMessage::SendServerToPlayerItemScriptAdd(unsigned long nPlayerId, CSWSArea* pArea,
                                                  CSWSItem* pItem, Vector vPosition)
 {
     unsigned char* pMessage;

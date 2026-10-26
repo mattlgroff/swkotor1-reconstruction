@@ -463,9 +463,9 @@ int CClientExoApp::CreateCaptureEventFile(const CExoString& sFile)
 }
 
 // FUNCTION: SWKOTOR 0x005ED830
-int CClientExoApp::setUpEventPlayBack(const CExoString& sFile)
+void CClientExoApp::setUpEventPlayBack(const CExoString& sFile)
 {
-    return m_pcInternal->setUpEventPlayBack(sFile);
+    m_pcInternal->setUpEventPlayBack(sFile);
 }
 
 // FUNCTION: SWKOTOR 0x005ED840
@@ -631,9 +631,9 @@ void CClientExoApp::ResetDriveAcceleration()
 }
 
 // FUNCTION: SWKOTOR 0x005EDBB0
-int CClientExoApp::BarkString(unsigned long oid, int a, int b, int c)
+void CClientExoApp::BarkString(unsigned long oid, const CExoString& text, const CResRef& sound, int b)
 {
-    return m_pcInternal->BarkString(oid, a, b, c);
+    m_pcInternal->BarkString(oid, text, sound, b);
 }
 
 // FUNCTION: SWKOTOR 0x005EDBC0
@@ -703,9 +703,9 @@ void CClientExoApp::SetCanSendDialog(int b)
 }
 
 // FUNCTION: SWKOTOR 0x005EDC90
-int CClientExoApp::GetCanSendDialog(int a, int b, int c)
+int CClientExoApp::GetCanSendDialog(unsigned long oidSpeaker, unsigned long oidListener, CSWSDialog* pDialog)
 {
-    return m_pcInternal->GetCanSendDialog(a, b, c);
+    return m_pcInternal->GetCanSendDialog(oidSpeaker, oidListener, pDialog);
 }
 
 // FUNCTION: SWKOTOR 0x005EDCE0
@@ -781,9 +781,9 @@ void CClientExoApp::PlayerFlourishWeapons()
 }
 
 // FUNCTION: SWKOTOR 0x005EDEA0
-void CClientExoApp::AddFloatyText(int a, int b, int c)
+void CClientExoApp::AddFloatyText(unsigned long oid, unsigned char nType, int nValue)
 {
-    m_pcInternal->AddFloatyText(a, b, c);
+    m_pcInternal->AddFloatyText(oid, nType, nValue);
 }
 
 // FUNCTION: SWKOTOR 0x005EDEE0
@@ -964,7 +964,7 @@ void CClientExoApp::SetVideoMode(int nMode)
 // FUNCTION: SWKOTOR 0x005ED8F0
 void CClientExoApp::SetTexturePack(int nPack)
 {
-    m_pcInternal->SetTexturePack(nPack, 1);
+    m_pcInternal->SetTexturePack((unsigned char)nPack, 1);
 }
 
 inline CResRef CClientExoAppInternal::GetItemDropSound(unsigned char nType)

@@ -19,6 +19,7 @@ public:
 };
 
 class Part;
+class CHitInfo;
 
 class Vector {
 public:
@@ -52,6 +53,8 @@ public:
 };
 
 class MdlNodeAnimMesh;
+class MdlNodeTriMesh;
+class MdlNodeAABB;
 
 class PartNode {
 public:
@@ -63,6 +66,20 @@ public:
     {
         if ((m_nType & 0x0a1) == 0x0a1)
             return (MdlNodeAnimMesh*)this;
+        return 0;
+    }
+    MdlNodeTriMesh* AsMdlNodeTriMesh()
+    {
+        if ((m_nType & 0x021) == 0x021)
+            return (MdlNodeTriMesh*)this;
+        return 0;
+    }
+    MdlNodeAABB* AsMdlNodeAABB()
+    {
+        short f = m_nType;
+        f &= 0x221;
+        if (f == 0x221)
+            return (MdlNodeAABB*)this;
         return 0;
     }
 };
@@ -81,7 +98,7 @@ public:
     virtual void V10(); virtual void V14(); virtual void V18();
     virtual void V1c();
     virtual int HitCheck(const Vector& vStart, const Vector& vEnd, Vector* pHit,
-                         int nUnused, int nFlags);   // +0x20
+                         CHitInfo* pInfo, float fScale);   // +0x20
     virtual void V24();
     virtual void V28(); virtual void V2c(); virtual void V30();
     virtual void V34(); virtual void V38(); virtual void V3c();
@@ -118,12 +135,12 @@ public:
 class PartAnimMesh : public PartTriMesh {
 public:
     virtual int HitCheck(const Vector& vStart, const Vector& vEnd, Vector* pHit,
-                         int nUnused, int nFlags);   // +0x20
+                         CHitInfo* pInfo, float fScale);   // +0x20
 };
 
 // The animated-mesh geometry test (name not recorded).
 int __cdecl HitCheckAnimMesh(Part* pPart, MdlNodeAnimMesh* pNode, Vector vStart,
-                             Vector vEnd, Vector* pHit, int nFlags);   // 0x00440cf0
+                             Vector vEnd, Vector* pHit, float fScale);   // 0x00440cf0
 
 class PartSkin : public PartTriMesh {
 public:
@@ -133,6 +150,8 @@ public:
 class PartAABB : public PartTriMesh {
 public:
     PartAABB();
+    virtual int HitCheck(const Vector& vStart, const Vector& vEnd, Vector* pHit,
+                         CHitInfo* pInfo, float fScale);   // +0x20
 };
 
 class PartDanglyMesh : public PartTriMesh {

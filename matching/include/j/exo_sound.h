@@ -203,8 +203,8 @@ public:
     void Pause();                                   // 0x005DC3C0
     void FadeAndStop(unsigned long nMs);            // 0x005DC480
     void SetVolume(unsigned char nVolume, int nMs, float fScale);   // 0x005DC930
-    int Play(unsigned long a, unsigned long b, unsigned long c,
-             unsigned long d, unsigned long e);     // 0x005DCA30
+    unsigned long Play(const CResRef& cResRef, unsigned short nResType,
+                       int bVoice, int bMusic, int nUnused); // 0x005DCA30
     void SetPriorityGroup(unsigned char nGroup);    // 0x005DCD50
     void Resume();                                  // 0x005DCDB0
     int GetPlayFailed();                            // 0x0063E7F0
@@ -257,8 +257,8 @@ public:
 
     int IsPlaying();
     int GetPlayFailed();
-    int Play(unsigned long a, unsigned long b, unsigned long c,
-             unsigned long d, unsigned long e);
+    int Play(const CResRef& cResRef, unsigned short nResType,
+             int bVoice, int bMusic, int nUnused);
     void Pause();
     void Resume();
     void SetLooping(int bLooping);

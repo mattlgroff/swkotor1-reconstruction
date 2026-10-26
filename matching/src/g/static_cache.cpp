@@ -69,13 +69,16 @@ public:
 
 extern int g_bBlackFog;                         // 0x008305e0
 
-// Scene virtuals; 0x0044f3a0-0x0044f3c0, 0x0044f780, 0x0044fd40 and
+// Scene virtuals; 0x0044f3a0-0x0044f3c0, 0x0044f780, 0x0044f800,
+// 0x0044f810, 0x0044f8c0, 0x0044fc80, 0x0044fca0, 0x0044fd40 and
 // 0x0044fd50 are missing from functions.csv.
 class Scene {
 public:
     char pad00[0x84];
     WindManager* m_pWind;                       // +0x84
-    char pad88[0xda - 0x88];
+    char pad88[0xd4 - 0x88];
+    int m_nCurrentRoom;                         // +0xd4
+    short m_bIgnoreVisibilityGraph;             // +0xd8
     unsigned char m_bAnimating;                 // +0xda
 
     float GetObjectScale(Gob* pGob);            // +0x14
@@ -84,7 +87,15 @@ public:
     void SetBlindLights(int b);                 // +0x68
     unsigned char IsAnimating();                // +0xa8
     Vector GetWindVector(Vector vPosition, float fScale);  // +0xd0
+    int ReplaceTileTexture(char* szOld, char* szNew, int n);   // +0x30
+    void DeleteTile(Vector* pPosition);         // +0x34
+    void SetCurrentRoom(int nRoom);             // +0x80
+    int GetIgnoreVisibilityGraph();             // +0x84
+    void DisableVisibilityGraph();              // +0x8c
 };
+
+int AurTextureReplaceTileReferences(Scene* pScene, char* szOld, char* szNew, int n);  // 0x004237e0
+void SceneBSPRemoveTileData(Scene* pScene, Vector* pPosition);    // 0x0046d2f0
 
 // FUNCTION: SWKOTOR 0x0044f3a0
 void Scene::EnableAnimations()
@@ -108,6 +119,36 @@ unsigned char Scene::IsAnimating()
 Vector Scene::GetWindVector(Vector vPosition, float fScale)
 {
     return m_pWind->GetWind(vPosition, fScale);
+}
+
+// FUNCTION: SWKOTOR 0x0044f800
+void Scene::DisableVisibilityGraph()
+{
+    m_bIgnoreVisibilityGraph = 1;
+}
+
+// FUNCTION: SWKOTOR 0x0044f810
+int Scene::GetIgnoreVisibilityGraph()
+{
+    return m_bIgnoreVisibilityGraph;
+}
+
+// FUNCTION: SWKOTOR 0x0044f8c0
+void Scene::SetCurrentRoom(int nRoom)
+{
+    m_nCurrentRoom = nRoom;
+}
+
+// FUNCTION: SWKOTOR 0x0044fc80
+int Scene::ReplaceTileTexture(char* szOld, char* szNew, int n)
+{
+    return AurTextureReplaceTileReferences(this, szOld, szNew, n);
+}
+
+// FUNCTION: SWKOTOR 0x0044fca0
+void Scene::DeleteTile(Vector* pPosition)
+{
+    SceneBSPRemoveTileData(this, pPosition);
 }
 
 // FUNCTION: SWKOTOR 0x0044fd40

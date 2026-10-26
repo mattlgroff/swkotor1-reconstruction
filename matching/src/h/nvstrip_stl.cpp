@@ -1,3 +1,7 @@
+// FUNCTION: SWKOTOR 0x0047CE00 SYMBOL: ?what@runtime_error@std@@UBEPBDXZ
+// FUNCTION: SWKOTOR 0x0047DA80 SYMBOL: ??0out_of_range@std@@QAE@ABV01@@Z
+// FUNCTION: SWKOTOR 0x0047DDC0 SYMBOL: ?_Buy@?$vector@GV?$allocator@G@std@@@std@@IAE_NI@Z
+// FUNCTION: SWKOTOR 0x0047E620 SYMBOL: ??0?$vector@PAVNvStripInfo@@V?$allocator@PAVNvStripInfo@@@std@@@std@@QAE@XZ
 // the remaining VC7 Dinkumware STL instances emitted next to
 // NvTriStrip (0x0047BAB0 .. 0x0047D7B0); worker e's nvstrip_stl.cpp has the
 // rest. The bodies come from the stock <vector>, <set>, <xstring> and

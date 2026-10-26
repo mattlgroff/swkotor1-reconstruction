@@ -76,7 +76,7 @@ void CSWGuiOptionsGraphics::OnResolution(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        CSWGuiOptionsResolution* pPanel = new CSWGuiOptionsResolution(m_pManager);
+        CSWGuiOptionsResolution* pPanel = new CSWGuiOptionsResolution(GetManager());
         pPanel->CenterPanel();
         m_pManager->AddPanel(pPanel, 1, 1);
     }
@@ -125,14 +125,11 @@ void CSWGuiOptionsGraphicsAdvanced::OnAntiAliasLeft(CSWGuiControl* pControl)
         m_nAntiAlias = 4;
         if (AurTestAntiAliasingMode(4)) found = 1;
     }
-    if (m_nAntiAlias >= 4) {
-        if (!found) {
-            m_nAntiAlias = 2;
-            if (AurTestAntiAliasingMode(2)) goto updateText;
-            m_nAntiAlias = 0;
-        }
-    } else if (!found) m_nAntiAlias = 0;
-updateText:
+    if (m_nAntiAlias >= 4 && !found) {
+        m_nAntiAlias = 2;
+        if (AurTestAntiAliasingMode(2)) found = 1;
+    }
+    if (!found) m_nAntiAlias = 0;
     SetAntiAliasText();
     m_pManager->PlayGuiSound(1);
 }

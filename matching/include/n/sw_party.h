@@ -8,7 +8,13 @@ class Vector {
 public:
     float x, y, z;
 
+#ifdef N_SW_PARTY_ZERO_VECTOR
+    // The party constructor's translation unit sees a zeroing default
+    // constructor (member and array construction in 0x00636170).
+    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
+#else
     Vector() {}
+#endif
     Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
     Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
     Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
@@ -20,6 +26,7 @@ class Quaternion {
 public:
     float w, x, y, z;
 
+    Quaternion() { z = 0.0f; y = 0.0f; x = 0.0f; w = 1.0f; }
     Quaternion(Vector vAxis, float fAngle);         // 0x004AC960
 };
 
@@ -124,12 +131,13 @@ public:
 
 extern CAppManager* g_pAppManager;                    // 0x007A39FC
 
-// One 0x88-byte party slot, at party +0x24.
+// One 0x88-byte party slot, at party +0x24 (CSWPartyMemberData).
 class CSWPartyMember {
 public:
     unsigned long m_oid;                              // +0x00
     int m_nFollowState;                               // +0x04
-    char pad_0x8[0x18 - 0x8];
+    float m_fFollowDistance;                          // +0x08, descriptive
+    Vector m_v0C;                                     // +0x0C
     Vector m_vPathPoint;                              // +0x18
     int m_nPathIndex;                                 // +0x24
     Vector m_vFollowPoint;                            // +0x28
@@ -137,7 +145,22 @@ public:
     Vector m_vFormationOffset;                        // +0x38
     char pad_0x44[0x4c - 0x44];
     Vector m_vDirection;                              // +0x4C
-    char pad_0x58[0x88 - 0x58];
+    char pad_0x58[0x5c - 0x58];
+    Vector m_v5C;                                     // +0x5C
+    char pad_0x68[0x70 - 0x68];
+    int m_n70;                                        // +0x70
+    Vector m_v74;                                     // +0x74
+    char pad_0x80[0x88 - 0x80];
+
+    CSWPartyMember()
+    {
+        Reset();
+        m_nPathIndex = 0;
+        m_oid = 0x7f000000;
+        m_fFollowDistance = 1.0f;
+        m_n70 = 0;
+    }
+    void Reset();                                     // 0x004EAE80 (CSWPartyMemberData)
 };
 
 class CSWParty;
@@ -176,9 +199,12 @@ public:
 class CSWParty {
 public:
     int m_nCount;                                     // +0x000
-    char pad_0x4[0x18 - 0x4];
+    int m_n04;                                        // +0x004
+    int m_n08;                                        // +0x008
+    Vector m_v0C;                                     // +0x00C
     int m_bChanged;                                   // +0x018
-    char pad_0x1c[0x24 - 0x1c];
+    int m_n1C;                                        // +0x01C
+    float m_f20;                                      // +0x020
     CSWPartyMember m_aMembers[3];                     // +0x024
     int m_nFormation;                                 // +0x1BC
     float m_fFollowDistance;                          // +0x1C0
@@ -188,7 +214,11 @@ public:
     float m_aFormationDistances[3];                   // +0x234
     Vector m_aCustomFormations[3][3];                 // +0x240
     unsigned char m_abCustomFormations[3];            // +0x2AC
-    char pad_0x2af[0x2dc - 0x2af];
+    char pad_0x2af[0x2b0 - 0x2af];
+    Vector m_v2B0;                                    // +0x2B0
+    int m_n2BC;                                       // +0x2BC
+    Vector m_v2C0;                                    // +0x2C0
+    Quaternion m_q2CC;                                // +0x2CC
     CSWPartyFollowDataArray m_cFollow;                // +0x2DC
     char pad_0x1288[0x1290 - 0x1288];
 

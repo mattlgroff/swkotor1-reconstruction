@@ -123,11 +123,11 @@ int CExoStreamingSoundSource::GetPlayFailed()
 }
 
 // FUNCTION: SWKOTOR 0x005D5B10
-int CExoStreamingSoundSource::Play(unsigned long a, unsigned long b, unsigned long c,
-                                   unsigned long d, unsigned long e)
+int CExoStreamingSoundSource::Play(const CResRef& cResRef, unsigned short nResType,
+                                   int bVoice, int bMusic, int nUnused)
 {
     if (m_pInternal)
-        return m_pInternal->Play(a, b, c, d, e);
+        return m_pInternal->Play(cResRef, nResType, bVoice, bMusic, nUnused);
     return 0;
 }
 

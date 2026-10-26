@@ -78,11 +78,28 @@ public:
     virtual ~CAurCamera();                      // 0x0045C240
 };
 
+struct Quaternion { float w, x, y, z; };
+struct Vector { float x, y, z; };
+class CHitInfo;
+class GobAttachment;
+class Part;
+class Scene;
+
 class Gob {
 public:
     Gob(char* szName);                          // 0x00449440
     virtual ~Gob();                             // 0x0044B2F0
-    char pad_0x4[0x184];
+    Gob* IntersectLine(Vector start, Vector end, Vector* hit, CHitInfo* info); // 0x0043EB80
+    GobAttachment* GetAttachment(int index); // 0x0043F130
+    void SetAttachment(GobAttachment* p); // 0x0043F1D0
+    void SetAttachmentLight(int n); // 0x0043F5A0
+    GobAttachment* AttachToPart(Gob* gob, Part* part, int n); // 0x004439A0
+    GobAttachment* AttachToObject(Gob* gob, char* name, int n); // 0x00443820
+    void SetScene(Scene* scene); // 0x0043F200
+    char pad_0x4[0x74];
+    Vector m_vPosition;
+    Quaternion m_qOrientation;                  // +0x84
+    char pad_0x94[0xF4];
     CameraTarget* m_pTarget;                    // +0x188
     char pad_0x18c[0x40];
 };
@@ -115,6 +132,28 @@ public:
     Camera(char* szName);                       // 0x0045D800
     virtual ~Camera();                          // 0x0045C330
     void BeginViewAngleAnimation(float fEnd, float fDuration, int n);
+    Vector SetPosition(Vector p);
+    Vector GetPosition();
+    Gob* AsAurObject();
+    GobAttachment* GetAttachment(int index);
+    void SetAttachment(GobAttachment* p);
+    void SetAttachmentLight(int n);
+    GobAttachment* AttachToPart(Gob* gob, Part* part, int n);
+    void EndViewAngleAnimation(bool bReset);
+    void SetViewPort(int x, int y, int width, int height);
+    Quaternion SetOrientation(Quaternion q);
+    Quaternion GetOrientation();
+    int GetViewPortHeight();
+    void GetClipDist(float* pNear, float* pFar);
+    float GetViewAngle();
+    Plane GetViewVolume(int index);
+    void SetFadePlanes(const Plane* a, const Plane* b);
+    void SetClipDist(float nearClip, float farClip);
+    void SetViewAngle(float angle);
+    int AttachToScene(Scene* scene);
+    GobAttachment* AttachToObject(Gob* gob, char* name, int n);
+    int ViewVolumeSet();
+    Gob* HitCheck(Vector start, Vector end, Vector* hit);
     float GetTarget3C();
     float GetTarget44();
     float GetTarget30();
@@ -133,6 +172,130 @@ void Camera::BeginViewAngleAnimation(float fEnd, float fDuration, int n)
     m_pAnimation->m_fEnd = fEnd;
     m_pAnimation->m_fStart = m_fViewAngle;
     m_pAnimation->m_n10 = n;
+}
+
+// FUNCTION: SWKOTOR 0x0045BF60
+void Camera::EndViewAngleAnimation(bool bReset)
+{
+    delete m_pAnimation;
+    m_pAnimation = 0;
+    if (bReset) m_fViewAngle = 45.0f;
+}
+
+// FUNCTION: SWKOTOR 0x0045BFA0
+void Camera::SetViewPort(int x, int y, int width, int height)
+{
+    m_n1E4 = x;
+    m_n1E8 = y;
+    if (width <= 0) width = 1;
+    m_n1EC = width;
+    if (height <= 0) height = 1;
+    m_n1F0 = height;
+}
+
+// FUNCTION: SWKOTOR 0x0045C060
+Quaternion Camera::SetOrientation(Quaternion q)
+{
+    m_qOrientation = q;
+    return q;
+}
+
+// FUNCTION: SWKOTOR 0x0045C470
+Quaternion Camera::GetOrientation()
+{
+    return m_qOrientation;
+}
+
+// FUNCTION: SWKOTOR 0x0045C4A0
+int Camera::GetViewPortHeight()
+{
+    return m_n1F0;
+}
+
+// FUNCTION: SWKOTOR 0x0045C4B0
+void Camera::GetClipDist(float* pNear, float* pFar)
+{
+    *pNear = m_fNear;
+    *pFar = m_fFar;
+}
+
+// FUNCTION: SWKOTOR 0x0045BFE0
+Gob* Camera::HitCheck(Vector start, Vector end, Vector* hit)
+{
+    return Gob::IntersectLine(start, end, hit, 0);
+}
+
+// FUNCTION: SWKOTOR 0x0045C4D0
+float Camera::GetViewAngle()
+{
+    return m_fViewAngle;
+}
+
+// FUNCTION: SWKOTOR 0x0045D760
+Plane Camera::GetViewVolume(int index)
+{
+    return m_lPlanes.element[index];
+}
+
+// FUNCTION: SWKOTOR 0x0045C4E0
+void Camera::SetFadePlanes(const Plane* a, const Plane* b)
+{
+    m_p214 = *a;
+    m_p224 = *b;
+}
+
+// FUNCTION: SWKOTOR 0x0045C530
+int Camera::ViewVolumeSet()
+{
+    return m_n1F4;
+}
+
+// FUNCTION: SWKOTOR 0x0045C030
+Vector Camera::SetPosition(Vector p) { m_vPosition = p; return p; }
+
+// FUNCTION: SWKOTOR 0x0045C450
+Vector Camera::GetPosition() { return m_vPosition; }
+
+// FUNCTION: SWKOTOR 0x0045C440
+Gob* Camera::AsAurObject() { return this; }
+
+// FUNCTION: SWKOTOR 0x0045C160
+void Camera::SetAttachmentLight(int n) { Gob::SetAttachmentLight(n); }
+
+// FUNCTION: SWKOTOR 0x0045C210
+GobAttachment* Camera::AttachToPart(Gob* gob, Part* part, int n)
+{ return Gob::AttachToPart(gob, part, n); }
+
+// FUNCTION: SWKOTOR 0x0045C220
+GobAttachment* Camera::GetAttachment(int index) { return Gob::GetAttachment(index); }
+
+// FUNCTION: SWKOTOR 0x0045C230
+void Camera::SetAttachment(GobAttachment* p) { Gob::SetAttachment(p); }
+
+// FUNCTION: SWKOTOR 0x0045BEC0
+void Camera::SetClipDist(float nearClip, float farClip)
+{
+    m_fNear = nearClip;
+    m_fFar = farClip;
+}
+
+// FUNCTION: SWKOTOR 0x0045BEE0
+void Camera::SetViewAngle(float angle)
+{
+    m_fViewAngle = angle;
+}
+
+// FUNCTION: SWKOTOR 0x0045C0A0
+int Camera::AttachToScene(Scene* scene)
+{
+    Gob::SetScene(scene);
+    return 1;
+}
+
+// FUNCTION: SWKOTOR 0x0045C200
+GobAttachment* Camera::AttachToObject(Gob* gob, char* name, int n)
+{
+    return Gob::AttachToObject(gob, name, n);
 }
 
 // FUNCTION: SWKOTOR 0x0045C170
@@ -163,6 +326,8 @@ float Camera::GetTarget30()
 CAurCamera::~CAurCamera()
 {
 }
+
+// FUNCTION: SWKOTOR 0x0045C250 SYMBOL: ??_GCAurCamera@@UAEPAXI@Z
 
 // FUNCTION: SWKOTOR 0x0045C300
 void _gluPerspective(double fovy, double aspect, double zNear, double zFar)

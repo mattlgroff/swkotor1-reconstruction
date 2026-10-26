@@ -11,6 +11,8 @@ public:
 
     Vector() {}
     Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
+
+    Vector& operator*=(float f);                        // 0x004a97a0
 };
 
 class Quaternion {
@@ -28,6 +30,10 @@ public:
 
 class Part;
 class Scene;
+class CHitInfo;
+class Gob;
+
+typedef void(__cdecl* GobCallback)(Gob* pGob, void* pData, Part* pPart);
 class Model;
 class MdlNode;
 
@@ -41,10 +47,13 @@ public:
     virtual int GetId();                                // +0x10
 };
 
+class Gob;
+
 // Part / scene virtuals called from the Gob accessors.
 class Part {
 public:
-    virtual void v00(); virtual void v04(); virtual void v08();
+    virtual void v00(); virtual void v04();
+    virtual void GetLocalTransform(Vector* pPos, Quaternion* pOrient);   // +0x08
     virtual void GetWorldTransform(Vector* pPos, Quaternion* pOrient);   // +0x0c
     virtual void v10(); virtual void v14(); virtual void v18();
     virtual int Intersect(Vector vStart, Vector vEnd, Vector* pHit, void* pInfo,
@@ -59,13 +68,15 @@ public:
     virtual void GetBoundingBox(Vector* pMin, Vector* pMax, float fScale);  // +0x74
     virtual void GetBoundingSphere(Vector* pCenter, float* pRadius);       // +0x78
 
-    char pad04[0x08 - 0x04];
+    MdlNode* m_pNode;                                   // +0x04
     Vector m_vPosition;                                 // +0x08
     Quaternion m_qOrientation;                          // +0x14
-    char pad24[0x30 - 0x24];
+    float m_fScale;                                     // +0x24
+    char pad28[0x30 - 0x28];
     CExoArrayList<Part*> m_lChildren;                   // +0x30
     Part* m_pParent;                                    // +0x3c
-    char pad40[0x48 - 0x40];
+    Gob* m_pGob;                                        // +0x40
+    char pad44[0x48 - 0x44];
     int m_bDirty;                                       // +0x48
 };
 
@@ -94,24 +105,47 @@ public:
     char m_szName[0x20];                                // +0x08
     MdlNode* m_pRoot;                                   // +0x28
     char pad2c[0x50 - 0x2c];
-    unsigned char m_nFlags;                             // +0x50
-    char pad51[0x54 - 0x51];
+    union {
+        unsigned char m_nFlags;                         // +0x50
+        struct {
+            unsigned short m_bb0 : 1;
+            unsigned short m_bb1 : 1;
+            unsigned short m_bb2 : 1;
+            unsigned short m_bUseAlphaDC : 1;           // bit 3
+            unsigned short m_bb4 : 1;
+            unsigned short m_bb5 : 1;
+            unsigned short m_bb6 : 1;
+            unsigned short m_bb7 : 1;
+            unsigned short m_bNoHitCheck : 1;           // bit 8
+        };
+    };
+    char pad52[0x54 - 0x52];
     int m_nRefCount;                                    // +0x54
+
+    unsigned char GetUseAlphaDC() { return m_bUseAlphaDC; }
+    unsigned char GetNoHitCheck() { return m_bNoHitCheck; }
 };
 
 class Gob {
 public:
+    Gob(char* szName);                                  // 0x00449440
     virtual ~Gob();                                     // +0x000
     virtual void v004();
     virtual char* GetName();                            // +0x008
     virtual char* GetModelName();                       // +0x00c
-    virtual void v010(); virtual void v014(); virtual void v018(); virtual void v01c();
-    virtual void v020(); virtual void v024(); virtual void v028(); virtual void v02c();
+    virtual void v010();
+    virtual void Update014(int n);                      // +0x014
+    virtual void v018(); virtual void v01c();
+    virtual void v020(); virtual void v024();
+    virtual void AddCallback(GobCallback pfnCallback, char* szEvent, void* pData,
+                             float fTime, int nFlags);  // +0x028
+    virtual void v02c();
     virtual void v030(); virtual void v034(); virtual void v038(); virtual void v03c();
     virtual int SetCanDownSample(unsigned char b);       // +0x040
     virtual void v044(); virtual void v048();
     virtual int SetSceneAndReport(Scene* pScene);       // +0x04c
-    virtual void v050(); virtual void v054();
+    virtual GobAttachment* AttachToObject(Gob* pObject, char* szPart, int nMode);  // +0x050
+    virtual GobAttachment* AttachToPart(Gob* pObject, Part* pPart, int nMode);  // +0x054
     virtual void SetAttachment(GobAttachment* p);       // +0x058
     virtual Vector SetPosition(Vector v);               // +0x05c
     virtual Quaternion SetOrientation(Quaternion q);    // +0x060
@@ -124,10 +158,11 @@ public:
     virtual void SetUserData2(int n);                   // +0x07c
     virtual void CopyUserData(Gob* pFrom);              // +0x080
     virtual Gob* IntersectSegment(Vector vStart, Vector vEnd, Vector* pHit);  // +0x084
-    virtual void v088();
-    virtual Gob* IntersectLine(Vector vStart, Vector vEnd, Vector* pHit, void* pInfo);             // +0x08c
+    virtual Gob* HitCheckPart(Part* pPart, Vector vStart, Vector vEnd, Vector* pHit,
+                              CHitInfo* pInfo);         // +0x088
+    virtual Gob* IntersectLine(Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pInfo);         // +0x08c
     virtual void SetNoClip(unsigned char b);            // +0x090
-    virtual int LookAtPart(char* szName, Vector v1, Vector v2, int n);  // +0x094
+    virtual int SetPartWorldTransform(char* szName, Vector vPos, Quaternion qOrient);  // +0x094
     virtual int GetPartWorldTransform(char* szName, Vector* pPos, Quaternion* pOrient);  // +0x098
     virtual int SetPartTransform(char* szName, Vector v, Quaternion q);  // +0x09c
     virtual int GetPartTransform(char* szName, Vector* pPos, Quaternion* pOrient);  // +0x0a0
@@ -194,10 +229,13 @@ public:
     int m_n34;                                          // +0x34
     char m_szName[0x20];                                // +0x38
     Model* m_pModel;                                    // +0x58
-    char pad5c[0x68 - 0x5c];
+    Model* m_pModelX;                                   // +0x5c (name + "_x")
+    Model* m_pModelZ;                                   // +0x60 (name + "_z")
+    char pad64[0x68 - 0x64];
     Scene* m_pScene;                                    // +0x68
     Part* m_pRoot;                                      // +0x6c
-    char pad70[0x78 - 0x70];
+    Part* m_pRootX;                                     // +0x70
+    Part* m_pRootZ;                                     // +0x74
     Vector m_vPosition;                                 // +0x78
     Quaternion m_qOrientation;                          // +0x84
     Vector m_vVelocity;                                 // +0x94
@@ -210,8 +248,11 @@ public:
     short m_bSelfIllum;                                 // +0xc8
     char padCA[0xcc - 0xca];
     AurColor m_cColorShift;                             // +0xcc
-    int m_nColorShiftMode;                              // +0xd8
-    char padDC[0xe0 - 0xdc];
+    union {
+        int m_nColorShiftMode;                          // +0xd8
+        float m_fAlphaD8;                               // +0xd8 (hit-check fade test)
+    };
+    float m_fAlphaDC;                                   // +0xdc
     AurColor m_cIllumination;                           // +0xe0
     CExoArrayList<Model*> m_lAttachedModels;            // +0xec
     CExoArrayList<Part*> m_lAttachedParts;              // +0xf8
@@ -230,7 +271,9 @@ public:
     int m_nFog160;                                      // +0x160
     char pad164[0x167 - 0x164];
     unsigned char m_bDirty;                             // +0x167
-    char pad168[0x17c - 0x168];
+    char pad168[0x170 - 0x168];
+    void* m_pTileData;                                  // +0x170
+    char pad174[0x17c - 0x174];
     unsigned char m_bHidden;                            // +0x17c
     unsigned char m_bNoClip;                            // +0x17d
     unsigned char m_b17e;                               // +0x17e
@@ -244,9 +287,11 @@ public:
     float m_fScale;                                     // +0x1b4
     float m_fBaseScale;                                 // +0x1b8
     CExoArrayList<Gob*> m_lChildren;                    // +0x1bc
+    int m_n1c8;                                         // +0x1c8 (sizeof 0x1cc)
 
     void SetScene(Scene* pScene);                       // 0x0043f200
     int EnumParts(Part* pRoot, int a, int b);           // 0x004474d0
+    void SetProcessFlag();                              // 0x0043f270
 };
 
 void __cdecl PartSetFog(Part* pRoot, int bOn);          // 0x00440550

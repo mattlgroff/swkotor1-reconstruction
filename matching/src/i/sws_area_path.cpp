@@ -307,26 +307,29 @@ int CSWSArea::CountAreaTransitionTriggers(unsigned long* pList, int nExcluded,
 }
 
 // FUNCTION: SWKOTOR 0x004BC0E0
-int CSWSArea::SetHitInfoForCreature(Vector* pFrom, Vector* pTo, Vector* pCenter, float fRadius,
+int CSWSArea::SetHitInfoForCreature(const Vector& vCenter, float fRadius, const Vector& vFrom, const Vector& vTo,
                                     CWalkHitInfo* pHit)
 {
     if (pHit == NULL) {
         return 1;
     }
+    const Vector* pFrom = &vFrom;
+    const Vector* pTo = &vTo;
+    const Vector* pCenter = &vCenter;
     Vector vHit1(0.0f, 0.0f, 0.0f);
     Vector vHit2(0.0f, 0.0f, 0.0f);
-    int nHits = IntersectCircle2d(*pFrom, *pTo, *pCenter, fRadius, &vHit1, &vHit2, 1);
+    int nHits = IntersectCircle2d(*pCenter, fRadius, *pFrom, *pTo, &vHit1, &vHit2, 1);
     if (nHits == 2) {
-        float fDist1 = (vHit1 - *pCenter).MagnitudeSquared();
-        if ((vHit2 - *pCenter).MagnitudeSquared() < fDist1) {
-            Vector vDir = NormalizeVector(vHit2 - *pFrom);
+        float fDist1 = (vHit1 - *pFrom).MagnitudeSquared();
+        if ((vHit2 - *pFrom).MagnitudeSquared() < fDist1) {
+            Vector vDir = NormalizeVector(vHit2 - *pCenter);
             Vector vPerp(-vDir.y, vDir.x, vDir.z);
             Vector vLeft = vHit2 + vPerp;
             vHit1 = vHit2 - vPerp;
             pHit->Initialize(1, vHit2, vDir, vHit1, vLeft, 1, vDir);
         }
         else {
-            Vector vDir = NormalizeVector(vHit1 - *pFrom);
+            Vector vDir = NormalizeVector(vHit1 - *pCenter);
             Vector vPerp(-vDir.y, vDir.x, vDir.z);
             Vector vLeft = vHit1 + vPerp;
             vHit2 = vHit1 - vPerp;
@@ -334,7 +337,7 @@ int CSWSArea::SetHitInfoForCreature(Vector* pFrom, Vector* pTo, Vector* pCenter,
         }
     }
     else if (nHits == 1) {
-        Vector vDir = NormalizeVector(vHit1 - *pFrom);
+        Vector vDir = NormalizeVector(vHit1 - *pCenter);
         Vector vPerp(-vDir.y, vDir.x, vDir.z);
         Vector vLeft = vHit1 + vPerp;
         vHit2 = vHit1 - vPerp;

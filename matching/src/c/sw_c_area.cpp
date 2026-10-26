@@ -102,11 +102,3 @@ void CSWCArea::SetAsDay()
         }
     }
 }
-
-// Defined only to emit the vtable and its scalar deleting destructor.
-CSWCArea::CSWCArea()
-{
-}
-
-// FUNCTION: SWKOTOR 0x0060A2E0 SYMBOL: ??_GCSWCArea@@UAEPAXI@Z
-// CSWCArea::`scalar deleting destructor' (compiler generated).

@@ -27,17 +27,19 @@ public:
     unsigned long m_oidLastUnlocked;                        // 0x318 (name guessed)
     unsigned long m_oidLastOpenedBy;                        // 0x31c (name guessed)
     unsigned long m_oidLastClosedBy;                        // 0x320 (name guessed)
-    char pad_0x324[0x328 - 0x324];
+    unsigned long m_oidEnteringObject;                      // 0x324 (name guessed)
     unsigned long m_oidLastDisarmed;                        // 0x328 (name guessed)
 };
 
 class CSWSPlaceable : public CSWSObject {
 public:
-    char pad_0xf4[0x350 - 0xf4];
+    char pad_0xf4[0x340 - 0xf4];
+    int m_bHostile;                                         // 0x340 (name guessed)
+    char pad_0x344[0x350 - 0x344];
     unsigned long m_oidLastOpenedBy;                        // 0x350 (name guessed)
     unsigned long m_oidLastClosedBy;                        // 0x354 (name guessed)
     unsigned long m_oidLastUsedBy;                          // 0x358 (name guessed)
-    char pad_0x35c[0x360 - 0x35c];
+    unsigned long m_oidEnteringObject;                      // 0x35c (name guessed)
     unsigned long m_oidLastDisarmed;                        // 0x360 (name guessed)
     unsigned long m_oidLastLocked;                          // 0x364 (name guessed)
     unsigned long m_oidLastUnlocked;                        // 0x368 (name guessed)
@@ -46,7 +48,8 @@ public:
 // Vtable slot 0x40 (object type 7).
 class CSWSAreaOfEffectObject : public CSWSObject {
 public:
-    char pad_0xf4[0x2a0 - 0xf4];
+    char pad_0xf4[0x29c - 0xf4];
+    unsigned long m_oidEnteringObject;                      // 0x29c (name guessed)
     unsigned long m_oidExitingObject;                       // 0x2a0 (name guessed)
     unsigned long m_oidLastDisarmed;                        // 0x2a4 (name guessed)
 };
@@ -56,13 +59,15 @@ class CSWSTrigger : public CSWSObject {
 public:
     char pad_0xf4[0x248 - 0xf4];
     unsigned long m_oidCreator;                             // 0x248
-    char pad_0x24c[0x254 - 0x24c];
+    char pad_0x24c[0x250 - 0x24c];
+    unsigned long m_oidEnteringObject;                      // 0x250 (name guessed)
     unsigned long m_oidExitingObject;                       // 0x254 (name guessed)
 };
 
 // Vtable slot 0x5c (object type 0xd).
 struct CGameObject5CExitView {
-    char pad_0x0[0x2e4];
+    char pad_0x0[0x2e0];
+    unsigned long m_oidEnteringObject;                      // 0x2e0 (name guessed)
     unsigned long m_oidExitingObject;                       // 0x2e4 (name guessed)
 };
 
@@ -341,7 +346,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastHostileActor(int nCommandId,
                     pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidResult);
                 }
             }
-            if (!pCreature || pCreature->GetIsInConversation() == 1 || pCreature->GetIsPaused() == 1 ||
+            if (!pCreature || pCreature->GetObjectState94() == 1 || pCreature->GetIsPaused() == 1 ||
                 pCreature->GetDeadTemp()) {
                 ((CSWSCreature*)pObject)->SetLastHostileActor(INVALID_OBJECT_ID, 1);
                 oidResult = INVALID_OBJECT_ID;
@@ -583,4 +588,128 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLoadFromSaveGame(int nCommandId,
 {
     return g_pVirtualMachine->StackPushInteger(g_pAppManager->GetServerExoApp()->GetLoadFromSaveGame()) ?
         0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+}
+
+// GetEnteringObject and GetClickingObject share this handler.
+// FUNCTION: SWKOTOR 0x00537EE0
+int CSWVirtualMachineCommands::ExecuteCommandGetEnteringObject(int nCommandId, int nParameters)
+{
+    unsigned long oidResult = OBJECT_INVALID_ID;
+    if (m_bValidObjectRunScript == 1) {
+        CGameObject* pObject = g_pAppManager->GetServerExoApp()->GetGameObject(m_oidObjectRunScript);
+        if (pObject) {
+            switch (pObject->m_nObjectType) {
+            case 0xa:
+                {
+                    CSWSDoor* p = pObject->AsSWSDoor();
+                    if (p) {
+                        oidResult = p->m_oidEnteringObject;
+                    }
+                }
+                break;
+            case 9:
+                {
+                    CSWSPlaceable* p = pObject->AsSWSPlaceable();
+                    if (p) {
+                        oidResult = p->m_oidEnteringObject;
+                    }
+                }
+                break;
+            case 7:
+                {
+                    CSWSAreaOfEffectObject* p = pObject->AsSWSAreaOfEffectObject();
+                    if (p) {
+                        oidResult = p->m_oidEnteringObject;
+                    }
+                }
+                break;
+            case 0xb:
+                {
+                    CSWSTrigger* p = pObject->AsSWSTrigger();
+                    if (p) {
+                        oidResult = p->m_oidEnteringObject;
+                    }
+                }
+                break;
+            case 3:
+                {
+                    CSWSModule* p = pObject->AsSWSModule();
+                    if (p) {
+                        oidResult = p->m_oidEnteringObject;
+                    }
+                }
+                break;
+            case 4:
+                {
+                    CSWSArea* p = pObject->AsSWSArea();
+                    if (p) {
+                        oidResult = p->m_oidEnteringObject;
+                    }
+                }
+                break;
+            case 0xd:
+                {
+                    void* p = pObject->AsSWS5C();
+                    if (p) {
+                        oidResult = ((CGameObject5CExitView*)p)->m_oidEnteringObject;
+                    }
+                }
+                break;
+            }
+        }
+    }
+    return g_pVirtualMachine->StackPushObject(oidResult) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+}
+
+// GetIsEnemy, GetIsFriend and GetIsNeutral share this handler.
+// NONMATCH: block placement only; the original keeps the pop-failure block
+// after the first pop and the optional second pop jumps back to it.
+// FUNCTION: SWKOTOR 0x00537CE0
+int CSWVirtualMachineCommands::ExecuteCommandGetIsEnemy(int nCommandId, int nParameters)
+{
+    int bResult = 0;
+    unsigned long oidSource = 0x7f000000;
+    unsigned long oidTarget = 0x7f000000;
+    if (!g_pVirtualMachine->StackPopObject(&oidTarget)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (m_bValidObjectRunScript == 1) {
+        oidSource = m_oidObjectRunScript;
+    }
+    if (nParameters > 1 && !g_pVirtualMachine->StackPopObject(&oidSource)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    CGameObject* pTarget;
+    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidTarget, &pTarget) == GAME_OBJECT_VALID) {
+        CSWSObject* pObject = pTarget->AsSWSObject();
+        if (pObject) {
+            switch (nCommandId) {
+            case 0xeb:
+                if (pTarget->AsSWSPlaceable()) {
+                    if (pTarget->AsSWSPlaceable()->m_bHostile) {
+                        bResult = pObject->GetReputation(oidSource, 0) <= 10;
+                    } else {
+                        bResult = 0;
+                    }
+                } else {
+                    bResult = pObject->GetReputation(oidSource, 0) <= 10;
+                }
+                break;
+            case 0xec:
+                bResult = pObject->GetReputation(oidSource, 0) >= 90;
+                break;
+            case 0xed:
+                {
+                    int nReputation = pObject->GetReputation(oidSource, 0);
+                    if (nReputation > 10 && nReputation < 90) {
+                        bResult = 1;
+                    } else {
+                        bResult = 0;
+                    }
+                }
+                break;
+            }
+        }
+    }
+    return g_pVirtualMachine->StackPushInteger(bResult) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
 }

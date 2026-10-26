@@ -244,3 +244,6 @@ void Gob::SetHidden() { m_bHidden = 1; }
 
 // FUNCTION: SWKOTOR 0x00449b00
 void Gob::ClearHidden() { m_bHidden = 0; }
+
+// FUNCTION: SWKOTOR 0x0043f270
+void Gob::SetProcessFlag() { m_bDirty = 1; }

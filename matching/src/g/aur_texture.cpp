@@ -330,7 +330,7 @@ int AurHasMultiTexture();                        // 0x0045f710
 void MakeNormalizationCubeMap(int nSize);        // 0x00425ea0
 float AurImageAlphaMean(void* pImage, int nWidth, int nHeight, int nBpp);  // 0x0045e790
 void BuildNormalMap(void* pDst, int nWidth, int nHeight, int nOldWidth,
-                    int nOldHeight, void* pSrc, int c, int d);           // 0x004260a0
+                    int nOldHeight, float fScale, int c, unsigned char bNormalMap);           // 0x004260a0
 unsigned short AurTextureCalculateHashID(char* szName, unsigned short nCount, int* pInts);  // 0x0041f4d0
 
 // FUNCTION: SWKOTOR 0x00420c20
@@ -393,8 +393,8 @@ void AurTextureCalculateNewTexMem(CExoArrayList<CAurTextureBasic*>* pList, int* 
 }
 
 // FUNCTION: SWKOTOR 0x00420ea0
-int BuildTextureNormalMap(void* pDst, void* pSrc, int* pWidth, int* pHeight,
-                          int nUnused, int c, int d)
+int BuildTextureNormalMap(void* pDst, float fScale, int* pWidth, int* pHeight,
+                          int nUnused, int c, unsigned char bNormalMap)
 {
     int nWidth = *pWidth;
     int bBad = 0;
@@ -412,7 +412,7 @@ int BuildTextureNormalMap(void* pDst, void* pSrc, int* pWidth, int* pHeight,
     }
     if (bBad)
         return 0;
-    BuildNormalMap(pDst, *pWidth, *pHeight, nWidth, nHeight, pSrc, c, d);
+    BuildNormalMap(pDst, *pWidth, *pHeight, nWidth, nHeight, fScale, c, bNormalMap);
     return 1;
 }
 

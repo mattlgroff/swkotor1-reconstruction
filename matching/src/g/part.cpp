@@ -88,7 +88,7 @@ Part* PartTriMesh::FindNamedPart(char* szName)
 // FUNCTION: SWKOTOR 0x0043ef70
 // Not in functions.csv; the base hit test finds nothing.
 int Part::HitCheck(const Vector& vStart, const Vector& vEnd, Vector* pHit,
-                   int nUnused, int nFlags)
+                   CHitInfo* pInfo, float fScale)
 {
     return 0;
 }
@@ -96,9 +96,9 @@ int Part::HitCheck(const Vector& vStart, const Vector& vEnd, Vector* pHit,
 // FUNCTION: SWKOTOR 0x00441510
 // Not in functions.csv.
 int PartAnimMesh::HitCheck(const Vector& vStart, const Vector& vEnd, Vector* pHit,
-                           int nUnused, int nFlags)
+                           CHitInfo* pInfo, float fScale)
 {
-    return HitCheckAnimMesh(this, m_pNode->AsMdlNodeAnimMesh(), vStart, vEnd, pHit, nFlags);
+    return HitCheckAnimMesh(this, m_pNode->AsMdlNodeAnimMesh(), vStart, vEnd, pHit, fScale);
 }
 
 // FUNCTION: SWKOTOR 0x0043f5c0
@@ -106,4 +106,11 @@ int PartAnimMesh::HitCheck(const Vector& vStart, const Vector& vEnd, Vector* pHi
 Vector Part::SetPartPosition(Vector v)
 {
     return Vector(0, 0, 0);
+}
+
+// Callback for the part tree walkers: does the part carry a material?
+// FUNCTION: SWKOTOR 0x0043ee40
+int PartHasMaterial(Part* pPart)
+{
+    return pPart->m_pMaterial != 0;
 }

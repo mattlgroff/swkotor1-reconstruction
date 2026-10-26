@@ -36,6 +36,8 @@ class CSWVarTable {
 public:
     void SetLocalBoolean(int nIndex, int bValue);           // 0x0059B040 (name guessed)
     void SetLocalNumber(int nIndex, char nValue);           // 0x0059B0D0 (name guessed)
+    int GetBoolean(int nIndex);                             // 0x0059B000
+    unsigned char GetNumber(int nIndex);                    // 0x0059B0B0
 
     char pad_0x0[0x14];
 };
@@ -73,6 +75,12 @@ public:
     CSWSAreaGameObject& AsGameObject() { return *this; }
     void* GetRoom(const Vector& vPosition, int bArg);       // 0x004BB600
     void PlaySoundAtLocation(int nSound, class CScriptLocation* pLocation); // 0x00507E20 (name guessed)
+    void SetPlayerRestrictMode(int bRestrict);              // 0x00506B90
+    void SetStealthXPMax(unsigned long nMax);               // 0x00506A80
+    void SetSunFogColor(const Vector& vColor);              // 0x00506AE0 (name guessed)
+    class CSWCArea* GetClientArea();                        // 0x00506A10 (name guessed)
+    void SetStealthXPCurrent(unsigned long nCurrent);       // 0x00506AA0
+    void AwardStealthXP(unsigned long oidCreature);         // 0x00508770 (name guessed)
     void ApplyEffect(class CGameEffect* pEffect, const Vector& vPosition, const Vector& vOrientation); // 0x0050C6B0
     Vector ComputeAwayVector(const Vector& vPosition, const Vector& vAwayFrom, float fRange,
                              int nArg);                     // 0x004BDF80 (name guessed)
@@ -82,10 +90,13 @@ public:
     void RemoveObjectFromArea(unsigned long nId);           // 0x0050DC40
     void AddObjectToArea(unsigned long nId, int bArg);      // 0x0050DFD0
     void DecrementPlayersInArea();                          // 0x00508C40
+    int GetFirstObjectIdInArea(unsigned long* pOid);        // 0x005071B0
+    int GetNextObjectIdInArea(unsigned long* pOid);         // 0x005071E0
 
     char pad_0x124[0x158 - 0x124];
     CExoString m_sTag;                                      // 0x158
-    char pad_0x160[0x1d8 - 0x160];
+    char pad_0x160[0x1d4 - 0x160];
+    unsigned long m_oidEnteringObject;                      // 0x1d4 (name guessed)
     unsigned long m_oidExitingObject;                       // 0x1d8 (name guessed)
     int m_n1DC;                                             // 0x1dc (name guessed)
     char pad_0x1e0[0x1f4 - 0x1e0];
@@ -93,6 +104,11 @@ public:
     CSWSAmbientSound* m_pAmbientSound;                      // 0x208
     char pad_0x20c[0x2ac - 0x20c];
     int m_bUnescapable;                                     // 0x2ac (name guessed)
+    char pad_0x2b0[0x2b4 - 0x2b0];
+    unsigned long m_nStealthXPMax;                          // 0x2b4
+    unsigned long m_nStealthXPCurrent;                      // 0x2b8
+    unsigned long m_nStealthXPLoss;                         // 0x2bc
+    int m_bStealthXPEnabled;                                // 0x2c0
 };
 
 class CSWCCreature {
@@ -143,7 +159,25 @@ public:
 
 class CSWSFaction {
 public:
+    unsigned long GetWeakestMember(unsigned long oidSource, int bMustBeVisible);   // 0x005BEA80
+    unsigned long GetStrongestMember(unsigned long oidSource, int bMustBeVisible); // 0x005BEBC0
+    unsigned long GetMostDamagedMember(unsigned long oidSource, int bMustBeVisible); // 0x005BED00
+    unsigned long GetLeastDamagedMember(unsigned long oidSource, int bMustBeVisible); // 0x005BEE70
+    int GetGold();                                          // 0x005BEFE0
+    int GetAverageReputation(unsigned long oidSource);      // 0x005BF020
+    int GetAverageGoodEvilAlignment();                      // 0x005BF090
+    int GetAverageLevel();                                  // 0x005BF140
+    int GetAverageXP();                                     // 0x005BF1A0
+    int GetMostFrequentClass();                             // 0x005BF1F0
+    unsigned long GetWorstAC(unsigned long oidSource, int bMustBeVisible); // 0x005BF340
+    unsigned long GetBestAC(unsigned long oidSource, int bMustBeVisible);  // 0x005BF480
+    unsigned long GetLeader();                              // 0x005BF5C0
+    unsigned long GetFactionMember(int nIndex, unsigned long bPCOnly); // 0x005BF6E0
     void AddMember(unsigned long oidMember, int bArg);      // 0x005BFA70
+    void RemoveMember(unsigned long oidMember);             // 0x005BF920
+
+    char pad_0x0[0x14];
+    int m_nCurrentMember;                                   // 0x14 (GetNextFactionMember cursor)
 };
 
 // Spell-like ability entry of the creature stats (0xc bytes).
@@ -181,9 +215,17 @@ public:
     char pad_0x44[0x68 - 0x44];
     int m_nExperience;                                      // 0x68
     int m_bIsPC;                                            // 0x6c
-    char pad_0x70[0x89 - 0x70];
+    char pad_0x70[0x78 - 0x70];
+    int m_nFactionId;                                       // 0x78
+    char pad_0x7c[0x84 - 0x7c];
+    float m_fChallengeRating;                               // 0x84
+    char pad_0x88[0x89 - 0x88];
     unsigned char m_nNumMultiClasses;                       // 0x89
-    char pad_0x8a[0xea - 0x8a];
+    char pad_0x8a[0xdc - 0x8a];
+    unsigned short m_nRace;                                 // 0xdc
+    char pad_0xde[0xe8 - 0xde];
+    unsigned char m_nSubRace;                               // 0xe8
+    char pad_0xe9[0xea - 0xe9];
     char m_nStrengthModifier;                               // 0xea (name guessed)
     char pad_0xeb[0xee - 0xeb];
     char m_nConstitutionModifier;                           // 0xee (name guessed)
@@ -193,9 +235,13 @@ public:
     char m_nWisdomModifier;                                 // 0xf2 (name guessed)
     char pad_0xf3[0xf4 - 0xf3];
     char m_nCharismaModifier;                               // 0xf4 (name guessed)
-    char pad_0xf5[0x128 - 0xf5];
+    char pad_0xf5[0x124 - 0xf5];
+    short m_nForcePointsBonus;                              // 0x124 (name guessed)
+    short m_nCurrentForcePoints;                            // 0x126 (name guessed)
     CExoArrayList<CSWSStats_SpellLikeAbility>* m_pSpellLikeAbilities; // 0x128
-    char pad_0x12c[0x17e - 0x12c];
+    char pad_0x12c[0x13a - 0x12c];
+    unsigned short m_nAIStyle;                              // 0x13a
+    char pad_0x13c[0x17e - 0x13c];
     short m_nGoodEvil;                                      // 0x17e
     char pad_0x180[0x186 - 0x180];
     unsigned short m_nAppearanceType;                       // 0x186 (name guessed)
@@ -208,9 +254,19 @@ public:
     unsigned short GetBonusFeat(unsigned short nIndex);     // 0x005A6940
 
     unsigned char GetClass(int nMultiClass);                // 0x005A4E90
+    unsigned char GetClass(unsigned char nMultiClass);      // 0x005A4E90 (byte argument)
+    unsigned char GetClassLevel(unsigned char nMultiClass, int bArg); // 0x005A5090
     unsigned char GetSpellUsesLeft(int nMultiClass, int nLevel); // 0x005A5650
+    unsigned char GetSpellUsesLeft(unsigned long nSpell, unsigned char nMultiClass,
+                                   unsigned char nSpellLevel, unsigned char nMetaType); // 0x005A5550
+    char GetSkillRank(unsigned char nSkill, class CSWSObject* pVersus, int bBaseOnly); // 0x005AA570
     int GetCanUseSkill(unsigned char nSkill);               // 0x005AF880
+    int GetEffectImmunity(unsigned char nType, class CSWSCreature* pVersus); // 0x005A6960
+    unsigned char GetFeatRemainingUses(unsigned short nFeat); // 0x005A6680
+    int HasSpell(unsigned char nList, unsigned long nSpell, int bUpgrade); // 0x005A6E70
     unsigned char GetLevel(int bArg);                       // 0x005A5FD0
+    int GetHasTalent(int nType, int nId);                   // 0x005AAA30 (name guessed)
+    int GetIsLinkImmune(class CGameEffect* pEffect);        // 0x005A6A90 (name guessed)
     void SetMovementRate(int nRate);                        // 0x005A5680
     void UpdateCombatInformation();                         // 0x005ADDC0
     int ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct, void* pArg); // 0x005AFCE0
@@ -227,6 +283,9 @@ public:
     unsigned char GetWISStat();                             // 0x005A63D0 (name guessed)
     unsigned char GetCHAStat();                             // 0x005A6490 (name guessed)
     char GetDEXMod(int bArmorDexCap);                       // 0x005A5330 (name guessed)
+    char GetFortSavingThrow(int bExcludeEffects);           // 0x005AB810
+    char GetWillSavingThrow(int bExcludeEffects);           // 0x005AB880
+    char GetReflexSavingThrow(int bExcludeEffects);         // 0x005AB8F0
     void ModifyAlignment(short nDelta);                     // 0x005AE610
 };
 
@@ -284,11 +343,13 @@ public:
     virtual void v33(); virtual void v34();
     virtual CExoLocString* GetFirstName();                  // 0x8c
     virtual CExoLocString* GetLastName();                   // 0x90
-    virtual int GetIsInConversation();                      // 0x94
+    virtual int GetObjectState94();                      // 0x94
     virtual short GetCreatureSize(int bArg);                // 0x98
     virtual short GetCurrentHitPoints(int bArg);            // 0x9c
     virtual void v40(); virtual void v41(); virtual void v42(); virtual void v43();
-    virtual void v44(); virtual void v45(); virtual void v46(); virtual void v47();
+    virtual void v44(); virtual void v45();
+    virtual unsigned long GetLastSpellId();                 // 0xb8 (placeholder name, as in bucket a)
+    virtual void v47();
     virtual void SetDialogOwner(unsigned long oid);         // 0xc0 (name guessed)
 
     unsigned long m_idSelf;                                 // 0x4
@@ -298,7 +359,8 @@ public:
     char pad_0x20[0x50 - 0x20];
     int m_bDialogPaused;                                    // 0x50 (name guessed)
     unsigned long m_oid54;                                  // 0x54 (name guessed)
-    char pad_0x58[0x90 - 0x58];
+    char pad_0x58[0x8c - 0x58];
+    unsigned long m_oidArea;                                // 0x8c
     Vector m_vPosition;                                     // 0x90
     Vector m_vOrientation;                                  // 0x9c
     char pad_0xa8[0xd4 - 0xa8];
@@ -326,9 +388,19 @@ public:
 class CSWSModule : public CResHelperModule, public CSWSAreaGameObject {
 public:
     CSWSArea* GetArea();                                    // 0x004C30F0
+    unsigned long GetWaypoint(const CExoString& sTag);      // 0x004C6E00
+    unsigned long GetObjectByTag(const CExoString& sTag, int nNth); // 0x004C5FE0
     void RemoveObjectFromLookupTable(const CExoString& sTag, unsigned long nId); // 0x004C5EF0
     void AddObjectToLookupTable(const CExoString& sTag, unsigned long nId); // 0x004C7DE0
     void PackModuleIntoMessage(unsigned long nPlayerId);    // 0x004C3170 (V0, name guessed)
+    void AddWorldJournalEntry(unsigned long nIndex, const CExoString& sEntry, const CExoString& sTitle,
+                              unsigned long nCalendarDay, unsigned long nTimeOfDay); // 0x004C7ED0
+    void AddWorldJournalEntryStrref(unsigned long nStrref, unsigned long nTitleStrref,
+                                    unsigned long nCalendarDay, unsigned long nTimeOfDay); // 0x004C8030 (name guessed)
+    void DeleteWorldJournalEntry(unsigned long nIndex);     // 0x004C8170
+    void DeleteWorldJournalEntryStrref(unsigned long nStrref); // 0x004C8230
+    void DeleteWorldJournalAllEntries();                    // 0x004C82F0
+    void UpdateTime(unsigned long nDay, unsigned long nTime, unsigned long nDelta); // 0x004C6210
 
     char pad_0x24[0x5c - 0x24];
     CExoString m_sModuleName;                               // 0x5c
@@ -337,10 +409,18 @@ public:
     CSWVarTable m_VarTable;                                 // 0x9c
     char pad_0xb0[0x148 - 0xb0];
     int m_n148;                                             // 0x148 (name guessed)
-    char pad_0x14c[0x150 - 0x14c];
+    unsigned long m_oidEnteringObject;                      // 0x14c (name guessed)
     unsigned long m_oidExitingObject;                       // 0x150 (name guessed)
-    char pad_0x154[0x1f8 - 0x154];
+    unsigned long m_oidItemAcquired;                        // 0x154
+    unsigned long m_oidItemAcquiredFrom;                    // 0x158
+    unsigned long m_oidItemLost;                            // 0x15c
+    unsigned long m_oidItemLostBy;                          // 0x160
+    char pad_0x164[0x1bc - 0x164];
+    unsigned char m_nTimeOfDay;                             // 0x1bc (1 day, 2 night, 3 dawn)
+    char pad_0x1bd[0x1f8 - 0x1bd];
     CExoString m_sTag;                                      // 0x1f8
+    char pad_0x200[0x218 - 0x200];
+    class CSWSAreaMap* m_pAreaMap;                          // 0x218 (name guessed)
 };
 
 class CSWSObject : public CGameObject {
@@ -350,7 +430,10 @@ public:
     void SetOrientation(const Vector& vOrientation);        // 0x004CD170
     void SetPosition(const Vector& vPosition, int a2, int a3, int a4); // 0x004CD1A0
     void ClearAllEffects(int bArg);                         // 0x004D0940
+    void SetCurrentHitPoints(int nHitPoints);               // 0x004CC280
     void ClearAllActions(int bArg);                         // 0x004CCD80
+    int GetHasSpellEffectApplied(int nSpellId);             // 0x004CDAC0
+    int GetHasFeatEffectApplied(unsigned short nFeat);      // 0x004CE680
     void LoadObjectState(CResGFF* pRes, CResStruct* pStruct); // 0x004D1CF0
     void RemoveEffectById(unsigned __int64 nID);            // 0x004D06C0
     void ApplyEffect(class CGameEffect* pEffect, int a2, int a3); // 0x004D14F0
@@ -380,11 +463,12 @@ public:
                    int nType11 = 0, void* p11 = 0, int nType12 = 0, void* p12 = 0,
                    int nType13 = 0, void* p13 = 0);         // 0x004CCB00
 
-    int GetIsActionTimed(unsigned long nActionId);          // 0x0057A240 (name guessed)
+    int GetAcceptableAction(unsigned long nActionId);          // 0x0057A240 (Mac debug map 2/2)
     unsigned short GetAQActionIDByID(unsigned short nActionId, int bAlternate); // 0x0057A2B0
     void SpeakOneLinerConversation(CExoString& sResRef, unsigned long oidTalkTo); // 0x004CB220 (name guessed)
     void SetListenExpression(CExoString& sPattern, int nNumber); // 0x004CF8F0
     int GetEffectCount(unsigned long nMask);                // 0x004CAFE0 (name guessed)
+    class CScriptLocation GetScriptLocation();              // 0x004CB7B0
 
     // AI actions (0x0057B290-0x0057CF00).
     unsigned long AIActionPauseDialog(class CSWSObjectActionNode* pNode);
@@ -401,6 +485,7 @@ public:
     int AddUnlockObjectAction(unsigned long oidDoor, unsigned long oidThievesTool, int bArg); // 0x004CFB80
     int AddLockObjectAction(unsigned long oidDoor);          // 0x004CFC20
     int AddCloseDoorAction(unsigned long oidDoor, int bArg); // 0x004CFB20
+    int AddOpenDoorAction(unsigned long oidDoor, int bArg);  // 0x004CFAC0
     int AddGiveItemActions(unsigned long oidItem, unsigned long oidGiveTo,
                            int nStackSize, int bArg);
     int AddTakeItemActions(unsigned long oidItem, unsigned long oidTakeFrom, int bArg);
@@ -415,6 +500,10 @@ class CSWSCreature : public CSWSObject {
 public:
     int RemoveItem(class CSWSItem* pItem, int a2, int a3, int a4); // 0x00510EF0
     void AddExperience(int nXP);                            // 0x004EF930
+    void CancelCombat(int bArg);                            // 0x004FDAA0
+    void SetLockOrientationToObject(unsigned long oidTarget, int bArg); // 0x004F34A0
+    void SetFormation(unsigned long oidAnchor, int nFormation, int nPosition); // 0x00514700 (name guessed)
+    int IsDebilitated();                                    // 0x005B4880
     void SignalEvent(int nEvent, CSWSEvent* pEvent);        // 0x004EDE10
     void SendFeedbackMessage(unsigned short nMessage, class CSWCCMessageData* pData); // 0x004EDE10
     void SetInParty(int bInParty, int bArg);                // 0x004FDB20
@@ -426,8 +515,18 @@ public:
     void PostLoad();                                        // 0x004F1C40
     void LoadCreatureState(CResGFF* pRes, CResStruct* pStruct); // 0x004F17D0
     int GetGold();                                          // 0x004EDD60
+    int GetIsWeaponEffective(unsigned long oidVersus, unsigned long bOffHand); // 0x004EDB20
+    CSWSCreatureVisibility* GetFromList920(unsigned long oid); // 0x00517A20 (bucket a placeholder name)
+    int CalculateSpellSaveDC(int nSpell);                   // 0x004EF6E0
+    short GetMaxForcePoints();                              // 0x004FD490 (GetMaxHitPoints in bucket a)
     int GetCreatureValue518B30();                           // 0x00518B30 (name guessed)
     CSWSFaction* GetFaction();                              // 0x00513FC0
+    unsigned long GetFirstAttacker();                       // 0x005BA400 (name guessed)
+    void Surrender(int bRetainBuffs);                       // 0x00518990 (name guessed)
+    int AddUnequipActions(class CSWSItem* pItem, unsigned long oidRepository, int bToFront,
+                          int bSkipPending, int nArg);      // 0x004F06D0
+    unsigned long GetNextAttacker();                        // 0x005B7FE0 (name guessed)
+    int AddPickUpItemActions(unsigned long oidItem, unsigned long oidArea, unsigned long nArg); // 0x004EB620
     class CItemRepository* GetItemRepository(int bArg);     // 0x004EF770
     int SaveCreature(CResGFF* pRes, CResStruct* pStruct);   // 0x00500610
     int LoadFromTemplate(const CResRef& cResRef, int bArg); // 0x005026D0
@@ -439,17 +538,21 @@ public:
     int GetDeadTemp();                                      // 0x004EF890
     short GetArmorClass();                                  // 0x004ED1D0 (name guessed)
     void SetLastHostileActor(unsigned long oidActor, int bArg); // 0x004CC0C0
-    void SetCombatState(int a, int b);                      // 0x0050EE80 (name guessed)
+    void SetCombatMode(unsigned char nMode, int bArg);     // 0x0050EE80 (Mac debug map 2/2)
+    void SetCombatState(int nState, unsigned char bArg);    // 0x004F2610 (Mac name 1/2)
+    void PacifyCreature();                                 // 0x004FD960 (Mac name 1/2)
+    void ClearVisibleList();                               // 0x005178F0
+    void UpdateVisibleList(unsigned char bArg);           // 0x0051B050
     void ClearActivityFlag(int nFlag);                      // 0x004F8770 (name guessed)
     void AddDriveAction(int nId, Vector* pPosition, int nAngle, int nA, int nB,
                         int nC);                            // 0x004EB510
     void TransferGold(unsigned long oidTarget, Vector* pPosition, int nAmount); // 0x004FD730 (name guessed)
     int GetCreatureReputation(unsigned long oidTarget, int nFaction); // 0x00513FF0 (name guessed)
-    void AddMoveToPointAction(unsigned short nGroupId, const Vector& vNewPos,
-                              unsigned long oidArea, unsigned long oidTarget, int bRun,
-                              float fRange, int a7, int a8, int a9, int a10, int a11,
-                              int a12, int a13, const Vector& vFace, int a15, int a16,
-                              int a17);                     // 0x004F8B60 (name guessed)
+    int AddMoveToPointAction(unsigned short nGroupId, const Vector& vNewPos,
+                             unsigned long oidArea, unsigned long oidTarget, int bRun,
+                             float fRange, float fTolerance, int a7, int a8, int a9, int a10,
+                             int a11, int a12, const Vector& vFace, unsigned long a14,
+                             unsigned long a15, int a16);  // 0x004F8B60
     int AcquireItem(class CSWSItem** ppItem, unsigned long oidPossessor,
                     unsigned long oidTarget, int bDisplayFeedback); // 0x005158E0
     void SetAIStateFlag(int nFlag, int bOn)
@@ -501,7 +604,9 @@ public:
     CSWSScriptVarTable m_ScriptVars;                        // 0x100
     CGameEffect** m_pAppliedEffects;                        // 0x124
     int m_nAppliedEffects;                                  // 0x128
-    char pad_0x12c[0x164 - 0x12c];
+    char pad_0x12c[0x154 - 0x12c];
+    unsigned long m_oid154;                                 // 0x154 (decay event caller; name unknown)
+    char pad_0x158[0x164 - 0x158];
     unsigned long m_oidLastDisturbed;                       // 0x164 (name guessed)
     char pad_0x168[0x16c - 0x168];
     unsigned short m_nLastAttackType;                       // 0x16c (name guessed)
@@ -538,7 +643,8 @@ public:
     unsigned long m_oidAttackTarget;                        // 0x504 (name guessed)
     unsigned long m_oidAttemptedMovementTarget;             // 0x508 (name guessed)
     unsigned long m_oidAttemptedAttackTarget;               // 0x50c (name guessed)
-    char pad_0x510[0x524 - 0x510];
+    char pad_0x510[0x520 - 0x510];
+    unsigned long m_oidGoingToBeAttackedBy;                 // 0x520
     unsigned long m_oidAttemptedSpellTarget;                // 0x524 (name guessed)
     unsigned long m_oidSpellTarget;                         // 0x528 (name guessed)
     char pad_0x52c[0x53c - 0x52c];
@@ -573,11 +679,14 @@ public:
     unsigned short m_n9D8;                                  // 0x9d8
     char pad_0x9da[0x9dc - 0x9da];
     int m_n9DC;                                             // 0x9dc
-    char pad_0x9e0[0xa00 - 0x9e0];
+    int m_bPoisoned;                                        // 0x9e0
+    char pad_0x9e4[0xa00 - 0x9e4];
     int m_nAIStateFlags;                                    // 0xa00 (bit 2: dialog paused)
     char pad_0xa04[0xa10 - 0xa04];
     unsigned char m_nA10;                                   // 0xa10
-    char pad_0xa11[0xa2c - 0xa11];
+    char pad_0xa11[0xa24 - 0xa11];
+    unsigned long m_oidEncounter;                           // 0xa24
+    char pad_0xa28[0xa2c - 0xa28];
     CSWInventory* m_pInventory;                             // 0xa2c
     char pad_0xa30[0xa48 - 0xa30];
     int m_bDisguised;                                       // 0xa48

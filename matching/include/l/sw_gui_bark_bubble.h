@@ -25,8 +25,8 @@ public:
 
     int IsPlaying();                                // 0x005D5AF0
     int GetPlayFailed();                            // 0x005D5B00
-    int Play(unsigned long a, unsigned long b, unsigned long c,
-             unsigned long d, unsigned long e);     // 0x005D5B10
+    int Play(const CResRef& cResRef, unsigned short nResType, int bVoice,
+             int bMusic, int nUnused);     // 0x005D5B10
     void Pause();                                   // 0x005D5B20
     void Resume();                                  // 0x005D5B30
     void SetVolume(unsigned char nVolume);          // 0x005D5B50
@@ -83,6 +83,7 @@ public:
     unsigned long m_oid;                            // 0x04
     char pad_0x8[0x1c];
     Vector m_vPosition;                             // 0x24
+    unsigned long GetId() { return m_oid; }
 };
 
 class CGameObject {
@@ -101,10 +102,37 @@ public:
     CSWCCreature* GetPlayerCharacter();             // 0x00635460
 };
 
+class CSWSPlayer;
 class CSWSClient {
 public:
-    char pad_0x0[0x38];
+    virtual ~CSWSClient();
+    virtual CSWSPlayer* AsSWSPlayer();              // 0x04
+    char pad_0x4[0x38 - 0x4];
     unsigned long m_oidServer;                      // 0x38
+};
+class CSWSPlayer : public CSWSClient {
+};
+
+// Node: prev, next, object (+8).
+struct CExoLinkedListNode {
+    CExoLinkedListNode* m_pPrev;
+    CExoLinkedListNode* m_pNext;
+    void* m_pObject;
+};
+class CExoLinkedListInternal {
+public:
+    CExoLinkedListNode* m_pHead;
+    CExoLinkedListNode* m_pTail;
+    unsigned long m_nCount;
+};
+template <class T> class CExoLinkedList {
+public:
+    CExoLinkedListInternal* m_pList;
+    T* GetHead()
+    {
+        CExoLinkedListNode* pNode = m_pList->m_pHead;
+        return !pNode ? 0 : (T*)pNode->m_pObject;
+    }
 };
 
 Vector operator-(const Vector& a, const Vector& b);  // 0x00423BC0
@@ -119,7 +147,7 @@ public:
     void OnPanelAdded();                            // 0x48 (0x006A9F90)
 
     void SetBark(unsigned long oidSpeaker, const CExoString& sText,
-                 unsigned long nSound, int bIgnoreRange);   // 0x006A9920
+                 const CResRef& cSound, int bIgnoreRange);   // 0x006A9920
     void Pause();                                   // 0x006A9BB0
     void Resume();                                  // 0x006A9C10
     void Hide(int bStopSound);                      // 0x006A9C60

@@ -28,10 +28,15 @@ class CGameObject;
 class CSWCObject;
 class CGameObjectArray;
 class CClientExoApp;
+class CNetLayer;
+class CConnectionLib;
 class CServerExoApp;
 class CSWParty;
 class CGuiInGame;
 class CSWSCreature;
+class CSWSObject;
+class CSWSDialog;
+class CSWSClient;
 class CSWCCombatAttackData;
 class CSWCMessage;
 class CSWCAreaOfEffectObject;
@@ -47,6 +52,7 @@ class CSWCPlaceable;
 class CGob;
 class CSWGuiInterfaceAction;
 class CSWGuiControl;
+class CExoFile;
 
 struct CHostileHilite {
     unsigned long m_oidTarget;                      // 0x00
@@ -217,6 +223,7 @@ public:
 class CSWGuiManager {
 public:
     int PanelExists(CSWGuiPanel* pPanel);           // 0x0040BD70
+    void SetSize(int nWidth, int nHeight);          // 0x0040BE70
     void AddPanel(CSWGuiPanel* pPanel, int nLayer, int bAnimate);   // 0x0040BC70
     int PanelExists(CSWGuiLoadScreen* pPanel);      // 0x0040BD70
     void PopModalPanel();                           // 0x0040BE00
@@ -234,6 +241,7 @@ public:
 
 class CSWGuiLoadScreen : public CSWGuiPanel {
 public:
+    CSWGuiLoadScreen(CSWGuiManager* pManager);     // 0x0067A710 (size 0x6b8)
     void SetHint(int nHint);                        // 0x0067A9C0
 };
 
@@ -274,7 +282,8 @@ public:
     virtual void v04();
     virtual void SetWorldTime(unsigned long nDay, unsigned long nTime);  // 0x08
     virtual CSWCObject* AsSWCObject();              // 0x0c
-    virtual void v10(); virtual CSWCDoor* AsSWCDoor(); virtual void v18(); virtual void v1C();
+    virtual CSWSObject* AsSWSObject();              // 0x10
+    virtual CSWCDoor* AsSWCDoor(); virtual void v18(); virtual void v1C();
     virtual void v20(); virtual CSWCArea* AsSWCArea(); virtual void v28();
     virtual CSWCCreature* AsSWCCreature();          // 0x2c
     virtual CSWSCreature* AsSWSCreature();          // 0x30
@@ -309,7 +318,7 @@ public:
     virtual void vF0(); virtual void vF4(); virtual void vF8(); virtual void vFC();
     virtual void v100(); virtual void v104(); virtual void v108(); virtual void v10C();
     virtual void v110(); virtual void v114(); virtual void v118(); virtual void v11C();
-    virtual int BarkString(unsigned long oid, int a, int b, int c);   // 0x120
+    virtual int BarkString(unsigned long oid, const CExoString& text, const CResRef& sound, int b);   // 0x120
 
     void PlayAnimation(int a, int b, int c, int d); // 0x0063CE60
 };
@@ -409,6 +418,8 @@ public:
     int Unknown61b780();                            // 0x0061B780
     char pad_0x0[0xc];
     float m_fToolTipDelay;                          // 0x0c
+    char pad_0x10[0x4];
+    unsigned char m_nFeedbackFlags;                 // 0x14 (descriptive; 0x10 = floaty text)
 
     float GetToolTipDelay() { return m_fToolTipDelay; }
     float GetGamma(int b);                          // 0x0061D590
@@ -425,6 +436,7 @@ public:
     CSWSCreature* GetCreatureByGameObjectID(unsigned long oid);  // 0x004AE770
     unsigned long ClientToServerObjectID(unsigned long oid);     // 0x004AEA30
     unsigned long GetPlayerCreatureID();            // 0x004AEA40
+    CSWSClient* GetClientObjectByObjectId(unsigned long oid);   // 0x004AE910
     CWorldTimer* GetWorldTimer();                   // 0x004AEDE0
     CWorldTimer* GetPauseTimer();                   // 0x004AEE00
     class CSWPartyTable* GetPartyTable();            // 0x004AEE70
@@ -455,6 +467,7 @@ public:
     CServerExoApp* m_pServerExoApp;                 // 0x08
     char pad_0xc[0x8];
     CAppPad* m_pPad;                                // 0x14
+    unsigned long m_nApplicationId;                 // 0x18
 
     void Unknown401280();                           // 0x00401280
     class CObjectTableManager* GetObjectTableManager(int n);    // 0x00401060
@@ -483,7 +496,7 @@ public:
     CClientOptions*                    m_pClientOptions; // 0x04
     void*                              m_pUnknown08; // 0x08
     void*                              m_pUnknown0c; // 0x0c
-    void*                              m_pUnknown10; // 0x10
+    CNetLayer*                         m_pNetLayer; // 0x10
     CGameObjectArray*                  m_pGameObjectArray; // 0x14
     CSWCModule*                        m_pModule; // 0x18
     CExoLinkedList<CClientPlayer>      m_lstPlayerList; // 0x1c
@@ -492,7 +505,7 @@ public:
     CWorldTimer*                       m_pExclusionTimer; // 0x28
     CWorldTimer*                       m_pPauseTimer; // 0x2c
     CWorldTimer*                       m_pAnimationTimer; // 0x30
-    void*                              m_pUnknown34; // 0x34
+    CConnectionLib*                    m_pConnectionLib; // 0x34
     CSWCQuestJournal*                  m_pQuestJournal; // 0x38
     CSWCWorldJournal*                  m_pWorldJournal; // 0x3c
     CGuiInGame*                        m_pGuiInGame; // 0x40
@@ -504,11 +517,11 @@ public:
     int                                m_nPazaakWager; // 0x7c
     int                                m_bPazaakWon; // 0x80
     int                                m_nPazaakDeck; // 0x84
-    int                                m_nUnknown88; // 0x88
+    CExoFile*                          m_pCaptureFile; // 0x88
     int                                m_bCaptureEvents; // 0x8c
     int                                m_bCaptureEventPlayBack; // 0x90
     int                                m_nUnknown94; // 0x94
-    char pad_0x98[0x4];
+    CExoLinkedList<void>               m_lstPlayBackEvents; // 0x98
     CClientInput*                      m_pInputClass; // 0x9c
     char pad_0xa0[0x4];
     unsigned long                      m_nHitCheckMaterialMask; // 0xa4
@@ -534,7 +547,10 @@ public:
     int                                m_nLoadBarState; // 0x18c
     CExoLinkedList<unsigned long>      m_lstHitcheckIgnore; // 0x190
     int                                m_nUnknown194; // 0x194
-    char pad_0x198[0x10];
+    char pad_0x198[0x8];
+    unsigned long                      m_nVideoMode; // 0x1a0
+    unsigned char                      m_nTexturePack; // 0x1a4
+    char pad_0x1a5[0x3];
     int                                m_nUnknown1a8; // 0x1a8
     int                                m_nUnknown1ac; // 0x1ac
     char pad_0x1b0[0x4];
@@ -554,7 +570,8 @@ public:
     int                                m_bIntroStarted; // 0x1fc
     int                                m_bUnknown200; // 0x200
     int                                m_bClientInitialized; // 0x204
-    char pad_0x208[0x18];
+    int                                m_bApplicationIdsMatch; // 0x208
+    char pad_0x20c[0x14];
     int                                m_bInStartNewModule; // 0x220
     char pad_0x224[0x4];
     int                                m_bCanSendDialog; // 0x228
@@ -704,12 +721,16 @@ public:
     void AddObjectToIgnoreList(unsigned long oid, CExoArrayList<CGob*>* pList);
     void SetCharacterFile(unsigned long nSize, const char* pData, unsigned long nValue);
     void StopLoadMusic();
-    int BarkString(unsigned long oid, int a, int b, int c);
+    void BarkString(unsigned long oid, const CExoString& text, const CResRef& sound, int b);
     int CanPlayBarkSound();
     void StopBarkSound();
     void SetPausedByCombat(int bPaused, unsigned char nFlag, int bForce);
     int LoadMoveToModuleMovies(int n);
     int LoadMovieList(int n, CExoArrayList<CResRef>* pList);   // 0x005FBBF0
+    void LoadItemDropSoundList();                   // 0x005F0AD0
+    void ReadAndSetVideoMode(int bForMovie, int bFullScreen);       // 0x005F5AB0
+    int ReadVideoModeSettings(unsigned long* pWidth, unsigned long* pHeight, unsigned char* pDepth,
+                              unsigned long* pRefresh);     // 0x005F0CE0
 
     // callees
     int IsOnExclusionList(unsigned long oid);       // 0x005F56B0
@@ -730,9 +751,9 @@ public:
     void SetMusic(int a, int b, int c);             // 0x005F9AF0
     void AddCreatureModelToIgnoreList(unsigned long oid, CExoArrayList<CGob*>* pList);  // 0x005F97E0
     void AddOtherModelToIgnoreList(unsigned long oid, CExoArrayList<CGob*>* pList);     // 0x005F9AA0
-    void SetVideoMode(int nMode, int b);            // 0x005F1830
+    int SetVideoMode(unsigned long nMode, unsigned char nFlags);    // 0x005F1830
     CResRef GetItemDropSound(unsigned char nType);  // inline in client_exo_app.cpp
-    void SetTexturePack(int nPack, int b);          // 0x005F14A0
+    int SetTexturePack(unsigned char nPack, int bUnused);       // 0x005F14A0
     CExoString GetLoadMusicByModuleName(const CExoString& sModule);   // 0x005F3650
     CExoString GetGUIString(int nId);               // 0x005FB540
     CExoString GetDisplayCharacterForKey(int nKey); // 0x005F4DF0
@@ -767,7 +788,8 @@ public:
     int Initialize();                                               // 0x005F51C0
     int MainLoop();                                                 // 0x00602EB0
     int CreateCaptureEventFile(const CExoString& sFile);            // 0x005F5720
-    int setUpEventPlayBack(const CExoString& sFile);                // 0x005F5910
+    void setUpEventPlayBack(const CExoString& sFile);               // 0x005F5910
+    void LoadPlayBackEvents();                      // 0x0061FBA0 (descriptive)
     void setCaptureEventRate(int nRate);                            // 0x005EEAE0
     void SetDebugMode(int nMode);                                   // 0x005F1490
     int StartServices(int a, int b, int c, int d, int e);           // 0x005F8550
@@ -776,6 +798,8 @@ public:
     unsigned char GetActivePauseState();                                      // 0x005EE910
     CSWCModuleScene* GetModuleScene();                              // 0x005EE6F0
     int HandleMessage(unsigned long nPlayerId, unsigned char* pData, unsigned long nSize, int bRaw);   // 0x005EE700
+    int ContinueMessageProcessing();                                // 0x0063E7A0 (ICF-folded return 1)
+    void HandleExitGameButton(CSWGuiControl* pControl);             // 0x005F1BD0 (descriptive)
     void QueryExitProgram();                                        // 0x005F6960
     int IsPlayerCreature(CGameObject* pObject);                     // 0x005F2B50
     unsigned long ServerToClientObjectId(unsigned long oid);        // 0x005F2AC0
@@ -797,7 +821,7 @@ public:
     void RunDeathSequence();                                        // 0x005F7200
     void SetLastPartyMemberTempKilled(int b);                       // 0x005F2FE0
     void SetCanSendDialog(int b);                                   // 0x005F3030
-    int GetCanSendDialog(int a, int b, int c);                      // 0x005F3070
+    int GetCanSendDialog(unsigned long oidSpeaker, unsigned long oidListener, CSWSDialog* pDialog);   // 0x005F3070
     int GetClientMeleeAnimation(unsigned long a, unsigned long b, int c, int d, int e, int f); // 0x005F32E0
     void SetLoadScreenByModuleName(const CExoString& sModule);      // 0x005F3480
     void SetLoadBarProgress(int a, int b);                          // 0x005FB3F0
@@ -808,7 +832,7 @@ public:
     int StopRumblePattern(int nPattern);                            // 0x005F74B0
     void TogglePartyFollow();                                       // 0x005F2A20
     void PlayerFlourishWeapons();                                   // 0x005F4460
-    void AddFloatyText(int a, int b, int c);                        // 0x006027C0
+    void AddFloatyText(unsigned long oid, unsigned char nType, int nValue);   // 0x006027C0
     void SetAutoPaused(int a, int b);                               // 0x005F3F10
     void EnableVideoEffect(int nEffect);                            // 0x005F7710
     void DelayNextEnemyAutoPause();                                 // 0x005F4100
@@ -865,14 +889,17 @@ public:
 
 class CClientExoApp {
 public:
-    // vtable 0x0074E6D8 (7 slots; names unknown yet)
+    // vtable 0x0074E6D8 (7 slots; slot 0 name unknown, the rest are the
+    // playable source's CBaseExoApp names)
     virtual void v00(int a, int b, int c);          // 0x005C5630 (empty, ret 0xc)
-    virtual void v04();                             // 0x005ED790
-    virtual float v08();                            // 0x005EE350 (fld [0x007A22B4])
-    virtual void v0C();                             // 0x005ED7A0
-    virtual void* v10();                            // 0x005ED6E0
-    virtual void v14();                             // 0x005ED890
-    virtual void* v18();                            // 0x005ED520
+    virtual int HandleMessage(unsigned long nPlayerId, unsigned char* pData, unsigned long nSize, int bRaw); // 0x005ED790
+    virtual float GetFPS();                         // 0x005EE350
+    virtual int ContinueMessageProcessing();        // 0x005ED7A0
+    virtual CNetLayer* GetNetLayer();               // 0x005ED6E0
+    virtual void ShutDownToMainMenu();              // 0x005ED890
+    virtual CConnectionLib* GetConnectionLib();     // 0x005ED520
+    void SetApplicationIdsMatch(int bMatch);        // 0x005ED8A0
+    unsigned long GetApplicationId();               // 0x005ED990
 
     CClientExoAppInternal* m_pcInternal;            // 0x04
 
@@ -957,7 +984,7 @@ public:
     int MainLoop();
     void Uninitialize();
     int CreateCaptureEventFile(const CExoString& sFile);
-    int setUpEventPlayBack(const CExoString& sFile);
+    void setUpEventPlayBack(const CExoString& sFile);
     void setCaptureEventRate(int nRate);
     void SetDebugMode(int nMode);
     int StartServices(int a, int b, int c, int d, int e);
@@ -985,7 +1012,7 @@ public:
     void AddMoveToModuleMovie(const CResRef& cMovie);
     void IndicateObject(CGameObject* pObject);
     void ResetDriveAcceleration();
-    int BarkString(unsigned long oid, int a, int b, int c);
+    void BarkString(unsigned long oid, const CExoString& text, const CResRef& sound, int b);
     int IsSoundPlayingInDialog();
     void StopSoundPlayingInDialog();
     void DisableInput();
@@ -997,7 +1024,7 @@ public:
     void SetGameOver(int b);
     void SetLastPartyMemberTempKilled(int b);
     void SetCanSendDialog(int b);
-    int GetCanSendDialog(int a, int b, int c);
+    int GetCanSendDialog(unsigned long oidSpeaker, unsigned long oidListener, CSWSDialog* pDialog);
     int GetClientMeleeAnimation(unsigned long a, unsigned long b, int c, int d, int e, int f);
     void SetLoadScreenByModuleName(const CExoString& sModule);
     void SetLoadBarProgress(int a, int b);
@@ -1010,7 +1037,7 @@ public:
     void TogglePartyFollow();
     void SetCombatMode(int bCombat);
     void PlayerFlourishWeapons();
-    void AddFloatyText(int a, int b, int c);
+    void AddFloatyText(unsigned long oid, unsigned char nType, int nValue);
     void SetAutoPaused(int a, int b);
     void SetLoadScreenHint(int nHint);
     void EnableVideoEffect(int nEffect);
@@ -1073,7 +1100,7 @@ public:
 
     // worker C r5: unnamed facade accessors
     void EmptyForwarder();                          // 0x005ED310
-    int GetUnknown88();                             // 0x005ED460
+    CExoFile* GetCaptureFile();               // 0x005ED460
     int GetUnknown144();                            // 0x005ED4C0
     unsigned long GetPlayerCreatureId();            // 0x005ED550
     CGameObjectArray* GetGameObjectArray();         // 0x005ED570

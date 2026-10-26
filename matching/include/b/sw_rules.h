@@ -12,8 +12,11 @@ public:
     C2DA* GetItemValue() { return m_pItemValue; }
 
     C2DA* GetDifficultyOptions() { return m_pDifficultyOptions; }
+    C2DA* GetAppearanceTable() { return m_pAppearanceTable; }
 
-    char pad_0x0[0x7c];
+    char pad_0x0[0xc];
+    C2DA* m_pAppearanceTable;   // 0xc (appearance.2da)
+    char pad_0x10[0x7c - 0x10];
     C2DA* m_pDifficultyOptions; // 0x7c (MULTIPLIER; name guessed)
     char pad_0x80[0xb0 - 0x80];
     C2DA* m_pIPRPDamageCost;    // 0xb0 (NumDice / Die)
@@ -51,6 +54,13 @@ public:
     char pad_0x29[0x48 - 0x29];
 };
 
+class CSWRace {
+public:
+    char pad_0x0[0x20];
+    int m_bPlayerRace;                                      // 0x20
+    char pad_0x24[0x34 - 0x24];
+};
+
 // vtable 0x00748BB4
 class CSWRules {
 public:
@@ -67,7 +77,9 @@ public:
     char pad_0xa6[0xaa - 0xa6];
     unsigned char m_nAA;        // 0xaa
     unsigned char m_nNumSkills; // 0xab
-    char pad_0xac[0xb8 - 0xac];
+    char pad_0xac[0xb0 - 0xac];
+    class CSWRace* m_pRaces;    // 0xb0 (0x34-byte entries)
+    char pad_0xb4[0xb8 - 0xb4];
     CTwoDimArrays* m_p2DArrays; // 0xb8
     unsigned char m_aDifficulty[5][6]; // 0xbc
     char pad_0xda[0x120 - 0xda];

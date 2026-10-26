@@ -27,7 +27,7 @@ CSWGuiBarkBubble::~CSWGuiBarkBubble()
 
 // FUNCTION: SWKOTOR 0x006A9920
 void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker, const CExoString& sText,
-                               unsigned long nSound, int bIgnoreRange)
+                               const CResRef& cSound, int bIgnoreRange)
 {
     unsigned long oidPlayer = g_pAppManager->GetServerExoApp()->GetPlayerCreatureID();
     unsigned long oidServer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectID(oidPlayer)->m_oidServer;
@@ -60,7 +60,7 @@ void CSWGuiBarkBubble::SetBark(unsigned long oidSpeaker, const CExoString& sText
     }
     m_pSound->SetPriorityGroup(0x1a);
     m_pSound->SetVolume(g_nBarkVolume);
-    m_bPlaying = m_pSound->Play(nSound, 8, 1, 0, 0);
+    m_bPlaying = m_pSound->Play(cSound, 8, 1, 0, 0);
 }
 
 // FUNCTION: SWKOTOR 0x006A9BB0

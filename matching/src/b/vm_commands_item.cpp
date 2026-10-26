@@ -4,7 +4,7 @@
 #include "b/sws_item.h"
 
 // FUNCTION: SWKOTOR 0x0053C220
-int CSWVirtualMachineCommands::ExecuteCommandGetItemStackSize(int nCommandId, int nParameters)
+int CSWVirtualMachineCommands::ExecuteCommandGetNumStackedItems(int nCommandId, int nParameters)
 {
     unsigned long oidItem;
     if (!g_pVirtualMachine->StackPopObject(&oidItem)) {

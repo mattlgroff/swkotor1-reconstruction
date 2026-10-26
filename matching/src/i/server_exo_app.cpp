@@ -375,7 +375,7 @@ CExoLinkedList<unsigned long>* CServerExoApp::GetActiveExclusionList()
 }
 
 // FUNCTION: SWKOTOR 0x004AE9E0
-CSWSPlayer* CServerExoApp::ResolvePlayerByFirstName(const CExoString& sName)
+unsigned long CServerExoApp::ResolvePlayerByFirstName(const CExoString& sName)
 {
     return m_pcExoAppInternal->ResolvePlayerByFirstName(sName);
 }
@@ -417,7 +417,7 @@ unsigned long CServerExoApp::GetPlayerCreatureID()
 }
 
 // FUNCTION: SWKOTOR 0x004AEAD0
-void CServerExoApp::UpdateSubareasOnMoveTo(unsigned long oid, float a, float b)
+void CServerExoApp::UpdateSubareasOnMoveTo(unsigned long oid, const Vector& a, const Vector& b)
 {
     m_pcExoAppInternal->UpdateSubareasOnMoveTo(oid, a, b);
 }
@@ -513,9 +513,9 @@ CGameObjectArray* CServerExoApp::FUN_004aed70()
 }
 
 // FUNCTION: SWKOTOR 0x004AED80
-unsigned long CServerExoApp::FUN_004aed80()
+CServerAIMaster* CServerExoApp::FUN_004aed80()
 {
-    return m_pcExoAppInternal->m_10044;
+    return m_pcExoAppInternal->m_pServerAIMaster;
 }
 
 // FUNCTION: SWKOTOR 0x004AED90
@@ -545,7 +545,7 @@ unsigned short CServerExoApp::GetServerMode()
 // FUNCTION: SWKOTOR 0x004AEDE0
 unsigned long CServerExoApp::FUN_004aede0()
 {
-    return m_pcExoAppInternal->m_10048;
+    return (unsigned long)m_pcExoAppInternal->m_pWorldTimer;
 }
 
 // FUNCTION: SWKOTOR 0x004AEDF0

@@ -40,7 +40,7 @@ public:
     char pad_0x184[0x9bc];
     CExoSoundSource* m_pBarkSound;                  // 0xb40
 
-    int ShowBarkString(unsigned long oid, int a, int b, int c);   // 0x0062AB30
+    void ShowBarkBubble(unsigned long oid, const CExoString& text, const CResRef& sound, int b);   // 0x0062AB30
     void UpdateCombatMode();                        // 0x0062B050
     void AdjustHideCount(int n);                    // 0x0062B410
     void ShutDown();                                // 0x0062C310
@@ -593,14 +593,17 @@ void CClientExoAppInternal::StopLoadMusic()
     }
 }
 
+// Native callers ignore the facade result; its fallback calls void
+// ShowBarkBubble and leaves EAX unchanged by any explicit return value.
 // FUNCTION: SWKOTOR 0x005F2C90
-int CClientExoAppInternal::BarkString(unsigned long oid, int a, int b, int c)
+void CClientExoAppInternal::BarkString(unsigned long oid, const CExoString& text, const CResRef& sound, int b)
 {
     CGameObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(oid);
     if (pObject) {
-        return pObject->AsSWCObject()->BarkString(oid, a, b, c);
+        pObject->AsSWCObject()->BarkString(oid, text, sound, b);
+    } else {
+        m_pGuiInGame->ShowBarkBubble(0x7f000000, text, sound, b);
     }
-    return m_pGuiInGame->ShowBarkString(0x7f000000, a, b, c);
 }
 
 // FUNCTION: SWKOTOR 0x005F2D00

@@ -79,6 +79,8 @@ public:
     virtual void vF0(); virtual void vF4(); virtual void vF8();
     virtual void UpdateShadow();                    // 0xfc
     virtual void RemoveShadow();                    // 0x100
+    virtual void v104();
+    virtual void RefreshShadow();                   // 0x108 (descriptive)
 
     void UnloadModel();                             // 0x004015A0
 
@@ -110,7 +112,9 @@ public:
     virtual void StartHeadTracking();               // 0x88
     virtual void StopHeadTracking();                // 0x8c
     virtual void v90(); virtual void v94(); virtual void v98(); virtual void v9C();
-    virtual void vA0(); virtual void vA4(); virtual void vA8(); virtual void vAC();
+    virtual void vA0();
+    virtual CGob* AddShadowBlob(const CExoString& sModel);   // 0xa4 (descriptive)
+    virtual void vA8(); virtual void vAC();
     virtual void vB0();
     virtual void SetShadowOrientation(const Quaternion& q);  // 0xb4
 
@@ -312,6 +316,7 @@ public:
 class C2DA {
 public:
     int GetFLOATEntry(int nRow, int nColumn, float* pResult);  // 0x00413350
+    int GetINTEntry(int nRow, int nColumn, int* pResult);     // 0x00413510
 };
 
 class C2DAs {
@@ -330,6 +335,7 @@ public:
 
 extern CSWRules* g_pRules;                          // 0x007A3A28
 extern int g_nHeadTurnRateColumn;                   // 0x007A2118
+extern int g_nAppearanceCol_SIZECATEGORY;           // 0x007A2124
 extern int g_nHeadBoneColumn;                       // 0x007A20D0
 extern int g_nHeadTurnHColumn;                      // 0x007A20F4
 extern int g_nHeadTurnVColumn;                      // 0x007A20F8
@@ -426,6 +432,7 @@ public:
     void SetPartyTransition(int nMode);
     int IsAnimationBlocked(unsigned short nAnimation);  // 0x0063C4A0
     void SetTransitionMode(int nMode);              // 0x0063D820
+    CGob* ApplyShadowBlob();
 
     // callees
     int InCombat();                                 // 0x0060D320
@@ -447,7 +454,8 @@ public:
         return GetServerObject() ? GetServerObject()->AsSWSCreature() : 0;
     }
 
-    char pad_0x6c[0x6c];
+    char pad_0x6c[0x68];
+    int m_bNoShadowRefresh;                         // 0xd4 (descriptive)
     Vector m_vShadowNormal;                         // 0xd8
     char pad_0xe4[0x10];
     void* m_pRumbleSource;                          // 0xf4
@@ -1312,4 +1320,43 @@ void CSWCCreature::SetPartyTransition(int nMode)
         return;
     }
     SetTransitionMode(nMode);
+}
+
+// NONMATCH (5 real diff insns; the rest is the jump table): the original
+// loads the appearance row before the 2DA chain; locals in either order, the
+// inline appearance getter and a direct call expression all schedule the
+// table chain first.
+// FUNCTION: SWKOTOR 0x0060E2F0
+CGob* CSWCCreature::ApplyShadowBlob()
+{
+    CExoString sModel;
+    if (!m_pModel) {
+        return 0;
+    }
+    int nSize;
+    unsigned short nAppearance = m_pAppearance->m_nAppearanceType;
+    C2DA* pTable = g_pRules->m_p2DArrays->m_pAppearanceTable;
+    if (!pTable->GetINTEntry(nAppearance, g_nAppearanceCol_SIZECATEGORY, &nSize)) {
+        nSize = 3;
+    }
+    switch (nSize) {
+    case 1:
+    case 2:
+        sModel = "Fx_Shadow_S";
+        break;
+    case 4:
+    case 5:
+        sModel = "Fx_Shadow_L";
+        break;
+    default:
+        sModel = "Fx_Shadow_M";
+        break;
+    }
+    CGob* pShadow = m_pModel->AddShadowBlob(sModel);
+    Vector vUp(0.0f, 0.0f, 1.0f);
+    m_pModel->SetShadowOrientation(RotationArc(vUp, m_vShadowNormal));
+    if (!m_bNoShadowRefresh) {
+        RefreshShadow();
+    }
+    return pShadow;
 }

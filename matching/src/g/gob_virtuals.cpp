@@ -48,6 +48,39 @@ Gob* Gob::IntersectSegment(Vector vStart, Vector vEnd, Vector* pHit)
     return IntersectLine(vStart, vEnd, pHit, 0);
 }
 
+Quaternion operator-(const Quaternion& q);                   // 0x004a9b50
+Quaternion operator*(const Quaternion& a, const Quaternion& b);   // 0x004a9ac0
+Vector operator*(const Quaternion& q, const Vector& v);      // 0x004a9bb0
+Quaternion Normalize(Quaternion q);                          // 0x004a9d60
+
+static inline Vector operator-(const Vector& a, const Vector& b)
+{
+    return Vector(a.x - b.x, a.y - b.y, a.z - b.z);
+}
+
+// Places a part so that its world transform becomes vPos / qOrient: the
+// part's parent frame is the world transform of an identity local one.
+// FUNCTION: SWKOTOR 0x0043f280
+int Gob::SetPartWorldTransform(char* szName, Vector vPos, Quaternion qOrient)
+{
+    Part* p = FindPart(szName);
+    if (!p)
+        return 0;
+    p->m_vPosition = Vector(0.0f, 0.0f, 0.0f);
+    p->m_qOrientation = Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+    Vector v(0.0f, 0.0f, 0.0f);
+    Quaternion q;
+    q.z = 0.0f;
+    q.y = 0.0f;
+    q.x = 0.0f;
+    q.w = 1.0f;
+    p->GetWorldTransform(&v, &q);
+    p->m_vPosition = -q * (vPos - v);
+    p->m_qOrientation = Normalize(-q * qOrient);
+    p->m_bDirty = 1;
+    return 1;
+}
+
 // FUNCTION: SWKOTOR 0x0043f430
 int Gob::GetPartWorldTransform(char* szName, Vector* pPos, Quaternion* pOrient)
 {

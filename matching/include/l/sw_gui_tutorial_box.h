@@ -22,7 +22,10 @@ public:
 
 class CTwoDimArrays {
 public:
-    char pad_0x0[0x68];
+    char pad_0x0[0xc];
+    C2DA* m_pAppearanceTable;                       // 0x0c
+    C2DA* GetAppearanceTable() { return m_pAppearanceTable; }
+    char pad_0x10[0x68 - 0x10];
     C2DA* m_pKeymapTable;                           // 0x68
     C2DA* m_pBindableKeysTable;                     // 0x6c
     char pad_0x70[0xc];
@@ -69,9 +72,16 @@ class CSWCCreatureStats;
 
 class CSWCCreature : public CSWCObject {
 public:
+    CSWCCreature();                                 // 0x00616A20
     CSWSCreature* AsServerCreature();               // 0x0060FB20
     char pad_0x30[0x2c8];
     CSWCCreatureStats* m_pStats;                    // 0x2f8
+    CSWCCreatureStats* GetClientStats() { return m_pStats; }
+    char pad_0x2fc[0x144];
+    unsigned long m_n440;                           // 0x440 (placeholder name)
+    char pad_0x444[0x8];
+
+    void SetUp3DScene(class CSWGui3DSceneView* pView, CSWCCreature* pSource, int a, int b);  // 0x006100F0 (descriptive)
 
     void PerformUseItem(unsigned long oidItem, int a, unsigned long oidTarget,
                         const Vector& vTarget);     // 0x0060EE60

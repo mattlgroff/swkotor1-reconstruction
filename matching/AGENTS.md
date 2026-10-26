@@ -54,7 +54,7 @@ for this repository. See research/claude-workflow-audit.md for the evidence.
   lose the work. Worker checkpoints contain only owned source/header/notes
   files; do not regenerate or commit shared reports from worker worktrees.
 - Do not push worker branches. The user's current publication rule requires
-  at least 100 NEW exact matches since the last push, as one combined commit.
+  more than 1,100 NEW exact matches since the last push, as one combined commit.
   The coordinator preserves local checkpoints and consolidates only its own
   unpublished work before publishing. Never rewrite published history.
 - Record screened candidates, implemented/attempted addresses, NEW exact
@@ -77,6 +77,6 @@ for this repository. See research/claude-workflow-audit.md for the evidence.
 - Commit sources, headers, notes and both reports together locally. Do not
   edit the CI-generated progress graphic. Matching-only batches need no
   VS2022 build or CTest run; tool changes need their relevant tool tests.
-- Publish only after checking the 100-new-MATCH threshold against the exact
+- Publish only after checking the more-than-1,100-new-MATCH threshold against the exact
   last-pushed report, with no previous MATCH regressions. Incorporate any
   verified tracker-only remote update before the ordinary fast-forward push.

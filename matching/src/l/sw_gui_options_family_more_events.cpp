@@ -7,7 +7,7 @@ void CSWGuiOptionsMain::OnGameplayOpt(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        CSWGuiInGameGameplay* pPanel = new CSWGuiInGameGameplay(m_pManager);
+        CSWGuiInGameGameplay* pPanel = new CSWGuiInGameGameplay(GetManager());
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }
@@ -17,7 +17,7 @@ void CSWGuiOptionsMain::OnAutopauseOpt(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        CSWGuiInGameAutoPause* pPanel = new CSWGuiInGameAutoPause(m_pManager);
+        CSWGuiInGameAutoPause* pPanel = new CSWGuiInGameAutoPause(GetManager());
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }
@@ -27,7 +27,7 @@ void CSWGuiOptionsMain::OnFeedbackOpt(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        CSWGuiOptionsFeedback* pPanel = new CSWGuiOptionsFeedback(m_pManager);
+        CSWGuiOptionsFeedback* pPanel = new CSWGuiOptionsFeedback(GetManager());
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }
@@ -37,7 +37,7 @@ void CSWGuiOptionsMain::OnGraphicsOpt(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        CSWGuiOptionsGraphics* pPanel = new CSWGuiOptionsGraphics(m_pManager);
+        CSWGuiOptionsGraphics* pPanel = new CSWGuiOptionsGraphics(GetManager());
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }
@@ -47,7 +47,7 @@ void CSWGuiOptionsMain::OnSoundOpt(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        CSWGuiOptionsSound* pPanel = new CSWGuiOptionsSound(m_pManager);
+        CSWGuiOptionsSound* pPanel = new CSWGuiOptionsSound(GetManager());
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }
@@ -57,7 +57,7 @@ void CSWGuiOptionsSound::OnAdvanced(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        CSWGuiOptionsSoundAdvanced* pPanel = new CSWGuiOptionsSoundAdvanced(m_pManager);
+        CSWGuiOptionsSoundAdvanced* pPanel = new CSWGuiOptionsSoundAdvanced(GetManager());
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }
@@ -67,7 +67,7 @@ void CSWGuiOptionsGraphics::OnAdvanced(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        CSWGuiOptionsGraphicsAdvanced* pPanel = new CSWGuiOptionsGraphicsAdvanced(m_pManager, this);
+        CSWGuiOptionsGraphicsAdvanced* pPanel = new CSWGuiOptionsGraphicsAdvanced(GetManager(), this);
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }
@@ -77,7 +77,7 @@ void CSWGuiInGameGameplay::OnMouse(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        CSWGuiOptionsMouse* pPanel = new CSWGuiOptionsMouse(m_pManager);
+        CSWGuiOptionsMouse* pPanel = new CSWGuiOptionsMouse(GetManager());
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }
@@ -87,7 +87,7 @@ void CSWGuiInGameGameplay::OnKeyMap(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        CSWGuiInGameOptKeyMappings* pPanel = new CSWGuiInGameOptKeyMappings(m_pManager);
+        CSWGuiInGameOptKeyMappings* pPanel = new CSWGuiInGameOptKeyMappings(GetManager());
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }

@@ -2,11 +2,6 @@
 #include "l/sw_gui_levelup_chargen.h"
 
 namespace {
-inline CSWCCreature* GetLiveCreature(CSWGuiLevelUpCharGen* pPanel)
-{
-    return g_pAppManager->GetClientExoApp()->GetCreatureByGameObjectID(pPanel->m_oidCreature);
-}
-
 inline void HideFlags(void* pControl)
 {
     unsigned long* pFlags = (unsigned long*)((char*)pControl + 0x44);
@@ -17,27 +12,27 @@ inline void HideFlags(void* pControl)
 // FUNCTION: SWKOTOR 0x006E87E0
 void CSWGuiLevelUpCharGen::ClearPowers()
 {
-    CSWCCreature* pCreature = GetLiveCreature(this);
+    CSWCCreature* pCreature = GetLiveCreature();
     if (pCreature == 0) {
         return;
     }
-    unsigned long nClass = (unsigned long)m_pSnapshot->m_pStats->m_nNumClasses - 1ul;
+    unsigned long nClass = (unsigned long)GetSnapshotStats()->m_nNumClasses - 1ul;
     pCreature->m_pStats->ClearSpells();
     unsigned char nIndex = 0;
-    if (m_pSnapshot->m_pStats->GetNumberKnownSpells(nClass, 0) > 0) {
+    if (GetSnapshotStats()->GetNumberKnownSpells(nClass, 0) > 0) {
         do {
             CSWCCreatureStats* pTarget = pCreature->m_pStats;
-            unsigned long nSpell = m_pSnapshot->m_pStats->GetKnownSpell(nClass, 0, nIndex);
+            unsigned long nSpell = GetSnapshotStats()->GetKnownSpell(nClass, 0, nIndex);
             pTarget->AddKnownSpell(nClass, nSpell);
             ++nIndex;
-        } while ((unsigned short)nIndex < m_pSnapshot->m_pStats->GetNumberKnownSpells(nClass, 0));
+        } while ((unsigned short)nIndex < GetSnapshotStats()->GetNumberKnownSpells(nClass, 0));
     }
 }
 
 // FUNCTION: SWKOTOR 0x006E8DB0
 void CSWGuiLevelUpCharGen::ClearFeats()
 {
-    CSWCCreature* pCreature = GetLiveCreature(this);
+    CSWCCreature* pCreature = GetLiveCreature();
     if (pCreature == 0) {
         return;
     }
@@ -62,7 +57,7 @@ void CSWGuiLevelUpCharGen::CancelLevelUp()
     if (m_nInputClass == 0) {
         return;
     }
-    CSWCCreature* pCreature = GetLiveCreature(this);
+    CSWCCreature* pCreature = GetLiveCreature();
     CopyCreatureStats(m_pSnapshot, pCreature);
     m_pManager->PopModalPanel();
     m_pManager->PopModalPanel();

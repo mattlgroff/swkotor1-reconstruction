@@ -25,7 +25,10 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAbilityScore(int nCommandId, int
     unsigned long oidCreature;
     int nAbility;
     int nResult = 0;
-    if (!g_pVirtualMachine->StackPopObject(&oidCreature) || !g_pVirtualMachine->StackPopInteger(&nAbility)) {
+    if (!g_pVirtualMachine->StackPopObject(&oidCreature)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopInteger(&nAbility)) {
         return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
     }
     CGameObject* pObject;
@@ -45,7 +48,10 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAbilityScore(int nCommandId, int
             nResult = pObject->AsSWSCreature()->m_pStats->GetCHAStat();
         }
     }
-    return g_pVirtualMachine->StackPushInteger(nResult) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    if (!g_pVirtualMachine->StackPushInteger(nResult)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    return 0;
 }
 
 // FUNCTION: SWKOTOR 0x00536310
@@ -53,7 +59,10 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAbilityModifier(int nCommandId, 
 {
     int nAbility;
     unsigned long oidCreature;
-    if (!g_pVirtualMachine->StackPopInteger(&nAbility) || !g_pVirtualMachine->StackPopObject(&oidCreature)) {
+    if (!g_pVirtualMachine->StackPopInteger(&nAbility)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
+    }
+    if (!g_pVirtualMachine->StackPopObject(&oidCreature)) {
         return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
     }
     int nResult = 0;
@@ -64,7 +73,10 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAbilityModifier(int nCommandId, 
             nResult = pCreature->m_pStats->m_nStrengthModifier;
             break;
         case 1:
-            nResult = pCreature->m_pStats->GetDEXMod(0);
+            {
+                CSWSCreatureStats* pStats = pCreature->m_pStats;
+                nResult = pStats->GetDEXMod(0);
+            }
             break;
         case 2:
             nResult = pCreature->m_pStats->m_nConstitutionModifier;
@@ -80,7 +92,10 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAbilityModifier(int nCommandId, 
             break;
         }
     }
-    return g_pVirtualMachine->StackPushInteger(nResult) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    if (!g_pVirtualMachine->StackPushInteger(nResult)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    return 0;
 }
 
 // FUNCTION: SWKOTOR 0x00536410
@@ -197,7 +212,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAreaUnescapable(int nCommandId, 
 {
     CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
     CSWSCreature* pPlayer = pServer->GetCreatureByGameObjectID(pServer->GetPlayerCreatureId());
-    return g_pVirtualMachine->StackPushInteger(pPlayer->GetArea()->m_bUnescapable) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    int bUnescapable = pPlayer->GetArea()->m_bUnescapable;
+    return g_pVirtualMachine->StackPushInteger(bUnescapable) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
 }
 
 // FUNCTION: SWKOTOR 0x00536800

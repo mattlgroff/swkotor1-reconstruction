@@ -15,7 +15,7 @@ void CSWGuiOptionsInGame::OnLoadGame(CSWGuiControl* pControl)
     int bClicked = pControl->m_n4c;
     if (bClicked) {
         g_pAppManager->GetClientExoApp()->SaveOptions();
-        CSWGuiSaveLoad* pPanel = new CSWGuiSaveLoad(m_pManager, 0, 0);
+        CSWGuiSaveLoad* pPanel = new CSWGuiSaveLoad(GetManager(), 0, 0);
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }
@@ -26,7 +26,7 @@ void CSWGuiOptionsInGame::OnSaveGame(CSWGuiControl* pControl)
     int bClicked = pControl->m_n4c;
     if (bClicked) {
         g_pAppManager->GetClientExoApp()->SaveOptions();
-        CSWGuiSaveLoad* pPanel = new CSWGuiSaveLoad(m_pManager, 1, 0);
+        CSWGuiSaveLoad* pPanel = new CSWGuiSaveLoad(GetManager(), 1, 0);
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }
@@ -36,7 +36,7 @@ void CSWGuiOptionsInGame::OnGameplay(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        m_pManager->AddPanel(new CSWGuiInGameGameplay(m_pManager), 3, 1);
+        m_pManager->AddPanel(new CSWGuiInGameGameplay(GetManager()), 3, 1);
     }
 }
 
@@ -45,7 +45,7 @@ void CSWGuiOptionsInGame::OnFeedback(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        CSWGuiOptionsFeedback* pPanel = new CSWGuiOptionsFeedback(m_pManager);
+        CSWGuiOptionsFeedback* pPanel = new CSWGuiOptionsFeedback(GetManager());
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }
@@ -55,7 +55,7 @@ void CSWGuiOptionsInGame::OnAutoPause(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        CSWGuiInGameAutoPause* pPanel = new CSWGuiInGameAutoPause(m_pManager);
+        CSWGuiInGameAutoPause* pPanel = new CSWGuiInGameAutoPause(GetManager());
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }
@@ -65,7 +65,7 @@ void CSWGuiOptionsInGame::OnGraphics(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        CSWGuiOptionsGraphics* pPanel = new CSWGuiOptionsGraphics(m_pManager);
+        CSWGuiOptionsGraphics* pPanel = new CSWGuiOptionsGraphics(GetManager());
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }
@@ -75,7 +75,7 @@ void CSWGuiOptionsInGame::OnSound(CSWGuiControl* pControl)
 {
     int bClicked = pControl->m_n4c;
     if (bClicked) {
-        CSWGuiOptionsSound* pPanel = new CSWGuiOptionsSound(m_pManager);
+        CSWGuiOptionsSound* pPanel = new CSWGuiOptionsSound(GetManager());
         m_pManager->AddPanel(pPanel, 3, 1);
     }
 }

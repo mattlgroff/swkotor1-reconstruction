@@ -13,24 +13,6 @@ public:
     CSWSRoomSurfaceMesh* m_pSurfaceMesh; // 0x3c
 };
 
-class C2DA {
-public:
-    int GetINTEntry(int nRow, const CExoString& sColumn, int* pValue);  // 0x00413660
-};
-
-class C2DAs {
-public:
-    char pad_0x0[0x14];
-    C2DA* m_pSurfaceMaterial;                       // 0x14 (placeholder name)
-};
-
-class CSWRules {
-public:
-    char pad_0x0[0xb8];
-    C2DAs* m_p2DArrays;                             // 0xb8
-};
-extern CSWRules* g_pRules;                          // 0x007A3A28
-
 // FUNCTION: SWKOTOR 0x005063C0
 int CSWSArea::GetSurfaceMaterial(Vector vPosition)
 {

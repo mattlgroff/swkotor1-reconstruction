@@ -214,7 +214,7 @@ int CSWSEffectListHandler::OnRemove4EE150(CSWSObject* pObject, CGameEffect* pEff
                 pEffect->SetDurationType(g_nDurationTemporary);
                 pEffect->m_fDuration = 0.0f;
             }
-            pCreature->AddEffect4EE150(pEffect);
+            pCreature->UnDisguise(pEffect);
         }
     }
     return 1;

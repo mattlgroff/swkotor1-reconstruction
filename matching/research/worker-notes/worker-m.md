@@ -318,3 +318,209 @@ k (0x00680030+). In bucket m: journal2 CSWCJournal/CSWCWorldJournal cluster
 (0x006760F0, 0x00676260, 0x006763D0, 0x00676530, 0x00676610, 0x00676B00,
 0x00676C20, 0x00676E60, 0x00676F00, 0x00676FA0, 0x00677000, 0x00677130,
 0x00677300, 0x00675F10), then module camera (0x006401D0..0x00641760).
+
+## Completed CSWCModule camera batch, worker-m-s3 (2026-10-26)
+
+The journal2 queue from s1 was already annotated on main (only 0x00676610
+CSWCJournal::Add remains, 1,264 bytes), so this round took the next queue
+item: the CSWCModule camera cluster 0x00640090-0x00644170 (nwcmodule.o).
+
+Result: **22 actual NEW attempts, 19 NEW exact, 3 retained NONMATCH, plus 1
+prior NONMATCH promoted** (0x006412B0 IsCameraAnimated: the plain
+`if (m_pCamera) return m_pCamera->GetEventTime(...) != 0;` form matches).
+Folder: 352/394 -> **372/416**. No duplicate annotations.
+
+Files: sw_c_module_camera_controls.cpp (9/9), sw_c_module_camera_modes.cpp
+(5/5), sw_c_module_dialog_camera.cpp (4/4 incl. promotion),
+sw_c_module_lifecycle.cpp (ctor/dtor 2/2), sw_c_module_camera_follow_modes.cpp
+(1/2), sw_c_module_camera_restore.cpp (0/1), sw_c_module_camera_next_position.cpp
+(0/1). Shared header include/m/sw_c_module_camera.h (layouts follow
+n/sw_behavior_camera.h; lifecycle TU declares the full polymorphic layout).
+
+NEW exact: 0x00640090 AcclTurnCamera, 0x006401D0 ZoomCamera, 0x00640240
+ScrollCamera, 0x00640700 UpdateCameraModeChaseCam, 0x00640A80
+UpdateCameraModeBG, 0x00640F70 SetCameraModel, 0x00641010 SetAnimatedCamera,
+0x006412F0 InitializeShotCamera, 0x006413C0 SetFreeLookCamera, 0x00641540
+EnterCombatMode, 0x00641610 SetNavigateCamera, 0x006416F0 ShakeCamera,
+0x00641730 BumpCamera, 0x00641760 UpdateCameraBumpAndShake, 0x006419A0
+UpdateCameraFollow, 0x00641CB0 ~CSWCameraSettings, 0x00641CD0 ~CSWCModule,
+0x00643F40 CSWCModule ctor, 0x00644170 UpdateCameraCollision.
+Names other than symbols.csv ones (InitializeShotCamera, EnterCombatMode,
+SetCameraModel, ctor/dtor) are descriptive, from the playable reference.
+
+Retained NONMATCHs:
+- 0x00640B90 UpdateCameraModeEQ: stack-slot tie only (player spill slot sits
+  between far/near clip outputs); 4 local-order shapes tried.
+- 0x00641DC0 RestoreCamera (50 diffs, 1296/1312): MSVC7 merges the combat
+  early `return 1` into the final epilogue; the original keeps a separate
+  EH epilogue there. if/else restructure did not help.
+- 0x006402F0 GetNextCameraPosition (56 diffs, 832/848): pow/clamps/flow
+  agree; original copies the normalized quaternion into a named local before
+  ToDirection and adds m_vCameraUp first for y/z.
+
+Compiler lessons (reproduced here):
+- `CClientExoApp* pApp = g_pAppManager->m_pClientExoApp; pApp->F(arg)`
+  loads the app manager before the argument (ECX app / EDX arg). The direct
+  `g_pAppManager->m_pClientExoApp->F(m_x)` form loads the argument first.
+  Fixed three functions at once (SetFreeLookCamera, SetAnimatedCamera tail,
+  UpdateCameraFollow).
+- `mov al,[eax+0x6d]; cmp al,3` comes from `unsigned char nMode = ...;
+  if (nMode == 3)`; the direct field compare gives `cmp byte ptr`.
+  `int nMode = ...` gives movzx into a register (UpdateCameraFollow).
+- if/else-if chains on the int mode with code laid out default-first are
+  a `switch` (case 3/5/7/default); EH states number in source order.
+- MSVC7 sinks stores: a global read hoisted to the top of a long store run
+  (ctor 0x00643F40) comes from writing that assignment *first*.
+- GobRef/CExoArrayList::Remove must be `throw()` or destructors get an extra
+  EH state store (~CSWCModule).
+- x87 `fxch st(1); fxch st(1)` pair before fmulp: separate float locals
+  (`float fEnvelope = (float)cos(..) + 1.0f; float fWave = (float)sin(..);`).
+  (float)-casting the intrinsic result keeps dword constants.
+- Clamp code that re-evaluates the min after the max test and assigns via
+  integer moves is the classic macro pair
+  `MAX(lo, MIN(v, hi))` with `#define MIN(a,b) ((a)<(b)?(a):(b))`.
+- Early `return` in a void function placed before a common tail vs.
+  `if (cond) {...} else { m_n84 = 0; }` decides whether the tail block lands
+  at the end (ChaseCam fabs <= 1 path).
+- `Vector v(0,0,0); if (... <= eps) return; v = Get(); v += d; Set(v);`
+  reproduces ScrollCamera's dead zero stores and jnp test.
+
+Next in-range queue: the three big x87 collision functions 0x006422E0
+(4,304 B), 0x006433B0 (2,960 B), 0x006441D0 FindClearView (1,152 B) finish
+this family but are x87-scheduling heavy. Other open rows: 0x00676610
+CSWCJournal::Add (1,264 B, journal2), stats/feedback helpers around
+0x0064B2B0-0x0064B4F0 and ctor 0x0064B2D0 (no playable definition), the
+0x00678xxx-0x0067Bxxx sound/player-control/GUI rows.
+
+## Completed load screen / main menu batch, worker-m-s5 (2026-10-26)
+
+(The s4 round - creature stats, CSoundSet, CanChooseFeat, AppendForceActions -
+was merged without a notes section; see its WIP commits.)
+
+Family: the title-screen GUI cluster 0x0067A6D0-0x0067CA4F: CSWGuiLoadScreen
+(vtable 0x00752DC0), CSWGui3DSceneView (0x00752E30) and CSWGuiMainMenu
+(0x00752F70). Shared header `include/m/sw_gui_main_menu.h` (self-contained;
+copied/trimmed from m/sw_gui_pazaak.h and l/sw_gui_upgrade.h). Files:
+sw_gui_load_screen.cpp (6/7), sw_gui_main_menu.cpp (20/23),
+sw_gui_main_menu_modules.cpp (1/1).
+
+Result: **31 actual NEW attempts, 27 NEW exact, 4 retained NONMATCH.**
+Folder: 421/467 -> **448/498**. No duplicate annotations.
+
+Missing from functions.csv (annotated as extents): 0x0067AC10 MainMenu::Draw,
+0x0067ACB0 3DSceneView::Draw, 0x0067AFB0/B1A0/B250/B2F0 the four menu button
+handlers, 0x0067B450/B470 enter/exit hilight, 0x0067B490 LaunchDashboard,
+0x0067B4A0 OnQuitButtonPressed, 0x0067C4B0 OnWarpButtonPressed.
+
+Names: handler names follow the playable reference (OnNewGamePicked,
+OnLoadSaveGame, OnMoviesPicked, OnOptionsPicked, OnWarpButtonPressed,
+OnQuitButtonPressed, LaunchDashboard, OnEnterButton, OnExitButton).
+Descriptive: CSWGuiLoadScreen::AppendHintToDialogBuffer (0x0067AA80; callers
+call it CSWGuiPanelR5::Destroy), CSWGuiMainMenu::LoadFromLayout,
+ClearModuleNames, OnModuleSelected, PopulateModules, ShowWarpList,
+CSWGuiModuleEntry (0x18-byte list element whose dtor folds into 0x0059EA30).
+Callers name 0x0067A6D0/0x0067A710 CSWGuiLoadScreenS1 (placeholder class);
+here the real class CSWGuiLoadScreen is used. The load screen has no user
+destructor (0x0067AB80 is compiler generated: no vptr store). 0x0067B4D0 is
+the out-of-line ~CExoArrayList<CSWGuiModuleEntry> used by EH unwind funclets
+(explicit instantiation emits it). CSWPartyTable::ResetCurrentSessionStartTime
+ignores ECX, so it is declared static here.
+
+Retained NONMATCHs:
+- 0x0067AA80 AppendHintToDialogBuffer (6 diffs): app-manager load in ECX vs
+  EAX (string address EDX); implicit "", named sEmpty and pApp-local tried.
+- 0x0067B1A0 OnLoadSaveGame (8 diffs): post-AddPanel flag test uses EDX/EAX
+  vs EAX/ECX; explicit mask, base pointer, int AddPanel tried.
+- 0x0067B9D0 OnModuleSelected (16 diffs, rest exact): pControl->m_n4c is
+  loaded into EAX before `mov edi,ecx` in the original; return/if-block tried.
+- 0x0067B6C0 OnPanelAdded (27 diffs, 576/592): the __int64 required-space
+  value keeps its high word in a stack home and `this` lives in EBP in the
+  original; ours spills this. Signed/unsigned, declaration order and inline
+  +2 forms tried.
+
+Compiler lessons (all reproduced here):
+- Inline constructor arguments evaluate right to left: the load screen's
+  `SetExtent(CSWGuiExtent(0, 0, w, h))` loads height first and fixes a
+  register rotation that persisted through the rest of a 688-byte ctor.
+  Field-by-field stores (any order) or aggregate init never matched.
+- Visibility bit via an inline setter `void SetVisible(int b) { m_bVisible =
+  b; }` keeps the member's address in a register / RMW `or [mem], eax`;
+  direct `m_nFlags |= 2` or bitfield stores get split into load/op/store and
+  scheduled pairwise. Fixed HandleInputEvent, ShowWarpList and the 1,424-byte
+  ctor at once (ctor register allocation of the button pointers too).
+- Implicit CExoString->CResRef conversion (`Exists(sModule, ...)`) builds the
+  temporary before the other arguments are pushed; an explicit `CResRef(s)`
+  pushes the constants first.
+- Explicit `CExoString("x")` argument temporaries push EAX; implicit
+  conversions from a literal push via LEA (also for `s + ":modules"`).
+- `int nPos = s.Find(CExoString("_s.rim"), 0); if (nPos != -1)` keeps the
+  int across the temp's dtor; an inline comparison produces setne.
+- EH state order follows source order: put the `zzz` else-branch first
+  (`if (n >= max) {...} else {...}`) to number its temporary first.
+- A new'd CSWGuiButton is constructed inline (CSWGuiNavigable ctor + vptr +
+  members) in PopulateModules but members call 0x0041C0F0 elsewhere: the
+  modules TU defines M_GUI_BUTTON_INLINE_CTOR for an inline `CSWGuiButton() {}`.
+- `__forceinline` CExoArrayList::AddInline was needed in the large function;
+  plain inline was not expanded. The list dtor must be `delete[] element;
+  element = 0;` (no `if`): pointer lists free unconditionally, class-type
+  lists get the vector-delete null check anyway, and dead lists vanish.
+- A single-expression `GetCornerSize() * 2 + GetHeight()` spills the first
+  call result to the stack like the original; a named local keeps it in EDI.
+- Declaring loop counters before a struct copy schedules their zero stores
+  before the copy's last store.
+- CExoIni is 4 bytes: it is built in the dead parameter slot.
+
+Next in-range queue: remaining M TODO rows are mostly large: CSWCMessage
+handlers 0x00650B90, 0x00652F20, 0x006501B0, 0x00653850, 0x00655E40,
+0x00663840 (no playable definitions), journal GUI 0x00644790/0x00645610/
+0x00645100/0x00645330/0x00645E00/0x006456E0 (src/units/1746), camera
+collision 0x006422E0/0x006433B0/0x006441D0, player control 0x00679870, and
+small leftovers 0x006460B0, 0x00646080, 0x0064B4D0/0x0064B4F0, 0x006449D0.
+
+## Unique object-ID array insertion, 2026-10-26
+
+- Screened the 56 remaining indexed M candidates. Reconstructed 0x006449D0
+  as CExoArrayList<unsigned long>::AddUnique: byte-identical 96/96. The Mac
+  debug map supports AddUnique (1/2); native code scans the entire list,
+  counts duplicates, then grows capacity to 16 or doubles it before appending.
+  Allocate resolves to the existing 0x005E03C0. Five other small candidates
+  require further ownership or lifetime evidence before naming.
+- 0x00644790 CSWGuiJournalItemEntry::SetEncouraged matches 192/192 bytes.
+  The flag is a one-bit field; native toggles border alpha and two color
+  vectors. Global color addresses were checked against the existing map.
+- 0x00645610 CSWGuiInGameJournal::MarkNewQuestsObserved matches: its virtual
+  +0x6c lookup clears bit 2 of each viewed entry and clears the ID list.
+  The coarse function extent includes the next routine; matcher confirms
+  the 96-byte emitted body against its corresponding original instructions.
+  0x00646070 OnPanelRemoved tail-calls that routine and matches 16/16 bytes.
+- 0x00644960 CSWGuiInGameJournal::GetQuestEntryAt matches 112/112 bytes;
+  it selects active/done list according to the GUI flag and bounds-checks
+  before calling existing entry getters. The two count accessor names are
+  descriptive folded-getter aliases, not independently recovered names.
+- 0x00645670 CSWGuiInGameJournal::Draw matches 112/112 bytes. Two separate
+  GetInGameGui calls mirror the native short-circuit path before panel draw.
+- 0x00644730 journal black-button handler has exact executable instructions,
+  but remains NONMATCH (11) because the original uses int3 padding and the
+  object output uses nop padding. The +0x60 virtual action name is provisional.
+- 0x00676DE0 CSWCWorldJournal::~CSWCWorldJournal matches 128/128 bytes.
+  The two array member destructors use unconditional delete[]; MSVC emits
+  the needed null check only for the nontrivial entry array.
+- 0x0064B4D0 and 0x0064B4F0 are exact 32-byte vector copies to projectile
+  offsets +0x114 and +0x1B0. Target/source names follow the existing verified
+  projectile layout; the latter native body is also used by server objects
+  for their spell-target position and is a folded implementation.
+- 0x0066BFB0 CSWMiniGameObjectArray::GetObjectByTag matches 176/176 bytes.
+  It scans the 255-entry object table, compares each object's virtual
+  GetModelName() result with the requested string, and returns the first match.
+- 0x0066C190 CSWMiniGameObject::RunHitBulletScript matches 320/320 bytes.
+  It runs the hit script if present, otherwise applies damage to a compatible
+  follower and plays the hit sound. Play3DOneShotSound arguments follow the
+  Mac debug signature (2/2), including float and resource-reference types.
+
+## Client admin message, 2026-10-26
+
+- 0x00675690 retained NONMATCH (9). It allocates a packet, prefixes 's',
+  copies the message and sends it to PLAYERID_SERVER. Two source shapes gave
+  11 and 9 differing instructions; null-return block placement and memcpy
+  register scheduling remain. Class/method name and void return are
+  descriptive pending independent ABI evidence; its known caller ignores EAX.

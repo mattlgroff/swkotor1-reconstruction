@@ -187,3 +187,175 @@ SetTexturePack, 005F0AD0 LoadItemDropSoundList, 005FB960 rumble cut-off,
 006027C0 AddFloatyText, 005F1090 (unknown 0x34-byte class dtor: strings at
 +0xC/+0x30, empty-dtor member at +0x14), 005F4FB0 (12-byte POD list find
 with callback).
+
+## Worker C s3 (branch claude/worker-c-s3), 2026-10-26
+
+Folder canonical check: **803/902 -> 868/970**; no prior MATCH regressed, no
+address annotated twice. 68 NEW attempts, **65 NEW exact**, 3 retained
+NONMATCH, 0 promotions.
+
+Main family: the client cheat console in nwcarea.o (0x0060A300-0x0060B020),
+35 functions, all exact (sw_c_area_cheats.cpp). Only 0x0060A300/0060A480/
+0060A590/0060ABD0 are in functions.csv; the other 31 are real starts missing
+from it (per-skill/per-ability entry points, XP/gold/alignment/items/warp,
+option toggles). Names are descriptive (Cheat*); GetCheatsTurnedOn is the
+Mac name. Plus CSWCCreature action-menu builders and small leaves.
+
+- New exact: 0060A300, 0060A460, 0060A480, 0060A510-0060A580 (8 skill stubs),
+  0060A590, 0060A690, 0060A6A0, 0060A730, 0060A7D0, 0060A860, 0060A8F0,
+  0060A980, 0060A9E0, 0060AA20, 0060AA40, 0060AA80, 0060AAC0, 0060AB30,
+  0060ABB0, 0060ABD0, 0060AC50, 0060ACD0, 0060AD60, 0060ADF0, 0060AE80,
+  0060AF10, 0060AF50, 0060B020 (cheats); 0061F760, 0061F790, 0061F7E0,
+  0061F830, 0061FA00 (ClearInputState), 0061FAA0, 0061FB50 (input leaves);
+  005F1090, 005F4FB0, 005F5180 (client app leaves); 00616940, 006169A0
+  (ArrayList Insert <ulong>/<ushort>); 0060CA80, 0060CBD0, 0060CD50,
+  0060CED0 (equipped-item / last-instant slot accessors); 00616FA0,
+  00616FB0, 00616FD0, 00616FE0, 00616FF0, 00617030, 00617070, 00617090,
+  006170C0 (object/creature virtual leaves, 8 missing from functions.csv);
+  00619DB0 GetPersonalActions, 00619C20 GetTargetActions, 00619B10,
+  00619950 GetCombatFeatsSkills; 00604C90 ApplyFireAndForgetVisualEffect.
+- NONMATCH: 00610490 GetFreeLookVideoEffect (17, row in si/table load
+  order), 006196A0 AddHostileItem (9, base/value load order), 00618A30
+  AddFeatAction (14, register choice for app/feat loads).
+
+Lessons (verified this batch):
+- CSWGuiInterfaceAction's callback at +0x0C is a pointer to member of a
+  class declared incomplete (16-byte general PMF representation, align 8):
+  wrap the struct in `#pragma pack(push, 4)`. Assigning
+  `&CSWCCreature::Method` then emits the {addr,0,0,0} stores; passing such a
+  PMF by value (AddFeatAction) also produces the `and esp, -8` frame.
+- Clamps: the alignment cheats re-test like a double-evaluating macro:
+  `MAX(MIN(n, 100), -100)` with MIN(a,b) ((a)>(b)?(b):(a)), MAX(a,b)
+  ((a)<(b)?(b):(a)). The gold cheat uses stdlib `__max(n, 99)`.
+- strcpy after an optional `*strchr(s, ' ') = 0` is duplicated in both
+  branches of the `if` in the original source.
+- A loop counter declared in the `for` (not with the count at the top) keeps
+  the post-clamp re-test of the count (no jump threading).
+- Toggle `x = !x` through two getter calls matched only via a local
+  (`int b = get()->x; get()->x = !b;`).
+- Inline getters again decided load order: GetClientExoApp(),
+  GetServerExoApp(), CSWCItem::GetBaseItem(), item GetBaseItemId/StackSize.
+  But the same `g_pAppManager->m_pClientExoApp` chain in AddFeatAction
+  wants the direct member (edx then ecx).
+- Feat/arg values computed into a local before the call
+  (`nFeat = CheckFeat(...); AddFeatAction(nFeat, ...)`) keep the original
+  call order; a local id before GetReputation fixed GetTargetActions.
+- 0x0061FAA0's switch must be on (int) with an explicit `case -1`, and case
+  order decides the jump-table block order.
+- `CExoString` returned by value needs the declared destructor to get the
+  original's construction-flag store (CSWCCreature::GetName).
+
+Unresolved real starts seen while screening (not attempted): 0x0061FA90
+(cdecl int equality helper after ClearInputState).
+
+Next in-range queue (screened, not attempted): 006191F0
+GetHostileForcePowers (432 B, like the 616230 NONMATCH), 00605510 GetRoom
+(CExoString compare; original has an 8-aligned frame, cause unknown),
+00605E50 RestartMiniGame (CSWCMiniGame track/obstacle rebuild), 0060E2F0
+ApplyShadowBlob (appearance 2DA + shadow model by size), 0060BDF0 (x87
+distance step), 0060D600 (portrait/name string build), 005EC7F0
+CExoLocStringInternal::Compare, 0060F1E0 scene hit check, then the
+remaining CSWCArea members (604DB0 SetWeather, 605090, 605C40, 606090 ctor,
+60A0F0 dtor).
+
+## Worker C s5 (branch claude/worker-c-s5), 2026-10-26
+
+Folder canonical check (`kotor-match -q -j 2 matching/src/c`): **909/1014 ->
+926/1039**. No prior MATCH regressed, no address annotated twice, every prior
+NONMATCH kept its diff-insn count.
+
+- 25 NEW attempts, **15 NEW exact**, 10 retained NONMATCH, **2 prior NONMATCH
+  promotions** (0060FB80 SetOverrideLightsaberState, 006116A0 BlurWeapon).
+- New exact: 005EB6B0 CExoAliasListInternal::ResolveFileName, 005EC2B0
+  CExoDebugInternal::Warning, 005ED0E0 CExoRandInternal ctor, 005F0AD0
+  LoadItemDropSoundList, 005F5910 setUpEventPlayBack, 005F5AB0
+  ReadAndSetVideoMode, 005F0CE0 ReadVideoModeSettings, 005F14A0
+  SetTexturePack, 006027C0 AddFloatyText, 00605E50 CSWCArea::RestartMiniGame,
+  00605C40 CSWCArea::HiliteAreaObjects (descriptive), 0060D600
+  SetFirstAndLastName (descriptive), 0060C540 GetSaveCreatureFilename,
+  0060F1E0 SceneHitCheck (free cdecl, playable name), 00613BA0
+  EquipToInventorySlot.
+- NONMATCH (diff insns): 005EBA40/005EBC60 CExoFileInternal::Read/Write (16
+  each, post-loop jump threading), 005EBF30 CExoAliasListInternal::Add (21,
+  loop rotation + zero register), 005ECEA0 CExoRandInternal::GetString (48,
+  length kept in edx/spill), 005EC7F0 CExoLocStringInternal::Compare (16),
+  0060E2F0 ApplyShadowBlob (5 real + jump table), 005F1830 SetVideoMode (79),
+  00604DB0 CSWCArea::SetWeather (33, register naming only), 005F3070
+  GetCanSendDialog (4 real: vtable eax/edx), 0060DC50 PlaySwingSound (32,
+  ebp/edi swap).
+- Files: new exo_file_internal_s5, exo_alias_list_internal_s5,
+  exo_rand_internal_s5, exo_loc_string_internal_s5, exo_debug_internal_s5,
+  client_exo_app_internal_s5, sw_c_area_s5, sw_c_creature_s5,
+  sw_c_scene_hit_s5; ReadVideoModeSettings went into
+  client_exo_app_valid_resolution.cpp, EquipToInventorySlot and the two
+  promotions into sw_c_creature_s3.cpp, ApplyShadowBlob into
+  sw_c_creature_r6.cpp.
+- Header facts: client app +0x88 is the capture/playback CExoFile* (renamed
+  m_pCaptureFile, forwarder GetCaptureFile), +0x98 a CExoLinkedList (playback
+  events), +0x1a0 m_nVideoMode, +0x1a4 m_nTexturePack; client options +0x14
+  bit 0x10 enables floaty text; CGameObject slot 0x10 is AsSWSObject;
+  SetVideoMode is (ulong, uchar) returning int, SetTexturePack (uchar, int)
+  returning int, setUpEventPlayBack returns void. 0x61FBA0 (event playback
+  file parser, declared LoadPlayBackEvents) is not attempted.
+
+Lessons (verified this batch):
+- **Same-TU callee register knowledge.** The original compiler skips
+  `mov ecx, esi` (or keeps edx live) across calls to functions compiled
+  earlier in the same object file. Put the caller in the file that defines
+  the callee, after it: ReadVideoModeSettings (40 diffs -> exact) after
+  IsValidResolution; EquipToInventorySlot, SetOverrideLightsaberState and
+  BlurWeapon after GetEquippedItemID/SetEquippedItemID/GetLastInstant in
+  sw_c_creature_s3.cpp. Look for calls without an ecx reload in the
+  original before blaming register allocation.
+- Inline getters again: `g_pAppManager->GetClientExoApp()`/
+  `GetServerExoApp()`, `g_pRules->Get2DArrays()->GetX()`, an inline
+  `GetPlayerId()` fixed load order in setUpEventPlayBack, HiliteAreaObjects,
+  GetCanSendDialog and the lightsaber promotions.
+- Implicit conversions: `sText = nValue;` (CExoString(int) temp addressed by
+  lea) matched AddFloatyText where `CExoString(nValue)` did not; passing a
+  CExoString to a `const CResRef&` parameter reuses a dead temp slot.
+- Two calls differing only in a constant arg (`if (b) f(x, 2); else
+  f(x, 1);`) give the original push/jmp/push tail-merge; `b ? 2 : 1` gives
+  setne/inc.
+- A switch whose cases share code must keep separate (identical) case
+  bodies to avoid the compiler's range check (SetWeather lightning).
+- Out-of-line function with a cached copy of a member pointer (e.g.
+  `pStats = m_pStats` used twice) and `unsigned long oid = m_idSelf;` before
+  a call fixed register choice (SetFirstAndLastName).
+- MSVC loop-head alignment and jump threading differ for retry loops; both
+  Read/Write are at 16 diffs after six shapes.
+
+Next in-range queue (screened, not attempted): 005F6640 GetObjectName (object
+type constants, STR_RES inline + out-of-line ctor), 005FB960
+LookUpAndPerformRumbleWithCutOff (bool-materialized ?: lookups, x87
+distance), 005FB6E0 CrownFutureLeader (inline CExoArrayList copies),
+006134C0 SetAppearance, 005F97E0 AddCreatureModelToIgnoreList (same `or bl,
+0xff` tie as 005F99F0), 0060A0F0 CSWCArea dtor (member list known: 0x11c,
+0x17c CExoString, 0x1c4, 0x1d0, 0x204 linked list, 0x20c/0x218/0x224
+arrays, 0x238/0x244 arrays with null-check dtor, 0x280 linked list),
+0061FBA0 LoadPlayBackEvents (sscanf parser). Consider moving more prior
+creature NONMATCHes next to their earlier-address callees.
+
+## Worker C s6 recovery, 2026-10-26
+
+Recovered Claude's interrupted CSWCArea construction/destruction/cleanup
+family from claude/worker-c-s6, including the unsaved UnloadArea work.
+Screened and attempted 3 functions: 0x00606090 CSWCArea constructor and
+0x0060A0F0 destructor MATCH; 0x00609410 UnloadArea NONMATCH (19 instruction
+diffs, two DelIndex register/order ties). No prior annotations intentionally
+changed. File comparison used the licensed executable and MSVC 7.0.
+
+The missing CGameObject AsSWCCreature/AsSWCPlaceable virtual slots are +0x2c
+and +0x4c, consistent with the native calls. Declared CSWCCreature as a
+CClientObject for the AI list call. Introducing a named CClientAIMaster
+local before RemoveObject cut cleanup differences from 36 to 19. The +0x250
+allocation is explicitly deallocated via operator delete, reflecting its
+native call to 0x006FA390 without inventing the allocation's element type.
+
+At 0x00606382 the native constructor passes the CSWCArea `this` pointer to
+0x0068DF40 CSWCAmbientSound's constructor. This file declares the pointer
+signature; the preexisting K source declares an unsigned-long area ID, which
+needs a separate K-owned correction. CWorldTimer::GetWorldTime is 0x004ADE40.
+
+Folder comparison: 926/1039 -> 928/1042, no prior MATCH regressions,
+no prior NONMATCH deterioration, and no duplicate annotations.

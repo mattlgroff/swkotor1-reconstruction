@@ -102,6 +102,7 @@ public:
 class CSWClass {
 public:
     static int IsForceUserClass(int nClass);
+    unsigned char GetSpellsPerDayLevel(unsigned char nLevel, unsigned char nSpellLevel);
     int IsNormalFeat(unsigned short nFeat);
     int IsClassSkill(unsigned short nSkill);
     int IsBonusFeat(unsigned short nFeat);
@@ -262,17 +263,29 @@ public:
     unsigned char m_nWeaponWield;    // +0x8
     char pad_0x9[0x1a - 0x9];
     unsigned char m_nRangedWeapon;   // +0x1a
-    char pad_0x1b[0x1f - 0x1b];
+    unsigned char m_nWeaponSize;     // +0x1b
+    char pad_0x1c[0x1e - 0x1c];
+    unsigned char m_nCritThreat;     // +0x1e
     unsigned char m_nCritMultiplier; // +0x1f
     char pad_0x20[0xad - 0x20];
     unsigned char m_nMaxDEXBonus;    // +0xad
+    char pad_0xae[0xb0 - 0xae];
+    unsigned short m_nSpecializationFeat;  // +0xb0 (placeholder name)
+};
+
+struct CSWItemProperty {
+    char pad_0x0[0x6];
+    unsigned short m_nCostValue;     // +0x6
 };
 
 class CSWSItem {
 public:
+    CSWBaseItem *GetBaseItem();
+    int GetPropertyByType(CSWItemProperty **ppProperty, unsigned short nType, unsigned short nSubType);
     int ComputeArmorClass();
     CSWBaseItem *GetBaseItemData();
     int GetIsFinesseWeapon();
+    int FindProperty(CSWItemProperty **ppProperty, unsigned short nName, unsigned short nSubType);
     char pad_0x0[0xc];
     int m_nBaseItem;                 // +0xc
 };
@@ -446,12 +459,17 @@ public:
     int ResolveSpecialAttackAttackBonus(int nUnused);
     int ResolveSpecialAttackDamageBonus(int nUnused);
     int GetCriticalHitMultiplier(int bOffHand);
+    int GetCriticalHitRoll(int bOffHand);
+    int EffectId2Effect2DAId(int nEffectId, int nSubType);
     CExoString GetClassString(unsigned char nMultiClass);
     int GetBaseAttackBonus();
     int HasSpellPrereq(CSWSpell *pSpell, CExoArrayList<unsigned long> *pList);
     int HasFeatPrereq(CSWFeat *pFeat, CExoArrayList<unsigned short> *pList);
     int CanChooseSpell(unsigned long nSpell, unsigned char nKnownLeft,
                        CExoArrayList<unsigned long> *pList);
+    int GetMeleeDamageBonus(int bOffHand);
+    unsigned char GetSpellGainWithBonus(unsigned char nMultiClass, unsigned char nSpellLevel);
+    int GetRangedDamageBonus();
 
     CExoArrayList<unsigned short> m_lFeats;            // +0x0
     CExoArrayList<CFeatUseListEntry *> m_lFeatUses;    // +0xc
@@ -1610,6 +1628,118 @@ int CSWSCreatureStats::GetCriticalHitMultiplier(int bOffHand)
     return nMultiplier;
 }
 
+// The original tests the address of GetBaseCreature (always true) where a
+// call was meant.
+// NONMATCH (55): pWeapon / nThreat take edi / esi the other way round and
+// the base-item lookups load the item id before g_pRules.
+// FUNCTION: SWKOTOR 0x005A5130
+int CSWSCreatureStats::GetCriticalHitRoll(int bOffHand)
+{
+    int nRange = 0;
+    if (&CSWSCreatureStats::GetBaseCreature) {
+        int nThreat;
+        CSWSItem *pWeapon = m_pBaseCreature->m_pInventory->GetItemInSlot(0x10);
+        if (bOffHand && pWeapon &&
+            g_pRules->m_pBaseItemArray->GetBaseItem(pWeapon->m_nBaseItem)->m_nWeaponWield != 3)
+            pWeapon = m_pBaseCreature->m_pInventory->GetItemInSlot(0x20);
+        if (!pWeapon)
+            pWeapon = m_pBaseCreature->m_pInventory->GetItemInSlot(8);
+        if (!pWeapon) {
+            nThreat = 1;
+        } else {
+            nThreat = g_pRules->m_pBaseItemArray->GetBaseItem(pWeapon->m_nBaseItem)->m_nCritThreat;
+            CSWItemProperty *pProperty = 0;
+            if (pWeapon->FindProperty(&pProperty, 0x1c, 0))
+                nRange = nThreat;
+        }
+        nRange += nThreat;
+        int nFeatBonus = 0;
+        switch (m_pBaseCreature->m_pcCombatRound->GetAttack(m_pBaseCreature->m_pcCombatRound->m_nCurrentAttack)
+                    ->m_nAttackType) {
+        case 0x08:
+        case 0x1f:
+            nFeatBonus = nThreat;
+            break;
+        case 0x13:
+        case 0x14:
+            nFeatBonus = nThreat * 2;
+            break;
+        case 0x4d:
+        case 0x51:
+            nFeatBonus = nThreat * 3;
+            break;
+        }
+        nRange += nFeatBonus;
+    }
+    return 21 - nRange;
+}
+
+// Maps an effect id (and the subtype of effect 8) to its row in the effect
+// icon 2DA; 0 when it has none.
+// FUNCTION: SWKOTOR 0x005A5AA0
+int CSWSCreatureStats::EffectId2Effect2DAId(int nEffectId, int nSubType)
+{
+    switch (nEffectId) {
+    case 0x12:
+        return 0x1;
+    case 0x23:
+        return 0x2;
+    case 0x25:
+        return 0x3;
+    case 0xb:
+        return 0x4;
+    case 0xe:
+        return 0x5;
+    case 0x11:
+        return 0x6;
+    case 0x31:
+        return 0x7;
+    case 0x1d:
+        return 0x8;
+    case 0x1b:
+        return 0x9;
+    case 0x22:
+        return 0xa;
+    case 0x38:
+        return 0xb;
+    case 0x5d:
+        return 0xc;
+    case 0x5e:
+        return 0xd;
+    case 0x5f:
+        return 0xe;
+    case 0x61:
+        return 0xf;
+    case 0x63:
+        return 0x10;
+    case 0x64:
+        return 0x11;
+    case 0x8: {
+        int nId = 0;
+        if (nSubType == 8)
+            nId = 0xd;
+        else if (nSubType == 7)
+            nId = 0xf;
+        else if (nSubType == 5)
+            nId = 0x12;
+        else if (nSubType == 4)
+            nId = 0x13;
+        else if (nSubType == 3)
+            nId = 0x15;
+        else if (nSubType == 1)
+            nId = 0x16;
+        else if (nSubType == 6)
+            nId = 0x17;
+        else if (nSubType == 2)
+            nId = 0x18;
+        return nId;
+    }
+    case 0x13:
+        return 0x14;
+    }
+    return 0;
+}
+
 // FUNCTION: SWKOTOR 0x005A53B0
 CExoString CSWSCreatureStats::GetClassString(unsigned char nMultiClass)
 {
@@ -1702,4 +1832,103 @@ int CSWSCreatureStats::CanChooseSpell(unsigned long nSpell, unsigned char nKnown
     if (!HasSpellPrereq(pSpell, pList))
         return 0;
     return nKnownLeft - pList->num > 0;
+}
+
+// Names are descriptive (no debug-map names): the STR damage bonus of the
+// melee / ranged weapon plus the weapon specialization bonus.
+// NONMATCH (31): cl hoists the shared m_pBaseCreature->m_pInventory load above
+// the off-hand branch; the original loads it in each arm.
+// FUNCTION: SWKOTOR 0x005A7A20
+int CSWSCreatureStats::GetMeleeDamageBonus(int bOffHand)
+{
+    CSWSItem *pWeapon;
+    if (bOffHand) {
+        pWeapon = m_pBaseCreature->m_pInventory->GetItemInSlot(0x20);
+        if (!pWeapon || g_pRules->m_pBaseItemArray->GetBaseItem(pWeapon->m_nBaseItem)->m_nWeaponWield != 3)
+            pWeapon = 0;
+    } else {
+        pWeapon = m_pBaseCreature->m_pInventory->GetItemInSlot(0x10);
+    }
+    if (pWeapon && g_pRules->m_pBaseItemArray->GetBaseItem(pWeapon->m_nBaseItem)->m_nRangedWeapon > 0)
+        return 0;
+    int nBonus;
+    if (bOffHand) {
+        if (m_nSTRMod > 0)
+            nBonus = (int)(m_nSTRMod * 0.5f);
+        else
+            nBonus = m_nSTRMod;
+    } else if (pWeapon) {
+        CSWBaseItem *pBaseItem = g_pRules->m_pBaseItemArray->GetBaseItem(pWeapon->m_nBaseItem);
+        if (pBaseItem->m_nWeaponSize - m_pBaseCreature->m_nCreatureSize == 1 && pBaseItem->m_nWeaponWield != 3) {
+            if (m_nSTRMod > 0)
+                nBonus = (int)(m_nSTRMod * 1.5f);
+            else
+                nBonus = m_nSTRMod;
+        } else {
+            nBonus = m_nSTRMod;
+        }
+    } else {
+        nBonus = m_nSTRMod;
+    }
+    int nSpecialization = 0;
+    if (pWeapon && pWeapon->GetBaseItem()) {
+        unsigned short nFeat = pWeapon->GetBaseItem()->m_nSpecializationFeat;
+        if (nFeat && HasFeat(nFeat))
+            nSpecialization = 2;
+    }
+    return nBonus + nSpecialization;
+}
+
+// NONMATCH (8): eax/ecx/edx roles around the two GetBaseItem calls only.
+// FUNCTION: SWKOTOR 0x005A7DB0
+int CSWSCreatureStats::GetRangedDamageBonus()
+{
+    int nBonus = 0;
+    CSWSItem *pWeapon = m_pBaseCreature->m_pInventory->GetItemInSlot(0x10);
+    if (pWeapon) {
+        if (!(g_pRules->m_pBaseItemArray->GetBaseItem(pWeapon->m_nBaseItem)->m_nRangedWeapon > 0))
+            return 0;
+        nBonus = 0;
+        if (g_pRules->m_pBaseItemArray->GetBaseItem(pWeapon->m_nBaseItem)->m_nWeaponWield == 7) {
+            nBonus = m_nSTRMod;
+        } else {
+            if (m_nSTRMod < 0)
+                nBonus = m_nSTRMod;
+            CSWItemProperty *pProperty;
+            if (pWeapon->GetPropertyByType(&pProperty, 0x1e, 0)) {
+                nBonus = (unsigned short)(m_nSTRMod < pProperty->m_nCostValue ? m_nSTRMod
+                                                                               : pProperty->m_nCostValue);
+            }
+        }
+    }
+    int nSpecialization = 0;
+    if (pWeapon && pWeapon->GetBaseItem()) {
+        unsigned short nFeat = pWeapon->GetBaseItem()->m_nSpecializationFeat;
+        if (nFeat && HasFeat(nFeat))
+            nSpecialization = 2;
+    }
+    return nBonus + nSpecialization;
+}
+
+// NONMATCH (7): the original evaluates the class ability modifier into al
+// (default reloaded from the zeroed stack byte) and keeps nBonus in bl; here
+// the ability lives in bl. Name from the debug-map list (GetSpellGainWithBonus).
+// FUNCTION: SWKOTOR 0x005A5EE0
+unsigned char CSWSCreatureStats::GetSpellGainWithBonus(unsigned char nMultiClass, unsigned char nSpellLevel)
+{
+    char nAbility = 0;
+    unsigned char nBonus = 0;
+    unsigned char nClass = GetClass(nMultiClass);
+    CSWClass *pClass = &g_pRules->m_pClasses[nClass];
+    if (pClass) {
+        nAbility = CSWClass::IsForceUserClass(nClass) ? m_nCHAMod : nAbility;
+        if (nSpellLevel > 0 && nAbility > 0 && nAbility >= nSpellLevel) {
+            int n = nAbility - nSpellLevel + 4;
+            nBonus = (unsigned char)((n > 0 ? n : 0) / 4);
+        }
+        unsigned char nGain = pClass->GetSpellsPerDayLevel(GetClassLevel(nMultiClass, 0), nSpellLevel);
+        if (nGain != 0xff)
+            return nGain + nBonus;
+    }
+    return 0;
 }

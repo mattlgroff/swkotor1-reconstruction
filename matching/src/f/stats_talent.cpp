@@ -15,12 +15,36 @@ public:
     char pad_0x1d[0x3];
 };
 
+class CExoString {
+public:
+    CExoString(const char *s);
+    ~CExoString();
+    char *m_sString;
+    unsigned long m_nBufferLength;
+};
+
+class C2DA {
+public:
+    int GetINTEntry(int nRow, const CExoString &sColumn, int *pValue);
+};
+
+class C2DArrays {
+public:
+    char pad_0x0[0xf4];
+    C2DA *m_pSpellsTable;            // +0xf4 (placeholder name)
+    C2DA *m_pFeatTable;              // +0xf8 (placeholder name)
+    C2DA *GetFeatTable() { return m_pFeatTable; }
+    C2DA *GetSpellsTable() { return m_pSpellsTable; }
+};
+
 class CSWRules {
 public:
     char pad_0x0[0x8c];
     CSWSpellArray *m_pSpellArray;    // +0x8c
     char pad_0x90[0x24];
     CSWSkill *m_pSkills;             // +0xb4
+    C2DArrays *m_p2DArrays;          // +0xb8
+    C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
 extern CSWRules *g_pRules;
@@ -51,6 +75,7 @@ public:
 class CSWSCreatureStats {
 public:
     int GetCreatureHasTalent(int nType, int nId);
+    int GetTalentAllowed(int nType, int nId, int nExclusionMask);
     unsigned char GetClass(unsigned char nMultiClass);
     int HasFeat(unsigned short nFeat);
     unsigned char GetFeatRemainingUses(unsigned short nFeat);
@@ -139,4 +164,25 @@ int CSWSCreatureStats::GetWeaponSpecialization(CSWItem* pItem)
         }
     }
     return 0;
+}
+
+// Name is descriptive: 0 when the talent's "Exclusion" column is set.
+// FUNCTION: SWKOTOR 0x005A5DF0
+int CSWSCreatureStats::GetTalentAllowed(int nType, int nId, int nExclusionMask)
+{
+    int bAllowed = 1;
+    int nExclusion = 0;
+    bool bFound;
+    if (nType == 1) {
+        CExoString sColumn("Exclusion");
+        bFound = g_pRules->Get2DArrays()->GetFeatTable()->GetINTEntry(nId, sColumn, &nExclusion) != 0;
+    } else if (nType == 0) {
+        CExoString sColumn("Exclusion");
+        bFound = g_pRules->Get2DArrays()->GetSpellsTable()->GetINTEntry(nId, sColumn, &nExclusion) != 0;
+    } else {
+        return bAllowed;
+    }
+    if (bFound && nExclusion && (nExclusion | nExclusionMask))
+        bAllowed = 0;
+    return bAllowed;
 }

@@ -12,6 +12,15 @@ class CSWSCreatureStats;
 template <class T> class CExoArrayList {
 public:
     void Remove(T t);
+    void Insert(T t, int nPos);                 // folded instantiation, e.g. 0x00616940
+    void Allocate(int nSize);                   // folded instantiation, e.g. 0x004D2FA0
+    void Add(T t)
+    {
+        if (num == array_size) {
+            Allocate(array_size ? array_size * 2 : 16);
+        }
+        element[num++] = t;
+    }
 
     T* element;
     int num;
@@ -35,6 +44,7 @@ template <class T> void CExoArrayList<T>::Remove(T t)
 
 class CExoString {
 public:
+    CExoString();                               // 0x005B3190
     CExoString(const char* s);                  // 0x005E5A90
     ~CExoString();                              // 0x005E5C20
 
@@ -45,6 +55,7 @@ public:
 class C2DA {
 public:
     int GetINTEntry(int nRow, const CExoString& sColumn, int* pValue);  // 0x00413660
+    int GetCExoStringEntry(int nRow, const CExoString& sColumn, CExoString* pValue);  // 0x00413270
 
     char pad_0x0[0x24];
     int m_nNumRows;                             // 0x24
@@ -52,7 +63,8 @@ public:
 
 class C2DAs {
 public:
-    char pad_0x0[0x124];
+    char pad_0x0[0x120];
+    C2DA* m_pEffectIconTable;                   // 0x120 (effecticon.2da)
     C2DA* m_pIgnoreOnDeath;                     // 0x124 (placeholder name)
 };
 
@@ -62,6 +74,7 @@ struct CSWRulesEntry34 {
 
 class CSWRules {
 public:
+    unsigned short RollDice(unsigned char nDice, unsigned char nSides);  // 0x00550B60
     CSWRulesEntry34* GetEntryB0(unsigned short n) { return &m_pEntriesB0[n]; }
 
     char pad_0x0[0xaa];
@@ -80,6 +93,7 @@ class CGameEffect {
 public:
     CGameEffect(int bCreateNewID);              // 0x00503E40
     CGameEffect(CGameEffect* pCopy);            // 0x00503F70
+    ~CGameEffect();                             // 0x00503590
     void UpdateLinked();                        // 0x00504240 (placeholder name)
     void ClearLinked(int a, int b);             // 0x00504810 (placeholder name)
     int GetInteger(int nIndex);                 // 0x00503690
@@ -89,9 +103,14 @@ public:
     float GetFloat(int nIndex);                 // 0x005036C0
     void SetFloat(int nIndex, float fValue);    // 0x005036D0
     void SetCreator(unsigned long oid);         // 0x00503A00
+    void CopyEffect(CGameEffect* pFrom, int bArg);  // 0x00504090
+    void SetExpiryTime(unsigned long nDay, unsigned long nTime);  // 0x00503750
     int GetSaveType();                          // 0x00503A70 (placeholder name)
     void SetDurationType(unsigned short nType) { m_nSubType = (m_nSubType & 0xfff8) | nType; }
     unsigned short GetDurationType() { return m_nSubType & 7; }
+    unsigned short GetType() { return m_nType; }
+    unsigned __int64 GetID() { return m_nID; }
+    float GetDuration() { return m_fDuration; }
 
     unsigned __int64 m_nID;                     // 0x00
     unsigned short m_nType;                     // 0x08
@@ -99,7 +118,9 @@ public:
     float m_fDuration;                          // 0x0c
     char pad_0x10[0x18 - 0x10];
     unsigned long m_oidCreator;                 // 0x18
-    char pad_0x1c[0x28 - 0x1c];
+    unsigned long m_nSpellId;                   // 0x1c
+    int m_bExpose;                              // 0x20
+    char pad_0x24[0x28 - 0x24];
     CGameEffect* m_pLinkLeft;                   // 0x28
     CGameEffect* m_pLinkRight;                  // 0x2c
     char pad_0x30[0x8c - 0x30];
@@ -131,6 +152,7 @@ public:
     ~CSWCCMessageData();
     void CopyTo(CSWCCMessageData* pOther);      // 0x004D6EE0 (placeholder name)
     void SetObjectID(int nIndex, unsigned long oid);  // 0x004D7780
+    void SetInteger(int nIndex, int nValue);    // 0x004D76B0
 
     char pad_0x0[0x34];
 };
@@ -141,6 +163,10 @@ public:
     virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
     virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
     virtual CSWSCreature* AsSWSCreature();      // 0x30
+
+    unsigned long GetId() { return m_idSelf; }
+
+    unsigned long m_idSelf;                     // 0x04
 };
 
 class CSWSObject : public CGameObject {
@@ -154,17 +180,20 @@ public:
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8c();
     virtual void v90();
     virtual int GetIsInConversation();          // 0x94
-    virtual void v98(); virtual void v9c();
+    virtual short GetMaxHitPoints(int bArg);    // 0x98
+    virtual short GetCurrentHitPoints(int bArg);  // 0x9c
     virtual void va0(); virtual void va4(); virtual void va8(); virtual void vac();
-    virtual void vb0();
+    virtual char GetDamageImmunityB0(int nType);  // 0xb0 (placeholder name)
     virtual char GetDamageImmunity(int nType);  // 0xb4
 
     void SetDamageImmunity(int nType, int nValue);  // 0x004CAF20
+    void SetDamageImmunity(unsigned short nType, char nValue);  // 0x004CAF20 (real signature)
     void ApplyEffect(CGameEffect* pEffect, int bLoadingGame, int bFlag);  // 0x004D14F0
+    void RemoveEffect(CGameEffect* pEffect);    // 0x004D05C0
+    int RemoveEffectById(unsigned __int64 nID); // 0x004D06C0
 
     void SetAIValue(int nValue);                // 0x004CD240 (placeholder name)
 
-    unsigned long m_idSelf;                     // 0x04
     unsigned char m_nObjectType;                // 0x08
     char pad_0x9[0x90 - 0x9];
     Vector m_vPosition;                         // 0x90
@@ -172,22 +201,31 @@ public:
     int m_nTemporaryHitPoints;                  // 0xe4 (read as a short)
     int m_nE8;                                  // 0xe8
     int m_nEC;                                  // 0xec
-    char pad_0xf0[0xf8 - 0xf0];
+    int m_bF0;                                  // 0xf0 (placeholder name)
+    char pad_0xf4[0xf8 - 0xf4];
     int m_bF8;                                  // 0xf8
+    char pad_0xfc[0x124 - 0xfc];
+    CExoArrayList<CGameEffect*> m_appliedEffects;   // 0x124
 };
 
 class CSWSCreatureStats {
 public:
+    unsigned char GetLevel(int bArg);           // 0x005A5FD0
     unsigned char GetClassNegativeLevels(unsigned char nClass);            // 0x005A50E0
     void SetClassNegativeLevels(unsigned char nClass, unsigned char nLevels);  // 0x005A5440
     char GetForceResistance();                  // 0x005A5A60
     void SetForceResistance(int nValue);        // 0x005AFAC0
+    void SetForceResistance(unsigned char nValue);  // 0x005AFAC0 (real signature)
 
     char pad_0x0[0x18];
     CExoArrayList<unsigned short> m_lstBonusFeats;  // 0x18
     char pad_0x24[0x6c - 0x24];
     int m_b6C;                                  // 0x6c
-    char pad_0x70[0x103 - 0x70];
+    char pad_0x70[0x89 - 0x70];
+    unsigned char m_nNumMultiClasses;           // 0x89
+    char pad_0x8a[0xf8 - 0x8a];
+    unsigned char m_nACBonus[10];               // 0xf8..0x101 (AC increase/decrease by kind, placeholder name)
+    char pad_0x102;
     unsigned char m_nEnemyAttackBonus;          // 0x103
     char pad_0x104[0x11c - 0x104];
     unsigned char m_n11C;                       // 0x11c
@@ -196,22 +234,37 @@ public:
     char pad_0x121[0x124 - 0x121];
     short m_nHitPoints124;                      // 0x124 (placeholder name)
     short m_nHitPoints126;                      // 0x126 (placeholder name)
-    char pad_0x128[0x138 - 0x128];
+    char pad_0x128[0x12e - 0x128];
+    unsigned short m_nACStart;                  // 0x12e (placeholder name)
+    char pad_0x130[0x138 - 0x130];
     unsigned short m_nAIStateStart;             // 0x138 (placeholder name)
-    char pad_0x13a[0x146 - 0x13a];
+    char pad_0x13a[0x13c - 0x13a];
+    unsigned short m_nEffectIconStart;          // 0x13c (placeholder name)
+    char pad_0x13e[0x140 - 0x13e];
+    unsigned short m_nInvisibilityStart;        // 0x140 (placeholder name)
+    char pad_0x142[0x146 - 0x142];
     unsigned short m_nFlag8ECBit0Start;         // 0x146 (placeholder name)
-    char pad_0x148[0x14e - 0x148];
+    unsigned short m_nTrueSeeingStart;          // 0x148 (placeholder name)
+    char pad_0x14a[0x14e - 0x14a];
     unsigned short m_nFlags8ECStart;            // 0x14e (placeholder name)
 
     short GetCurrentHitPoints() { return (short)(m_nHitPoints126 + m_nHitPoints124); }
+    unsigned char GetClass(unsigned char nMultiClass);  // 0x005A4E90
 
     void Set11C(char nValue);                   // 0x0060E760 (placeholder name)
     void SetForceResistanceDecrease(int nValue);  // 0x005AFAE0 (placeholder name)
     int GetEffectImmunity(unsigned char nType, CSWSCreature* pVersus);  // 0x005A6960
 };
 
+// effect icon entry (placeholder name; only the leading id is used)
+struct CEffectIcon {
+    short m_nIcon;
+};
+
 class CSWSCreature : public CSWSObject {
 public:
+    void UnsummonMyself();                    // 0x005149B0
+    void UpdateAmbientAnimationState();     // 0x004F28D0
     int GetIsPossessed();                       // 0x0063E7F0 (placeholder name)
     int GetDeadTemp();                          // 0x004EF890
     void ClearVisibleList();                    // 0x005178F0
@@ -223,13 +276,14 @@ public:
     void SendFeedbackData(int nMessage, CSWCCMessageData* pData);  // 0x004EDE10 (placeholder name)             // 0x004CCD80 (placeholder name)
     void ClearActions4ECFF0();                  // 0x004ECFF0 (placeholder name)
     void ClearActions4ED060(int bFlag);         // 0x004ED060 (placeholder name)
-    void AddEffect4EE150(CGameEffect* pEffect); // 0x004EE150 (placeholder name)
+    int UnDisguise(CGameEffect* pEffect);       // 0x004EE150
     short GetMaxHitPoints();                    // 0x004FD490 (placeholder name)
+    int Disguise(int nAppearance, CGameEffect* pEffect, int bLoadingGame);  // 0x004EE010 (placeholder name)
     void SetMovementRate(float fRate);          // 0x004EC3B0 (placeholder name)
 
-    char pad_0xfc[0x124 - 0xfc];
-    CExoArrayList<CGameEffect*> m_appliedEffects;   // 0x124
-    char pad_0x130[0x310 - 0x130];
+    char pad_0x130[0x19c - 0x130];
+    int m_b19C;                                 // 0x19c (placeholder name)
+    char pad_0x1a0[0x310 - 0x1a0];
     unsigned long m_oid310;                     // 0x310 (placeholder name)
     Vector m_v314;                              // 0x314 (placeholder name)
     int m_n320;                                 // 0x320
@@ -246,7 +300,10 @@ public:
     int m_b8E4;                                 // 0x8e4
     int m_b8E8;                                 // 0x8e8
     unsigned char m_n8EC;                       // 0x8ec
-    char pad_0x8ed[0x9a4 - 0x8ed];
+    unsigned char m_n8ED;                       // 0x8ed (placeholder name)
+    char pad_0x8ee[0x8f4 - 0x8ee];
+    CExoArrayList<CEffectIcon*> m_lstEffectIcons;  // 0x8f4 (placeholder name)
+    char pad_0x900[0x9a4 - 0x900];
     int m_n9A4;                                 // 0x9a4
     char pad_0x9a8[0x9c8 - 0x9a8];
     CSWSCombatRound* m_pCombatRound;            // 0x9c8
@@ -275,6 +332,10 @@ public:
 class CWorldTimer {
 public:
     void GetWorldTime(unsigned long* pDay, unsigned long* pTime);  // 0x004ADE40
+    unsigned long GetCalendarDayFromSeconds(float fSeconds);       // 0x004AE1B0
+    unsigned long GetTimeOfDayFromSeconds(float fSeconds);         // 0x004AE200
+    int AddWorldTimes(unsigned long nDay1, unsigned long nTime1, unsigned long nDay2,
+                      unsigned long nTime2, unsigned long* pDay, unsigned long* pTime);  // 0x004ADF50
 };
 
 class CServerAIMaster {
@@ -283,9 +344,25 @@ public:
                           unsigned long oidObject, unsigned long nEvent, void* pData);  // 0x004B08D0
 };
 
+// a CExoArrayList<unsigned long> (placeholder class name)
 class CVisibilityList {
 public:
     void AddInvisible(unsigned long oid);       // 0x006449D0 (placeholder name)
+    void Remove(unsigned long oid);             // 0x0066DCC0
+    int Contains(unsigned long oid)
+    {
+        int n = 0;
+        for (int i = 0; i < num; i++) {
+            if (element[i] == oid) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    unsigned long* element;
+    int num;
+    int array_size;
 };
 
 class CServerExoAppInternal2 {
@@ -294,14 +371,32 @@ public:
     CVisibilityList m_lInvisible;               // 0x13c (placeholder name)
 };
 
+class CSWSClient {
+public:
+    char pad_0x0[0x4];
+    unsigned long m_nPlayerId;                  // 0x04 (placeholder name)
+};
+
+class CSWSMessage {
+public:
+    int SendServerToPlayerCCMessage(unsigned long nPlayerId, unsigned char nMinor,
+                                    CSWCCMessageData* pData, void* pArg);  // 0x00568570
+};
+
 class CServerExoApp {
 public:
+    CSWSClient* GetClientObjectByObjectID(unsigned long oid);  // 0x004AE910
+    CSWSMessage* GetNWSMessage();               // 0x004AEDB0
     CServerExoAppInternal2* GetInternal6B0();   // 0x004AE6B0 (placeholder name)
     CGameObjectArray* GetObjectArray();         // 0x004AED70
     CServerAIMaster* GetServerAIMaster();       // 0x004AED80
     CWorldTimer* GetWorldTimer();               // 0x004AEDE0
     CGameObject* GetAreaByGameObjectID(unsigned long oid);  // 0x004AE780
     void Fn4AE960(int bFlag);                   // 0x004AE960 (placeholder name)
+    void TogglePauseState(unsigned char nState);  // 0x004AE960
+    unsigned char GetActivePauseState();        // 0x004AE990
+    void AddToExclusionList(unsigned long oid, unsigned char nState);  // 0x004AE9B0
+    CWorldTimer* GetActiveTimer(unsigned long oid);  // 0x004AE830
     void Fn4AE9C0(unsigned long oid, int bFlag);  // 0x004AE9C0 (placeholder name)
     CSWSCreature* GetCreatureByGameObjectID(unsigned long oid); // 0x004AE770
 };
@@ -315,10 +410,13 @@ extern CAppManager* g_pAppManager;              // 0x007A39FC
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 extern const unsigned char g_nGameObjectFound;   // 0x0074666C
 extern const unsigned long g_nEventRemoveAoE;    // 0x007441E0 (0x0b)
+extern const unsigned long g_nEventRemoveEffect;  // 0x007441EC (placeholder name)
 extern const unsigned long g_nEvent4;            // 0x007441C4 (4)
 extern const unsigned long g_nEvent7441C8;       // 0x007441C8
 extern const unsigned short g_nDurationInstant;
 extern const unsigned short g_nDurationTemporary;  // 0x007473C0
+extern const unsigned short g_nDurationPermanent;  // 0x007473C4 (placeholder name)
+extern const unsigned short g_nDurationEquipped;   // 0x007473C8 (placeholder name)
 extern const unsigned char g_nObjectTypeA;       // 0x00746634
 extern const unsigned char g_nObjectTypeB;       // 0x00746638
 extern const unsigned char g_nObjectTypeC;       // 0x00746639  // 0x007473B8
@@ -337,6 +435,10 @@ typedef int (CSWSEffectListHandler::*EffectRemoveFn)(CSWSObject* pObject, CGameE
 // vtable 0x00744274
 class CSWSEffectListHandler : public CGameEffectApplierRemover {
 public:
+    int OnRemoveSummonCreature(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveSetStateInternal(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnApplyACIncrease(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnApplyACDecrease(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
     virtual ~CSWSEffectListHandler();
 
     int OnApply8D4(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);       // 0x004D83A0
@@ -433,6 +535,39 @@ public:
     int OnApplyInvisibility(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
     int OnRemoveBonusFeat(CSWSObject* pObject, CGameEffect* pEffect);
 
+    // effect_list_handler5.cpp
+    int OnRemoveEffectIcon(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnApplySlow(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnApplyDispelAllMagic(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnApplyTimestop(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnApplyBlindness(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnRemoveACIncrease(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveACDecrease(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveDamageImmunityIncrease(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveDamageImmunityDecrease(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveSetState(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveMovementSpeedChange(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveForceResistanceIncrease(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnApplyUltraVision(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnRemoveUltraVision(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveInvisibility(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveForceResistanceDecrease(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnApplyHasteOrSlow(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnRemoveHasteOrSlow(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnApplyVision(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnApplyDisguise(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnApplyTrueSeeing(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnRemoveTrueSeeing(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnApplyBonusFeat(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+
+    // effect_list_handler6.cpp
+    int OnApplySanctuary(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnRemoveSanctuary(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnApplyResurrection(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnApplyPureGoodPowers(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnApplyPureEvilPowers(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnApplyEffectIcon(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+
     EffectApplyFn* m_pApplyFunctions;           // 0x04
     EffectRemoveFn* m_pRemoveFunctions;         // 0x08
 };
@@ -440,7 +575,28 @@ public:
 // 0x004DF510: a CExoArrayList of 64-bit ids (placeholder class name).
 class CEffectIDList {
 public:
+    CEffectIDList() { num = 0; array_size = 0; element = NULL; }
+    ~CEffectIDList() { delete[] element; }
     int CountMatches(unsigned __int64 nID);     // 0x004DF510
+    void AddUnique(unsigned __int64 nID);       // 0x004E3B70
+    void Allocate(int nSize);                   // 0x004C4F50 (folded 8-byte instantiation)
+    int Contains(unsigned __int64 nID)
+    {
+        int nMatches = 0;
+        for (int i = 0; i < num; i++) {
+            if (element[i] == nID) {
+                nMatches++;
+            }
+        }
+        return nMatches;
+    }
+    void Add(unsigned __int64 nID)
+    {
+        if (num == array_size) {
+            Allocate(array_size ? array_size * 2 : 16);
+        }
+        element[num++] = nID;
+    }
 
     unsigned __int64* element;
     int num;

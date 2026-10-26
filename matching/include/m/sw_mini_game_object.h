@@ -166,6 +166,7 @@ public:
     CExoString();                                   // 0x005B3190
     CExoString(const char* s);                      // 0x005E5A90
     ~CExoString();                                  // 0x005E5C20
+    int operator==(const CExoString& s) const;       // 0x005E5200
     CExoString& operator=(const CExoString& s);     // 0x005E5C50
     CExoString& operator=(const char* s);           // 0x005E5140
 };
@@ -238,6 +239,9 @@ public:
 
 class CExoSound {
 public:
+    int Play3DOneShotSound(const CResRef& cRes, Vector vPos, float fDelay,
+                           unsigned char nGroup, unsigned long nFlags,
+                           unsigned char nVolume, float fPitch, float fVariance); // 0x005D5E10
     void PlaySoundEffect(const CResRef& cRes, Vector vPos, int a, unsigned char nGroup,
                          int b, int c, int d, int e);   // 0x005D5E10
     int PlayOneShotSound(const CResRef& cRes, unsigned char nGroup, int a, unsigned char nVolume,
@@ -366,6 +370,7 @@ class CSWMiniGameObjectArray {
 public:
     CSWMiniGameObjectArray();                       // 0x0066BF10
     CSWMiniGameObject* GetObject(unsigned long nId, unsigned char nType);   // 0x0066BF30
+    CSWMiniGameObject* GetObjectByTag(const CExoString& sTag);             // 0x0066BFB0
     int GetFreeSlot();                              // 0x0066C060
 
     int m_nNext;                                    // 0x00

@@ -25,6 +25,7 @@ public:
     CResRef();                                      // 0x00405ED0
     CResRef(const CExoString& s);                   // 0x00406D60
     CResRef operator=(const CExoString& s);         // 0x004061F0
+    CResRef operator=(const CResRef& r);            // 0x00406120
     void CopyToString(CExoString& s) const;         // 0x00405F70
 };
 
@@ -41,6 +42,9 @@ public:
     void FadeAndStop(unsigned long nMs);            // 0x005D5B90
     void SetPriorityGroup(unsigned char nGroup);    // 0x005D5BA0
     CResRef GetFilePlaying();                       // 0x005D6230
+    void Set3D(int b3D);                            // 0x005D6290
+    void SetPosition(const struct Vector& v);       // 0x005D62C0
+    void SetDistances(float fMin, float fMax);      // 0x005D62A0
 
     void* m_pInternal;                              // 0x00
 };
@@ -172,9 +176,11 @@ public:
     unsigned char m_nAmbientSndNitVol;              // 0x29
 };
 
+class CSWCArea;
+
 class CSWCAmbientSound : public CSWAmbientSound {
 public:
-    CSWCAmbientSound(unsigned long oidArea);        // 0x0068DF40
+    CSWCAmbientSound(CSWCArea* pArea);        // 0x0068DF40
     ~CSWCAmbientSound();                            // 0x0068E0D0
 
     virtual void PlayMusic(int bPlay);
@@ -212,7 +218,7 @@ public:
     unsigned long m_nUnknownDC;                     // 0xdc
     CExoStreamingSoundSource* m_pMusicSource;       // 0xe0
     CExoStreamingSoundSource* m_pAmbientSource;     // 0xe4
-    unsigned long m_oidArea;                        // 0xe8
+    CSWCArea* m_pArea;                        // 0xe8
     int m_bMusicEnabled;                            // 0xec
     int m_bAmbientEnabled;                          // 0xf0
     int m_bActive;                                  // 0xf4

@@ -49,6 +49,12 @@ public:
         y = 0.0f;
         z = 0.0f;
     }
+    Vector3(float fX, float fY, float fZ)
+    {
+        x = fX;
+        y = fY;
+        z = fZ;
+    }
 
     float x;
     float y;
@@ -64,12 +70,13 @@ public:
     void DestroyGrassPolys();                           // 0x004A8460
     void BuildGrassPolys();
     __declspec(noinline) void CreateArrays(); // 0x004A87C0
+    void FinishGeometry();                              // 0x004A67B0
 
     unsigned short vertex_format;
     unsigned char flags;
     unsigned char pad_03;
     unsigned int pad_04;
-    unsigned int pad_08;
+    float m_fRadius;                                    // +0x08
     int polygon_count;                                  // +0x0c
     int m_n10;                                          // +0x10
     Vector3 m_v14;                                      // +0x14

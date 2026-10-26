@@ -447,7 +447,7 @@ void CSWSCreature::MergeOrEquip4F0990(CSWSItem* pItem, CSWSItem* pOther)
         for (int i = 0; i < 0x12; i++) {
             CSWSItem* pSlot = m_pInventory->GetItemInSlot(1 << i);
             if (pSlot && pSlot->m_n14 == pItem->m_n14) {
-                Fn4F0420(pOther, 1 << i, 0, 0, 0, 0, 0);
+                AddEquipItemActions(pOther, 1 << i, 0, 0, 0, 0, 0);
                 return;
             }
         }

@@ -70,6 +70,7 @@ public:
     void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
     void* Remove(CExoLinkedListPosition pos);       // 0x005E9C10
     void* RemoveHead();                             // 0x005E9C80
+    void* RemoveTail();                             // 0x005E9CE0
     CExoLinkedListPosition AddTail(void* p);        // 0x005E9DC0
 };
 
@@ -91,6 +92,7 @@ public:
     T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
     T* Remove(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->Remove(pos); }
     T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
+    T* RemoveTail() { return (T*)m_pcExoLinkedListInternal->RemoveTail(); }
     CExoLinkedListPosition AddTail(T* p) { return m_pcExoLinkedListInternal->AddTail(p); }
     int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
 };

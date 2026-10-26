@@ -19,8 +19,7 @@ Vector NormalizeVector(const Vector& v);                    // 0x004AB180
 // The out-of-line free operator-(const Vector&, const Vector&); declared
 // under another name because Vector here carries the inline member form.
 Vector VectorSubtract(const Vector& a, const Vector& b);    // 0x00423BC0
-int IntersectCircle2d(const Vector& vFrom, const Vector& vTo, const Vector& vCenter,
-                      float fRadius, Vector* pNear, Vector* pFar, int bSegment);  // 0x004AAB50
+int IntersectCircle2d(const Vector& vCenter, float fRadius, const Vector& vFrom, const Vector& vTo, Vector* pNear, Vector* pFar, int bSegment);  // 0x004AAB50
 
 template <class T> class CExoArrayList {
 public:
@@ -251,7 +250,7 @@ public:
     void PathPointDFSTransTableInitialize();                                // 0x004BBEB0
     int PathPointDFSTransTableGet(float fX, float fY, float* pCost, float* pDepth);  // 0x004BBF20
     void PathPointDFSTransTablePut(float fX, float fY, float fCost, float fDepth);   // 0x004BC010
-    int SetHitInfoForCreature(Vector* pFrom, Vector* pTo, Vector* pCenter, float fRadius,
+    int SetHitInfoForCreature(const Vector& vCenter, float fRadius, const Vector& vFrom, const Vector& vTo,
                               CWalkHitInfo* pHit);                          // 0x004BC0E0
     float ComputeHeight(const Vector& vPosition, int bUseFace, CSWSRoom** ppRoom);  // 0x004BC380
     int CountAreaTransitionTriggers(unsigned long* pList, int nExcluded,

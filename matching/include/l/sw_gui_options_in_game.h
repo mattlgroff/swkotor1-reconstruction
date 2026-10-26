@@ -34,8 +34,10 @@ public:
     CSWGuiBorder& GetHilight() { return *(CSWGuiBorder*)pad_0xe0; }
     char pad_0x5c[0x24];
     CSWGuiBorderParams m_cBorderParams;             // 0x80 (m_cBorder + 0x14)
+    char pad_0xd4[0xc];
     char pad_0xe0[0x14];
     CSWGuiBorderParams m_cHilightParams;            // 0xf4 (m_cHilight + 0x14)
+    char pad_0x148[0xc];
     CSWGuiLabelText m_cTextBox;                     // 0x154 (m_cText)
     CSWGuiTextParams m_cTextParams;                 // 0x16c (m_cText + 0x18)
 };
@@ -61,8 +63,10 @@ public:
     };
     char pad_0x1cc[0x14];
     CSWGuiBorderParams m_cSelectedBorderParams;     // 0x1e0
+    char pad_0x234[0xc];
     char pad_0x240[0x14];
     CSWGuiBorderParams m_cSelectedHilightParams;    // 0x254
+    char pad_0x2a8[0xc];
 };
 
 // Inferred CSWGuiOptionsCheckbox, vtable 0x00758258, size 0x2B4.

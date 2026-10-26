@@ -188,3 +188,187 @@ EH states 2-4), SetCurrentWeather 00508050 (needs the CGameObject-at-0x11c
 cast for GetArea()->m_idSelf), 00508820 (aligned frame, appearance 2DA),
 PlayVisualEffect 00507E20, BudgeCreatures 00508180, HandleTransparentDoors
 0050C0E0, CSWSArea ctor 0050CF80 and the 0x00506D90 list holder ctor.
+
+
+# Worker A, round s2 (2026-10-26, resumed after usage limit)
+
+Branch claude/worker-a-s2 (local). Resumed from the WIP commit b8e5a24, which
+did not compile: sws_area_surface.cpp redefined C2DA/C2DAs/CSWRules after the
+WIP moved them into sws_area.h (fixed by adding m_pSurfaceMaterial at C2DAs
++0x14 and deleting the local copies); a scratch zz_stub.cpp with duplicate
+annotations was removed. Family: CSWSArea (nwsarea.o) walk/LOS, effects,
+doors, GIT load/save.
+
+Folder `kotor-match -q -j 2 matching/src/a`: main 476 -> **485/577**.
+0 prior MATCH regressions; old NONMATCH diff counts unchanged.
+
+NEW exact (9): 00506D90 CExoLinkedList ctor (from the WIP), 00508820
+FlagCreaturesWithHead, 00508010 ListContainsObject (annotation moved from
+0x00507FF0: the real start is 0x00508010, the function is missing from
+functions.csv; it is CSWSArea vtable slot +4), 005064D0 GetDoorCrossed,
+0050C0E0 UnloadArea (functions.csv lacks the 0x0050C1E0 start, matcher
+still reports exact), 0050C1E0 HandleTransparentDoors (vtable +0x18, missing
+from functions.csv), 0050C330 ClearLineOfSight, 0050C6B0 ApplyEffect,
+0050A350 LoadTriggers.
+
+Retained NONMATCH (diff insns): 00506650 NoNonWalkPolysDetailed (1: frame
+0x34 vs 0x28, slot layout only), 0050CA10 NoNonWalkPolysInDoors (12: frame
+0x38 vs 0x30), 00508050 SetCurrentWeather (13: dead `add eax,0x11c` from a
+real CGameObject base cast + esi ordering), 0050CCF0 GetObstructionFactor
+(28: frame +0xc and `fxch; fadd [vFrom]` order), 00508180 BudgeCreatures
+(35: this/list/index register permutation), 00507E20 PlayVisualEffect (53:
+index in the dead pPosition slot, this/table register order), 0050BA00
+SaveGIT (128: pGFF vs loop index register; orig list dtors show no
+`element = NULL` store).
+
+Lessons:
+- CSWSArea is polymorphic (CSWArea vptr at 0): slot +4 ListContainsObject,
+  +0x18 HandleTransparentDoors. Replacing pad_0x0 by the virtuals changed no
+  existing match.
+- Inline getters decide registers/load order: `GetAppearance()`,
+  `GetType()`, `GetCreator()`, `GetDuration()`, `GetSpellId()`,
+  `GetGenericType()` each fixed operand order or register choice where
+  the direct member access did not (FlagCreaturesWithHead,
+  HandleTransparentDoors, ApplyEffect).
+- An argument loaded before a virtual call and pushed after it is the
+  parameter of an inline wrapper (`AddAreaOfEffect(oid)` around AddUnique).
+- `new CExoArrayList` only gets its EH state with the sized
+  `CExoArrayList(int nSize = 0)` ctor (worker-i trick); sws_area.h now has
+  it plus `~CExoArrayList() { delete[] element; element = NULL; }` and an
+  `AddInline` (inline Add body; other TUs keep the out-of-line Add).
+- Single-exit with a flag: `if (!bOpen) {...} if (bOpen || bArg8) { loop }`
+  reproduced the je-to-cleanup of ClearLineOfSight where an early return
+  duplicated the destructor epilogue.
+- `if (vStart.x < vEnd.x) { min = start; max = end; }`: assigning min first
+  in each branch and declaring the float temporaries at function scope
+  fixed the x87 stack/memory split in the two walk-box functions.
+- A float constant loaded first (`fld [const]; fadd [mem]`) is an extern
+  const float, not a literal (PlayVisualEffect 250.0f at 0x00747440).
+- Comparisons: `a <= b` -> test ah,41h/jnp; `a >= b` -> test ah,1/je.
+- `&m_aGameObjects` kept in a pointer that is null-tested in the original
+  (BudgeCreatures); MSVC does not fold the test.
+- Two success flags: the ObjectId read in LoadTriggers uses its own int
+  (separate stack slot from the template-path reads).
+- Strings 0x747xxx etc. can be read from swkotor.exe with a small PE
+  reader in the scratch dir (TriggerList, LinkedToModule, ...).
+
+Next in-range queue (CSWSArea leftovers, all need structural work):
+CSWSArea ctor 0050CF80 and dtor 0050D370 (need the real CSWArea /
+CResHelper@0x100 / CGameObject@0x11c bases), EventHandler 0050D6C0 (1408 B,
+script/movie/transition calls), then the creature action family
+0050E400/0050E900/0050EE80/0050F170/0050FD50/0050FF20 (claude_w5_* units).
+
+
+# Worker A, round s4 (2026-10-26)
+
+Branch claude/worker-a-s4 (local). Family: CSWSEffectListHandler apply/remove
+handlers 0x004DBA50-0x004E4790 (new file effect_list_handler5.cpp) plus a few
+CSWSCreature helpers (sws_creature_disguise.cpp).
+
+Folder `kotor-match -q -j 2 matching/src/a`: 504/600 -> **518/628**.
+28 attempted, 14 NEW exact, 14 retained NONMATCH; no earlier MATCH lost.
+
+NEW exact (14): 004E46E0 OnApplyBonusFeat, 004E31D0 OnApplyDisguise,
+004DBA50 OnApplySlow, 004E2650 OnRemoveForceResistanceDecrease, 004E2F40
+OnApplyVision, 004E2570 OnRemoveForceResistanceIncrease, 004E3C30
+OnRemoveInvisibility, 004E14D0 OnRemoveACIncrease, 004E16E0
+OnRemoveACDecrease, 004E18D0 / 004E19A0 OnRemoveDamageImmunityIncrease /
+Decrease, 004E22F0 OnRemoveSetState, 004E3B70 CEffectIDList::AddUnique,
+004F28D0 CSWSCreature::UpdateAmbientAnimationState.
+
+Untabled starts annotated (functions.csv rows span them; do not edit the
+csv): 004E31D0 (row 004E30D0), 004E2490/004E2570/004E22F0 (row 004E1C20),
+004E14D0/004E16E0/004E18D0/004E19A0 (row 004E13C0), 004E2D50/004E2F40 (row
+004E2A90). Still untabled and unwritten: 004E2720 OnApplyDisease (row
+004E2650, 2DA strings + EH), 004E43C0 OnApplyDispelBestMagic (row 004E40D0).
+
+Retained NONMATCH (diff insns): 004E35B0 OnApplyTrueSeeing (3), 004E3320
+OnApplyUltraVision (4), 004EE150 UnDisguise (4), 004EE010 Disguise (7),
+004E2D50 OnRemoveHasteOrSlow (7), 004E2490 OnRemoveMovementSpeedChange (9),
+004DCD30 OnApplyBlindness (10), 004E3690 OnRemoveTrueSeeing (13), 004DCB40
+OnApplyTimestop (22), 004E3480 OnRemoveUltraVision (33), 004F6D70
+UpdateAppearance/stealth refresh (35), 004E30D0 OnRemoveEffectIcon (46),
+004E40D0 OnApplyDispelAllMagic (78), 004E2A90 OnApplyHasteOrSlow (100).
+
+Lessons:
+- Early `if (!pObject->AsSWSCreature()) return 1;` lets the creature share
+  pObject's register (esi); the outer-if form pushes extra registers and
+  keeps both (OnRemoveInvisibility, OnApplyBlindness went the other way:
+  there the outer-if form was right). Try both.
+- Re-reading a member in an inner test (`pOther->m_nType == 0x22` instead of
+  the cached nType) stops MSVC from jump-threading the redundant compare the
+  original keeps (OnRemoveForceResistanceIncrease).
+- `GetID()` (inline returning the __int64) makes RemoveEffectById's argument
+  load lo before hi like the original; the plain member loads hi first.
+- Clamp code with a duplicated `cmp x,1` comes from the stdlib macros
+  `__max(__min(x, 1), -1)` (double evaluation); write the expression inside
+  the macro, not a pre-computed local.
+- `bHaste = nType == 1` with nType read into a local before the stores gave
+  the original sete/mov order (OnRemoveHasteOrSlow 66 -> 7).
+- Locals the original passes uninitialised to out-parameter calls must stay
+  uninitialised (GetWorldTime/AddWorldTimes outputs in OnApplyTimestop).
+- Switch-looking if/else chains: the original UpdateAmbientAnimationState is
+  an if/else chain with one SetAnimation tail; the default `(n == 5) ? 0xc : 0`
+  gives setne/dec/and.
+- `pObject->m_appliedEffects` lives on CSWSObject (+0x124); moving it from
+  CSWSCreature into CSWSObject in effect_list_handler.h changed nothing else.
+- Real signatures used as overloads: SetDamageImmunity(unsigned short, char),
+  SetForceResistance(unsigned char) (both in symbols.csv as "defines").
+- Unsolved pattern (several functions): the original compares the effect
+  type word in memory against a constant held in a register
+  (`mov eax,0x49; cmp word ptr [edi+8],ax`, or 0x49 hoisted into ebp), where
+  MSVC here loads the word and compares with an immediate. Locals, casts,
+  GetType() and continue-forms did not reproduce it.
+
+Next in-range queue: 004E2720 OnApplyDisease, 004E43C0 OnApplyDispelBestMagic,
+004E4790 OnApplyEffectIcon, 004E3D10/004E3E70 Sanctuary apply/remove,
+004E3800 OnApplyForcePush, 004DD270 OnRemoveDisappearAppear, 004DDAC0
+OnRemoveWounding, 004DC7A0 OnRemoveHitPointChangeWhenDying, 004E0750
+OnApplyHeal; creature: 004F19E0 death XP, 004EF930 ReceiveExperience,
+004F1310 desired attack range, 004FD490 max force points.
+
+## Worker A s8, 2026-10-26
+
+Screened the 138 currently listed in-range todo rows; several are large or
+contain multiple function starts. Recovered the locally saved 0x005101A0
+AIActionCheckMoveToObject from codex/worker-a-r2 commit 81e6e8c, using the
+current base's unchanged layout plus an explicitly named +0x314 vector.
+The full 528-byte function compares MATCH using MSVC 7.0. The related existing
+five movement attempts in the same file retain their previous outcomes.
+The callee 0x004EE440 GetUseRange signature is also supported by both Mac
+builds; 0x004F6000 GetIsInUseRange behavior is independently corroborated by
+the playable-source reconstruction. Next: related movement/collision and
+creature helper candidates; whole-folder validation after the batch.
+
+Additional s8 attempts, all retained NONMATCH: 0x0050FD50
+AIActionCheckMoveAwayFromLocation (41 diffs, this/node register allocation
+and x87 scheduling); 0x004F62A0 GetCollisionFlag (15 diffs, descriptive name,
+return-block placement/registers); 0x0051B7B0 UpdateSubareasOnMoveTo (7
+diffs, list construction/cleanup stores and stack scheduling). One alternate
+collision return shape worsened its result; one alternate subarea lifetime
+shape worsened its result, so both were reverted. The movement helper at
+0x004BDF80 returns a Vector via its hidden output pointer and takes the two
+Vector references, float distance and path information; the subarea methods
+at 0x004BF2C0/0x004BF470 have reference signatures supported by both Mac
+builds. These attempts are not claimed as exact matches.
+
+Final owned-folder comparison: 525/634 -> 526/638, one new exact and three
+new NONMATCH. No prior MATCH regressions, no previous NONMATCH deterioration,
+and no duplicate annotations.
+
+## Worker A continuation, 2026-10-26
+
+Screened 134 indexed candidates and 22 additional starts found in source
+references inside coarse address spans. Three newly reconstructed functions:
+0x004EADD0 CSWSActionRecord constructor (96/96), 0x004D8A10
+OnRemoveSummonCreature (48-byte body; coarse extent spans following code), and
+0x004DA870 OnRemoveSetStateInternal (160/160); all compare MATCH. The state
+handler uses native switch cases and a +0x260 creature script reference.
+Retained NONMATCH: 0x004D8D80 OnApplyACIncrease (80 diffs) and 0x004D8F80
+OnApplyACDecrease (72 diffs), early-return placement and register allocation.
+Their AC byte layout follows the existing matched OnRemoveAC handlers.
+- Promoted 0x004EE150 CSWSCreature::UnDisguise from 4 differences to exact
+  (192/192). Naming `m_pFollowInfo` in a local before ComputeSafeLocation
+  produces the original ECX/EDX argument order without changing semantics.
+  Corrected the related 0x004DCAC0 caller's provisional void alias to the
+  established `int UnDisguise(CGameEffect*)`; the caller remains NONMATCH 2.

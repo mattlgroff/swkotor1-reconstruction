@@ -89,6 +89,8 @@ public:
                                     class CSWCCMessageData* pData,
                                     class CSWSCombatAttackData* pAttackData); // 0x00568570
     int SendServerToServerAdminMessage(unsigned long nPlayerId, const CExoString& sMessage); // 0x00579890
+    void SendServerToServerAdminPlayerList(unsigned long nPlayerId);       // 0x00579A80
+    void SendServerToServerAdminServerStatus(unsigned long nPlayerId);     // 0x00579920
     int SendServerToAllPlayersCreatureUpdate_StripEquippedItems(unsigned long oidCreature); // 0x00570180 (name inferred)
     int SendServerToPlayerSafeProjectileProjectile(CSWSPlayer* pPlayer,
         unsigned long oidSource, unsigned long oidTarget, Vector vSource, Vector vTarget,
@@ -115,7 +117,8 @@ public:
     int HandlePlayerToServerMapPinDestroyMapPin(CSWSPlayer* pPlayer);
     int HandlePlayerToServerMapPinChangePin(CSWSPlayer* pPlayer);
     int HandlePlayerToServerMapPinMessage(CSWSPlayer* pPlayer, unsigned char nMinor);
-    int QuickChatMessage(unsigned long oidSpeaker, unsigned short nQuickChat); // 0x00571EC0
+    int HasValidLocalizedString(CExoLocString* pString, unsigned char nGender); // 0x0056AC20 (descriptive)
+    int SendServerToPlayerQuickChatMessage(unsigned long oidSpeaker, unsigned short nQuickChat); // 0x00571EC0
     int HandlePlayerToServerAreaMessage(CSWSPlayer* pPlayer, unsigned char nMinor);
     int HandlePlayerToServerPlayerDeath(CSWSPlayer* pPlayer, unsigned char nMinor);
     int HandlePlayerToServerDialogMessage(CSWSPlayer* pPlayer, unsigned char nMinor);
@@ -350,7 +353,7 @@ public:
                                         int bArg2, int nArg, const CExoString& sText);
     int SendServerToPlayerCharacterDownloadReply(CSWSPlayer* pPlayer);
     int SendServerToPlayerCharacterDownloadFail(CSWSPlayer* pPlayer);
-    int SendServerToPlayerItemScriptAdd(unsigned long nPlayerId, unsigned long oidArea,
+    int SendServerToPlayerItemScriptAdd(unsigned long nPlayerId, CSWSArea* pArea,
                                         CSWSItem* pItem, Vector vPosition);
     int SendServerToPlayerUpdateActiveItemProperties(CSWSPlayer* pPlayer,
                                                      unsigned long oidItem,

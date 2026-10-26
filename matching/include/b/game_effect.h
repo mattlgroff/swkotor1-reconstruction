@@ -9,6 +9,7 @@ struct CResStruct;
 class CGameEffect {
 public:
     CGameEffect(int bCreateNewID);                          // 0x00503E40
+    CGameEffect(CGameEffect* pOther);                       // 0x00503F70
     ~CGameEffect();                                         // 0x00503590
     void SetInteger(int nIndex, int nValue);                // 0x005036A0
     void SetFloat(int nIndex, float fValue);                // 0x005036D0
@@ -20,6 +21,7 @@ public:
     void SaveGameEffect(CResGFF* pRes, CResStruct* pStruct); // 0x00503790
     void CopyEffect(CGameEffect* pOther, int bArg);         // 0x00504090
     void LoadGameEffect(CResGFF* pRes, CResStruct* pStruct); // 0x005043A0
+    int GetScriptEffectType();                              // 0x00503A70
 
     unsigned short GetDurationType() { return m_nDurationType; }
     void SetDurationType(unsigned short nType) { m_nSubType = (m_nSubType & 0xfff8) | nType; }
@@ -37,7 +39,7 @@ public:
     float m_fDuration;                                      // 0x0c
     char pad_0x10[0x18 - 0x10];
     unsigned long m_oidCreator;                             // 0x18
-    char pad_0x1c[0x20 - 0x1c];
+    int m_nSpellId;                                         // 0x1c
     int m_n20;                                              // 0x20 (name guessed)
     int m_n24;                                              // 0x24 (name guessed)
     char pad_0x28[0x8c - 0x28];

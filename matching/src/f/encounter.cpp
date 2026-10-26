@@ -310,18 +310,6 @@ public:
     unsigned long m_n20;             // +0x20
 };
 
-// FUNCTION: SWKOTOR 0x00590250
-CEncounterListEntry &CEncounterListEntry::operator=(const CEncounterListEntry &o)
-{
-    m_cResRef = o.m_cResRef;
-    m_fCR = o.m_fCR;
-    m_n14 = o.m_n14;
-    m_n18 = o.m_n18;
-    m_n1C = o.m_n1C;
-    m_n20 = o.m_n20;
-    return *this;
-}
-
 class CEncounterSpawnPoint {
 public:
     char pad_0x0[0x10];
@@ -348,9 +336,9 @@ public:
     CExoLocString *GetLocalizedName();
     void SpawnIfAppropriate(unsigned long oid, float fDifficulty);
     void SetActive(int bActive);
-    void UpdateActivateArea(unsigned long oid);
-    void SpawnEncounterCreatures(float fDifficulty);
-    void SetExhausted();
+    void UpdateActivateAreaList(unsigned long oid);
+    void CalculateSpawnPool(float fDifficulty);
+    void BuildSpawnList();
 
     char pad_0x228[0x8];
     CExoLocString m_sLocName;        // +0x230
@@ -373,7 +361,7 @@ public:
     char pad_0x2b4[0x4];
     unsigned long *m_pSpawnPointIds; // +0x2b8
     char pad_0x2bc[0x1c];
-    float m_fRespawnTime;            // +0x2d8
+    float m_fNextLevelPoints;            // +0x2d8
     char pad_0x2dc[0xc];
     CExoString m_sScripts[5];        // +0x2e8
     CEncounterBuffer *m_pBuffer;     // +0x310
@@ -487,11 +475,11 @@ void CSWSEncounter::SpawnIfAppropriate(unsigned long oid, float fDifficulty)
 {
     if (m_bActive && m_bExhausted != 1) {
         m_bTriggered = 0;
-        UpdateActivateArea(oid);
+        UpdateActivateAreaList(oid);
         if (m_bTriggered == 1) {
-            SpawnEncounterCreatures(fDifficulty);
-            if (m_fRespawnTime > 0.0f) {
-                SetExhausted();
+            CalculateSpawnPool(fDifficulty);
+            if (m_fNextLevelPoints > 0.0f) {
+                BuildSpawnList();
                 m_bExhausted = 1;
             }
         }

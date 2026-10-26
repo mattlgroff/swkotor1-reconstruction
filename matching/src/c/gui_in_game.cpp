@@ -24,7 +24,7 @@ public:
 
 class CSWGuiBarkBubble : public CSWGuiPanel {
 public:
-    void SetBark(int a, int b, int c, int d);           // 0x006A9920
+    void SetBark(unsigned long oid, const CExoString& text, const CResRef& sound, int b);           // 0x006A9920
 };
 
 class CSWGuiFade : public CSWGuiPanelV {
@@ -95,7 +95,7 @@ class CGuiInGame {
 public:
     int IsAnimationPlayingInDialog();
     int ShowItemCreateMenu();
-    void ShowBarkBubble(int a, int b, int c, int d);
+    void ShowBarkBubble(unsigned long oid, const CExoString& text, const CResRef& sound, int b);
     void StartGlobalFade(int a, int b, int c, int d);
     int UpdateMessageGUI();
     int GetPartyAccessPanelUp(int bOnlyFirst);
@@ -186,10 +186,10 @@ int CGuiInGame::ShowItemCreateMenu()
 }
 
 // FUNCTION: SWKOTOR 0x0062AB30
-void CGuiInGame::ShowBarkBubble(int a, int b, int c, int d)
+void CGuiInGame::ShowBarkBubble(unsigned long oid, const CExoString& text, const CResRef& sound, int b)
 {
     if (m_bItemCreateAvailable) {
-        m_pBarkBubble->SetBark(a, b, c, d);
+        m_pBarkBubble->SetBark(oid, text, sound, b);
         m_pGuiManager->AddPanel(m_pBarkBubble, 4, 1);
     }
 }

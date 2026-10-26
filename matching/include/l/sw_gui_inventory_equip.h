@@ -11,7 +11,10 @@ public:
     virtual void SetExtent(const CSWGuiExtent&);
     virtual void v08();
     virtual void Draw(float);
-    char pad_4[0x70];
+    CSWGuiExtent GetInnerExtent(); // 0x00415240
+    char pad_4[0x10];
+    CSWGuiBorderParams m_cParams; // 0x14
+    char pad_0x68[0xc];
 };
 class CSWGuiText {
 public:
@@ -21,7 +24,8 @@ public:
     virtual void SetExtent(const CSWGuiExtent&);
     virtual void v08();
     virtual void Draw(float);
-    char pad_4[0x6c];
+    char pad_4[0x14];
+    CSWGuiTextParams m_cParams; // 0x18
 };
 class CSWGuiRadioButton : public CSWGuiButton {
 public:
@@ -85,8 +89,49 @@ public:
     T* m_pArray;
     int m_nCount;
     int m_nAllocated;
-    CExoArrayList() : m_pArray(0), m_nCount(0), m_nAllocated(0) {}
+    CExoArrayList()
+    {
+        m_nCount = 0;
+        m_nAllocated = 0;
+        m_pArray = 0;
+    }
     ~CExoArrayList() { delete[] m_pArray; m_pArray = 0; }
+    void Allocate(int nSize);                       // 0x005E03C0 (folded)
+    void DelIndex(int nIndex);                      // 0x006857A0 (folded)
+    int IndexOf(T t)
+    {
+        for (int i = 0; i < m_nCount; i++) {
+            if (m_pArray[i] == t) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    void Add(T t)
+    {
+        if (m_nCount == m_nAllocated) {
+            Allocate(m_nAllocated ? m_nAllocated * 2 : 0x10);
+        }
+        m_pArray[m_nCount] = t;
+        m_nCount++;
+    }
+    __forceinline void AddInline(T t)
+    {
+        if (m_nCount == m_nAllocated) {
+            int nSize = m_nAllocated ? m_nAllocated * 2 : 0x10;
+            T* pOld = m_pArray;
+            m_nAllocated = nSize;
+            m_pArray = new T[nSize];
+            for (int i = 0; i < m_nCount; i++) {
+                m_pArray[i] = pOld[i];
+            }
+            if (pOld) {
+                delete[] pOld;
+            }
+        }
+        m_pArray[m_nCount] = t;
+        m_nCount++;
+    }
 };
 class CSWGuiInGameEquip : public CSWGuiPanel {
 public:

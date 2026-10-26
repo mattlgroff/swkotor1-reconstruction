@@ -26,9 +26,6 @@ public:
     char pad_0x0[0x34];
 };
 
-// NONMATCH: the original lays the shared pop-fail block out after the first
-// pop (the second jumps back); separate ifs, `||` and scoped locals all put it
-// after the second (same tie as SavingThrow 0x005421E0).
 // FUNCTION: SWKOTOR 0x0052DC40
 int CSWVirtualMachineCommands::ExecuteCommandAddAvailableNPCByObject(int nCommandId, int nParameters)
 {
@@ -41,7 +38,10 @@ int CSWVirtualMachineCommands::ExecuteCommandAddAvailableNPCByObject(int nComman
     if (!g_pVirtualMachine->StackPopObject(&oidCreature)) {
         return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
     }
-    return g_pVirtualMachine->StackPushInteger(pServer->GetPartyTable()->AddNPC(nNPC, pServer->GetCreatureByGameObjectID(oidCreature))) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    if (!g_pVirtualMachine->StackPushInteger(pServer->GetPartyTable()->AddNPC(nNPC, pServer->GetCreatureByGameObjectID(oidCreature)))) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    return 0;
 }
 
 // FUNCTION: SWKOTOR 0x0052DCD0
@@ -85,9 +85,6 @@ int CSWVirtualMachineCommands::ExecuteCommandAddMultiClass(int nCommandId, int n
     return 0;
 }
 
-// NONMATCH: the original lays the shared pop-fail block out after the first
-// pop (the second jumps back); separate ifs, `||` and scoped locals all put it
-// after the second (same tie as SavingThrow 0x005421E0).
 // FUNCTION: SWKOTOR 0x0052DE70
 int CSWVirtualMachineCommands::ExecuteCommandAddPartyMember(int nCommandId, int nParameters)
 {
@@ -112,7 +109,10 @@ int CSWVirtualMachineCommands::ExecuteCommandAddPartyMember(int nCommandId, int 
             pCreature->SetInParty(1, 1);
         }
     }
-    return g_pVirtualMachine->StackPushInteger(bResult) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    if (!g_pVirtualMachine->StackPushInteger(bResult)) {
+        return VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
+    }
+    return 0;
 }
 
 // FUNCTION: SWKOTOR 0x0052DF40

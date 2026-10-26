@@ -21,11 +21,20 @@ public:
     int GetLength() const;                          // 0x005E5790
     char* CStr() const;                             // 0x005E5670
     void Format(const char* szFormat, ...);         // 0x005E5680
+    int Find(char c, int nStart) const;             // 0x005E5F20
+    CExoString Left(int nCount) const;              // 0x005E5F70
+    CExoString Right(int nCount) const;             // 0x005E6170
 };
 
 class Vector {
 public:
     Vector() {}
+    Vector(float fX, float fY, float fZ)
+    {
+        x = fX;
+        y = fY;
+        z = fZ;
+    }
     float x, y, z;
 };
 
@@ -54,6 +63,7 @@ public:
 
 class CSWGuiPanel;
 template <class T> class CExoArrayListL;
+template <class T> class CExoArrayList;
 class CSWGuiControl;
 class CResRef;
 
@@ -104,6 +114,7 @@ class CSWGuiSlider;
 class CSWGuiLabel;
 class CSWGuiLabelHilight;
 class CSWGuiButtonToggle;
+class CSWGuiRadioButton;
 
 class CSWGuiControl {
 public:
@@ -121,14 +132,14 @@ public:
     virtual void v38();
 #endif
     virtual void HandleInputEvent(int nEvent, int bDown);   // 0x3c
-    virtual void v40();
+    virtual void SetFlag0(int b);                   // 0x40 (hilight on/off for labels)
     virtual CSWGuiControl* HitCheckMouse(int x, int y); // 0x44 (0x004187C0)
     virtual void v48(); virtual void v4C();
     virtual CSWGuiLabel* GetLabel();                // 0x50
     virtual CSWGuiLabelHilight* GetLabelHilight();          // 0x54
     virtual int IsSelectable();                     // 0x58
     virtual CSWGuiButtonToggle* GetButtonToggle();  // 0x5c
-    virtual void v60(); virtual CSWGuiSlider* GetSlider(); virtual void v68(); virtual void v6C();
+    virtual CSWGuiRadioButton* GetRadioButton();    /* 0x60 */ virtual CSWGuiSlider* GetSlider(); virtual void v68(); virtual void v6C();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void SetEnabled(int bEnabled);  /* 0x88 */ virtual void v8C();
     virtual void v90(); virtual void v94();
@@ -152,10 +163,13 @@ public:
     int m_n48;                                      // 0x48
     int m_n4c;                                      // 0x4c
     int m_n50;                                      // 0x50
-    char pad_0x54[0x4];
+    unsigned char m_nSound;                         // 0x54
+    char pad_0x55[0x3];
     int m_n58;                                      // 0x58
 
     int GetUserData() { return m_n50; }
+    int IsActivated() { return m_n4c; }            // descriptive (+0x4c set on activation)
+    void SetVisibleBit(int bVisible) { m_bVisible = bVisible; }
     void AddEvent(int nEvent, CSWGuiPanel* pObject,
                   void (CSWGuiPanel::*pfnCallback)(CSWGuiControl*));   // 0x0041AB20
     void AddChildControl(CSWGuiControl* pControl);                    // 0x0041ACC0
@@ -190,11 +204,12 @@ public:
     void SetFillImage(const CResRef& cResRef, int bForce);  // 0x00414C00
     void SetCornerImage(const CResRef& cResRef, int bForce);    // 0x00414AE0
     void SetEdgeImage(const CResRef& cResRef, int bForce);  // 0x00414B70
+    void SetColor(const Vector& vColor) { m_vColor = vColor; }
     char pad_0x0[0xc];
     float m_fAlpha;                                 // 0x0c
     Vector m_vColor;                                // 0x10
     unsigned long m_nStyle : 2;                     // 0x1c bits 0-1
-    char pad_0x20[0x40];
+    char pad_0x20[0x34];
 };
 
 class CSWGuiBorder;
@@ -208,6 +223,7 @@ public:
     virtual void CopyStyle(const CSWGuiExtent& extent, CSWGuiControl* pFrom, float fScale); // 0x98
     char pad_0x5c[0x14];
     CSWGuiBorderParams m_cBorder;                   // 0x70
+    char pad_0xc4[0xc];
     CSWGuiLabelText m_cTextBox;                     // 0xd0
     CSWGuiTextParams m_cText;                       // 0xe8
 };
@@ -221,6 +237,8 @@ public:
     void AddControls(CSWGuiControl** ppControls, int nCount, int a, int b, int c);   // 0x0041C2C0
     void AddControls(const CExoArrayListL<CSWGuiControl*>& lstControls, int bOwned, int bRestoreExtents,
                      int bUnequal);                 // 0x0041C1D0
+    void AddControls(const CExoArrayList<CSWGuiControl*>& lstControls, int bOwned, int bRestoreExtents,
+                     int bUnequal);                 // 0x0041C1D0
     int IsOversized()
     {
         if (m_nPadding + m_nItemSize > m_nAreaHeight && m_nControls > 0 && !(m_nListFlags & 0x100)) {
@@ -231,8 +249,11 @@ public:
     virtual void v98(); virtual void v9C(); virtual void vA0();
     virtual void SetListFlag0(int bFlag);           // 0xa4 (0x0041B120)
     CSWGuiControl* GetSelectedControl();            // 0x0041A5D0
+    void SetSelectedControl(int nIndex, int bSound);    // 0x0041C040
     CSWGuiControl* GetControl(int nIndex);          // 0x0041A5A0
     void SelectControl(int nIndex) { SetActiveControlV(GetControl(nIndex), 0); }
+    // The list box border (+0x90) is declared as padding; its params are at +0xa4.
+    CSWGuiBorderParams& GetBorderParams() { return *(CSWGuiBorderParams*)&pad_0x88[0xa4 - 0x88]; }
     void ClearListFlag40() { m_nListFlags &= ~0x40; }
     char pad_0x5c[0x24];
     CSWGuiPoint m_ptLocalMouse;                     // 0x80
@@ -299,6 +320,7 @@ public:
     void SetToDestroy(int bDestroy);                // 0x00624A00
     void CenterPanel(); // 0x0040A600
     void SetVisible(int bVisible);                   // 0x0040B9D0
+    CSWGuiManager* GetManager() { return m_pManager; }
     void SetCloseCallback(CSWGuiPanel* pObject, void (CSWGuiPanel::*pfnCallback)(CSWGuiControl*),
                           int nArg);                // 0x00624A40
 
@@ -313,14 +335,17 @@ class CSWGuiMessageBox;
 
 class CGuiInGame {
 public:
-    char pad_0x0[0x60];
+    char pad_0x0[0x14];
+    int m_bCharacterScreenOpen;                     // 0x14 (descriptive)
+    char pad_0x18[0x48];
     CSWGuiLetterbox* m_pLetterbox;                  // 0x60
     CSWGuiLetterbox* m_pLetterboxBottom;            // 0x64
     char pad_0x68[0x28];
     CSWGuiInGamePartySelection* m_pPartySelection;  // 0x90
     void* m_p94;                                    // 0x94
     CSWGuiMessageBox* m_pMessageBox;                // 0x98
-    char pad_0x9c[0xb14];
+    class CSWGuiSkillInfo* m_pSkillInfo;            // 0x9c
+    char pad_0xa0[0xb10];
     int m_bMessagePending;                          // 0xbb0
     char pad_0xbb4[0xc];
     unsigned char m_nAbilityMode;                   // 0xbc0
@@ -432,6 +457,7 @@ class CSWCDoor;
 class CSWCPlaceable;
 class CSWParty;
 class CSWSClient;
+template <class T> class CExoLinkedList;
 class CSWSCreature;
 
 class CClientExoApp {
@@ -451,6 +477,9 @@ public:
     int GetCombatMode();                            // 0x005EDE70
     void PlayerFlourishWeapons();                   // 0x005EDE90
     CGuiInGame* GetInGameGui();                     // 0x005ED690
+    class CSWCMessage* GetMessage();                // 0x005ED6F0
+    int GetInputClass();                            // 0x005EDA70
+    unsigned long GetClientLanguage();              // 0x005ED4C0
     CClientOptions* GetOptions();                   // 0x005ED700
     CSWGuiManager* GetGuiManager();                 // 0x005EDA40
     void SetInputClass(int nClass, int bForce);     // 0x005EDA60
@@ -471,13 +500,21 @@ public:
     unsigned long m_bPartyMode : 1;                 // 0x104 bit 0
 };
 
+class CItemRepository;
+
 class CSWPartyTable {
 public:
+    CItemRepository* GetPartyItems();               // 0x00563340
+    int GetNPCAvailable(int nNPC);                  // 0x005636B0
+    unsigned char GetNPCSelectable(int nNPC);       // 0x005637C0
     unsigned long GetNPCObject(int nNPC, int bCreate, int bRevive);    // 0x00564700
 };
 
+class CSWSItem;
+
 class CServerExoApp {
 public:
+    CSWSItem* GetItemByGameObjectID(unsigned long oid);    // 0x004AE760
     unsigned long ClientToServerObjectID(unsigned long oid);    // 0x004AEA30
     void SkipPastDialog(unsigned long oid);         // 0x004AE970
     CSWSClient* GetClientObjectByObjectID(unsigned long oid);  // 0x004AE910
@@ -487,6 +524,7 @@ public:
     void SetMoveToModuleString(const CExoString& sModule);  // 0x004AECD0
     CServerInfo* GetServerInfo();                   // 0x004AEC90
     CSWPartyTable* GetPartyTable();                 // 0x004AEE70
+    CExoLinkedList<CSWSClient>* GetPlayerList();    // 0x004AED90
 };
 
 class CAppManager {

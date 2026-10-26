@@ -19,6 +19,7 @@ public:
 
     CSWGuiExtent m_extent;                          // 0x04
     CSWGuiBorderParams m_cParams;                   // 0x14
+    char pad_0x68[0xc];
 };
 
 // The original's CSWGuiExtent has a zeroing ctor (returned through a hidden pointer).
@@ -113,15 +114,77 @@ public:
     unsigned long GetKnownSpell(unsigned char nClass, unsigned char nLevel,
                                 unsigned char nIndex); // 0x006495A0
     void AddKnownSpell(unsigned char nClass, unsigned long nSpell); // 0x00649F90
-    char pad_0x0[0x32];
+    unsigned char GetClassLevel(unsigned char nIndex);  // 0x00647750
+    short GetMaxHitPoints();                        // 0x00647A80
+    unsigned char GetTotalLevel();                  // 0x00648430
+    CExoString GetClassDescription(char cSeparator);    // 0x00648470
+    CResRef GetPortrait(int bLarge);                // 0x00647E80
+    void ClearKnownSpells(unsigned char nClass);    // 0x00649580
+    void ClearSkills();                             // 0x006475E0
+    short GetArmorClass(int bArg);                  // 0x00647720
+    char GetAbilityMod(unsigned char nScore);       // 0x00647630
+    char pad_0x0[0x14];
+    CExoString m_sFirstName;                        // 0x14
+    CExoString m_sLastName;                         // 0x1c
+    unsigned short m_nRace;                         // 0x24
+    char pad_0x26[0x2];
+    CExoString m_sSubRace;                          // 0x28
+    unsigned char m_n30;                            // 0x30
+    unsigned char m_nGender;                        // 0x31
     unsigned char m_nNumClasses;                    // 0x32
-    char pad_0x33[0x7d];
+    unsigned char m_n33;                            // 0x33
+    char pad_0x34[0x2];
+    unsigned char m_nCON;                           // 0x36
+    char pad_0x37[0x1];
+    unsigned char m_nWIS;                           // 0x38
+    unsigned char m_nCHA;                           // 0x39
+    unsigned char m_nSTRBase;                       // 0x3a
+    unsigned char m_nDEXBase;                       // 0x3b
+    unsigned char m_nCONBase;                       // 0x3c
+    unsigned char m_nINTBase;                       // 0x3d
+    unsigned char m_nWISBase;                       // 0x3e
+    unsigned char m_nCHABase;                       // 0x3f
+    char pad_0x40[0x8];
+    short m_nBaseHitPoints;                         // 0x48
+    char pad_0x4a[0x2];
+    short m_nCurrentHitPoints;                      // 0x4c
+    short m_nMaxHitPoints;                          // 0x4e
+    short m_nACNaturalBase;                         // 0x50
+    char pad_0x52[0x6];
+    int m_nExperience;                              // 0x58
+    char m_nFortSave;                               // 0x5c
+    char m_nWillSave;                               // 0x5d
+    char m_nReflexSave;                             // 0x5e
+    char pad_0x5f[0x5];
+    char m_nBaseAttackBonus;                        // 0x64
+    char pad_0x65[0xb];
+    CResRef m_cPortrait;                            // 0x70
+    short m_nGoodEvil;                              // 0x80
+    char pad_0x82[0x6];
+    char* m_pSkillRanks;                            // 0x88
+    char pad_0x8c[0x20];
+    unsigned char m_nAbilityPoints;                 // 0xac
+    char pad_0xad[0x1];
+    unsigned short m_nSkillPoints;                  // 0xae
     unsigned short* m_pFeats;                       // 0xB0
     unsigned short m_nNumFeats;                     // 0xB4
     char pad_0xb6[2];
     int m_nFeatCapacity;                            // 0xB8
+    char pad_0xbc[0x62];
+    short m_nCurrentForcePoints;                    // 0x11e
+    short m_nBaseForcePoints;                       // 0x120
+    short m_nMaxForcePoints;                        // 0x122
+    short m_nForcePointsBonus;                      // 0x124
 
     unsigned char GetLastClass() { return GetClass(m_nNumClasses - 1); }
+    unsigned short GetNumFeats() { return m_nNumFeats; }
+    char GetSkillRank(unsigned short nSkill)
+    {
+        if (nSkill >= g_pRules->m_nNumSkills) {
+            return 0;
+        }
+        return m_pSkillRanks[nSkill];
+    }
 };
 
 class CSWSObject;
@@ -138,6 +201,12 @@ public:
     char GetSkillRankBase(unsigned char nSkill);    // 0x005A5FD0 (placeholder name)
     char pad_0x0[0x89];
     unsigned char m_nNumClasses;                    // 0x89
+    char pad_0x8a[0x64];
+    char m_nConstitutionModifier;                   // 0xee (name guessed)
+    char pad_0xef[0x3];
+    char m_nWisdomModifier;                         // 0xf2 (name guessed)
+    char pad_0xf3[0x1];
+    char m_nCharismaModifier;                       // 0xf4 (name guessed)
 };
 
 // 0x1a0 bytes, g_pRules->m_pClasses.
@@ -147,7 +216,10 @@ public:
     int IsNormalFeat(unsigned short nFeat);         // 0x005BE2C0
     int IsGrantedFeat(unsigned short nFeat, unsigned char& nLevel);  // 0x005BE310
     int IsFeatUseable(unsigned short nFeat);        // 0x005BE370
-    char pad_0x0[0x1a0];
+    char pad_0x0[0x54];
+    unsigned char m_nHitDie;                        // 0x54
+    unsigned char m_nForceDie;                      // 0x55
+    char pad_0x56[0x14a];
 };
 
 class CSWSCreature {
@@ -188,16 +260,16 @@ public:
     virtual void v064();
     virtual void v068();
     virtual void v06C();
-    virtual void v070();
+    virtual CExoString GetDisplayName();           // 0x70 (descriptive)
     virtual void v074();
     virtual void v078();
     virtual void v07C();
     virtual void v080();
     virtual void v084();
     virtual void v088();
-    virtual void v08C();
+    virtual void SetGuiPosition(const Vector& vPosition);  // 0x8c (descriptive)
     virtual void v090();
-    virtual void v094();
+    virtual void SetGuiScene(class CAurScene* pScene);   // 0x94 (descriptive)
     virtual void v098();
     virtual void v09C();
     virtual void v0A0();
@@ -214,7 +286,7 @@ public:
     virtual void v0CC();
     virtual void v0D0();
     virtual void v0D4();
-    virtual void v0D8();
+    virtual float GetModelHeight();                // 0xd8 (descriptive)
     virtual void v0DC();
     virtual void v0E0();
     virtual void v0E4();

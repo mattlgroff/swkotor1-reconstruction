@@ -41,9 +41,13 @@ public:
     C2DA *GetWeaponDischargeTable() { return m_pWeaponDischargeTable; }
 };
 
+class CSWBaseItemArray;
+
 class CSWRules {
 public:
-    char pad_0x00[0xb8];
+    char pad_0x00[0x34];
+    CSWBaseItemArray *m_pBaseItemArray; // 0x34
+    char pad_0x38[0xb8 - 0x38];
     C2DArrays *m_p2DArrays;             // 0xb8
 
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
@@ -92,7 +96,7 @@ public:
     virtual void v04();
     virtual void v08();
     virtual void v0c();
-    virtual void v10();
+    virtual CGameObject *AsSWSObject();   // +0x10
     virtual void v14();
     virtual CGameObject *AsDoor();        // +0x18
     virtual void v1c();
@@ -110,7 +114,8 @@ public:
     virtual void v4c(); virtual void v50(); virtual void v54(); virtual void v58();
     virtual void v5c(); virtual void v60(); virtual void v64(); virtual void v68();
     virtual void v6c(); virtual void v70(); virtual void v74(); virtual void v78();
-    virtual void v7c(); virtual void v80(); virtual void v84(); virtual void v88();
+    virtual void SetAnimation(int nAnimation);   // +0x7c
+    virtual void v80(); virtual void v84(); virtual void v88();
     virtual void v8c(); virtual void v90(); virtual void v94(); virtual void v98();
     virtual short GetCurrentHitPoints(int bExcludeTemporary);   // +0x9c
     unsigned long GetID() { return m_idSelf; }
@@ -163,8 +168,15 @@ public:
 
 class CSWSCreature;
 
+class CSWPartyTable {
+public:
+    int GetIsLeader(unsigned long oid);
+};
+
 class CSWSCreatureStats {
 public:
+    char pad_0x0[0x6c];
+    int m_bIsPC;                        // 0x6c
     int GetFeatImmunity(unsigned short nFeat);
     int GetEffectImmunity(unsigned char nType, CSWSCreature *pVersus);
 };
@@ -174,6 +186,7 @@ public:
     CSWSCreature *GetCreatureByGameObjectID(unsigned long oid);
     CGameObject *GetGameObject(unsigned long oid);
     CServerAIMaster *GetServerAIMaster();
+    CSWPartyTable *GetPartyTable();
 };
 
 class CAppManager {
@@ -187,14 +200,23 @@ extern CAppManager *g_pAppManager;      // 0x007A39FC
 
 class CSWBaseItem {
 public:
-    char pad_0x0[0x8e];
+    char pad_0x0[0x1a];
+    unsigned char m_bRangedWeapon;      // +0x1a
+    char pad_0x1b[0x8e - 0x1b];
     unsigned char m_nWeaponWield;       // +0x8e
+};
+
+class CSWBaseItemArray {
+public:
+    CSWBaseItem *GetBaseItem(int nBaseItem);
 };
 
 class CSWSItem {
 public:
     CSWBaseItem *GetBaseItem();
-    char pad_0x0[0x14];
+    char pad_0x0[0xc];
+    int m_nBaseItem;                    // 0xc
+    char pad_0x10[0x4];
     unsigned long m_idSelf;             // 0x14
     char pad_0x18[0xe0];
     int m_bF8;                          // 0xf8
@@ -234,6 +256,8 @@ public:
 class CSWSCombatRound {
 public:
     CSWSCombatAttackData *GetAttack(int nAttack);
+    void SetRoundPaused(int bPaused, unsigned long oidPauser);
+    void SetPauseTimer(int nTimer, int bFlag);
     char pad_0x0[0x96c];
     unsigned char m_nCurrentAttack;     // 0x96c
 };
@@ -289,6 +313,13 @@ public:
     CExoArrayList<unsigned long> *m_pAttackers;  // 0xa80
     int m_bA84;                         // 0xa84
     int m_bA88;                         // 0xa88
+    char pad_0xa8c[0xaa4 - 0xa8c];
+    int m_nAA4;                         // 0xaa4 (placeholder name)
+
+    void ActivityManager(unsigned long nActivity);
+    void ResolveRangedAttack(CGameObject *pTarget, int a2, int a3, int a4, int a5, int a6, int a7);
+    void ResolveMeleeAttack(CGameObject *pTarget, int a2, int a3, int a4, int a5, int a6, int a7);
+    void ResolveAttack(unsigned long oidTarget, int a2, int a3, int a4, int a5, int a6, int a7);
 };
 
 // FUNCTION: SWKOTOR 0x005B47C0
@@ -566,4 +597,36 @@ unsigned long CSWSCreature::GetFirstAttacker()
         return m_pAttackers->element[0];
     }
     return 0x7f000000;
+}
+
+// NONMATCH (23): the original keeps the dead `bRanged` store (sbb form) and
+// loads the ranged byte into bl; the argument copies rotate other registers.
+// FUNCTION: SWKOTOR 0x005BBA80
+void CSWSCreature::ResolveAttack(unsigned long oidTarget, int a2, int a3, int a4, int a5, int a6, int a7)
+{
+    CGameObject *pObject = g_pAppManager->m_pServerExoApp->GetGameObject(oidTarget);
+    if (!pObject || (!pObject->AsSWSCreature() && !pObject->AsDoor() && !pObject->AsPlaceable())) {
+        m_pcCombatRound->SetRoundPaused(0, 0x7f000000);
+        m_pcCombatRound->SetPauseTimer(0, 0);
+        SetAnimation(0x2711);
+        return;
+    }
+    CGameObject *pTarget = pObject->AsSWSObject();
+    m_oidAttackTarget = oidTarget;
+    ActivityManager(4);
+    int bRanged = 0;
+    CSWSItem *pWeapon = m_pInventory->GetItemInSlot(0x10);
+    if (pWeapon)
+        bRanged = g_pRules->m_pBaseItemArray->GetBaseItem(pWeapon->m_nBaseItem)->m_bRangedWeapon != 0;
+    if (bRanged)
+        ResolveRangedAttack(pTarget, a2, a3, a4, a5, a6, a7);
+    else
+        ResolveMeleeAttack(pTarget, a2, a3, a4, a5, a6, a7);
+    if (pTarget->AsSWSCreature()) {
+        CSWSCreature *pCreature = (CSWSCreature *)pTarget->AsSWSCreature();
+        if (m_nAA4 &&
+            (pCreature->m_pStats->m_bIsPC ||
+             g_pAppManager->m_pServerExoApp->GetPartyTable()->GetIsLeader(pCreature->m_idSelf)))
+            m_nAA4 = -1;
+    }
 }

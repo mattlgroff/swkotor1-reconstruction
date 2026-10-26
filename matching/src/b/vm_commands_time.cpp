@@ -135,7 +135,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsBusy(int nCommandId, int nPara
     CGameObject* pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidObject);
     if (pObject) {
         if (pObject->AsSWSCreature()) {
-            if (pObject->AsSWSCreature()->GetIsInConversation() ||
+            if (pObject->AsSWSCreature()->GetObjectState94() ||
                 pObject->AsSWSCreature()->GetIsPaused() ||
                 pObject->AsSWSCreature()->GetDeadTemp()) {
                 bResult = 1;
@@ -143,7 +143,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsBusy(int nCommandId, int nPara
                 bResult = 0;
             }
         } else {
-            bResult = pObject->GetIsInConversation();
+            bResult = pObject->GetObjectState94();
         }
     }
     return g_pVirtualMachine->StackPushInteger(bResult) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;

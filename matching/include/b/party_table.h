@@ -104,6 +104,7 @@ public:
     void GivePlotXP(const CExoString& sLabel, int nPercent);
     void GivePlotXP(int nRow, int nPercent);
     int SwitchPlayerCharacter(int nNPC);
+    void SetPartyAIStyle(int nStyle) { m_nE4 = nStyle; }
     // Small accessors (0x005636B0-0x005646D0, names guessed).
     int GetNPCAvailable(int nNPC);                              // 0x005636B0
     unsigned char GetNumAvailableNPCs();                        // 0x005636D0

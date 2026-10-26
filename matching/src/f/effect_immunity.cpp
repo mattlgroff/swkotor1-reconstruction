@@ -5,6 +5,14 @@ public:
     int GetINTEntry(int nColumn, int nRow, int *pValue);
 };
 
+template <class T>
+class CExoArrayList {
+public:
+    T *element;
+    int num;
+    int array_size;
+};
+
 class CTwoDimArrays {
 public:
     char pad_0x0[0xdc];
@@ -13,7 +21,9 @@ public:
 
 class CSWRules {
 public:
-    char pad_0x0[0xb8];
+    char pad_0x0[0xaa];
+    unsigned char m_nRacialTypeInvalid;  // +0xaa (placeholder name)
+    char pad_0xab[0xb8 - 0xab];
     CTwoDimArrays *m_p2DArrays;      // +0xb8
     CTwoDimArrays *Get2DArrays() { return m_p2DArrays; }
 };
@@ -36,11 +46,17 @@ public:
     char pad_0x30[0x4];
 };
 
+class CSWSCreatureStats;
+
 class CSWSCreature {
 public:
     void SendFeedbackMessage(int nMessage, CGameEffect *pEffect);
     char pad_0x0[0x4];
     unsigned long m_idSelf;          // +0x4
+    char pad_0x8[0x124 - 0x8];
+    CExoArrayList<CGameEffect *> m_appliedEffects;  // +0x124
+    char pad_0x130[0xa74 - 0x130];
+    CSWSCreatureStats *m_pStats;     // +0xa74
 };
 
 class CServerExoApp {
@@ -79,16 +95,60 @@ extern const int IMMUNITY_TYPE_CONFUSED;
 extern const int IMMUNITY_TYPE_CURSED;
 extern const int IMMUNITY_TYPE_DAZED;
 extern const int IMMUNITY_TYPE_ABILITY_DECREASE;
+extern const int IMMUNITY_TYPE_NONE;    // 0x007468FC
 
 class CSWSCreatureStats {
 public:
     int GetEffectImmunityColumn(unsigned short nType, int nSubType);
-    int GetEffectImmunity(int nImmunityType, CSWSCreature *pVersus);
+    int GetEffectImmunity(unsigned char nImmunityType, CSWSCreature *pVersus);
     int GetEffectLinkImmunity(CGameEffect *pEffect);
+    unsigned char GetSimpleAlignmentGoodEvil()
+    {
+        if (m_nGoodEvil <= 40)
+            return 3;
+        if (m_nGoodEvil >= 60)
+            return 2;
+        return 1;
+    }
 
     char pad_0x0[0x24];
     CSWSCreature *m_pBaseCreature;   // +0x24
+    char pad_0x28[0xdc - 0x28];
+    unsigned short m_nRace;          // +0xdc
+    char pad_0xde[0x15e - 0xde];
+    unsigned short m_nImmunityEffectStart;  // +0x15e (placeholder name)
+    char pad_0x160[0x17e - 0x160];
+    short m_nGoodEvil;               // +0x17e
 };
+
+// FUNCTION: SWKOTOR 0x005A6960
+int CSWSCreatureStats::GetEffectImmunity(unsigned char nImmunityType, CSWSCreature *pVersus)
+{
+    int nRace;
+    int nAlignment;
+    if (pVersus) {
+        nRace = pVersus->m_pStats->m_nRace;
+        nAlignment = pVersus->m_pStats->GetSimpleAlignmentGoodEvil();
+    } else {
+        nRace = g_pRules->m_nRacialTypeInvalid;
+        nAlignment = -1;
+    }
+    CExoArrayList<CGameEffect *> *pEffects = &m_pBaseCreature->m_appliedEffects;
+    for (int i = m_nImmunityEffectStart; i < pEffects->num; i++) {
+        CGameEffect *pEffect = pEffects->element[i];
+        if (pEffect->m_nType > EFFECT_TRUETYPE_IMMUNITY)
+            break;
+        int nType = pEffect->GetInteger(0);
+        int nVsRace = pEffect->GetInteger(1);
+        int nVsAlignment = pEffect->GetInteger(2);
+        if (pEffect->m_nType == EFFECT_TRUETYPE_IMMUNITY &&
+            (nType == IMMUNITY_TYPE_NONE || nType == nImmunityType) &&
+            (nVsRace == g_pRules->m_nRacialTypeInvalid || nVsRace == nRace) &&
+            (!nVsAlignment || nVsAlignment == nAlignment))
+            return 1;
+    }
+    return 0;
+}
 
 // NONMATCH (59, mostly offset shift): the original re-does `movzx` of the
 // 16-bit type for the second true-type compare (ours reuses eax, 3 bytes

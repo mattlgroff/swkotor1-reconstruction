@@ -404,24 +404,6 @@ int CSWCCreature::ShowLightSaberContactVisual(int nUnused)
     return 1;
 }
 
-// FUNCTION: SWKOTOR 0x0060FB80
-// NONMATCH: the original keeps the client app in EDX across the call to
-// GetEquippedItemID (likely /GL register knowledge).
-void CSWCCreature::SetOverrideLightsaberState(int bState, int a, int b)
-{
-    if (bState) {
-        CSWCItem* pItem = (CSWCItem*)g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(GetEquippedItemID(0x10));
-        if (pItem) {
-            pItem->SetPowered(a, 1, b, 0);
-        }
-        pItem = (CSWCItem*)g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(GetEquippedItemID(0x20));
-        if (pItem) {
-            pItem->SetPowered(a, 1, b, 0);
-        }
-    }
-    m_bOverrideLightsaber = bState;
-}
-
 // FUNCTION: SWKOTOR 0x0060FC00
 // NONMATCH: the original returns int-sized constants on every path except
 // the last (`mov al, bl` from EBX = -1 with EAX == 0); not reproduced.
@@ -481,24 +463,6 @@ int CSWCCreature::IsStealthCapable()
         return 0;
     }
     return 1;
-}
-
-// FUNCTION: SWKOTOR 0x006116A0
-// NONMATCH: the original keeps the client app in EDX across the call to
-// GetEquippedItemID (likely /GL register knowledge).
-void CSWCCreature::BlurWeapon(int bBlur)
-{
-    if (m_bBlurWeapon == bBlur) {
-        return;
-    }
-    CSWCItem* pItem = (CSWCItem*)g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(GetEquippedItemID(0x10));
-    if (pItem) {
-        g_pRules->m_pBaseItems->GetBaseItem(pItem->m_nBaseItem);
-        if (pItem->m_bPowered == 1) {
-            return;
-        }
-    }
-    m_bBlurWeapon = bBlur;
 }
 
 // FUNCTION: SWKOTOR 0x00613850
