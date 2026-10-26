@@ -40,13 +40,22 @@ struct CFollowNode {
     int m_nStart;                               // 0x24
     Vector m_vEnd;                              // 0x28
     int m_nEnd;                                 // 0x34
+    char pad_38[0x5c-0x38];
+    Vector m_vTeleport;
 };
+
+class CPathfindInformation;
+class CSWSArea { public: int TestSafePoint(const Vector* p, CPathfindInformation* pPath); }; // 0x004BE5E0, descriptive name
 
 class CSWSCreature {
 public:
+    unsigned long FollowLeaderTeleportForward(CFollowNode*, CSWFollowPath*, float*, int);
+    CSWSArea* GetArea(); // 0x004CB120
     unsigned long FollowLeaderOffsetWaitDest(CFollowNode*, CSWFollowPath*, float*, int);
     unsigned long FollowLeaderPathWaitDest(CFollowNode*, CSWFollowPath*, float*, int);
     unsigned long FollowLeaderToOffsetWaitDest(CFollowNode*, CSWFollowPath*, float*, int);
+    char pad_0[0x340];
+    CPathfindInformation* m_pPathData;
 };
 
 

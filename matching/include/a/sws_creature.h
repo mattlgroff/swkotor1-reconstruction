@@ -117,6 +117,7 @@ extern int g_nAppearanceColHeight;                  // 0x007A2104               
 
 template <class T> class CExoArrayList {
 public:
+    void SetSize(int nSize);
     void Allocate(int nSize);                       // out of line (sws_creature2.cpp)
     void Add(T t)
     {
@@ -315,10 +316,18 @@ public:
     unsigned long m_oid;                            // 0x04
 };
 
+struct CSWPartyMovementRecord {
+    unsigned long m_nState;
+    char pad_4[0x88-4];
+};
+
 class CSWParty {
 public:
     CSWPartyMember* GetMember(int n);               // 0x006346C0
+    int IsPartyMember(unsigned long oid); // 0x006349C0
     int m_nMembers;                                 // 0x00
+    char pad_4[0x28-4];
+    CSWPartyMovementRecord m_aMovement[3];
 };
 
 class CClientExoApp {
@@ -536,7 +545,9 @@ public:
 
 class CSWSArea {
 public:
-    char pad_0x0[0x190];
+    char pad_0x0[0x120];
+    unsigned long m_idSelf;
+    char pad_124[0x190-0x124];
     CExoArrayList<unsigned long> m_lPlayers;        // 0x190 (placeholder name)
     char pad_0x19c[0x208 - 0x19c];
     CSWSAreaSound* m_pSoundObject;                  // 0x208 (placeholder name)
@@ -741,13 +752,15 @@ public:
     char pad_0x4[0x38 - 0x4];
     union { unsigned long m_n38; float m_f38; };      // 0x38 (placeholder name)
     union { unsigned long m_n3C; float m_f3C; };      // 0x3c (placeholder name)
-    unsigned long m_n40;                            // 0x40
+    union { unsigned long m_n40; float m_f40; };      // 0x40
 
-    unsigned long m_n44;                            // 0x44 (placeholder name)
+    union { unsigned long m_n44; float m_f44; };      // 0x44
     unsigned long m_n48;                            // 0x48
 
     unsigned long m_n4C;                            // 0x4c (placeholder name)
-    char pad_0x50[0x6c - 0x50];
+    union { unsigned long m_n50; float m_f50; };      // 0x50
+    unsigned long m_n54;
+    char pad_0x58[0x6c - 0x58];
     unsigned short m_nGroupId;                      // 0x6c
     unsigned short m_nParameterCount;               // 0x6e
 };
@@ -759,10 +772,10 @@ public:
     virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
     virtual void v70(); virtual int RunAction(CSWSObjectActionNode* pNode, int bArg);  // 0x74 (placeholder name)
     virtual void v78(); virtual void SetAnimation(int nAnimation);  // 0x7c (placeholder name)
-   
+
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8c();
     virtual void v90(); virtual int GetDead();  // 0x94 (placeholder name)
-   
+
     virtual short GetMaxHitPoints(int bArg);        // 0x98
     virtual short GetCurrentHitPoints(int bArg);    // 0x9c
 
@@ -884,6 +897,14 @@ public:
     int RunUnequip(unsigned long oidItem, unsigned long oidRepository, int bUpdate, CSWSItem** ppItem, int nValue); // 0x005023A0
     int AIActionEncounterCreatureDestroySelf();      // 0x00510C20 (RET 0, no stack argument)
     unsigned char CheckWeaponSlot(CSWSItem* pItem, unsigned long* pSlot, int bFeedback, int bUpdate); // 0x00515860 (descriptive name)
+    void SetVisibilityList(CExoArrayList<CSWSCreatureListEntry*>* pList); // 0x0051AFD0, descriptive name
+    int AIActionCheckMoveToPoint(CSWSObjectActionNode* pNode); // 0x00510670
+    int AIActionCheckMoveToPointRadius(CSWSObjectActionNode* pNode); // 0x005108A0
+    int AIActionCheckMoveToFollowRadius(CSWSObjectActionNode* pNode); // 0x00510AB0
+    int AddMoveToPointActionToFront(unsigned short nGroup, const Vector& vTarget, unsigned long oidArea,
+        unsigned long oidTarget, int bRun, float fRange, float fTolerance, int, int, int, int, int, int,
+        const Vector& vOffset, unsigned long, unsigned long, int); // 0x004F8A50
+    int AIActionCheckForceFollowObject(CSWSObjectActionNode* pNode); // 0x005136B0
     int AIActionChangeFacingPoint(CSWSObjectActionNode* pNode); // 0x0050FC90
     int AIActionChangeFacingObject(CSWSObjectActionNode* pNode); // 0x0050FB60
     int AIActionEquipItem(CSWSObjectActionNode* pNode); // 0x00510FD0

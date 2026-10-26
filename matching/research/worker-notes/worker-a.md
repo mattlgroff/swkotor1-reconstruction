@@ -94,3 +94,38 @@ remain separate deeper follow-up work, not fabricated compact attempts.
 Publication baseline was advanced by the coordinator during this run to
 `ee977a4` / 5,584 exact. No worker push was performed. These 19 new matches
 remain local for independent acceptance toward the next 100-new threshold.
+
+
+# Worker A, round 2 (2026-10-26)
+
+Fresh branch codex/worker-a-r2 at frozen r1 4868ed9. Prefetched 274 raw todo
+rows and excluded 32 parent annotations, leaving 242 available candidates.
+Checkpoint 1: 8 attempted, 3 NEW exact, 5 retained NONMATCH. Exact:
+004FD6F0 CalculateDamagePower, 00501D90 UpdateClassInfo (established symbol
+name retained despite pure-alignment hint), 004FDAA0 CancelCombat.
+Misses: 005136B0 (4), 005111C0 (5), 00512F10 (12), 004FDA20 (5),
+004FD960 (7). Bounded ordinary source shapes exhausted; remaining stack-slot,
+loop rotation, x87 multiplication and receiver load scheduling ties.
+No parent scheduling misses revisited; shared reports untouched.
+
+Checkpoint 2: 13 attempted cumulatively, 6 NEW exact, 7 retained NONMATCH.
+New exact: 0051B720 (generic dword-array assignment), 004FDBD0/004FDC80
+(pure good/evil power effect creation). Effect magic subtype is a two-bit
+field in the ushort at +0x0a; a ushort bitfield generates the observed
+byte-memory AND while a char field creates a register load/store tie.
+The effect's complete 0x8c declaration is local to this translation unit.
+Retained 0051AFD0 at 2 diff (initial count memory compare) and 00512DE0
+at 29 (EBX/EBP receiver/node register allocation). Existing three wait-state
+siblings still compare exact after extending their isolated header.
+
+Checkpoint 3: 19 new attempts, 8 NEW exact, 11 retained NONMATCH.
+Added exact 004FDD30 (effect-pointer array copy constructor, shallow ownership
+contract) and 004FDDD0 (GUI action array SetSize, complete size 0x38).
+Copy-constructor/growth implementation is isolated; adding a declaration
+for SetSize to the shared array does not change its constructors.
+Movement check actions 00510670/005108A0/00510AB0 retained at 11/29/23 diff
+after three source forms; all node arguments, lookup, flag/radius checks,
+requeue calls, and party state writes follow the canonical instruction flow.
+UnsummonMyself 005149B0 retained at 8 diff after three event receiver forms;
+all EH, allocation, visual effect and destruction-event bytes match except
+the event/app-manager register selection.

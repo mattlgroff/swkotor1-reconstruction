@@ -134,3 +134,29 @@ NONMATCH:
 - Options class vtable declarations include the independently observed
   HandleInputEvent override at panel slot 0x3C; this leaves the original
   base layout size (0x64), all member offsets and matched bytes unchanged.
+
+## Inventory/equipment/store continuation (2026-10-26, worker-l-r2)
+
+- Screened a fresh 180-address unowned candidate pool, excluding all source
+  annotations from the accepted r1 baseline (private pool `/private/tmp/l-r2-pool.txt`).
+  Selected the coherent inventory/equipment control/lifecycle family.
+- First checkpoint: 13 attempted / 13 NEW exact. Real radio/item/store-entry
+  constructors and member destructors, five deleting wrappers, equip Draw,
+  and container release callback. Typed drawable member sizes are border
+  0x74 and text 0x70; item entries own three borders and one text drawable.
+- `novtable` isolates the observed omission of derived vptr restoration;
+  radio cleanup genuinely restores its vptr and calls the button destructor.
+  Container/inventory/equip constructors used only to emit deleting wrappers
+  remain unannotated as constructors and are not counted as reconstructed.
+- Exact new addresses: 0x006B66F0, 0x006BE360, 0x006B7EE0, 0x006B71E0,
+  0x006B7F80, 0x006B87A0, 0x006B7FA0, 0x006B87C0, 0x006BB510,
+  0x006B8770, 0x006B4B90, 0x006B9450, 0x006B8030.
+- Second checkpoint extends the family with container regular destructor,
+  inventory/equip OnPanelAdded, and item-entry GetNumItems: four more new
+  attempts. The callback at 0x006B8770 is now named Update, and its callee
+  0x006B8410 SetupGiveMode, following the existing semantic reconstruction.
+  Earlier provisional event labels were descriptive; ABI and bytes unchanged.
+- The extended equip layout preserves base size 0x64 and models nine slot
+  buttons, nine labels, entry array, description/items listboxes and the
+  final control/compare state. Shared panel padding now exposes the observed
+  control pointer at +0x1c, without shifting any field.

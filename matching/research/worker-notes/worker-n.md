@@ -113,3 +113,89 @@ marked descriptive CSWGuiModalWarningBox (no evidence for a battery name).
 Its 0x00625A60 callback uses established SetUnknown1a8(int,int,int):
 0x005EDE10 demonstrably stores three integers, so the weaker FadeToBlack
 alias and float parameter are inappropriate even though masked calls match.
+
+## Isolated r2 object/control family, in progress
+
+Screened the complete 206-address remaining eligible pool via canonical TODO
+and Mac hints (206 >= 100). Selected the coherent CSWCObject animation/table,
+queue, model and server-link family; the larger GUI constructors have much
+larger exception/layout requirements. First checkpoint: eight new exact
+predicates at 0x0063C170/1E0/240/2A0/410/4F0/550/5B0. The short animation
+argument stays short through ServerToClientAnimation's virtual +E0 contract;
+GetINTEntry receives its zero-extended row. Naming the C2DA pointer before
+GetINTEntry reproduces the original table-before-arguments scheduling.
+
+Second r2 checkpoint: 14 additional attempts, 13 exact, cumulative 21/22.
+Looping/fire-forget/play-out-of-place/dialog predicates and control members
+are exact. RemoveTopFireForgetAnimation uses a typed 28-byte queue entry and
+copies each member (preserving the untouched 16-bit padding); defining it in
+the same translation unit as ClearFireForgetAnimations reproduces MSVC's
+knowledge that ECX survives the call. GetServerObject is retained NONMATCH
+at four instruction diffs: only EAX versus EDX for the pre-conversion object
+ID, after explicit server temporaries resolved the earlier control-flow tie.
+
+Third r2 checkpoint extends model, portrait, vocalization and animation queue:
+10 new attempts / 6 exact, cumulative 27/32. Exact: 0x0063D1D0 NewVocalization,
+0x0063D140 SetPortraitId, 0x0063D070 RemoveShadowBlob, 0x0063F570 SetArea,
+0x0063BFD0 queue-entry constructor, 0x0063C760 AddFireForgetAnimation.
+CSWPortrait is 16 bytes and slot +EC takes only const CResRef&; the zero
+pushed before GetPortrait is its unsigned-char argument, not a second setter
+argument. GetTopFireForgetAnimation is retained with seven x87 scheduling
+diffs after explicit client pointers resolve all timer argument scheduling.
+SetOrientation (five diffs), SetWind (six) and AcquireAnimationBase (two)
+retain honest ABI and source, with register scheduling ties. Existing
+UnregisterAnimationCallbacks and CExoArrayList<unsigned long>::AddUnique /
+Remove names are reused for the established callees.
+
+Fourth r2 checkpoint completes the compact event/control extension: eight
+new attempts / five exact, cumulative 32/40. New exact addresses:
+0x0063D3F0, 0x0063D850, 0x0063F5E0, 0x0063E510, 0x0063CFD0.
+The event/portrait helper names without independent public records are
+explicitly descriptive. SetPortraitRef needs a named assignment-result
+CResRef before its virtual call; nesting the assignment in the argument
+hoists the vtable read. Environment-map defaults at 0x0073E304 are verified
+as "DEFAULT"; both SetEnvMap helpers retain stack-slot/register NONMATCH
+attempts (26/28 diffs) after three source shapes. OnAnimationEvent retains
+six register/argument-scheduling diffs with established int animation-name
+slot argument; no short-argument ABI was invented to remove them.
+
+## r2 frozen handoff, 2026-10-26
+
+- Branch: `codex/worker-n-r2`, based on published `ee977a4`.
+- Screened: **206** remaining eligible addresses; selected one CSWCObject
+  animation/control/queue/model/server-link family rather than revisiting
+  the six r1 scheduling misses or three unresolved void-return forwards.
+- NEW annotations/attempts: **40**. NEW exact: **32**. NEW NONMATCH: **8**.
+  Prior NONMATCH promotions: **zero**. Existing exact regressions: **zero**.
+- Canonical whole-folder run, original inputs/default MSVC 7 flags,
+  `-q -j 4 --report /tmp/worker-n-r2-final.csv matching/src/n`:
+  **128/145 exact** = 96 prior exact + 32 new; 9 prior misses + 8 new.
+  Shared status/symbol reports were not changed. `git diff --check` passed.
+- New exact addresses: 0x0063BFD0, 0x0063C0A0, 0x0063C100,
+  0x0063C170, 0x0063C1E0, 0x0063C240, 0x0063C2A0, 0x0063C300,
+  0x0063C380, 0x0063C410, 0x0063C470, 0x0063C4A0, 0x0063C4F0,
+  0x0063C550, 0x0063C5B0, 0x0063C760, 0x0063C9C0, 0x0063CAB0,
+  0x0063CAD0, 0x0063CE40, 0x0063CFD0, 0x0063D070, 0x0063D140,
+  0x0063D1D0, 0x0063D2D0, 0x0063D300, 0x0063D3F0, 0x0063D830,
+  0x0063D850, 0x0063E510, 0x0063F570, 0x0063F5E0.
+- New retained NONMATCH queue: 0x0063C110 SetOrientation 5;
+  0x0063C610 GetTopFireForgetAnimation 7; 0x0063CB70 SetEnvMap 26;
+  0x0063CCC0 SetEnvMapPart 28; 0x0063D270 SetWind 6;
+  0x0063D330 OnAnimationEvent 6; 0x0063D4B0 GetServerObject 4;
+  0x0063D700 AcquireAnimationBase 2. Do not burn another batch on these
+  known register/stack/x87 ties without new compiler evidence.
+- Final callee audit uses established int-returning
+  CWorldTimer::AddWorldTimes, CSWCCreature::UnregisterAnimationCallbacks,
+  CExoArrayList<unsigned long>::AddUnique/Remove and CResRef/CExoString
+  contracts. Every new global is an extern declaration. No absolute-address
+  loads, assembly, fake callee labels or ABI changes for matching were used.
+- The complete local object layout is 0xFC bytes; extending it did not alter
+  any preexisting header or derived layout. Matching validation is canonical
+  compiler/executable byte comparison, with no V4 runtime promotion claim.
+  Engine object graphs, timers, strings, GUI state and model vtables remain
+  external dependencies; no gameplay sources/builds/tests were touched.
+- Next coherent object workset: constructor/destructor 0x0063E530/0x0063E800
+  with their complete base/member layout, or fade/visibility lifecycle
+  0x0063CE60/0x0063DE50/0x0063DEE0/0x0063DF60/0x0063E220 and area-fade
+  0x0063E350. These are unattempted, not matches. GUI constructor/FixMessageLabel
+  queue from r1 remains available for a fresh context.

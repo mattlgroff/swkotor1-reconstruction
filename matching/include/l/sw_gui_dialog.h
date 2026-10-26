@@ -16,6 +16,8 @@ public:
     CExoString& operator=(const CExoString& s);     // 0x005E5C50
     CExoString& operator=(const char* s);           // 0x005E5140
     CExoString operator+(const CExoString& s) const;    // 0x005E5D10
+    int IsEmpty() const;                          // 0x005E58A0
+    int AsINT() const;                            // 0x005E5630
     int GetLength() const;                          // 0x005E5790
     char* CStr() const;                             // 0x005E5670
     void Format(const char* szFormat, ...);         // 0x005E5680
@@ -261,7 +263,8 @@ public:
     CSWGuiExtent m_extent;                          // 0x04
     int m_bUpdateFonts;                             // 0x14
     CSWGuiManager* m_pManager;                      // 0x18
-    char pad_0x1c[0x28];
+    CSWGuiControl* m_pControl1c;                    // 0x1c
+    char pad_0x20[0x24];
     unsigned long m_nFlags;                         // 0x44
     unsigned char m_nResolution;                    // 0x48
     float m_fAlpha;                                 // 0x4c
@@ -399,6 +402,7 @@ public:
     CSWGuiManager* GetGuiManager();                 // 0x005EDA40
     void SetInputClass(int nClass, int bForce);     // 0x005EDA60
     void SetUnknown1a8(int a, int b, int c);        // 0x005EDE10
+    void ShowTutorialWindow(int, int, int, int); // 0x005EDF40
     void SaveOptions();                             // 0x005EDF70
     CSWCCreature* GetPlayerCreature();              // 0x005ED540
     int ChangeCharacterToNextLivingPartyMember(int a, int b, int c);  // 0x005EDF80

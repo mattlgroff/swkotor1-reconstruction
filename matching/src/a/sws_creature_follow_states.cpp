@@ -88,3 +88,32 @@ unsigned long CSWSCreature::FollowLeaderToOffsetWaitDest(CFollowNode *pNode, CSW
     }
     return ACTION_COMPLETE;
 }
+
+
+// Descriptive name from the ring-point search and teleport-state update.
+// NONMATCH: 29 diff: EBX/EBP receiver and node allocation propagates through copies.
+// FUNCTION: SWKOTOR 0x00512DE0
+unsigned long CSWSCreature::FollowLeaderTeleportForward(CFollowNode* pNode, CSWFollowPath* pPath,
+                                                       float* pSpeed, int)
+{
+    int nHead = pPath->m_nCurrent;
+    int i = pNode->m_nStart;
+    pPath->GetFollowPoint(pNode->m_nEnd);
+    Vector vPoint = *pPath->GetFollowPoint(i);
+    i++;
+    if (i >= 100) i = 0;
+    vPoint = *pPath->GetFollowPoint(i);
+    while (!GetArea()->TestSafePoint(&vPoint, m_pPathData)) {
+        if (i == nHead) return ACTION_COMPLETE;
+        i++;
+        if (i >= 100) i = 0;
+        vPoint = *pPath->GetFollowPoint(i);
+    }
+    if (i == nHead) return ACTION_COMPLETE;
+    pNode->m_nStart = i;
+    pNode->m_vStart = vPoint;
+    pNode->m_vTeleport = vPoint;
+    *pSpeed = 0.0f;
+    pNode->m_nState = 2;
+    return ACTION_COMPLETE;
+}

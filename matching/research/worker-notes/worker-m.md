@@ -139,3 +139,108 @@ Next coherent queue: larger CSWCMessage object lifecycle/update handlers
 read documented by the playable reference; defer layout/ownership decisions
 until its stack contract is reconciled. Do not revisit constructor EH misses
 0x00676DA0 / 0x006770C0 as store-only "matches".
+
+## Active next-family batch, worker-m-r2
+
+Screened 180 of the 232 current eligible M TODO rows, then the 38-row current
+CSWCMessage pool. Screening is separate from implementation. First five NEW
+attempts: 0x0064CC90, 0x0064F960, 0x00654B10, 0x0064FEF0, 0x0064DCF0.
+Current result: three NEW exacts (CC90, 54B10, DCF0), two retained misses.
+Prior seven source-shape misses remain untouched.
+
+Creature deletion's complete 512-byte EH path matches, including uninitialized
+2DA output slots and dead-creature corpse handling. Use existing inline
+Get2DArrays / typed table accessors to preserve the original evaluation tree.
+ItemScript_Add (400 bytes) matches after materializing the AI receiver and base
+item index. Extended item layouts stay local to this new family interface.
+
+The load-progress handler (432 bytes) matches with nested float casts within
+one SetLoadBarProgress expression. This places its second argument before the
+five reader calls and forces each original float materialization. Preserve the
+established GetTutorialFlag(int) symbol at 0x005EDFF0 even though this caller's
+semantic reference labels the five returned bytes as load steps. The native
+RunFrame name at 0x00401C10 and SendPlayerToServer_04_03 are preserved.
+
+Bounded retained misses: TriggerUpdate_Delete 0x0064F960 (39 diff insns,
+496/448 bytes; three shapes, common-success EH epilogue cloned by MSVC7),
+GuiContainer 0x0064FEF0 (4 diff insns, 448/448 bytes; two shapes, one EBP pop
+scheduled across the second coordinate store). Both retain complete typed C++.
+
+Second local checkpoint: ten actual NEW attempts, seven NEW exacts, three
+retained misses. Additional exacts: Camera 0x0064B8E0 (464 bytes), SetGuiSkillRank
+0x0064CE90 (160 bytes), GenericObjectUpdate_Update 0x00651880 (624 bytes),
+AreaOfEffectUpdate_Add 0x00651680 (304 bytes). ItemUpdate_Add 0x0064E7B0 is
+retained NONMATCH after three shapes (36 diff insns, 784/784 bytes; receiver /
+area EBX/EBP allocation plus output-slot scheduling). Full typed reuse/create
+behavior is retained; no assembly or raw absolute global loads were added.
+
+Camera matched on its first source compile, including the native uninitialized
+camera local on the absent-module path. Generic updates matched after removing
+invented initializers from conditionally read portrait/speed/animation fields
+and preserving two separate mask-4 tests around the float and WORD readers.
+SetGuiSkillRank needs plain char ranks and statement-form bounds checking;
+changing signed char or a ternary accessor alters the inlined register tree.
+AoE allocation/registration matches directly with the 0x17C typed object,
+virtual SetObjectID/SetArea slots and established game-object array interface.
+
+Third local checkpoint: fifteen actual NEW attempts, nine NEW exacts / six
+retained misses. Inventory 0x0064DEE0 (1,264 bytes) and token-part helper
+0x006500B0 (256 bytes) are additional exacts. Per-case returns preserve the
+inventory switch's local success epilogues. Token handling requires separate
+CTlkTable/CSWTlkTable globals (7A3A08 / 7A3A0C) and a scoped integer-string
+local, avoiding reliance on a constructor's EAX result.
+
+New bounded misses: ServerStatus 0x0064F280 (41 diff insns, 432/432 bytes;
+three complete source shapes, common EH success placement), LoadBar 0x0064EDD0
+(37 diff insns, 640/640; three shapes, inline field accessor/register trees),
+and CreatureUpdate_VisEffect 0x0064C3C0 (261 diff insns, 1744/1840; two shapes,
+large EH frame/register and temporary scheduling). The latter retains all
+three native dummy allocation paths and the first path's inverted array-status
+check. Its extended 0x44C creature declaration is isolated in that translation
+unit. Existing GAME_OBJECT_VALID, object-type globals, canonical immediate
+OBJECT_INVALID and typed base-class conversions are preserved.
+
+Status format data was read directly from canonical .rdata: "%c%s.%s", 's',
+"Module", "Run". The original caller uses established GetGameOver/SetGameOver
+symbols even though its behavioral reference labels the state "downloaded".
+No invented state names replace those proven symbols.
+
+Fourth local checkpoint / recovery state: **21 actual NEW attempts, 12 NEW
+exacts, 9 retained NEW NONMATCHs; no prior NONMATCH promotions.** This expands
+well past compact dispatchers into complete object creation and inventory
+model/sound paths. Two full add handlers are bounded misses: DoorUpdate_Add
+0x0064CF30 (29 diff insns, 1120/1136 bytes; three shapes, locstring temporary
+slots and register scheduling), TriggerUpdate_Add 0x0064F4B0 (81 diff insns,
+1200/1200; three shapes, zero-vector frame/temporary scheduling). Their best
+complete sources are retained. Native strings "Model", "VisibleModel",
+"ModelName", "v_mnfrag", "EMPTY" were directly checked in canonical .rdata.
+
+The compatible inventory item expansion adds NEW exact PlayDropSound
+0x006466D0, AttachAuxiliaryModel 0x00646830 and SetSpecialAttackModel
+0x00646880. The latter two names are descriptive; these addresses had no
+established symbols. SetEquippedModelFlags 0x00646BA0 is a complete bounded
+NONMATCH (9 diff insns, 224/240 bytes; two source shapes, owner-ID evaluation
+and model-override load hoisting). All use typed fields and virtual slots.
+
+Canonical whole M-folder check: **271/305 exact**, compared with accepted
+baseline **259/284**. All 259 prior exacts survive, the prior 25 misses retain
+their prior results, and all twelve claimed new exacts pass. No duplicate
+annotations. The six new files/headers pending this checkpoint remain inside
+owned M paths; no reports, non-M sources, VS2022 files or pushes are involved.
+
+NEW exact addresses to date:
+0x006466D0, 0x00646830, 0x00646880, 0x0064B8E0, 0x0064CC90,
+0x0064CE90, 0x0064DCF0, 0x0064DEE0, 0x006500B0, 0x00651680,
+0x00651880, 0x00654B10.
+NEW NONMATCH addresses to date:
+0x00646BA0, 0x0064C3C0, 0x0064CF30, 0x0064E7B0, 0x0064EDD0,
+0x0064F280, 0x0064F4B0, 0x0064F960, 0x0064FEF0.
+
+Next compatible queue: item render orientation 0x00646A30 and secondary
+SetArea receiver 0x00646930 (the latter needs a defensible secondary-base
+class declaration before attempting); CSWCMessage creature add 0x0064C0A0,
+item creation 0x0064B540 / active properties 0x0064E3D0, placeable add
+0x0064D500, and the local-character upload overload 0x00678080. The GUI
+handler at 0x0064EC00 has two fixed stack arrays with an unbounded byte count;
+its native stack contract needs reconciliation before a safe typed attempt.
+Do not count disassembly-only screening of these queue addresses as attempts.
