@@ -280,7 +280,9 @@ public:
     unsigned short m_nAnimation;                    // 0x48
     char pad_0x4a[0x9a];
     int m_bCorpse;                                  // 0xe4
-    char pad_0xe8[0x2f4];
+    char pad_0xe8[0x20c];
+    unsigned long m_oidLockOrientation;             // 0x2f4
+    char pad_0x2f8[0xe4];
     unsigned long m_oidCorpseContainer;             // 0x3dc
 
     int IsAnimationPlaying(unsigned short nAnim);   // 0x0063C4A0
@@ -728,6 +730,8 @@ public:
     void EnableMouseAtEndOfLoadModuleMovie();                       // 0x005F4DB0
     void AddMovieToMovieQueue(int a, int b);                        // 0x005FBF50
     void PlayMovieQueue(int b);                                     // 0x00602D40
+    int PlayMoviesInExoArrayList(CExoArrayList<CExoString>* pList, int* pResult,
+                                 int bWait, unsigned long nFlags, CExoArrayList<int>* pMovieFlags); // 0x00602AF0
     int IsValidResolution(int a, int b);                            // 0x005F0C60
     int DontUseThisSetPlayerCreature(unsigned long oid);            // 0x005F4EC0
 

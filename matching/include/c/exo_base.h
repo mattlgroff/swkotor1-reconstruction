@@ -102,6 +102,7 @@ public:
     int array_size;                                 // 0x08
 
     T& operator[](int i) { return element[i]; }
+    int count(CExoString s);
     void Allocate(int n);
     void Add(T t)
     {
