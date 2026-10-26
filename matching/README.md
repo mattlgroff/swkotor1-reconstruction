@@ -25,8 +25,9 @@ the original.
 When this directory was added, 5,756 functions were annotated and 5,252 of
 them were byte-identical. The other 504 are best attempts (`NONMATCH`) kept
 for later passes. Another 395 functions are identical to the stock
-`LIBCMT.LIB` and need no source (see below). `status.csv` records every function's current result, and
-the tracker above is rebuilt from it.
+`LIBCMT.LIB` and need no source (see below). `status.csv` records each
+annotated function's current result. The tracker is rebuilt from that report,
+the function table and the stock-library records, using the coverage rules below.
 
 ## Layout
 
@@ -119,10 +120,11 @@ so they are never added together:
   and probable leftovers, plus tiny stubs. Its milestones
   restate [STATUS.md](../STATUS.md); update `PLAYABLE` in the script when
   that file changes.
-- **Original toolchain, byte-identical** (green, `matching/`): decompiled
-  with Visual Studio .NET 2002 (MSVC 7.0) and the original libraries, so it
-  compiles to the original's exact bytes, from `status.csv`. Functions
-  identical to the stock `LIBCMT.LIB` (grey) need no source.
+- **Original-toolchain matching coverage** (green, `matching/`): the headline
+  includes source functions marked `MATCH` in `status.csv` plus functions
+  identified as identical to the original stock `LIBCMT.LIB` (grey). The
+  library functions need no reconstructed source. The source and original
+  runtime counts and percentages are shown separately below the headline.
 - **Address map:** for every 4 KiB of the original code it shows what is
   byte-identical, what is stock library, what exists only in the modern-toolchain version,
   and what neither has yet.
@@ -136,12 +138,52 @@ It updates itself:
    every push to `main` that changes `src/`, `matching/status.csv`,
    `matching/functions.csv`, `matching/crt_libcmt.csv`,
    `build-manifest.json` or the renderer. Its badge shows the change in
-   byte-identical functions since the previous `status.csv`.
+   source-matched functions since the previous `status.csv`; adding the
+   runtime to headline coverage does not turn library functions into new
+   source matches.
 
-`matching/functions.csv` lists the executable's 20,397 function starts. It
-holds addresses only, and `kind` is `eh` for the 11,730 compiler-generated
-EH funclets, which are not counted. Annotated functions missing from the
-list (585 today) are added to it, giving 9,252 functions in total.
+### Counting matching coverage
+
+The denominator is the unique original addresses in `functions.csv`, plus
+annotated addresses in `status.csv` missing from that table. Entries
+classified as compiler-generated EH funclets (`CG`, normally `kind=eh`)
+are excluded. The denominator is computed on every render; it can grow as
+additional function starts are recovered, so do not reuse an old total.
+
+Each address has exactly one category, in this order:
+
+1. **Source match (`M`):** `status.csv` marks it `MATCH`.
+2. **Compiler-generated (`CG`):** the remaining entry has `kind=eh` and is excluded.
+3. **Original runtime (`L`):** the remaining address appears in `crt_libcmt.csv`.
+4. **Attempt (`N`) or remaining (`T`):** no verified source or library match.
+
+**Matching coverage = (M + L) / (M + L + N + T).** Source-only coverage is
+`M` over the same denominator. Library-only coverage is `L` over that
+denominator. Library symbol aliases at one address count once; an address
+also matched from source counts only as `M`. Library hits outside the
+denominator are not added to either the numerator or denominator merely
+because they occur in `crt_libcmt.csv`.
+
+The displayed matching code-byte percentage likewise includes both `M`
+and `L`. Sizes run from each known function start to the next and include
+alignment padding; EH funclet spans are excluded. The coloured bar retains
+separate source, runtime and unmatched-attempt segments. The attempt segment
+does not contribute to matching coverage. The modern-toolchain percentage
+and the two-track union in the footer are separate metrics.
+
+These are **function-comparison metrics with relocation fields masked**,
+not proof of the original source text, a complete linked build, identical
+global/data layout or a byte-identical whole executable. The data/link and
+whole-executable milestones remain separate.
+
+Renderer-only changes can be checked without the game or compiler:
+
+```bash
+python matching/tools/render_banner.py --out /tmp/kotor-progress.svg
+```
+
+Inspect the rendered graphic and its accessible description. Do not commit
+the preview or edit `assets/progress.svg` by hand; CI refreshes it after merge.
 
 ## The C runtime: stock LIBCMT.LIB
 
