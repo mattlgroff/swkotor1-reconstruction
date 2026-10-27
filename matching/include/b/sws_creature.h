@@ -74,6 +74,7 @@ class CSWSArea : public CResHelperArea, public CSWSAreaGameObject {
 public:
     CSWSAreaGameObject& AsGameObject() { return *this; }
     void* GetRoom(const Vector& vPosition, int bArg);       // 0x004BB600
+    float ComputeHeight(const Vector& vPosition, int bArg, class CSWSRoom** ppRoom); // 0x004BC380
     void PlaySoundAtLocation(int nSound, class CScriptLocation* pLocation); // 0x00507E20 (name guessed)
     void SetPlayerRestrictMode(int bRestrict);              // 0x00506B90
     void SetStealthXPMax(unsigned long nMax);               // 0x00506A80
@@ -93,7 +94,9 @@ public:
     int GetFirstObjectIdInArea(unsigned long* pOid);        // 0x005071B0
     int GetNextObjectIdInArea(unsigned long* pOid);         // 0x005071E0
 
-    char pad_0x124[0x158 - 0x124];
+    char pad_0x124[0x12c - 0x124];
+    CExoArrayList<unsigned long> m_aTrapList;               // 0x12c (name guessed)
+    char pad_0x138[0x158 - 0x138];
     CExoString m_sTag;                                      // 0x158
     char pad_0x160[0x1d4 - 0x160];
     unsigned long m_oidEnteringObject;                      // 0x1d4 (name guessed)
@@ -117,8 +120,14 @@ public:
     void SetFadeState(int nState);                          // 0x0063E220
     void SetDesiredFadeState(int a1, int a2, int a3, int a4); // 0x0063CE60
 
-    char pad_0x0[0xe4];
+    void ClearAllActions();                                 // 0x0063D470 (CSWCObject)
+
+    char pad_0x0[0x4];
+    unsigned long m_idSelf;                                 // 0x04
+    char pad_0x8[0xe4 - 0x8];
     int m_bFadeDestroy;                                     // 0xe4
+    char pad_0xe8[0x3a4 - 0xe8];
+    int m_bPartyMember;                                     // 0x3a4 (name guessed)
 };
 
 // 0x24-byte appearance block (creature +0xa50, CLastUpdateObject +0x0).
@@ -154,6 +163,7 @@ struct CSWSActionQueueEntry {
 class CSWSItem;
 class CSWInventory {
 public:
+    int GetItemInInventory(class CSWSItem* pItem);          // 0x005A4950
     CSWSItem* GetItemInSlot(unsigned long nSlot);           // 0x005A4C20
 };
 
@@ -176,7 +186,8 @@ public:
     void AddMember(unsigned long oidMember, int bArg);      // 0x005BFA70
     void RemoveMember(unsigned long oidMember);             // 0x005BF920
 
-    char pad_0x0[0x14];
+    CExoArrayList<unsigned long> m_aMembers;                // 0x00 (name guessed)
+    char pad_0xc[0x14 - 0xc];
     int m_nCurrentMember;                                   // 0x14 (GetNextFactionMember cursor)
 };
 
@@ -256,7 +267,16 @@ public:
     unsigned char GetClass(int nMultiClass);                // 0x005A4E90
     unsigned char GetClass(unsigned char nMultiClass);      // 0x005A4E90 (byte argument)
     unsigned char GetClassLevel(unsigned char nMultiClass, int bArg); // 0x005A5090
+    unsigned char GetMemorizedSpellClass(unsigned long nSpellId); // 0x005A6E30
+    int HasReadySpell(unsigned long nSpellId);              // 0x005A68E0
+    int GetCreatureTalent(int nCategory, int nCRMax, int* pType, int* pId, unsigned char* pMultiClass,
+                          unsigned long* pItem, int* pItemPropertyIndex, unsigned char* pCasterLevel,
+                          int nInclusion, int nExcludeType, int nExcludeId); // 0x005B23A0 (name guessed)
     unsigned char GetSpellUsesLeft(int nMultiClass, int nLevel); // 0x005A5650
+    int GetMeleeAttackBonus(int bArg1, int bArg2, int bArg3, int bArg4); // 0x005A7770 (Mac debug map 2/2)
+    char GetForceResistance();                              // 0x005A5A60 (Mac debug map 2/2)
+    int GetRangedAttackBonus(int bArg1, int bArg2, int bArg3); // 0x005A7B60 (Mac debug map 2/2)
+    short GetArmorClassVersus(class CSWSCreature* pAttacker, int bArg); // 0x005AD0E0 (Mac debug map 2/2)
     unsigned char GetSpellUsesLeft(unsigned long nSpell, unsigned char nMultiClass,
                                    unsigned char nSpellLevel, unsigned char nMetaType); // 0x005A5550
     char GetSkillRank(unsigned char nSkill, class CSWSObject* pVersus, int bBaseOnly); // 0x005AA570
@@ -306,9 +326,15 @@ public:
     char pad_0x0[0x24];
 };
 
+class CSWSCombatAttackData;
+
 class CSWSCombatRound {
 public:
     void ClearAllSpecialAttacks();                          // 0x004D4F60
+    CSWSCombatAttackData* GetAttack(int nAttack);           // 0x004D2B50 (Mac debug map 2/2)
+
+    char pad_0x0[0x96c];
+    unsigned char m_nCurrentAttack;                         // 0x96c
 };
 class CExoLocString;
 struct CResStruct;
@@ -339,7 +365,11 @@ public:
     virtual void v24();
     virtual class CSWSStore* AsSWSStore();                  // 0x64
     virtual void v26(); virtual void v27(); virtual void v28();
-    virtual void v29(); virtual void v30(); virtual void v31(); virtual void v32();
+    virtual void v29();
+    virtual void EventHandler(unsigned long nEventId, unsigned long nCallerObjectId, void* pScript,
+                              unsigned long nCalendarDay, unsigned long nTimeOfDay); // 0x78
+    virtual void SetDialogDelay7C(int nMilliseconds);       // 0x7c (name guessed)
+    virtual void v32();
     virtual void v33(); virtual void v34();
     virtual CExoLocString* GetFirstName();                  // 0x8c
     virtual CExoLocString* GetLastName();                   // 0x90
@@ -352,6 +382,8 @@ public:
     virtual void v47();
     virtual void SetDialogOwner(unsigned long oid);         // 0xc0 (name guessed)
 
+    unsigned long GetId() { return m_idSelf; }
+
     unsigned long m_idSelf;                                 // 0x4
     unsigned char m_nObjectType;                            // 0x8
     char pad_0x9[0x18 - 0x9];
@@ -359,7 +391,9 @@ public:
     char pad_0x20[0x50 - 0x20];
     int m_bDialogPaused;                                    // 0x50 (name guessed)
     unsigned long m_oid54;                                  // 0x54 (name guessed)
-    char pad_0x58[0x8c - 0x58];
+    char pad_0x58[0x78 - 0x58];
+    int m_nAILevel;                                         // 0x78 (name guessed)
+    char pad_0x7c[0x8c - 0x7c];
     unsigned long m_oidArea;                                // 0x8c
     Vector m_vPosition;                                     // 0x90
     Vector m_vOrientation;                                  // 0x9c
@@ -367,7 +401,7 @@ public:
     int m_nD4;                                              // 0xd4 (items: 10001)
     char pad_0xd8[0xe8 - 0xd8];
     int m_bCommandable;                                     // 0xe8
-    char pad_0xec[0x4];
+    int m_bEC;                                              // 0xec (name guessed)
     int m_bF0;                                              // 0xf0
 };
 
@@ -428,6 +462,10 @@ public:
     CSWSObject(unsigned char nObjectType, unsigned long nId, int bArg); // 0x004CFCB0
     ~CSWSObject();                                          // 0x004D0220
     void SetOrientation(const Vector& vOrientation);        // 0x004CD170
+    int DoSpellLevelAbsorption(CSWSObject* pCaster);        // 0x004D13A0 (Mac debug map 2/2)
+    int DoSpellImmunity(CSWSObject* pCaster);               // 0x004CCFC0 (name guessed)
+    void SetDeleteNoFade(int bNoFade);                      // 0x004CE920
+    void SetFadeOutTime(int nMilliseconds);                 // 0x004CE8A0
     void SetPosition(const Vector& vPosition, int a2, int a3, int a4); // 0x004CD1A0
     void ClearAllEffects(int bArg);                         // 0x004D0940
     void SetCurrentHitPoints(int nHitPoints);               // 0x004CC280
@@ -443,6 +481,9 @@ public:
     void SetTag(CExoString& sTag);                          // 0x00553040
     void RemoveEffectByCreator(unsigned long nCreator);     // 0x004D0820
     int GetIsPaused();                                      // 0x0063E7F0 (shared `return 0`)
+    int StartDialog(unsigned long oidTarget, const CExoString& sDialog,
+                    int bPrivate);                          // 0x004CF490 (name guessed)
+    void ClearUpdateFlag(unsigned long nBit);               // 0x004CC250
     int ReplyDialog(unsigned long nPlayerId, unsigned long nReply, int bArg,
                     unsigned long nArg, int bArg2);         // 0x004CB480
     void SetCommandable(int bCommandable) { m_bCommandable = bCommandable; }
@@ -478,6 +519,12 @@ public:
     unsigned long AIActionDoCommand(class CSWSObjectActionNode* pNode);
     unsigned long AIActionTakeItem(class CSWSObjectActionNode* pNode);
     unsigned long AIActionCloseDoor(class CSWSObjectActionNode* pNode);
+    unsigned long AIActionOpenDoor(class CSWSObjectActionNode* pNode);     // 0x0057D490
+    unsigned long AIActionLockObject(class CSWSObjectActionNode* pNode);   // 0x0057BEC0
+    unsigned long AIActionUnlockObject(class CSWSObjectActionNode* pNode); // 0x0057D9D0
+    unsigned long AIActionUseObject(class CSWSObjectActionNode* pNode);    // 0x0057E8C0
+    unsigned long AIActionPlayAnimation(class CSWSObjectActionNode* pNode); // 0x0057D080
+    unsigned long AIActionGiveItem(class CSWSObjectActionNode* pNode);     // 0x0057B6A0
     unsigned long AIActionSetCommandable(class CSWSObjectActionNode* pNode);
     unsigned long AIActionBarkString(class CSWSObjectActionNode* pNode);
     unsigned long AIActionPlaySound(class CSWSObjectActionNode* pNode);
@@ -498,6 +545,7 @@ class CSWSEvent;
 
 class CSWSCreature : public CSWSObject {
 public:
+    CSWSCreatureStats* GetStats() { return m_pStats; }
     int RemoveItem(class CSWSItem* pItem, int a2, int a3, int a4); // 0x00510EF0
     void AddExperience(int nXP);                            // 0x004EF930
     void CancelCombat(int bArg);                            // 0x004FDAA0
@@ -534,7 +582,9 @@ public:
     CSWCCreature* GetClientCreature();                      // 0x004EFB20
     void SetActivity(int nActivity, int bOn, int nArg);     // 0x004F00A0
     void AddGold(int nGold, int bFeedback);                 // 0x004F3DB0
+    void RemoveGold(int nGold, int bFeedback);              // 0x004F3ED0
     void AddPazaakCard(class CSWSItem* pCard);              // 0x004EFB40
+    int RemovePazaakCard(class CSWSItem* pCard);            // 0x004EFC30
     int GetDeadTemp();                                      // 0x004EF890
     short GetArmorClass();                                  // 0x004ED1D0 (name guessed)
     void SetLastHostileActor(unsigned long oidActor, int bArg); // 0x004CC0C0
@@ -553,6 +603,14 @@ public:
                              float fRange, float fTolerance, int a7, int a8, int a9, int a10,
                              int a11, int a12, const Vector& vFace, unsigned long a14,
                              unsigned long a15, int a16);  // 0x004F8B60
+    int GetUseRange(unsigned long oid, Vector& vPosition, float& fRange, int nFlag); // 0x004EE440
+    int GetIsInUseRange(unsigned long oidTarget, float fRange, int bArg); // 0x004F6000
+    int EvaluateLock(CGameObject* pObject, int bArg);       // 0x004F0B20
+    int AddMoveToPointActionToFront(unsigned short nGroupId, const Vector& vNewPos,
+                                    unsigned long oidArea, unsigned long oidTarget, int bRun,
+                                    float fRange, float fTolerance, int a7, int a8, int a9,
+                                    int a10, int a11, int a12, const Vector& vFace,
+                                    unsigned long a14, unsigned long a15, int a16); // 0x004F8A50
     int AcquireItem(class CSWSItem** ppItem, unsigned long oidPossessor,
                     unsigned long oidTarget, int bDisplayFeedback); // 0x005158E0
     void SetAIStateFlag(int nFlag, int bOn)
@@ -570,6 +628,10 @@ public:
     void AddAttackActions(unsigned long oidAttackee, int a2, int a3, int bPassive, int a5, int a6,
                           int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14,
                           int a15);                         // 0x004FDE40 (name guessed)
+    int ResolveDefensiveEffects(CSWSObject* pTarget, int bHit); // 0x005B8E50
+    void AddCastSpellActions(unsigned long nSpell, int nMultiClass, int a3, int a4, int a5, Vector vTarget,
+                             unsigned long oidTarget, int a8, int a9, int a10, int a11, unsigned char a12,
+                             int a13, int a14, unsigned char a15, int a16); // 0x004F9460 (Mac debug map 2/2)
     void AddCutsceneAttackActions(unsigned long oidTarget, int nAnimation, int nAttackResult,
                                   int nDamage);             // 0x004F9FB0
     void AddCutsceneMoveActions(unsigned long oidTarget, const Vector& vPosition, int bRun); // 0x004FA050
@@ -688,7 +750,9 @@ public:
     unsigned long m_oidEncounter;                           // 0xa24
     char pad_0xa28[0xa2c - 0xa28];
     CSWInventory* m_pInventory;                             // 0xa2c
-    char pad_0xa30[0xa48 - 0xa30];
+    char pad_0xa30[0xa3c - 0xa30];
+    int m_nTotalWeight;                                     // 0xa3c (name guessed)
+    char pad_0xa40[0xa48 - 0xa40];
     int m_bDisguised;                                       // 0xa48
     unsigned short m_nDisguiseAppearance;                   // 0xa4c
     char pad_0xa4e[0x2];

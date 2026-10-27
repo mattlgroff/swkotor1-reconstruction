@@ -34,6 +34,8 @@ public:
     virtual int SetWieldedItem(unsigned long oid, const CExoString& sNode, unsigned char nHand, float fAlpha);  // 0x7c
     virtual void SetWieldedModels(const CResRef& cRight, const CResRef& cLeft);  // 0x80
     virtual void ShowWieldedItems();                // 0x84
+    virtual void DetachHeadItem();                  // 0x88 (empty, folded)
+    virtual void AttachHeadItem();                  // 0x8c (empty, folded)
     virtual void SetCheckItems(int b);              // 0x90
     virtual void ModelVC0();                        // 0xb8
     virtual void ModelVBC();                        // 0xbc

@@ -73,7 +73,7 @@ int CRumblePattern::GetIntensity(float fTime, float* pfLeft, float* pfRight)
         return 1;
     if (fTime < m_cLeft.GetTime(m_cLeft.m_nCount - 1))
         return 1;
-    if (fTime < m_cRight.GetTime(m_cRight.m_nCount - 1))
-        return 1;
-    return 0;
+    if (!(fTime < m_cRight.GetTime(m_cRight.m_nCount - 1)))
+        return 0;
+    return 1;
 }

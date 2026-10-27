@@ -142,6 +142,69 @@ void CSWMGGunBank::LoadResources()
     }
 }
 
+// FUNCTION: SWKOTOR 0x006740D0
+// NONMATCH (5 diff insns): stack frame only. The original shares the
+// initial CResRef::operator= return temporary with the gun-emitter case's
+// (frame 0x48); ours gives each its own slot (0x58). Scoping the first
+// assignment, an early return and C-style declarations were tried.
+// When the old gun has no emitter the original uses pNewGun uninitialized.
+void CSWMGGunBank::SetGunModel(CResRef* pGunModel)
+{
+    m_cGunModel = *pGunModel;
+    int nCount = m_lstGuns.num;
+    for (int i = 0; i < nCount; i++) {
+        CAurObject* pTarget = 0;
+        CAurObject* pOldGun = m_lstGuns.element[0];
+        CAurObject* pNewGun;
+        CAurEmitter* pEmitter = (CAurEmitter*)pOldGun->GetUserData(-1);
+        if (pEmitter) {
+            switch (pEmitter->GetType()) {
+            case 0xaaaa:
+                pTarget = ((CAurTargettingEmitter*)pEmitter)->m_pTarget;
+            case 0xaaad: {
+                CAurObject* pModel = pEmitter->m_pModel;
+                CAurPart* pPart = pEmitter->m_pPart;
+                if (pModel && pPart) {
+                    char szModel[17];
+                    m_cGunModel.CopyToString(szModel);
+                    pNewGun = NewCAurObject(szModel, "", 0, 0);
+                    switch (pEmitter->GetType()) {
+                    case 0xaaad: {
+                        CAurGunEmitter* pOld = (CAurGunEmitter*)pEmitter;
+                        CAurGunEmitter* pNew = new CAurGunEmitter(pNewGun, pModel, pPart);
+                        pNew->SetBirthrateA(pOld->GetBirthrate());
+                        pNew->m_cSound = pOld->m_cSound;
+                        pNewGun->SetBehavior(pNew);
+                        pNewGun->AddEventCallback(GunEventCallback, "*", this, 9999.0f, 0);
+                        break;
+                    }
+                    case 0xaaaa: {
+                        CAurTargettingEmitter* pOld = (CAurTargettingEmitter*)pEmitter;
+                        CAurTargettingEmitter* pNew =
+                            new CAurTargettingEmitter(pNewGun, pModel, pPart, pTarget);
+                        pNew->m_cInfo = pOld->m_cInfo;
+                        pNew->m_fBump = pOld->GetBump();
+                        pNew->m_vOffset = pOld->m_vOffset;
+                        pNew->SetBirthrateB(pOld->GetBirthrate());
+                        pNew->m_cSound = pOld->m_cSound;
+                        pNewGun->SetBehavior(pNew);
+                        pNewGun->AddEventCallback(GunEventCallback, "*", this, 9999.0f, 0);
+                        break;
+                    }
+                    }
+                    pNewGun->AttachToPart(pModel, pPart, 0);
+                }
+                break;
+            }
+            }
+        }
+        pNewGun->PlayAnimation("ready", 1.0f, 0, 0);
+        m_lstGuns.DelIndexInline(0);
+        delete pOldGun;
+        m_lstGuns.AddInline(pNewGun);
+    }
+}
+
 // FUNCTION: SWKOTOR 0x006746D0
 CSWMGGunBank::CSWMGGunBank(CSWTrackFollower* pOwner, CResRef* pBulletModel, CResRef* pGunModel,
                            CSWMiniHitInfo* pHit)

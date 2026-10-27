@@ -3,9 +3,9 @@
 
 #include "h/texctl.h"
 
-// NONMATCH (16 insns): the original keeps an SEH frame with no state stores
-// (the CExoArrayList members); ours drops the frame (same open problem as
-// worker e LightningEmitter / PartTrigger ctors).
+// NONMATCH (4 insns): with the sized CExoArrayList ctor (dead `new`) the
+// SEH frame matches; the original only loads pTexture between the two list
+// constructions.
 // FUNCTION: SWKOTOR 0x00462A70
 TextureController::TextureController(AurTexture* pTexture)
 {

@@ -28,6 +28,10 @@ public:
     int IsValid() const;                            // 0x00406030
     int operator!=(const char* s) const;            // 0x00406060
     int operator!=(const CResRef& r) const;         // 0x00406DC0
+    int operator==(const char* s) const;            // 0x004060D0
+    void CopyToString(CExoString& s) const;         // 0x00405F70
+    CResRef operator=(const char* s);               // 0x00406290
+    CResRef operator=(const CResRef& r);            // 0x00406120
     char m_resRef[16];
 };
 
@@ -50,6 +54,12 @@ int AurGUISetupViewport(int x, int y, int w, int h, Vector* pColor, int n, float
 void AurGUIStopLayer();                             // 0x004592B0
 void AurGUICloseViewport();                         // 0x00459580
 extern Vector g_vGuiViewportColor;                  // 0x0078D3D8
+extern Vector g_vBlack;                             // 0x00833910
+extern Vector g_vGuiColor23B4;                      // 0x007A23B4 (descriptive)
+extern Vector g_vGuiColor23D8;                      // 0x007A23D8 (descriptive)
+extern Vector g_vGuiColor23E4;                      // 0x007A23E4 (descriptive)
+extern Vector g_vGuiColor23F0;                      // 0x007A23F0 (descriptive)
+extern Vector g_vGuiColor23FC;                      // 0x007A23FC (descriptive)
 
 class CSWGuiControl;
 
@@ -68,31 +78,172 @@ public:
 
 extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
 
+typedef void* CExoLinkedListPosition;
+
+struct CExoLinkedListNode {
+    CExoLinkedListNode* pPrev;
+    CExoLinkedListNode* pNext;
+    void* pObject;
+};
+
+class CExoLinkedListInternal {
+public:
+    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
+    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
+    CExoLinkedListNode* m_pHead;
+    CExoLinkedListNode* m_pTail;
+    unsigned long m_nCount;
+};
+
+template <class T>
+class CExoLinkedList {
+public:
+    CExoLinkedListPosition GetHeadPos() { return m_pList->m_pHead; }
+    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pList->GetAtPos(pos); }
+    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pList->GetNext(pos); }
+    CExoLinkedListInternal* m_pList;
+};
+
+// Queued creature action (CSWSObject action list entry).
+struct CSWSObjectActionNode {
+    int m_nActionId;                                // 0x00
+    char pad_0x4[0x34];
+    unsigned long m_nParam0;                        // 0x38 (spell id / item oid)
+};
+
+struct CSWSCombatRoundAction {
+    char pad_0x0[0x10];
+    unsigned char m_nActionType;                    // 0x10
+    char pad_0x11[0x13];
+    int m_nSpellId;                                 // 0x24
+    char pad_0x28[0x34];
+    union {
+        int m_nFeat;                                // 0x5c
+        unsigned short m_nFeatId;
+    };
+    char pad_0x60[0x4];
+    unsigned long m_oidItem;                        // 0x64
+};
+
+class CSWSItem {
+public:
+    CResRef GetIcon();                              // 0x005556B0
+};
+
+class CSWSpell {
+public:
+    char pad_0x0[0x10];
+    CResRef m_cIcon;                                // 0x10
+};
+
+class CSWSpellArray {
+public:
+    CSWSpell* GetSpell(int nSpell);                 // 0x0059B6D0
+};
+
+class CSWFeat {
+public:
+    char pad_0x0[0x18];
+    CResRef m_cIcon;                                // 0x18
+};
+
+class CSWRules {
+public:
+    CSWFeat* GetFeat(unsigned short nFeat);         // 0x00550C00
+    CSWSpellArray* GetSpellArray() { return m_pSpellArray; }
+    char pad_0x0[0x8c];
+    CSWSpellArray* m_pSpellArray;                   // 0x8c
+};
+
+extern CSWRules* g_pRules;                          // 0x007A3A28
+
 class CSWSCombatRound {
 public:
     int RemoveLastAction();                         // 0x004D37B0
+    unsigned char GetCurrentAction();               // 0x004D2B30
+    char pad_0x0[0x934];
+    int m_bRoundStarted;                            // 0x934
+    char pad_0x938[0x9b0 - 0x938];
+    CExoLinkedList<CSWSCombatRoundAction>* m_pPendingActions;  // 0x9b0 (descriptive)
+    char pad_0x9b4[0x9c8 - 0x9b4];
+    CSWSCombatRoundAction* m_pScheduledAction;      // 0x9c8 (descriptive)
+};
+
+class CSWSCreatureStats {
+public:
+    int CanLevelUp();                               // 0x005A6810
 };
 
 class CSWSCreature {
 public:
+    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
+    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
+    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
+    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
+    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
+    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
+    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
+    virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
+    virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
+    virtual void v90();
+    virtual int GetDead();                          // 0x94 (placeholder name)
     void ClearAllActions(int bClearCombat);         // 0x004CCD80
-    char pad_0x0[0x9c8];
+    int GetDeadTemp();                              // 0x004EF890
+    char pad_0x4[0xf8];
+    CExoLinkedList<CSWSObjectActionNode> m_lstActions;  // 0xfc
+    char pad_0x100[0x9c8 - 0x100];
     CSWSCombatRound* m_pCombatRound;                // 0x9c8
+    char pad_0x9cc[0xa74 - 0x9cc];
+    CSWSCreatureStats* m_pStats;                    // 0xa74
 };
 
 class CSWCCreature;
 class CGameObject;
 class CGuiInGame;
 
+// One 0x88-byte party slot, at party +0x24.
+class CSWPartyMemberData {
+public:
+    void SetCombatMessage(unsigned long nStrRef);   // 0x006345E0
+    char pad_0x0[0x88];
+};
+
 class CSWParty {
 public:
+    CSWCCreature* GetCharacter(int nIndex);         // 0x006346C0
     CSWCCreature* GetPlayerCharacter();             // 0x00635460
+    int IsPartyMember(unsigned long oid);           // 0x006349C0
+    int m_nCount;                                   // 0x00 (descriptive)
+    char pad_0x4[0x20];
+    CSWPartyMemberData m_aMembers[3];               // 0x24
+    void SetCombatMessage(int nIndex, unsigned long nStrRef)
+    {
+        m_aMembers[nIndex].SetCombatMessage(nStrRef);
+    }
+};
+
+class CSWPartyTable {
+public:
+    int m_nNPCCount;                                // 0x00 (descriptive)
+    char pad_0x4[0x18c];
+    int m_bSoloMode;                                // 0x190 (descriptive)
+};
+
+class CSWSModule;
+
+class CServerExoApp {
+public:
+    CSWSModule* GetModule();                        // 0x004AE6B0
+    CSWPartyTable* GetPartyTable();                 // 0x004AEE70
+    CSWSItem* GetItemByGameObjectID(unsigned long oid);  // 0x004AE760
 };
 
 class CClientOptions {
 public:
     char pad_0x0[0x14];
-    unsigned long m_nFlags0 : 9;                    // 0x14
+    unsigned long m_nFlags0 : 3;                    // 0x14
+    unsigned long m_bShowMap : 1;                   //      bit 3
+    unsigned long m_nFlags4 : 5;
     unsigned long m_bHideMap : 1;                   //      bit 9
     unsigned long m_nFlags10 : 5;
     unsigned long m_bTutorialPause : 1;             //      bit 15
@@ -112,13 +263,22 @@ public:
     CSWParty* GetParty();                           // 0x005ED8B0
     CSWGuiManager* GetGuiManager();                 // 0x005EDA40
     CExoString GetGUIString(unsigned long nStrRef); // 0x005EDEB0
+    int GetPausedByCombat();                        // 0x005EDC10
+    int SetPausedByCombat(int bPaused, unsigned char nFlag, int bForce);   // 0x005EDC20
+    CSWCCreature* GetPlayerCreature();              // 0x005ED540
+    unsigned long GetPlayerCreatureId();            // 0x005ED550
+    int SetInputClass(int nClass, int bForce);      // 0x005EDA60
+    void ChangeCharacter(int nDirection, int bArg); // 0x005EDC30
+    class CSWCModuleCamera* GetModuleCamera();      // 0x005ED560
 };
 
 class CAppManager {
 public:
     void* m_p00;
     CClientExoApp* m_pClientExoApp;                 // 0x04
+    CServerExoApp* m_pServerExoApp;                 // 0x08
     CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
+    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
 };
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
@@ -126,6 +286,7 @@ extern CAppManager* g_pAppManager;                  // 0x007A39FC
 class CSWGuiTextParams {
 public:
     void SetText(const CExoString& sText);          // 0x00415E00
+    void SetColor(const Vector& vColor);            // 0x00414E10
     CExoString m_sText;                             // 0x00
     char pad_0x8[0x20];
     float m_fAlpha;                                 // 0x28
@@ -137,13 +298,18 @@ class CSWGuiBorderParams {
 public:
     void SetFillImage(const CResRef& cResRef, int bForce);  // 0x00414C00
     void SetFlags(int b2, int b3, int b4);          // 0x00414D00
-    char pad_0x0[0xc];
+    char pad_0x0[0x8];
+    float m_fRotation;                              // 0x08
     float m_fAlpha;                                 // 0x0c
     Vector m_vColor;                                // 0x10
-    char pad_0x1c[0x24];
+    unsigned long m_nFlags;                         // 0x1c
+    char pad_0x20[0x20];
     CResRef m_cFillImage;                           // 0x40
     char pad_0x50[0x10];
 };
+
+class __single_inheritance CSWGuiPanel;
+class CSWGuiMainInterface;
 
 class CSWGuiControl {
 public:
@@ -159,14 +325,20 @@ public:
     virtual void v40();
     virtual int IsMouseOver(int nX, int nY);        // 0x44
     virtual void v48(); virtual void v4C();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
+    virtual void v50(); virtual void v54();
+    virtual CSWGuiControl* GetSelectedControl();    // 0x58 (descriptive)
+    virtual void v5C();
     virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void v88();
     virtual void UpdateFonts();                     // 0x8c
     virtual void v90(); virtual void v94();
+    virtual void v98(); virtual void v9C();
+    virtual void TimedUpdate(float fDelta);         // 0xa0 (descriptive)
 
     void SetVisible(int bVisible) { m_bVisible = bVisible; }
+    void AddEvent(int nEvent, CSWGuiPanel* pObject,
+                  void (CSWGuiPanel::*pfnCallback)(CSWGuiControl*));   // 0x0041AB20
     __forceinline void MoveTop(int nDelta)
     {
         CSWGuiExtent ext = m_extent;
@@ -174,14 +346,23 @@ public:
         SetExtent(ext);
     }
 
+    void AddChildControl(CSWGuiControl* pControl);  // 0x0041ACC0
+    void SetNavigable(int b) { m_bNavigable = b; }
+
     CSWGuiExtent m_extent;                          // 0x04
-    char pad_0x14[0x30];
+    CSWGuiControl* m_pParentControl;                // 0x14
+    char m_lstChildren[0xc];                        // 0x18
+    int m_nToolTipStrRef;                           // 0x24
+    CExoString m_sToolTip;                          // 0x28
+    int m_nKeyBinding;                              // 0x30
+    char pad_0x34[0x10];
     union {
         unsigned long m_nFlags;                     // 0x44
         struct {
             unsigned long m_bActive : 1;            //      bit 0
             unsigned long m_bVisible : 1;           //      bit 1
-            unsigned long m_nFlagsRest : 30;
+            unsigned long m_bNavigable : 1;         //      bit 2
+            unsigned long m_nFlagsRest : 29;
         };
     };
     int m_n48;                                      // 0x48
@@ -236,17 +417,20 @@ public:
 
 // One action column of the target menu (three per menu), 0x71c bytes:
 // four buttons (icon frame, icon, up / down arrows) and the flash timer.
+class CSWGuiPanel;
+
 class CSWGuiMainInterfaceAction {
 public:
     CSWGuiControl* HitCheckMouse(int nX, int nY);   // 0x00684DF0
     int IsActive();                                 // 0x00685840
     void Draw(float fDelta);                        // 0x00685870
     void Update(float fDelta);                      // 0x006858E0
-    void SetIcon(const CResRef& cIcon, int a2, int a3, int bEnabled);  // 0x00685960
+    void SetIcon(const CResRef& cIcon, const CExoString& sName, int bEnabled, int a4);  // 0x00685960
 
     CSWGuiMainInterfaceAction();                    // 0x00689200
     ~CSWGuiMainInterfaceAction();                   // 0x006893A0
     void SetFrame(int bShow, int bArrows);          // 0x00689280
+    void Initialize(CSWGuiPanel* pPanel, int nIndex, int bTarget);  // 0x0068B9D0
     void StartFlash()
     {
         m_nFlash = 2;
@@ -300,6 +484,7 @@ struct CSWGuiTargetAction {
 #pragma pack(pop)
 
 struct CSWGuiTargetActionList {
+    CSWGuiTargetActionList();                       // 0x005A76D0 (CExoArrayList)
     ~CSWGuiTargetActionList();                      // 0x005FBFB0
     CSWGuiTargetAction* m_pData;                    // 0x00
     int m_nCount;                                   // 0x04
@@ -316,9 +501,14 @@ public:
     void SetAttackTarget(int b);                    // 0x00610A10
     void GetTargetActions(CSWCObject* pTarget, int nMenu, CSWGuiTargetActionList* pList);  // 0x00619C20
     void ClearTargetActions();                      // 0x0063D470
+    int IsStealthCapable();                         // 0x00610AC0
+    void PartyMenuStealth(int a, int b);            // 0x0060F4B0
+    void GetPersonalActions(int nSlot, CSWGuiTargetActionList& lstActions);  // 0x00619DB0
     char pad_0x0[0x4];
     unsigned long m_idSelf;                         // 0x04
-    char pad_0x8[0x438];
+    char pad_0x8[0x18c];
+    int m_bStealthMode;                             // 0x194
+    char pad_0x198[0x2a8];
     unsigned char m_nCombatFlags;                   // 0x440
 };
 
@@ -331,6 +521,8 @@ public:
 class CGuiInGame {
 public:
     void SetPaused(int bPaused, int nReason);       // 0x0062DEF0
+    void ShowSoloModeQuery(int b);                  // 0x0062E550
+    int ShowSWInGameGui(int nPanel);                // 0x0062C9B0
 };
 
 class CSWCObject {
@@ -354,8 +546,14 @@ public:
 };
 
 // The main interface's target action menu (+0xbc), unnamed in the binary.
+// Zero-initialised extent (target menu rectangles).
+struct CSWGuiRect : public CSWGuiExtent {
+    CSWGuiRect() { left = top = width = height = 0; }
+};
+
 class CSWGuiTargetActionMenu {
 public:
+    CSWGuiTargetActionMenu();                       // 0x0068BE40
     ~CSWGuiTargetActionMenu();                      // 0x0068B0C0
     void UpdateTimers(float fDelta);                // 0x00684E70
     char GetControlType(CSWGuiControl* pControl);   // 0x00684ED0
@@ -368,13 +566,15 @@ public:
     void SelectPrevAction(int nMenu);               // 0x00686680
     void UpdateActions(CSWCCreature* pPC, CSWCObject* pTarget);    // 0x00686090
     void PopulateMenus(CSWCCreature* pPC, int bDisabled, CSWCObject* pTarget);  // 0x00689410
+    void Initialize(CSWGuiPanel* pPanel);           // 0x0068BF50
+    void UseAction(int nSlot, int a2);              // 0x00689610 (descriptive)
 
     CSWGuiTargetActionList m_aLists[3];             // 0x00
     int m_anSelected[4][3];                         // 0x24
     CSWGuiMainInterfaceAction m_aActions[3];        // 0x54
-    int m_n15a8;                                    // 0x15a8
-    CSWGuiExtent m_extent;                          // 0x15ac
-    char pad_0x15bc[0x10];
+    CSWGuiPanel* m_pPanel;                          // 0x15a8
+    CSWGuiRect m_extent;                            // 0x15ac
+    CSWGuiRect m_rect15bc;                          // 0x15bc
     CSWGuiLabel m_lblName;                          // 0x15cc
     CSWGuiLabel m_lblNameBG;                        // 0x170c
     CSWGuiLabel m_lblBarBG;                         // 0x184c
@@ -433,6 +633,21 @@ public:
         element = 0;
     }
     void DelIndex(int nIndex);                      // <CSWGuiControl*>: 0x006857A0
+    __forceinline void Add(T value)
+    {
+        if (num == array_size) {
+            array_size = array_size ? array_size * 2 : 16;
+            T* pOld = element;
+            element = new T[array_size];
+            for (int i = 0; i < num; i++) {
+                element[i] = pOld[i];
+            }
+            if (pOld) {
+                delete[] pOld;
+            }
+        }
+        element[num++] = value;
+    }
 };
 
 // Status icon label of the main interface (b0065: Update 0x00686A20),
@@ -459,6 +674,7 @@ public:
 
 class CSWGuiMainInterfaceChar;
 class CSWGuiMainInterfaceStatus;
+class CSWGuiMainInterface;
 
 // Party portrait button with a tool tip (vtable 0x00753BD0).
 class CSWGuiCharButton : public CSWGuiButton {
@@ -481,6 +697,7 @@ public:
     void DrawStack(float fDelta, int bBig, int bTop);   // 0x00685330
     void SetHealth(int nCurrent, int nMax, int bFriendly);  // 0x006857D0
     void Show(int bShow, unsigned char nParts, unsigned char nStackA, unsigned char nStackB); // 0x006867F0
+    void Initialize(CSWGuiMainInterface* pPanel, int nIndex);   // 0x006898A0
     void DrawStacks(float fDelta, int bBig)
     {
         if (m_aLabels[5].m_bVisible) {
@@ -543,7 +760,16 @@ public:
 class CSWGuiButtonToggle : public CSWGuiButton {
 public:
     ~CSWGuiButtonToggle();                          // 0x0041CAD0
-    char pad_0x1c4[0xf0];
+    void SetSelected(int bSelected) { m_bSelected = bSelected; }
+    char pad_0x1c4[0x4];
+    union {
+        unsigned long m_nToggleFlags;               // 0x1c8
+        struct {
+            unsigned long m_bSelected : 1;          //      bit 0
+            unsigned long m_nToggleFlagsRest : 31;
+        };
+    };
+    char pad_0x1cc[0xe8];
 };
 
 class CSWGuiMainInterfaceExtra {
@@ -564,6 +790,7 @@ public:
     void UpdateFonts();                             // 0x68 (0x00685760)
     void ShowActionQueue(int bShow);                // 0x006874C0
     void UpdateMessage();                           // 0x00686E20
+    void SetCombatMessage(unsigned long nStrRef);   // 0x00687700
     CSWParty* GetParty();                           // 0x00687FD0
     void ShowStatus(unsigned char nStatus);         // 0x00687FE0
     void RemoveControl(CSWGuiControl* pControl);    // 0x00688060
@@ -576,6 +803,17 @@ public:
     void DoPersonalAction(int nSlot, int a2);       // 0x0068AD60
     void OnPersonalPrevClicked(CSWGuiControl* pControl);    // 0x0068AF70
     void OnPersonalNextClicked(CSWGuiControl* pControl);    // 0x0068AFE0
+    void OnPersonalActionFocus(CSWGuiControl* pControl);    // 0x006856C0 (descriptive)
+    void OnTargetActionFocus(CSWGuiControl* pControl);      // 0x00688490 (descriptive)
+    void OnTargetPrevClicked(CSWGuiControl* pControl);      // 0x006884B0 (descriptive)
+    void OnTargetNextClicked(CSWGuiControl* pControl);      // 0x00688520 (descriptive)
+    void OnActionClicked(CSWGuiControl* pControl);          // 0x0068B970 (descriptive)
+    void OnPauseClicked(CSWGuiControl* pControl);           // 0x00688590 (descriptive)
+    void OnSoloClicked(CSWGuiControl* pControl);            // 0x00688610 (descriptive)
+    void OnStealthClicked(CSWGuiControl* pControl);         // 0x00688640 (descriptive)
+    void OnMenuButtonPressed(CSWGuiControl* pControl);      // 0x006883C0 (descriptive)
+    void OnCharacterClicked(CSWGuiControl* pControl);       // 0x00688690 (descriptive)
+    void OnCharacterEvent44(CSWGuiControl* pControl);       // empty, folded to 0x0060E760
     void OnCancelCombatClicked(CSWGuiControl* pControl);    // 0x0068B050
     void OnClearTargetClicked(CSWGuiControl* pControl);     // 0x0068B0A0
     ~CSWGuiMainInterface();                         // 0x0068B170
@@ -585,6 +823,14 @@ public:
     void UpdateQueue();                             // 0x0068A010
     void UpdateParty(float fFrameTime);             // 0x0068A310
     void DrawMap(float fDelta);                     // 0x0068AB10
+    void InitializeMap();                           // 0x00687E40
+    void AddFloatyText(unsigned long oid, const CExoString& sText,
+                       const Vector& vColor, float fDuration);  // 0x0068B7C0
+    void DrawFogOfWar(CSWGuiExtent* pExtent);       // 0x00688100 (descriptive)
+    void Update(float fDelta);                      // 0x38 (0x00686BA0)
+    void GetActionIcon(CSWSCombatRound* pRound, CSWSObjectActionNode* pNode,
+                       CSWSCombatRoundAction* pAction, CExoLinkedListPosition& pos,
+                       CResRef& cIcon, CResRef& cAlt);  // 0x00686FB0
 
     int m_nTargetId;                                // 0x64
     int m_n68;                                      // 0x68
@@ -624,9 +870,9 @@ public:
     CSWGuiLabel m_lblDescriptionBG;                 // 0x749c
     CSWGuiLabel m_lblDescriptionAlt;                // 0x75dc
     int m_bDescriptionHidden;                       // 0x771c
-    int m_n7720;                                    // 0x7720
+    float m_fMessageDuration;                       // 0x7720 (descriptive)
     float m_fQueueTime;                             // 0x7724
-    int m_n7728;                                    // 0x7728
+    unsigned long m_nCombatMessage;                 // 0x7728 (descriptive)
     CSWGuiMainInterfaceAction m_aPersonalActions[6];    // 0x772c
     CSWGuiLabel m_lblMessage;                       // 0xa1d4
     CSWGuiLabel m_lblMessageBG;                     // 0xa314

@@ -244,3 +244,57 @@ Scene::~Scene()
 }
 
 // FUNCTION: SWKOTOR 0x00458ED0 SYMBOL: ??_GScene@@UAEPAXI@Z
+
+int HitPartOnBSPNode(BSPNode* pNode, Vector vStart, Vector vEnd, Vector* pHit);    // 0x0046B4C0
+int BSPHitCheck(BSPNodeBase* pRoot, Vector vStart, Vector vEnd, Vector* pHit,
+                int (*pfn)(BSPNode*, Vector, Vector, Vector*));                    // 0x004AD260
+int BoxIntersect(Vector* pStart, Vector* pEnd, Vector* pMin, Vector* pMax);       // 0x004AA610
+
+extern CHitInfo g_DefaultHitInfo;                       // 0x007B93A8
+extern CHitInfo* g_pBSPHitInfo;                         // 0x007FBF48, descriptive
+
+// NONMATCH (7 insns): store order only; the original writes the hit type
+// between the y and z words of each hit-point copy. The static CHitInfo at
+// 0x007B93A8 is the one g/gob_hit.cpp calls g_DefaultHitInfo (symbols.csv
+// still names it g_vMiniHitPoint).
+// FUNCTION: SWKOTOR 0x00456B60
+int Scene::HitCheck(Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pInfo)
+{
+    if (!pInfo) {
+        pInfo = &g_DefaultHitInfo;
+        pInfo->ClearOutput();
+    }
+    g_pBSPHitInfo = pInfo;
+    CAurObject* pGob = 0;
+    if (!pInfo->m_b5F) {
+        if (!m_lRooms.num) {
+            if (BSPHitCheck(m_pBSP, vStart, vEnd, &vEnd, HitPartOnBSPNode)) {
+                pInfo->SetHit(vEnd, 1);
+                if (pHit)
+                    *pHit = vEnd;
+            }
+        }
+        for (int i = 0; i < m_lRooms.num; i++) {
+            CAurRoom* pRoom = m_lRooms.element[i];
+            if (!BoxIntersect(&vStart, &vEnd, &pRoom->m_vMin, &pRoom->m_vMax))
+                continue;
+            if (!HitPartOnBSPNode((BSPNode*)pRoom, vStart, vEnd, &vEnd))
+                continue;
+            pInfo->SetHit(vEnd, 1);
+            if (pHit)
+                *pHit = vEnd;
+            pInfo->m_n54 = (int)pRoom;
+        }
+    }
+    g_pBSPHitInfo = 0;
+    if (!pInfo->m_p0) {
+        pGob = HitCheckGob(vStart, vEnd, &vEnd, pInfo);
+        if (pGob) {
+            pInfo->SetHit(vEnd, 2);
+            if (pHit)
+                *pHit = vEnd;
+        }
+    }
+    pInfo->m_pHit.Set(pGob);
+    return pInfo->m_n18;
+}

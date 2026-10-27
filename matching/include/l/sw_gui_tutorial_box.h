@@ -74,7 +74,14 @@ class CSWCCreature : public CSWCObject {
 public:
     CSWCCreature();                                 // 0x00616A20
     CSWSCreature* AsServerCreature();               // 0x0060FB20
-    char pad_0x30[0x2c8];
+    class CSWCAnimBase* GetAnimBase();              // 0x0063C070
+    void CGPauseCycle(float fDelta, int bReset);    // 0x0060F7C0
+    void SetAppearance(struct CSWCCreatureAppearance* pAppearance, int nPart, int bLoad);  // 0x006134C0
+    char pad_0x30[0x21c - 0x30];
+    struct CSWCCreatureAppearance* m_pAppearance;   // 0x21c (0x3c-byte appearance block)
+    char pad_0x220[0x2d4 - 0x220];
+    unsigned long m_bSoloFlag : 1;                  // 0x2d4 bit 0 (descriptive)
+    char pad_0x2d8[0x2f8 - 0x2d8];
     CSWCCreatureStats* m_pStats;                    // 0x2f8
     CSWCCreatureStats* GetClientStats() { return m_pStats; }
     char pad_0x2fc[0x144];
@@ -90,11 +97,15 @@ public:
     void PerformFeat(int nFeat, CSWCCreature* pTarget);         // 0x006167D0
     void ActionMenuAttack(int a, CSWCCreature* pAttacker);      // 0x00616800
     void PerformSkill(unsigned short nSkill, CSWCCreature* pTarget);   // 0x00616900
+    void PerformSkill(int nSkill, int a, unsigned long oidTarget);   // 0x0060EE00
 };
 
 class CSWCDoor {
 public:
     void ActionMenuOpen(int a, CSWCCreature* pCreature);        // 0x00683E90
+    CExoString GetTransitionName();                 // 0x006C7D20 (descriptive)
+    char pad_0x0[0x13c];
+    CExoString m_sTransitionName;                   // 0x13c (descriptive)
 };
 
 class CSWCPlaceable {

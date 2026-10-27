@@ -20,6 +20,8 @@ __declspec(dllimport) void __stdcall glLoadIdentity();
 __declspec(dllimport) void __stdcall glOrtho(double l, double r, double b, double t,
     double n, double f);
 __declspec(dllimport) void __stdcall glBlendFunc(unsigned int s, unsigned int d);
+__declspec(dllimport) void __stdcall glVertex4f(float x, float y, float z, float w);
+__declspec(dllimport) void __stdcall glClear(unsigned int mask);
 }
 
 #define GL_VIEWPORT 0x0ba2
@@ -37,19 +39,11 @@ public:
     int array_size;
 };
 
-struct GUIRect {
-    short x;
-    short y;
-    short w;
-    short h;
-    short bClear;
-};
-
 extern unsigned int g_aPrimitiveModes[];        // 0x0073F334
 extern short g_nGUILayer;                       // 0x007B9460
 extern int g_bAurNoGUIDraw;                     // 0x007BB4D0
 extern float g_afGUIAlpha[];                    // 0x007B9248
-extern GUIRect g_aGUIRects[];                   // 0x007B9468
+extern short g_aGUIRects[][5];                  // 0x007B9468 {x, y, w, h, bClear}
 extern unsigned int g_nGLProjection;            // 0x0073F290
 extern unsigned int g_nGLModelView;             // 0x0073F298
 extern unsigned int g_nGLDepthTest;             // 0x0078D45C
@@ -57,6 +51,22 @@ extern unsigned int g_nGLLighting;              // 0x0078D474
 extern unsigned int g_nGLBlend;                 // 0x0078D448
 extern unsigned int g_nGLSrcAlpha;              // 0x0073F270
 extern unsigned int g_nGLOneMinusSrcAlpha;      // 0x0073F274
+extern unsigned int g_nGLTexture2D;             // 0x0078D458
+extern int g_nScreenWidth;                      // 0x0078D1D4
+extern int g_nScreenHeight;                     // 0x0078D1D8
+
+int operator!=(const Vector& a, const Vector& b);   // 0x0043E1F0
+
+// Rounds to the nearest integer with the current FPU mode.
+inline void AurRoundToInt(int* pOut, float f)
+{
+    __asm {
+        fld f
+        mov edx, pOut
+        frndint
+        fistp dword ptr [edx]
+    }
+}
 
 class CAurGUIImage {
 public:
@@ -131,11 +141,11 @@ void AurGUIStartLayer()
 {
     int aViewport[4];
     glGetIntegerv(GL_VIEWPORT, aViewport);
-    g_aGUIRects[0].x = aViewport[0];
-    g_aGUIRects[0].y = aViewport[1];
-    g_aGUIRects[0].w = aViewport[2];
-    g_aGUIRects[0].h = aViewport[3];
-    g_aGUIRects[0].bClear = 0;
+    g_aGUIRects[0][0] = aViewport[0];
+    g_aGUIRects[0][1] = aViewport[1];
+    g_aGUIRects[0][2] = aViewport[2];
+    g_aGUIRects[0][3] = aViewport[3];
+    g_aGUIRects[0][4] = 0;
     g_afGUIAlpha[0] = 1.0f;
     g_nGUILayer = 0;
     glDisable(g_nGLDepthTest);
@@ -161,8 +171,63 @@ void AurGUIStopLayer()
     glEnable(g_nGLLighting);
 }
 
-// NONMATCH (16 insns): MSVC folds the frame index into scaled field loads;
-// original materializes the 10-byte frame offset before reading its fields.
+// NONMATCH: the original keeps the frame stores in source order (ours
+// hoists the layer and clear-flag stores) and loads the layer without
+// clearing edx first; registers, colour packing and quad match.
+// FUNCTION: SWKOTOR 0x004592F0
+int AurGUISetupViewport(int x, int y, int w, int h, Vector* pColor, unsigned char bClear, float fAlpha)
+{
+    if (g_bAurNoGUIDraw)
+        return 0;
+    if (x + w < 0 || y + h < 0)
+        return 0;
+    if (w <= 0 || h <= 0)
+        return 0;
+    if (x >= g_nScreenWidth || y >= g_nScreenHeight)
+        return 0;
+    short nX = g_aGUIRects[g_nGUILayer][0] + x;
+    short nY = g_aGUIRects[g_nGUILayer][1] + y;
+    short nLayer = g_nGUILayer + 1;
+    g_aGUIRects[nLayer][0] = nX;
+    g_afGUIAlpha[nLayer] = fAlpha;
+    g_aGUIRects[nLayer][1] = nY;
+    g_aGUIRects[nLayer][2] = w;
+    g_nGUILayer = nLayer;
+    g_aGUIRects[nLayer][3] = h;
+    g_aGUIRects[nLayer][4] = bClear;
+    AurSetViewport(nX, g_aGUIRects[0][3] - nY - h, w, h);
+    int r, g, b, a;
+    AurRoundToInt(&r, pColor->x * 255.0f);
+    AurRoundToInt(&g, pColor->y * 255.0f);
+    AurRoundToInt(&b, pColor->z * 255.0f);
+    AurRoundToInt(&a, fAlpha * 255.0f);
+    unsigned int nColor = (((a << 8 | b) << 8 | g) << 8) | r;
+    Vector vNone;
+    vNone.x = -1.0f;
+    vNone.y = -1.0f;
+    vNone.z = -1.0f;
+    if (*pColor != vNone) {
+        glDisable(g_nGLTexture2D);
+        glDisable(g_nGLDepthTest);
+        glBegin(g_aPrimitiveModes[6]);
+        AurSetColor(nColor);
+        glVertex4f(0.0f, 0.0f, 0.0f, 1.0f);
+        glVertex4f(1.0f, 0.0f, 0.0f, 1.0f);
+        glVertex4f(1.0f, 1.0f, 0.0f, 1.0f);
+        glVertex4f(0.0f, 1.0f, 0.0f, 1.0f);
+        glEnd();
+        glEnable(g_nGLTexture2D);
+        glEnable(g_nGLDepthTest);
+    }
+    if (bClear) {
+        glClear(0x500);
+        glEnable(g_nGLLighting);
+    }
+    return 1;
+}
+
+// The frames are a short[][5] table: indexing a 10-byte struct array
+// emits scaled field loads instead of the original row offset.
 // FUNCTION: SWKOTOR 0x00459580
 void AurGUICloseViewport()
 {
@@ -170,15 +235,13 @@ void AurGUICloseViewport()
         return;
 
     g_nGUILayer--;
-    GUIRect* previous = &g_aGUIRects[g_nGUILayer];
-    int h = previous->h;
-    int w = previous->w;
-    int y = g_aGUIRects[0].h - previous->y - h;
-    int x = previous->x;
+    int h = g_aGUIRects[g_nGUILayer][3];
+    int w = g_aGUIRects[g_nGUILayer][2];
+    int y = g_aGUIRects[0][3] - g_aGUIRects[g_nGUILayer][1] - h;
+    int x = g_aGUIRects[g_nGUILayer][0];
     glViewport(x, y, w, h);
 
-    previous = &g_aGUIRects[g_nGUILayer];
-    if (previous->bClear)
+    if (g_aGUIRects[g_nGUILayer][4])
         glEnable(g_nGLLighting);
     else
         glDisable(g_nGLLighting);

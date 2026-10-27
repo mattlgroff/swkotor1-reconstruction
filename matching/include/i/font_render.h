@@ -56,9 +56,15 @@ public:
 
 void AurTextureRelease(CAurTexture* pTexture);          // 0x00420D70
 
+struct CAurColor {
+    float r, g, b, a;
+};
+extern CAurColor g_cDefaultStringColor;                 // 0x00798BB4 (placeholder name)
+
 class CAurFontRender {
 public:
     ~CAurFontRender();                                  // 0x004A21D0
+    int ParseMarkup(const char* p, CAurFontRender** ppFont, CAurColor* pColor);  // 0x004A1600 (placeholder name)
 
     int m_nIndex;                                       // +0x00
     char pad_0x04[0x1c - 0x04];

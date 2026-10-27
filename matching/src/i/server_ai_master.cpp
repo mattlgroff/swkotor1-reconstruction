@@ -111,6 +111,10 @@ int CServerAIMaster::RemoveObject(CSWSObject* pObject)
     return nResult;
 }
 
+// Out-of-line copy of the inline ctor, emitted for the m_aGameAIList
+// vector constructor (not in functions.csv).
+// FUNCTION: SWKOTOR 0x004B0770 SYMBOL: ??0CServerAIList@@QAE@XZ
+
 // FUNCTION: SWKOTOR 0x004B0780
 CServerAIMaster::CServerAIMaster()
 {
@@ -300,6 +304,215 @@ int CServerAIMaster::AddEventAbsoluteTime(unsigned long nDay, unsigned long nTim
     }
     if (!bInserted) {
         m_lEventQueue.AddTail(pNew);
+    }
+    return 1;
+}
+
+// FUNCTION: SWKOTOR 0x004AFEA0
+int CServerAIEventNode::SaveNode(CResGFF* pGFF, CResStruct* pStruct)
+{
+    CResStruct cData;
+    pGFF->WriteFieldDWORD(pStruct, m_nDay, "Day");
+    pGFF->WriteFieldDWORD(pStruct, m_nTime, "Time");
+    pGFF->WriteFieldDWORD(pStruct, m_nObjectId, "ObjectId");
+    pGFF->WriteFieldDWORD(pStruct, m_nCallerObjectId, "CallerId");
+    pGFF->WriteFieldDWORD(pStruct, m_nEventId, "EventId");
+    switch (m_nEventId) {
+    case 5:
+    case 14:
+        if (m_pEventData) {
+            pGFF->AddStructToStruct(&cData, pStruct, "EventData", 0x1111);
+            ((CGameEffect*)m_pEventData)->SaveGameEffect(pGFF, &cData);
+        }
+        break;
+    case 15:
+    case 21:
+        if (m_pEventData) {
+            pGFF->AddStructToStruct(&cData, pStruct, "EventData", 0x2222);
+            ((CSWSCombatAttackData*)m_pEventData)->SaveData(pGFF, &cData);
+        }
+        break;
+    case 4:
+        if (m_pEventData) {
+            pGFF->AddStructToStruct(&cData, pStruct, "EventData", 0x9999);
+            pGFF->WriteFieldBYTE(&cData, (unsigned char)(unsigned long)m_pEventData, "Value");
+        }
+        break;
+    case 20:
+        if (m_pEventData) {
+            pGFF->AddStructToStruct(&cData, pStruct, "EventData", 0x3333);
+            pGFF->WriteFieldDWORD(&cData, (unsigned long)m_pEventData, "Value");
+        }
+        break;
+    case 22:
+        if (m_pEventData) {
+            pGFF->AddStructToStruct(&cData, pStruct, "EventData", 0xcccc);
+            ((CSWCCMessageData*)m_pEventData)->SaveData(pGFF, &cData);
+        }
+        break;
+    case 9:
+        if (m_pEventData) {
+            pGFF->AddStructToStruct(&cData, pStruct, "EventData", 0x3333);
+            pGFF->WriteFieldINT(&cData, (int)m_pEventData, "Value");
+        }
+        break;
+    case 10:
+        if (m_pEventData) {
+            pGFF->AddStructToStruct(&cData, pStruct, "EventData", 0x4444);
+            ((CScriptEvent*)m_pEventData)->SaveEvent(pGFF, &cData);
+        }
+        break;
+    case 18:
+        if (m_pEventData) {
+            pGFF->AddStructToStruct(&cData, pStruct, "EventData", 0x8888);
+            ((CSWSActionTarget*)m_pEventData)->SaveData(pGFF, &cData);
+        }
+        break;
+    case 17:
+        if (m_pEventData) {
+            pGFF->AddStructToStruct(&cData, pStruct, "EventData", 0x5555);
+            ((CServerAIBodyBagInfo*)m_pEventData)->SaveBodyBag(pGFF, &cData);
+        }
+        break;
+    case 8:
+    case 19:
+        if (m_pEventData) {
+            pGFF->AddStructToStruct(&cData, pStruct, "EventData", 0x6666);
+            ((CSWSSpellScriptData*)m_pEventData)->SaveData(pGFF, &cData);
+        }
+        break;
+    case 1:
+        pGFF->AddStructToStruct(&cData, pStruct, "EventData", 0x7777);
+        g_pVirtualMachine->SaveScriptSituation(m_pEventData, pGFF, &cData);
+        break;
+    case 24:
+        if (m_pEventData) {
+            pGFF->AddStructToStruct(&cData, pStruct, "EventData", 0xdddd);
+            ((CScriptEvent*)m_pEventData)->SaveEvent(pGFF, &cData);
+        }
+        break;
+    case 26:
+        if (m_pEventData) {
+            pGFF->AddStructToStruct(&cData, pStruct, "EventData", 0xeeee);
+            ((CScriptEvent*)m_pEventData)->SaveEvent(pGFF, &cData);
+        }
+        break;
+    case 27:
+        pGFF->AddStructToStruct(&cData, pStruct, "EventData", 0xffff);
+        pGFF->WriteFieldINT(&cData, (int)m_pEventData, "Value");
+        break;
+    }
+    return 1;
+}
+
+// NONMATCH: only the last case block schedules its first lea/push pair
+// differently (and the jump table that follows shifts with it).
+// FUNCTION: SWKOTOR 0x004B0290
+int CServerAIEventNode::LoadNode(CResGFF* pGFF, CResStruct* pStruct)
+{
+    int bSuccess;
+    CResStruct cData;
+    m_nDay = pGFF->ReadFieldDWORD(pStruct, "Day", bSuccess, 0);
+    m_nTime = pGFF->ReadFieldDWORD(pStruct, "Time", bSuccess, 0);
+    m_nObjectId = pGFF->ReadFieldDWORD(pStruct, "ObjectId", bSuccess, 0);
+    m_nCallerObjectId = pGFF->ReadFieldDWORD(pStruct, "CallerId", bSuccess, 0);
+    m_nEventId = pGFF->ReadFieldDWORD(pStruct, "EventId", bSuccess, 0);
+    switch (m_nEventId) {
+    case 5:
+    case 14:
+        m_pEventData = new CGameEffect(1);
+        if (m_pEventData) {
+            pGFF->GetStructFromStruct(&cData, pStruct, "EventData");
+            ((CGameEffect*)m_pEventData)->LoadGameEffect(pGFF, &cData);
+        }
+        break;
+    case 2:
+    case 3:
+    case 6:
+    case 7:
+    case 11:
+    case 12:
+    case 13:
+    case 16:
+        m_pEventData = NULL;
+        break;
+    case 15:
+    case 21:
+        m_pEventData = NULL;
+        if (pGFF->GetStructFromStruct(&cData, pStruct, "EventData")) {
+            CSWSCombatAttackData* pData = new CSWSCombatAttackData;
+            m_pEventData = pData;
+            pData->LoadData(pGFF, &cData);
+        }
+        break;
+    case 4:
+        m_pEventData = NULL;
+        if (pGFF->GetStructFromStruct(&cData, pStruct, "EventData")) {
+            m_pEventData = (void*)pGFF->ReadFieldBYTE(&cData, "Value", bSuccess, 0);
+        }
+        break;
+    case 20:
+        m_pEventData = NULL;
+        if (pGFF->GetStructFromStruct(&cData, pStruct, "EventData")) {
+            m_pEventData = (void*)pGFF->ReadFieldDWORD(&cData, "Value", bSuccess, 0);
+        }
+        break;
+    case 22:
+        m_pEventData = NULL;
+        if (pGFF->GetStructFromStruct(&cData, pStruct, "EventData")) {
+            CSWCCMessageData* pData = new CSWCCMessageData;
+            m_pEventData = pData;
+            pData->LoadData(pGFF, &cData);
+        }
+        break;
+    case 10:
+        m_pEventData = new CScriptEvent;
+        if (m_pEventData) {
+            pGFF->GetStructFromStruct(&cData, pStruct, "EventData");
+            ((CScriptEvent*)m_pEventData)->LoadEvent(pGFF, &cData);
+        }
+        break;
+    case 18:
+        return 0;
+    case 17:
+        m_pEventData = new CServerAIBodyBagInfo;
+        if (m_pEventData) {
+            pGFF->GetStructFromStruct(&cData, pStruct, "EventData");
+            ((CServerAIBodyBagInfo*)m_pEventData)->LoadBodyBag(pGFF, &cData);
+        }
+        break;
+    case 8:
+        m_pEventData = new CSWSSpellScriptData;
+        if (m_pEventData) {
+            pGFF->GetStructFromStruct(&cData, pStruct, "EventData");
+            ((CSWSSpellScriptData*)m_pEventData)->LoadData(pGFF, &cData);
+        }
+        break;
+    case 1:
+        pGFF->GetStructFromStruct(&cData, pStruct, "EventData");
+        g_pVirtualMachine->LoadScriptSituation(&m_pEventData, pGFF, &cData);
+        break;
+    case 24:
+        m_pEventData = new CScriptEvent;
+        if (m_pEventData) {
+            pGFF->GetStructFromStruct(&cData, pStruct, "EventData");
+            ((CScriptEvent*)m_pEventData)->LoadEvent(pGFF, &cData);
+        }
+        break;
+    case 26:
+        m_pEventData = new CScriptEvent;
+        if (m_pEventData) {
+            pGFF->GetStructFromStruct(&cData, pStruct, "EventData");
+            ((CScriptEvent*)m_pEventData)->LoadEvent(pGFF, &cData);
+        }
+        break;
+    case 9:
+    case 27:
+        m_pEventData = NULL;
+        if (pGFF->GetStructFromStruct(&cData, pStruct, "EventData")) {
+            m_pEventData = (void*)pGFF->ReadFieldINT(&cData, "Value", bSuccess, 0);
+        }
+        break;
     }
     return 1;
 }

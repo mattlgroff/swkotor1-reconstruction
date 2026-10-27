@@ -6,7 +6,16 @@
 extern const unsigned char GAME_OBJECT_VALID;               // 0x0074666C
 extern const float AI_SOUND_RANGE;                           // 0x00747444, 1000.0f
 
-// NONMATCH (24): register and stack allocation in the broadcast loop.
+static inline Vector VectorDelta(const Vector& a, const Vector& b)
+{
+    Vector v;
+    v.x = a.x - b.x;
+    v.y = a.y - b.y;
+    v.z = a.z - b.z;
+    return v;
+}
+
+// NONMATCH (24): esi/edi swap (bResult/pPlayer) and the GetNext this load order.
 // FUNCTION: SWKOTOR 0x00571EC0
 int CSWSMessage::SendServerToPlayerQuickChatMessage(unsigned long oidSpeaker, unsigned short nQuickChat)
 {
@@ -28,11 +37,9 @@ int CSWSMessage::SendServerToPlayerQuickChatMessage(unsigned long oidSpeaker, un
         CSWSPlayer* pPlayer = (CSWSPlayer*)pPlayers->GetAtPos(pos);
         if (pPlayer->GetGameObject()) {
             CGameObject* pPlayerObject = pPlayer->GetGameObject();
-            float fX = pPlayerObject->m_vPosition.x - vPosition.x;
-            float fY = pPlayerObject->m_vPosition.y - vPosition.y;
-            float fZ = pPlayerObject->m_vPosition.z - vPosition.z;
+            Vector vDelta = VectorDelta(pPlayerObject->m_vPosition, vPosition);
             if (pArea == ((CSWSObject*)pPlayer->GetGameObject())->GetArea()) {
-                if (fZ*fZ + fY*fY + fX*fX <= AI_SOUND_RANGE * AI_SOUND_RANGE) {
+                if (vDelta.z*vDelta.z + vDelta.y*vDelta.y + vDelta.x*vDelta.x <= AI_SOUND_RANGE * AI_SOUND_RANGE) {
                     bResult = SendServerToPlayerQuickChat(pPlayer->m_nPlayerID, oidSpeaker, nQuickChat) & 1;
                 }
             }

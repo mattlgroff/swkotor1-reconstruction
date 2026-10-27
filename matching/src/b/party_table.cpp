@@ -683,7 +683,7 @@ int CSWPartyTable::AddNPC(int nNPC, CSWSCreature* pCreature)
     CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
     CSWSCreature* pPC = pServer->GetCreatureByGameObjectID(pServer->GetPlayerCreatureId());
     if (pPC && pPC->GetFaction()) {
-        pPC->GetFaction()->AddMember(pCreature->m_idSelf, 0);
+        pPC->GetFaction()->AddMember(pCreature->GetId(), 0);
     }
     pCreature->m_pStats->SetMovementRate(0);
     CExoString sPath;
@@ -849,7 +849,7 @@ int CSWPartyTable::SwitchPlayerCharacter(int nNPC)
 {
     CExoString sFileName;
     CClientExoApp* pClient = g_pAppManager->GetClientExoApp();
-    CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
+    CServerExoApp* pServer = g_pAppManager->m_pServerExoApp;
     CSWSPlayer* pPlayer = (CSWSPlayer*)pServer->GetPlayerList()->GetHead();
     CSWSCreature* pOld = pServer->GetCreatureByGameObjectID(pPlayer->m_oid38);
     CSWSArea* pArea = pOld->GetArea();
@@ -869,7 +869,7 @@ int CSWPartyTable::SwitchPlayerCharacter(int nNPC)
             return 1;
         }
         CSWSCreature* pPC = pServer->GetCreatureByGameObjectID(pServer->GetPlayerCreatureId());
-        pPC->m_pStats->m_bIsPC = 0;
+        pPC->GetStats()->m_bIsPC = 0;
         pPC->m_bIsPC = 0;
         SaveMember(m_nControlledNPC, 0);
         pTarget = new CSWSCreature(INVALID_OBJECT_ID, 0);
@@ -903,7 +903,7 @@ int CSWPartyTable::SwitchPlayerCharacter(int nNPC)
         }
         else {
             CSWSCreature* pPC = pServer->GetCreatureByGameObjectID(pServer->GetPlayerCreatureId());
-            pPC->m_pStats->m_bIsPC = 0;
+            pPC->GetStats()->m_bIsPC = 0;
             pPC->m_bIsPC = 0;
             SaveMember(m_nControlledNPC, 0);
         }
@@ -939,7 +939,7 @@ int CSWPartyTable::SwitchPlayerCharacter(int nNPC)
     }
     pClient->GetSWParty()->ResetPartyGui();
     pTarget->SetInParty(1, 1);
-    pTarget->m_pStats->m_bIsPC = 1;
+    pTarget->GetStats()->m_bIsPC = 1;
     pTarget->m_bIsPC = 1;
     CItemRepository* pRepository = pTarget->GetItemRepository(1);
     if (pRepository) {
@@ -960,7 +960,7 @@ int CSWPartyTable::SwitchPlayerCharacter(int nNPC)
         int nMember = m_aMembers[i];
         RemoveMember(nMember);
         if (nMember >= 0 && nMember < PARTY_NUM_NPCS && !GetIsMember(nMember)) {
-            CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(m_aNPCObjectIds[nMember]);
+            CSWSCreature* pCreature = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(m_aNPCObjectIds[nMember]);
             m_aNPCObjectIds[nMember] = INVALID_OBJECT_ID;
             if (pCreature) {
                 CSWCCreature* pClientCreature = pCreature->GetClientCreature();

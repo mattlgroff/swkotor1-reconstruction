@@ -133,9 +133,10 @@ public:
     unsigned char m_nGender;                        // 0x31
     unsigned char m_nNumClasses;                    // 0x32
     unsigned char m_n33;                            // 0x33
-    char pad_0x34[0x2];
+    unsigned char m_nSTR;                           // 0x34
+    unsigned char m_nDEX;                           // 0x35
     unsigned char m_nCON;                           // 0x36
-    char pad_0x37[0x1];
+    unsigned char m_nINT;                           // 0x37
     unsigned char m_nWIS;                           // 0x38
     unsigned char m_nCHA;                           // 0x39
     unsigned char m_nSTRBase;                       // 0x3a
@@ -144,7 +145,8 @@ public:
     unsigned char m_nINTBase;                       // 0x3d
     unsigned char m_nWISBase;                       // 0x3e
     unsigned char m_nCHABase;                       // 0x3f
-    char pad_0x40[0x8];
+    char m_nACBonus;                                // 0x40 (descriptive)
+    char pad_0x41[0x7];
     short m_nBaseHitPoints;                         // 0x48
     char pad_0x4a[0x2];
     short m_nCurrentHitPoints;                      // 0x4c
@@ -162,7 +164,8 @@ public:
     short m_nGoodEvil;                              // 0x80
     char pad_0x82[0x6];
     char* m_pSkillRanks;                            // 0x88
-    char pad_0x8c[0x20];
+    unsigned short m_nAppearance;                   // 0x8c
+    char pad_0x8e[0x1e];
     unsigned char m_nAbilityPoints;                 // 0xac
     char pad_0xad[0x1];
     unsigned short m_nSkillPoints;                  // 0xae
@@ -207,6 +210,8 @@ public:
     char m_nWisdomModifier;                         // 0xf2 (name guessed)
     char pad_0xf3[0x1];
     char m_nCharismaModifier;                       // 0xf4 (name guessed)
+    char pad_0xf5[0x13a - 0xf5];
+    unsigned short m_nAIState;                      // 0x13a (descriptive)
 };
 
 // 0x1a0 bytes, g_pRules->m_pClasses.
@@ -219,7 +224,14 @@ public:
     char pad_0x0[0x54];
     unsigned char m_nHitDie;                        // 0x54
     unsigned char m_nForceDie;                      // 0x55
-    char pad_0x56[0x14a];
+    char pad_0x56[0x17b - 0x56];
+    char m_nPackageSTR;                             // 0x17b (descriptive)
+    char m_nPackageDEX;                    // 0x17c
+    char m_nPackageCON;                    // 0x17d
+    char m_nPackageINT;                    // 0x17e
+    char m_nPackageWIS;                    // 0x17f
+    char m_nPackageCHA;                    // 0x180
+    char pad_0x181[0x1a0 - 0x181];
 };
 
 class CSWSCreature {
@@ -372,6 +384,20 @@ public:
     void SetSize(int nSize)
     {
         if (nSize) {
+            Allocate(nSize);
+        }
+        num = nSize;
+    }
+    // SetSize that also releases the buffer for a zero size.
+    void SetSizeFree(int nSize)
+    {
+        if (nSize == 0) {
+            if (element) {
+                delete[] element;
+                element = 0;
+                array_size = 0;
+            }
+        } else {
             Allocate(nSize);
         }
         num = nSize;

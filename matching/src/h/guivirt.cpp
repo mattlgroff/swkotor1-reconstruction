@@ -13,16 +13,8 @@ __declspec(dllimport) void __stdcall glColor4ubv(const unsigned char* v);
 __declspec(dllimport) void __stdcall glVertex4f(float x, float y, float z, float w);
 }
 
-struct GUIRect {
-    short x;
-    short y;
-    short w;
-    short h;
-    short bClear;
-};
-
 extern short g_nGUILayer;                       // 0x007B9460
-extern GUIRect g_aGUIRects[];                   // 0x007B9468
+extern short g_aGUIRects[][5];                  // 0x007B9468 {x, y, w, h, bClear}
 extern int g_bAurNoGUIDraw;                     // 0x007BB4D0
 extern int g_nGUIImageFlag;                     // 0x007A689C
 extern unsigned int g_nGLDepthTest;             // 0x0078D45C
@@ -257,8 +249,8 @@ int CAurGUIStringInternal::GetFontScale()
 // FUNCTION: SWKOTOR 0x00458FE0
 void CAurGUIStringInternal::GetPosition(float* pX, float* pY)
 {
-    *pX = (float)m_nX / g_aGUIRects[g_nGUILayer].w;
-    *pY = (float)m_nY / g_aGUIRects[g_nGUILayer].h;
+    *pX = (float)m_nX / g_aGUIRects[g_nGUILayer][2];
+    *pY = (float)m_nY / g_aGUIRects[g_nGUILayer][3];
 }
 
 // FUNCTION: SWKOTOR 0x0045BBE0
@@ -271,8 +263,8 @@ void CAurGUIStringInternal::GetPixelPosition(int* pX, int* pY)
 // FUNCTION: SWKOTOR 0x00459030
 void CAurGUIStringInternal::SetPosition(float fX, float fY)
 {
-    m_nX = (int)(g_aGUIRects[g_nGUILayer].w * fX);
-    m_nY = (int)(g_aGUIRects[g_nGUILayer].h * fY);
+    m_nX = (int)(g_aGUIRects[g_nGUILayer][2] * fX);
+    m_nY = (int)(g_aGUIRects[g_nGUILayer][3] * fY);
 }
 
 // FUNCTION: SWKOTOR 0x0045BC00
@@ -285,8 +277,8 @@ void CAurGUIStringInternal::SetPixelPosition(int nX, int nY)
 // FUNCTION: SWKOTOR 0x00459090
 void CAurGUIStringInternal::GetSize(float* pW, float* pH)
 {
-    *pW = (float)m_nW / g_aGUIRects[g_nGUILayer].w;
-    *pH = (float)m_nH / g_aGUIRects[g_nGUILayer].h;
+    *pW = (float)m_nW / g_aGUIRects[g_nGUILayer][2];
+    *pH = (float)m_nH / g_aGUIRects[g_nGUILayer][3];
 }
 
 // FUNCTION: SWKOTOR 0x0045BC20
@@ -299,8 +291,8 @@ void CAurGUIStringInternal::GetPixelSize(int* pW, int* pH)
 // FUNCTION: SWKOTOR 0x004590E0
 void CAurGUIStringInternal::SetSize(float fW, float fH)
 {
-    m_nW = (int)(g_aGUIRects[g_nGUILayer].w * fW);
-    m_nH = (int)(g_aGUIRects[g_nGUILayer].h * fH);
+    m_nW = (int)(g_aGUIRects[g_nGUILayer][2] * fW);
+    m_nH = (int)(g_aGUIRects[g_nGUILayer][3] * fH);
 }
 
 // FUNCTION: SWKOTOR 0x0045BC40
@@ -318,10 +310,10 @@ void CAurGUIStringInternal::DrawBounds(int a, int b, int c, int d)
     glDisable(g_nGLDepthTest);
     glDisable(g_nGLTexture2D);
     glDisable(g_nGLBlend);
-    float fY0 = 1.0f - m_nY / (float)g_aGUIRects[g_nGUILayer].h;
-    float fY1 = 1.0f - (m_nY + m_nH) / (float)g_aGUIRects[g_nGUILayer].h;
-    float fX0 = m_nX / (float)g_aGUIRects[g_nGUILayer].w;
-    float fX1 = (m_nX + m_nW) / (float)g_aGUIRects[g_nGUILayer].w;
+    float fY0 = 1.0f - m_nY / (float)g_aGUIRects[g_nGUILayer][3];
+    float fY1 = 1.0f - (m_nY + m_nH) / (float)g_aGUIRects[g_nGUILayer][3];
+    float fX0 = m_nX / (float)g_aGUIRects[g_nGUILayer][2];
+    float fX1 = (m_nX + m_nW) / (float)g_aGUIRects[g_nGUILayer][2];
     glBegin(g_nGLLineStrip);
     {
         unsigned int nColor = 0xffe5a566;
@@ -399,8 +391,8 @@ void CAurGUIImageInternal::DrawPixelRect2(int nX, int nY, int nW, int nH,
 {
     if (g_bAurNoGUIDraw)
         return;
-    DrawRect2(nX / (float)g_aGUIRects[g_nGUILayer].w, nY / (float)g_aGUIRects[g_nGUILayer].h,
-        nW / (float)g_aGUIRects[g_nGUILayer].w, nH / (float)g_aGUIRects[g_nGUILayer].h,
+    DrawRect2(nX / (float)g_aGUIRects[g_nGUILayer][2], nY / (float)g_aGUIRects[g_nGUILayer][3],
+        nW / (float)g_aGUIRects[g_nGUILayer][2], nH / (float)g_aGUIRects[g_nGUILayer][3],
         a, b, pColor, fAlpha);
 }
 
@@ -424,8 +416,8 @@ void CAurGUIImageInternal::DrawPixelRect(int nX, int nY, int nW, int nH,
     if (g_bAurNoGUIDraw)
         return;
     g_nGUIImageFlag = 0;
-    DrawRect(nX / (float)g_aGUIRects[g_nGUILayer].w, nY / (float)g_aGUIRects[g_nGUILayer].h,
-        nW / (float)g_aGUIRects[g_nGUILayer].w, nH / (float)g_aGUIRects[g_nGUILayer].h,
+    DrawRect(nX / (float)g_aGUIRects[g_nGUILayer][2], nY / (float)g_aGUIRects[g_nGUILayer][3],
+        nW / (float)g_aGUIRects[g_nGUILayer][2], nH / (float)g_aGUIRects[g_nGUILayer][3],
         a, b, pColor, fAlpha);
 }
 

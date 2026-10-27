@@ -884,6 +884,7 @@ public:
     int PerformRButtonUpAction();                                    // 0x0061F960
     void HandleMouseClickInWorld();                                 // 0x00620350
     CSWCCreature* LookUpCreature(unsigned long oid);                // inline in client_exo_app_internal_r5.cpp
+    CGameObjectArray* GetGameObjectArray() { return m_pGameObjectArray; }
     int PlayMovieList(CExoArrayList<CResRef>* pList, int a, int b, int c, int d);   // 0x00602AF0
 };
 

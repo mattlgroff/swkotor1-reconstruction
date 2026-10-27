@@ -298,6 +298,16 @@ void CSWCAnimBaseWield::ModelVFC()
     CSWCAnimBaseTW::ModelVFC();
 }
 
+// No head item at this layer: both overrides are empty and the linker
+// folded them (and their two vtordisp thunks) into shared stubs.
+void CSWCAnimBaseWield::DetachHeadItem()
+{
+}
+
+void CSWCAnimBaseWield::AttachHeadItem()
+{
+}
+
 // FUNCTION: SWKOTOR 0x0069AA60 SYMBOL: ??_GCSWCAnimBaseWield@@UAEPAXI@Z
 
 // FUNCTION: SWKOTOR 0x0069AA90
@@ -436,3 +446,21 @@ int CSWCAnimBaseWield::LoadModel(const CResRef& cResRef, unsigned char nPart)
     }
     return 0;
 }
+
+// vtordisp{4} thunks (compiler generated for the overrides seen through
+// the virtual CSWCAnimBase base: `sub ecx, [ecx-4]; jmp`).
+// FUNCTION: SWKOTOR 0x0069A330 SYMBOL: ??_ECSWCAnimBaseWield@@$4PPPPPPPM@A@AEPAXI@Z
+// FUNCTION: SWKOTOR 0x0069A340 SYMBOL: ?ShowWieldedItems@CSWCAnimBaseWield@@$4PPPPPPPM@A@AEXXZ
+// FUNCTION: SWKOTOR 0x0069A350 SYMBOL: ?SetCheckItems@CSWCAnimBaseWield@@$4PPPPPPPM@A@AEXH@Z
+// FUNCTION: SWKOTOR 0x0069A360 SYMBOL: ?ModelVC0@CSWCAnimBaseWield@@$4PPPPPPPM@A@AEXXZ
+// FUNCTION: SWKOTOR 0x0069A370 SYMBOL: ?ModelVBC@CSWCAnimBaseWield@@$4PPPPPPPM@A@AEXXZ
+// FUNCTION: SWKOTOR 0x0069A380 SYMBOL: ?UpdateSound@CSWCAnimBaseWield@@$4PPPPPPPM@A@AEXH@Z
+// FUNCTION: SWKOTOR 0x0069A390 SYMBOL: ?PlayAnimOnPart@CSWCAnimBaseWield@@$4PPPPPPPM@A@AEHPAVCAurObject@@EHMHH@Z
+// FUNCTION: SWKOTOR 0x0069AA10 SYMBOL: ?SetWieldedModels@CSWCAnimBaseWield@@$4PPPPPPPM@A@AEXABVCResRef@@0@Z
+// FUNCTION: SWKOTOR 0x0069AA20 SYMBOL: ?DetachHeadItem@CSWCAnimBaseWield@@$4PPPPPPPM@A@AEXXZ
+// FUNCTION: SWKOTOR 0x0069AA30 SYMBOL: ?ModelVF8@CSWCAnimBaseWield@@$4PPPPPPPM@A@AEXXZ
+// FUNCTION: SWKOTOR 0x0069AA40 SYMBOL: ?ModelVFC@CSWCAnimBaseWield@@$4PPPPPPPM@A@AEXXZ
+// FUNCTION: SWKOTOR 0x0069AA50 SYMBOL: ?PlayAnimOnModel@CSWCAnimBaseWield@@$4PPPPPPPM@A@AEHPAVCAurObject@@HMHH@Z
+// FUNCTION: SWKOTOR 0x0069AFC0 SYMBOL: ?GetModel@CSWCAnimBaseWield@@$4PPPPPPPM@A@AEPAVCAurObject@@E@Z
+// FUNCTION: SWKOTOR 0x0069AFD0 SYMBOL: ?SetWieldedItem@CSWCAnimBaseWield@@$4PPPPPPPM@A@AEHKABVCExoString@@EM@Z
+// FUNCTION: SWKOTOR 0x0069B020 SYMBOL: ?LoadModel@CSWCAnimBaseWield@@$4PPPPPPPM@A@AEHABVCResRef@@E@Z

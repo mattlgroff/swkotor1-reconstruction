@@ -2,7 +2,6 @@
 #include "b/sws_message.h"
 #include "b/exo_loc_string.h"
 
-// NONMATCH (34): register choices and early branch layout.
 // FUNCTION: SWKOTOR 0x0056AC20
 int CSWSMessage::HasValidLocalizedString(CExoLocString* pString, unsigned char nGender)
 {
@@ -11,17 +10,16 @@ int CSWSMessage::HasValidLocalizedString(CExoLocString* pString, unsigned char n
     if (!pServer) return 0;
     int nLanguage = pServer->GetPlayerLanguage(m_nPlayerId);
     int nModuleLanguage = g_pAppManager->GetServerExoApp()->GetModuleLanguage();
-    int bFound = pString->GetStringLoc(nLanguage, sText, nGender);
-    if (!bFound) {
-        if (nLanguage != 0) bFound = pString->GetStringLoc(0, sText, nGender);
-        if (!bFound) {
-            if (nModuleLanguage != nLanguage && nModuleLanguage != 0)
-                bFound = pString->GetStringLoc(nModuleLanguage, sText, nGender);
-            if (!bFound) {
-                bFound = pString->GetString(0, &nLanguage, sText, &nGender);
-                if (!bFound && pString->m_nStrRef != 0xffffffff) return 1;
-            }
+    if (!pString->GetStringLoc(nLanguage, sText, nGender) &&
+        !(nLanguage != 0 && pString->GetStringLoc(0, sText, nGender)) &&
+        !(nModuleLanguage != nLanguage && nModuleLanguage != 0 && pString->GetStringLoc(nModuleLanguage, sText, nGender))) {
+        unsigned char nFoundGender;
+        if (!pString->GetString(0, &nLanguage, sText, &nFoundGender) && pString->m_nStrRef != 0xffffffff) {
+            return 1;
         }
     }
-    return sText.GetLength() > 0;
+    if (sText.GetLength() > 0) {
+        return 1;
+    }
+    return 0;
 }

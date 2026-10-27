@@ -25,12 +25,11 @@ void CSWGuiCharButton::BuildToolTip()
 }
 
 // FUNCTION: SWKOTOR 0x006851B0
-// NONMATCH: x87 scheduling only (the original issues the 1.0 - t fsubr after
-// the extent copy; statement order and temporaries tried).
 void CSWGuiMainInterfaceChar::SlideIn(float fTime)
 {
-    float t = 1.0f - fTime * 4.0f;
+    float t = fTime * 4.0f;
     CSWGuiExtent ext = m_aBars[0].m_extent;
+    t = 1.0f - t;
     int nDX = (int)((m_nToX - m_nFromX) * t + m_nFromX - ext.left);
     int nDY = (int)((m_nToY - m_nFromY) * t + m_nFromY - ext.top);
     int i;

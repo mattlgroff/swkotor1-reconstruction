@@ -195,8 +195,9 @@ void CycleTIDTextureController::ParseField(char* szField)
 extern int g_nAurFrameCounter;          // 0x007A46F4
 extern float g_fAurFrameDelta;          // 0x0078E574
 
-// NONMATCH (16 insns): the original also spills m_pTexture to a stack slot
-// (push ecx frame) it never reads; ours keeps it in edi only.
+// NONMATCH (4 insns): the dead m_pTexture stack slot comes from the
+// by-reference GetNumFrames helper; the original loads m_pTexture before
+// the m_fTime = 0 store.
 // FUNCTION: SWKOTOR 0x00460970
 void CycleTIDTextureController::Update()
 {
@@ -205,7 +206,7 @@ void CycleTIDTextureController::Update()
         m_fTime += g_fAurFrameDelta;
         if (m_fTime > 1.0f / m_fFps) {
             m_fTime = 0;
-            m_nFrameIndex = (m_nFrameIndex + 1) % m_pTexture->GetNumFrames();
+            m_nFrameIndex = (m_nFrameIndex + 1) % GetNumFrames(m_pTexture);
             m_pTexture->SetFrame(m_nFrameIndex);
         }
     }

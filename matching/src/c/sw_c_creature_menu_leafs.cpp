@@ -8,11 +8,7 @@ public:
 // FUNCTION: SWKOTOR 0x00614B60
 int CSWCCreature::IsInjured()
 {
-    if (GetServerObject() != 0) {
-        CSWSCreature* pServerCreature = GetServerObject()->AsSWSCreature();
-        return pServerCreature->GetIsInjured();
-    }
-    CSWSCreature* pServerCreature = 0;
+    CSWSCreature* pServerCreature = GetServerObject() ? GetServerObject()->AsSWSCreature() : 0;
     return pServerCreature->GetIsInjured();
 }
 

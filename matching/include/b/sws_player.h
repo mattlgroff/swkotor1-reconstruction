@@ -44,12 +44,19 @@ public:
 
     CSWSCreatureAppearanceInfo m_cAppearance;                   // 0x0
     int m_bUpdated;                                             // 0x24
-    char pad_0x28[0x2a - 0x28];
+    unsigned char m_nObjectType;                                // 0x28
+    char pad_0x29[0x2a - 0x29];
     unsigned short m_n2A;                                       // 0x2a
     unsigned long m_nId;                                        // 0x2c
-    char pad_0x30[0x90 - 0x30];
+    char pad_0x30[0x4c - 0x30];
+    int m_nDialogDelay;                                         // 0x4c (name guessed)
+    char pad_0x50[0x90 - 0x50];
     CExoLocString m_lsFirstName;                                // 0x90
     CExoLocString m_lsLastName;                                 // 0x98
+    char pad_0xa0[0x148 - 0xa0];
+    int m_b148;                                                 // 0x148 (name guessed)
+    int m_b14C;                                                 // 0x14c (name guessed)
+    unsigned long m_n150;                                       // 0x150 (name guessed)
 };
 
 // 0xc-byte entry of the client info list (dtor 0x0059EA20).

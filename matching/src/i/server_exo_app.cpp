@@ -141,15 +141,17 @@ CSWSModule* CServerExoApp::GetModule()
 }
 
 // FUNCTION: SWKOTOR 0x004AE6E0
-int CServerExoApp::SaveGame(unsigned long nSlot, CExoString& sName, CExoString& sDesc)
+int CServerExoApp::SaveGame(unsigned long nSlot, CExoString& sName, CSWSPlayer* pPlayer,
+                            int bUnused)
 {
-    return m_pcExoAppInternal->SaveGame(nSlot, sName, sDesc);
+    return m_pcExoAppInternal->SaveGame(nSlot, sName, pPlayer, bUnused);
 }
 
 // FUNCTION: SWKOTOR 0x004AE6F0
-int CServerExoApp::LoadGame(unsigned long nSlot, CExoString& sName)
+int CServerExoApp::LoadGame(unsigned long nSlot, CExoString& sName, CExoString& sModule,
+                            int bLoadFromSave)
 {
-    return m_pcExoAppInternal->LoadGame(nSlot, sName);
+    return m_pcExoAppInternal->LoadGame(nSlot, sName, sModule, bLoadFromSave);
 }
 
 // FUNCTION: SWKOTOR 0x004AE740
@@ -285,9 +287,9 @@ int CServerExoApp::RunModule()
 }
 
 // FUNCTION: SWKOTOR 0x004AE8F0
-int CServerExoApp::StartServices(CExoString& sModule, int a, int b)
+void CServerExoApp::StartServices(int nMode)
 {
-    return m_pcExoAppInternal->StartServices(sModule, a, b);
+    m_pcExoAppInternal->StartServices(nMode);
 }
 
 // FUNCTION: SWKOTOR 0x004AE900

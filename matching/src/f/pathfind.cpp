@@ -7,8 +7,13 @@ class Vector {
 public:
     Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
     Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
+    Vector operator-(const Vector &v) const { return Vector(x - v.x, y - v.y, z - v.z); }
+    Vector operator-() const { return Vector(-x, -y, -z); }
     float x, y, z;
 };
+
+Vector CrossProduct(const Vector &a, const Vector &b);      // 0x004AB210
+Vector Normalize(const Vector &v);                          // 0x004AB180
 
 class CPathfindInformation {
 public:
@@ -447,6 +452,8 @@ public:
                                  CPathfindInformation *pInfo);
     Vector *FindPath_Left(int *pnPoints);
     Vector *FindPath_Right(int *pnPoints);
+    int IsPointInHex(const Vector &vPoint);
+    int GetClosestPointTo(const Vector &vPoint);
 
     char pad_0x0[0x4];
     Vector m_avCorners[6];           // +0x04
@@ -531,4 +538,37 @@ Vector *CAvoidCreature::FindPath_Right(int *pnPoints)
     Vector *pPath = new Vector[*pnPoints];
     memcpy(pPath, avPath, *pnPoints * sizeof(Vector));
     return pPath;
+}
+
+// FUNCTION: SWKOTOR 0x005CFC70
+int CAvoidCreature::IsPointInHex(const Vector &vPoint)
+{
+    for (int i = 0; i < 6; i++) {
+        int j = (i + 1) % 6;
+        Vector vUp(0.0f, 0.0f, 1.0f);
+        Vector vEdge = m_avCorners[j] - m_avCorners[i];
+        Vector vNormal = Normalize(-CrossProduct(vUp, vEdge));
+        Vector vDir = Normalize(vPoint - m_avCorners[i]);
+        if (vNormal.x * vDir.x + vNormal.y * vDir.y + vNormal.z * vDir.z < 0.0f)
+            return 0;
+    }
+    return 1;
+}
+
+// NONMATCH (4): x87 stack scheduling of the last unrolled iteration only (the
+// original compares against st(4) before popping; cl pops first).
+// FUNCTION: SWKOTOR 0x005CFAE0
+int CAvoidCreature::GetClosestPointTo(const Vector &vPoint)
+{
+    float fBest = 3.402823466e+38F;
+    int nBest = -1;
+    for (int i = 0; i < 6; i++) {
+        Vector v = m_avCorners[i] - vPoint;
+        float fDist = v.y * v.y + v.x * v.x + v.z * v.z;
+        if (fDist < fBest) {
+            fBest = fDist;
+            nBest = i;
+        }
+    }
+    return nBest;
 }

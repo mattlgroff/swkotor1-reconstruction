@@ -314,6 +314,76 @@ void CSWTrackFollower::ValidateTarget170()
     }
 }
 
+// FUNCTION: SWKOTOR 0x0066CB40
+void CSWMiniPlayer::ClampPosition(Vector* pPos)
+{
+    if (m_vClamp.x != 0.0f) {
+        if (m_pMiniGame->m_nMode == 2) {
+            if (pPos->x < 0.0f) {
+                pPos->x += 360.0f;
+            }
+            else if (pPos->x > 359.0f) {
+                pPos->x -= 360.0f;
+            }
+        }
+    }
+    else if (m_vMin.x + m_vOffset.x < pPos->x) {
+        pPos->x = m_vMin.x + m_vOffset.x;
+    }
+    else if (m_vMax.x + m_vOffset.x > pPos->x) {
+        pPos->x = m_vMax.x + m_vOffset.x;
+    }
+    if (m_vClamp.y != 0.0f) {
+        if (m_pMiniGame->m_nMode == 2) {
+            if (pPos->y < 0.0f) {
+                pPos->y += 360.0f;
+            }
+            else if (pPos->y > 359.0f) {
+                pPos->y -= 360.0f;
+            }
+        }
+    }
+    else if (m_vMin.y + m_vOffset.y < pPos->y) {
+        pPos->y = m_vMin.y + m_vOffset.y;
+    }
+    else if (m_vMax.y + m_vOffset.y > pPos->y) {
+        pPos->y = m_vMax.y + m_vOffset.y;
+    }
+    if (m_vClamp.z != 0.0f) {
+        if (m_pMiniGame->m_nMode == 2) {
+            if (pPos->z < 0.0f) {
+                pPos->z += 360.0f;
+            }
+            else if (pPos->z > 359.0f) {
+                pPos->z -= 360.0f;
+            }
+        }
+    }
+    else if (m_vMin.z + m_vOffset.z < pPos->z) {
+        pPos->z = m_vMin.z + m_vOffset.z;
+    }
+    else if (m_vMax.z + m_vOffset.z > pPos->z) {
+        pPos->z = m_vMax.z + m_vOffset.z;
+    }
+}
+
+// FUNCTION: SWKOTOR 0x0066CD30
+// NONMATCH (6 diff insns): the original reuses vVel's dead stack slot for the
+// conjugated-quaternion temporary (frame 0x34, ours 0x40), and multiplies the
+// projection's x term as delta.x * axis.x. Inline Dot/operator forms and a
+// block-scoped vVel were tried.
+Vector CSWMiniPlayer::GetInertia(const Vector& vPrevPos, const Vector& vPos, const Quaternion& qOri,
+                                 float fDelta)
+{
+    Vector vAxis = m_pMiniGame->GetAxis((Quaternion*)&qOri);
+    Vector vVel = (vPos - vPrevPos) / fDelta;
+    Vector vDelta = m_v228 - vVel;
+    vDelta -= vAxis * (vDelta.x * vAxis.x + vDelta.y * vAxis.y + vDelta.z * vAxis.z);
+    m_v228 = vVel;
+    float fScale = g_fMiniInertiaScale;
+    return (-qOri * vDelta) * fScale;
+}
+
 // FUNCTION: SWKOTOR 0x0066CCF0
 Vector CSWMiniPlayer::SetPosition(const Vector& v)
 {

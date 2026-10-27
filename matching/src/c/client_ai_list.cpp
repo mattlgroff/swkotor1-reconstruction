@@ -135,7 +135,7 @@ CClientAIList::~CClientAIList()
         CExoLinkedListPosition pos = m_lstActions.GetHeadPos();
         CExoLinkedListNode* pNode = (CExoLinkedListNode*)pos;
         unsigned long oid = pNode ? (unsigned long)pNode->pObject : 0;
-        CClientExoAppInternal* pInternal = g_pAppManager->m_pClientExoApp->m_pcInternal;
+        CClientExoAppInternal* pInternal = g_pAppManager->GetClientExoApp()->m_pcInternal;
         RemoveObject(pInternal->GetGameObject(oid)->AsSWCObject());
     }
 }

@@ -50,7 +50,7 @@ CSWSItem::CSWSItem(unsigned long nId)
 // the final AI-master load; everything else matches.
 CSWSItem::~CSWSItem()
 {
-    unsigned long nId = m_idSelf;
+    unsigned long nId = GetId();
     unsigned long nClientId = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(nId);
     CSWCItem* pClientItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(nClientId);
     if (pClientItem) {
@@ -63,7 +63,7 @@ CSWSItem::~CSWSItem()
     }
     CSWSModule* pModule = g_pAppManager->GetServerExoApp()->GetModule();
     if (pModule) {
-        pModule->RemoveObjectFromLookupTable(m_sTag, m_idSelf);
+        pModule->RemoveObjectFromLookupTable(m_sTag, GetId());
     }
     if (m_pRepository) {
         delete m_pRepository;
@@ -543,11 +543,11 @@ void CSWSItem::DecrementUses(int nIndex, unsigned long oidPlayer)
             g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(oidPlayer);
         if (pPlayer) {
             g_pAppManager->GetServerExoApp()->GetSWSMessage()
-                ->SendServerPlayerItemUpdate_DestroyItem(pPlayer, m_idSelf);
+                ->SendServerPlayerItemUpdate_DestroyItem(pPlayer, GetId());
         }
         m_bDeleting = 1;
         g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-            0, 0, oidPlayer, m_idSelf, EVENT_DESTROY_OBJECT, NULL);
+            0, 0, oidPlayer, GetId(), EVENT_DESTROY_OBJECT, NULL);
         return;
     }
     UpdateUsedActiveProperties();
@@ -562,7 +562,7 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeStacks, int bArg, int 
     if (pParent) {
         if (pParent->AsSWSCreature()) {
             if ((*ppItem)->GetBaseItem()->m_nBaseType == 0x17) {
-                pParent->AsSWSCreature()->AddGold((*ppItem)->m_nStackCount, 1);
+                pParent->AsSWSCreature()->AddGold((*ppItem)->GetStackSize(), 1);
                 delete *ppItem;
                 *ppItem = NULL;
                 return 1;
@@ -577,12 +577,12 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeStacks, int bArg, int 
         else if (pParent->AsSWSItem()) {
             CSWSItem* pContainer = pParent->AsSWSItem();
             if (g_pRules->m_pBaseItemArray->GetBaseItem(pContainer->m_nBaseItem)->m_bContainer == 1 &&
-                pContainer->m_oidPossessor != INVALID_OBJECT_ID) {
+                pContainer->GetPossessor() != INVALID_OBJECT_ID) {
                 CSWSCreature* pCreature = g_pAppManager->GetServerExoApp()
-                                              ->GetCreatureByGameObjectID(pContainer->m_oidPossessor);
+                                              ->GetCreatureByGameObjectID(pContainer->GetPossessor());
                 if (pCreature) {
                     if ((*ppItem)->GetBaseItem()->m_nBaseType == 0x17) {
-                        pCreature->AddGold((*ppItem)->m_nStackCount, 1);
+                        pCreature->AddGold((*ppItem)->GetStackSize(), 1);
                         delete *ppItem;
                         *ppItem = NULL;
                         return 1;
@@ -626,7 +626,7 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeStacks, int bArg, int 
                             oidOwner = m_oidParent;
                         }
                         else if (pParent->m_nObjectType == OBJECT_TYPE_ITEM) {
-                            oidOwner = pParent->AsSWSItem()->m_oidPossessor;
+                            oidOwner = pParent->AsSWSItem()->GetPossessor();
                         }
                         else {
                             goto merged;
@@ -642,7 +642,7 @@ int CItemRepository::AddItem(CSWSItem** ppItem, int bMergeStacks, int bArg, int 
                 merged:
                     delete *ppItem;
                     *ppItem = pItem;
-                    pItem->SetPossessor(pItem->m_oidPossessor, bArg, bArg, INVALID_OBJECT_ID);
+                    pItem->SetPossessor(pItem->GetPossessor(), bArg, bArg, INVALID_OBJECT_ID);
                     if (bNewItem) {
                         (*ppItem)->m_bNewItem = 1;
                         m_nNewItems++;

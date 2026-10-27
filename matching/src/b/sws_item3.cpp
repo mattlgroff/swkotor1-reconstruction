@@ -264,7 +264,7 @@ void CSWSItem::CloseInventory(unsigned long nObject, int bReturnItems)
         CScriptEvent* pEvent = new CScriptEvent();
         pEvent->m_nType = 0x17;
         g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-            0, 0, nObject, m_idSelf, EVENT_DELAY_INVENTORY, pEvent);
+            0, 0, nObject, GetId(), EVENT_DELAY_INVENTORY, pEvent);
         m_bInventoryOpen = 0;
     }
 }
@@ -371,9 +371,9 @@ int CSWSItem::CopyItem(CSWSItem* pSource)
     m_lsDescription = pSource->m_lsDescription;
     m_lsLocalizedName = pSource->m_lsLocalizedName;
     m_sTag = pSource->m_sTag;
-    m_oidPossessor = pSource->m_oidPossessor;
+    m_oidPossessor = pSource->GetPossessor();
     if (pSource->m_pRepository) {
-        m_pRepository = new CItemRepository(m_idSelf, 0);
+        m_pRepository = new CItemRepository(GetId(), 0);
     }
     m_nIcon = pSource->m_nIcon;
     int i;
@@ -410,6 +410,6 @@ int CSWSItem::CopyItem(CSWSItem* pSource)
     m_n7 = pSource->m_n7;
     m_n8 = pSource->m_n8;
     m_n9 = pSource->m_n9;
-    g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(m_sTag, m_idSelf);
+    g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(m_sTag, GetId());
     return 1;
 }

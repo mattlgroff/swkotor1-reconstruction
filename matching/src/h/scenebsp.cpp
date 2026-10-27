@@ -444,9 +444,12 @@ void ClearBuckets()
     g_n7FBF30 = g_lModels.num;
 }
 
-// NONMATCH 9: SEH frame without state stores (known MSVC 7 ctor pattern).
+// The lists use the sized constructor so the SEH frame is kept.
 // FUNCTION: SWKOTOR 0x0046BFB0
 nodedata::nodedata()
+    : m_lParts(0), m_lGobs(0), m_lStatic(0), m_lDynamic(0), m_lLights30(0),
+      m_lLights3C(0), m_lParts48(0), m_lEmitterBoxes(0), m_lParts60(0),
+      m_lObjects(0), m_lList80(0), m_lEmitters(0)
 {
     m_p6C = 0;
     m_pTileData = 0;

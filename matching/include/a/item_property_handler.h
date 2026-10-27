@@ -216,6 +216,21 @@ public:
         num++;
     }
     void DelIndex(int nIndex);
+    T& operator[](int n) { return element[n]; }
+    void SetSize(int nSize)
+    {
+        if (nSize == 0) {
+            if (element) {
+                delete[] element;
+                element = 0;
+                array_size = 0;
+            }
+        }
+        else {
+            Allocate(nSize);
+        }
+        num = nSize;
+    }
     T* element;
     int num;
     int array_size;
@@ -292,7 +307,9 @@ public:
     unsigned long m_idSelf;                         // 0x4
     char pad_0x8[0x18 - 0x8];
     CExoString m_sTag;                              // 0x18
-    char pad_0x20[0xfc - 0x20];
+    char pad_0x20[0xcc - 0x20];
+    int m_nUpdateDelta;                             // 0xcc (placeholder name)
+    char pad_0xd0[0xfc - 0xd0];
     CExoLinkedList<CSWSObjectActionNode> m_lQueuedActions; // 0xfc
     char pad_0x100[0x124 - 0x100];
     CExoArrayList<CGameEffect*> m_appliedEffects;   // 0x124
@@ -320,6 +337,10 @@ public:
     int IsDebilitated();                                        // 0x005B4880
     unsigned char CanUnequipWeapon(CSWSItem* pItem);            // 0x00513E30
     void SetCombatTarget(unsigned long oidTarget, int bFlag);   // 0x004F34A0
+    void UpdateCombatRoundTimer();                              // 0x004FAF20
+    int ResetCombatAnimations(int nTime);                       // 0x004F1250
+    void SignalDamage(int nDamage, unsigned long oidTarget);    // 0x005B8050
+    int GetDeadTemp();                                          // 0x004EF890
 };
 
 class CSWSItemPropertyHandler;

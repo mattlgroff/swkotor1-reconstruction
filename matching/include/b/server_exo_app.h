@@ -40,6 +40,11 @@ public:
     void SetAutoSavePending(int bPending);                              // 0x004AED10
     CGameObject* GetClientObjectByObjectId(unsigned long nId);          // 0x004AE910
     CSWPartyTable* GetPartyTable();                                     // 0x004AEE70
+    void SetActionConversation(unsigned long oidConversation);          // 0x004AF010
+    unsigned long GetActionConversation();                              // 0x004AF020
+    void SetMoveToModulePending(int bPending);                          // 0x004AECC0
+    void SetMoveToModuleString(const CExoString& sModule);              // 0x004AECD0
+    void SetMoveToModuleStartWaypoint(const CExoString& sWaypoint);     // 0x004AED30
     class CSWSModule* GetModule();                                      // 0x004AE6B0
     short GetServerMode();                                              // 0x004AEDD0
     void AddCharListRequest(unsigned long nPlayerId);                   // 0x004AEA00
@@ -152,7 +157,11 @@ public:
     unsigned long ServerToClientObjectId(unsigned long nId);            // 0x005EDA50
     CSWCCreature* GetCreatureByGameObjectID(unsigned long nId);         // 0x005ED5B0
     CSWGuiInGame* GetInGameGui();                                       // 0x005ED690
+    void AddMoveToModuleMovie(const CExoString& sMovie);                // 0x005EDB50 (Mac map: CResRef const&)
     CSWParty* GetSWParty();                                             // 0x005ED8B0
+    void ChangeCharacter(int nDirection, int bArg);                     // 0x005EDC30
+    void SetPlayerCreature(unsigned long oidCreature);                  // 0x005ED780
+    void AttachPlayerGameObjectToArea();                                // 0x005ED720
     CExoString GetGUIString(unsigned long nStrRef);                     // 0x005EDEB0
     int GetLanguage();                                                  // 0x005ED4C0
     void BarkString(unsigned long oidSpeaker, const CExoString& sText,

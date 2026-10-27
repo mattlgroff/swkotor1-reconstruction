@@ -5,6 +5,7 @@
 struct Vector {
     Vector() {}
     Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
+    Vector& operator+=(const Vector& v);              // 0x004A9740
 
     float x;
     float y;

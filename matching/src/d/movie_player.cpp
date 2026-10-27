@@ -112,6 +112,11 @@ public:
     CExoString();                   // 0x005b3190
     ~CExoString();                  // 0x005e5c20
     CExoString& operator=(const char* s);           // 0x005e5140
+    CExoString& operator=(const CExoString& s);     // 0x005e5c50
+    CExoString operator+(const CExoString& s) const; // 0x005e5d10
+    char* CStr() const;                             // 0x005e5670
+    void Format(const char* sFormat, ...);          // 0x005e5680
+    int operator!=(const char* s) const;            // 0x005e5390
 };
 
 template <class T>
@@ -125,6 +130,8 @@ public:
     ~CExoArrayList();
     CExoArrayList<T>& operator=(const CExoArrayList<T>& o);
     void Clear(int bFree);
+    void SetSize(int nSize);                        // 0x00405950 (CExoString)
+    T& operator[](int i) { return element[i]; }
 };
 
 class CExoCriticalSection {
@@ -142,10 +149,16 @@ public:
     void Warning(int nLine, char* sFile, char* sMessage);   // 0x005e9400
 };
 
+class CExoAliasList {
+public:
+    CExoString ResolveFileName(const CExoString& sName, unsigned short nResType); // 0x005e68a0
+};
+
 class CExoBase {
 public:
     char pad_0x0[8];
     CExoDebug* m_pcExoDebug;        // 0x08
+    CExoAliasList* m_pcExoAliasList; // 0x0c
 };
 
 extern CExoBase* g_pExoBase;        // 0x007a39e0
@@ -160,8 +173,16 @@ public:
 
 class CClientOptions;
 
+class CClientExoAppInternal {
+public:
+    char pad_0x0[0x4bc];
+    int m_bEvilEndingHackInProgress; // 0x4bc
+};
+
 class CClientExoApp {
 public:
+    void* m_p00;
+    CClientExoAppInternal* m_pInternal; // 0x04
     CSWGuiManager* GetGuiManager(); // 0x005eda40
     CClientOptions* GetClientOptions(); // 0x005ed700
 };
@@ -182,6 +203,7 @@ void __cdecl RunFrame(float fDelta, int bRunServer, int bNoRender);    // 0x0040
 class CExoMoviePlayerInternal {
 public:
     CExoMoviePlayerInternal();
+    ~CExoMoviePlayerInternal();
 
     int m_bQuit;                    // 0x00
     void* m_hEvent;                 // 0x04
@@ -201,8 +223,10 @@ public:
     BINK* m_hBink;                  // 0x48
     BINKBUFFER* m_hBinkBuffer;      // 0x4c
     void* m_hWnd;                   // 0x50
-    char pad_0x54[0x14];
-    CExoString m_s68;               // 0x68
+    char pad_0x54[0x0c];
+    int m_n60;                      // 0x60
+    int m_n64;                      // 0x64
+    CExoString m_sMovieFile;        // 0x68
     int m_n70;                      // 0x70
     char pad_0x74[0x10];
     int m_nOffsetX;                 // 0x84
@@ -222,6 +246,7 @@ public:
     void HideFadePanel();
     void UpdateWindowPos(MOVIE_RECT* pRect);
     void Resume();
+    int OpenMovie(const CExoString& sMovie);                    // 0x004053e0
     void PlayMoviesAsync(CExoArrayList<CExoString>& lstMovies, int n, CExoArrayList<int>* pSkippable);
     static unsigned long __stdcall ThreadProc(void* pParam);   // 0x00405b30
 };
@@ -321,8 +346,9 @@ Vector::Vector(float fX, float fY, float fZ)
 class CSWGuiFadePanel {
 public:
     CSWGuiFadePanel(CSWGuiManager* pManager);   // 0x00624810
+    virtual ~CSWGuiFadePanel();
 
-    char pad_0x0[0x4c];
+    char pad_0x4[0x48];
     float m_fAlpha;                 // 0x4c
     Vector m_vColor;                // 0x50
     char pad_0x5c[0x15c];
@@ -480,7 +506,9 @@ extern "C" __declspec(dllimport) long __stdcall SendMessageA(void* hWnd, unsigne
 
 class CClientOptions {
 public:
-    char pad_0x0[0x54];
+    char pad_0x0[0x48];
+    unsigned char m_nMovieVolume;   // 0x48
+    char pad_0x49[0x54 - 0x49];
     int m_bSwapMouseButtons;        // 0x54
 };
 
@@ -546,4 +574,269 @@ long __stdcall MovieWndProc(void* hWnd, unsigned int nMsg, unsigned int wParam, 
         return 0;
     }
     return DefWindowProcA(hWnd, nMsg, wParam, lParam);
+}
+
+extern "C" __declspec(dllimport) int __stdcall GetExitCodeThread(void* hThread, unsigned long* pExitCode);
+extern "C" __declspec(dllimport) int __stdcall CloseHandle(void* hObject);
+extern "C" __declspec(dllimport) __declspec(noreturn) void __stdcall ExitThread(unsigned long nExitCode);
+extern "C" __declspec(dllimport) unsigned long __stdcall WaitForSingleObject(void* hHandle,
+                                                                             unsigned long nMilliseconds);
+extern "C" __declspec(dllimport) int __stdcall PostMessageA(void* hWnd, unsigned int nMsg, unsigned int wParam,
+                                                            long lParam);
+
+class CRenderWindow {
+public:
+    virtual void Slot00();
+    virtual int IsFullScreen();     // 0x04
+};
+
+extern CRenderWindow* g_pRenderWindow;              // 0x007a39f8
+extern int g_bMovieResolutionLocked;                // 0x007a3cc0
+
+// FUNCTION: SWKOTOR 0x00405a50
+CExoMoviePlayerInternal::~CExoMoviePlayerInternal()
+{
+    m_bQuit = 1;
+    SetEvent(m_hEvent);
+    unsigned long nExitCode;
+    do {
+        GetExitCodeThread(m_hThread, &nExitCode);
+    } while (nExitCode == 0x103);
+    CloseHandle(m_hThread);
+    CloseHandle(m_hEvent);
+    if (m_pFadePanel) {
+        delete m_pFadePanel;
+        m_pFadePanel = 0;
+    }
+    CloseMovie();
+}
+
+// FUNCTION: SWKOTOR 0x00405b30
+unsigned long __stdcall CExoMoviePlayerInternal::ThreadProc(void* pParam)
+{
+    CExoMoviePlayerInternal* pPlayer = (CExoMoviePlayerInternal*)pParam;
+    g_pMoviePlayer = pPlayer;
+    if (!pPlayer) {
+        ExitThread(0);
+    }
+    WaitForSingleObject(pPlayer->m_hEvent, 0xffffffff);
+    while (!pPlayer->m_bQuit) {
+        for (int i = 0; i < pPlayer->m_lstMovies.num; i++) {
+            pPlayer->m_lstMovies[i] != "";
+        }
+        pPlayer->m_p9c = (void*)1;
+        for (int j = 0; j < pPlayer->m_lstMovies.num; j++) {
+            CExoString& sMovie = pPlayer->m_lstMovies[j];
+            if (sMovie != "") {
+                if (pPlayer->m_lstSkippable.num > 0) {
+                    if (j < pPlayer->m_lstSkippable.num) {
+                        pPlayer->m_p9c = (void*)pPlayer->m_lstSkippable[j];
+                    } else {
+                        pPlayer->m_p9c = (void*)1;
+                    }
+                }
+                if (pPlayer->OpenMovie(sMovie) == 1) {
+                    pPlayer->PlayLoop(1);
+                    Sleep(5);
+                    if (!pPlayer->m_bDirty) {
+                        pPlayer->m_lstMovies[j] = "";
+                    }
+                    pPlayer->StopMovie();
+                }
+                if (!pPlayer->m_p9c) {
+                    pPlayer->m_bAbort = 0;
+                } else if (pPlayer->m_bAbort == 1) {
+                    if (pPlayer->m_n18) {
+                        break;
+                    }
+                    pPlayer->m_bAbort = 0;
+                }
+            }
+        }
+        if (!pPlayer->m_bDirty) {
+            pPlayer->m_lstMovies.SetSize(0);
+        }
+        pPlayer->m_bAbort = 0;
+        pPlayer->m_n18 = 0;
+        pPlayer->m_nState = 0;
+        if (pPlayer->m_bDirty == 1) {
+            g_bMovieResolutionLocked = 1;
+            if (pPlayer->m_n20 == 1) {
+                if (g_pRenderWindow->IsFullScreen() == 1) {
+                    PostMessageA(g_hMainWindow, 0x409, 0, 0);
+                } else {
+                    PostMessageA(g_hMainWindow, 0x409, 1, 0);
+                }
+            } else {
+                PostMessageA(g_hMainWindow, 0x1c, 0, 0);
+            }
+            pPlayer->m_n20 = 0;
+            pPlayer->m_bDirty = 0;
+        } else {
+            g_bMovieResolutionLocked = 0;
+            PostMessageA(g_hMainWindow, 0x40a, 0, 0);
+        }
+        WaitForSingleObject(pPlayer->m_hEvent, 0xffffffff);
+    }
+    ExitThread(0);
+}
+
+struct WNDCLASSA {
+    unsigned int style;
+    long (__stdcall* lpfnWndProc)(void* hWnd, unsigned int nMsg, unsigned int wParam, long lParam);
+    int cbClsExtra;
+    int cbWndExtra;
+    void* hInstance;
+    void* hIcon;
+    void* hCursor;
+    void* hbrBackground;
+    const char* lpszMenuName;
+    const char* lpszClassName;
+};
+
+extern "C" __declspec(dllimport) void* __stdcall LoadIconA(void* hInstance, const char* sName);
+extern "C" __declspec(dllimport) void* __stdcall LoadCursorA(void* hInstance, const char* sName);
+extern "C" __declspec(dllimport) unsigned short __stdcall RegisterClassA(const WNDCLASSA* pWndClass);
+extern "C" __declspec(dllimport) unsigned long __stdcall FormatMessageA(unsigned long nFlags, const void* pSource,
+                                                                       unsigned long nMessageId,
+                                                                       unsigned long nLanguageId, char* pBuffer,
+                                                                       unsigned long nSize, void* pArgs);
+extern "C" __declspec(dllimport) int __stdcall MessageBoxA(void* hWnd, const char* sText, const char* sCaption,
+                                                           unsigned int nType);
+extern "C" __declspec(dllimport) void* __stdcall LocalFree(void* hMem);
+extern "C" __declspec(dllimport) void* __stdcall CreateWindowExA(unsigned long nExStyle, const char* sClassName,
+                                                                 const char* sWindowName, unsigned long nStyle,
+                                                                 int x, int y, int nWidth, int nHeight,
+                                                                 void* hWndParent, void* hMenu, void* hInstance,
+                                                                 void* pParam);
+extern "C" __declspec(dllimport) void* __stdcall SetCapture(void* hWnd);
+extern "C" __declspec(dllimport) long __stdcall SetWindowLongA(void* hWnd, int nIndex, long nNewLong);
+extern "C" __declspec(dllimport) int __stdcall SetWindowPos(void* hWnd, void* hWndInsertAfter, int x, int y,
+                                                            int cx, int cy, unsigned int nFlags);
+extern "C" __declspec(dllimport) int __stdcall AIL_quick_handles(void** pDig, void** pMdi, void** pDls);
+extern "C" __declspec(dllimport) void* __stdcall BinkOpenMiles(unsigned long nParam);
+extern "C" __declspec(dllimport) int __stdcall BinkSetSoundSystem(void* pOpen, unsigned long nParam);
+extern "C" __declspec(dllimport) BINK* __stdcall BinkOpen(const char* sName, unsigned long nFlags);
+extern "C" __declspec(dllimport) BINKBUFFER* __stdcall BinkBufferOpen(void* hWnd, unsigned long nWidth,
+                                                                      unsigned long nHeight, unsigned long nFlags);
+extern "C" __declspec(dllimport) void __stdcall BinkSetVolume(BINK* hBink, unsigned long nTrack, int nVolume);
+extern "C" __declspec(dllimport) int __stdcall BinkBufferSetScale(BINKBUFFER* hBuffer, unsigned long nWidth,
+                                                                  unsigned long nHeight);
+extern "C" char* __cdecl strchr(const char* s, int c);
+
+extern void* g_hInstance;           // 0x007a39c0
+extern int g_bMovieWaitForFrame;    // 0x007a3c9c (descriptive)
+int g_bMovieClassRegistered;        // 0x007a3cfc
+
+// NONMATCH: 65 insns, body and calls line up; the original keeps the
+// constant 1 in edi from the entry block (saves edi up front, ebp later) and
+// has a frame 4 bytes larger, which shifts every stack offset.
+// FUNCTION: SWKOTOR 0x004053e0
+int CExoMoviePlayerInternal::OpenMovie(const CExoString& sMovie)
+{
+    WNDCLASSA wc;
+    tagWINDOWINFO wi;
+    char* pMessage;
+    void* hDig;
+    int nLeft;
+    int nTop;
+    int nRight;
+    int nBottom;
+    int nWidth;
+    m_hWnd = 0;
+    g_hMovieWnd = 0;
+    if (!g_bMovieClassRegistered) {
+        wc.style = 0;
+        wc.lpfnWndProc = MovieWndProc;
+        wc.cbClsExtra = 0;
+        wc.cbWndExtra = 0;
+        wc.hInstance = g_hInstance;
+        wc.hIcon = LoadIconA(g_hInstance, (const char*)0x65);
+        wc.hCursor = LoadCursorA(0, (const char*)0x7f00);
+        wc.hbrBackground = 0;
+        wc.lpszMenuName = 0;
+        wc.lpszClassName = "SWMovieWindow";
+        if (!RegisterClassA(&wc)) {
+            FormatMessageA(0x1300, 0, GetLastError(), 0x400, (char*)&pMessage, 0, 0);
+            MessageBoxA(0, pMessage, "Error", 0x40);
+            LocalFree(pMessage);
+            return 0;
+        }
+        g_bMovieClassRegistered = 1;
+    }
+    m_nState = 1;
+    wi.cbSize = sizeof(wi);
+    if (!GetWindowInfo(g_hMainWindow, &wi)) {
+        return 0;
+    }
+    nLeft = wi.rcClient.left;
+    nTop = wi.rcClient.top;
+    nRight = wi.rcClient.right;
+    nBottom = wi.rcClient.bottom;
+    void* hWnd = CreateWindowExA(0, "SWMovieWindow", "SW Movie Player Window", 0x90000000, nLeft, nTop,
+                                 nRight - nLeft, nBottom - nTop, g_hMainWindow, 0, g_hInstance, 0);
+    m_hWnd = hWnd;
+    g_hMovieWnd = hWnd;
+    SetCapture(hWnd);
+    g_pRenderWindow->IsFullScreen();
+    SetWindowLongA(m_hWnd, -16, 0x82000000);
+    nWidth = nRight - nLeft;
+    SetWindowPos(m_hWnd, (void*)-1, nLeft, nTop, nWidth, nBottom - nTop, 0x121);
+    m_hBink = 0;
+    m_n60 = 0;
+    m_n64 = 0;
+    if (!strchr(sMovie.CStr(), '.')) {
+        m_sMovieFile = sMovie;
+        if (!strchr(m_sMovieFile.CStr(), ':')) {
+            m_sMovieFile.Format("MOVIES:%s", m_sMovieFile.CStr());
+        }
+        m_sMovieFile = g_pExoBase->m_pcExoAliasList->ResolveFileName(m_sMovieFile, 0x80f);
+    } else {
+        m_sMovieFile = sMovie;
+    }
+    AIL_quick_handles(&hDig, 0, 0);
+    BinkSetSoundSystem(BinkOpenMiles, (unsigned long)hDig);
+    m_hBink = BinkOpen(m_sMovieFile.CStr(), 0x8000000);
+    if (!m_hBink) {
+        CExoString sError;
+        sError = "CExoMoviePlayerInternal::CExoMoviePlayerInternal()  Can't open movie: ";
+        sError = sError + m_sMovieFile;
+        g_pExoBase->m_pcExoDebug->Warning(0x43b, "exomovieplayerinternal.cpp", sError.CStr());
+        CloseMovie();
+        m_nState = 0;
+        return 0;
+    }
+    m_hBinkBuffer = 0;
+    m_hBinkBuffer = BinkBufferOpen(m_hWnd, m_hBink->Width, m_hBink->Height, 0x5d000000);
+    if (!m_hBinkBuffer) {
+        BinkClose(m_hBink);
+        m_nState = 0;
+        return 0;
+    }
+    int nVolume = GetClientOptions()->m_nMovieVolume;
+    if (g_pAppManager->m_pClientExoApp->m_pInternal->m_bEvilEndingHackInProgress) {
+        nVolume = 0;
+    }
+    BinkSetVolume(m_hBink, 0, (nVolume << 15) / 100);
+    if (nWidth != m_hBink->Width) {
+        float fScale = (float)nWidth / (float)m_hBink->Width;
+        int nScaledWidth = (int)(m_hBink->Width * fScale);
+        int nScaledHeight = (int)(m_hBink->Height * fScale);
+        BinkBufferSetScale(m_hBinkBuffer, nScaledWidth, nScaledHeight);
+        m_nOffsetX = (nRight - nScaledWidth - nLeft) / 2;
+        m_nOffsetY = (nBottom - nScaledHeight - nTop) / 2;
+    } else {
+        m_nOffsetX = (nRight - m_hBink->Width - nLeft) >> 1;
+        m_nOffsetY = (nBottom - m_hBink->Height - nTop) >> 1;
+    }
+    BinkBufferSetOffset(m_hBinkBuffer, m_nOffsetX, m_nOffsetY);
+    m_nState = 1;
+    while (g_bMovieWaitForFrame == 1) {
+        Sleep(1);
+    }
+    void* hDC = GetDC(g_hMainWindow);
+    PatBlt(hDC, 0, 0, g_nScreenWidth, g_nScreenHeight, 0x42);
+    ReleaseDC(g_hMainWindow, hDC);
+    ShowWindow(m_hWnd, 8);
+    return 1;
 }

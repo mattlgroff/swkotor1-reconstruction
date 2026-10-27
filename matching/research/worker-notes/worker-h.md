@@ -114,3 +114,137 @@
 - 0x0046F1A0 PartTriMesh::WithinRange is retained NONMATCH (1): equivalent
   x87 code differs only in whether stack cleanup occurs before or after the
   addition. The 2.0f constant was read directly from the original image.
+
+## H s1 (Mac): hidden Scene/Camera entries
+
+- Folder: 406/447 -> 440/486. 39 annotated, 34 NEW exact, 5 NONMATCH.
+  None of the 39 addresses is in functions.csv (all are native entries
+  inside coarse extents, checked against the purchased executable);
+  functions.csv was not edited.
+- Camera (camera.cpp): Camera's Gob-side vtable 0x00741988 holds 13
+  `sub ecx, 4; jmp` adjustor thunks. Declaring the shared methods as
+  virtuals of both CAurCamera and Gob makes MSVC emit them with the
+  vtable (`?X@Camera@@W3AE...`, `??_ECamera@@W3AEPAXI@Z`); annotate with
+  SYMBOL. Exact: 0x0045C3A0..0x0045C420 (9), 0x0045D7C0..0x0045D7F0 (4),
+  plus Gob-introduced overrides 0x0045BEA0 Camera::Render (Gob slot +0x10,
+  `this` arrives as Gob*) and 0x0045C430 AsAurCamera (`lea eax,[ecx-4]`,
+  Gob slots +0x04 and +0x160 share it).
+- Scene passes (new scene_buckets.cpp, local minimal Scene with vtable
+  0x00741708 slots): exact 0x00450150 DoBinBucket, 0x004503A0
+  DoDistortionBuckets, 0x00450440 DoLightSaberBucket, 0x004504D0
+  DoBlurBuckets, 0x00450550 DoGobShadowsForThisLight, 0x00450730
+  RenderStencilShadowsForThisLight, 0x004509B0 DoEmitterBucket, 0x00450AC0
+  DoTriggerBucket, 0x00450B50 RenderDynamicGeometry, 0x00450BB0 (slot +0xCC,
+  named RenderTransparentGeometry; playable calls it RenderMotionBlur),
+  0x00450C30 RenderStaticGeometry, 0x004514F0 RenderSinglePass (1376 B),
+  0x00451A50 RenderShadows, 0x00457B90 DoGobBuckets.
+- Image header readers (image.cpp): exact 0x0045E010 ImageRead16bitHeader,
+  0x0045E180 ImageReadS3TCHeader(char*, ...) (overload of the FILE* one at
+  0x0045E0F0), 0x0045E440 ImageReadHeader.
+- Texture controllers (texctl_perlin.cpp): exact 0x0045FE50
+  PerlinTextureController::BuildPerlinImage, 0x00462800
+  RandomTextureController::Update. texctl.h gained AurTexture GetData (+0x3C),
+  UpdateImage (+0xAC), inline GetPixelCount/GetImageSize,
+  TextureController::DistortImage (+0x14, 0x00460D70, was v14) and
+  Height2Channel (0x00461060). texctl.cpp still 22/24 as before.
+- NONMATCH kept: 0x0045D300 Camera::HitCheckViewVolume (8, lea ecx/eax and
+  copy register swap), 0x0045CF30 Camera::MouseDir (12, viewport copy order;
+  x87 part matches), 0x0045FD70 TextureController::Distort (19) and
+  0x0045FDD0 PerlinTextureController::Init (4) (both: dead `push ecx` spill of
+  m_pTexture, same unsolved pattern as CycleTID Update 0x00460970),
+  0x004512D0 Scene::Render (51, only the stats max block: native sums
+  `lea eax,[B+A]; add Bind` and compares the peak from memory).
+
+### Lessons
+
+- Overloaded virtuals are laid out in reverse declaration order; declare
+  `EnableHighestPriorityLights(int,int)` (+0x24) before `(int)` (+0x20).
+- __int64 timer globals 0x007B9280/88/90/98: declare them `static` in the
+  TU. MSVC then knows `this` members cannot alias them and delays the high
+  dword store past member loads exactly like the original (fixed
+  RenderStaticGeometry's 3-insn tie and Scene::Render's prologue).
+- Constant folding: `a * 0.5f * 255.0f` becomes one fmul by 127.5; write
+  `255.0f * (a * 0.5f)` to keep both fmuls.
+- Function-local statics (`static Vector s_v(0,0,0); static Quaternion
+  s_q;`) reproduce the guard-bit blocks in DoGobBuckets; `static T* p = new
+  T[n]` gives the EH-framed guard in RenderStencilShadowsForThisLight.
+- Model flags at +0x50 need `unsigned short` bitfields plus an inline
+  `unsigned char Get()` accessor for `mov cl,[]; shr cl,2; test cl,1`; a
+  char bitfield or mask gives `test byte ptr [],4`.
+- `for (r) { row = base + r*size; ... }` reproduces the strength-reduced row
+  pointer kept in the argument slot (BuildPerlinImage).
+- Hoisting an inline soft-shadow test into `static __forceinline bool`
+  is required; plain `static inline` was emitted out of line.
+- `if (n > 0) flags = 0x3f;` instead of a ternary avoids setcc/dec/and.
+
+### Next in-range queue
+
+- Scene: DoMeshBuckets 0x00455710 (EH, local list copy), DoGobShadows
+  0x00453950, DoDynamicMeshProjections 0x00453BB0, DoFadeBuckets 0x00455B60,
+  DoHighlightTriggers 0x00456300, RenderLensFlares 0x00457EC0 — the
+  scene_buckets.cpp Scene/Gob/SceneLights declarations cover most of their
+  callees. Scene::Render stats block (see above).
+- Camera: MapToScreen 0x0045D040, HitCheck(x,y) 0x0045CC90,
+  SceneBoundaryCheck 0x0045D490, Animate 0x0045D220 (x87 heavy).
+- Texture controllers: Life Init/Update 0x00460120/0x00460250, Arturo
+  0x00460560/0x00460690, Ring Update 0x00460A90, Perlin Update 0x004615A0
+  (x87 heavy). Gob::Render 0x00478260 (EH, 1008 B).
+
+## H s3: model parsers, recursive tree walkers
+
+- Folder: 448/502 -> 459/521. 19 annotated, 11 NEW exact, 8 NONMATCH.
+  Hidden entries (inside coarse functions.csv extents, checked in the
+  purchased exe; functions.csv not edited): 0x0045CC90, 0x0045D040,
+  0x00460D70, 0x00473EA0 has its own todo entry. 0x004741A0 and 0x0046D2F0
+  are real starts shorter than their coarse extents.
+- Exact: 0x00465560 MdlNode::InternalParseField, 0x00469150
+  MdlNodeLight::InternalParseField, 0x004658B0
+  MdlNodeEmitter::InternalParseField (10 KB, all MDL_FIELD /
+  MDL_CONTROLLER macros) in mdlnode_parse.cpp; 0x00463C20 Parse_AABB
+  (aabb_parse.cpp); 0x004531A0 Scene::ListSpecialPartsR and 0x00453550
+  Scene::UnlistSpecialParts (scene_special.cpp, inline_depth 6);
+  0x00454470 ExpandReferenceParts (scene_reference.cpp, inline_depth 7);
+  0x0046D2F0 SceneBSPRemoveTiledata (scene_tiledata.cpp); 0x00452000
+  findnode and 0x00452500 SetPartTextureRotate (tile_tree.cpp,
+  inline_depth 9); 0x00473EA0 Gob::PartDraw (gob_partdraw.cpp,
+  inline_depth 2).
+- NONMATCH kept: 0x0045D040 Camera::MapToScreen (36, viewport-copy
+  prologue only, same as MouseDir), 0x0045CC90 Camera::HitCheck(x,y) (56,
+  orthographic path keeps offsets on the x87 stack), 0x00469700
+  MdlNodeTriMesh::InternalParseField (280, this/s register swap around the
+  lightmap block), 0x00465320 AddBezierController (91, same pattern as
+  AddGenericController), 0x0045FF40 WaterTextureController::Init (2, imul
+  operand register), 0x00451DC0 ComputePartBBox (16, one `add esp`
+  scheduled later), 0x004741A0 ProcessFaces (5, original keeps the counter
+  in the dead third-argument slot), 0x00460D70
+  TextureController::DistortImage (42).
+- MdlNode InternalParseField returns void in the original (no eax on the
+  parent-NULL path); modelparse.cpp still declares int, harmless there.
+- texctl.h: WaterTextureController +0x4c/+0x50 phases, +0x5c/+0x60 byte
+  images, +0x64 counter; Vector gained operator/= (0x004A97D0).
+
+### Lessons
+
+- Recursion depth: try inline_depth 2..9; the matching depth equals the
+  number of inlined levels + 1 for some functions and differs for others
+  (findnode/SetPartTextureRotate need 9 to get 6 inlined levels). An
+  inline helper used inside the recursion (GetName, _glScalef) is expanded
+  only in the outermost level, exactly like the original.
+- Locals packed into a dead parameter home slot (emitter flags, renderorder
+  temp): put the address-taken locals in their own `{ }` block.
+- `Vector c = a + b` with member-wise inline operators: MSVC may commute
+  the first add, so try both operand orders per expression.
+- Per-branch `p->n = 1 << (c ? 1 : 4);` reproduces tail-duplicated
+  returns; a shared `nAxis` variable merges the tails.
+- `*ppNode` reload pattern and pass-through pointer: a `(T*)p` reuse of a
+  null pointer register keeps `MdlNode* pParent = (MdlNode*)pTree;` exact.
+
+### Next in-range queue
+
+- Scene::Scene 0x00458790 (EH, members already in h/scene.h; zeroing
+  order suggests zero-constructing member types).
+- 0x0047A2F0 EnableFragmentShaders (switch, integer only, 2.2 KB).
+- 0x004680E0 ParseNode (EH, As* destroy chain).
+- x87 heavy: Camera::SceneBoundaryCheck 0x0045D490, 0x00452CC0
+  AddFacesToBins, 0x00464B50 CompressQuaternionKey, texture controller
+  Update/Control 0x004615A0 / 0x00461820 / 0x00462030 / 0x00462520.

@@ -2,6 +2,7 @@
 // (0x0045DA80 .. 0x0045E320).
 
 #include <stdio.h>
+#include <string.h>
 
 struct TGAFileHeader {
     unsigned char nIDLength;
@@ -63,4 +64,74 @@ unsigned char* ImageReadTGAImage(FILE* f, int nWidth, int nHeight, int nBpp)
     unsigned char* pData = new unsigned char[nSize];
     fread(pData, 1, nSize, f);
     return pData;
+}
+
+int ImageReadS3TCHeader(FILE* f, int* pWidth, int* pHeight, int* pFormat, int* pMipMaps,
+                        float* pAlphaMean);                             // 0x0045E0F0
+
+// Reads only the header of a 16-bit (.4pc) image.
+// FUNCTION: SWKOTOR 0x0045E010
+int ImageRead16bitHeader(char* szName, int* pWidth, int* pHeight, int* pBpp, int* pFormat)
+{
+    char szPath[256];
+    strcpy(szPath, szName);
+    FILE* f = fopen(szPath, "rb");
+    if (!f) {
+        strcat(szPath, ".4pc");
+        f = fopen(szPath, "rb");
+        if (!f)
+            return 0;
+    }
+    fread(pWidth, 4, 1, f);
+    fread(pHeight, 4, 1, f);
+    fread(pBpp, 4, 1, f);
+    fread(pFormat, 4, 1, f);
+    fclose(f);
+    return 1;
+}
+
+// FUNCTION: SWKOTOR 0x0045E180
+int ImageReadS3TCHeader(char* szName, int* pWidth, int* pHeight, int* pFormat, int* pMipMaps,
+                        float* pAlphaMean)
+{
+    if (!szName || !*szName)
+        return 0;
+    *pMipMaps = 0;
+    *pWidth = 0;
+    *pHeight = 0;
+    *pFormat = 0;
+    char szPath[256];
+    sprintf(szPath, "%s", szName);
+    FILE* f = fopen(szPath, "rb");
+    if (!f) {
+        sprintf(szPath, "%s.dds", szName);
+        f = fopen(szPath, "rb");
+        if (!f)
+            return 0;
+    }
+    ImageReadS3TCHeader(f, pWidth, pHeight, pFormat, pMipMaps, pAlphaMean);
+    fclose(f);
+    return 1;
+}
+
+// FUNCTION: SWKOTOR 0x0045E440
+int ImageReadHeader(char* szName, int* pWidth, int* pHeight, int* pBpp)
+{
+    if (!szName || !*szName)
+        return 0;
+    *pWidth = 0;
+    *pHeight = 0;
+    *pBpp = 0;
+    char szPath[256];
+    sprintf(szPath, "%s", szName);
+    FILE* f = fopen(szPath, "rb");
+    if (!f) {
+        sprintf(szPath, "%s.tga", szName);
+        f = fopen(szPath, "rb");
+        if (!f)
+            return 0;
+    }
+    ImageReadTGAHeader(f, pWidth, pHeight, pBpp);
+    fclose(f);
+    return 1;
 }

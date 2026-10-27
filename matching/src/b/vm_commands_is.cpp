@@ -30,10 +30,7 @@ struct CSWSObjectListenView {
 };
 
 // Also GetIsPlaceableObjectActionPossible.
-// NONMATCH (66): register allocation only. The original keeps pCreature in
-// ebp (case 1 overwrites it with m_pStats) and bPossible in edi; ours spills
-// pCreature to the stack and keeps bPossible in ebp. Declaration order, a
-// named pStats in case 1 and a for loop in case 4 do not change it.
+// Matches with the inline GetStats() accessor (round s10).
 // FUNCTION: SWKOTOR 0x00539940
 int CSWVirtualMachineCommands::ExecuteCommandGetIsDoorActionPossible(int nCommandId, int nParameters)
 {
@@ -66,7 +63,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsDoorActionPossible(int nComman
             }
             break;
         case 1: {
-            CSWSCreatureStats* pStats = pCreature->m_pStats;
+            CSWSCreatureStats* pStats = pCreature->GetStats();
             char nRank = pStats->GetSkillRank(6, NULL, 0);
             if (nCommandId == 0x151 && pDoor) {
                 if (pDoor->m_bLocked && !pDoor->m_bKeyRequired && nRank > 0 &&
@@ -92,9 +89,9 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsDoorActionPossible(int nComman
                 (pPlaceable && !pPlaceable->m_nF8 && !pPlaceable->m_bKeyRequired)) {
                 unsigned char nMultiClass = 0;
                 do {
-                    bPossible = pCreature->m_pStats->GetSpellUsesLeft(0x5d, nMultiClass, 0, 0) > 0;
+                    bPossible = pCreature->GetStats()->GetSpellUsesLeft(0x5d, nMultiClass, 0, 0) > 0;
                     nMultiClass++;
-                } while (!bPossible && nMultiClass <= pCreature->m_pStats->m_nNumMultiClasses);
+                } while (!bPossible && nMultiClass <= pCreature->GetStats()->m_nNumMultiClasses);
             }
             break;
         }

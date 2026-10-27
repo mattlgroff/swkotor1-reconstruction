@@ -28,6 +28,7 @@ public:
     int StackPopObject(unsigned long* oidValue);            // 0x005D10C0
     int StackPushObject(unsigned long oidValue);            // 0x005D10D0
     int StackPopCommand(class CVirtualMachineScript** ppScript); // 0x005D10E0
+    int RunScriptSituation(void* pScript, unsigned long oidSelf, int bArg); // 0x005D0FD0
     int RunScript(CExoString* sScriptName, unsigned long oid, int bOidValid); // 0x005D0FC0
 
     void* m_pInternal;                                      // 0x00
@@ -588,6 +589,28 @@ public:
     int ExecuteCommandSetPartyLeader(int nCommandId, int nParameters); // 0x00545A70
     int ExecuteCommandGetFirstEffect(int nCommandId, int nParameters); // 0x00549180
     int ExecuteCommandOpenStore(int nCommandId, int nParameters); // 0x00540300
+    int ExecuteCommandGetCreatureTalent(int nCommandId, int nParameters); // 0x00536FE0 (Random/Best)
+    int ExecuteCommandEffectAreaOfEffect(int nCommandId, int nParameters); // 0x00530CE0
+    int ExecuteCommandActionStartConversation(int nCommandId, int nParameters); // 0x0052D5B0
+    int ExecuteCommandTakeGoldFromCreature(int nCommandId, int nParameters); // 0x00544970
+    int ExecuteCommandActionMoveToObject(int nCommandId, int nParameters); // 0x0053FB00 (ActionMoveToObject, ActionForceMoveToObject)
+    int ExecuteCommandDestroyObject(int nCommandId, int nParameters); // 0x0052FF20
+    int ExecuteCommandActionForceFollowObject(int nCommandId, int nParameters); // 0x0052C960
+    int ExecuteCommandDoDoorAction(int nCommandId, int nParameters); // 0x00530360
+    int ExecuteCommandVersusAlignmentEffect(int nCommandId, int nParameters); // 0x00545470 (VersusAlignment/RacialType/TrapEffect)
+    int ExecuteCommandTouchAttackMelee(int nCommandId, int nParameters); // 0x00548CA0 (TouchAttackMelee, TouchAttackRanged)
+    int ExecuteCommandGetFirstItemInInventory(int nCommandId, int nParameters); // 0x00549B50 (GetFirst/NextItemInInventory)
+    int ExecuteCommandBeginConversation(int nCommandId, int nParameters); // 0x0052E9F0
+    int ExecuteCommandActionCastSpellAtObject(int nCommandId, int nParameters); // 0x0052EE50 (ActionCast[Fake]SpellAt*)
+    int ExecuteCommandCreateObject(int nCommandId, int nParameters); // 0x0052F820
+    int ExecuteCommandActionPlayAnimation(int nCommandId, int nParameters); // 0x00540550 (ActionPlayAnimation, PlayAnimation)
+    int ExecuteCommandGetFirstInPersistentObject(int nCommandId, int nParameters); // 0x00549360 (GetFirst/NextInPersistentObject)
+    int ExecuteCommandGetFirstObjectInShape(int nCommandId, int nParameters); // 0x0054A260 (GetFirst/NextObjectInShape)
+    int ExecuteCommandGetNearestCreature(int nCommandId, int nParameters); // 0x0054B550 (GetNearestCreature/Object*)
+    int ExecuteCommandGetTrapDisarmable(int nCommandId, int nParameters); // 0x0054C0E0 (GetTrap*/SetTrap*)
+    int ExecuteCommandEffectAssuredHit(int nCommandId, int nParameters); // 0x005313F0 (EffectAssuredHit and 20 more effect constructors)
+    int ExecuteCommandResistForce(int nCommandId, int nParameters); // 0x00541CC0
+    int ExecuteCommandSetFacing(int nCommandId, int nParameters); // 0x00542830 (SetFacing, SetFacingPoint)
 };
 
 #endif

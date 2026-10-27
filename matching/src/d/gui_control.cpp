@@ -215,6 +215,24 @@ void CSWGuiControl::Load(CSWGuiObject* pOwner, CResGFF* pGFF, CResStruct* pStruc
     }
 }
 
+// FUNCTION: SWKOTOR 0x00418840 SYMBOL: ?Load@CSWGuiControl@@QAEXPAVCSWGuiObject@@PAVCResGFF@@PAUCResList@@ABVCExoString@@@Z
+void CSWGuiControl::Load(CSWGuiObject* pOwner, CResGFF* pGFF, CResList* pList, const CExoString& sTag)
+{
+    m_pOwner = pOwner;
+    int nCount = pGFF->GetListCount(pList);
+    CExoString sValue;
+    CResStruct cStruct;
+    for (int i = 0; i < nCount; i++) {
+        pGFF->GetListElement(&cStruct, pList, i);
+        int bSuccess;
+        sValue = pGFF->ReadFieldCExoString(&cStruct, "TAG", bSuccess, "");
+        if (sValue == sTag) {
+            Load(pGFF, &cStruct);
+            break;
+        }
+    }
+}
+
 // FUNCTION: SWKOTOR 0x00418960
 void CSWGuiControl::HandleFocusChange(int bFocus)
 {
@@ -237,6 +255,39 @@ void CSWGuiControl::HandleMouseOver(int bOver)
     } else if (m_bToolTipShown) {
         HideToolTip();
     }
+}
+
+// FUNCTION: SWKOTOR 0x00418a90
+int CSWGuiControl::DisplayToolTip()
+{
+    if (!m_nToolTipStrRef && m_sToolTip == "") {
+        if (m_pParentControl) {
+            return m_pParentControl->DisplayToolTip();
+        }
+        return 0;
+    }
+    int nStrRef;
+    CExoString sTip;
+    sTip = !m_nToolTipStrRef ? m_sToolTip : g_pTlkTable->GetSimpleString(m_nToolTipStrRef);
+    if (m_nKeyBinding) {
+        CExoInputEvent* pEvent =
+            g_pExoInput->GetEvent(m_nKeyBinding, g_pAppManager->m_pClientExoApp->GetInputClass());
+        if (pEvent) {
+            int bFound;
+            {
+                CExoString sColumn("KeyNameStrRef");
+                bFound = g_pRules->m_p2DArrays->m_pBindableKeysTable->GetINTEntry(
+                    pEvent->m_nKey - g_nFirstKeyIndex, sColumn, &nStrRef);
+            }
+            if (bFound) {
+                CExoString sSeparator(" : ");
+                sTip = sTip + sSeparator + g_pTlkTable->GetSimpleString(nStrRef);
+            }
+        }
+    }
+    g_pGuiManager->DisplayToolTip(sTip);
+    m_bToolTipShown = 1;
+    return 1;
 }
 
 // FUNCTION: SWKOTOR 0x004189d0
@@ -281,17 +332,6 @@ CSWGuiControl* CSWGuiControl::GetOwner()
 void CSWGuiLabel::CopyStyle(const CSWGuiExtent& extent, CSWGuiLabel* pFrom, float fScale)
 {
     SetStyle(extent, &pFrom->m_cText.m_cParams, &pFrom->m_cBorder.m_cParams, fScale);
-}
-
-// FUNCTION: SWKOTOR 0x00418d00
-void CSWGuiLabel::SetEnabled(int b)
-{
-    CSWGuiControl::SetEnabled(b);
-    if (b) {
-        m_cText.m_cParams.ResetColor();
-    } else {
-        m_cText.m_cParams.SetColor(&g_vDisabledColor);
-    }
 }
 
 // FUNCTION: SWKOTOR 0x00418d40
@@ -645,11 +685,16 @@ CSWGuiButton::CSWGuiButton()
 {
 }
 
+// The ctor's unwind path is the first use of the implicit
+// ~CSWGuiEditText; it must be generated with auto-inlining on so that
+// ~CSWGuiEditbox inlines it (0x0041c740).
+#pragma auto_inline(on)
 // FUNCTION: SWKOTOR 0x0041c6b0
 CSWGuiEditbox::CSWGuiEditbox()
 {
     m_bNavigable = 1;
 }
+#pragma auto_inline(off)
 
 // FUNCTION: SWKOTOR 0x0041c720 SYMBOL: ??_GCSWGuiEditbox@@UAEPAXI@Z
 
@@ -729,6 +774,27 @@ void CSWGuiButtonToggle::Load(CResGFF* pGFF, CResStruct* pStruct)
     }
     m_bSelected = pGFF->ReadFieldBYTE(pStruct, "ISSELECTED", bSuccess, 0);
     CSWGuiButton::Load(pGFF, pStruct);
+}
+
+// FUNCTION: SWKOTOR 0x0041cc30
+void CSWGuiSlider::Load(CResGFF* pGFF, CResStruct* pStruct)
+{
+    int bSuccess;
+    {
+        CExoString sBorder("BORDER");
+        m_cBorder.Load(pGFF, pStruct, sBorder);
+    }
+    {
+        CExoString sHilight("HILIGHT");
+        m_cThumb.Load(pGFF, pStruct, sHilight);
+    }
+    {
+        CExoString sThumb("THUMB");
+        m_cImage.Load(pGFF, pStruct, sThumb);
+    }
+    SetMaxValue(pGFF->ReadFieldINT(pStruct, "MAXVALUE", bSuccess, 0));
+    SetValue(pGFF->ReadFieldINT(pStruct, "CURVALUE", bSuccess, 0));
+    CSWGuiNavigable::Load(pGFF, pStruct);
 }
 
 // ---------------------------------------------------------------------------
@@ -1198,3 +1264,32 @@ CSWGuiEditbox::~CSWGuiEditbox()
 // Out of the auto_inline(off) region so new[] inlines the extent ctor loop.
 // FUNCTION: SWKOTOR 0x0041a8f0 SYMBOL: ?Allocate@?$CExoArrayList@UCSWGuiExtent@@@@QAEXH@Z
 GUI_ARRAY_LIST_ALLOCATE(CSWGuiExtent)
+
+// FUNCTION: SWKOTOR 0x0041c400
+void CSWGuiListBox::HandleMouseMove()
+{
+    if (!m_bSelectable) {
+        return;
+    }
+    int nIndex;
+    CSWGuiControl* pControl = HitCheckMouseLocal(&nIndex);
+    if (pControl != m_pLastControl) {
+        if (m_pLastControl) {
+            m_pLastControl->HideToolTip();
+        }
+        m_pLastControl = pControl;
+        if (!pControl) {
+            return;
+        }
+        g_pGuiManager->ResetToolTipTimer();
+    }
+    if (!pControl || pControl->v6c() || m_bListFlag0) {
+        return;
+    }
+    if (m_lstControls.num > 0 && m_lstControls[0]->v60()) {
+        return;
+    }
+    if (m_nSelected != nIndex) {
+        SetSelectedControl(nIndex, 1);
+    }
+}

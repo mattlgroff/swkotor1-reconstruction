@@ -892,20 +892,20 @@ int CSWVirtualMachineCommands::ExecuteCommandGetClassByPosition(int nCommandId, 
     if (pCreature) {
         if (nCommandId == 0x155) {
             nResult = 0xff;
-            if (nValue >= 1 && nValue <= pCreature->m_pStats->m_nNumMultiClasses) {
-                pCreature->m_pStats->GetClass((unsigned char)(nValue - 1));
-                if (pCreature->m_pStats->GetClass((unsigned char)(nValue - 1)) <= 0x20) {
-                    nResult = pCreature->m_pStats->GetClass((unsigned char)(nValue - 1));
+            if (nValue >= 1 && nValue <= pCreature->GetStats()->m_nNumMultiClasses) {
+                pCreature->GetStats()->GetClass((unsigned char)(nValue - 1));
+                if (pCreature->GetStats()->GetClass((unsigned char)(nValue - 1)) <= 0x20) {
+                    nResult = pCreature->GetStats()->GetClass((unsigned char)(nValue - 1));
                 }
             }
         } else if (nCommandId == 0x156) {
-            if (nValue >= 1 && nValue <= pCreature->m_pStats->m_nNumMultiClasses) {
-                nResult = pCreature->m_pStats->GetClassLevel((unsigned char)(nValue - 1), 0);
+            if (nValue >= 1 && nValue <= pCreature->GetStats()->m_nNumMultiClasses) {
+                nResult = pCreature->GetStats()->GetClassLevel((unsigned char)(nValue - 1), 0);
             }
         } else if (nCommandId == 0x157) {
             for (int i = 0; i < 2; i++) {
-                if (pCreature->m_pStats->GetClass((unsigned char)i) == nValue) {
-                    nResult = pCreature->m_pStats->GetClassLevel((unsigned char)i, 0);
+                if (pCreature->GetStats()->GetClass((unsigned char)i) == nValue) {
+                    nResult = pCreature->GetStats()->GetClassLevel((unsigned char)i, 0);
                 }
             }
         }

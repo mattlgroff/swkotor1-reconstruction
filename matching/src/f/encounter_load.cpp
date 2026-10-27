@@ -332,6 +332,7 @@ public:
     void SpawnIfAppropriate(unsigned long oid, float fDifficulty);
     void SpawnCreatureFromSpawnList();
     void AIUpdate();
+    void RemoveFromActiveCreatureCount(float fCR, int bAddToNextLevel);
     void EventHandler(unsigned long nEventId, unsigned long oidCaller, void *pScript,
                       unsigned long nCalendarDay, unsigned long nTimeOfDay);
     void AddCreaturesToSpawnList(CEncounterListEntry *pList, int *pnCount, int nIndex,
@@ -1054,4 +1055,38 @@ void CSWSEncounter::BuildInitialSpawnList(CEncounterListEntry *pList, int *pnCou
         }
         i++;
     } while (i < m_nCreatureListCount);
+}
+
+// Name from the playable source (NWN: RemoveFromActiveCreatureCount); the flag
+// returns the creature's points to the next-level pool instead of signalling
+// OnExhausted.
+// FUNCTION: SWKOTOR 0x00594310
+void CSWSEncounter::RemoveFromActiveCreatureCount(float fCR, int bAddToNextLevel)
+{
+    if (m_nNumSpawned == 0)
+        return;
+    m_f2DC -= CalculatePointsFromCR(fCR);
+    m_nNumSpawned--;
+    if (m_f2DC < 0.0f)
+        m_f2DC = 0.0f;
+    if (bAddToNextLevel == 1) {
+        m_fNextLevelPoints += CalculatePointsFromCR(fCR);
+        return;
+    }
+    if (m_nNumSpawned != 0)
+        return;
+    CScriptEvent *pEvent = new CScriptEvent;
+    pEvent->m_nType = 0x15;
+    pEvent->SetObjectID(0, m_idSelf);
+    g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+        0, 0, m_idSelf, m_idSelf, EVENT_SIGNAL_EVENT, pEvent);
+    if (m_bReset == 1)
+        g_pAppManager->GetServerExoApp()->GetWorldTimer()->GetWorldTime(&m_nLastSpawnDay,
+                                                                        &m_nLastSpawnTime);
+    for (int i = 0; i < m_nCreatureListCount; i++) {
+        m_pCreatureList[i].m_bTried = 0;
+        m_pCreatureList[i].m_bAlreadyUsed = 0;
+    }
+    m_bActive = 0;
+    m_bExhausted = 0;
 }

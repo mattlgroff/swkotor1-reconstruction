@@ -1,5 +1,6 @@
 // CSWSObject effect / listen-data savers (own file so /Ob2 does
 // not inline them into SaveObjectState).
+#include <string.h>
 #include "i/sws_object.h"
 
 // FUNCTION: SWKOTOR 0x004CC9D0
@@ -75,5 +76,99 @@ void CSWSObject::SaveActionQueue(CResGFF* pRes, CResStruct* pStruct)
             }
         }
         m_lQueuedActions.GetNext(pos);
+    }
+}
+
+// FUNCTION: SWKOTOR 0x004CECB0
+void CSWSObject::LoadActionQueue(CResGFF* pRes, CResStruct* pStruct)
+{
+    CResList cList;
+    if (pRes->GetList(&cList, pStruct, "ActionList")) {
+        for (unsigned long i = 0; i < pRes->GetListCount(&cList); i++) {
+            CResStruct cAction;
+            if (pRes->GetListElement(&cAction, &cList, i)) {
+                int bSuccess;
+                void* pParams[13];
+                int nParamTypes[13];
+                int nAllocated[13];
+                memset(pParams, 0, sizeof(pParams));
+                memset(nParamTypes, 0, sizeof(nParamTypes));
+                unsigned long nActionId = pRes->ReadFieldDWORD(&cAction, "ActionId", bSuccess, 0);
+                unsigned short nGroupId = pRes->ReadFieldWORD(&cAction, "GroupActionId", bSuccess, 0);
+                unsigned short nNumParams = pRes->ReadFieldWORD(&cAction, "NumParams", bSuccess, 0);
+                if (nNumParams > 0) {
+                    CResList cParams;
+                    pRes->GetList(&cParams, &cAction, "Paramaters");
+                    for (unsigned int j = 0; j < nNumParams; j++) {
+                        CResStruct cParam;
+                        pRes->GetListElement(&cParam, &cParams, j);
+                        nParamTypes[j] = pRes->ReadFieldDWORD(&cParam, "Type", bSuccess, 0);
+                        switch (nParamTypes[j]) {
+                        case 1: {
+                            int* pInt = new int;
+                            *pInt = pRes->ReadFieldINT(&cParam, "Value", bSuccess, 0);
+                            pParams[j] = pInt;
+                            nAllocated[j] = 1;
+                            break;
+                        }
+                        case 2: {
+                            float* pFloat = new float;
+                            *pFloat = pRes->ReadFieldFLOAT(&cParam, "Value", bSuccess, 0);
+                            pParams[j] = pFloat;
+                            nAllocated[j] = 2;
+                            break;
+                        }
+                        case 4: {
+                            CExoString* pString = new CExoString;
+                            *pString = pRes->ReadFieldCExoString(&cParam, "Value", bSuccess, "");
+                            pParams[j] = pString;
+                            nAllocated[j] = 4;
+                            break;
+                        }
+                        case 3: {
+                            unsigned long* pDword = new unsigned long;
+                            *pDword = pRes->ReadFieldDWORD(&cParam, "Value", bSuccess, 0);
+                            pParams[j] = pDword;
+                            nAllocated[j] = 3;
+                            break;
+                        }
+                        case 5: {
+                            CResStruct cScript;
+                            void* pScript;
+                            pRes->GetStructFromStruct(&cScript, &cParam, "Value");
+                            g_pVirtualMachine->LoadScriptSituation(&pScript, pRes, &cScript);
+                            pParams[j] = pScript;
+                            nAllocated[j] = 5;
+                            break;
+                        }
+                        }
+                    }
+                }
+                AddAction(nActionId, nGroupId,
+                          nParamTypes[0], pParams[0], nParamTypes[1], pParams[1],
+                          nParamTypes[2], pParams[2], nParamTypes[3], pParams[3],
+                          nParamTypes[4], pParams[4], nParamTypes[5], pParams[5],
+                          nParamTypes[6], pParams[6], nParamTypes[7], pParams[7],
+                          nParamTypes[8], pParams[8], nParamTypes[9], pParams[9],
+                          nParamTypes[10], pParams[10], nParamTypes[11], pParams[11],
+                          nParamTypes[12], pParams[12]);
+                for (unsigned int k = 0; k < nNumParams; k++) {
+                    switch (nAllocated[k]) {
+                    case 1:
+                        delete (int*)pParams[k];
+                        break;
+                    case 2:
+                        delete (float*)pParams[k];
+                        break;
+                    case 4:
+                        delete (CExoString*)pParams[k];
+                        break;
+                    case 3:
+                        delete (unsigned long*)pParams[k];
+                        break;
+                    }
+                }
+            }
+        }
     }
 }

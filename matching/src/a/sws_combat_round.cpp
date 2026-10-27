@@ -3,6 +3,43 @@
 // src/batches/b004d42_combat_round_lifecycle.cpp).
 #include "a/sws_combat_round.h"
 
+// FUNCTION: SWKOTOR 0x004D1D50
+void CSWSCombatRoundAction::Clear() throw()
+{
+    m_nActionTimer = 0;
+    m_nAnimationTime = 0;
+    m_nAnimation = 0;
+    m_nActionType = 0;
+    m_nNumAttacks = 0;
+    m_oidTarget = OBJECT_INVALID;
+    m_bRetargettable = 1;
+    m_nInventorySlot = 0;
+    m_oidItem = OBJECT_INVALID;
+    m_nSpellId = 0;
+    m_nSpellClass = 0;
+    m_nSpellParam2c = 0;
+    m_nSpellParam30 = 0;
+    m_nSpellParam34 = 0;
+    m_oidSpellTarget = OBJECT_INVALID;
+    m_nSpellParam48 = 0;
+    m_nSpellParam4c = 0;
+    m_nSpellParam50 = 0;
+    m_nParam54 = 0;
+    m_nParam58 = 0;
+    m_nParam5c = 0;
+    m_nSpellParam60 = 0;
+    m_oidItemSpellTarget = OBJECT_INVALID;
+    m_nItemSpellParam68 = 0;
+    m_nItemSpellParam6c = 0;
+    m_nParam70 = 0;
+    m_nParam72 = 0;
+    m_bCutscene = 0;
+    m_nCutsceneParam78 = 0;
+    m_nCutsceneParam7c = 4;
+    m_nCutsceneParam80 = 0;
+    m_nParam84 = 0;
+}
+
 // FUNCTION: SWKOTOR 0x004D28B0
 void CSWSCombatRound::SetRoundSpell(int nSpellParam, int nSpellId)
 {
@@ -471,11 +508,12 @@ void CSWSCombatRound::AddCutsceneAttackAction(unsigned long oidTarget, int nPara
     }
 }
 
+#pragma inline_depth(0)
 // FUNCTION: SWKOTOR 0x004D38B0
 void CSWSCombatRound::AddAttackAction(unsigned long oidTarget, unsigned short nFeat,
                                       int nParam84, int nUnused, int nNumAttacks)
 {
-    CGameObject* pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
+    CGameObject* pObject = g_pAppManager->m_pServerExoApp->GetGameObject(oidTarget);
     if (pObject == 0 || pObject->AsSWSObject() == 0) {
         return;
     }
@@ -503,6 +541,7 @@ void CSWSCombatRound::AddAttackAction(unsigned long oidTarget, unsigned short nF
         m_pBaseCreature->m_oidAttackTarget = oidTarget;
     }
 }
+#pragma inline_depth()
 
 // NONMATCH: ECX kept across Clear() in the original (see 0x004D3810).
 // FUNCTION: SWKOTOR 0x004D39B0
@@ -887,3 +926,80 @@ template <> CExoLinkedList<CSWSCombatRoundAction>::CExoLinkedList()
     m_pcExoLinkedListInternal = new CExoLinkedListInternal;
 }
 #pragma auto_inline(on)
+
+// FUNCTION: SWKOTOR 0x004D5120
+int CSWSCombatRound::LoadCombatRound(CResGFF* pRes, CResStruct* pStruct)
+{
+    int bSuccess;
+    m_bRoundStarted = pRes->ReadFieldBYTE(pStruct, "RoundStarted", bSuccess, (unsigned char)m_bRoundStarted);
+    if (!m_bRoundStarted) {
+        return 0;
+    }
+    m_bSpellCastRound = pRes->ReadFieldBYTE(pStruct, "SpellCastRound", bSuccess, (unsigned char)m_bSpellCastRound);
+    m_nField978 = pRes->ReadFieldBYTE(pStruct, "DeflectArrow", bSuccess, (unsigned char)m_nField978);
+    m_nField97c = pRes->ReadFieldBYTE(pStruct, "WeaponSucks", bSuccess, (unsigned char)m_nField97c);
+    m_oidNewAttackTarget = pRes->ReadFieldDWORD(pStruct, "DodgeTarget", bSuccess, m_oidNewAttackTarget);
+    m_oidField98c = pRes->ReadFieldDWORD(pStruct, "NewAttackTarget", bSuccess, m_oidField98c);
+    m_bRoundPaused = pRes->ReadFieldBYTE(pStruct, "RoundPaused", bSuccess, (unsigned char)m_bRoundPaused);
+    m_oidRoundPausedBy = pRes->ReadFieldDWORD(pStruct, "RoundPausedBy", bSuccess, m_oidRoundPausedBy);
+    m_bInfinitePause = pRes->ReadFieldBYTE(pStruct, "InfinitePause", bSuccess, (unsigned char)m_bInfinitePause);
+    m_nPauseTimer = pRes->ReadFieldINT(pStruct, "PauseTimer", bSuccess, m_nPauseTimer);
+    m_bInfinitePause = 0;
+    m_bSynchronized = pRes->ReadFieldINT(pStruct, "Engaged", bSuccess, 0);
+    m_bMaster = pRes->ReadFieldINT(pStruct, "Master", bSuccess, 0);
+    m_oidMaster = pRes->ReadFieldDWORD(pStruct, "MasterID", bSuccess, 0x7f000000);
+    m_nTimer = pRes->ReadFieldINT(pStruct, "Timer", bSuccess, m_nTimer);
+    m_nRoundLength = pRes->ReadFieldINT(pStruct, "RoundLength", bSuccess, m_nRoundLength);
+    m_nOverlapAmount = pRes->ReadFieldINT(pStruct, "OverlapAmount", bSuccess, m_nOverlapAmount);
+    m_nBleedTimer = pRes->ReadFieldINT(pStruct, "BleedTimer", bSuccess, m_nBleedTimer);
+    m_nCurrentAttack = pRes->ReadFieldBYTE(pStruct, "CurrentAttack", bSuccess, m_nCurrentAttack);
+    m_nAttackID = pRes->ReadFieldWORD(pStruct, "AttackID", bSuccess, m_nAttackID);
+    m_nField974 = pRes->ReadFieldBYTE(pStruct, "AttackGroup", bSuccess, m_nField974);
+    m_nField980 = pRes->ReadFieldINT(pStruct, "ParryIndex", bSuccess, m_nField980);
+    m_nField984 = pRes->ReadFieldINT(pStruct, "NumAOOs", bSuccess, m_nField984);
+    m_nField988 = pRes->ReadFieldINT(pStruct, "NumCleaves", bSuccess, m_nField988);
+    m_nOnHandAttacks = pRes->ReadFieldINT(pStruct, "OnHandAttacks", bSuccess, m_nOnHandAttacks);
+    m_nOffHandAttacks = pRes->ReadFieldINT(pStruct, "OffHandAttacks", bSuccess, m_nOffHandAttacks);
+    m_nEffectAttacks = pRes->ReadFieldINT(pStruct, "AdditAttacks", bSuccess, m_nEffectAttacks);
+    pRes->ReadFieldINT(pStruct, "EffectAttacks", bSuccess, m_nAdditionalAttacks);
+    m_nAdditionalAttacks = 0;
+    m_nField9a8 = pRes->ReadFieldBYTE(pStruct, "ParryActions", bSuccess, m_nField9a8);
+    m_nOffHandAttacksTaken = pRes->ReadFieldINT(pStruct, "OffHandTaken", bSuccess, m_nOffHandAttacksTaken);
+    m_nExtraAttacksTaken = pRes->ReadFieldINT(pStruct, "ExtraTaken", bSuccess, m_nExtraAttacksTaken);
+    CResList cList;
+    CResStruct cElement;
+    int i;
+    if (pRes->GetList(&cList, pStruct, "AttackList") == 1) {
+        for (i = 0; i < (int)pRes->GetListCount(&cList); i++) {
+            if (pRes->GetListElement(&cElement, &cList, i) == 1) {
+                m_pcAttackList[i].LoadData(pRes, &cElement);
+            }
+        }
+    }
+    if (pRes->GetList(&cList, pStruct, "SpecAttackList") == 1) {
+        m_alstSpecialAttacks.SetSize(pRes->GetListCount(&cList));
+        for (i = 0; i < m_alstSpecialAttacks.num; i++) {
+            if (pRes->GetListElement(&cElement, &cList, i) == 1) {
+                m_alstSpecialAttacks[i] = pRes->ReadFieldWORD(&cElement, "SpecialAttack", bSuccess, 0);
+            }
+        }
+    }
+    if (pRes->GetList(&cList, pStruct, "SpecAttackIdList") == 1) {
+        m_alstSpecialAttackIds.SetSize(pRes->GetListCount(&cList));
+        for (i = 0; i < m_alstSpecialAttacks.num; i++) {
+            if (pRes->GetListElement(&cElement, &cList, i) == 1) {
+                m_alstSpecialAttackIds[i] = pRes->ReadFieldWORD(&cElement, "SpecialAttackId", bSuccess, 0);
+            }
+        }
+    }
+    if (pRes->GetList(&cList, pStruct, "SchedActionList") == 1) {
+        for (i = 0; i < (int)pRes->GetListCount(&cList); i++) {
+            if (pRes->GetListElement(&cElement, &cList, i) == 1) {
+                CSWSCombatRoundAction* pAction = new CSWSCombatRoundAction;
+                pAction->LoadData(pRes, &cElement);
+                m_pScheduledActions->AddTail(pAction);
+            }
+        }
+    }
+    return 1;
+}

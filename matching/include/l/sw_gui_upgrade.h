@@ -24,6 +24,12 @@ public:
 class CExoResMan {
 public:
     int Exists(const CResRef& cResRef, unsigned short nType, unsigned long* pTable);  // 0x00408BC0
+    int CreateDirectory2(const CExoString& sAlias); // 0x004068C0
+    int GetFreeDiskSpace(const CExoString& sAlias, unsigned __int64* pFree);  // 0x004067B0
+    int AddResourceDirectory(const CExoString& sAlias);     // 0x00408800
+    int RemoveResourceDirectory(const CExoString& sAlias);  // 0x004088D0
+    int CleanDirectory(const CExoString& sAlias, int bDirs, int bRecurse);   // 0x00409460
+    int NukeDirectory(const CExoString& sAlias, int bDirs, int bRecurse);    // 0x00409480
 };
 extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
 
@@ -55,17 +61,23 @@ public:
     CExoString GetKeyedPropertyString(unsigned char nKey);  // 0x0055F510
     CSWSItem* SplitItem(int nCount);                // 0x0055F280
     CResRef GetIcon();                              // 0x005556B0
+    unsigned long GetCost();                        // 0x00554000
     char pad_0x4[0xc - 0x4];
     int m_nBaseItem;                                // 0x0c
     int GetBaseItemType() { return m_nBaseItem; }
     char pad_0x10[0x4];
     unsigned long m_idSelf;                         // 0x14
-    char pad_0x18[0x268 - 0x18];
+    char pad_0x18[0x108 - 0x18];
+    int m_bPlotItem;                                // 0x108
+    char pad_0x10c[0x268 - 0x10c];
     unsigned long m_oidPossessor;                   // 0x268
     char pad_0x26c[0x280 - 0x26c];
     CExoLocString m_sLocName;                       // 0x280
-    char pad_0x288[0x28c - 0x288];
+    unsigned long m_bItemFlag0 : 1;                 // 0x288 bit 0
+    unsigned long m_bItemFlag1 : 1;                 //       bit 1
+    unsigned long m_bInfinite : 1;                  //       bit 2 (store stock)
     int m_nStackSize;                               // 0x28c
+    int GetStackSize() { return m_nStackSize; }
     char pad_0x290[0x4];
     unsigned long m_nUpgrades;                      // 0x294
 };
@@ -79,8 +91,12 @@ public:
     unsigned long FindItemWithTag(const CExoString& sTag);  // 0x00555ED0
 };
 
+class CSWSCreatureStats;
 class CSWSCreature {
 public:
+    int GetGold();                                  // 0x004EDD60
+    void SetGold(int nGold);                        // 0x004EDD90
+    CItemRepository* GetItemRepository(int bParty); // 0x004EF770
     int UnequipItem(CSWSItem* pItem);               // 0x004FAA70
     void EquipItem(unsigned long nSlot, CSWSItem* pItem, int bUpdate, int b2, int b3);    // 0x004FEB90
     unsigned char CanEquipItem(CSWSItem* pItem, unsigned long* pSlot, int b1, int b2, int b3);  // 0x0051AA60
@@ -88,6 +104,9 @@ public:
     unsigned long m_idSelf;                         // 0x04
     char pad_0x8[0xa2c - 0x8];
     CSWInventory* m_pInventory;                     // 0xa2c
+    char pad_0xa30[0xa74 - 0xa30];
+    CSWSCreatureStats* m_pStats;                    // 0xa74
+    CSWSCreatureStats* GetStats() { return m_pStats; }
     CSWInventory* GetInventory() { return m_pInventory; }
 };
 

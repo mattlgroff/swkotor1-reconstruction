@@ -22,6 +22,7 @@ public:
     char* CStr() const;                             // 0x005E5670
     void Format(const char* szFormat, ...);         // 0x005E5680
     int Find(char c, int nStart) const;             // 0x005E5F20
+    int Find(const CExoString& s, int nStart) const;    // 0x005E5EB0
     CExoString Left(int nCount) const;              // 0x005E5F70
     CExoString Right(int nCount) const;             // 0x005E6170
 };
@@ -35,6 +36,8 @@ public:
         y = fY;
         z = fZ;
     }
+    Vector& operator-=(const Vector& v);            // 0x004A9770
+    void Normalize();                               // 0x004AB130
     float x, y, z;
 };
 
@@ -85,7 +88,11 @@ public:
     int PanelExists(CSWGuiPanel* pPanel);           // 0x0040BD70
     void RemovePanel(CSWGuiPanel* pPanel);          // 0x0040C830
     void ReloadToolTipPanel();                      // 0x0040A350
+    void SaveMousePosition();                       // 0x0040A3D0
+    void MoveMouseToPosition(int x, int y);         // 0x0040C790
+    void RestoreOldMousePosition();                 // 0x0040C7D0
 };
+extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
 
 // Text parameters embedded in labels/controls.
 class CSWGuiTextParams {
@@ -94,6 +101,8 @@ public:
     void SetText(const CExoString& sText);          // 0x00415E00
     void SetBaseFont(const CResRef& cFont);         // 0x00415DD0
     void SetStrRef(int nStrRef);                    // 0x00415E50
+    CSWGuiTextParams(const CExoString& sText, const CResRef& cFont, const Vector& vColor, int nAlign,
+                     float fScale);                 // 0x00417120
     CSWGuiTextParams& operator=(const CSWGuiTextParams& p); // 0x004171E0
     CExoString m_sText;                             // 0x00
     char pad_0x8[0x30];
@@ -124,8 +133,11 @@ public:
     virtual void SetActiveControlV(CSWGuiControl* pControl, int bSound);   // 0x08 (list boxes)
     virtual void HandleMouseOver(int bOver);        // 0x0c
     virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual void v30(); virtual void v34();
+    virtual void v20(); virtual void v24();
+    virtual CSWGuiPanel* GetPanel();                // 0x28
+    virtual void v2C();
+    virtual void v30();
+    virtual int GetHeight();                        // 0x34
 #ifdef L_GUI_CONTROL_DRAW_SLOT
     virtual void Draw(float fDelta);                // 0x38
 #else
@@ -149,7 +161,7 @@ public:
     char pad_0x18[0xc];
     unsigned long m_nToolTipStrRef;                 // 0x24
     char pad_0x28[0xc];
-    void* m_pOwner;                                // 0x34
+    void* m_pOwner;                                // 0x34 (a CSWGuiObject)
     char pad_0x38[0xc];
     union {
         unsigned long m_nFlags;                     // 0x44
@@ -205,10 +217,19 @@ public:
     void SetCornerImage(const CResRef& cResRef, int bForce);    // 0x00414AE0
     void SetEdgeImage(const CResRef& cResRef, int bForce);  // 0x00414B70
     void SetColor(const Vector& vColor) { m_vColor = vColor; }
-    char pad_0x0[0xc];
+    char pad_0x0[0x8];
+    float m_fRotation;                              // 0x08 (descriptive)
     float m_fAlpha;                                 // 0x0c
     Vector m_vColor;                                // 0x10
-    unsigned long m_nStyle : 2;                     // 0x1c bits 0-1
+    union {
+        struct {
+            unsigned long m_nStyle : 2;             // 0x1c bits 0-1
+        };
+        struct {
+            unsigned long m_bStyle0 : 1;            //      bit 0
+            unsigned long m_bStyle1 : 1;            //      bit 1
+        };
+    };
     char pad_0x20[0x34];
 };
 
@@ -221,6 +242,7 @@ public:
     CSWGuiLabel();                                  // 0x0041ACD0
     ~CSWGuiLabel();                                 // 0x00419D10
     virtual void CopyStyle(const CSWGuiExtent& extent, CSWGuiControl* pFrom, float fScale); // 0x98
+    void SetFillImage(const CResRef& cImage) { m_cBorder.SetFillImage(cImage, 0); }
     char pad_0x5c[0x14];
     CSWGuiBorderParams m_cBorder;                   // 0x70
     char pad_0xc4[0xc];
@@ -255,6 +277,7 @@ public:
     // The list box border (+0x90) is declared as padding; its params are at +0xa4.
     CSWGuiBorderParams& GetBorderParams() { return *(CSWGuiBorderParams*)&pad_0x88[0xa4 - 0x88]; }
     void ClearListFlag40() { m_nListFlags &= ~0x40; }
+    void SetTopVisible(short nTop);                 // 0x006B2590
     char pad_0x5c[0x24];
     CSWGuiPoint m_ptLocalMouse;                     // 0x80
     char pad_0x88[0x20c];
@@ -271,7 +294,8 @@ public:
     short m_nPages;                                 // 0x2c2
     short m_nVisible;                               // 0x2c4
     short m_nSelected;                              // 0x2c6
-    char pad_0x2c8[0x4];
+    short m_nTop;                                   // 0x2c8
+    char pad_0x2ca[0x2];
     CSWGuiControl* m_pProtoItem;                    // 0x2cc
     char pad_0x2d0[0x10];
 };
@@ -337,7 +361,9 @@ class CGuiInGame {
 public:
     char pad_0x0[0x14];
     int m_bCharacterScreenOpen;                     // 0x14 (descriptive)
-    char pad_0x18[0x48];
+    char pad_0x18[0x18];
+    int m_bPartySelectionOpen;                      // 0x30 (descriptive)
+    char pad_0x34[0x60 - 0x34];
     CSWGuiLetterbox* m_pLetterbox;                  // 0x60
     CSWGuiLetterbox* m_pLetterboxBottom;            // 0x64
     char pad_0x68[0x28];
@@ -345,7 +371,9 @@ public:
     void* m_p94;                                    // 0x94
     CSWGuiMessageBox* m_pMessageBox;                // 0x98
     class CSWGuiSkillInfo* m_pSkillInfo;            // 0x9c
-    char pad_0xa0[0xb10];
+    char pad_0xa0[0x14];
+    int m_bB4;                                      // 0xb4 (placeholder name)
+    char pad_0xb8[0xbb0 - 0xb8];
     int m_bMessagePending;                          // 0xbb0
     char pad_0xbb4[0xc];
     unsigned char m_nAbilityMode;                   // 0xbc0
@@ -359,6 +387,11 @@ public:
     int IsMinimapHidden();                          // 0x0062F910
     unsigned char GetCombatBarHeight();             // 0x0062F8F0
     CSWGuiInGameMap* GetMapPanel(int nPanel, int b);    // 0x0062B060
+    void ShowExamineBox(unsigned long nStrRef, int bFlag);  // 0x0062D3E0
+    void HideStoreGui();                            // 0x0062E4A0
+    void SetupPauseGuiExtent(void* pExtent);        // 0x0062B100
+    void HideSoloMode();                            // 0x0062E6D0
+    int GetBarkBubbleVisible(int* pTop);            // 0x0062EBE0
 };
 
 class CClientOptions {
@@ -477,6 +510,13 @@ public:
     int GetCombatMode();                            // 0x005EDE70
     void PlayerFlourishWeapons();                   // 0x005EDE90
     CGuiInGame* GetInGameGui();                     // 0x005ED690
+    CExoString GetGUIString(unsigned long nStrRef); // 0x005EDEB0
+    class CSWCMiniGame* GetMiniGame();              // 0x005EDB00
+    class CSWCModule* GetModule();                  // 0x005ED530
+    int GetAreaNotReadyToDisplay();                 // 0x005EDAD0
+    void TogglePartyFollow();                       // 0x005EDE60
+    int GetAutoPaused();                            // 0x005EDEF0
+    void SetAutoPaused(int bPaused, int bForce);    // 0x005EDEE0
     class CSWCMessage* GetMessage();                // 0x005ED6F0
     int GetInputClass();                            // 0x005EDA70
     unsigned long GetClientLanguage();              // 0x005ED4C0
@@ -492,6 +532,12 @@ public:
     CSWCCreature* GetPlayerCreature();              // 0x005ED540
     CExoString GetDisplayCharacterForKey(int nKey); // 0x005EE280
     int ChangeCharacterToNextLivingPartyMember(int a, int b, int c);  // 0x005EDF80
+    void DisplayMainMenu(int bShow);                // 0x005ED420
+    void SetLoadBarProgress(int nProgress, int bRender);    // 0x005EDD40
+    int SendSaveGameRequest(unsigned long nGameNumber, const CExoString& sGameName,
+                            const CExoString& sSaveName);   // 0x005ED670
+    unsigned char GetTutorialFlag(int nFlag);       // 0x005EDFF0
+    void HideLoadScreen(int a, int b);              // 0x005EDA90
 };
 
 class CServerInfo {
@@ -504,16 +550,21 @@ class CItemRepository;
 
 class CSWPartyTable {
 public:
+    char pad_0x0[0x190];
+    int m_bSoloMode;                                // 0x190 (descriptive)
     CItemRepository* GetPartyItems();               // 0x00563340
     int GetNPCAvailable(int nNPC);                  // 0x005636B0
+    int KillNPCObject(int nNPC, int bFade);         // 0x00563810
     unsigned char GetNPCSelectable(int nNPC);       // 0x005637C0
     unsigned long GetNPCObject(int nNPC, int bCreate, int bRevive);    // 0x00564700
 };
 
 class CSWSItem;
+class CSWSStore;
 
 class CServerExoApp {
 public:
+    CSWSStore* GetStoreByGameObjectID(unsigned long oid);  // 0x004AE7B0
     CSWSItem* GetItemByGameObjectID(unsigned long oid);    // 0x004AE760
     unsigned long ClientToServerObjectID(unsigned long oid);    // 0x004AEA30
     void SkipPastDialog(unsigned long oid);         // 0x004AE970

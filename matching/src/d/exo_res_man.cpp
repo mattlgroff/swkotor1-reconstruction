@@ -161,17 +161,13 @@ struct RES_PREFIX {
     char m_aData[6];
 };
 
-// NONMATCH: 1 insn; original subtracts the 6-byte prefix as `add eax, -6`, we emit `sub eax, 6`
 // FUNCTION: SWKOTOR 0x00406540
 void CExoResMan::FreeResourceData(CRes* pRes)
 {
     if (pRes && pRes->m_pResource) {
         if ((pRes->m_nID & 0xc0000000) != 0x40000000) {
             char* pData = (char*)pRes->m_pResource;
-            if (pRes->m_bHeaderPrefix) {
-                pData = (char*)((RES_PREFIX*)pData - 1);
-            }
-            delete[] pData;
+            delete[] (pRes->m_bHeaderPrefix ? pData - sizeof(RES_PREFIX) : pData);
             m_nAvailableMemory += pRes->m_nSize;
         }
         pRes->m_nSize = 0;
@@ -223,7 +219,7 @@ int CExoResMan::FreeChunk()
                     if ((pRes->m_nID & 0xc0000000) != 0x40000000) {
                         char* pData = (char*)pRes->m_pResource;
                         if (pRes->m_bHeaderPrefix) {
-                            pData = (char*)((RES_PREFIX*)pData - 1);
+                            pData -= sizeof(RES_PREFIX);
                         }
                         delete[] pData;
                         m_nAvailableMemory += pRes->m_nSize;

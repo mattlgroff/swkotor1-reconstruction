@@ -130,6 +130,8 @@ public:
     virtual Vector* GetCurrentWayPoint();           // 0x14c
     virtual Vector* GetLastWayPoint();              // 0x150
     virtual Vector* GetFirstWayPoint();             // 0x154
+    // vtable 0x158 is RequestModel (sw_c_creature_model_s7.cpp)
+    int AdvanceWayPoint();                          // vtable 0x15c (descriptive)
 
     virtual void SetArea(CSWCAreaX* pArea);         // 0x84
     virtual int Hilite(int a, int b, int c, int d); // 0xa4
@@ -211,6 +213,21 @@ Vector* CSWCCreature::GetFirstWayPoint()
         return 0;
     }
     return m_pWayPoints;
+}
+
+// Descriptive name: steps the current waypoint forward unless it is the last.
+// The start is missing from functions.csv.
+// FUNCTION: SWKOTOR 0x0060C4A0
+int CSWCCreature::AdvanceWayPoint()
+{
+    if (m_nWayPoints == 0) {
+        return 0;
+    }
+    if (m_pCurWayPoint == m_pWayPoints + m_nWayPoints - 1) {
+        return 0;
+    }
+    m_pCurWayPoint++;
+    return 1;
 }
 
 // FUNCTION: SWKOTOR 0x0060E480

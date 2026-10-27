@@ -49,6 +49,29 @@ void CSWGuiControl::SetEnabled(int b)
     m_bSelectable = b;
 }
 
+// CSWGuiControl::SetEnabled above leaves ecx intact; cl reuses it here.
+// FUNCTION: SWKOTOR 0x00418d00
+void CSWGuiLabel::SetEnabled(int b)
+{
+    CSWGuiControl::SetEnabled(b);
+    if (b) {
+        m_cText.m_cParams.ResetColor();
+    } else {
+        m_cText.m_cParams.SetColor(&g_vDisabledColor);
+    }
+}
+
+// FUNCTION: SWKOTOR 0x004184b0
+void CSWGuiEditbox::SetEnabled(int b)
+{
+    CSWGuiControl::SetEnabled(b);
+    if (b) {
+        m_cText.m_cParams.ResetColor();
+    } else {
+        m_cText.m_cParams.SetColor(&g_vDisabledColor);
+    }
+}
+
 // FUNCTION: SWKOTOR 0x004176c0
 void CSWGuiControl::HideToolTip()
 {
@@ -223,6 +246,42 @@ void CSWGuiSlider::SetValue(int nValue)
     SetExtent(m_extent);
 }
 
+// FUNCTION: SWKOTOR 0x00419060
+int CSWGuiSlider::HitCheckSlider(int x, int y)
+{
+    CSWGuiExtent cThumb = m_cImage.m_extent;
+    CSWGuiExtent cInner;
+    cInner = m_cBorder.GetInnerExtent();
+    if (m_extent.height > m_extent.width) {
+        if (y >= cThumb.top && y <= cThumb.height + cThumb.top && x >= cThumb.left &&
+            x <= cThumb.width + cThumb.left) {
+            return 1;
+        }
+        if (y > cInner.top && y < cThumb.top && x > cInner.left && x < cInner.width + cInner.left) {
+            return 2;
+        }
+        if (y > cThumb.height + cThumb.top && y < cInner.height + cInner.top && x > cInner.left &&
+            x < cInner.width + cInner.left) {
+            return 3;
+        }
+        return 0;
+    }
+    {
+        if (x >= cThumb.left && x <= cThumb.left + cThumb.width && y >= cThumb.top &&
+            y <= cThumb.height + cThumb.top) {
+            return 1;
+        }
+        if (x > cInner.left && x < cThumb.left && y > cInner.top && y < cInner.height + cInner.top) {
+            return 2;
+        }
+        if (x > cThumb.width + cThumb.left && x < cInner.width + cInner.left && y > cInner.top &&
+            y < cInner.height + cInner.top) {
+            return 3;
+        }
+    }
+    return 0;
+}
+
 // FUNCTION: SWKOTOR 0x004191d0
 void CSWGuiSlider::HandleLMouseDown()
 {
@@ -390,6 +449,62 @@ void CSWGuiScrollBar::CopyStyle(const CSWGuiExtent& extent, CSWGuiScrollBar* pFr
 {
     SetStyle(extent, &pFrom->m_cBorder.m_cParams, pFrom->m_cDir.m_cParams.m_cResRef,
              pFrom->m_cThumb.m_cParams.m_cResRef);
+}
+
+// FUNCTION: SWKOTOR 0x004197c0
+int CSWGuiScrollBar::HitCheckScrollbar(int x, int y)
+{
+    CSWGuiExtent cDir = m_cDir.m_extent;
+    CSWGuiExtent cExtent = m_extent;
+    CSWGuiExtent cThumb = m_cThumb.m_extent;
+    CSWGuiExtent cInner;
+    cInner = m_cBorder.GetInnerExtent();
+    if (m_extent.height > m_extent.width) {
+        if (y >= cThumb.top && y <= cThumb.height + cThumb.top && x >= cThumb.left &&
+            x <= cThumb.width + cThumb.left) {
+            return 3;
+        }
+        if (y > cExtent.top && y <= cDir.height + cExtent.top && x > cExtent.left &&
+            x < cExtent.left + cExtent.width) {
+            return 1;
+        }
+        int nDownTop = cExtent.height - cDir.height + cExtent.top;
+        if (y >= nDownTop && y < cExtent.height + cExtent.top && x > cExtent.left &&
+            x < cExtent.width + cExtent.left) {
+            return 2;
+        }
+        if (y > cDir.height + cExtent.top && y < cThumb.top && x > cInner.left &&
+            x < cInner.width + cInner.left) {
+            return 4;
+        }
+        if (y > cThumb.height + cThumb.top && y < nDownTop && x > cInner.left &&
+            x < cInner.width + cInner.left) {
+            return 5;
+        }
+        return 0;
+    }
+    if (x > cExtent.left && x <= cDir.width + cExtent.width + cExtent.left && y > cExtent.top &&
+        y < cExtent.height + cExtent.top) {
+        return 1;
+    }
+    int nRightLeft = cExtent.width - cDir.width + cExtent.left;
+    if (x >= nRightLeft && x < cExtent.width + cExtent.left && y > cExtent.top &&
+        y < cExtent.height + cExtent.top) {
+        return 2;
+    }
+    if (x >= cThumb.left && x <= cThumb.width + cThumb.left && y >= cThumb.top &&
+        y <= cThumb.height + cThumb.top) {
+        return 3;
+    }
+    if (x > cDir.width + cExtent.left && x < cThumb.left && y > cInner.top &&
+        y < cInner.height + cInner.top) {
+        return 4;
+    }
+    if (x > cThumb.width + cThumb.left && x < nRightLeft && y > cInner.top &&
+        y < cInner.height + cInner.top) {
+        return 5;
+    }
+    return 0;
 }
 
 // FUNCTION: SWKOTOR 0x00419b80

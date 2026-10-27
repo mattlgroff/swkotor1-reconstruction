@@ -91,7 +91,8 @@ public:
     Vector m_vUp;                                   // +0x24
     float m_f30;                                    // +0x30
     float m_fZoom;                                  // +0x34
-    char pad_0x38[0x40 - 0x38];
+    char pad_0x38[0x3c - 0x38];
+    float m_f3C;                                    // +0x3c
     float m_fTurn;                                  // +0x40
     float m_f44;                                    // +0x44
     float m_fTilt;                                  // +0x48
@@ -267,13 +268,28 @@ public:
     CSWCCreature* GetCharacter(int nIndex);         // 0x006346C0
 };
 
+class CClientExoAppInternal {
+public:
+    unsigned char GetActivePauseState();            // 0x005EE910
+};
+
+class CSWGuiManager {
+public:
+    char pad_0x00[0x70];
+    unsigned char m_bModalPanel;                    // +0x70, descriptive
+};
+
 class CClientExoApp {
 public:
+    CSWGuiManager* GetGuiManager();                 // 0x005EDA40
     CSWParty* GetParty();                           // 0x005ED8B0
     int GetCombatMode();                            // 0x005EDE70
     CSWCCreature* GetPlayerCreature();              // 0x005ED540
     CGameObject* GetGameObject(unsigned long oid);  // 0x005ED580
     CClientOptions* GetClientOptions();             // 0x005ED700
+
+    void* m_p00;
+    CClientExoAppInternal* m_pInternal;             // +0x04
 };
 
 void* operator new(unsigned int nSize);
@@ -322,6 +338,7 @@ extern float g_fCameraFollowPitch;                  // 0x007A245C
 class Scene;
 class CSWCArea {
 public:
+    void Update(float fDelta);                      // 0x006097F0, descriptive
     char pad_0x00[0x184];
     Scene* m_pScene;                                // +0x184
 };
@@ -350,7 +367,9 @@ public:
     float m_fCameraTilt;                            // +0x94
     float m_fCameraTurn;                            // +0x98
     float m_fCameraZoom;                            // +0x9c
-    char pad_0xa0[0xd5 - 0xa0];
+    char pad_0xa0[0xb8 - 0xa0];
+    float m_fGameTime;                              // +0xb8, descriptive
+    char pad_0xbc[0xd5 - 0xbc];
     unsigned char m_nLastCameraOption;              // +0xd5
     char pad_0xd6[0xd8 - 0xd6];
     int m_bResetCameraParams;                       // +0xd8
@@ -388,6 +407,8 @@ public:
     float UpdateCameraCollision(float fDelta, float fZoom);
     float UpdateCameraCollisionDefault(float fDelta, float fZoom);  // 0x006422E0
     float UpdateCameraCollisionEQ(float fDelta, float fZoom);       // 0x006433B0
+    int FindClearView(float fDelta, float* pTurn, float* pZoom);    // 0x006441D0
+    void Update(float fDelta);                                      // 0x00644650
 };
 
 #endif

@@ -27,10 +27,17 @@ public:
     unsigned long GetListCount(CResList* pList);                                    // 0x00411940
     int GetListElement(CResStruct* pStruct, CResList* pList, unsigned long nIndex); // 0x00411990
     unsigned long ReadFieldDWORD(CResStruct* pStruct, char* szLabel, int& bSuccess, unsigned long nDefault); // 0x00411C20
+    unsigned char ReadFieldBYTE(CResStruct* pStruct, char* szLabel, int& bSuccess, unsigned char nDefault); // 0x00411A60
+    int ReadFieldINT(CResStruct* pStruct, char* szLabel, int& bSuccess, int nDefault);   // 0x00411C90
+    int GetStructFromStruct(CResStruct* pOut, CResStruct* pParent, char* szLabel);    // 0x00411A10
     float ReadFieldFLOAT(CResStruct* pStruct, char* szLabel, int& bSuccess, float fDefault);  // 0x00411D00
     int AddList(CResList* pList, CResStruct* pStruct, char* szLabel);               // 0x00412450
     int AddListElement(CResStruct* pOut, CResList* pList, unsigned long nType);     // 0x004124E0
     int WriteFieldDWORD(CResStruct* pStruct, unsigned long nValue, char* szLabel);  // 0x00412760
+    int WriteFieldBYTE(CResStruct* pStruct, unsigned char nValue, char* szLabel);   // 0x00412620
+    int WriteFieldINT(CResStruct* pStruct, int nValue, char* szLabel);              // 0x004127B0
+    int AddStructToStruct(CResStruct* pOut, CResStruct* pParent, char* szLabel,
+                          unsigned long nType);                                     // 0x004125B0
     int WriteFieldFLOAT(CResStruct* pStruct, float fValue, char* szLabel);          // 0x00412870
 };
 
@@ -153,14 +160,18 @@ public:
 struct CSWSSpellScriptData {
     CSWSSpellScriptData();                          // 0x004AF130
     ~CSWSSpellScriptData();                         // 0x004AF150
+    int SaveData(CResGFF* pGFF, CResStruct* pStruct);   // 0x004EE230
+    int LoadData(CResGFF* pGFF, CResStruct* pStruct);   // 0x004EE2E0
     char m_pad0[0x10];
     unsigned long m_n10;                            // +0x10
     unsigned long m_n14;                            // +0x14
     unsigned long m_n18;                            // +0x18
     CExoString m_s1c;                               // +0x1c
+    char m_pad24[0x2c - 0x24];
 };
 
 struct CServerAIBodyBagInfo {
+    CServerAIBodyBagInfo() { m_fX = 0.0f; m_fY = 0.0f; m_fZ = 0.0f; }
     int SaveBodyBag(CResGFF* pGFF, CResStruct* pStruct);    // 0x004AF160
     int LoadBodyBag(CResGFF* pGFF, CResStruct* pStruct);    // 0x004AF1C0
     unsigned long m_oidBodyBag;                     // +0x00
@@ -225,6 +236,8 @@ extern CAppManager* g_pAppManager;                  // 0x007A39FC
 class CVirtualMachine {
 public:
     void DeleteScriptSituation(void* pScript);      // 0x005D1110
+    int SaveScriptSituation(void* pScript, CResGFF* pGFF, CResStruct* pStruct);  // 0x005D10F0
+    int LoadScriptSituation(void** ppScript, CResGFF* pGFF, CResStruct* pStruct); // 0x005D1100
 };
 extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 
@@ -232,13 +245,37 @@ extern int g_bLogEvents;                            // 0x00831FD8 (unnamed)
 void LogEventAdd(unsigned long nCaller, unsigned long nObject, void* pEventData);  // 0x004AF630 (unnamed)
 
 struct CSWSCombatAttackData {
+    CSWSCombatAttackData();                         // 0x004D57F0
     ~CSWSCombatAttackData();                        // 0x004D4480
+    int SaveData(CResGFF* pGFF, CResStruct* pStruct);   // 0x004D2210
+    int LoadData(CResGFF* pGFF, CResStruct* pStruct);   // 0x004D2450
+    char m_pad0[0x14c];
 };
 struct CUnknown004d6a40 {
     ~CUnknown004d6a40();                            // 0x004D6A40
 };
+struct CSWCCMessageData {
+    CSWCCMessageData();                             // 0x004D69F0
+    int SaveData(CResGFF* pGFF, CResStruct* pStruct);   // 0x004D64E0
+    int LoadData(CResGFF* pGFF, CResStruct* pStruct);   // 0x004D6B10
+    char m_pad0[0x34];
+};
+struct CSWSActionTarget {
+    int SaveData(CResGFF* pGFF, CResStruct* pStruct);   // 0x005034F0 (placeholder class)
+};
+class CGameEffect {
+public:
+    CGameEffect(int bCreateNewID);                  // 0x00503E40
+    void SaveGameEffect(CResGFF* pGFF, CResStruct* pStruct);    // 0x00503790
+    int LoadGameEffect(CResGFF* pGFF, CResStruct* pStruct);     // 0x005043A0
+    char m_pad0[0x8c];
+};
 struct CScriptEvent {
+    CScriptEvent();                                 // 0x004D7540
     ~CScriptEvent();                                // 0x004D7590
+    int SaveEvent(CResGFF* pGFF, CResStruct* pStruct);  // 0x004D73A0
+    int LoadEvent(CResGFF* pGFF, CResStruct* pStruct);  // 0x004D79B0
+    char m_pad0[0x34];
 };
 
 class CServerAIMaster {

@@ -41,6 +41,13 @@ public:
     unsigned long ReadFieldDWORD(CResStruct* pStruct, char* szLabel, int& bSuccess,
                                  unsigned long nDefault);                           // 0x00411C20
     int ReadFieldINT(CResStruct* pStruct, char* szLabel, int& bSuccess, int nDefault); // 0x00411C90
+    short ReadFieldSHORT(CResStruct* pStruct, char* szLabel, int& bSuccess, short nDefault); // 0x00411BB0
+    float ReadFieldFLOAT(CResStruct* pStruct, char* szLabel, int& bSuccess, float fDefault); // 0x00411D00
+    CExoString ReadFieldCExoString(CResStruct* pStruct, char* szLabel, int& bSuccess,
+                                   const CExoString& sDefault);     // 0x00411EC0
+    int GetList(CResList* pList, CResStruct* pStruct, char* szLabel);               // 0x004118C0
+    unsigned long GetListCount(CResList* pList);                                    // 0x00411940
+    int GetListElement(CResStruct* pElement, CResList* pList, unsigned long nIndex); // 0x00411990
 };
 
 class CGameObject;
@@ -80,6 +87,7 @@ public:
     CGameObject* GetGameObject(unsigned long oid);              // 0x004AE750
     CSWSItem* GetItemByGameObjectID(unsigned long oid);         // 0x004AE760
     CSWSCreature* GetCreatureByGameObjectID(unsigned long oid); // 0x004AE770
+    int GetPauseState(unsigned char nState);                    // 0x004AE980
 };
 
 class CSWCCreature {
@@ -284,6 +292,7 @@ public:
     void AddDamage(unsigned short nFlags, int nDamage, int bAddToBase); // 0x004D20D0
     int GetTotalDamage(int nUnused);            // 0x004D2180 (placeholder name)
     int SaveData(CResGFF* pRes, CResStruct* pStruct);   // 0x004D2210
+    int LoadData(CResGFF* pRes, CResStruct* pStruct);   // 0x004D2450
     void ResolveTopSubAttackToAttack();         // 0x004D45B0
     int IsSubAttackReady(unsigned long nTime);  // 0x004D45E0
     void ResolveAttackToMeleeSubAttack(int nAttackType, unsigned long nTime);
@@ -342,12 +351,17 @@ public:
     CSWSCombatRound(CSWSCreature* pCreature);
     ~CSWSCombatRound();
 
+#ifndef SWS_COMBAT_ROUND_OUTLINE_GETATTACK
     CSWSCombatAttackData* GetAttack(int nAttack) {
         if (nAttack < 0) {
             nAttack = 0;
         }
         return &m_pcAttackList[nAttack];
     }
+#else
+    // Callers outside nwscombatround.cpp reach the out-of-line copy.
+    CSWSCombatAttackData* GetAttack(int nAttack);   // 0x004D2B50
+#endif
     int GetTotalAttacks() { return m_nOffHandAttacks + m_nOnHandAttacks; }
 
     void SetRoundSpell(int nSpellParam, int nSpellId);
@@ -392,6 +406,8 @@ public:
     void UpdateAttackTargetForAllAction(unsigned long oidTarget);
     void DEBUGDumpCombatRoundToScreen(int nUnused, CExoString& sMessage);
     void EndCombatRound(int bFlag);                             // 0x004D4620
+    int SaveCombatRound(CResGFF* pRes, CResStruct* pStruct);    // 0x004D3EC0
+    int LoadCombatRound(CResGFF* pRes, CResStruct* pStruct);    // 0x004D5120
     void IncrementTimer(int nTime);
     void DecrementPauseTimer(int nTime);
     void ClearAllSpecialAttacks();

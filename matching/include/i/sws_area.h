@@ -16,6 +16,7 @@ struct Vector {
 };
 
 Vector NormalizeVector(const Vector& v);                    // 0x004AB180
+int operator==(const Vector& a, const Vector& b);          // 0x004AA980 (cdecl)
 // The out-of-line free operator-(const Vector&, const Vector&); declared
 // under another name because Vector here carries the inline member form.
 Vector VectorSubtract(const Vector& a, const Vector& b);    // 0x00423BC0
@@ -80,6 +81,12 @@ public:
 };
 
 // 0x4c bytes, an array of them at CSWSArea +0x230.
+class CSWRoomWalkMesh {
+public:
+    int ClipSegmentToRoom(Vector vStart, Vector vEnd, Vector* pClipStart, Vector* pClipEnd,
+                          int* pEdge);              // 0x00583E30 (placeholder name)
+};
+
 class CSWSRoom {
 public:
     virtual ~CSWSRoom();                                                // 0x005794B0
@@ -89,8 +96,17 @@ public:
                           CSWCollisionResult* pResult);                 // 0x00579560
     int CheckAABBAll(Vector vStart, Vector vEnd,
                      CSWCollisionResult* pResult);                      // 0x00579610
+    int GetAdjacentRoom(int nEdge);                                     // 0x00579420
+    int ClipSegmentWalkable(Vector* pStart, const Vector& vEnd, Vector* pClipStart,
+                            Vector* pClipEnd, float* pZLow, float* pZHigh,
+                            int* pEdge);                                // 0x00579670 (placeholder name)
+    int NoNonWalkPolysOnRoom(Vector* pStart, Vector* pEnd, float* pZLow, float* pZHigh,
+                             const float& fRadius, CWalkHitInfo* pHit); // 0x00579680
 
-    char pad_0x4[0x4c - 0x4];
+    char pad_0x4[0x38 - 0x4];
+    int m_bBlocked;                                                     // +0x38 (placeholder name)
+    CSWRoomWalkMesh* m_pWalkMesh;                                       // +0x3c (placeholder name)
+    char pad_0x40[0x4c - 0x40];
 };
 
 class CSWSObject;
@@ -129,11 +145,27 @@ public:
 
 class CPathfindInformation {
 public:
-    char pad_0x0[0x8];
+    char pad_0x0[0x4];
+    float m_fRadius;                                // +0x04 (placeholder name)
     float m_fPersonalSpace;                         // +0x08 (placeholder name)
-    char pad_0xc[0x2c - 0xc];
+    char pad_0xc[0x14 - 0xc];
+    float m_fHeight;                                // +0x14 (placeholder name)
+    char pad_0x18[0x2c - 0x18];
     unsigned long m_oidCreature;                    // +0x2c
     unsigned long m_oidTarget;                      // +0x30 (placeholder name)
+    char pad_0x34[0x6c - 0x34];
+    int m_nGridStepTolerance;                       // +0x6c (placeholder name)
+    char pad_0x70[0xbc - 0x70];
+    unsigned long m_oidIgnore;                      // +0xbc (placeholder name)
+    char pad_0xc0[0x15c - 0xc0];
+    int* m_pGridPath;                               // +0x15c (placeholder name, x/y pairs)
+    int m_nGridPathLength;                          // +0x160 (placeholder name)
+    char pad_0x164[0x188 - 0x164];
+    int m_nBestGridPathLength;                      // +0x188 (placeholder name)
+    int* m_pBestGridPath;                           // +0x18c (placeholder name)
+    int m_nBestGridDistance;                        // +0x190 (placeholder name)
+    char pad_0x194[0x210 - 0x194];
+    int m_bIgnoreCreatures;                         // +0x210 (placeholder name)
 };
 
 class CSWSObject : public CGameObject {
@@ -190,6 +222,9 @@ public:
 extern const unsigned char g_nGameObjectFound;      // 0x0074666C
 extern const unsigned char g_nObjectTypeTrigger;    // 0x00746636 (placeholder name)
 extern int g_bDebugOverlap;                         // 0x00832838 (placeholder name)
+extern int g_bDebugDirectLine;                      // 0x008327C4 (placeholder name)
+extern int g_bDebugDirectLineHeights;               // 0x008327C8 (placeholder name)
+int VectorEqual(const Vector& a, const Vector& b);  // 0x004AA980 (placeholder name)
 
 class CGameObjectArray {
 public:
@@ -244,6 +279,9 @@ public:
     void GridDFSTransTableInitialize();                                     // 0x004BBC50
     int GridDFSTransTableGet(int nX, int nY, int* pCost, int* pDepth);      // 0x004BBCC0
     void GridDFSTransTablePut(int nX, int nY, int nCost, int nDepth);       // 0x004BBD80
+    int GridDFSGenerateSuccessors(int nCost, int nLimit, int nX, int nY, int nZ,
+                                  int** ppSuccessors);                      // 0x004BCEE0 (placeholder name)
+    int GridDFSearch(int nDepth, int nCost, int nLimit, int nX, int nY, int nZ);  // 0x004C0930
     int NoNoneWalkPolysInStaticObject(unsigned long oid, float fX1, float fY1, float fX2,
                                       float fY2, float fZ, int a7, int a8,
                                       int nArg);                            // 0x004BBE20
@@ -263,6 +301,22 @@ public:
     int ClearLineOfSight(Vector* pFrom, Vector* pTo, Vector* pHit, int* pOut,
                          unsigned long oidExclude1, unsigned long oidExclude2,
                          int a7, int a8);                                   // 0x0050C330
+    int NoNonWalkPolysDetailed(const Vector& vStart, const Vector& vEnd, float fZLow,
+                               float fZHigh, float fRadius, unsigned long oidIgnore,
+                               unsigned long* pBlocker, int a8, int a9, int a10,
+                               CWalkHitInfo* pHit, int a12);                // 0x00506650
+    int NoCreaturesOnLine(const Vector& vStart, const Vector& vEnd, CPathfindInformation* pInfo,
+                          int a4, int a5, unsigned long* pBlocker, int a7,
+                          CWalkHitInfo* pHit);                              // 0x004BC590
+    int TestDirectLine(const Vector& vFrom, const Vector& vTo, const float& fRadius,
+                       float fHeight, int nUnused, CWalkHitInfo* pHit);     // 0x004BCB70
+    int ComputeBestCorner(float fX0, float fY0, float fX1, float fY1, float fX2, float fY2,
+                          float fRadius, float fHeight, float* pX1, float* pY1,
+                          float* pX2, float* pY2);                  // 0x004BE3A0
+    int NoNonWalkPolys(const Vector& vStart, const Vector& vEnd, float fZLow, float fZHigh,
+                       float fRadius, unsigned long oidIgnore, CWalkHitInfo* pHit,
+                       int nArg);                   // 0x005086D0
+    int ValidateSafePosition(const Vector& vPosition, CPathfindInformation* pInfo);  // 0x004BE5E0 (placeholder name)
 
     char pad_0x0[0x120];
     unsigned long m_idSelf;                         // 0x120 (CGameObject at 0x11c)
@@ -270,9 +324,13 @@ public:
     CExoArrayList<unsigned long> m_aGameObjects;    // 0x190
     char pad_0x19c[0x1a0 - 0x19c];
     CExoArrayList<unsigned long> m_aSubAreas;       // 0x1a0 (placeholder name)
-    char pad_0x1ac[0x1b4 - 0x1ac];
+    CPathfindInformation* m_pPathfindInformation;   // 0x1ac
+    char pad_0x1b0[0x1b4 - 0x1b0];
     CGridDFSTransEntry* m_pGridDFSTransTable;       // 0x1b4
-    char pad_0x1b8[0x1e0 - 0x1b8];
+    char pad_0x1b8[0x1cc - 0x1b8];
+    int m_bGridDFSAbort;                            // 0x1cc (placeholder name)
+    int m_nGridDFSNodes;                            // 0x1d0 (placeholder name)
+    char pad_0x1d4[0x1e0 - 0x1d4];
     int m_bTransitionCounted;                       // 0x1e0 (placeholder name)
     char pad_0x1e4[0x22c - 0x1e4];
     int m_nRooms;                                   // 0x22c

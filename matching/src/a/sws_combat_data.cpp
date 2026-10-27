@@ -20,42 +20,6 @@ static inline void FloatToInt(int* pOut, float f)
 extern "C" double __cdecl log10(double x);
 #pragma intrinsic(log10)
 
-// FUNCTION: SWKOTOR 0x004D1D50
-void CSWSCombatRoundAction::Clear() throw()
-{
-    m_nActionTimer = 0;
-    m_nAnimationTime = 0;
-    m_nAnimation = 0;
-    m_nActionType = 0;
-    m_nNumAttacks = 0;
-    m_oidTarget = OBJECT_INVALID;
-    m_bRetargettable = 1;
-    m_nInventorySlot = 0;
-    m_oidItem = OBJECT_INVALID;
-    m_nSpellId = 0;
-    m_nSpellClass = 0;
-    m_nSpellParam2c = 0;
-    m_nSpellParam30 = 0;
-    m_nSpellParam34 = 0;
-    m_oidSpellTarget = OBJECT_INVALID;
-    m_nSpellParam48 = 0;
-    m_nSpellParam4c = 0;
-    m_nSpellParam50 = 0;
-    m_nParam54 = 0;
-    m_nParam58 = 0;
-    m_nParam5c = 0;
-    m_nSpellParam60 = 0;
-    m_oidItemSpellTarget = OBJECT_INVALID;
-    m_nItemSpellParam68 = 0;
-    m_nItemSpellParam6c = 0;
-    m_nParam70 = 0;
-    m_nParam72 = 0;
-    m_bCutscene = 0;
-    m_nCutsceneParam78 = 0;
-    m_nCutsceneParam7c = 4;
-    m_nCutsceneParam80 = 0;
-    m_nParam84 = 0;
-}
 
 // FUNCTION: SWKOTOR 0x004D1DD0
 int CSWSCombatRoundAction::SaveData(CResGFF* pRes, CResStruct* pStruct)

@@ -107,7 +107,14 @@ public:
     MdlNodeTriMeshData* GetData();  // 0x0043E1C0
 };
 
-class MdlNodeTriMesh {
+class MdlNodeTriMesh;
+
+class MdlNode {
+public:
+    MdlNodeTriMesh* AsMdlNodeTriMesh();     // 0x0043E400
+};
+
+class MdlNodeTriMesh : public MdlNode {
 public:
     bool HasBumpmap();              // 0x0043E410
     int GetVertexBuffer() { return m_pOwner->GetData()->m_hVertexBuffer; }
@@ -119,9 +126,15 @@ public:
     char pad13c[0x14c - 0x13c];
     int m_nVertexStride;            // +0x14c
     int m_n150;                     // +0x150
-    char pad154[0x160 - 0x154];
+    int m_nVertexOffset;            // +0x154
+    int m_nNormalOffset;            // +0x158
+    char pad15c[0x160 - 0x15c];
     int m_nUVOffset;                // +0x160
-    char pad164[0x180 - 0x164];
+    int m_nUV1Offset;               // +0x164
+    int m_nUV2Offset;               // +0x168
+    int m_nUV3Offset;               // +0x16c
+    int m_nTangentOffset;           // +0x170
+    char pad174[0x180 - 0x174];
     short m_nNumVertices;           // +0x180
     short m_n182;                   // +0x182
     char pad184[0x194 - 0x184];
@@ -159,7 +172,13 @@ int AurBumpMappingAvailable();                                          // 0x004
 int AurVertexProgramsAvailable();                                       // 0x0045F770
 
 extern int g_bDisableTexCoordArray;     // 0x008305E0
-extern unsigned int g_eTexCoordArray;   // 0x0073F3A0
+extern unsigned int g_eColorArray;      // 0x0073F3A0
+extern unsigned int g_eTexCoordArray;   // 0x0073F398
+void ActivateTextureStage(int nStage);  // 0x00425250
+int AurGLCaps710();                     // 0x0045F710, multitexture available
+typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int texture);
+extern PFNCLIENTACTIVETEXTURE g_pfnClientActiveTexture; // 0x007BB6B0
+extern unsigned int g_nActiveTextureUnit;   // 0x007A6898
 extern int g_bARBVertexProgram;         // 0x0078E5EC
 extern int g_bNVVertexProgram;          // 0x0078E8C0
 typedef void (__stdcall* PFNVERTEXATTRIBPTR)(unsigned int index, int size,
@@ -171,6 +190,10 @@ extern PFNVERTEXATTRIBPTRNV g_pglVertexAttribPointerNV; // 0x007BB854
 
 extern "C" __declspec(dllimport) void __stdcall glEnableClientState(unsigned int);
 extern "C" __declspec(dllimport) void __stdcall glDisableClientState(unsigned int);
+extern "C" __declspec(dllimport) void __stdcall glColorPointer(int size, unsigned int type, int stride, const void* p);
+extern "C" __declspec(dllimport) void __stdcall glTexCoordPointer(int size, unsigned int type, int stride, const void* p);
+extern "C" __declspec(dllimport) void __stdcall glNormalPointer(unsigned int type, int stride, const void* p);
+extern "C" __declspec(dllimport) void __stdcall glVertexPointer(int size, unsigned int type, int stride, const void* p);
 
 class VertexPrimitiveFlat;
 class VertexPrimitiveSkinned;

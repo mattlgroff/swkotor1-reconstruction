@@ -605,6 +605,53 @@ int CSWSCreature::AddEquipItemActions(CSWSItem* pItem, unsigned long nSlot, int 
     return 1;
 }
 
+// FUNCTION: SWKOTOR 0x004F3A60
+int CSWSCreature::EquipMostEffectiveArmor()
+{
+    if (!m_pInventory || !m_pItemRepository) return 0;
+    CSWSItem* pBest = 0;
+    unsigned long nBestAC = 0;
+    CSWSItem* pItem = m_pInventory->GetItemInSlot(2);
+    CSWSItem* pCurrent = pItem;
+    int i;
+    if (pItem && g_pRules->GetBaseItem(pItem->m_nBaseItem)) {
+        pBest = pItem;
+        nBestAC = pItem->m_nBaseAC;
+        for (i = 0; i < pItem->m_nPassiveProperties; i++) {
+            CSWItemProperty* pProperty = pItem->GetPassiveProperty(i);
+            if (pProperty &&
+                (pProperty->m_nActivation == 0xff ||
+                 ((1 << pProperty->m_nActivation) & pItem->m_nPropertyActivationMask)) &&
+                pProperty->m_nPropertyName == 1)
+                nBestAC += pProperty->m_nCostValue;
+        }
+    }
+    for (unsigned long n = 0; n < m_pItemRepository->m_nItems; n++) {
+        pItem = m_pItemRepository->ItemListGetItem(n);
+        if (!pItem) continue;
+        unsigned long nSlot = 2;
+        if (pItem->GetBaseItem()->m_nAC < 0x1f || pItem->GetBaseItem()->m_nAC > 0x26) continue;
+        if (!CanEquipItem(pItem, &nSlot, 0, 0, 1)) continue;
+        if (!g_pRules->GetBaseItem(pItem->m_nBaseItem)) continue;
+        unsigned long nAC = pItem->m_nBaseAC;
+        for (i = 0; i < pItem->m_nPassiveProperties; i++) {
+            CSWItemProperty* pProperty = pItem->GetPassiveProperty(i);
+            if (pProperty &&
+                (pProperty->m_nActivation == 0xff ||
+                 ((1 << pProperty->m_nActivation) & pItem->m_nPropertyActivationMask)) &&
+                pProperty->m_nPropertyName == 1)
+                nAC += pProperty->m_nCostValue;
+        }
+        if (nAC > nBestAC) {
+            pBest = pItem;
+            nBestAC = nAC;
+        }
+    }
+    if (!pBest) return 0;
+    if (pCurrent != pBest) AddEquipItemActions(pBest, 2, 0, 0, 0, 0, 0);
+    return 1;
+}
+
 // FUNCTION: SWKOTOR 0x004FD070
 int CSWSCreature::AddUseTalentAtLocationActions(int nType, int nId, Vector* pTarget, unsigned char nMultiClass,
                                                 unsigned long oidItem, int nProperty, int a7, unsigned char a8)

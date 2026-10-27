@@ -544,10 +544,10 @@ int CSWSEffectListHandler::OnApplyImmunityFeedback(CSWSObject* pObject, CGameEff
     CSWSCreature* pCreature = pObject->AsSWSCreature();
     if (pCreature) {
         CSWSCreature* pCreator =
-            g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(pEffect->m_oidCreator);
-        if (pCreature->m_pStats->GetEffectImmunity(0xb, pCreator)) {
+            g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(pEffect->GetCreator());
+        if (pCreature->GetStats()->GetEffectImmunity(0xb, pCreator)) {
             CSWCCMessageData* pData = new CSWCCMessageData;
-            pData->SetObjectID(0, pObject->m_idSelf);
+            pData->SetObjectID(0, pObject->GetId());
             if (pCreator) {
                 CSWCCMessageData* pCopy = new CSWCCMessageData;
                 pData->CopyTo(pCopy);

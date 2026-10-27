@@ -3,8 +3,12 @@
 
 class CExoString {
 public:
+    CExoString();                                   // 0x005B3190
+    CExoString(int n);                              // 0x005E5BC0
     CExoString(const char* s);                      // 0x005E5A90
     ~CExoString();                                  // 0x005E5C20
+    CExoString& operator=(const char* s);           // 0x005E5140
+    int IsEmpty() const;                            // 0x005E58A0
     char* m_sString;
     unsigned long m_nBufferLength;
 };
@@ -12,12 +16,17 @@ public:
 class C2DA {
 public:
     int GetINTEntry(int nRow, const CExoString& sColumn, int* pValue);   // 0x00413660
+    int GetCExoStringEntry(const CExoString& sRow, const CExoString& sColumn, CExoString* pValue);   // 0x00413DE0
 };
 
 class C2DAs {
 public:
     char pad_0x0[0xc];
     C2DA* m_pAppearanceTable;                       // 0x0c
+    char pad_0x10[0x88 - 0x10];
+    C2DA* m_pVisualEffects;                         // 0x88
+
+    C2DA* GetVisualEffects() { return m_pVisualEffects; }
 };
 
 class CSWBaseItem;
@@ -33,6 +42,8 @@ public:
     CSWBaseItemArray* m_pBaseItems;                 // 0x34
     char pad_0x38[0xb8 - 0x38];
     C2DAs* m_p2DArrays;                             // 0xb8
+
+    C2DAs* Get2DArrays() { return m_p2DArrays; }
 };
 
 extern CSWRules* g_pRules;                          // 0x007A3A28
@@ -80,6 +91,7 @@ class CSWCItem {
 public:
     void SetEquippedBy(CSWCCreature* pCreature);    // 0x00646600
     void SetPowered(int a, int b, int c, int d);    // 0x00647130
+    void SetSpecialAttackModel(const CExoString& sModel, const CExoString& sNode);   // 0x00646880
 
     char pad_0x0[0xc];
     int m_nBaseItem;                                // 0x0c
@@ -122,6 +134,8 @@ public:
     void EquipToInventorySlot(unsigned long nSlot, CSWCItem* pItem);
     void SetOverrideLightsaberState(int bState, int a, int b);
     void BlurWeapon(int bBlur);
+    void SetAttackAnimationData(int nBaseItem, int nAttackType, int bRanged);
+    int SelectByMode(int nMode, int a, int b, int c);   // 0x0060D430
     void SetItemUnEquippedByMe(unsigned long oid);  // 0x0060D020
     void UpdateWeaponClass();                       // 0x00613710
     void UpdateVisibleWeapons(unsigned long nSlot, CSWCItem* pItem, int bFlag);   // 0x00613850
@@ -438,4 +452,82 @@ void CSWCCreature::BlurWeapon(int bBlur)
         }
     }
     m_bBlurWeapon = bBlur;
+}
+
+// Picks the special-attack impact effect row for the weapon type and hands the
+// effect model and hook node to the equipped weapons.
+// FUNCTION: SWKOTOR 0x006142F0
+void CSWCCreature::SetAttackAnimationData(int nBaseItem, int nAttackType, int bRanged)
+{
+    int nEffect;
+    switch (nBaseItem) {
+    case 17:
+        nEffect = SelectByMode(nAttackType, 0xfbb, 0xfac, 0xfbb);
+        break;
+    case 83:
+        nEffect = SelectByMode(nAttackType, 0xfbc, 0xfb3, 0xfbc);
+        break;
+    case 19:
+        nEffect = SelectByMode(nAttackType, 0xfb9, 0xfae, 0xfb9);
+        break;
+    case 81:
+        nEffect = SelectByMode(nAttackType, 0xfba, 0xfb2, 0xfba);
+        break;
+    case 91:
+        nEffect = SelectByMode(nAttackType, 0xfbe, 0xfb5, 0xfbe);
+        break;
+    case 53:
+        nEffect = SelectByMode(nAttackType, 0xfbf, 0xfb1, 0xfbf);
+        break;
+    case 31:
+        nEffect = 0xfc6;
+        break;
+    case 20:
+        nEffect = 0xfaf;
+        break;
+    case 77:
+        nEffect = 0xfb4;
+        break;
+    case 92:
+        nEffect = 0xfb6;
+        break;
+    case 26:
+        nEffect = 0xfb0;
+        break;
+    case 18:
+        nEffect = 0xfad;
+        break;
+    case 82:
+        nEffect = 0xfbd;
+        break;
+    default:
+        return;
+    }
+    if (!nEffect) {
+        return;
+    }
+    CExoString sRow(nEffect);
+    CExoString sModel;
+    {
+        CExoString sColumn("Imp_Impact_Node");
+        g_pRules->Get2DArrays()->GetVisualEffects()->GetCExoStringEntry(sRow, sColumn, &sModel);
+    }
+    if (!sModel.IsEmpty()) {
+        CExoString sNode;
+        if (bRanged) {
+            sNode = "bullethook";
+        } else {
+            sNode = "root";
+        }
+        CSWCItem* pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(GetEquippedItemID(0x10));
+        if (pItem) {
+            pItem->SetSpecialAttackModel(sModel, sNode);
+        }
+        if (nAttackType == 4 || nAttackType == 6) {
+            pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(GetEquippedItemID(0x20));
+            if (pItem) {
+                pItem->SetSpecialAttackModel(sModel, sNode);
+            }
+        }
+    }
 }

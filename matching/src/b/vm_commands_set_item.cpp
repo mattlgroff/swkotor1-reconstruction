@@ -162,16 +162,16 @@ int CSWVirtualMachineCommands::ExecuteCommandGiveItem(int nCommandId, int nParam
     CGameObject* pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidGiveTo);
     if (pItem && pObject) {
         if (pObject->m_nObjectType == 5) {
-            pObject->AsSWSCreature()->AcquireItem(&pItem, pItem->m_oidPossessor, 0x7f000000, 0);
+            pObject->AsSWSCreature()->AcquireItem(&pItem, pItem->GetPossessor(), 0x7f000000, 0);
             return 0;
         }
         if (pObject->m_nObjectType == 9) {
-            pObject->AsSWSPlaceable()->AcquireItem(&pItem, pItem->m_oidPossessor, 0);
+            pObject->AsSWSPlaceable()->AcquireItem(&pItem, pItem->GetPossessor(), 0);
             return 0;
         }
         if (pObject->m_nObjectType == 6 &&
             g_pRules->m_pBaseItemArray->GetBaseItem(pObject->AsSWSItem()->m_nBaseItem)->m_bContainer) {
-            pObject->AsSWSItem()->AcquireItem(&pItem, pItem->m_oidPossessor, 0);
+            pObject->AsSWSItem()->AcquireItem(&pItem, pItem->GetPossessor(), 0);
         }
     }
     return 0;

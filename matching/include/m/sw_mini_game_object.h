@@ -18,9 +18,11 @@ struct Vector {
     {
         return Vector(f * x, f * y, f * z);
     }
+    Vector& operator-=(const Vector& v);            // 0x004A9770
 };
 
 Vector operator/(const Vector& v, float f);         // 0x00437A90
+extern float g_fMiniInertiaScale;                   // 0x007A2488 (descriptive)
 inline Vector operator+(const Vector& a, const Vector& b)
 {
     return Vector(a.x + b.x, a.y + b.y, a.z + b.z);
@@ -63,6 +65,8 @@ struct Quaternion {
 };
 
 Quaternion operator*(const Quaternion& a, const Quaternion& b);   // 0x004A9AC0
+Quaternion operator-(const Quaternion& q);         // 0x004A9B50 (conjugate)
+Vector operator*(const Quaternion& q, const Vector& v);   // 0x004A9BB0 (rotate)
 Quaternion DirectionToQuaternion(const Vector& v);  // 0x004ACCA0
 
 template <class T>
@@ -112,6 +116,21 @@ public:
     {
         if (num == array_size) {
             Allocate(array_size ? array_size * 2 : 16);
+        }
+        element[num++] = t;
+    }
+    __forceinline void AddInline(T t)
+    {
+        if (num == array_size) {
+            array_size = array_size ? array_size * 2 : 16;
+            T* pOld = element;
+            element = new T[array_size];
+            for (int i = 0; i < num; i++) {
+                element[i] = pOld[i];
+            }
+            if (pOld) {
+                delete[] pOld;
+            }
         }
         element[num++] = t;
     }
@@ -177,6 +196,7 @@ public:
     CResRef();                                      // 0x00405ED0
     CResRef(const char* s);                         // 0x00406D80
     CResRef operator=(const CResRef& r);            // 0x00406120
+    CResRef operator=(const char* s);               // 0x00406290
     int IsValid() const;                            // 0x00406030
     int operator==(const char* s) const;            // 0x004060D0
     int operator==(const CResRef& r) const;         // 0x004060B0
@@ -304,7 +324,7 @@ public:
     virtual void v40(); virtual void v44(); virtual void v48();
     virtual void SetScene(void* pScene);            // 0x4c
     virtual void AttachToObject(CAurObject* pTo, const char* szNode, int n);    // 0x50
-    virtual void v54();
+    virtual void AttachToPart(CAurObject* pTo, CAurPart* pPart, int n);   // 0x54 (descriptive)
     virtual void SetBehavior(void* pBehavior);      // 0x58
     virtual Vector SetLocalPosition(Vector v);      // 0x5c
     virtual Quaternion SetOrientation(Quaternion q);   // 0x60
@@ -395,7 +415,10 @@ public:
 
 class CExoStreamingSoundSource {
 public:
+    CExoStreamingSoundSource();                     // 0x005D5A50
     ~CExoStreamingSoundSource();                    // 0x005D6200
+    void SetLooping(int bLoop);                     // 0x005D5B40
+    void* m_pInternal;                              // 0x00
     void Play(const CResRef& cRes, int a, int b, int c, int d);   // 0x005D5B10
 };
 
@@ -422,7 +445,16 @@ public:
 // CResHelper base (vtable 0x0074767C, destructor 0x00506BD0), 0x1c bytes.
 class CResHelperMiniGame {
 public:
+#ifdef M_INLINE_RES_HELPER_CTOR
+    CResHelperMiniGame()
+    {
+        m_pRes = 0;
+        m_cResRef = "";
+        m_bAutoRequest = 0;
+    }
+#endif
     virtual ~CResHelperMiniGame();                  // 0x00506BD0
+    void SetResRef(const CResRef& cResRef, int bAutoRequest);   // 0x00506C30 (shared template)
 
     int m_bAutoRequest;                             // 0x04
     void* m_pRes;                                   // 0x08
@@ -514,8 +546,11 @@ public:
     CSWMiniSceneObj* GetScene() { return m_pScene; }
 };
 
+class CSWCArea;
+
 class CSWCMiniGame : public CResHelperMiniGame {
 public:
+    CSWCMiniGame(CSWCArea* pArea);                  // 0x00671C40
     ~CSWCMiniGame();                                // 0x00672EB0 (??_G 0x00673060)
 
     int GetHookNode();                              // 0x00670C10
@@ -590,7 +625,8 @@ public:
     int m_nMode;                                    // 0x80
     int m_nLateralAxis;                             // 0x84
     int m_nVerticalAxis;                            // 0x88
-    char pad_0x8c[0x94 - 0x8c];
+    int m_n8C;                                      // 0x8c
+    char pad_0x90[0x94 - 0x90];
     unsigned char m_bActive;                        // 0x94
     unsigned char m_b95;                            // 0x95
     CResRef m_cMusic;                               // 0x96
@@ -757,6 +793,8 @@ class CAurGunEmitter : public CAurEmitter {
 public:
     CAurGunEmitter(CAurObject* pGun, CAurObject* pModel, CAurPart* pPart);   // 0x006DADF0
 
+    float GetBirthrate() { return m_fRate; }
+
     CResRef m_cSound;                               // 0x3c
     float m_fRate;                                  // 0x4c
     char pad_0x50[0x54 - 0x50];
@@ -770,10 +808,14 @@ public:
     CSWMGTargettingInfo m_cInfo;                    // 0x3c
     float m_f4C;                                    // 0x4c
     float m_fBump;                                  // 0x50
-    char pad_0x54[0x58 - 0x54];
+    CAurObject* m_pTarget;                          // 0x54
     Vector m_vOffset;                               // 0x58
     CResRef m_cSound;                               // 0x64
-    char pad_0x74[0x7c - 0x74];
+    float m_fRate;                                  // 0x74
+    char pad_0x78[0x7c - 0x78];
+
+    float GetBirthrate() { return m_fRate; }
+    float GetBump() { return m_fBump; }
 };
 
 class CAurBehaviorAttach {
@@ -938,6 +980,8 @@ public:
 
     void ClampPosition(Vector* pPos);               // 0x0066CB40
     void SetBank(int n, int bRelative);             // 0x0066CE60
+    Vector GetInertia(const Vector& vPrevPos, const Vector& vPos, const Quaternion& qOri,
+                      float fDelta);                // 0x0066CD30 (descriptive)
     Vector SetPosition(const Vector& v);            // 0x0066CCF0
     float SetF1D8(float f);                         // 0x0066CF40
     float SetF1DC(float f);                         // 0x0066CF70

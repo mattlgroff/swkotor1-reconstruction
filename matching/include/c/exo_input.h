@@ -370,6 +370,7 @@ public:
     void ClearEventRepeat(unsigned long nEvent);
     void CoolDownEvent(unsigned long nEvent, int bCoolDown);
     void BufferEvent(unsigned long nValue1, unsigned long nValue2, unsigned long nEvent);
+    int BufferEvent(struct tagMSG* pMsg);           // 0x005E12A0 (window mouse message)
     int IsEventInClass(int nEvent, int nClass);
     CExoInputEventDesc* GetEvent(int nEvent, int nClass);
     void ClearAllInputEventDescriptions();
@@ -407,7 +408,9 @@ public:
     unsigned long m_aKeyMap[0x84];                  // 0x164
     CExoLinkedList<CExoInputBufferedEvent> m_lstBufferedEvents;   // 0x374
     unsigned char m_nMouseMode;                     // 0x378
-    char pad_0x379[0xb];
+    char pad_0x379[0x37c - 0x379];
+    int m_nMouseX;                                  // 0x37c (descriptive; -1 after a button event)
+    int m_nMouseY;                                  // 0x380 (descriptive)
     int m_bMousePosSet;                             // 0x384
     char pad_0x388[0x10];
     int m_nCursor;                                  // 0x398

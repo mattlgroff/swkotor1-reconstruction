@@ -44,14 +44,24 @@ public:
             m_p->Remove(this);
         m_p = 0;
     }
+    // operator=(object): unregister with the old host, register with the new.
+    void Set(CAurObject* p);
 };
 
-class Vector0 {
-public:
-    float x, y, z;
+__forceinline void SafePointerBase::Set(CAurObject* p)
+{
+    if (m_p)
+        m_p->RemoveInline(this);
+    m_p = p;
+    if (p)
+        p->Add(this);
+}
 
+class Vector0 : public Vector {
+public:
     Vector0() { x = 0.0f; y = 0.0f; z = 0.0f; }
     Vector0(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
+    Vector0& operator=(const Vector& v) { Vector::operator=(v); return *this; }
 };
 
 class CHitInfo {
@@ -80,6 +90,7 @@ public:
     CHitInfo(void* p0, void* p4, int n14);  // 0x004578F0
     ~CHitInfo();                            // 0x00456B30
     void ClearOutput();                     // 0x00456A60
+    void SetHit(const Vector& v, int nType) { m_v1C = v; m_n18 = nType; }
     void Reset(void* p0, void* p4, int n14);    // 0x00456AF0
 };
 
@@ -203,7 +214,10 @@ class BSPNodeBase {
 public:
     BSPNodeBase(VectorD vNormal, float fDist);  // 0x004AD630
     ~BSPNodeBase();                             // 0x004ACED0
-    char pad_0x0[0x5c];
+    char pad_0x0[0x1c];
+    Vector m_vMin;                              // +0x1c
+    Vector m_vMax;                              // +0x28
+    char pad_0x34[0x5c - 0x34];
 };
 
 class RoomObject {
@@ -328,6 +342,8 @@ public:
     float GetFogEnd() { return m_fFogEnd; }
     float GetFogDensity() { return m_fFogDensity; }
     CAurRoom* FindRoom(char* szName);       // 0x00452B10
+    int HitCheck(Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pInfo);       // 0x00456B60
+    CAurObject* HitCheckGob(Vector vStart, Vector vEnd, Vector* pHit, CHitInfo* pInfo);    // 0x0044FE00
     int WriteVisibility(char* szDir, char* szName); // 0x00452B70
     CAurRoom* GetRoom(int i);               // 0x00452C60
     void SetCurrentRoom(int i);             // 0x00452C90

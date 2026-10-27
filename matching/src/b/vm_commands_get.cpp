@@ -139,7 +139,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetGoodEvilValue(int nCommandId, in
     CGameObject* pObject;
     if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidCreature, &pObject) == GAME_OBJECT_VALID &&
         pObject->m_nObjectType > OBJECT_TYPE_AREA) {
-        CSWSCreatureStats* pStats = pObject->AsSWSCreature()->m_pStats;
+        CSWSCreatureStats* pStats = pObject->AsSWSCreature()->GetStats();
         switch (nCommandId) {
         case 0x7d:
             nResult = pStats->m_nGoodEvil;
@@ -193,7 +193,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetArea(int nCommandId, int nParame
         return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
     }
     CGameObject* pObject;
-    if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidTarget, &pObject) == GAME_OBJECT_VALID &&
+    if (g_pAppManager->m_pServerExoApp->GetObjectArray()->GetGameObject(oidTarget, &pObject) == GAME_OBJECT_VALID &&
         pObject) {
         if (pObject->m_nObjectType > OBJECT_TYPE_AREA) {
             CSWSArea* pArea = ((CSWSObject*)pObject)->GetArea();

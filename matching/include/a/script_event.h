@@ -7,6 +7,8 @@
 class CExoString {
 public:
     CExoString();                                   // 0x005B3190
+    CExoString(const char* s);                      // 0x005E5A90
+    CExoString(const CExoString& s);                // 0x005E5B00
     ~CExoString();                                  // 0x005E5C20
     CExoString& operator=(const CExoString& s);     // 0x005E5C50
     int operator!=(const CExoString& s) const;      // 0x005E5310
@@ -32,6 +34,19 @@ public:
     int WriteFieldINT(CResStruct* pStruct, int nValue, char* szLabel);              // 0x004127B0
     int WriteFieldFLOAT(CResStruct* pStruct, float fValue, char* szLabel);          // 0x00412870
     int WriteFieldCExoString(CResStruct* pStruct, const CExoString& sValue, char* szLabel); // 0x00412970
+    unsigned char ReadFieldBYTE(CResStruct* pStruct, char* szLabel, int& bSuccess,
+                                unsigned char nDefault);            // 0x00411A60
+    unsigned short ReadFieldWORD(CResStruct* pStruct, char* szLabel, int& bSuccess,
+                                 unsigned short nDefault);          // 0x00411B40
+    unsigned long ReadFieldDWORD(CResStruct* pStruct, char* szLabel, int& bSuccess,
+                                 unsigned long nDefault);           // 0x00411C20
+    int ReadFieldINT(CResStruct* pStruct, char* szLabel, int& bSuccess, int nDefault); // 0x00411C90
+    float ReadFieldFLOAT(CResStruct* pStruct, char* szLabel, int& bSuccess, float fDefault); // 0x00411D00
+    CExoString ReadFieldCExoString(CResStruct* pStruct, char* szLabel, int& bSuccess,
+                                   const CExoString& sDefault);     // 0x00411EC0
+    int GetList(CResList* pList, CResStruct* pStruct, char* szLabel);               // 0x004118C0
+    unsigned long GetListCount(CResList* pList);                                    // 0x00411940
+    int GetListElement(CResStruct* pElement, CResList* pList, unsigned long nIndex); // 0x00411990
 };
 
 template <class T> class CExoArrayList {
@@ -73,6 +88,14 @@ public:
         }
         num = nSize;
     }
+    void Add(T t)                                   // <CExoString> 0x004059A0
+    {
+        if (num == array_size) {
+            Allocate(array_size ? array_size * 2 : 16);
+        }
+        element[num] = t;
+        num++;
+    }
     T* element;
     int num;
     int array_size;
@@ -84,6 +107,7 @@ public:
     ~CScriptEvent();
     int operator==(const CScriptEvent& e);
     int SaveEvent(CResGFF* pRes, CResStruct* pStruct);
+    int LoadEvent(CResGFF* pRes, CResStruct* pStruct);   // 0x004D79B0
     void CopyScriptEvent(CScriptEvent* pSource);
 
     unsigned short m_nType;                     // 0x00

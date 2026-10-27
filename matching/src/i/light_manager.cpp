@@ -5,7 +5,7 @@
 // FUNCTION: SWKOTOR 0x004A36B0
 void LightManager::SetupLightsForThisPositionAndRadius(Vector* pPos, float fRadius)
 {
-    m_nRenderLights = 0;
+    m_lRenderLights.num = 0;
     for (int i = 0; i < m_lLights.num; i++) {
         Light* pLight = m_lLights.element[i];
         if (pLight->m_fRadius <= 0.0f) {
@@ -29,8 +29,6 @@ void LightManager::SetupLightsForThisPositionAndRadius(Vector* pPos, float fRadi
     }
 }
 
-// NONMATCH: the original keeps the copied list's element pointer in esi
-// across the glDisable/glEnable import call; ours reloads it.
 // FUNCTION: SWKOTOR 0x004A4F10
 int LightManager::DisableThisLight(Light* pLight)
 {
@@ -47,8 +45,6 @@ int LightManager::DisableThisLight(Light* pLight)
     return 1;
 }
 
-// NONMATCH: the original keeps the copied list's element pointer in esi
-// across the glDisable/glEnable import call; ours reloads it.
 // FUNCTION: SWKOTOR 0x004A4FF0
 int LightManager::EnableThisLight(Light* pLight)
 {
@@ -65,8 +61,6 @@ int LightManager::EnableThisLight(Light* pLight)
     return 1;
 }
 
-// NONMATCH (3 insns): the original frees the copy through the cached
-// element pointer (ebx) without reloading it after the loop.
 // FUNCTION: SWKOTOR 0x004A5680
 void LightManager::DisableBumpMapLights()
 {
@@ -80,8 +74,6 @@ void LightManager::DisableBumpMapLights()
     }
 }
 
-// NONMATCH (3 insns): the original frees the copy through the cached
-// element pointer (ebx) without reloading it after the loop.
 // FUNCTION: SWKOTOR 0x004A5710
 void LightManager::EnableBumpMapLights()
 {

@@ -11,7 +11,9 @@ public:
     CResRef(const char* s);                         // 0x00406D80
     CResRef(const CExoString& s);                   // 0x00406D60
     CResRef();                                      // 0x00405ED0
+#ifndef L_RESREF_IMPLICIT_COPY
     CResRef(const CResRef& cResRef);
+#endif
     CResRef operator=(const CResRef& cResRef);      // 0x00406120
     CResRef operator=(const CExoString& sResRef);   // 0x004061F0
     CResRef operator=(const char* sResRef);         // 0x00406290
@@ -51,6 +53,7 @@ public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
     void ParseTokens(CExoString* pString);          // 0x0041DD30
     unsigned char GetGender();                      // 0x00674B40
+    void SetCustomToken(int nToken, const CExoString& sValue);  // 0x0041DB50
 
     char pad_0x0[0x3c];
     unsigned char m_nGender;                        // 0x3c
@@ -81,7 +84,8 @@ class CSWCObject {
 public:
     char pad_0x0[0x4];
     unsigned long m_oid;                            // 0x04
-    char pad_0x8[0x1c];
+    unsigned char m_nObjectType;                    // 0x08
+    char pad_0x9[0x1b];
     Vector m_vPosition;                             // 0x24
     unsigned long GetId() { return m_oid; }
 };
@@ -90,6 +94,12 @@ class CGameObject {
 public:
     virtual void v00(); virtual void v04(); virtual void v08();
     virtual CSWCObject* AsSWCObject();              // 0x0c
+    virtual void v10();
+    virtual class CSWCDoor* AsSWCDoor();            // 0x14
+    virtual void v18(); virtual void v1C(); virtual void v20(); virtual void v24();
+    virtual void v28(); virtual void v2C(); virtual void v30(); virtual void v34();
+    virtual void v38();
+    virtual class CSWCTrigger* AsSWCTrigger();      // 0x3c
 };
 
 class CSWCCreature;
@@ -100,6 +110,7 @@ class CSWParty {
 public:
     CSWCObject* GetMember(int n);                   // 0x006346C0
     CSWCCreature* GetPlayerCharacter();             // 0x00635460
+    int IsPartyTogether();                          // 0x00635350
 };
 
 class CSWSPlayer;

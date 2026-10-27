@@ -35,7 +35,8 @@ public:
     float m_fMaxRange;                                      // 0x34
     char pad_0x38[0x70 - 0x38];
     int m_bContainer;                                       // 0x70
-    char pad_0x74[0x8a - 0x74];
+    char pad_0x74[0x89 - 0x74];
+    unsigned char m_nWeight;                                // 0x89 (name guessed)
     unsigned char m_nDefaultModelPart;                      // 0x8a
     char pad_0x8b[0xac - 0x8b];
     unsigned char m_nBaseType;                              // 0xac
@@ -75,8 +76,15 @@ struct CSWItemProperty {
 
 class CSWSPlaceable : public CSWSObject {
 public:
+    CSWSPlaceable(unsigned long nId);                       // 0x005877E0
+    int LoadFromTemplate(const CResRef& cResRef, int bArg); // 0x00587A70
+    using CSWSObject::SetOrientation;
+    void SetOrientation(const class Quaternion& qOrientation); // 0x005853C0
+    void AddToArea(CSWSArea* pArea, const Vector& vPosition, int bArg); // 0x00587170
     int RemoveItem(CSWSItem* pItem);                        // 0x00584AC0
     int AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor, int bFlag); // 0x00584B10
+    int AddCastFakeSpellActions(unsigned long nSpell, int nArg, const Vector& vTarget,
+                                unsigned long oidTarget, int bArg, unsigned char nPathType); // 0x00584DB0
     void CloseInventory(unsigned long oidCloser, int bArg);  // 0x00587560
     int GetLightIsOn();                                     // 0x00585130
     void SetLightIsOn(int bOn);                             // 0x00585080
@@ -114,14 +122,21 @@ public:
     unsigned char m_nHardness;                              // 0x314
     unsigned char m_nFortSave;                              // 0x315
     unsigned char m_nWillSave;                              // 0x316
-    char pad_0x317[0x328 - 0x317];
+    char pad_0x317[0x318 - 0x317];
+    CExoArrayList<unsigned long> m_aTrapDetectedBy;         // 0x318 (name guessed)
+    int m_bHasInventory;                                    // 0x324 (name guessed)
     int m_n328;                                             // 0x328
     int m_n32C;                                             // 0x32c
     int m_n330;                                             // 0x330 (lockable)
-    char pad_0x334[0x378 - 0x334];
+    char pad_0x334[0x33c - 0x334];
+    int m_bPartyInteract;                                   // 0x33c (name guessed)
+    char pad_0x340[0x36c - 0x340];
+    class CItemRepository* m_pItemRepository;               // 0x36c (name guessed)
+    char pad_0x370[0x378 - 0x370];
     CResRef m_cOnUsed;                                      // 0x378
     char pad_0x388[0x398 - 0x388];
     int m_n398;                                             // 0x398
+    char pad_0x39c[0x454 - 0x39c];
 };
 
 class CScriptEvent {
@@ -269,10 +284,14 @@ public:
     CSWSItem* SplitItem(int nCount);                        // 0x0055F280
     CSWSItem(unsigned long nId);                            // 0x005530A0
     virtual ~CSWSItem();                                    // 0x0055EC70
+    virtual void EventHandler(unsigned long nEventId, unsigned long nCallerObjectId, void* pScript,
+                              unsigned long nCalendarDay, unsigned long nTimeOfDay); // 0x0055EE10
     int CopyItem(CSWSItem* pSource);                        // 0x0055D950
     int LoadFromTemplate(const CResRef& cResRef);           // 0x005608B0
     int LoadItem(CResGFF* pGFF, CResStruct* pStruct);       // 0x00560970
     int LoadItemData(CResGFF* pGFF, CResStruct* pStruct);   // 0x0055FCD0
+    int GetStackSize() { return m_nStackCount; }
+    unsigned long GetPossessor() { return m_oidPossessor; }
 
     CSWBaseItem* GetBaseItemFromRules()
     {

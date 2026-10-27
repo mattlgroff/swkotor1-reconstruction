@@ -113,11 +113,13 @@ public:
 };
 
 // Options panels; ordered members follow constructor and destructor evidence.
+#ifndef L_SW_GUI_SAVE_LOAD_FULL
 class CSWGuiSaveLoad : public CSWGuiPanel {
 public:
     CSWGuiSaveLoad(CSWGuiManager* pManager, int bSave, int nArg);   // 0x006CC680
     char pad_0x64[0x1160 - 0x64];
 };
+#endif
 
 #ifdef L_OPTIONS_FAMILY_NOVTABLE
 class __declspec(novtable) CSWGuiInGameGameplay : public CSWGuiPanel {

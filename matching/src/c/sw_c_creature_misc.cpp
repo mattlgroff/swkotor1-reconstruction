@@ -608,10 +608,9 @@ void CSWCCreature::SetItemUnEquippedByMe(unsigned long oid)
 }
 
 // FUNCTION: SWKOTOR 0x0060EE60
-// NONMATCH: ECX/EDX swapped while pushing b and b >> 16 (7 insns).
 int CSWCCreature::PerformUseItem(unsigned long a, long b, int c, int d)
 {
-    CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
+    CSWCMessage* pMessage = g_pAppManager->GetClientExoApp()->GetSWCMessage();
     int nResult = (int)pMessage;
     if (pMessage) {
         nResult = pMessage->SendPlayerToServerInput_UseItem(a, b, b >> 16, c, d);

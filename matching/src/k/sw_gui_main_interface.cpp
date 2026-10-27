@@ -503,3 +503,236 @@ void CSWGuiMainInterface::Draw(float fDelta)
         AurGUIStopLayer();
     }
 }
+
+// Not in the function table: focus callback of the personal action slots.
+// FUNCTION: SWKOTOR 0x006856C0
+void CSWGuiMainInterface::OnPersonalActionFocus(CSWGuiControl* pControl)
+{
+    if (pControl->m_bMouseClick && pControl->m_nId != m_nLastPersonalSlot) {
+        m_nLastPersonalSlot = pControl->m_nId;
+    }
+}
+
+// Not in the function table: focus callback of the target action slots.
+// FUNCTION: SWKOTOR 0x00688490
+void CSWGuiMainInterface::OnTargetActionFocus(CSWGuiControl* pControl)
+{
+    if (pControl->m_bMouseClick) {
+        m_cTargetMenu.m_nSelectedMenu = pControl->m_nId - 4;
+    }
+}
+
+// Not in the function table.
+// FUNCTION: SWKOTOR 0x006884B0
+void CSWGuiMainInterface::OnTargetPrevClicked(CSWGuiControl* pControl)
+{
+    if (pControl->m_bMouseClick) {
+        int nSlot = pControl->m_nId;
+        if (g_pAppManager->m_pClientExoApp->GetOptions()->m_bTutorialPause) {
+            g_pAppManager->m_pClientExoApp->SetTutorialPaused(1, 7);
+        }
+        g_pAppManager->m_pClientExoApp->ShowTutorialWindow(5, 0x7f000000, 0x7f000000, 0);
+        m_cTargetMenu.SelectPrevAction(nSlot - 4);
+    }
+}
+
+// Not in the function table.
+// FUNCTION: SWKOTOR 0x00688520
+void CSWGuiMainInterface::OnTargetNextClicked(CSWGuiControl* pControl)
+{
+    if (pControl->m_bMouseClick) {
+        int nSlot = pControl->m_nId;
+        if (g_pAppManager->m_pClientExoApp->GetOptions()->m_bTutorialPause) {
+            g_pAppManager->m_pClientExoApp->SetTutorialPaused(1, 7);
+        }
+        g_pAppManager->m_pClientExoApp->ShowTutorialWindow(5, 0x7f000000, 0x7f000000, 0);
+        m_cTargetMenu.SelectNextAction(nSlot - 4);
+    }
+}
+
+// Not in the function table: event 0x27 callback of every action slot.
+// FUNCTION: SWKOTOR 0x0068B970
+void CSWGuiMainInterface::OnActionClicked(CSWGuiControl* pControl)
+{
+    if (!pControl->m_bMouseClick) {
+        return;
+    }
+    int nId = pControl->m_nId;
+    if (nId >= 0 && nId < 4) {
+        DoPersonalAction(nId, 0);
+        return;
+    }
+    int nSlot = nId - 4;
+    if (nSlot >= 0 && nSlot < 3) {
+        if (g_bClearTargetOnAction) {
+            RefreshTargetActions();
+        }
+        m_cTargetMenu.UseAction(nSlot, 1);
+    }
+}
+
+// Not in the function table.
+// FUNCTION: SWKOTOR 0x00688590
+void CSWGuiMainInterface::OnPauseClicked(CSWGuiControl* pControl)
+{
+    if (!pControl->m_bMouseClick) {
+        return;
+    }
+    int bPaused = g_pAppManager->m_pClientExoApp->GetPausedByCombat();
+    g_pAppManager->m_pClientExoApp->SetPausedByCombat(bPaused == 0, 4, 0);
+    if (g_pAppManager->m_pClientExoApp->GetPauseOnPersonalAction()) {
+        g_pAppManager->m_pClientExoApp->SetTutorialPaused(0, 0);
+    }
+    g_pAppManager->m_pClientExoApp->ShowTutorialWindow(6, 0x7f000000, 0x7f000000, 0);
+}
+
+// Not in the function table.
+// FUNCTION: SWKOTOR 0x00688610
+void CSWGuiMainInterface::OnSoloClicked(CSWGuiControl* pControl)
+{
+    if (pControl->m_bMouseClick) {
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowSoloModeQuery(0);
+    }
+}
+
+// Not in the function table.
+// FUNCTION: SWKOTOR 0x00688640
+void CSWGuiMainInterface::OnStealthClicked(CSWGuiControl* pControl)
+{
+    if (pControl->m_bMouseClick && g_pAppManager->m_pClientExoApp->GetPlayerCreature()->IsStealthCapable()) {
+        g_pAppManager->m_pClientExoApp->GetParty()->GetPlayerCharacter()->PartyMenuStealth(0, 0);
+    }
+}
+
+// FUNCTION: SWKOTOR 0x006883C0
+void CSWGuiMainInterface::OnMenuButtonPressed(CSWGuiControl* pControl)
+{
+    if (!pControl->m_bMouseClick) {
+        return;
+    }
+    CSWGuiControl* pPressed = pControl->GetSelectedControl();
+    int nPanel;
+    if (pPressed == &m_btnMinimap) {
+        nPanel = 0;
+    }
+    else if (pPressed == &m_btnB1d0) {
+        nPanel = 1;
+    }
+    else if (pPressed == &m_btnB394) {
+        nPanel = 2;
+    }
+    else if (pPressed == &m_btnB558) {
+        nPanel = 3;
+    }
+    else if (pPressed == &m_btnB71c) {
+        nPanel = 4;
+    }
+    else if (pPressed == &m_btnB8e0) {
+        nPanel = 5;
+    }
+    else if (pPressed == &m_btnBaa4 || pPressed == &m_btnMapArrow) {
+        nPanel = 6;
+    }
+    else {
+        nPanel = 7;
+    }
+    if (g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowSWInGameGui(nPanel)) {
+        g_pAppManager->m_pClientExoApp->SetInputClass(2, 1);
+    }
+}
+
+// NONMATCH (6): the original re-tests the decremented id (`dec; test; jne`)
+// where cl uses the DEC flags; == 0, !, separate decrement and switch shapes
+// all drop the test (the switch is worse).
+// Not in the function table.
+// FUNCTION: SWKOTOR 0x00688690
+void CSWGuiMainInterface::OnCharacterClicked(CSWGuiControl* pControl)
+{
+    if (!pControl->m_bMouseClick) {
+        return;
+    }
+    int nIndex = pControl->m_nId - 1;
+    if (nIndex == 0) {
+        CSWCCreature* pChar = g_pAppManager->m_pClientExoApp->GetParty()->GetCharacter(0);
+        if (!pChar) {
+            return;
+        }
+        CSWSCreature* pServer = pChar->GetServerCreature();
+        if (!pServer) {
+            return;
+        }
+        if (pServer->m_pStats->CanLevelUp()) {
+            m_btnB394.m_bMouseClick = 1;
+            OnMenuButtonPressed(&m_btnB394);
+            return;
+        }
+        m_btnMinimap.m_bMouseClick = 1;
+        OnMenuButtonPressed(&m_btnMinimap);
+        return;
+    }
+    if (nIndex >= 3) {
+        return;
+    }
+    int nMember = nIndex;
+    if (g_pAppManager->m_pClientExoApp->GetParty()->m_nCount < 3) {
+        nMember = 1;
+    }
+    CSWCCreature* pChar = g_pAppManager->m_pClientExoApp->GetParty()->GetCharacter(nMember);
+    if (!pChar || !pChar->GetServerCreature()) {
+        return;
+    }
+    if (pChar->GetServerCreature()->GetDeadTemp()) {
+        return;
+    }
+    g_pAppManager->m_pClientExoApp->ChangeCharacter(nMember, 1);
+}
+
+// FUNCTION: SWKOTOR 0x00687700
+void CSWGuiMainInterface::SetCombatMessage(unsigned long nStrRef)
+{
+    if (m_fQueueTime != -1.0f) {
+        return;
+    }
+    switch (nStrRef) {
+    case 0xa5ee:
+        m_lblDescription.m_cText.SetColor(g_vGuiColor23E4);
+        m_fMessageDuration = 2.5f;
+        m_fQueueTime = 2.5f;
+        break;
+    case 0xa5ed:
+        if (g_pAppManager->m_pClientExoApp->GetPauseOnPersonalAction()) {
+            return;
+        }
+        m_lblDescription.m_cText.SetColor(g_vGuiColor23B4);
+        break;
+    case 0xa5ec:
+        if (g_pAppManager->m_pClientExoApp->GetPauseOnPersonalAction()) {
+            return;
+        }
+        m_lblDescription.m_cText.SetColor(g_vGuiColor23E4);
+        break;
+    case 0xbaf3:
+        if (g_pAppManager->m_pClientExoApp->GetPauseOnPersonalAction()) {
+            return;
+        }
+        m_lblDescription.m_cText.SetColor(g_vGuiColor23FC);
+        m_fMessageDuration = 2.5f;
+        m_fQueueTime = 2.5f;
+        break;
+    case 0xbc50:
+        m_lblDescription.m_cText.SetColor(g_vGuiColor23D8);
+        break;
+    case 0xbb2b:
+        m_lblDescription.m_cText.SetColor(g_vGuiColor23F0);
+        break;
+    default:
+        m_lblDescription.m_cText.SetColor(g_vGuiColor23B4);
+        m_fMessageDuration = 2.5f;
+        m_fQueueTime = 2.5f;
+        break;
+    }
+    m_nCombatMessage = nStrRef;
+    CExoString sText = g_pAppManager->GetClientExoApp()->GetGUIString(nStrRef);
+    m_lblDescription.m_cText.SetText(sText);
+    m_lblDescription.m_cText.m_fAlpha = 1.0f;
+}

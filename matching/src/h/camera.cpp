@@ -73,28 +73,52 @@ public:
     float m_f44;                                // +0x44
 };
 
-class CAurCamera {
-public:
-    virtual ~CAurCamera();                      // 0x0045C240
-};
-
 struct Quaternion { float w, x, y, z; };
 struct Vector { float x, y, z; };
 class CHitInfo;
 class GobAttachment;
+class Gob;
 class Part;
 class Scene;
+
+// Aurora camera interface. Camera implements the methods that it shares
+// with Gob here, so Camera's Gob vtable holds `this`-adjusting thunks.
+class CAurCamera {
+public:
+    virtual ~CAurCamera();                      // 0x0045C240
+    virtual Gob* AsAurObject() = 0;             // +0x04
+    virtual int Animate(float fDeltaT) = 0;     // +0x0c
+    virtual int AttachToScene(Scene* scene) = 0; // +0x14
+    virtual Vector SetPosition(Vector p) = 0;   // +0x18
+    virtual Quaternion SetOrientation(Quaternion q) = 0; // +0x1c
+    virtual Vector GetPosition() = 0;           // +0x20
+    virtual Quaternion GetOrientation() = 0;    // +0x24
+    virtual void SetAttachmentLight(int n) = 0; // +0x60
+    virtual GobAttachment* AttachToObject(Gob* gob, char* name, int n) = 0; // +0x74
+    virtual GobAttachment* AttachToPart(Gob* gob, Part* part, int n) = 0; // +0x78
+    virtual void SetAttachment(GobAttachment* p) = 0; // +0x7c
+    virtual GobAttachment* GetAttachment(int index) = 0; // +0x80
+};
 
 class Gob {
 public:
     Gob(char* szName);                          // 0x00449440
     virtual ~Gob();                             // 0x0044B2F0
+    virtual CAurCamera* AsAurCamera();          // +0x04
+    virtual void Render(int bPropagate);        // +0x10, 0x00478260
+    virtual int Animate(float fDeltaT);         // +0x14
+    virtual int AttachToScene(Scene* scene);    // +0x4c
+    virtual GobAttachment* AttachToObject(Gob* gob, char* name, int n); // +0x50, 0x00443820
+    virtual GobAttachment* AttachToPart(Gob* gob, Part* part, int n); // +0x54, 0x004439A0
+    virtual void SetAttachment(GobAttachment* p); // +0x58, 0x0043F1D0
+    virtual Vector SetPosition(Vector p);       // +0x5c
+    virtual Quaternion SetOrientation(Quaternion q); // +0x60
+    virtual Vector GetPosition();               // +0x64
+    virtual Quaternion GetOrientation();        // +0x68
+    virtual void SetAttachmentLight(int n);     // +0xa8, 0x0043F5A0
+    virtual GobAttachment* GetAttachment(int index); // +0x108, 0x0043F130
+    virtual Gob* AsAurObject();                 // +0x164
     Gob* IntersectLine(Vector start, Vector end, Vector* hit, CHitInfo* info); // 0x0043EB80
-    GobAttachment* GetAttachment(int index); // 0x0043F130
-    void SetAttachment(GobAttachment* p); // 0x0043F1D0
-    void SetAttachmentLight(int n); // 0x0043F5A0
-    GobAttachment* AttachToPart(Gob* gob, Part* part, int n); // 0x004439A0
-    GobAttachment* AttachToObject(Gob* gob, char* name, int n); // 0x00443820
     void SetScene(Scene* scene); // 0x0043F200
     char pad_0x4[0x74];
     Vector m_vPosition;
@@ -132,17 +156,20 @@ public:
     Camera(char* szName);                       // 0x0045D800
     virtual ~Camera();                          // 0x0045C330
     void BeginViewAngleAnimation(float fEnd, float fDuration, int n);
-    Vector SetPosition(Vector p);
-    Vector GetPosition();
-    Gob* AsAurObject();
-    GobAttachment* GetAttachment(int index);
-    void SetAttachment(GobAttachment* p);
-    void SetAttachmentLight(int n);
-    GobAttachment* AttachToPart(Gob* gob, Part* part, int n);
+    virtual Vector SetPosition(Vector p);
+    virtual Vector GetPosition();
+    virtual Gob* AsAurObject();
+    virtual CAurCamera* AsAurCamera();
+    virtual void Render(int bPropagate);
+    virtual int Animate(float fDeltaT);         // 0x0045D220
+    virtual GobAttachment* GetAttachment(int index);
+    virtual void SetAttachment(GobAttachment* p);
+    virtual void SetAttachmentLight(int n);
+    virtual GobAttachment* AttachToPart(Gob* gob, Part* part, int n);
     void EndViewAngleAnimation(bool bReset);
     void SetViewPort(int x, int y, int width, int height);
-    Quaternion SetOrientation(Quaternion q);
-    Quaternion GetOrientation();
+    virtual Quaternion SetOrientation(Quaternion q);
+    virtual Quaternion GetOrientation();
     int GetViewPortHeight();
     void GetClipDist(float* pNear, float* pFar);
     float GetViewAngle();
@@ -150,8 +177,8 @@ public:
     void SetFadePlanes(const Plane* a, const Plane* b);
     void SetClipDist(float nearClip, float farClip);
     void SetViewAngle(float angle);
-    int AttachToScene(Scene* scene);
-    GobAttachment* AttachToObject(Gob* gob, char* name, int n);
+    virtual int AttachToScene(Scene* scene);
+    virtual GobAttachment* AttachToObject(Gob* gob, char* name, int n);
     int ViewVolumeSet();
     Gob* HitCheck(Vector start, Vector end, Vector* hit);
     float GetTarget3C();
@@ -172,6 +199,39 @@ void Camera::BeginViewAngleAnimation(float fEnd, float fDuration, int n)
     m_pAnimation->m_fEnd = fEnd;
     m_pAnimation->m_fStart = m_fViewAngle;
     m_pAnimation->m_n10 = n;
+}
+
+extern "C" double __cdecl cos(double);
+extern "C" double __cdecl sin(double);
+#pragma intrinsic(cos, sin)
+
+// NONMATCH: the original copies the stacked delta through eax before each
+// tail call; ours picks ecx / edx (scratch register choice only).
+// FUNCTION: SWKOTOR 0x0045D220
+int Camera::Animate(float fDeltaT)
+{
+    if (!m_pAnimation)
+        return Gob::Animate(fDeltaT);
+    m_pAnimation->m_fTime = fDeltaT + m_pAnimation->m_fTime;
+    if (m_pAnimation->m_fTime > m_pAnimation->m_fDuration) {
+        delete m_pAnimation;
+        m_pAnimation = 0;
+        return Gob::Animate(fDeltaT);
+    }
+    ViewAngleAnimation* pAnim = m_pAnimation;
+    float t = pAnim->m_fTime / pAnim->m_fDuration;
+    if (pAnim->m_n10 == 0) {
+    } else if (pAnim->m_n10 == 1) {
+        t = 1.0f - ((float)cos(t * 3.1415927f) + 1.0f) * 0.5f;
+    } else if (pAnim->m_n10 == 2) {
+        t = 1.0f - (float)cos(t * 1.5707964f);
+    } else if (pAnim->m_n10 == 3) {
+        t = (float)sin(t * 1.5707964f);
+    } else {
+        return Gob::Animate(fDeltaT);
+    }
+    m_fViewAngle = (1.0f - t) * pAnim->m_fStart + t * pAnim->m_fEnd;
+    return Gob::Animate(fDeltaT);
 }
 
 // FUNCTION: SWKOTOR 0x0045BF60
@@ -272,6 +332,19 @@ GobAttachment* Camera::GetAttachment(int index) { return Gob::GetAttachment(inde
 // FUNCTION: SWKOTOR 0x0045C230
 void Camera::SetAttachment(GobAttachment* p) { Gob::SetAttachment(p); }
 
+// The camera currently being rendered (0x007BB4E8).
+extern Camera* g_pRenderCamera;
+
+// FUNCTION: SWKOTOR 0x0045BEA0
+void Camera::Render(int bPropagate)
+{
+    if (g_pRenderCamera != this && g_pRenderCamera)
+        Gob::Render(bPropagate);
+}
+
+// FUNCTION: SWKOTOR 0x0045C430
+CAurCamera* Camera::AsAurCamera() { return this; }
+
 // FUNCTION: SWKOTOR 0x0045BEC0
 void Camera::SetClipDist(float nearClip, float farClip)
 {
@@ -363,3 +436,19 @@ CAurCamera* NewCAurCamera(char* szName)
 {
     return new Camera(szName);
 }
+
+// Adjustor thunks in Camera's Gob vtable (0x00741988): `sub ecx, 4` then a
+// jump to the Camera method, emitted with the vtable in this unit.
+// FUNCTION: SWKOTOR 0x0045C3A0 SYMBOL: ??_ECamera@@W3AEPAXI@Z
+// FUNCTION: SWKOTOR 0x0045C3B0 SYMBOL: ?AttachToScene@Camera@@W3AEHPAVScene@@@Z
+// FUNCTION: SWKOTOR 0x0045C3C0 SYMBOL: ?AttachToObject@Camera@@W3AEPAVGobAttachment@@PAVGob@@PADH@Z
+// FUNCTION: SWKOTOR 0x0045C3D0 SYMBOL: ?AttachToPart@Camera@@W3AEPAVGobAttachment@@PAVGob@@PAVPart@@H@Z
+// FUNCTION: SWKOTOR 0x0045C3E0 SYMBOL: ?SetAttachment@Camera@@W3AEXPAVGobAttachment@@@Z
+// FUNCTION: SWKOTOR 0x0045C3F0 SYMBOL: ?SetPosition@Camera@@W3AE?AUVector@@U2@@Z
+// FUNCTION: SWKOTOR 0x0045C400 SYMBOL: ?SetOrientation@Camera@@W3AE?AUQuaternion@@U2@@Z
+// FUNCTION: SWKOTOR 0x0045C410 SYMBOL: ?SetAttachmentLight@Camera@@W3AEXH@Z
+// FUNCTION: SWKOTOR 0x0045C420 SYMBOL: ?GetAttachment@Camera@@W3AEPAVGobAttachment@@H@Z
+// FUNCTION: SWKOTOR 0x0045D7C0 SYMBOL: ?Animate@Camera@@W3AEHM@Z
+// FUNCTION: SWKOTOR 0x0045D7D0 SYMBOL: ?GetPosition@Camera@@W3AE?AUVector@@XZ
+// FUNCTION: SWKOTOR 0x0045D7E0 SYMBOL: ?GetOrientation@Camera@@W3AE?AUQuaternion@@XZ
+// FUNCTION: SWKOTOR 0x0045D7F0 SYMBOL: ?AsAurObject@Camera@@W3AEPAVGob@@XZ

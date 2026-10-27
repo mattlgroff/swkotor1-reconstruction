@@ -16,17 +16,30 @@ public:
     CExoString& operator=(const CExoString& s);     // 0x005e5c50
     CExoString& operator=(const char* s);           // 0x005e5140
     char* CStr() const;                             // 0x005e5c40
+    int operator==(const CExoString& s) const;      // 0x005e5200
+    int operator==(const char* s) const;            // 0x005e5290
+    CExoString operator+(const CExoString& s) const; // 0x005e5d10
 };
 
 struct CResStruct {
     unsigned long m_nStructIndex;
 };
 
+struct CResList : public CResStruct {
+    char m_pLabel[16];
+};
+
+class Vector;
+
 class CResGFF {
 public:
     int GetStructFromStruct(CResStruct* pOut, CResStruct* pStruct, char* szLabel); // 0x00411a10
     unsigned char ReadFieldBYTE(CResStruct* pStruct, char* szLabel, int& bSuccess, unsigned char nDefault); // 0x00411a60
     int ReadFieldINT(CResStruct* pStruct, char* szLabel, int& bSuccess, int nDefault); // 0x00411c90
+    unsigned long GetListCount(CResList* pList);    // 0x00411940
+    int GetListElement(CResStruct* pStruct, CResList* pList, unsigned long nIndex); // 0x00411990
+    CExoString ReadFieldCExoString(CResStruct* pStruct, char* szLabel, int& bSuccess, const CExoString& sDefault); // 0x00411ec0
+    Vector ReadFieldVector(CResStruct* pStruct, char* szLabel, int& bSuccess, const Vector& vDefault); // 0x004122a0
 };
 
 template <class T>
@@ -151,19 +164,69 @@ public:
     void ResetToolTipTimer();                       // 0x0040b4d0
     void RemoveToolTip();                           // 0x0040c150
     CSWGuiPanel* PopModalPanel();                    // 0x0040be00
+    void DisplayToolTip(const CExoString& sText);   // 0x0040b490
 };
 
 extern CSWGuiManager* g_pGuiManager;            // 0x007a39f4
 
 CSWGuiExtent IntersectExtents(const CSWGuiExtent& a, const CSWGuiExtent& b); // 0x0040a4a0
 
+class CExoInputEvent {
+public:
+    virtual int IsAxis();                           // 0x00
+    char pad_0x4[0x18];
+    unsigned long m_nKey;                           // 0x1c
+};
+
 class CExoInput {
 public:
     void StartTextInput();                          // 0x005df520
     void StopTextInput();                           // 0x005df530
+    CExoInputEvent* GetEvent(unsigned long nId, int nClass); // 0x005df4c0
 };
 
 extern CExoInput* g_pExoInput;                  // 0x007a39e4
+extern const int g_nFirstKeyIndex;              // 0x0074d3d8
+
+class CClientExoApp {
+public:
+    int GetInputClass();                            // 0x005eda70
+};
+
+class CAppManager {
+public:
+    void* m_pServer;
+    CClientExoApp* m_pClientExoApp;                 // 0x04
+};
+
+extern CAppManager* g_pAppManager;              // 0x007a39fc
+
+class CTlkTable {
+public:
+    CExoString GetSimpleString(unsigned long nStrRef); // 0x0041e8f0
+};
+
+extern CTlkTable* g_pTlkTable;                  // 0x007a3a08
+
+class C2DA {
+public:
+    int GetINTEntry(int nRow, const CExoString& sColumn, int* pValue); // 0x00413660
+};
+
+class C2DArrays {
+public:
+    char pad_0x0[0x6c];
+    C2DA* m_pBindableKeysTable;                     // 0x6c
+};
+
+class CSWRules {
+public:
+    char pad_0x0[0xb8];
+    C2DArrays* m_p2DArrays;                         // 0xb8
+    C2DArrays* Get2DArrays() { return m_p2DArrays; }
+};
+
+extern CSWRules* g_pRules;                      // 0x007a3a28
 
 class CSWGuiBorderParams {
 public:
@@ -211,6 +274,7 @@ public:
     virtual void v08();
     virtual void Draw(float fDelta);                // 0x0c
     virtual void Load(CResGFF* pGFF, CResStruct* pStruct, const CExoString& sName); // 0x10
+    int GetFontHeight();                            // 0x00414ee0
     char pad_0x04[0x14];
     CSWGuiTextParams m_cParams;                     // 0x18
     int m_n6c;                                      // 0x6c
@@ -222,7 +286,6 @@ public:
     void SetFocus(int bFocus);                      // 0x00416530
     void RemoveLastChar();                          // 0x004162e0
     void AddNewChar(const char* sChar);             // 0x004163a0
-    __forceinline ~CSWGuiEditText() {}
     short m_nMaxLength;             // 0x70
     unsigned long m_bFlag0 : 1;     // 0x74
     CExoString m_sText;             // 0x78
@@ -257,6 +320,7 @@ public:
 class CSWGuiNavigable;
 class CSWGuiListBox;
 class CSWGuiScrollBar;
+class CSWGuiLabel;
 
 // vtable 0x0073e488 (slots 0x00-0x94).
 class CSWGuiControl : public CSWGuiObject {
@@ -274,7 +338,8 @@ public:
     virtual CSWGuiControl* HitCheckMouse(int x, int y);         // 0x44
     virtual void Load(CResGFF* pGFF, CResStruct* pStruct);      // 0x48
     virtual CSWGuiNavigable* GetNavigation();                   // 0x4c
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5c();
+    virtual CSWGuiLabel* GetLabel();                            // 0x50
+    virtual void v54(); virtual void v58(); virtual void v5c();
     virtual int v60(); virtual void v64(); virtual void v68();
     virtual CSWGuiScrollBar* v6c();                             // 0x6c (scroll bar part, or 0)
     virtual void v70(); virtual void v74(); virtual void v78();
@@ -310,6 +375,7 @@ public:
 
     void AddChildControl(CSWGuiControl* pControl);
     void Load(CSWGuiObject* pOwner, CResGFF* pGFF, CResStruct* pStruct, CExoString& sName);
+    void Load(CSWGuiObject* pOwner, CResGFF* pGFF, CResList* pList, const CExoString& sTag);
     int HasChildControl(CSWGuiControl* pControl);
     CSWGuiControl* GetOwner();
     void HideToolTip();                             // 0x004176c0
@@ -470,6 +536,7 @@ public:
     virtual void HandleLMouseDown();                            // 0x18
     virtual void Draw(float fDelta);                            // 0x38
     virtual void HandleInputEvent(int nEvent, int bDown);       // 0x3c
+    virtual void Load(CResGFF* pGFF, CResStruct* pStruct);      // 0x48
     virtual void CopyStyle(const CSWGuiExtent& extent, CSWGuiSlider* pFrom); // 0x98
     virtual void SetStyle(const CSWGuiExtent& extent, CSWGuiBorderParams* pBorder, CSWGuiBorderParams* pThumb,
                           const CResRef& cImage);       // 0x9c
@@ -498,13 +565,15 @@ public:
     virtual void UpdateFont();                                  // 0x8c
     virtual void Initialize(const CSWGuiExtent& extent, CSWGuiTextParams* pText, CSWGuiBorderParams* pBorder); // 0x98
     virtual void HandleChar(int nChar);             // 0x9c
+    virtual void SetEnabled(int b);                             // 0x88
     void SetFocus();
     virtual void Load(CResGFF* pGFF, CResStruct* pStruct);      // 0x48
     CSWGuiBorder m_cBorder;                         // 0x6c
     CSWGuiEditText m_cText;                         // 0xe0
 };
 
-// 12-byte member of CSWGuiListBox (+0x2d0), zeroed by its inline ctor.
+// 12-byte member of CSWGuiListBox (+0x2d0), zeroed by its inline ctor; the
+// GFF "COLOR" vector (ListBox::Load 0x0041d5b0).
 struct CSWGuiListBoxScroll {
     int m_n0;
     int m_n4;
@@ -514,6 +583,11 @@ struct CSWGuiListBoxScroll {
         m_n0 = 0;
         m_n4 = 0;
         m_n8 = 0;
+    }
+    CSWGuiListBoxScroll& operator=(const Vector& vColor)
+    {
+        *(Vector*)this = vColor;
+        return *this;
     }
 };
 
@@ -560,6 +634,7 @@ public:
             unsigned long m_bFlag10 : 1;                    //       bit 10
             unsigned long m_bFlag11 : 1;                    //       bit 11
             unsigned long m_bKeepSelectionVisible : 1;      //       bit 12
+            unsigned long m_nProtoType : 4;                 //       bits 13-16
         };
     };
     unsigned char m_n2c0;                           // 0x2c0
@@ -589,6 +664,7 @@ public:
     CSWGuiControl* GetSelectedControl();            // 0x0041a5d0
     void SetSelectedControl(int nIndex, int bSound); // 0x0041c040
     void SetPadding(unsigned char nPadding);        // 0x0041c190
+    void HandleMouseMove();                         // 0x0041c400
     void AddControls(const CExoArrayList<CSWGuiControl*>& lstControls, int bOwned, int bRestoreExtents,
                      int bUnequal);                 // 0x0041c1d0
     void AddControls(CSWGuiControl** pControls, int nCount, int bOwned, int bRestoreExtents,
@@ -602,6 +678,10 @@ public:
                                    const CResRef& cThumb, int bLeft); // 0xa0
     virtual void SetListFlag0(int b);               // 0xa4 (0x0041b120)
     void OrganizeControls();                        // 0x0041b140
+    void OrganizeOversized();                       // 0x0041a2d0
+    void OrganizeUnequal();                         // 0x00419ee0
+    virtual void Load(CResGFF* pGFF, CResStruct* pStruct);      // 0x48
+    void LoadProtoItem(CResGFF* pGFF, CResStruct* pStruct); // 0x0041d3e0
 };
 
 #endif

@@ -44,12 +44,16 @@ public:
     int ReplyToInvitation(unsigned long nReply, unsigned long oidInviter); // 0x0051D060 (descriptive reference name)
     CSWSFaction* GetFaction();                      // 0x00513FC0
     void SetInvitedToParty(int bInvited);            // 0x004EF520
+    void SendFeedbackMessage(unsigned short nMessage, class CSWCCMessageData* pData); // 0x004EDE10
+    void UpdateInvitations();                        // 0x00518660 (descriptive name)
 
     char pad_0[4];
     unsigned long m_idSelf;
     char pad_8[0x92c - 8];
     unsigned long m_oidInviter;                     // 0x92c
-    char pad_930[0x93c - 0x930];
+    char pad_930[0x934 - 0x930];
+    unsigned long m_nInvitedDay;                    // 0x934 (placeholder name)
+    unsigned long m_nInvitedTime;                   // 0x938 (placeholder name)
     CExoArrayList<CSWSCreatureInvitation>* m_pInvitationsOffered; // 0x93c
     CExoArrayList<CSWSCreatureInvitation>* m_pInvitationsIgnored; // 0x940
 };

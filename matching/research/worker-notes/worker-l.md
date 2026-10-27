@@ -396,3 +396,259 @@ NONMATCH:
   real destructors 0x006C05A0/0x006C2560/0x006C8190/0x006BFFB0. Class
   identities are supported by Mac debug names and the native vtable contexts.
   The unannotated emitter constructors are not reconstructed constructors.
+
+## Store, party selection and small in-game panels (2026-10-27, worker-l-s7)
+
+- Whole folder: **545/600 -> 591/655**. 55 functions annotated, **46 NEW
+  exact**, 9 retained NONMATCH, no prior MATCH regressed.
+- MATCH, store (`l/sw_gui_store.cpp`, `sw_gui_store_ctor.cpp`, header
+  `l/sw_gui_store.h`): 0x006C0610 PopulateStore, 0x006C0690 SetDescription,
+  0x006C0790/0x006C07F0 GetItemBuy/SellValue, 0x006C0AA0 OnControlEntered,
+  0x006C0BE0 BuyItem, 0x006C0D20 BuyItemCallback, 0x006C0D80 SellItem,
+  0x006C0EE0 SellItemCallback, 0x006C1130 OnControlStoreAButton, 0x006C13C0
+  ShowSellGUI, 0x006C1A50 ShowBuyGUI, 0x006C1B00 OnControlXButton,
+  0x006C1B50 InitializeStoreType, 0x006C2190 HandleInputEvent, 0x006C1C00
+  ctor, 0x006C1470 dtor, 0x006C1820 ??_G; store item entry 0x006B53F0
+  Initialize (`sw_gui_store_entry.cpp`).
+- MATCH, party selection (`sw_gui_party_selection.cpp`, `_ctor.cpp`, header
+  `l/sw_gui_party_selection.h`): 0x006BE310 SetForcedNPC, 0x006BE370 slot
+  SetSelected, 0x006BE490 OnPanelRemoved, 0x006BE4E0 UpdateCount, 0x006BEC90
+  ConfirmPartySelection, 0x006BECC0 SetAddRemoveLabel, 0x006BEDE0
+  HandleInputEvent, 0x006BF2A0 OnToggled, 0x006BF3B0 OnDone, 0x006BFA40
+  ctor; implicit dtors 0x006BE420 (member button) and 0x006BFFB0.
+- MATCH, small panels: pause 0x006C00B0 Draw, 0x006C02F0 OnPanelAdded,
+  0x006C0350 OnUnpause, 0x006C03B0 ctor, 0x006C05A0 dtor
+  (`sw_gui_in_game_pause.cpp`); solo-mode query 0x006C2270 ctor, 0x006C2310
+  Draw, 0x006C2400 HandleInputEvent, 0x006C24A0 SetQuery, 0x006C2560 dtor
+  (`sw_gui_solo_mode_query.cpp`); area transition 0x006C7D20
+  CSWCDoor::GetTransitionName, 0x006C7D50 ctor, 0x006C7EC0
+  SetTransitionObject, 0x006C8050 Draw, 0x006C8190 dtor
+  (`sw_gui_area_transition.cpp`). All implicit panel dtors share the
+  novtable TU `sw_gui_panel_dtors_novtable.cpp`.
+- NONMATCH kept: 0x006B2590 CSWGuiListBox::SetTopVisible (8; esi/edx swap,
+  own TU `sw_gui_listbox_top_visible.cpp` because the caller otherwise keeps
+  ECX live), 0x006B5270 store entry SetExtent (5; same ebx/edx tie as the
+  upgrade entry 0x006C2650), 0x006B7270 store entry SetItem (53; frame is 8
+  bytes larger, one extra 4-byte slot at the bottom, structure identical),
+  0x006C0850 PopulateInventoryItemListBox (71; original spills `this` and
+  keeps the inner index in ebp), 0x006C1840 PopulateStoreItemListBox (28;
+  ebx/ebp swap + nIndex slot), 0x006C1660 CreateItemEntry (30; ebx/ebp swap
+  of pool/entry), 0x006C0F40 OnControlInvAButton (11; second GetLevel keeps
+  the stats pointer in edi; a GetStats() getter fixes that but spills pItem),
+  0x006C00C0 pause SetPauseReason (47; eax/edx temp colouring only),
+  0x006BED70 party member button ctor (3; vptr/field store scheduling).
+- functions.csv lacks the starts 0x006B5270, 0x006B53F0, 0x006BE490,
+  0x006BEC90, 0x006BEDE0, 0x006BF2A0, 0x006BF3B0, 0x006C00B0, 0x006C02F0,
+  0x006C0350, 0x006C0AA0, 0x006C0D20, 0x006C0EE0, 0x006C0F40, 0x006C1130,
+  0x006C2310, 0x006C2400, 0x006C8050; the annotations restore them.
+- Naming: mac_names attaches "OnControlStoreAButton" to 0x006C0D80 and
+  "OnPanelRemoved" to 0x006BE420 by call pattern only; the code at those
+  addresses is SellItem (player sells to the store) and the member-button
+  destructor, so the descriptive names follow the code. CSWGuiPartySelectionSlot
+  (member button) and CSWGuiInGameSoloModeQuery::SetQuery are descriptive.
+- Shared-header changes (whole folder verified): CSWGuiListBox +0x2C8 m_nTop
+  and SetTopVisible; CSWGuiBorderParams +0x08 m_fRotation and bit aliases
+  m_bStyle0/1 over m_nStyle; CSWGuiTextParams full ctor 0x00417120;
+  CGuiInGame +0x30, +0xB4, ShowExamineBox/HideStoreGui/SetupPauseGuiExtent/
+  HideSoloMode/GetBarkBubbleVisible; CClientExoApp GetGUIString/GetMiniGame/
+  GetModule/GetAutoPaused/SetAutoPaused/GetAreaNotReadyToDisplay/
+  TogglePartyFollow; CServerExoApp::GetStoreByGameObjectID; CSWPartyTable
+  +0x190 and KillNPCObject; CExoString::Find(const CExoString&, int);
+  CTlkTable::SetCustomToken; bark CSWCObject +0x08 object type and
+  CGameObject slots 0x14 AsSWCDoor / 0x3C AsSWCTrigger; tutorial CSWCCreature
+  +0x2D4 bit and PerformSkill(int,int,ulong), CSWCDoor +0x13C; upgrade
+  CSWSItem m_bPlotItem/m_bInfinite/GetCost/GetStackSize, CSWSCreature
+  GetGold/SetGold/GetItemRepository/m_pStats(+0xA74)/GetStats; inventory
+  CSWGuiStoreItemEntry SetExtent/Initialize/SetItem.
+- Lessons: (1) Inline accessors again decided register colouring:
+  GetServerExoApp()/GetClientExoApp() on some calls (OnPanelAdded,
+  Draw, the getter-backed GetStore()), CSWSItem::GetStackSize(),
+  CSWCModule::GetArea(), CSWSCreature::GetStats(). (2) Reading the control's
+  object id into a local before fetching the server pointer
+  (`unsigned long oidItem = pEntry->m_oidItem; CServerExoApp* pServer = ...`)
+  fixed every GetItemByGameObjectID(ClientToServerObjectID(..)) lookup.
+  (3) `if (n > 1) store->Acquire(item->Split(1)); else { repo->Remove(item);
+  store->Acquire(item); }` (tail-merged calls) beat a pSold variable.
+  (4) Constructors keep member pointers in callee-saved registers only when
+  the source uses pointer locals from the InitControl call on
+  (`CSWGuiListBox* pShopItems = &m_lbShopItems; InitControl(pShopItems, ..)`);
+  re-using one `pButton` for two buttons reproduces the address-in-ecx store.
+  (5) Visibility flag triples written with ShowControl/HideControl give the
+  `or [mem], eax` form. (6) A CSWGuiZeroExtent local assigned through
+  `static_cast<CSWGuiExtent&>(x) = ext` keeps the ctor zeroing. (7) Counter
+  declaration order picks which byte counter gets the immediate zero store
+  in a fully unrolled loop (OnDone). (8) Scratch variant script with a
+  compile-failure check: /private/tmp/claude-501/swk-l-s7/var.py.
+- Next in-range queue: party selection remainder (AcceptParty 0x006BE560,
+  OnPanelAdded 0x006BEEB0, OnEnter 0x006BF5B0); the 9 NONMATCHes above;
+  store entry Draw 0x006B4D40 / in-game item entry Initialize 0x006B4DB0;
+  upgrade remainder (Draw 0x006C33A0, ShowItems 0x006C2F80, Update3DView
+  0x006C3630, SetItem 0x006C3EA0, OnPanelAdded 0x006C4D70, OnControlEntered
+  0x006C5370, OnSlotSelected 0x006C6500); save/load GUI 0x006C8200-0x006CC680;
+  CSWMGBehavior 0x006DB4F0-0x006DBD30; projectile modes 0x006D4520-0x006D55F0.
+
+## Save/load screen (2026-10-27, worker-l-s8)
+
+- Whole folder: **591/655 -> 622/688**. 33 functions annotated, **31 NEW
+  exact**, 2 retained NONMATCH, no prior MATCH regressed. The previous s8
+  worker left no commits; this batch started from the merged main state.
+- Header `l/sw_gui_save_load.h` (swguisaveload.o): CSWGuiSaveLoad (0x1160,
+  vtable 0x00757650), CSWGuiSaveLoadEntry (0x248, vtable 0x00757740, a
+  CSWGuiRadioButton whose ctor/dtor are inlined), CSWGuiSaveNamePanel
+  (0x690, vtable 0x007576D0), CSWGuiSaveGameEditBox (vtable 0x007575B0),
+  CStatusSummary, KOTOR_AUTOSAVE_PARAMS, plus local CResGFF/CERFFile/
+  CExoFile/CExoAliasList/CExoBase declarations.
+- MATCH: entry 0x006C8200 GetPlayerPortrait (`_entry.cpp`, implicit CResRef
+  copy), 0x006C8250 GetGameDirectory, 0x006C8E50 LoadData
+  (`_entry_load.cpp`), 0x006C9780 SetName (`_entry_name.cpp`), 0x006CB940
+  ctor, 0x006CBA90 dtor, 0x006CBA70 ??_G; edit box 0x006C82F0 HandleChar,
+  0x006CB0A0 ??_G; save-name panel 0x006C8410 OnPanelAdded, 0x006C8460
+  OnPanelRemoved, 0x006C8470 HandleCancelButton, 0x006CB040
+  HandleInputEvent, 0x006CAE70 ctor, 0x006CC060 dtor, 0x006CC040 ??_G;
+  save/load 0x006C86D0 HandleInputEvent, 0x006C8750 LoadBarCallback,
+  0x006C8900 DeleteGame, 0x006C89D0 ShowGame (`_show.cpp`), 0x006C9A90
+  ExtractSaveGame, 0x006CAA90 PromptDeleteGame, 0x006CAAF0
+  PrepareGameInProgress, 0x006CB820 PromptForSaveName, 0x006CC0E0
+  VerifyLoadGame, 0x006CC160 PopulateGameList (`_list.cpp`), 0x006CC680
+  ctor, 0x006CA110 dtor, 0x006CB0C0 ??_G; GFF readers 0x006C8490
+  CStatusSummary::LoadFromGFF, 0x006C9DE0 KOTOR_AUTOSAVE_PARAMS::LoadFromGFF
+  (`_gff.cpp`). Dtors without derived vptr stores are in
+  `sw_gui_save_load_dtors_novtable.cpp`.
+- NONMATCH kept: 0x006C8790 WriteGame (17; Format/SendSaveGameRequest
+  argument registers eax/ecx/edx/esi colouring only), 0x006CBB60
+  HandleSaveButton (70; original reads pControl->m_n4c before the pushes
+  and spills the int64 comparand to an extra 4-byte slot, which shifts every
+  frame offset; structure otherwise identical).
+- functions.csv lacks the starts 0x006C82F0, 0x006C8410, 0x006C8460,
+  0x006C8470, 0x006C8750, 0x006C8900, 0x006CB040, 0x006CC0E0; the
+  annotations restore them.
+- Naming: mac_names puts "VerifyLoadGame" on 0x006CC060, but that is the
+  save-name panel destructor (called from ??_G 0x006CC040); the real
+  VerifyLoadGame is 0x006CC0E0 (the BTN_SAVELOAD load callback). Descriptive
+  names: DeleteGame, PromptDeleteGame, ExtractSaveGame,
+  PrepareGameInProgress, LoadBarCallback, HandleCancelButton, SetName and
+  the entry flag names (m_bSavedGame, m_bCorrupt, m_bRebootAutoSave,
+  m_bPCAutoSave, m_bMissingContent, m_bCheatUsed). ExtractSaveGame and
+  PrepareGameInProgress are thiscall members that never use `this` (callers
+  leave ECX untouched, RET 8/0xC).
+- Shared-header changes: CSWGuiControl slot 0x28 is now `GetPanel()`;
+  CSWGuiLabel::SetFillImage(const CResRef&) inline wrapper; CSWGuiManager
+  Save/MoveMouseToPosition/RestoreOldMousePosition and g_pGuiManager;
+  CClientExoApp DisplayMainMenu/SetLoadBarProgress/SendSaveGameRequest/
+  GetTutorialFlag/HideLoadScreen; CExoResMan CreateDirectory2/
+  Add/RemoveResourceDirectory/CleanDirectory/NukeDirectory/GetFreeDiskSpace;
+  CExoArrayList::InsertInline; macros L_RADIO_BUTTON_INLINE
+  (inventory_equip.h), L_RESREF_IMPLICIT_COPY (bark_bubble.h),
+  L_SW_GUI_SAVE_LOAD_FULL (hides the padded CSWGuiSaveLoad in
+  options_in_game.h). m_pOwner (+0x34) stays void* (keymap button assigns
+  its owner panel); cast to CSWGuiControl* for GetPanel.
+- Lessons: (1) Message-box accepted checks want a `CSWGuiMessageBox* pBox`
+  local (gives `mov eax,[eax+0x98]; test [eax+0x64]`). (2) A temporary
+  CExoString/CResRef whose address is pushed with `lea` instead of the
+  ctor's eax comes from an implicit conversion (`RemoveResourceDirectory(
+  "TEMP:")` style) or a named local in a block; explicit `CExoString(..)`
+  temps push eax. (3) A CResRef temp built before the other arguments are
+  pushed means an inline wrapper (`label.SetFillImage(img)` ->
+  `m_cBorder.SetFillImage(img, 0)`). (4) Member buttons called through the
+  vtable need a pointer expression (`(&m_btnDelete)->SetEnabled(1)`).
+  (5) A byte default read through a stack slot (`mov dl,[esi+x]; mov
+  [esp+n],dl; mov eax,[esp+n]; push eax`) is a named `unsigned char` local.
+  (6) EH state numbering follows source order: when the second-laid-out
+  branch has the lower states, swap the if/else. (7) `n = max(..)` with the
+  `cmp ebx,eax; jbe; mov eax,ebx; mov ebx,eax` shape is
+  `if (nMax > n) n = nMax; nMax = n;`. (8) The add-then-shift insertion in
+  PopulateGameList is an inline Insert(t, 0) using the old count as the
+  loop counter. (9) var.py now also captures stderr (compile failures).
+- Next in-range queue: save/load remainder LoadGame 0x006CB0E0 and
+  LoadPCAutoSave 0x006CA250 (both need many CClientExoApp/CServerExoApp
+  declarations); the 2 NONMATCHes above; party selection remainder
+  (AcceptParty 0x006BE560, OnPanelAdded 0x006BEEB0, OnEnter 0x006BF5B0);
+  upgrade remainder (0x006C2F80, 0x006C33A0, 0x006C3630, 0x006C3EA0,
+  0x006C4D70, 0x006C5370, 0x006C6500); CSWMGBehavior 0x006DB4F0-0x006DBD30;
+  projectile modes 0x006D4520-0x006D55F0; title movies 0x006DCE80-0x006DDAF0.
+
+## Character creation frame, step panels and AI script picker (2026-10-27, worker-l-s10)
+
+- Whole folder: **640/710 -> 679/753**. 43 functions annotated, **39 NEW
+  exact**, 4 retained NONMATCH, no prior MATCH regressed. (The s9 round left
+  no notes section: it added the class selection screen, CResSSF and the MG
+  track behaviours, see its commits.)
+- Header `l/sw_gui_main_chargen.h` (on top of `sw_gui_levelup_chargen.h`):
+  CSWGuiMainCharGen (0x22DC, vtable 0x007592A8; 27 labels, model view, name
+  strings), CSWGuiQuickOrCustomPanel (pointer fields only), CSWGuiQuickPanel
+  (0x1360), CSWGuiCustomPanel (0x2188), CSWGuiPortraitCharGen /
+  CSWGuiNameChargen (ctor + SetParentPanel only), CSWCAnimBase, CAurObject
+  (slots 0x18 PlayAnimation, 0x104 GetScene). Header `l/sw_gui_script_select.h`:
+  CSWGuiScriptSelect (0xC40, vtable 0x007590A8) with CExoArrayListZ (ctor +
+  zeroing dtor + releasing SetSize).
+- MATCH, main chargen (`sw_gui_main_chargen.cpp`, `_ctor.cpp`, `_dtor.cpp`):
+  0x006EA760 SetVisiblePanel, 0x006EA810 OnPanelAdded, 0x006EA830
+  RemoveSubPanels, 0x006EA910 DetermineClass, 0x006EA9B0 SetNameString,
+  0x006EA9F0 PortraitChanged (x87 camera framing), 0x006EAC30
+  AbilitiesChanged, 0x006EB010 ClearAbilities, 0x006EB320 BeginPlayGame,
+  0x006EB340 Draw, 0x006EB420 ctor (2752 bytes), 0x006EBEE0 ??_G,
+  0x006EBF00 dtor (novtable TU).
+- MATCH, custom panel (`sw_gui_custom_panel.cpp`, `_ctor.cpp`, `_dtor.cpp`):
+  0x006EEF70 CSWGuiMainCharGen::NameChanged (emitted in this object),
+  0x006EF120 OnSelectPortrait, 0x006EF220 OnSelectPlay, 0x006EF240
+  OnSelectName, 0x006EF2D0 OnSelectFeats, 0x006EF360 OnSelectSkills,
+  0x006EF3F0 OnSelectAbilities, 0x006EF480 CancelledByChild, 0x006EF5B0
+  ConfirmCancel, 0x006EF610 HandleInputEvent, 0x006EF6A0 OnCancelPressed,
+  0x006EF730 ctor, 0x006EFB20 ??_G, 0x006EFB40 dtor.
+- MATCH, quick panel (`sw_gui_quick_panel.cpp`): 0x006EFD60 OnSelectPlay,
+  0x006EFD80 OnSelectName, 0x006EFE10 OnSelectPortrait, 0x006EFF10
+  CancelledByChild.
+- MATCH, script select (`sw_gui_script_select.cpp`): 0x006E9AC0 dtor,
+  0x006E9BC0 HandleInputEvent, 0x006E9CA0 SetCreatureID, 0x006E9D50
+  SetDescription, 0x006E9E70 OnScriptSelected, 0x006E9EF0 ??_G, 0x006E9F10
+  CreateOption, 0x006E9FE0 OnEnterOption.
+- NONMATCH kept: 0x006EEFD0 custom SetState and 0x006EFC10 quick SetState
+  (35 each; the original strength-reduces the step arrays to element base
+  pointers and does read-modify-write on the text flags, mine keeps
+  flag-field pointers; same tie as level-up ChangeState 0x006EE0E0; tried
+  bitfield writes, SetHighlighted, pointer locals, ul masks), 0x006EFFD0
+  DoQuickStats (97; every byte argument goes through a stack slot in the
+  original, `mov [esp+n],cl; mov eax,[esp+n]; push eax`; named locals and
+  getters did not reproduce it), 0x006EA000 ScriptSelect ctor (15; frame is
+  8 bytes smaller in the original, stack-slot packing only).
+- functions.csv lacks the starts 0x006EB340, 0x006EF120, 0x006EF220,
+  0x006EF240, 0x006EF2D0, 0x006EF360, 0x006EF3F0, 0x006EF5B0, 0x006EF6A0,
+  0x006EFD60, 0x006EFD80, 0x006EFE10, 0x006E9FE0; the annotations restore
+  them.
+- Naming: descriptive RemoveSubPanels, ConfirmCancel, OnScriptSelected,
+  CreateOption, OnEnterOption, CSWClass::GetACBonus (0x005BE770),
+  CSWCLevelUpStats ClearPackage/AddDefaultPackageFeats/
+  AddDefaultPackageSkills/UpdateAbilityModifiedSkillRanks, the class package
+  ability bytes CSWClass +0x17B..+0x180 and CSWSCreatureStats +0x13A
+  m_nAIState. The sub-step panels store the custom panel in their +0x68
+  parent (declared CSWGuiLevelUpPanel*), cast at the store.
+- Shared-header changes (whole folder verified): CSWCCreatureStats m_nSTR/
+  m_nDEX/m_nINT (0x34/0x35/0x37), m_nACBonus 0x40, m_nAppearance 0x8C;
+  CSWClass package bytes; CSWSCreatureStats m_nAIState; CExoArrayListL
+  SetSizeFree; CSWCCreature m_pAppearance (0x21C), GetAnimBase,
+  CGPauseCycle, SetAppearance; CSWGuiControl slot 0x34 GetHeight(); Vector
+  operator-= / Normalize; CAurCamera slots 0x18 SetPosition / 0x1C
+  SetOrientation.
+- Lessons: (1) The original sometimes duplicates a short helper's body
+  instead of calling it (custom ConfirmCancel/OnCancelPressed inline the
+  CancelPanel body while HandleInputEvent calls it out of line): write the
+  body twice. (2) `dec eax; jne` on a member compare comes from a
+  one-case `switch`. (3) Arguments computed inside the call expression
+  (`YawPitchRoll(Yaw(v) + 180.0f, 90.0f - Pitch(v), 0.0f)`) fstp straight
+  into the pushed slot; separate float locals cost a frame slot. (4) A
+  vptr-less implicit dtor of a big panel needs only the novtable TU (labels
+  out of line). (5) A label fill image from a by-value virtual return
+  (`push eax`) wants the inline label wrapper with the virtual called
+  directly, not through a by-value inline helper. (6) Stat reads into named
+  locals in the order of the original loads fixed AbilitiesChanged
+  (hit die before base HP). (7) `CAurScene* pScene = member; if
+  (x->GetScene() != pScene) Set(member)` reproduces the reload after a
+  virtual call.
+- Next in-range queue: the 4 NONMATCHes above plus level-up ChangeState
+  (same loop shape); quick panel remainder is outside the bucket (ctor
+  0x006F0390, OnPanelAdded 0x006F0260, HandleInputEvent 0x006F0280);
+  save/load LoadGame 0x006CB0E0 / LoadPCAutoSave 0x006CA250; party selection
+  remainder (0x006BE560, 0x006BEEB0, 0x006BF5B0); upgrade remainder
+  (0x006C2F80, 0x006C33A0, 0x006C3630, 0x006C3EA0, 0x006C4D70, 0x006C5370,
+  0x006C6500); title movies 0x006DCE80-0x006DDAF0; projectile modes
+  0x006D4520-0x006D55F0; RK4 / camera helpers 0x006D0A40-0x006D30C0.

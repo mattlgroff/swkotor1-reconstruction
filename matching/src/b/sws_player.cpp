@@ -348,7 +348,7 @@ int CSWSPlayer::LoadServerCharacter(CResRef cResRef)
 {
     CSWSCreature* pCreature = new CSWSCreature(INVALID_OBJECT_ID, 1);
     SetGameObject(pCreature);
-    m_oid38 = pCreature->m_idSelf;
+    m_oid38 = pCreature->GetId();
     m_n64 = 3;
     g_pExoResMan->RemoveResourceDirectory("SERVERVAULT:");
     g_pExoResMan->AddResourceDirectory("SERVERVAULT:");
@@ -415,7 +415,7 @@ int CSWSPlayer::LoadCharacterFromIFO(int nIndex, int bArg, int bFinish)
     m_oid38 = pCreature->m_idSelf;
     unsigned long oidArea = pRes->ReadFieldDWORD(&cPlayer, "AreaId", bSuccess, 0);
     pCreature->SetInParty(1, 1);
-    if (pCreature->m_pStats->ReadStatsFromGff(pRes, &cPlayer, &pCreature->m_cAppearance)) {
+    if (pCreature->GetStats()->ReadStatsFromGff(pRes, &cPlayer, &pCreature->m_cAppearance)) {
         g_pExoResMan->ReleaseResObject(pRes);
         delete pCreature;
         return 0;
@@ -428,7 +428,7 @@ int CSWSPlayer::LoadCharacterFromIFO(int nIndex, int bArg, int bFinish)
     pCreature->m_nCreatureSize = pRes->ReadFieldINT(&cPlayer, "CreatureSize", bSuccess, 3);
     pCreature->LoadFromGff(pRes, &cPlayer, !bVault, 1, 0);
     pCreature->LoadObjectState(pRes, &cPlayer);
-    pCreature->m_pStats->ReadSpellsFromGff(pRes, &cPlayer);
+    pCreature->GetStats()->ReadSpellsFromGff(pRes, &cPlayer);
     pCreature->m_bDisguised = pRes->ReadFieldBYTE(&cPlayer, "PM_IsDisguised", bSuccess, 0);
     if (pCreature->m_bDisguised) {
         pCreature->m_nDisguiseAppearance = pRes->ReadFieldWORD(&cPlayer, "PM_Appearance", bSuccess, 0);

@@ -48,6 +48,8 @@ class CAppManager {
 public:
     void* m_pUnknown00;
     CClientExoApp* m_pClientExoApp;                 // 0x04
+
+    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
 };
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
@@ -173,7 +175,7 @@ int CSWCCreature::PlaySwingSound(const CExoString& sEvent, CSWCCombatAttackData*
     if (pItem && pItem->GetBaseItem()) {
         nRow = pItem->GetBaseItem()->m_nWeaponSoundRow;
     }
-    pItem = g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(m_oidLeftWeapon);
+    pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_oidLeftWeapon);
     if (pItem && pItem->GetBaseItem()) {
         CSWSItem* pServerItem = pItem->GetServerItem();
         if (pServerItem && pServerItem->GetIsFinesseWeapon() == 1) {

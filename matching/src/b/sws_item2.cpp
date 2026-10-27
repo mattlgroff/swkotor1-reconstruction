@@ -62,7 +62,7 @@ void CSWSItem::OpenInventory(unsigned long nOpener)
             CGameObject* pPlayer = g_pAppManager->GetServerExoApp()->GetClientObjectByObjectId(nOpener);
             if (pPlayer) {
                 unsigned long nCount = m_pRepository->m_aItems.num;
-                unsigned long oid = m_idSelf;
+                unsigned long oid = GetId();
                 int bHasItems = nCount > 0;
                 g_pAppManager->GetServerExoApp()->GetSWSMessage()->SendServerToPlayerOpenInventory(
                     pPlayer, oid, bHasItems);
@@ -70,7 +70,7 @@ void CSWSItem::OpenInventory(unsigned long nOpener)
             CScriptEvent* pEvent = new CScriptEvent();
             pEvent->m_nType = 0x16;
             g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-                0, 0, nOpener, m_idSelf, EVENT_DELAY_INVENTORY, pEvent);
+                0, 0, nOpener, GetId(), EVENT_DELAY_INVENTORY, pEvent);
             m_bInventoryOpen = 1;
         }
     }

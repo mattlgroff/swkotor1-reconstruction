@@ -372,3 +372,218 @@ Their AC byte layout follows the existing matched OnRemoveAC handlers.
   produces the original ECX/EDX argument order without changing semantics.
   Corrected the related 0x004DCAC0 caller's provisional void alias to the
   established `int UnDisguise(CGameEffect*)`; the caller remains NONMATCH 2.
+
+# Worker A, round s6 (2026-10-27)
+
+Branch claude/worker-a-s6 (local) from main ec401c4. Family: the
+CSWSEffectListHandler handlers registered by InitializeEffects (0x004E4A10)
+that had no source. The registration function lists every handler slot; 26
+of its in-bucket targets were unannotated (several have no functions.csv row
+or sit inside a coarse row: 0x004DADE0 spans to 0x004DB00F although the
+table splits it at 0x004DAE1F). New files effect_list_handler7.cpp and
+effect_list_handler8.cpp.
+
+Folder `kotor-match -q -j 2 matching/src/a`: 530/643 -> **543/662**.
+19 attempted, 13 NEW exact, 6 retained NONMATCH; 0 prior MATCH regressions;
+old NONMATCH 0x004DC200 OnApplyImmunityFeedback improved 35 -> 22.
+
+NEW exact (13): 004E4A10 InitializeEffects, 004DADE0 OnApplyAreaOfEffect,
+004DA090 OnApplyDeaf, 004D9720 OnApplyEntangled, 004DD270
+OnRemoveDisappearAppear, 004D9320 OnRemoveTemporaryHitpoints, 004DDAC0
+OnRemoveWounding, 004DC7A0 OnRemoveHitPointChangeWhenDying, 004DBE60
+OnApplyCurse, 004E2720 OnApplyDisease, 004DD520 OnApplyNegativeLevel,
+004DA330 OnApplySetStateInternal, 004D8A40 OnApplySummonParty.
+
+Retained NONMATCH (diff insns): 004DB320 OnApplyPoison (21, frame 0x20 vs
+0x24 / temporaries in arg slots), 004E3800 OnApplyForcePush (22, area resref
+argument: original adds 0x100 then 0x0c, cl folds to 0x10c), 004D99B0
+OnApplyKnockdown (14, dot product term order), 004E0750 OnApplyHeal (21,
+type word compared in memory twice), 004DE0A0 OnApplyForceJumpDelayed (104,
+register allocation), 004D8680 OnApplySummonCreature (74, 0/-1 constants
+not cached in ebp/edi).
+
+Lessons:
+- Inline getters again decided most matches: CGameEffect::GetCreator(),
+  GetSpellId(), GetDuration(); CSWSCreature::GetStats(), GetF8() (+0xf8),
+  CGameObject::GetId(); CSWRules::Get2DArrays() + C2DAs::GetAppearanceTable()
+  (2DA pointer loaded into eax before the argument pushes); a pathfind
+  getter for m_pFollowInfo (+0x340). The immunity-feedback block shared by
+  ~10 handlers matches with GetCreator/GetStats/GetId (+GetF8 when the
+  creature has many uses).
+- `Vector GetPosition() { return m_vPosition; }` by value gives the
+  `add reg,0x90; mov [reg],[reg+4],[reg+8]` copy pattern.
+- A dead `add eax,0x1c` after a module id load comes from calling an inline
+  of a non-primary polymorphic base (CSWSModule: CGameObject at +0x1c).
+- InitializeEffects: slots that share one address were distinct source
+  functions folded by the linker (identical bodies); with one symbol cl
+  caches the address in a register. Only two adjacent pairs (types 1/3 and
+  0x4d/0x58) really share a symbol. Placeholder names are base handler +
+  "Type<XX>" (declared in effect_list_handler.h); 0x0066B360 is the shared
+  three-argument zero leaf (OnApplyNothing).
+- Separate early-return vs outer-if: the outer-if form keeps all callee-saved
+  pushes in the prologue like the original (THP, Disease, ForcePush,
+  ForceJump, Knockdown); `int bDirect = 0` after a cached GetInteger.
+- Vector temporaries: `Normalize(a - b)` with inline operators reproduces the
+  x87 sequences; Knockdown instead calls the out-of-line operator- 0x00423BC0,
+  so it lives in its own file.
+- Header: CGameObject slot 0 is now the virtual destructor (needed for
+  `delete` of a new creature); CExoString m_sScriptOnSpawn at creature +0x270
+  and the other added members changed no existing result.
+
+Next in-range queue (same family, all large): 004D9CE0 OnApplyDisarm (rand
+jitter, no EH), 004DAA40 OnApplyVisualEffect (aligned frame),
+004DE600 OnApplyLightsaberThrow, 004DF540 OnApplyForceShield (2DA string
+compares), 004DFA40 OnApplyDamage, 004E0AC0 OnApplyDeath, 004E1C20
+OnApplySetState (five immunity blocks), 004E43C0 OnApplyDispelBestMagic.
+Names/declarations for all of them are already in effect_list_handler.h.
+
+# Worker A, round s7 (2026-10-27)
+
+Branch claude/worker-a-s7 (local) from main 025f375; continued after a usage
+limit cut the first s7 worker off (its WIP DesiredAttackRange /
+ReceiveExperience compiled as-is). Family: nwscreature.cpp CSWSCreature
+helpers (activities, appearance, journal, locks, counter-spell) plus the
+CSWSCombatRound / CSWSCombatAttackData / CScriptEvent / CSWCCMessageData GFF
+load/save bodies in 0x004D2450-0x004D79B0.
+
+Folder `kotor-match -q -j 2 matching/src/a`: 543/664 -> **562/686**.
+24 attempted, 13 NEW exact, 11 retained NONMATCH, 6 prior NONMATCH promoted,
+0 prior MATCH regressions (checked against status.csv).
+
+NEW exact (13): 004EB1B0 ClearActivities, 004F00A0 SetActivity, 004ED850
+UpdateAppearanceDependantInfo, 004ED4C0 SetPortraitId, 004FCE90
+AddCounterSpellActions, 004F17D0 LoadJournal, 004F0B20 EvaluateLock,
+004D2450 CSWSCombatAttackData::LoadData, 004D3EC0
+CSWSCombatRound::SaveCombatRound, 004D5120 CSWSCombatRound::LoadCombatRound,
+004D79B0 CScriptEvent::LoadEvent, 004D6B10 CSWCCMessageData::LoadData,
+004D6EE0 CSWCCMessageData::CopyTo. (Names without a Mac/debug-map entry are
+descriptive: ClearActivities, SetPortraitId, AddCounterSpellActions,
+EvaluateLock, CalculateDeathExperience.)
+
+Promoted (6, all in sws_combat_round.cpp after moving
+CSWSCombatRoundAction::Clear 0x004D1D50 there from sws_combat_data.cpp):
+004D2FF0 CSWSCombatRoundAction ctor, 004D3810 AddCutsceneAttackAction,
+004D3A90 AddSWItemSpellAction, 004D3B30 AddCutsceneMoveActions, 004D3C30
+AddEquipAction, 004D3CE0 AddUnequipAction. AddAttackAction (004D38B0) calls
+the ctor out of line in the original: it keeps its match under
+`#pragma inline_depth(0)` with the server app read as a plain member.
+
+Retained NONMATCH (diff insns): 004F1310 DesiredAttackRange (23, door/
+placeable vtable CSE), 004EF930 ReceiveExperience (25, ebx/edi swap, fmul
+operand order), 004F19E0 CalculateDeathExperience (11, ecx/eax for the list
+head), 004F2C30 ValidNearestObjectType (22, this/ref register swap),
+004FAF20 UpdateCombatRoundTimer (12, scratch register rotation), 004F87D0
+ActivityManager (2, merged return placement), 004F2A50 ToggleMode (4, late
+`push ebx` vs return-0 block placement), 004FD1E0 Rest (11, `cmp eax,ebx`
+for the client-object test, lea registers), 004F0FD0 RemoveFromArea (15,
+first event block register choice), 004F9DA0 AddMineActions (30, frame 8 vs
+4 and return-0 placement), 004F6000 GetIsInUseRange (8, zero-vector store
+scheduling).
+
+Lessons:
+- Temporaries vs named scoped locals: wherever the original `lea`s the
+  argument address instead of pushing the ctor's EAX (CExoString column
+  names, "" defaults, CResRef), use `{ CExoString s("..."); f(s); }`. The
+  block scope also lets cl share the stack slot (SetPortraitId frame).
+- Inline getters load the pointer into EAX before the argument pushes and
+  `mov ecx,eax` at the call: C2DAs::GetPortraits()/GetPartyTable(),
+  CSWSCreature::GetInventory(). A direct member load goes straight to ECX.
+- `bool b = f() == 1;` reproduces `dec/neg/sbb/inc bl` (weaponscale).
+- `int bSuccess;` left uninitialized puts the GFF success flag in a dead
+  argument slot and keeps `push 0` immediates (no cached zero register).
+- Found-flag loops: `int bFound = 0; for (...) { if (hit) { ...; bFound = 1;
+  break; } } if (!bFound) return 0;` jump-threads into the original's
+  duplicated tail with the shared feedback block at the end (EvaluateLock).
+- LHS-first evaluation (`lea edx,[ecx+ebp*2]` kept before the call): use an
+  inline `T& operator[](int)` on CExoArrayList (LoadCombatRound).
+- MSVC 7 inlines functions defined LATER in the same TU. SetActivity inlines
+  into ClearActivities/ActivityManager unless split into other files; the
+  original inlined SetActivity only in ToggleMode (same TU there), so
+  ToggleMode lives beside SetActivity in sws_creature_activity.cpp.
+- CSWCCMessageData Load/CopyTo inline SetFloat/SetObjectID/SetString (with
+  inline Allocate) but call SetInteger: nw_message_load.cpp declares a
+  TU-local CSWCCMessageData on script_event.h (inline Allocate) with inline
+  setters; nw_message.h keeps Allocate out of line for the matched setters.
+- Callee register tracking: with Clear() defined earlier in the same TU, cl
+  keeps ECX across the call (`mov ebx,ecx` after it) like the original.
+- Header: CGameObject now declares slots 0x4c and 0x50
+  (AsSWSAreaOfEffectObject); CSWSCreature's v4c/v50 placeholders were
+  removed accordingly; CSWSCreature virtuals 0xa0-0xcc (SetPortrait at 0xcc)
+  added. New members: creature +0x30, +0x324 list, +0x4c8 model type,
+  +0x4d2..+0x4d4, +0x4ec..+0x500, +0x994..+0x9a0; door/placeable/trigger
+  lock, key and trap fields.
+
+Next in-range queue: 004D09E0 CSWSObject::DoDamageReduction (goto-shaped
+simulate paths), 004D1730 CSWSObject::UpdateEffectList, 004D4620
+CSWSCombatRound::EndCombatRound, 0050EE80 SetCombatMode (control flow
+unclear; SetActivity calls stay out of line there), 0051B940
+UpdateSubareasOnJumpPosition, 00514700 SetFormation (quaternion x87),
+00501250 EquipMostDamagingRangedWeapon, 00518660 invitation cleanup, plus the
+large effect handlers listed under round s6.
+
+# Worker A, round s8 (2026-10-27)
+
+Branch claude/worker-a-s8 (local) from main daed0825. Family: CSWSCreature
+equipment selection / equip-unequip runners (nwscreature.cpp) plus combat
+state/mode, animation, surrender and invitation helpers in the same range.
+106 todo rows screened (all >= 416 B now).
+
+Folder `kotor-match -q -j 2 matching/src/a`: 562/686 -> **568/701**.
+15 attempted, 6 NEW exact, 9 retained NONMATCH, 0 prior MATCH regressions,
+no prior NONMATCH diff count changed (checked against status.csv).
+
+NEW exact (6): 00501250 EquipMostDamagingRangedWeapon, 00500E50
+EquipMostDamagingMeleeWeapon, 004F3A60 EquipMostEffectiveArmor (lives in
+sws_creature3.cpp: it inlines AddEquipItemActions), 004FBBE0
+BroadcastCombatStateToParty (Mac-name hint), 004F0D70 SetAnimation (virtual
+slot 0x7c), 00518990 SurrenderToEnemies.
+
+Retained NONMATCH (diff insns): 00501DE0 RunEquip (165, repository kept in a
+register, player/message swap), 005023A0 RunUnequip (67, player not spilled),
+005158E0 AcquireItem (27, SetPossessor tails not cross-jumped), 004FD730
+TransferGold (44, ebx/ebp swap + give-item tails merged), 004FD490
+GetMaxForcePoints (43, eax/ecx naming), 004F2610 SetCombatState (21, debug
+Format locals load order), 0050EE80 SetCombatMode (116, activity if-chain
+block layout), 0051AA60 CanEquipItem (15, return-0 cross-jump target and
+if-converted final slot test), 00518660 UpdateInvitations (18, inlined list
+removal count register; descriptive name).
+
+Lessons:
+- `Vector::MagnitudeSquared() const { return x*x + y*y + z*z; }` (now in
+  a/sws_creature.h) fixes x87 sum order where every hand-written permutation
+  of the sum compiles identically (cl reassociates): BroadcastCombatState and
+  SurrenderToEnemies both matched only through the member call. It did NOT
+  help the older movement NONMATCHes (they got worse; reverted).
+- Ternary flag arguments `f(1, c ? 1 : 2)` materialise in eax; the original
+  pattern `push 2 / jmp / push 1` is `if (c) f(1,1); else f(1,2);`.
+- A function that reuses a local item pointer for the second loop
+  (`pItem = GetItemInSlot(2); pCurrent = pItem; ... pItem = list[n]`) gave the
+  original esi/edi/ebp choice in EquipMostEffectiveArmor.
+- `int nSize = (d < -2 || d > 1) ? -10 : d;` with the creature field read into
+  a local first reproduces the hoisted `mov ebx,[esi+0x4f8]` (melee weapon).
+- `(!a && f()) || (a && f() == 1)` reproduces the duplicated CanEquipItem
+  calls with `jne ok / jmp next`; `GetStats()->` instead of `m_pStats->`
+  fixes the pre-push `mov ecx,[esi+0xa74]` scheduling.
+- `if (GetClientObject() && (p = GetClientObject()->AsSWCCreature()) && ...)`
+  instead of the GetClientCreature() ternary inline when the result is used
+  directly (SetAnimation); the ternary inline still matches SetCombatState's
+  tail.
+- Inlined CExoArrayList removal: a TU-local `static inline` helper got the
+  ignored-list compaction to within the count-register tie.
+- Header: CSWItemProperty +0x4/+0x6, CSWSItem +0x244, CSWBaseItem +0x70,
+  CSWSCreature +0x4e4, +0x504..+0x554, +0xaa8/+0xaac, +0xf8, combat round
+  +0x944/+0x94c/+0x9b8..+0x9cc, stats +0x122, level stats +0x2d, CSWCCreature
+  +0x4. CSWPartyTable::GetIsPartyMember renamed to the defined
+  GetIsNPCObject (0x00563790). GetClass(unsigned char) overload added (true
+  parameter type; the int overload stays for existing callers).
+- Naming conflict for the coordinator: 00500E50 EquipMostDamagingMeleeWeapon
+  and 004F3A60 EquipMostEffectiveArmor return 0/1 in EAX in the original, so
+  bucket a defines them as int; bucket b (and symbols.csv "calls") declares
+  them void.
+
+Next in-range queue: retry the NONMATCH set above only with new ideas; new
+todo candidates of moderate size: 004F6F30 UpdateActionQueue, 005014A0
+GetFilteredEffectList (no src/), 004FA100 placement, 004EE440 GetUseRange,
+00501950 invisibility check, 0051B050 UpdateVisibleList, 005155B0 /
+005103B0 / 0050FF20 movement actions, 004D4620 EndCombatRound, 004D09E0
+DoDamageReduction, 004D1730 UpdateEffectList.

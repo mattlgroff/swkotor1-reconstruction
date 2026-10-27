@@ -81,13 +81,15 @@ void CSWGuiBorderParams::SetBorder(CSWGuiBorder* pBorder)
 // FUNCTION: SWKOTOR 0x00414cd0
 int CSWGuiBorderParams::GetCornerSize()
 {
-    if (m_nCornerSize) {
-        return m_nCornerSize;
+    int nSize = m_nCornerSize;
+    if (nSize) {
+        return nSize;
     }
-    if (m_pBorder && m_pBorder->m_pCorner && m_pBorder->m_pEdge) {
-        return m_pBorder->m_pCorner->GetHeight();
+    nSize = 0;
+    if (m_pBorder) {
+        nSize = m_pBorder->GetCornerHeight();
     }
-    return 0;
+    return nSize;
 }
 
 // FUNCTION: SWKOTOR 0x00414d00
@@ -170,6 +172,7 @@ int CSWGuiText::GetFontHeight()
 // FUNCTION: SWKOTOR 0x00414f10
 CSWGuiExtent CSWGuiText::GetTextExtent()
 {
+    CSWGuiExtent r;
     int nLines = m_pString->GetLineCount(m_nMaxWidth);
     int nWidth = m_nMaxWidth;
     while (nLines == m_pString->GetLineCount(nWidth)) {
@@ -183,9 +186,6 @@ CSWGuiExtent CSWGuiText::GetTextExtent()
     if (m_pString->GetFontHeight() < 16) {
         nLines++;
     }
-    CSWGuiExtent r;
-    r.left = 0;
-    r.top = 0;
     r.width = nWidth;
     r.height = nLines;
     return r;
@@ -201,8 +201,8 @@ CSWGuiBorderParams::CSWGuiBorderParams(const CResRef& cCorner, const CResRef& cE
     m_cFill = cFill;
     m_nCornerSize = nCornerSize;
     m_nStyle = nStyle;
-    m_b2 = 0;
     m_fEdgeScale = fEdgeScale;
+    m_b2 = 0;
     m_vColor = vColor;
     m_b3 = 0;
     m_b4 = 0;
@@ -218,9 +218,9 @@ CSWGuiBorderParams& CSWGuiBorderParams::operator=(const CSWGuiBorderParams& p)
     m_cEdge = p.m_cEdge;
     m_cFill = p.m_cFill;
     m_nStyle = p.m_nStyle;
-    m_f08 = p.m_f08;
+    m_f08 = p.GetF08();
     m_nCornerSize = ((CSWGuiBorderParams&)p).GetCornerSize();
-    m_fEdgeScale = p.m_fEdgeScale;
+    m_fEdgeScale = p.GetEdgeScale();
     m_b2 = p.m_b2;
     m_vColor = p.m_vColor;
     m_b3 = p.m_b3;
@@ -513,7 +513,7 @@ void CSWGuiEditText::SetCaretVisible(int bVisible)
 int CSWGuiScene::RemoveModel(int nIndex, int bDelete)
 {
     if (nIndex >= 0 && nIndex < m_lstModels.num) {
-        CAurObject* pModel = m_lstModels[nIndex];
+        CAurObject* pModel = m_lstModels.element[nIndex];
         m_lstModels.DelIndex(nIndex);
         if (bDelete && pModel) {
             pModel->Destroy(1);
@@ -527,7 +527,7 @@ int CSWGuiScene::RemoveModel(int nIndex, int bDelete)
 CAurObject* CSWGuiScene::GetModel(int nIndex)
 {
     if (nIndex >= 0 && nIndex < m_lstModels.num) {
-        return m_lstModels[nIndex];
+        return m_lstModels.element[nIndex];
     }
     return 0;
 }
@@ -548,9 +548,9 @@ CSWGuiImageParams& CSWGuiImageParams::operator=(const CSWGuiImageParams& p)
     m_cResRef = p.m_cResRef;
     m_b1 = p.m_b1;
     m_n2 = p.m_n2;
-    m_f10 = p.m_f10;
+    m_f10 = p.GetRotation();
     m_n6 = p.m_n6;
-    m_f14 = p.m_f14;
+    m_f14 = p.GetF14();
     m_b0 = p.m_b0;
     m_vColor = p.m_vColor;
     SetOwner(m_pImage);
@@ -566,7 +566,10 @@ CSWGuiTextParams::CSWGuiTextParams()
     m_fAlpha = 1.0f;
     m_nAlign = 9;
     m_bHilight = 0;
-    SetBaseFont(CResRef("dialogfont16x16"));
+    {
+        CResRef cFont("dialogfont16x16");
+        SetBaseFont(cFont);
+    }
 }
 
 // FUNCTION: SWKOTOR 0x00417120 SYMBOL: ??0CSWGuiTextParams@@QAE@ABVCExoString@@ABVCResRef@@ABVVector@@HM@Z
@@ -593,7 +596,7 @@ CSWGuiTextParams& CSWGuiTextParams::operator=(const CSWGuiTextParams& p)
     m_vDefaultColor = p.m_vColor;
     m_vColor = p.m_vColor;
     m_nAlign = p.m_nAlign;
-    m_fAlpha = p.m_fAlpha;
+    m_fAlpha = p.GetAlpha();
     m_bHilight = p.m_bHilight;
     SetOwner(m_pText);
     return *this;
@@ -638,10 +641,8 @@ CSWGuiEditText::CSWGuiEditText()
 
 // FUNCTION: SWKOTOR 0x00417440 SYMBOL: ??_GCSWGuiEditText@@UAEPAXI@Z
 
-// FUNCTION: SWKOTOR 0x00417460
-CSWGuiEditText::~CSWGuiEditText()
-{
-}
+// Compiler-generated: no vfptr store before the member/base destructors.
+// FUNCTION: SWKOTOR 0x00417460 SYMBOL: ??1CSWGuiEditText@@UAE@XZ
 
 // FUNCTION: SWKOTOR 0x004175c0
 int CSWGuiScene::AddModel(CAurObject* pModel, int nIndex, int bAttach)

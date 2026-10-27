@@ -310,9 +310,9 @@ int CSWSObject::AddGiveItemActions(unsigned long oidItem, unsigned long oidGiveT
     if (pItem) {
         CSWSCreature* pCreature = AsSWSCreature();
         CSWSCreature* pPossessor =
-            g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(pItem->m_oidPossessor);
+            g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(pItem->GetPossessor());
         if ((pPossessor && pCreature && pPossessor->m_bInParty && pCreature->m_bInParty) ||
-            pItem->m_oidPossessor == m_idSelf) {
+            pItem->GetPossessor() == m_idSelf) {
             if (m_bCommandable) {
                 if (nStackSize > pItem->m_nStackCount) {
                     nStackSize = pItem->m_nStackCount;

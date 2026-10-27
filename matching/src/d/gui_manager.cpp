@@ -218,10 +218,10 @@ void CSWGuiManager::SetSoftwareMouseCursor(int nCursor, int bCentred, int bPress
 }
 
 // FUNCTION: SWKOTOR 0x0040a340
-void CSWGuiManager::ChangeToolTipText(int nText)
+void CSWGuiManager::ChangeToolTipText(const CExoString& sText)
 {
     if (m_pToolTip) {
-        m_pToolTip->SetText(nText);
+        m_pToolTip->SetText(sText);
     }
 }
 
@@ -352,7 +352,7 @@ CSWGuiMouse* CSWGuiManager::ShowSoftwareMouse()
     if (m_pMouse) {
         return m_pMouse;
     }
-    return ActivateSoftwareMouse();
+    return (CSWGuiMouse*)ActivateSoftwareMouse();
 }
 
 // FUNCTION: SWKOTOR 0x0040b2a0
@@ -448,11 +448,11 @@ void CSWGuiManager::UpdateAllFonts()
 #pragma auto_inline(on)
 
 // FUNCTION: SWKOTOR 0x0040b490
-void CSWGuiManager::DisplayToolTip(int nText)
+void CSWGuiManager::DisplayToolTip(const CExoString& sText)
 {
     if (!m_bToolTipLocked && (g_pAppManager->m_pClientExoApp->GetOptions()->m_nFlags & 0x400)) {
         m_bToolTipShown = 1;
-        m_pToolTip->SetText(nText);
+        m_pToolTip->SetText(sText);
         m_pToolTip->Show();
     }
 }
@@ -670,6 +670,130 @@ void CSWGuiManager::RemoveToolTip()
 }
 #pragma auto_inline(on)
 
+// FUNCTION: SWKOTOR 0x0040c1e0
+void CSWGuiManager::HandleMouseMove(int x, int y)
+{
+    m_nMouseX = x;
+    m_nMouseY = y;
+    if (m_pMouse) {
+        Vector vPosition;
+        vPosition.x = x * 0.01f;
+        vPosition.y = (m_nHeight - y) * 0.01f;
+        vPosition.z = 0.0f;
+        m_pMouse->SetPosition(vPosition);
+    }
+    if (m_pCaptureControl && m_pCaptureControl->HandleMouseMove(x, y)) {
+        return;
+    }
+    CSWGuiPanel* pPanel;
+    CSWGuiControl* pControl;
+    HitCheckMouse(x, y, &pPanel, &pControl, 0);
+    if (pControl != m_pMouseOverControl) {
+        if (m_bToolTipShown) {
+            RemoveToolTip();
+        }
+        SetTemporarilyDisableToolTip(0);
+    }
+    if (!pControl) {
+        if (m_pMouseOverControl) {
+            CSWGuiControl* pOwner;
+            if ((m_pMouseOverControl->m_nFlags & 1) && !(m_pMouseOverControl->m_nFlags & 4)) {
+                m_pMouseOverControl->SetHighlight(0);
+                pOwner = m_pMouseOverControl->GetOwner();
+                if (pOwner) {
+                    pOwner->SetHighlight(0);
+                }
+            } else {
+                pOwner = m_pMouseOverControl->GetOwner();
+                if (pOwner && (pOwner->m_nFlags & 1) && !(m_pMouseOverControl->m_nFlags & 4)) {
+                    pOwner->SetHighlight(0);
+                }
+            }
+            m_pMouseOverControl = 0;
+        }
+        SetTemporarilyDisableToolTip(0);
+        return;
+    }
+    if (m_bToolTipLocked == 1 && !pControl->GetScrollBar() && pControl != m_pToolTipControl) {
+        SetTemporarilyDisableToolTip(0);
+    }
+    CSWGuiControl* pOld = m_pMouseOverControl;
+    m_pMouseOverControl = pControl;
+    if (!pControl->v60() && !m_pMouseOverControl->v78()) {
+        if (m_pMouseOverControl != pPanel->GetFocusControl()) {
+            if (m_pMouseOverControl->IsControl() && (m_pMouseOverControl->m_nFlags & 4) &&
+                (m_pMouseOverControl->m_nFlags & 8)) {
+                if (pPanel->GetFocusControl()) {
+                    pPanel->GetFocusControl()->SetFocus(0);
+                }
+                m_pMouseOverControl->SetFocus(1);
+            } else {
+                CSWGuiControl* pOwner = m_pMouseOverControl->GetOwner();
+                if (pOwner && !pOwner->v60() && !pOwner->v78()) {
+                    if (((pOwner->m_nFlags >> 2) & 1) && (pOwner->m_nFlags & 8)) {
+                        if (pOwner != pPanel->GetFocusControl()) {
+                            pOwner->SetFocus(1);
+                        }
+                    } else if (!((pOwner->m_nFlags >> 2) & 1) && (pOwner->m_nFlags & 8)) {
+                        pOwner->SetHighlight(1);
+                    }
+                }
+            }
+        }
+    }
+    int bFocus = 0;
+    if (pOld != m_pMouseOverControl) {
+        if (m_pMouseOverControl->IsControl()) {
+            m_pMouseOverControl->SetHighlight(1);
+            if ((m_pMouseOverControl->m_nFlags & 4) && (m_pMouseOverControl->m_nFlags & 8)) {
+                bFocus = 1;
+            }
+        }
+        CSWGuiControl* pParent = m_pMouseOverControl;
+        while (pParent->m_pParentControl) {
+            pParent = pParent->m_pParentControl;
+            if (pParent != pOld && pParent->IsControl()) {
+                pParent->SetHighlight(1);
+                if ((pParent->m_nFlags & 4) && (pParent->m_nFlags & 8)) {
+                    bFocus = 1;
+                }
+            }
+        }
+        if (bFocus) {
+            if (pOld) {
+                if (!pOld->m_pParentControl && !pOld->HasChildControl(m_pMouseOverControl)) {
+                    pOld->SetHighlight(0);
+                }
+                if (pOld->GetOwner()) {
+                    pOld->SetHighlight(0);
+                }
+            }
+        } else if (pOld) {
+            CSWGuiControl* pOwner;
+            if ((pOld->m_nFlags & 1) && !(pOld->m_nFlags & 4)) {
+                pOld->SetHighlight(0);
+                pOwner = pOld->GetOwner();
+                if (pOwner && pOwner != m_pMouseOverControl && pOwner != m_pMouseOverControl->GetOwner()) {
+                    pOwner->SetHighlight(0);
+                }
+            } else {
+                pOwner = pOld->GetOwner();
+                if (pOwner && (pOwner->m_nFlags & 1) && !(pOwner->m_nFlags & 4) &&
+                    pOwner != m_pMouseOverControl && pOwner != m_pMouseOverControl->GetOwner()) {
+                    pOwner->SetHighlight(0);
+                }
+            }
+        }
+    }
+    CSWGuiControl* pScroll = pControl->GetScrollBar();
+    if (pScroll) {
+        if (m_bToolTipLocked == 1 && pScroll->GetToolTipControl(0) != m_pToolTipControl) {
+            SetTemporarilyDisableToolTip(0);
+        }
+        pScroll->RefreshScroll();
+    }
+}
+
 // FUNCTION: SWKOTOR 0x0040c570
 int CSWGuiManager::HandleLMouseDown(int bDown)
 {
@@ -822,6 +946,131 @@ int CSWGuiManager::RemovePanel(CSWGuiPanel* pPanel)
     return 1;
 }
 #pragma auto_inline(on)
+
+// FUNCTION: SWKOTOR 0x0040c8e0
+void CSWGuiManager::HandleInputEvent(int nEvent, int bDown)
+{
+    m_n68 = nEvent;
+    if (bDown) {
+        switch (nEvent) {
+        case 0x33:
+            if (bDown == 1) {
+                nEvent = 0x3e;
+            } else if (bDown == -1) {
+                nEvent = 0x3d;
+            }
+            break;
+        case 0x34:
+            if (bDown == 1) {
+                nEvent = 0x40;
+            } else if (bDown == -1) {
+                nEvent = 0x3f;
+            }
+            break;
+        case 0x37:
+            if (bDown == 1) {
+                nEvent = 0x3a;
+            } else if (bDown == -1) {
+                nEvent = 0x39;
+            }
+            break;
+        case 0x38:
+            if (bDown == 1) {
+                nEvent = 0x3c;
+            } else if (bDown == -1) {
+                nEvent = 0x3b;
+            }
+            break;
+        }
+        bDown = 1;
+        unsigned long nTime = g_pExoBase->m_pcExoTimers->GetLowResolutionTimer();
+        switch (nEvent) {
+        case 0x31:
+        case 0x32:
+            if (!m_n72) {
+                m_n72 = nEvent;
+            } else if (m_n72 > 0x2e && m_n72 <= 0x30) {
+                if (nTime - m_n64 < 150) {
+                    return;
+                }
+                m_n72 = nEvent;
+            }
+            m_n64 = nTime;
+            break;
+        case 0x2f:
+        case 0x30:
+            if (!m_n72) {
+                m_n72 = nEvent;
+            } else if (m_n72 > 0x30 && m_n72 <= 0x32) {
+                if (nTime - m_n64 < 150) {
+                    return;
+                }
+                m_n72 = nEvent;
+            }
+            m_n64 = nTime;
+            break;
+        }
+    }
+    switch (nEvent) {
+    case 0xb4:
+    case 0xdf:
+        if (bDown) {
+            nEvent = 0x28;
+        }
+        break;
+    case 0xb5:
+    case 0xbb:
+        nEvent = 0x27;
+        break;
+    case 0xb6:
+        nEvent = 0x3d;
+        break;
+    case 0xb7:
+        nEvent = 0x3e;
+        break;
+    case 0xb8:
+        nEvent = 0x3f;
+        break;
+    case 0xb9:
+        nEvent = 0x40;
+        break;
+    }
+    if (m_lstModalPanels.num) {
+        m_lstModalPanels[m_lstModalPanels.num - 1]->HandleInputEvent(nEvent, bDown);
+    } else {
+        CExoArrayList<CSWGuiPanel*> lstPanels;
+        lstPanels.SetSize(m_lstPanels.num);
+        for (int i = 0; i < m_lstPanels.num; i++) {
+            lstPanels[i] = m_lstPanels[i];
+        }
+        for (int j = 0; j < lstPanels.num; j++) {
+            CSWGuiPanel* pPanel = lstPanels[j];
+            if (m_lstPanels.IndexOf(pPanel) != -1) {
+                pPanel->HandleInputEvent(nEvent, bDown);
+            }
+        }
+    }
+    for (int k = m_lstPanels.num - 1; k >= 0; k--) {
+        CSWGuiPanel* pPanel = m_lstPanels[k];
+        unsigned long nFade = pPanel->m_nFadeState;
+        if (nFade == 2) {
+            RemovePanel(pPanel);
+            delete pPanel;
+        }
+        else if (nFade) {
+            pPanel->m_nFlags &= ~0x700;
+            RemovePanel(pPanel);
+        }
+    }
+    if (g_pExoResMan->m_nUnloadRims & 2) {
+        g_pExoResMan->RemoveResourceImageFile(CExoString("RIMS:MAINMENU"));
+        g_pExoResMan->m_nUnloadRims &= ~2;
+    }
+    if (g_pExoResMan->m_nUnloadRims & 1) {
+        g_pExoResMan->RemoveResourceImageFile(CExoString("RIMS:CHARGEN"));
+        g_pExoResMan->m_nUnloadRims &= ~1;
+    }
+}
 
 // FUNCTION: SWKOTOR 0x00409ee0
 void CSWGuiManager::GetSafeMargins(int* pX, int* pY)

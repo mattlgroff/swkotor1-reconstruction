@@ -16,7 +16,7 @@ CAurRoom::~CAurRoom()
 
 // FUNCTION: SWKOTOR 0x004548A0
 CAurRoom::CAurRoom(char* szName)
-    : BSPNodeBase(VectorD(0.0f, 0.0f, 0.0f), 0)
+    : BSPNodeBase(VectorD(0.0f, 0.0f, 0.0f), 0), m_lVisible(0), m_lObjects(0)
 {
     strcpy(m_szName, szName);
     m_pModel = 0;

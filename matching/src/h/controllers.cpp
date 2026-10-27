@@ -141,3 +141,33 @@ void AddGenericController(int nUnused, char* szText,
     g_nControllers += lKeys.num;
     pControllers->AddInline(ctl);
 }
+
+// Bezier keys: three values per channel, so the column count is a third of
+// the value count, tagged with 0x10.
+// NONMATCH (91 insns): same pattern as AddGenericController above (key
+// count kept in ebp and both key loops counted down in the original).
+// FUNCTION: SWKOTOR 0x00465320
+void AddBezierController(int nUnused, char* szText,
+                         CExoArrayList<NewController>* pControllers,
+                         CExoArrayList<float>* pData, int nType, short nRow)
+{
+    NewController ctl;
+    CExoArrayList<AurGenericKey> lKeys;
+    ctl.nType = nType;
+    ctl.nRow = nRow;
+    ParseList(szText, &lKeys);
+    ctl.nRows = (short)lKeys.num;
+    if (!lKeys.num)
+        return;
+    ctl.nColumns = (unsigned char)((lKeys.element[0].nNumValues - 1) / 3) | 0x10;
+    ctl.nTimeIndex = (short)pData->num;
+    int i;
+    for (i = 0; i < lKeys.num; i++)
+        pData->AddInline(lKeys.element[i].fValues[0]);
+    ctl.nDataIndex = (short)pData->num;
+    for (i = 0; i < lKeys.num; i++)
+        for (int j = 1; j < lKeys.element[i].nNumValues; j++)
+            AddFloat(pData, lKeys.element[i].fValues[j]);
+    g_nControllers += lKeys.num;
+    pControllers->AddInline(ctl);
+}

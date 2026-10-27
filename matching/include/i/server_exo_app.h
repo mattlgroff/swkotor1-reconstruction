@@ -9,6 +9,8 @@ class CExoString {
 public:
     CExoString();                                   // 0x005B3190
     CExoString(const char* s);                      // 0x005E5A90
+    CExoString(int n);                              // 0x005E5BC0
+    int AsINT() const;                              // 0x005E5630
     CExoString(const CExoString& s);                // 0x005E5B00
     ~CExoString();                                  // 0x005E5C20
     CExoString& operator=(const CExoString& s);     // 0x005E5C50
@@ -19,9 +21,12 @@ public:
     int Find(char c, int nStart) const;             // 0x005E5F20
     char operator[](int n) const;                   // 0x005E5600
     CExoString& operator=(const char* s);           // 0x005E5140
+    int operator!=(const char* s) const;            // 0x005E5390
     int GetLength() const;                          // 0x005E5790
     CExoString Right(int nCount) const;             // 0x005E6170
+    CExoString Left(int nCount) const;              // 0x005E5F70
     CExoString operator+(const CExoString& s) const; // 0x005E5D10
+    void Format(char* sFormat, ...);                // 0x005E5680
     char* m_sString;
     unsigned long m_nBufferLength;
 };
@@ -35,6 +40,8 @@ struct Vector {
 // Passed by value with an inline (member-wise) copy.
 struct CResRef {
     CResRef(const char* s);                         // 0x00406D80
+    CResRef(const CExoString& s);                   // 0x00406D60
+    void CopyToString(CExoString& s) const;         // 0x00405F70
 #ifdef I_CRESREF_DECLARED_COPY
     // Declared, not defined: a temporary is then built in the argument slot.
     CResRef(const CResRef& c);
@@ -94,17 +101,35 @@ public:
 };
 class CSWSSoundObject;
 class CWorldTimer;
+class CSWVirtualMachineCommands {
+public:
+    virtual ~CSWVirtualMachineCommands();
+    char m_pad4[0x10 - 4];
+};
 class CFactionManager;
 class CPathfindInformation;
 class CSWSModule;
 class CSWSPlayer;
 class CSWSArea;
+class CResGFF;
+struct CResStruct;
 class CServerAIMaster;
+class CServerExoApp;
 
 class CSWSMessage {
 public:
+    CSWSMessage();                                  // 0x00520980
+    virtual ~CSWSMessage();
     int SendServerToPlayerServerStatus_Status(unsigned long nPlayerId);          // 0x00568310
     void SendServerToPlayerServerAdmin_Status(unsigned long nPlayerId);          // 0x00579920 (placeholder name)
+    int SendServerToPlayerModule_DumpPlayer(CSWSPlayer* pPlayer);                // 0x0056CCB0
+    int SendServerToPlayerSaveLoad_Status(CSWSPlayer* pPlayer, unsigned char nType,
+                                          int bFailed);                          // 0x0056CB80
+    int SendServerToPlayerLoadBar_StartStallEvent(unsigned long nEvent);         // 0x0056C8B0
+    int SendServerToPlayerPlayerList_Delete(unsigned long nPlayerId, CSWSPlayer* pPlayer);  // 0x005682B0
+    void SendServerToServerAdminPlayerList(unsigned long nPlayerId);             // 0x00579A80
+    int SendServerToPlayerGameObjUpdate_ObjControl(unsigned long nPlayerId,
+                                                   unsigned long oid);           // 0x0056F430
     int SendServerToPlayerModule_EndStartNewModule(int bSuccess);                // 0x0056CC50
     int SendServerToPlayerArea_ClientArea(CSWSPlayer* pPlayer, CSWSArea* pArea, float fX, float fY,
                                           float fZ, const Vector& vOrientation,
@@ -124,6 +149,7 @@ public:
     int SendServerToPlayerLogin_CharacterQuery(CSWSPlayer* pPlayer, unsigned char* pCount,
                                                unsigned __int64* p1, unsigned long* p2,
                                                unsigned long* p3); // 0x0056C730
+    char m_pad4[0x50 - 4];
 };
 class CSWSArea;
 class CSWSCreature;
@@ -148,8 +174,10 @@ template <class T>
 class CExoArrayList {
 public:
     CExoArrayList() { num = 0; array_size = 0; element = NULL; }
-    ~CExoArrayList() { delete[] element; }
+    ~CExoArrayList() { delete[] element; element = NULL; }
     void Allocate(int n);
+    void Remove(T t);
+    int count(T t);
     void Add(T t)
     {
         if (num == array_size) {
@@ -191,10 +219,13 @@ struct CExoLinkedListNode {
 
 class CExoLinkedListInternal {
 public:
+    ~CExoLinkedListInternal();                      // 0x005E9AB0
+    void* RemoveHead();                             // 0x005E9C80
     void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
     void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
     void* Remove(CExoLinkedListPosition pos);       // 0x005E9C10
     CExoLinkedListPosition AddTail(void* p);        // 0x005E9DC0
+    CExoLinkedListPosition AddHead(void* p);        // 0x005E9D70
     CExoLinkedListNode* m_pHead;
     CExoLinkedListNode* m_pTail;
     unsigned long m_nCount;
@@ -203,11 +234,17 @@ public:
 template <class T>
 class CExoLinkedList {
 public:
+    CExoLinkedList();                               // 0x004B25D0 (out of line)
+    ~CExoLinkedList() { delete m_pList; }
     CExoLinkedListPosition GetHeadPos() { return m_pList->m_pHead; }
+    int IsEmpty() { return m_pList->m_pHead == NULL; }
+    unsigned long GetCount() { return m_pList->m_nCount; }
+    T* RemoveHead() { return (T*)m_pList->RemoveHead(); }
     T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pList->GetAtPos(pos); }
     T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pList->GetNext(pos); }
     T* Remove(CExoLinkedListPosition pos) { return (T*)m_pList->Remove(pos); }
     CExoLinkedListPosition AddTail(T* p) { return m_pList->AddTail(p); }
+    CExoLinkedListPosition AddHead(T* p) { return m_pList->AddHead(p); }
     CExoLinkedListInternal* m_pList;
 };
 
@@ -247,13 +284,18 @@ public:
 
 class CSWSObject : public CGameObject {
 public:
-    char m_padc[0x1f4 - 0xc];
+    char m_padc[0x18 - 0xc];
+    CExoString m_sTag;                              // +0x18
+    char m_pad20[0x1f4 - 0x20];
     int m_bSkipDialog;                              // +0x1f4 (unnamed)
 };
 
 class CGameObjectArray {
 public:
+    CGameObjectArray(int nSize);                    // 0x004D7D80
+    ~CGameObjectArray();                            // 0x004D7E10
     unsigned char GetGameObject(unsigned long oid, CGameObject** ppObject); // 0x004D8230
+    char m_pad0[0x18];
 };
 
 class CSWSPlayer;
@@ -262,29 +304,44 @@ class CSWSClient {
 public:
     virtual ~CSWSClient();
     virtual CSWSPlayer* AsSWSPlayer();              // +0x04
+    unsigned long GetPlayerID() { return m_nPlayerID; }
     unsigned long m_nPlayerID;                      // +0x04
     int m_nLanguage;                                // +0x08
 };
 
 class CSWSPlayer : public CSWSClient {
 public:
+    CSWSPlayer(unsigned long nPlayerId);            // 0x00562C70
     CGameObject* GetGameObject();                   // 0x00561080
     void SetGameObject(CGameObject* pObject);       // 0x00561C40
     void SetAreaTransitionBMP(int nId, const CExoString& sBMP);  // 0x00560CD0
     void LoadCharacterIFO(int nIndex, int a, int b);  // 0x00561E30 (placeholder name)
+    int LoadServerCharacter(CResRef cResRef);       // 0x00562380
+    int LoadLocalCharacter();                       // 0x00561D70
+    CExoString GetPlayerName();                     // 0x005610B0
     void FUN_005624c0();                            // 0x005624C0
+    void ClearPlayerOnDestroyGame();                // 0x00562E40
     void GetCharacterInfoFromIFO(unsigned char* pCount, unsigned __int64* p1, unsigned long* p2,
                                  unsigned long* p3); // 0x00560D00
     char m_pad0c[0x24 - 0x0c];
     unsigned char m_bPendingAreaMove;               // +0x24 (placeholder name)
-    char m_pad25[0x38 - 0x25];
+    char m_pad25[0x34 - 0x25];
+    unsigned long m_oid34;                          // +0x34 (unnamed)
     unsigned long m_oidPCObject;                    // +0x38
-    char m_pad3c[0x40 - 0x3c];
+    int m_bIsPrimaryPlayer;                         // +0x3c (placeholder name)
     int m_bFromSaveGame;                            // +0x40 (placeholder name)
     int m_nPrimaryPlayerIndex;                      // +0x44 (unnamed)
     int m_bCharacterListed;                         // +0x48 (placeholder name)
     char m_pad4c[0x64 - 0x4c];
     unsigned char m_nCharacterType;                 // +0x64 (unnamed)
+    char m_pad65[0x7c - 0x65];
+    int m_n7c;                                      // +0x7c (unnamed)
+    int m_nCharacterIndex;                          // +0x80 (placeholder name)
+};
+
+class CSWSSysAdmin : public CSWSClient {
+public:
+    CSWSSysAdmin(unsigned long nPlayerId);          // 0x005802F0
 };
 
 class CExoIni {
@@ -294,13 +351,33 @@ public:
     void* m_pIniInternal;
 };
 
+class CNetLayerPlayerInfo {
+public:
+    int m_bPlayerInUse;                             // +0x00
+    CExoString m_sPlayerName;                       // +0x04
+    CExoString& GetPlayerName() { return m_sPlayerName; }
+    char m_padc[0x1c - 0xc];
+    int m_bGameMasterPrivileges;                    // +0x1c
+    int m_bPlayerPrivileges;                        // +0x20
+    int m_bServerAdminPrivileges;                   // +0x24
+};
+
 class CNetLayer {
 public:
+    CNetLayerPlayerInfo* GetPlayerInfo(unsigned long nPlayerId);  // 0x005D5170
+    CNetLayer();                                    // 0x005D54A0
+    ~CNetLayer();                                   // 0x005D5720
+    int Initialize(CServerExoApp* pApp);            // 0x005D5550 (CNetLayerWindow*)
+    int EndServerMode();                            // 0x005D5020
+    int ShutDown();                                 // 0x005D5600
     int StartServerMode(const CExoString& sMode, unsigned long nMaxPlayers);   // 0x005D4FB0
+    char m_pad0[0x2007c];
 };
 
 class CServerInfo {
 public:
+    CServerInfo();                                  // 0x0054EB10
+    ~CServerInfo();                                 // 0x004B1360
     void FUN_0054ea70(int n);                       // 0x0054EA70
     char m_pad0[0x80];
     unsigned long m_nMaxPlayers;                    // +0x80 (unnamed)
@@ -317,6 +394,7 @@ public:
     CExoString m_sModuleName;                       // +0xfc
     char m_pad104[4];
     int m_nDifficulty;                              // +0x108
+    char m_pad10c[0x42c - 0x10c];
 };
 
 class CSWS2DArrays {
@@ -327,14 +405,17 @@ public:
 
 class CSWRules {
 public:
+    virtual ~CSWRules();
     int GetDifficultyOption(int nOption, int nDifficulty);  // 0x00550C30 (unnamed)
-    char m_pad0[0xb8];
+    char m_pad4[0xb8 - 4];
     CSWS2DArrays* m_p2DArrays;                      // +0xb8 (placeholder name)
+    char m_padbc[0xdc - 0xbc];
 };
 extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CExoDebug {
 public:
+    void OpenLogFiles(const CExoString& sName);     // 0x005E93F0
     void GetCurrentTimestamp(CExoString& s);        // 0x005E9410
 };
 
@@ -344,11 +425,21 @@ public:
     unsigned __int64 GetHighResolutionTimer();      // 0x005E9260
 };
 
+class CExoAliasList {
+public:
+    CExoString* GetAliasPath(const CExoString& sAlias, int nIndex);  // 0x005E6890
+};
+
 class CExoBase {
 public:
+    void GetDirectoryList(CExoArrayList<CExoString>* pList, const CExoString& sDir,
+                          unsigned short nType, int bSort, int bFullPath);  // 0x005E6640
+    unsigned short GetResTypeFromExtension(const CExoString& sExt);  // 0x005E6670
+    unsigned long GetDirectorySize(const CExoString& sDir);         // 0x005E6650
     void* m_p0;
     CExoTimers* m_pcExoTimers;                      // +0x04
     CExoDebug* m_pcExoDebug;                        // +0x08
+    CExoAliasList* m_pcExoAliasList;                // +0x0c
 };
 extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
@@ -394,6 +485,8 @@ public:
     int AcquireItem(CSWSItem** ppItem, unsigned long oidPossessor, unsigned long oidTarget,
                     int bDisplayFeedback);          // 0x005158E0 (unnamed)
     CSWSArea* GetArea();                            // 0x004CB120 (CSWSObject)
+    void RemoveFromArea(int bArg);                  // 0x004F0FD0
+    int SaveCreature(CResGFF* pGFF, CResStruct* pStruct);  // 0x00500610
     CSWSCreature(unsigned long oid, int bPlayerCharacter);  // 0x004F7A10
     void SetArea(CSWSArea* pArea);                  // 0x004CB160 (CSWSObject)
     void AddToArea(CSWSArea* pArea, float fX, float fY, float fZ, int a, int b);  // 0x004FA100
@@ -436,8 +529,19 @@ public:
 
 class CExoResMan {
 public:
+    CExoResMan();                                   // 0x00409BF0
+    ~CExoResMan();                                  // 0x00408670
+    int AddFixedKeyTableFile(const CExoString& sFile);      // 0x004087E0
+    int AddResourceDirectory(const CExoString& sDir);       // 0x00408800
+    int CreateDirectory2(const CExoString& sDir);           // 0x004068C0
+    int Leaf9460(const CExoString& sDir, int a, int b);     // 0x00409460 (unnamed)
+    int RemoveFixedKeyTableFile(const CExoString& sFile);   // 0x004088C0
+    int RemoveResourceDirectory(const CExoString& sDir);    // 0x004088D0
+    int NukeDirectory(const CExoString& sDir, int a, int b); // 0x00409480 (symbols.csv: Leaf9480)
+    int Exists(const CResRef& cResRef, unsigned short nType, unsigned long* pSize);  // 0x00408BC0
     int GetFreeDiskSpace(const CExoString& sPath, unsigned __int64* pFreeBytes);  // 0x004067B0
     int RemoveFile(const CExoString& sFileName, unsigned short nType);             // 0x00406B20
+    char m_pad0[0x60];
 };
 extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
 
@@ -483,15 +587,17 @@ struct CSWSModuleEntryInfo {
 
 class CSWSModule {
 public:
+    virtual ~CSWSModule();
     CSWSArea* GetArea();                            // 0x004C30F0
     int GetPrimaryPlayerIndex();                    // 0x004C5D90
+    int GetPlayerIndexInPlayerList(CSWSPlayer* pPlayer);  // 0x004C5C70
     CExoString GetModuleShortName();                // 0x004C4B80 (placeholder name)
     unsigned long GetWaypoint(const CExoString& sTag);  // 0x004C6E00
     int LoadTemporaryArea();                        // 0x004C3B10 (placeholder name)
     void SaveModuleStart(const CExoString& sPrefix, const CExoString& sPath);   // 0x004C8960
     int SaveModuleFinish(const CExoString& sPrefix, const CExoString& sPath);   // 0x004CA680
     CExoString* GetModuleNamePtr() { return &m_sModuleName; }
-    char m_pad0[0x20];
+    char m_pad4[0x20 - 4];
     unsigned long m_oidModule;                      // +0x20 (placeholder name)
     char m_pad24[0x4c - 0x24];
     char m_cDescription[8];                         // +0x4c (CExoLocString)
@@ -505,26 +611,45 @@ public:
 };
 
 struct CSWGlobalVariableTable {
+    CSWGlobalVariableTable();                       // 0x0052B170
+    ~CSWGlobalVariableTable();                      // 0x00528DE0
+    int Load();                                     // 0x0052ADE0
     void ReadCatalogue(const CResRef& cResRef);     // 0x0052AE50
     char m_data[0x1b770 - 0x100fc];
 };
 
-struct CServerExoAppInternal1b770 {
+struct CSWPartyTable {
+    CSWPartyTable();                                // 0x00563D20
+    ~CSWPartyTable();                               // 0x00563D40
+    void ClearInventory();                          // 0x00563600
+    void UpdateMembers(int bFlag);                  // 0x00565530
+    void UpdateInventory(int bFlag);                // 0x00564030
+    int AddGameInProgress();                        // 0x005638D0
+    void RemoveGameInProgress();                    // 0x00563950
     void CreateParty();                             // 0x00565760 (placeholder name)
     void PositionParty();                           // 0x00565B00 (placeholder name)
-    char m_data[0x1b908 - 0x1b770];
+    void LoadTableInfo();                           // 0x00565D20
+    char m_pad0[0x10c];
+    int m_n10c;                                     // +0x10c (unnamed)
+    char m_pad110[0x1b908 - 0x1b770 - 0x110];
 };
+typedef CSWPartyTable CServerExoAppInternal1b770;
 
 #pragma pack(push, 4)
 class CServerExoAppInternal {
 public:
     CServerExoAppInternal();                        // 0x004B55E0
     ~CServerExoAppInternal();                       // 0x004B7230
+    CSWPartyTable* GetPartyTable() { return &m_c1b770; }
+    int GetLoadingModule() { return m_bLoadingModule; }
+    CSWSMessage* GetServerMessage() { return m_pServerMessage; }
 
     CSWSModule* GetModule();                                                // 0x004B14F0
     CExoString GetModuleName();                                             // 0x004B1580
-    int SaveGame(unsigned long nSlot, CExoString& sName, CExoString& sDesc);// 0x004B58A0
-    int LoadGame(unsigned long nSlot, CExoString& sName);                   // 0x004BA640
+    int SaveGame(unsigned long nSlot, CExoString& sName, CSWSPlayer* pPlayer,
+                 int bUnused);                                              // 0x004B58A0 (RET 0x10)
+    int LoadGame(unsigned long nSlot, CExoString& sName, CExoString& sModule,
+                 int bLoadFromSave);                                        // 0x004BA640 (RET 0x10)
     int LoadCharacterStart(unsigned char nType, CSWSPlayer* pPlayer, CResRef cResRef,
                            void* pData, unsigned long nSize);               // 0x004B7470
     int LoadCharacterFinish(CSWSPlayer* pPlayer, int bArg);             // 0x004B5C50
@@ -534,6 +659,8 @@ public:
     int SendCharacterQuery(CSWSPlayer* pPlayer);                            // 0x004B3070
     int IncludeModuleInSave(const CExoString& sModule);                     // 0x004B20E0
     int StoreCurrentModule();                                               // 0x004B2E70
+    int StorePlayerCharacters();                                            // 0x004B2BA0
+    void EstimateSaveGameSize(const CExoString& sModule, unsigned short nType); // 0x004B5F90 (placeholder name)
     void GetServerInfoFromIniFile();                                        // 0x004B1B00
     int HasEnoughDiskSpaceForSaveGame();                                    // 0x004B2520
     CGameObject* GetGameObject(unsigned long oid);                          // 0x004B1700
@@ -558,7 +685,7 @@ public:
     int LoadModule(CExoString& sModule, int bLoadFromSave);                 // 0x004B95B0 (RET 8)
     int RunModule();                                                        // 0x004B6270
     CExoString GetPlayerListString();                                       // 0x004B41C0
-    int StartServices(CExoString& sModule, int a, int b);                    // 0x004B63E0
+    void StartServices(int nMode);                                          // 0x004B63E0 (RET 4, nMode unused)
     void StopServices();                                                    // 0x004B7C60
     CSWSClient* GetClientObjectByObjectID(unsigned long oid);               // 0x004B2A50
     CSWSClient* GetClientObjectByPlayerID(unsigned long nPlayerId, unsigned char b); // 0x004B2AE0
@@ -594,6 +721,9 @@ public:
     void GetMoveToWorldTime(unsigned long* p0, unsigned char* p1, unsigned char* p2, unsigned char* p3, unsigned short* p4, unsigned short* p5, unsigned short* p6);     // 0x004B2320
     int GetModulePreviouslyVisited(CExoString& sModule);                    // 0x004B51A0
     int ExecuteLoadModule(CExoString& sModule);                             // 0x004BA820
+    int StartNewModule(CExoString& sModule);                                // 0x004BA920
+    void DoPCAutosave(const CExoString& sModule, C2DA* p2DA);               // 0x004B8300 (placeholder name)
+    void PlayerListChange(unsigned long nPlayerId, int bEnter, int bUnused);  // 0x004B78F0 (placeholder name)
     void DealWithLoadGameError(unsigned long nError);                       // 0x004BA5B0
     int IsInjured(unsigned long oid);                                       // 0x004B1D20
     int IsOnActiveExclusionList(unsigned long oid);                         // 0x004B48E0
@@ -615,9 +745,10 @@ public:
     CServerInfo* m_pServerInfo;                     // +0x10004
     unsigned short m_nServerMode;                   // +0x10008
     unsigned short m_pad1000a;
-    unsigned long m_pad1000c;
+    CSWVirtualMachineCommands* m_pVirtualMachineCommands;  // +0x1000c
     CSWSMessage* m_pServerMessage;                  // +0x10010
-    char m_pad10014[0x1001c - 0x10014];
+    unsigned long m_pad10014;
+    unsigned long* m_p10018;                        // +0x10018 (unnamed, 16 player ids)
     CExoArrayList<unsigned long> m_lShutdownPlayers;  // +0x1001c (placeholder name)
     unsigned __int64 m_nShutdownRemaining;          // +0x10028 (placeholder name)
     unsigned __int64 m_nShutdownLast;               // +0x10030 (placeholder name)
@@ -642,7 +773,7 @@ public:
     int m_bMoveToModulePending;                     // +0x10080
     CExoString m_sMoveToModuleString;               // +0x10084
     CExoString m_sMoveToModuleStartWaypoint;        // +0x1008c
-    unsigned long m_pad10094[2];
+    CExoString m_s10094;                            // +0x10094 (unnamed)
     unsigned long m_nMoveToTime0;                   // +0x1009c
     unsigned char m_nMoveToTime1;                   // +0x100a0
     unsigned char m_nMoveToTime2;                   // +0x100a1
@@ -659,14 +790,16 @@ public:
     int m_bExportAllCharactersPending;              // +0x100bc
     unsigned long m_pad100c0;
     int m_bLoadFromSaveGame;                        // +0x100c4
-    unsigned long m_pad100c8[4];
+    unsigned long m_nEstimatedSaveSize;             // +0x100c8 (placeholder name)
+    unsigned long m_n100cc;                         // +0x100cc (unnamed, ms timer)
+    unsigned __int64 m_n100d0;                      // +0x100d0 (unnamed)
     int m_bButtonMashCheck;                         // +0x100d8
     unsigned __int64 m_nThrottleRemaining;          // +0x100dc (unnamed)
     unsigned __int64 m_nThrottleLast;               // +0x100e4 (unnamed)
-    unsigned long m_pad100ec[3];
+    CExoArrayList<unsigned long> m_l100ec;          // +0x100ec (unnamed)
     CExoLinkedListPosition m_posPC;                 // +0x100f8
     CSWGlobalVariableTable m_cGlobalVariableTable;  // +0x100fc
-    CServerExoAppInternal1b770 m_c1b770;            // +0x1b770
+    CSWPartyTable m_c1b770;                         // +0x1b770 (party table)
     CExoString m_sLastConversation;                 // +0x1b908
     unsigned long m_oidActionConversation;          // +0x1b910
     int m_bIgnoreConversationStartRange;            // +0x1b914
@@ -686,11 +819,15 @@ class CServerExoApp {
 public:
     CServerExoApp();
     virtual ~CServerExoApp();
+    virtual void v04();
+    virtual void v08();
+    virtual void v0c();
+    virtual CNetLayer* GetNetLayer();               // +0x10
 
     CSWSModule* GetModule();
     CExoString GetModuleName();
-    int SaveGame(unsigned long nSlot, CExoString& sName, CExoString& sDesc);
-    int LoadGame(unsigned long nSlot, CExoString& sName);
+    int SaveGame(unsigned long nSlot, CExoString& sName, CSWSPlayer* pPlayer, int bUnused);
+    int LoadGame(unsigned long nSlot, CExoString& sName, CExoString& sModule, int bLoadFromSave);
     int LoadCharacterStart(unsigned char nType, CSWSPlayer* pPlayer, CResRef cResRef,
                            void* pData, unsigned long nSize);
     int LoadCharacterFinish(CSWSPlayer* pPlayer, int bArg);
@@ -716,7 +853,7 @@ public:
     int LoadModule(CExoString& sModule, int bLoadFromSave);
     int RunModule();
     CExoString GetPlayerListString();
-    int StartServices(CExoString& sModule, int a, int b);
+    void StartServices(int nMode);
     void StopServices();
     CSWSClient* GetClientObjectByObjectID(unsigned long oid);
     CSWSClient* GetClientObjectByPlayerID(unsigned long nPlayerId, unsigned char b);

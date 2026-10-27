@@ -33,8 +33,13 @@ public:
 
 class CSWSpell {
 public:
-    char pad_0x0[0x124];
+    unsigned char GetSpellLevel(unsigned char nClass);      // 0x0059B650
+    char pad_0x0[0x3f];
+    unsigned char m_nInnateLevel;                           // 0x3f (name guessed)
+    char pad_0x40[0x124 - 0x40];
     int m_n124;                                             // 0x124 (talent category)
+    char pad_0x128[0x140 - 0x128];
+    unsigned char m_bForceResistable;                       // 0x140 (name guessed)
 };
 
 class CSWSpellArray {

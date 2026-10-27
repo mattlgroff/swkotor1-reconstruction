@@ -13,6 +13,14 @@ class PointerList {
 public:
     void AddUnique(T value);
     void Remove(T value);
+    int Contains(T value)
+    {
+        int n = 0;
+        for (int i = 0; i < num; i++)
+            if (element[i] == value)
+                n++;
+        return n;
+    }
     T* element;
     int num;
     int array_size;

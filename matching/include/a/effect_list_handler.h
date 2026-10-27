@@ -47,6 +47,9 @@ public:
     CExoString();                               // 0x005B3190
     CExoString(const char* s);                  // 0x005E5A90
     ~CExoString();                              // 0x005E5C20
+    CExoString& operator=(const CExoString& s); // 0x005E5C50
+    int operator!=(const char* s) const;        // 0x005E5390
+    int operator==(const char* s) const;        // 0x005E5290
 
     char* m_sString;
     unsigned long m_nBufferLength;
@@ -63,7 +66,13 @@ public:
 
 class C2DAs {
 public:
-    char pad_0x0[0x120];
+    char pad_0x0[0xc];
+    C2DA* m_pAppearanceTable;                   // 0x0c (appearance.2da)
+    C2DA* GetAppearanceTable() { return m_pAppearanceTable; }
+    char pad_0x10[0x90 - 0x10];
+    C2DA* m_pPoisonTable;                       // 0x90 (poison.2da)
+    C2DA* m_pDiseaseTable;                      // 0x94 (disease.2da)
+    char pad_0x98[0x120 - 0x98];
     C2DA* m_pEffectIconTable;                   // 0x120 (effecticon.2da)
     C2DA* m_pIgnoreOnDeath;                     // 0x124 (placeholder name)
 };
@@ -83,6 +92,7 @@ public:
     CSWRulesEntry34* m_pEntriesB0;              // 0xb0 (placeholder name)
     char pad_0xb4[0xb8 - 0xb4];
     C2DAs* m_p2DArrays;                         // 0xb8
+    C2DAs* Get2DArrays() { return m_p2DArrays; }
 };
 extern CSWRules* g_pRules;                      // 0x007A3A28
 
@@ -101,16 +111,20 @@ public:
     unsigned long GetObjectID(int nIndex);      // 0x005036E0
     void SetObjectID(int nIndex, unsigned long oid);  // 0x005036F0
     float GetFloat(int nIndex);                 // 0x005036C0
+    CExoString GetString(int nIndex);           // 0x00503700
     void SetFloat(int nIndex, float fValue);    // 0x005036D0
     void SetCreator(unsigned long oid);         // 0x00503A00
     void CopyEffect(CGameEffect* pFrom, int bArg);  // 0x00504090
     void SetExpiryTime(unsigned long nDay, unsigned long nTime);  // 0x00503750
+    void GetExpiryTime(unsigned long* pDay, unsigned long* pTime);  // 0x00503770
     int GetSaveType();                          // 0x00503A70 (placeholder name)
     void SetDurationType(unsigned short nType) { m_nSubType = (m_nSubType & 0xfff8) | nType; }
     unsigned short GetDurationType() { return m_nSubType & 7; }
     unsigned short GetType() { return m_nType; }
     unsigned __int64 GetID() { return m_nID; }
     float GetDuration() { return m_fDuration; }
+    unsigned long GetCreator() { return m_oidCreator; }
+    unsigned long GetSpellId() { return m_nSpellId; }
 
     unsigned __int64 m_nID;                     // 0x00
     unsigned short m_nType;                     // 0x08
@@ -138,10 +152,14 @@ class CSWSCombatRound {
 public:
     void SetRoundPaused(int bPaused, unsigned long oidPausedBy);  // 0x004D28F0
     void SetPauseTimer(int nTime, int bInfinite);                 // 0x004D2920
+    void RemoveAllActions();                                      // 0x004D3770
+    struct CSWSAttackData* GetAttack(int nAttack);                // 0x004D2B50
 
     char pad_0x0[0x958];
     int m_bRoundPaused;                         // 0x958
-    char pad_0x95c[0x9a4 - 0x95c];
+    char pad_0x95c[0x96c - 0x95c];
+    unsigned char m_nCurrentAttack;             // 0x96c
+    char pad_0x96d[0x9a4 - 0x96d];
     int m_nAdditionalAttacks;                   // 0x9a4
 };
 
@@ -159,8 +177,10 @@ public:
 
 class CGameObject {
 public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
+    virtual ~CGameObject();                     // 0x00
+    virtual void v04(); virtual void v08(); virtual void v0c();
+    virtual class CSWSObject* AsSWSObject();    // 0x10
+    virtual void v14(); virtual void v18(); virtual void v1c();
     virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
     virtual CSWSCreature* AsSWSCreature();      // 0x30
 
@@ -172,7 +192,9 @@ public:
 class CSWSObject : public CGameObject {
 public:
     virtual void v34(); virtual void v38(); virtual void v3c();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4c();
+    virtual void v40(); virtual void v44();
+    virtual class CSWSPlaceable* AsSWSPlaceable();  // 0x48
+    virtual void v4c();
     virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5c();
     virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
     virtual void v70(); virtual void v74(); virtual void v78();
@@ -195,9 +217,11 @@ public:
     void SetAIValue(int nValue);                // 0x004CD240 (placeholder name)
 
     unsigned char m_nObjectType;                // 0x08
-    char pad_0x9[0x90 - 0x9];
+    char pad_0x9[0x8c - 0x9];
+    unsigned long m_oidArea;                    // 0x8c
     Vector m_vPosition;                         // 0x90
-    char pad_0x9c[0xe4 - 0x9c];
+    Vector m_vOrientation;                      // 0x9c
+    char pad_0xa8[0xe4 - 0xa8];
     int m_nTemporaryHitPoints;                  // 0xe4 (read as a short)
     int m_nE8;                                  // 0xe8
     int m_nEC;                                  // 0xec
@@ -211,6 +235,7 @@ public:
 class CSWSCreatureStats {
 public:
     unsigned char GetLevel(int bArg);           // 0x005A5FD0
+    unsigned char GetClassLevel(unsigned char nMultiClass, int bArg);  // 0x005A5090
     unsigned char GetClassNegativeLevels(unsigned char nClass);            // 0x005A50E0
     void SetClassNegativeLevels(unsigned char nClass, unsigned char nLevels);  // 0x005A5440
     char GetForceResistance();                  // 0x005A5A60
@@ -280,16 +305,25 @@ public:
     short GetMaxHitPoints();                    // 0x004FD490 (placeholder name)
     int Disguise(int nAppearance, CGameEffect* pEffect, int bLoadingGame);  // 0x004EE010 (placeholder name)
     void SetMovementRate(float fRate);          // 0x004EC3B0 (placeholder name)
+    CSWSCreatureStats* GetStats() { return m_pStats; }
+    int GetF8() { return m_bF8; }
 
     char pad_0x130[0x19c - 0x130];
     int m_b19C;                                 // 0x19c (placeholder name)
-    char pad_0x1a0[0x310 - 0x1a0];
+    char pad_0x1a0[0x270 - 0x1a0];
+    CExoString m_sScriptOnSpawn;                // 0x270 (placeholder name)
+    char pad_0x278[0x310 - 0x278];
     unsigned long m_oid310;                     // 0x310 (placeholder name)
     Vector m_v314;                              // 0x314 (placeholder name)
     int m_n320;                                 // 0x320
-    char pad_0x324[0x344 - 0x324];
+    char pad_0x324[0x340 - 0x324];
+    class CSWSCreatureFollowInfo* m_pFollowInfo;  // 0x340 (pathfind information)
     int m_bUpdateCombatInformation;             // 0x344
-    char pad_0x348[0x8c8 - 0x348];
+    char pad_0x348[0x34c - 0x348];
+    int m_bSpawned34C;                          // 0x34c (placeholder name)
+    int m_n350;                                 // 0x350 (placeholder name)
+    int m_n354;                                 // 0x354 (placeholder name)
+    char pad_0x358[0x8c8 - 0x358];
     int m_b8C8;                                 // 0x8c8
     int m_b8CC;                                 // 0x8cc
     int m_b8D0;                                 // 0x8d0
@@ -318,9 +352,13 @@ public:
     int m_bA04;                                 // 0xa04
     char pad_0xa08[0xa10 - 0xa08];
     unsigned char m_nA10;                       // 0xa10
-    char pad_0xa11[0xa74 - 0xa11];
+    char pad_0xa11[0xa60 - 0xa11];
+    unsigned short m_nAppearanceType;           // 0xa60
+    char pad_0xa62[0xa74 - 0xa62];
     CSWSCreatureStats* m_pStats;                // 0xa74
-    char pad_0xa78[0xa9c - 0xa78];
+    char pad_0xa78[0xa8c - 0xa78];
+    int m_nAIState;                             // 0xa8c
+    char pad_0xa90[0xa9c - 0xa90];
     int m_bA9C;                                 // 0xa9c
 };
 
@@ -403,7 +441,8 @@ public:
 
 class CAppManager {
 public:
-    char pad_0x0[0x8];
+    char pad_0x0[0x4];
+    class CClientExoApp* m_pClientExoApp;       // 0x4
     CServerExoApp* m_pServerExoApp;             // 0x8
 };
 extern CAppManager* g_pAppManager;              // 0x007A39FC
@@ -567,6 +606,88 @@ public:
     int OnApplyPureGoodPowers(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
     int OnApplyPureEvilPowers(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
     int OnApplyEffectIcon(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+
+    // effect_list_handler7.cpp
+    int OnApplyAreaOfEffect(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnApplyDeaf(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnApplyEntangled(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnRemoveDisappearAppear(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveTemporaryHitpoints(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveWounding(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnRemoveHitPointChangeWhenDying(CSWSObject* pObject, CGameEffect* pEffect);
+    int OnApplyCurse(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnApplyDisease(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnApplyPoison(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnApplyNegativeLevel(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    int OnApplySetStateInternal(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    void InitializeEffects();                   // 0x004E4A10
+
+    // handlers not reconstructed yet (registered by InitializeEffects)
+    int OnApplySummonCreature(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);    // 0x004D8680
+    int OnApplySummonParty(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);       // 0x004D8A40
+    int OnApplyKnockdown(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);         // 0x004D99B0
+    int OnApplyDisarm(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);            // 0x004D9CE0
+    int OnApplyVisualEffect(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);      // 0x004DAA40
+    int OnApplyForceJumpDelayed(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);  // 0x004DE0A0
+    int OnApplyLightsaberThrow(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);   // 0x004DE600
+    int OnApplyForceShield(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);       // 0x004DF540
+    int OnApplyDamage(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);            // 0x004DFA40
+    int OnApplyHeal(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);              // 0x004E0750
+    int OnApplyDeath(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);             // 0x004E0AC0
+    int OnApplySetState(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);          // 0x004E1C20
+    int OnApplyForcePush(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);         // 0x004E3800
+    int OnApplyDispelBestMagic(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);   // 0x004E43C0
+    // returns 0; folded with other three-argument zero leaves at 0x0066B360 (placeholder name)
+    int OnApplyNothing(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
+    // InitializeEffects slots whose identical bodies the linker folded into one
+    // address (placeholder names: base handler + effect type)
+    int OnRemoveFlag344Type1B(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveFlag344
+    int OnRemoveFlag344Type0A(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveFlag344
+    int OnRemoveFlag344Type0B(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveFlag344
+    int OnRemoveFlag344Type0D(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveFlag344
+    int OnRemoveFlag344Type0E(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveFlag344
+    int OnApplyNothingType3D(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);  // folded with OnApplyNothing
+    int OnRemoveNothingType3D(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnApplyNothingType0C(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);  // folded with OnApplyNothing
+    int OnRemoveMovementSpeedChangeType1D(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveMovementSpeedChange
+    int OnRemoveNothingType20(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnApplyNothingType41(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);  // folded with OnApplyNothing
+    int OnRemoveNothingType41(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnApplyNothingType32(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);  // folded with OnApplyNothing
+    int OnRemoveNothingType32(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnRemoveNothingType2D(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnRemoveNothingType4A(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnRemoveNothingType4B(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnApplyMissChanceType4C(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);  // folded with OnApplyMissChance
+    int OnRemoveNothingType4C(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnApplyNothingType4E(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);  // folded with OnApplyNothing
+    int OnRemoveNothingType4E(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnRemoveNothingType16(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnRemoveNothingType36(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnRemoveNothingType37(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnRemoveNothingType38(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnRemoveNothingType44(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnRemoveNothingType45(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnRemoveNothingType4D(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnRemoveSummonCreatureType59(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveSummonCreature
+    int OnApplyCreatureOnlyType2B(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);  // folded with OnApplyCreatureOnly
+    int OnApplyCreatureOnlyType42(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);  // folded with OnApplyCreatureOnly
+    int OnRemoveCreatureOnlyType42(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveCreatureOnly
+    int OnApplyCreatureOnlyType5C(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);  // folded with OnApplyCreatureOnly
+    int OnRemoveCreatureOnlyType5C(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveCreatureOnly
+    int OnApplyCreatureOnlyType5D(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);  // folded with OnApplyCreatureOnly
+    int OnRemoveCreatureOnlyType5D(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveCreatureOnly
+    int OnApplyCreatureOnlyType5E(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);  // folded with OnApplyCreatureOnly
+    int OnRemoveCreatureOnlyType5E(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveCreatureOnly
+    int OnApplyCreatureOnlyType61(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);  // folded with OnApplyCreatureOnly
+    int OnRemoveCreatureOnlyType61(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveCreatureOnly
+    int OnApplyCreatureOnlyType63(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);  // folded with OnApplyCreatureOnly
+    int OnRemoveCreatureOnlyType63(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveCreatureOnly
+    int OnRemoveNothingType66(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnRemoveNothingType67(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnRemoveNothingType6B(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnRemoveNothingType6C(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
+    int OnRemoveNothingType6D(CSWSObject* pObject, CGameEffect* pEffect);  // folded with OnRemoveNothing
 
     EffectApplyFn* m_pApplyFunctions;           // 0x04
     EffectRemoveFn* m_pRemoveFunctions;         // 0x08

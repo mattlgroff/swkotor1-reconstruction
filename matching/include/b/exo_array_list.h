@@ -45,7 +45,11 @@ public:
 
     T& operator[](int i) { return element[i]; }
 
+    int count(T t);                 // out of line (<unsigned long>: 0x004AF240)
+
     void InsertAt(T t, int nPos);   // out of line (<unsigned long>: 0x00616940)
+
+    void AddUnique(T t);            // out of line (<unsigned long>: 0x006449D0)
 
     void Add(T t)
     {

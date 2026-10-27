@@ -10,6 +10,16 @@ public:
     int array_size;
 
     CExoArrayList() { num = 0; array_size = 0; element = 0; }
+    // Sized constructor; with a constant 0 the `new` is dead, but the
+    // owner's constructor keeps its SEH frame (CAurRoom).
+    explicit CExoArrayList(int nSize)
+    {
+        num = 0;
+        array_size = nSize;
+        element = 0;
+        if (array_size)
+            element = new T[array_size];
+    }
     ~CExoArrayList() { if (element) delete[] element; }
     void Allocate(int n);                       // 0x005E03C0 (pointer lists)
     T& operator[](int i) { return element[i]; }

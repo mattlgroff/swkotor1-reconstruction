@@ -359,3 +359,145 @@ needs a separate K-owned correction. CWorldTimer::GetWorldTime is 0x004ADE40.
 
 Folder comparison: 926/1039 -> 928/1042, no prior MATCH regressions,
 no prior NONMATCH deterioration, and no duplicate annotations.
+
+## Worker C s7 (branch claude/worker-c-s7), 2026-10-27
+
+Folder canonical check (`kotor-match -q -j 2 matching/src/c`): **928/1042 ->
+940/1059**. No prior MATCH regressed, no prior NONMATCH got worse, no address
+annotated twice (checked against main's status.csv with a scratch report).
+
+- 17 NEW attempts, **10 NEW exact**, 7 retained NONMATCH, **2 prior NONMATCH
+  promotions** (00614B60 CSWCCreature::IsInjured, 0060B8A0 GetSoundSetStrres).
+- New exact: 0060B400 HitGroundEvent (cdecl model-event callback), 0061A980
+  AnimationUpdate, 0061A2D0 PlayFootstep, 006142F0 SetAttackAnimationData (in
+  sw_c_creature_s3.cpp after GetEquippedItemID), 0060BB20 HandleConjuring
+  (descriptive), 006170D0 ~CSWCCreature (new sw_c_creature_dtor_s7.cpp),
+  0061A670 AnimateFireAndForget (descriptive), 00615E80 FollowAnimationUpdate,
+  0060C1E0 RequestModel (new sw_c_creature_model_s7.cpp) and 0060C4A0
+  AdvanceWayPoint (descriptive, sw_c_creature_vslots_s4.cpp).
+- **Missing from functions.csv** (annotated, not edited): 0x0060C1E0
+  CSWCCreature::RequestModel (vtable 0x158; mac_names wrongly puts that name on
+  0x0060BF60, which is the movement-scale x87 helper) and 0x0060C4A0 (vtable
+  0x15c). Annotating 0x0060C4A0 is what gives RequestModel its correct extent.
+- NONMATCH (diff insns): 006134C0 SetAppearance (19, the `!(body||head)` path
+  is jump-threaded by us, not by the original), 006146E0 LookAt (51,
+  this/target esi/edi swap), 006191F0 GetHostileForcePowers (40, this/target
+  ebx/edi swap), 0060BDF0 MoveCreatureToPosition (32, snap-block placement and
+  one stack slot; interpolation is identical), 006193A0 CreateUsableItemEntry
+  (16, same SetSize/name-store register rotation as AddHostileItem), 00616310
+  LipSync (13, stack-slot rotation of pTimes/pShapes/fLength), 005F6640
+  CClientExoAppInternal::GetObjectName (105, block layout + frame size; new
+  client_exo_app_internal_s7.cpp).
+- Files: new sw_c_creature_s7.cpp (shared TU-local layout for most of the
+  batch), sw_c_creature_dtor_s7.cpp, sw_c_creature_model_s7.cpp,
+  client_exo_app_internal_s7.cpp; additions to sw_c_creature_s3.cpp,
+  sw_c_creature_action_menu.cpp (CSWGuiInterfaceAction +0x30 is now a bitfield:
+  bit 0 enabled, bits 1-4 disabled reason), sw_c_creature_vslots_s4.cpp,
+  sw_c_creature_menu_leafs.cpp, sw_c_creature_r6.cpp.
+
+Lessons (verified this batch):
+- **Separate early returns stay in line.** `if (a) return 0; if (b) return 0;`
+  keeps the `return 0` block right after the tests (AdvanceWayPoint, and it
+  promoted GetSoundSetStrres); `if (a || b) return 0;` moves it to the end.
+  Conversely a nested `if (ok) { ...; return x; } cleanup; return 0;` puts the
+  failure block last (LipSync's `!LoadLip` path).
+- **Inline budget.** MSVC 7.0 stopped expanding the inline
+  `GetServerCreature()` (ternary on GetServerObject) at its third use in
+  FollowAnimationUpdate and emitted an out-of-line call; `__forceinline` on the
+  TU-local helper restores the original. STR_RES's inline ctor shows the same
+  effect in the original itself (expanded once, out of line at 0x00414DC0 in
+  GetObjectName).
+- `CResRef` built from `CStr()` straight in the call (implicit conversion of a
+  `const CResRef&` parameter) is constructed before the other args and reuses
+  a dead temp slot; a named CResRef local needs its own slot (HitGroundEvent,
+  PlayFootstep). Implicit `const char*` -> `const CExoString&` arguments are
+  addressed with `lea` again at the push.
+- x87: a float threshold kept on the FPU stack matched only as
+  `f = member; f *= g_global;` (the one-line product put the global first);
+  `!(a > b)`, `!(a >= b)`, `!(a <= b)` select the `test ah,5 jp` / `test ah,1
+  je` / `test ah,0x41 jnp` encodings; three-stage Vector math through named
+  Vector temporaries (diff, scaled, sum) reproduces the store-heavy sequence.
+- `int x = m_member;` before a call that also loads globals keeps the
+  original's "argument first" order (IsInjured/IsPartyMember calls), and
+  `bConjuring = 1;` before `pSpell = GetSpell(nSpell)` with the id in a local.
+- Overloaded virtuals: declare `SetOrientation(Vector*)` before
+  `SetOrientation(Quaternion*)` to get Vector at 0x64 and Quaternion at 0x60
+  (MSVC groups overloads in reverse).
+- Classes with virtual bases (CSWCAnimBaseHead/Wield/HeadWield) get the hidden
+  `push 1` most-derived flag and the vbtable adjust on conversion for free.
+- Destructor: virtual-deleting `delete p; p = 0;` without an `if` stores the
+  null even when p was null (sound-source loop), with `if (p) {...}` only then.
+
+Next in-range queue (screened, not attempted): 0060F7C0 CGPauseCycle (rand
+idle-animation timer, 864 B), 006100F0 Setup3DScene (string compares on
+model names), 00617AD0 (line-of-sight with the static CHitInfo), 00617470
+PlayHitSound (1360 B, many 2DA lookups), 00619E10 footstep dust (Vector
+temporaries + x87), 0060BF60 movement scale (x87), 0060FF30 GetMenuPoint
+(quaternion maths), 00618C20 GetEquipmentForcePowers, 005F94D0/005F4460/
+005F4180 client app internals. Retry SetAppearance/LookAt/LipSync only with a
+new idea; GetObjectName needs the list-first layout (try a goto-free form that
+keeps esi = pObject and no ebx).
+
+## Worker C s9 (branch claude/worker-c-s9), 2026-10-27
+
+Folder canonical check (`kotor-match -q -j 2 matching/src/c`): **950/1075 ->
+952/1082**. No prior MATCH regressed, no prior NONMATCH got worse, no address
+annotated twice (checked against main's status.csv).
+
+The in-range todo list is down to 43 functions, all 528 B or larger (most
+1-8 KB with EH and x87), so this round is a small CClientExoAppInternal /
+input / area batch rather than a 20-40 function family.
+
+- 7 NEW attempts, **1 NEW exact**, 6 retained NONMATCH, **1 prior NONMATCH
+  promotion** (005F99F0 AddItemModelDirectlyToIgnoreList, moved from
+  client_exo_app_internal.cpp into the new client_exo_app_internal_ignore_s9.cpp).
+- New exact: 005F97E0 CClientExoAppInternal::AddCreatureModelToIgnoreList.
+- NONMATCH (diff insns): 005F4460 PlayerFlourishWeapons (10 reported, 2 real:
+  `mov ecx, esi` / `push eax` order of the final +0x44 call), 005F5370
+  UpdateSoundEngine (49, inline-budget tie on operator*), 005FB050
+  SelectNearestObject (105, register permutation plus a zero kept in edx),
+  005F3AD0 (119, descriptive UpdatePartyCombatTargets; register assignment and
+  a 0x20 vs 0x18 frame), 00606E30 CSWCArea::AddPlaceableObjectLight (137, the
+  original has an `and esp, -8` frame), 005E12A0 CExoInputInternal::BufferEvent
+  (MSG*) (88, final shared call gets eax/ebx instead of edx/ecx).
+- Not source: 0x005E50C0 is the DirectInput8Create import thunk
+  (`jmp [0x73D000]`); it needs no source.
+- Header: matching/include/c/exo_input.h names CExoInputInternal +0x37c/+0x380
+  (m_nMouseX/m_nMouseY, layout unchanged) and declares BufferEvent(tagMSG*).
+- Files: new client_exo_app_internal_s9.cpp (PlayerFlourishWeapons,
+  UpdateSoundEngine), client_exo_app_internal_select_s9.cpp,
+  client_exo_app_internal_combat_s9.cpp, client_exo_app_internal_ignore_s9.cpp,
+  sw_c_area_light_s9.cpp, exo_input_internal_s9.cpp.
+
+Lessons (verified this batch):
+- **CSWCObject/CGob::FindPart takes the part number as `unsigned char`.** A
+  byte loop `for (unsigned char n = 0xff; n >= 0xfb; n--) FindPart(n, 1)`
+  gives the original's counter in the dead `oid` argument slot and its
+  `or bl, 0xff` form with no casts (this promoted 005F99F0).
+- A TU-local `CExoArrayList::AddInline` must be `__forceinline` when a function
+  has several adds; plain in-class inline was emitted out of line.
+- Inline budget, again: in UpdateSoundEngine the original inlines
+  `operator*(const Vector&, float)` in the first branch and calls the
+  out-of-line COMDAT copy (0x00423BF0) in the next two. Declaring it inline
+  matches the first branch but inlines the second too.
+- Inline `GetClientExoApp()` accessor (instead of `->m_pClientExoApp`) puts
+  the app load before the pushed argument for the cached player-creature
+  pattern (PlayerFlourishWeapons 32 -> 10).
+- Win32 message handlers: `GET_X_LPARAM` / `LOWORD` give the original's
+  movsx/movzx word loads; a `__forceinline` helper that reads x and y into
+  locals inside the `if` reproduces each case body, and the switch cases must
+  follow the original block order (LDOWN, LDBLCLK, LUP, RDOWN, RDBLCLK, RUP,
+  WHEEL, MDOWN, MUP) for the jump table to line up.
+- A pointer to the array entry for check-then-assign
+  (`CSelectableObject& e = element[i]; if (e.x == 0xff) e.x = ...;`) plus a
+  re-read of `element[i].x` matches the original's cached `lea reg, [..]`.
+- Unsolved: `and esp, -8` frames (AddPlaceableObjectLight): neither POD
+  vectors nor a dead double trigger it.
+
+Next in-range queue (screened, not attempted): 0061FBA0 LoadPlayBackEvents
+(sscanf parser, 1344 B, no EH/x87), 005F9C60 SetSelectedObject-like caller of
+SelectNearestObject (2368 B), 005FA5A0, 00618C20 GetEquipmentForcePowers
+(EH, CExoArrayList<short> inserts), 00616A20 CSWCCreature constructor (EH,
+needs the full creature layout), 0060E7D0 EvaluateNewWayPoints, 005E8CF0
+CExoBaseInternal::GetDirectoryList. Retry SelectNearestObject/005F3AD0 only
+with a register-allocation idea.

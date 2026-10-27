@@ -30,8 +30,23 @@ public:
 };
 
 struct CResRef {
+    void CopyToString(CExoString& s) const;         // 0x00405F70
+    char* GetResRefStr() const;                     // 0x00405FE0
+    CResRef();                                      // 0x00405ED0
     CResRef(const char* s);                         // 0x00406D80
+    CResRef operator=(const CResRef& o);            // 0x00406120
+    CResRef operator=(const CExoString& s);         // 0x004061F0
+    int operator==(const char* s) const;            // 0x004060D0
     char m_resRef[16];
+};
+
+// 8 bytes.
+class CExoLocString {
+public:
+    CExoLocString();                                // 0x005E9E10
+    ~CExoLocString();                               // 0x005EA000
+    void* m_pInternal;
+    unsigned long m_n4;
 };
 
 class C2DA {
@@ -69,8 +84,18 @@ struct CResList {
 
 class CResGFF {
 public:
+    CResGFF(unsigned short nType, char* szFileType, const CResRef& cResRef);  // 0x00410630
+    virtual ~CResGFF();
     unsigned char ReadFieldBYTE(CResStruct* pStruct, char* szLabel, int& bSuccess,
                                 unsigned char nDefault);                // 0x00411A60
+    unsigned short ReadFieldWORD(CResStruct* pStruct, char* szLabel, int& bSuccess,
+                                 unsigned short nDefault);              // 0x00411B40
+    CExoString ReadFieldCExoString(CResStruct* pStruct, char* szLabel, int& bSuccess,
+                                   const CExoString& sDefault);         // 0x00411EC0
+    int GetList(CResList* pList, CResStruct* pStruct, char* szLabel);   // 0x004118C0
+    unsigned long GetListCount(CResList* pList);                        // 0x00411940
+    int GetListElement(CResStruct* pStruct, CResList* pList, unsigned long nIndex);  // 0x00411990
+    int GetStructFromStruct(CResStruct* pOut, CResStruct* pParent, char* szLabel);   // 0x00411A10
     unsigned long ReadFieldDWORD(CResStruct* pStruct, char* szLabel, int& bSuccess,
                                  unsigned long nDefault);               // 0x00411C20
     int ReadFieldINT(CResStruct* pStruct, char* szLabel, int& bSuccess,
@@ -88,6 +113,9 @@ public:
     int WriteFieldDWORD(CResStruct* pStruct, unsigned long nValue, char* szLabel);  // 0x00412760
     int WriteFieldINT(CResStruct* pStruct, int nValue, char* szLabel);              // 0x004127B0
     int WriteFieldFLOAT(CResStruct* pStruct, float fValue, char* szLabel);          // 0x00412870
+    char pad_0x4[0x94 - 0x4];
+    int m_bLoaded;                                  // 0x94 (placeholder name)
+    char pad_0x98[0xa0 - 0x98];
 };
 
 // 0x18 bytes: position then orientation.
@@ -199,6 +227,7 @@ public:
     T& operator[](int i) { return element[i]; }
     void Allocate(int nSize);                       // 0x005E03C0
     void Remove(T t);                               // <unsigned long>: 0x0066DCC0
+    void AddOutOfLine(T t);                         // folded Add: 0x00671C00
     int Count(T t)
     {
         int n = 0;
@@ -246,6 +275,7 @@ class CVirtualMachineScript;
 class CVirtualMachine {
 public:
     int SaveScriptSituation(void* pScript, CResGFF* pRes, CResStruct* pStruct);  // 0x005D10F0
+    int LoadScriptSituation(void** ppScript, CResGFF* pRes, CResStruct* pStruct); // 0x005D1100
     void DeleteScriptSituation(CVirtualMachineScript* pScript);   // 0x005D1110
 };
 extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
@@ -270,13 +300,22 @@ public:
     void SetExpression(CExoString sExpression);     // 0x0059DAB0 (placeholder name)
     int TestExpression(CExoString& sText, int bFlag);   // 0x0059E170 (placeholder name)
     int m_nId;                                      // 0x00
-    char pad_0x4[0x18 - 0x4];
+    CExoArrayList<CExoString*> m_lstMatches;        // 0x04 (placeholder name)
+    char pad_0x10[0x18 - 0x10];
     CExoString m_sExpression;                       // 0x18
 };
 
+class CGameObject;
+
+// 0x12c bytes.
 class CSWSDialog {
 public:
-    virtual ~CSWSDialog();
+    CSWSDialog();                                   // 0x005A0E80
+    virtual ~CSWSDialog();                          // 0x005A4880
+    int LoadDialog(CResGFF* pRes, int bFlag);       // 0x005A2AE0
+    int GetStartEntryOneLiner(CGameObject* pObject, CExoLocString& sText, CResRef& cSound,
+                              CResRef& cScript);    // 0x0059EE00
+    void RunScript(CGameObject* pObject, const CResRef& cScript);   // 0x0059ED70
     int FUN_005a03c0(unsigned long nReply, CSWSObject* pObject, int a, int b, int c,
                      int d);                        // 0x005A03C0
     void RunEndConversationScript(CSWSObject* pObject, int bAborted);  // 0x005A0A40
@@ -286,6 +325,8 @@ public:
                         int* pStatus);              // 0x005A4010 (placeholder name)
     void ClearAllPlayerHostileActions();            // 0x005A0940
     void FUN_004cc490(void* p);                     // 0x004CC490
+    void SetOwnerAILevel(CSWSObject* pObject);      // 0x0059F430
+    unsigned long GetStartEntry(CGameObject* pObject);  // 0x005A3640
     unsigned long FUN_004cc4b0();                   // 0x004CC4B0
     unsigned long GetOwnerInline()
     {
@@ -300,8 +341,13 @@ public:
     char pad_0x40[0x60 - 0x40];
     void* m_p60;                                    // 0x60 (placeholder name)
     CExoLinkedList<void> m_lstPlayers;              // 0x64 (placeholder name)
-    char pad_0x68[0x7c - 0x68];
+    char pad_0x68[0x78 - 0x68];
+    unsigned char m_nOwnerGender;                   // 0x78 (placeholder name)
+    char pad_0x79[0x7c - 0x79];
     unsigned long m_oidOwner;                       // 0x7c (placeholder name)
+    char pad_0x80[0x90 - 0x80];
+    int m_n90;                                      // 0x90 (placeholder name)
+    char pad_0x94[0x12c - 0x94];
 };
 
 class CSWSAreaOfEffectObject {
@@ -338,6 +384,7 @@ public:
     virtual void v48();
     virtual void v4c();
     virtual CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject();  // +0x50
+    unsigned long GetId() { return m_idSelf; }
 
     unsigned long m_idSelf;                         // +0x04
     unsigned char m_nObjectType;                    // +0x08
@@ -359,8 +406,12 @@ struct CSWCCreatureEntry {
 
 class CSWSClient {
 public:
-    char pad_0x0[0xc];
+    char pad_0x0[0x4];
+    unsigned long m_nPlayerID;                      // 0x04
+    char pad_0x8[0xc - 0x8];
     CExoLinkedList<CSWCCreatureEntry>* m_pEntries;  // 0x0c (placeholder name)
+    char pad_0x10[0x38 - 0x10];
+    unsigned long m_oidPCObject;                    // 0x38
 };
 
 // 0x34 bytes.
@@ -380,6 +431,12 @@ class CSWSMessage {
 public:
     int SendServerToPlayerCCMessage(unsigned long nPlayerId, unsigned char nMinor,
                                     CSWCCMessageData* pData, void* pExtra);  // 0x00568570
+    int SendServerToPlayerChatMultiLangMessage(unsigned char nChatType, unsigned long oidSpeaker,
+                                               CExoLocString& sMessage, unsigned long oidTarget,
+                                               unsigned char nGender, unsigned long* pPlayers,
+                                               unsigned long nPlayers, int bFlag,
+                                               const CResRef& cSound, unsigned long oidOther,
+                                               int bFlag2);    // 0x00571570
 };
 
 class CSWSItem;
@@ -400,6 +457,16 @@ public:
     CSWSCreature* GetCreatureByGameObjectID(unsigned long oid); // 0x004AE770
     CWorldTimer* GetWorldTimer();                   // 0x004AEDE0
     unsigned long GetPlayerCreatureID();            // 0x004AEA40
+};
+
+struct CClientModuleState {
+    char pad_0x0[0x6d];
+    unsigned char m_nState;                         // 0x6d (placeholder name)
+};
+
+struct CClientExoAppInternal {
+    char pad_0x0[0x4];
+    CClientModuleState* m_pModuleState;             // 0x04 (placeholder name)
 };
 
 class CGameObject;
@@ -429,6 +496,12 @@ public:
     CGameObject* GetGameObject(unsigned long oid);  // 0x005ED580
     unsigned long ServerToClientObjectId(unsigned long oid);    // 0x005EDA50
     void StopSoundPlayingInDialog();                // 0x005EDBD0
+    void SetDialogSent(int bSent);                  // 0x005EDCA0
+    void SetDialogModelsDirty(int bDirty);          // 0x005EDCB0
+    void SetInputClass(int nClass, int bFlag);      // 0x005EDA60
+    void ClearEnemySighted();                       // 0x005EE010
+    char pad_0x0[0x4];
+    CClientExoAppInternal* m_pInternal;             // 0x04
 };
 
 class CAppManager {
@@ -492,15 +565,22 @@ public:
 
 class CSWSArea;
 
-class CSWSArea {
+// The area's primary base (0x11c bytes, own vtable); CGameObject follows at
+// 0x11c.
+class CSWSAreaBase {
+public:
+    virtual ~CSWSAreaBase();
+    char pad_0x4[0x11c - 0x4];
+};
+
+class CSWSArea : public CSWSAreaBase, public CGameObject {
 public:
     void FUN_00506fe0(CSWSObject* pObject);         // 0x00506FE0
     CExoArrayList<unsigned long>* GetCreatureList() { return &m_aCreatures; }
     int GetFirstObjectIdInArea(unsigned long* pOid);    // 0x005071B0
     int GetNextObjectIdInArea(unsigned long* pOid);     // 0x005071E0
-    char pad_0x0[0x120];
-    unsigned long m_idSelf;                         // 0x120
-    char pad_0x124[0x190 - 0x124];
+    int GetFirstObjectIndiceByX(int* pnIndex, float fX);   // 0x00506F20
+    char pad_0x128[0x190 - 0x128];
     CExoArrayList<unsigned long> m_aCreatures;      // 0x190 (placeholder name)
 };
 
@@ -517,6 +597,7 @@ public:
 };
 
 extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
+extern unsigned char g_nDefaultGender;              // 0x0073ECD0
 extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
 extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
 extern const unsigned char OBJECT_TYPE_AREA_OF_EFFECT;  // 0x0074663A
@@ -535,9 +616,9 @@ public:
     virtual int RunActionNode(CSWSObjectActionNode* pNode, int bFlag);  // 0x74 (placeholder name)
     virtual void v78();
     virtual void v7c();
-    virtual void v80();
+    virtual CResRef GetDialogResref();              // 0x80
     virtual void v84();
-    virtual void v88();
+    virtual unsigned char GetGender();              // 0x88 (placeholder name)
     virtual void v8c();
     virtual void v90();
     virtual int GetIsDead();                        // 0x94 (placeholder name)
@@ -548,7 +629,7 @@ public:
     virtual void va8();
     virtual void vac();
     virtual int GetDamageImmunity(unsigned char nType);         // 0xb0 0x004CAEE0
-    virtual void vb4();
+    virtual char GetTotalDamageImmunity(unsigned short nFlags);   // 0xb4 (placeholder name)
     virtual void vb8();
     virtual void vbc();
     virtual void vc0();
@@ -557,6 +638,12 @@ public:
     virtual void SetPortrait(const CResRef& cPortrait);         // 0xcc (placeholder name)
 
     // 0x004CA000-0x004CFFFF
+    void SpellCastAndImpact(unsigned long nSpellId, const Vector& vTargetPosition,
+                            unsigned long oidTarget, unsigned char nMultiClass,
+                            unsigned long oidItem, int bSpellCountered, int bCounteringSpell,
+                            unsigned char nProjectilePathType, int bInstantSpell);  // 0x004CDF50
+    int StartDialog(unsigned long oidWith, const CExoString& sDialog, int bFlag);  // 0x004CF490
+    int RunDialogOneLiner(const CExoString& sDialog, unsigned long oidTarget);  // 0x004CB220
     int ReplyDialog(unsigned long nReply, int a, int b, int c, int d);  // 0x004CB480
     int StopDialog();                               // 0x004CB4F0
     void StopSoundPlayingInDialog();                // 0x004CB5A0
@@ -603,6 +690,7 @@ public:
     int RemoveObjectFromDialog(unsigned long oid);  // 0x004CD660
     CSWSExpression* GetListenExpressionById(int nId);   // 0x004CD6C0 (FUN_004cd6c0)
     int TestListenExpression(CExoString& sText);    // 0x004CD700
+    void BroadcastDialog(CExoString& sText, float fRange, int bFlag);   // 0x004CD760
     int GetHasSpellEffectApplied(int nSpellId);     // 0x004CDAC0 (FUN_004cdac0)
     int GetHasFeatEffectApplied(unsigned short nFeat);  // 0x004CE680
     void SetFadeOutTime(int nTime);                 // 0x004CE8A0
@@ -652,9 +740,17 @@ public:
                                  unsigned long nDelay, unsigned char nProjectileType, int nSpell,
                                  unsigned char nAttackResult, unsigned char nProjectilePath,
                                  int bFlag);        // 0x004CDB00
+    void BroadcastSafeProjectile(unsigned long oidOriginator, unsigned long oidTarget,
+                                 const Vector& vOrigin, const Vector& vTarget,
+                                 unsigned long nDelay, unsigned char nProjectileType, int nSpell,
+                                 unsigned char nAttackResult, unsigned char nProjectilePath,
+                                 int bFlag, int nExtra);    // 0x004CDD30
     void ReportOverflow(unsigned long nMessage, int nValue, int nLimit, int nUnused);  // 0x004CE6E0 (placeholder name)
     int FUN_0057a240(unsigned long nActionId);      // 0x0057A240
     void SaveActionQueue(CResGFF* pRes, CResStruct* pStruct);   // 0x004CC7E0
+    void LoadActionQueue(CResGFF* pRes, CResStruct* pStruct);   // 0x004CECB0
+    int DoDamageImmunity(CSWSCreature* pAttacker, int nDamage, unsigned short nFlags,
+                         int bSimulate, int bFeedback);   // 0x004CF160
     void AddAction(int nActionId, unsigned short nGroupId,
                    int nType1, void* p1, int nType2 = 0, void* p2 = NULL,
                    int nType3 = 0, void* p3 = NULL, int nType4 = 0, void* p4 = NULL,
@@ -688,11 +784,13 @@ public:
     unsigned long m_oidDialogOwner;                 // 0x54
     char pad_0x58[0x5c - 0x58];
     unsigned long m_nDialogDelayFlags;              // 0x5c (placeholder name)
-    char pad_0x60[0x68 - 0x60];
+    int m_n60;                                      // 0x60
+    int m_n64;                                      // 0x64
     unsigned long m_nCameraAnimationTime;           // 0x68
     char pad_0x6c[0x70 - 0x6c];
     int m_n70;                                      // 0x70
-    char pad_0x74[0x8c - 0x74];
+    int m_n74;                                      // 0x74
+    char pad_0x78[0x8c - 0x78];
     unsigned long m_oidArea;                        // 0x8c
     Vector m_vPosition;                             // 0x90
     Vector m_vOrientation;                          // 0x9c
@@ -717,7 +815,8 @@ public:
     unsigned long* m_p168;                          // 0x168
     char pad_0x16c[0x18c - 0x16c];
     CExoArrayList<CSWSExpression*> m_lstListenExpressions;  // 0x18c
-    char pad_0x198[0x1a0 - 0x198];
+    char pad_0x198[0x19c - 0x198];
+    int m_bListening;                               // 0x19c (placeholder name)
     CExoArrayList<CExoString*> m_lstMatchedExpressionStrings;   // 0x1a0
     char* m_pDamageImmunity;                        // 0x1ac (placeholder name)
     Vector m_vLastSpellTarget;                      // 0x1b0 (placeholder name)
@@ -725,7 +824,8 @@ public:
     int m_nLastSpellId;                             // 0x1c0 (placeholder name)
     char pad_0x1c4[0x1c8 - 0x1c4];
     int m_nLastSpellProjectileTime;                 // 0x1c8 (placeholder name)
-    char pad_0x1cc[0x1f4 - 0x1cc];
+    int m_bSpellImpactQueued;                       // 0x1cc (placeholder name)
+    char pad_0x1d0[0x1f4 - 0x1d0];
     int m_n1f4;                                     // 0x1f4
     char pad_0x1f8[0x1fc - 0x1f8];
     unsigned long m_nUpdateFlags[1];                // 0x1fc
@@ -747,8 +847,13 @@ class CSWSCreatureStats {
 public:
     char pad_0x0[0x78];
     unsigned long m_nFactionID;                     // 0x78
-    char pad_0x7c[0x154 - 0x7c];
+    char pad_0x7c[0x124 - 0x7c];
+    short m_nForcePoints;                           // 0x124 (placeholder name)
+    short m_nForcePointsBonus;                      // 0x126 (placeholder name)
+    char pad_0x128[0x154 - 0x128];
     unsigned short m_nSpellImmunityIndex;           // 0x154 (placeholder name)
+    char pad_0x156[0x17e - 0x156];
+    short m_nCasterLevel;                           // 0x17e (placeholder name)
     int GetCanUseSkill(unsigned char nSkill);       // 0x005AF880
 };
 
@@ -760,15 +865,26 @@ public:
     Vector m_vTarget;                               // 0x258 (placeholder name)
 };
 
+class CSWSCombatAttackData {
+public:
+    char pad_0x0[0xa0];
+    CExoArrayList<CSWCCMessageData*> m_alstPendingFeedback;    // 0xa0
+};
+
 class CSWSCombatRound {
 public:
     void ClearAllAttacks();                         // 0x004D37E0
+    CSWSCombatAttackData* GetAttack(int nAttack);   // 0x004D2B50
+    char pad_0x0[0x96c];
+    unsigned char m_nCurrentAttack;                 // 0x96c
 };
 
 class CSWSCreature : public CSWSObject {
 public:
     int GetDeadTemp();                              // 0x004EF890
     void FUN_004f34a0(unsigned long oid, int n);    // 0x004F34A0
+    void ClearActionsForType4F8770(int nType);      // 0x004F8770
+    void SetActivity(int nActivity, int bOn, int bFlag);    // 0x004F00A0
     void SendFeedbackMessage(unsigned short nMessage, CSWCCMessageData* pData);    // 0x004EDE10
     CSWSCreatureStats* GetCreatureStats() { return m_pStats; }
     char pad_0x264[0x340 - 0x264];

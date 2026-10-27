@@ -195,6 +195,7 @@ public:
                                       unsigned long* pAppearanceFlags); // 0x00577FA0
     int TestObjectVisible(CSWSObject* pObject, CSWSObject* pObserver); // 0x0056DC60
     void DeleteLastUpdateObjectsForObject(CSWSPlayer* pPlayer, unsigned long oidObject); // 0x0056E190
+    void DeleteLastUpdateObjectsInOtherAreas(CSWSPlayer* pPlayer);      // 0x0056DF60
     void WriteGameObjUpdate_UpdateObject(CSWSPlayer* pPlayer, CSWSObject* pObject,
         CLastUpdateObject* pLast, unsigned long nFlags, unsigned long nAppearanceFlags); // 0x00574A10
     void ComputeGameObjectUpdateForObject(CSWSPlayer* pPlayer, CSWSObject* pObserver,
@@ -212,13 +213,18 @@ public:
                                                   CSWSPlayerLastUpdateObject* pLast); // 0x0056C430
     void ComputeLastUpdate_WriteSpellLikeAbility(CSWSCreature* pCreature,
                                                  CSWSPlayerLastUpdateObject* pLast); // 0x0056C4D0
+    void AssignVisualEffectLists(CExoArrayList<CLoopingVisualEffect*>* pTarget,
+                                 CExoArrayList<CLoopingVisualEffect*>* pSource); // 0x00570530 (Mac debug map 2/2)
     void AssignCreatureLists(CExoArrayList<unsigned long>* pSource,
                              CExoArrayList<unsigned long>* pTarget);    // 0x005706F0
     void ComputeLastUpdate_StoreUpdateSpellLikeAbility(CSWSCreature* pCreature,
                                                        CSWSPlayerLastUpdateObject* pLast); // 0x00570BA0
-    static void GetLocStringServer(unsigned long nPlayerId, const CExoLocString& sFirst,
-                                   const CExoLocString& sLast, CExoString& sOut,
-                                   unsigned char nGender);              // 0x00578870
+    static int GetLocStringServer(unsigned long nPlayerId, CExoLocString& sFirst,
+                                  CExoLocString& sLast, CExoString& sOut,
+                                  unsigned char nGender);               // 0x00578870 (Mac debug map 2/2)
+    static int GetLocStringServerTime(unsigned long nPlayerId, CExoLocString& sString,
+                                      CExoString& sOut, float& fSeconds,
+                                      unsigned char nGender);           // 0x00578A20 (name guessed)
 
     int SendServerToPlayerMessage(unsigned long nPlayerId, unsigned char nMajor,
                                   unsigned char nMinor, unsigned char* pData,
@@ -308,6 +314,12 @@ public:
                           unsigned long nStrRef);                       // 0x00571760
     int ChatMessage(unsigned long nTalkVolume, unsigned long oidSpeaker, CExoString sText,
                     unsigned long oidTarget, const CExoString& sName);  // 0x00571960 (name guessed)
+    int SendServerToPlayerChatMultiLangMessage(unsigned char nChatType, unsigned long oidSpeaker,
+                                               CExoLocString& sMessage, unsigned long oidTarget,
+                                               unsigned char nGender, unsigned long* pPlayerIds,
+                                               unsigned long nPlayerIds, int bRestrictToList,
+                                               const CResRef& cSound, unsigned long oidSound,
+                                               int nValue);                 // 0x00571570
     int SendServerToPlayerChatMultiLang_Helper(unsigned long nPlayerId, unsigned char nChatType,
                                                unsigned long oidSpeaker,
                                                const CExoLocString& sMessage,

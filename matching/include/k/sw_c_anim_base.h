@@ -8,6 +8,7 @@
 struct Vector {
     float x, y, z;
     Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
+    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
 };
 
 struct Quaternion {
@@ -35,6 +36,12 @@ public:
     CExoString& operator=(const CExoString& s);     // 0x005E5C50
     CExoString& operator=(const char* s);           // 0x005E5140
     char* CStr() const;                             // 0x005E5670
+    int GetLength() const;                          // 0x005E5790
+    int operator==(const char* s) const;            // 0x005E5290
+    CExoString(const char* s);                      // 0x005E5A90
+    CExoString(const CExoString& s);                // 0x005E5B00
+    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
+    int IsEmpty() const;                            // 0x005E58A0
     void Format(const char* szFormat, ...);         // 0x005E5680
 };
 
@@ -65,7 +72,8 @@ public:
     virtual int GetEventTime(const char* szAnim, float* pfA, float* pfB);  // 0x1c
     virtual void v20();
     virtual void v24();
-    virtual void v28();
+    virtual void AddEventCallback(void (*pfnCallback)(CAurObject*, char*, void*), const char* szEvent,
+                                  void* pUserData, float fTime, int n);  // 0x28 (placeholder name)
     virtual void v2C();
     virtual void ReplaceTextureIndexed(char* szOld, char* szNew, int nCount, unsigned short* pIndices, int nStart);  // 0x30
     virtual void ReplaceTexture(char* szOld, char* szNew);  // 0x34
@@ -93,15 +101,15 @@ public:
     virtual void v8C();
     virtual void v90();
     virtual void SetNodePosition(const char* szNode, Vector v, Quaternion q);  // 0x94
-    virtual void GetNodePosition(const char* szNode, Vector* pv, Quaternion* pq);  // 0x98
+    virtual int GetNodePosition(const char* szNode, Vector* pv, Quaternion* pq);  // 0x98
     virtual void v9C();
     virtual int GetNodeTransform(const char* szNode, Vector* pv, Quaternion* pq);  // 0xa0
     virtual void vA4();
     virtual void vA8();
     virtual void vAC();
     virtual void vB0();
-    virtual void vB4();
-    virtual void vB8();
+    virtual void SetColorShifting(Vector vColor, float fAlpha, int b);  // 0xb4 (descriptive)
+    virtual void SetIllumination(Vector vColor, int b);  // 0xb8 (descriptive)
     virtual void vBC();  // 0xbc
     virtual void vC0();  // 0xc0
     virtual void vC4();
@@ -120,7 +128,7 @@ public:
     virtual void vF8();  // 0xf8
     virtual void vFC();  // 0xfc
     virtual void v100();
-    virtual void v104();
+    virtual void* GetGobProperty();  // 0x104 (descriptive)
     virtual void v108();
     virtual void v10C();
     virtual void v110();
@@ -187,7 +195,7 @@ public:
     virtual int HasModel(int n);  // 0x34
     virtual float GetAnimationEventTime(int nAnim);  // 0x38
     virtual float GetAnimationEventTime2(int nAnim);  // 0x3c
-    virtual CExoString GetAnimationName(int nAnim);  // 0x40
+    virtual CExoString GetAnimationName(unsigned short nAnim);  // 0x40 (0x0069E620)
     virtual int PlayAnimSet(int a, int b);  // 0x44
     virtual int HasAnimation(int nAnim);  // 0x48
     virtual int HasAnimationLength(int nAnim);  // 0x4c
@@ -208,7 +216,7 @@ public:
     virtual void DetachHeadItem();  // 0x88
     virtual void AttachHeadItem();  // 0x8c
     virtual void SetCheckItems(int b);  // 0x90
-    virtual void v94();  // 0x94
+    virtual int SetAlpha(float fAlpha, unsigned char nPart);  // 0x94 (0x0069EB20)
     virtual int SetEnvMapPart(unsigned char nPart, int bEnable, int bStore, const CResRef& cEnvMap);  // 0x98
     virtual int SetEnvMap(int bEnable, int bStore, const CResRef& cEnvMap);  // 0x9c
     virtual int RestoreEnvMap();  // 0xa0
@@ -227,7 +235,7 @@ public:
     virtual void UpdateTilt();  // 0xd4
     virtual int GetBoundingExtent(CSWGuiExtent* pExtent);  // 0xd8
     virtual void vDC();  // 0xdc
-    virtual void vE0();  // 0xe0
+    virtual unsigned short ServerToClientAnimation(unsigned short nAnim);  // 0xe0
     virtual void ModelVF8();  // 0xe4
     virtual void ModelVFC();  // 0xe8
     virtual void SetHeadItem(unsigned long oid);  // 0xec
@@ -248,6 +256,7 @@ public:
     int PlayAnimSetOnModel(CAurObject* pModel, int a, int b);  // 0x0069E420
     int GetBoundingRect(CAurObject* pModel, CSWGuiExtent* pExtent);  // 0x0069EDC0
     int SetModelV12C(CAurObject* pModel, int n);
+    void SetGroundTilt(Vector* pNormal, Vector* pOrientation);  // 0x0069DE90
 
     unsigned short m_aTextureIndices[10];           // 0x14
     unsigned char m_nTextureCount;                  // 0x28

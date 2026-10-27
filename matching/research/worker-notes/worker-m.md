@@ -524,3 +524,84 @@ small leftovers 0x006460B0, 0x00646080, 0x0064B4D0/0x0064B4F0, 0x006449D0.
   11 and 9 differing instructions; null-return block placement and memcpy
   register scheduling remain. Class/method name and void return are
   descriptive pending independent ABI evidence; its known caller ignores EAX.
+
+## Completed s7 batch (2026-10-27)
+
+Folder: 469/526 -> **482/547**. 21 new annotations: **12 NEW exact**, 9 retained
+NONMATCH, plus one promotion (0x00644730, previously the NONMATCH
+`OnBlackButtonPressed` with int3/nop padding, is really the vcall thunk
+`??_9@$BGA@AE`; sw_gui_journal_black.cpp was removed and the thunk is now
+annotated in sw_gui_in_game_journal.cpp). No duplicate annotations.
+
+NEW exact:
+- CSWGuiInGameJournal (include/m/sw_gui_in_game_journal.h, src
+  sw_gui_in_game_journal.cpp): ~CSWGuiInGameJournal 0x00644850,
+  OnControlEntered 0x00645100, PopulateItemListBox 0x00645330, OnPanelAdded
+  0x00645E00, vcall thunk ??_9@$BFM@AE 0x00644720 (OnYButtonPressed +0x5c;
+  0x00644720/0x00644730 are not in functions.csv).
+- CSWMiniPlayer::ClampPosition 0x0066CB40 (sw_mini_game_object.cpp).
+- CSWCMiniGame::CSWCMiniGame(CSWCArea*) 0x00671C40 (sw_c_mini_game_ctor.cpp;
+  CResHelper base ctor inlined via M_INLINE_RES_HELPER_CTOR).
+- CSWCMessage: HandleServerToPlayerActiveItemProperties 0x0064E3D0,
+  HandleServerToPlayerActiveItemPropertyUpdate 0x00651560
+  (sw_c_message_item_properties.cpp), HandleServerToPlayerCreatureUpdate_Add
+  0x0064C0A0 (sw_c_message_creature_add.cpp), CreateItem 0x0064B540
+  (sw_c_message_create_item.cpp), HandleServerToPlayerExportReply 0x006634A0
+  (sw_c_message_export_reply.cpp).
+
+Retained NONMATCH (best attempts, reasons in the source comments):
+- 0x00644A40 journal ctor (50): only the else branch of the swap-text if/else
+  allocates eax/ecx where the original repeats the if branch's ecx/edx.
+- 0x006456E0 journal HandleInputEvent (70): the two cases' sText locals get
+  each other's stack slots; one `!flag` register rotation.
+- 0x006740D0 CSWMGGunBank::SetGunModel (5): frame 0x58 vs 0x48 (original
+  shares the first CResRef temp with the gun-case temp).
+- 0x0066CD30 CSWMiniPlayer::GetInertia (6, descriptive name): frame slot reuse.
+- 0x0064EC00 CSWCMessage::HandleServerToPlayerLogin (19): frame layout only.
+- 0x00678080 SendPlayerToServerLogin_LoginLocalCharacter(CResRef, int) (15):
+  frame layout only.
+- 0x00644650 CSWCModule::Update (3): load/store order of the two clear-view
+  outputs.
+- 0x0064D500 HandleServerToPlayerPlaceableUpdate_Add (52): register rotations,
+  flag-store scheduling, hoisted hitcheck push.
+- 0x0064BAB0 HandleServerToPlayerArea (119): original has an 8-aligned EBP
+  frame; ours does not (trigger unknown).
+
+Compiler lessons (verified this batch):
+- String concatenation `tlk(a) + " " + tlk(b)` with an *implicit* literal
+  conversion builds the separator temporary first (before both
+  GetSimpleString calls), exactly like the original; an explicit
+  `CExoString(" ")` is evaluated after the right operand. Same for
+  `InitControl`-style named locals: `{ CExoString sName("X"); Fn(sName); }`.
+- Choosing between two member functions with a conditional,
+  `(p->*(cond ? &C::A : &C::B))(args)`, reproduces the original's
+  `mov eax, offset A; jne; mov eax, offset B; call eax`.
+- `pPanel->AddEvent(0x27, this, &CSWGuiPanel::VirtualFn)` emits the shared
+  `??_9@$B..@AE` vcall thunks; annotate them with SYMBOL.
+- A CSWGuiListBox method named SetActiveControl silently overrides the base
+  virtual; call the non-virtual 0x0041C160 as SelectControl.
+- Inline accessors decide object-vs-argument load order:
+  `g_pAppManager->GetClientExoApp()->F(x)` loads the app before x, the direct
+  member after. Two accesses to `m_pInternal` matched only as
+  `GetClientExoApp()->GetInternal()` in both the test and the store.
+- Float member copies that the original does via fld/fstp come from inline
+  getters (`pOld->GetBirthrate()`, `GetBump()`); plain member copies use mov.
+- `if (x == 1) F(1,0,0,0); else F(0,0,0,0);` gives the original's merged call
+  with `push eax` / `push 0`; a `== 1` argument gives setcc code.
+- Stack slots of locals follow the order of their *later uses*, not their
+  declaration: swapping two stores (ActiveItemProperties) or keeping the
+  eight placeable flag stores in read order fixed slot assignments.
+- `nType == 1 ? sImage : sResRef` (lvalue conditional) selects the address
+  without copies.
+- Temporaries in `CExoFile(path, 0x7df, "wb")` inside `new` get the
+  conditional-destruction flag automatically.
+
+Next in-range queue: 0x00651C10 HandleServerToPlayerCheat_DoNasty (704,
+quaternion math), 0x00676610 CSWCJournal::Add (1,264), 0x00678280
+SendPlayerToServer_LevelUp (1,440), 0x0066D640 CSWMiniPlayer::Control and
+0x0066EDA0 DoFollowerHitCheck (x87), 0x006723D0 CSWMiniGame::Load (2,784,
+GFF reads, structured), 0x006710E0 CSWMiniGame::Control (x87), the big
+CSWCMessage handlers 0x00650B90/0x00652F20/0x006501B0/0x00653850/0x00655E40/
+0x00663840/0x00668640/0x00667CC0, and camera collision 0x006422E0/0x006433B0/
+0x006441D0. Revisit the frame-layout NONMATCHes once the 8-alignment/slot
+rules are better understood.

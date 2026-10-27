@@ -357,6 +357,8 @@ class CAppManager {
 public:
     void* m_pUnknown00;
     CClientExoApp* m_pClientExoApp;
+
+    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
 };
 extern CAppManager* g_pAppManager;
 
@@ -907,7 +909,7 @@ void CSWCCreature::UpdateWeaponClass()
                 case 6: nClass = 9; break;
                 }
             } else {
-                pItem = (CSWCItem*)g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(oidLeft);
+                pItem = (CSWCItem*)g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(oidLeft);
                 if (pItem) {
                     nBaseItem = pItem->m_nBaseItem;
                     pBaseItems = g_pRules->m_pBaseItems;
@@ -938,7 +940,7 @@ void CSWCCreature::PlayVoiceChat(unsigned short nIndex, int bSpatial)
     }
     unsigned char nPriority;
     if (g_pAppManager->m_pClientExoApp->GetPlayerCreature() == this) nPriority = 8;
-    else if (g_pAppManager->m_pClientExoApp->GetPlayerByGameObjectID(m_idSelf)) nPriority = 9;
+    else if (g_pAppManager->GetClientExoApp()->GetPlayerByGameObjectID(m_idSelf)) nPriority = 9;
     else {
         int nSize;
         g_pRules->m_p2DArrays->m_pAppearanceTable->GetINTEntry(

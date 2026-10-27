@@ -581,7 +581,7 @@ static inline unsigned long ServerToClientId(unsigned long oid)
 inline CSWCCreature* CClientExoAppInternal::LookUpCreature(unsigned long oid)
 {
     CGameObject* pObject = 0;
-    return (m_pGameObjectArray->GetGameObject(oid, &pObject) == GAME_OBJECT_VALID
+    return (GetGameObjectArray()->GetGameObject(oid, &pObject) == GAME_OBJECT_VALID
         && pObject && pObject->m_nObjectType == OBJECT_TYPE_CREATURE) ? pObject->AsSWCCreature() : 0;
 }
 

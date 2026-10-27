@@ -550,10 +550,12 @@ extern char g_sFootstepPrefix[];                    // 0x0074F378
 
 
 // FUNCTION: SWKOTOR 0x0060B8A0
-// NONMATCH: the original places the `return 0` block before the success path (4 insns).
 int CSWCCreature::GetSoundSetStrres(int a, int b)
 {
-    if (m_nSoundSet == 0xffff || !m_pSoundSet) {
+    if (m_nSoundSet == 0xffff) {
+        return 0;
+    }
+    if (!m_pSoundSet) {
         return 0;
     }
     if (!m_pSoundSet->m_pRes->Demand()) {
@@ -853,12 +855,12 @@ void CSWCCreature::GetUsableItems(int a, int b)
                 CSWSItem* pServerItem = pItem->GetServerItem();
                 AddUsableItem(a, pServerItem, 1, b);
             }
-            pItem = (CSWCItem*)g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(m_oidEquipped240);
+            pItem = (CSWCItem*)g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_oidEquipped240);
             if (pItem) {
                 CSWSItem* pServerItem = pItem->GetServerItem();
                 AddUsableItem(a, pServerItem, 1, b);
             }
-            pItem = (CSWCItem*)g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(m_oidEquipped248);
+            pItem = (CSWCItem*)g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_oidEquipped248);
             if (pItem) {
                 CSWSItem* pServerItem = pItem->GetServerItem();
                 AddUsableItem(a, pServerItem, 1, b);

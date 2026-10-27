@@ -41,9 +41,9 @@ void CSWSMessage::TestObjectUpdateDifferences(CSWSPlayer* pPlayer, CSWSObject* p
     void* pPos = pPlayer->m_pLastUpdateObjects->GetHeadPos();
     while (pPos) {
         *ppLast = pPlayer->m_pLastUpdateObjects->GetAtPos(pPos);
-        if ((*ppLast)->m_nId == pObject->m_idSelf) {
+        if ((*ppLast)->m_nId == pObject->GetId()) {
             (*ppLast)->m_bUpdated = 1;
-            int bSelf = pObject->m_idSelf == pPlayerObject->m_idSelf;
+            int bSelf = pObject->GetId() == pPlayerObject->GetId();
             *pFlags = ComputeUpdateRequired(pPlayer, pObject, *ppLast, bSelf);
             *pAppearanceFlags = ComputeAppearanceUpdateRequired(pObject, *ppLast);
             return;

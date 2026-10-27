@@ -178,7 +178,7 @@ CItemRepository* CSWSCreature::GetItemRepository(int bParty)
         }
         if (((CSWSModule*)GetServerExoApp()->GetModule())->m_nFlags104 & 1) {
             unsigned long oid = m_idSelf;
-            if (GetServerExoApp()->GetPartyTable()->GetIsPartyMember(oid)) {
+            if (GetServerExoApp()->GetPartyTable()->GetIsNPCObject(oid)) {
                 if (((CGuiInGame*)GetClientExoApp()->GetInGameGui(0))->GetIsInMenu()) {
                     return GetServerExoApp()->GetPartyTable()->GetItemRepository();
                 }

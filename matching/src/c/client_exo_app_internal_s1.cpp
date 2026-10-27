@@ -637,7 +637,7 @@ int CClientExoAppInternal::WaitForMovie(int bRestoreMusic)
             m_pEvilEndingSound->Stop();
             delete m_pEvilEndingSound;
         }
-        g_pAppManager->m_pClientExoApp->GetGuiInGame()->StartDialogAmbientTrack("");
+        g_pAppManager->GetClientExoApp()->GetGuiInGame()->StartDialogAmbientTrack("");
         m_pEvilEndingSound = new CExoStreamingSoundSource();
         m_pEvilEndingSound->SetVolume((unsigned char)(g_pAppManager->m_pClientExoApp->GetClientOptions()->m_nMusicVolume * 1.27f));
         m_pEvilEndingSound->Play("evil_ending", 8, 0, 1, 0);
@@ -789,7 +789,7 @@ int CClientExoAppInternal::ChangeCharacterToNextLivingPartyMember(int bCheckTarg
             return 1;
         }
     } else if (nTries != 0) {
-        ChangeCharacter(g_pAppManager->m_pClientExoApp->GetParty()->IsPartyMember(pClient->m_oidCreature), 0);
+        ChangeCharacter(g_pAppManager->GetClientExoApp()->GetParty()->IsPartyMember(pClient->m_oidCreature), 0);
     }
     return 0;
 }

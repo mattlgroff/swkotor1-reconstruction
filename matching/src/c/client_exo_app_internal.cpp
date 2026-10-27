@@ -406,15 +406,13 @@ void CClientExoAppInternal::ClearPauseExclusionList()
         m_pGameObjectArray->GetGameObject(oid, &pObject);
         if (pObject) {
             unsigned long nDay, nTime;
-            GetActiveTimer(pObject->m_idSelf)->GetWorldTime(&nDay, &nTime);
+            GetActiveTimer(pObject->GetId())->GetWorldTime(&nDay, &nTime);
             pObject->SetWorldTime(nDay, nTime);
             pObject->AsSWCObject()->FindPart(0xff, 1)->Resume();
         }
     }
 }
 
-// NONMATCH (5 insns): original loads pObject->m_idSelf before pushing the
-// GetWorldTime out-pointers.
 // FUNCTION: SWKOTOR 0x005F7F10
 void CClientExoAppInternal::AddToPauseExclusionList(unsigned long oid)
 {
@@ -424,7 +422,7 @@ void CClientExoAppInternal::AddToPauseExclusionList(unsigned long oid)
         pObject->AsSWCObject()->FindPart(0xff, 1)->Pause();
         m_pPauseExclusionList->AddTail((unsigned long*)oid);
         unsigned long nDay, nTime;
-        GetActiveTimer(pObject->m_idSelf)->GetWorldTime(&nDay, &nTime);
+        GetActiveTimer(pObject->GetId())->GetWorldTime(&nDay, &nTime);
         pObject->SetWorldTime(nDay, nTime);
     }
 }
@@ -462,33 +460,6 @@ void CClientExoAppInternal::Uninitialize()
         m_pUnknownPanel27c = 0;
     }
     SetCursorState(0xff, 1);
-}
-
-// NONMATCH (4 insns): original sets the byte counter with `or bl, 0xff`
-// (3 bytes), we get `mov bl, 0xff`; everything else matches.
-// FUNCTION: SWKOTOR 0x005F99F0
-void CClientExoAppInternal::AddItemModelDirectlyToIgnoreList(unsigned long oid, CExoArrayList<CGob*>* pList)
-{
-    CGameObject* pObject = 0;
-    if (m_pGameObjectArray->GetGameObject(oid, &pObject) == GAME_OBJECT_VALID && pObject &&
-        pObject->m_nObjectType == OBJECT_TYPE_ITEM) {
-        CItemModel* pModel = pObject->GetItemModel();
-        if (pModel) {
-            unsigned char nPart = 0xff;
-            *(unsigned char*)&oid = nPart;
-            do {
-                CGob* pGob = pModel->FindPart(oid, 1);
-                if (pGob) {
-                    if (pList->num == pList->array_size) {
-                        pList->Allocate(pList->array_size ? pList->array_size * 2 : 16);
-                    }
-                    pList->element[pList->num++] = pGob;
-                }
-                nPart--;
-                *(unsigned char*)&oid = nPart;
-            } while (nPart >= 0xfb);
-        }
-    }
 }
 
 // FUNCTION: SWKOTOR 0x005FB490

@@ -3,6 +3,7 @@
 #define B_SWS_DOOR_H
 
 #include "b/exo_string.h"
+#include "b/exo_array_list.h"
 
 class CSWSDoor {
 public:
@@ -13,7 +14,9 @@ public:
     int m_nAnimationState;                                  // 0xd4 (0x2726 closed)
     char pad_0xd8[0xf8 - 0xd8];
     int m_bPlot;                                            // 0xf8
-    char pad_0xfc[0x2bf - 0xfc];
+    char pad_0xfc[0x2b8 - 0xfc];
+    int m_nFactionId;                                       // 0x2b8
+    char pad_0x2bc[0x2bf - 0x2bc];
     unsigned char m_nOpenLockDC;                            // 0x2bf (GetLockUnlockDC)
     unsigned char m_nCloseLockDC;                           // 0x2c0 (GetLockLockDC)
     char pad_0x2c1[0x2c4 - 0x2c1];
@@ -23,10 +26,11 @@ public:
     char pad_0x2cd[0x2d0 - 0x2cd];
     CExoString m_sKeyName;                                  // 0x2d0
     int m_bKeyRequired;                                     // 0x2d8
-    char pad_0x2dc[0x2e8 - 0x2dc];
+    CExoArrayList<unsigned long> m_aTrapDetectedBy;         // 0x2dc (name guessed)
     int m_bTrapped;                                         // 0x2e8 (name guessed)
     char pad_0x2ec[0x3c0 - 0x2ec];
     int m_n3C0;                                             // 0x3c0 (no door actions when set)
+    int m_bAutoRemoveKey;                                   // 0x3c4 (name guessed)
 };
 
 #endif

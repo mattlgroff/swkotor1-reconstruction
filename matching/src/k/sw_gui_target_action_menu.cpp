@@ -54,7 +54,7 @@ void CSWGuiMainInterfaceAction::Draw(float fDelta)
 }
 
 // FUNCTION: SWKOTOR 0x00685960
-void CSWGuiMainInterfaceAction::SetIcon(const CResRef& cIcon, int a2, int bEnabled, int a4)
+void CSWGuiMainInterfaceAction::SetIcon(const CResRef& cIcon, const CExoString& sName, int bEnabled, int a4)
 {
     if (cIcon != m_btnIcon.m_cBorder.m_cFillImage) {
         m_btnIcon.m_cBorder.SetFillImage(cIcon, 0);
@@ -331,7 +331,7 @@ void CSWGuiTargetActionMenu::PopulateMenus(CSWCCreature* pPC, int bDisabled, CSW
             if (m_aLists[i].m_pData[j].m_nId == m_anSelected[m_nSelectedRow][i]) {
                 m_aActions[i].SetFrame(0, m_aLists[i].m_nCount > 1);
                 CSWGuiTargetAction* pAction = &m_aLists[i].m_pData[j];
-                m_aActions[i].SetIcon(pAction->m_cIcon, 0, (pAction->m_nFlags & 1) && !bDisabled, 0);
+                m_aActions[i].SetIcon(pAction->m_cIcon, pAction->m_sName, (pAction->m_nFlags & 1) && !bDisabled, 0);
                 bFound = 1;
                 break;
             }
@@ -340,7 +340,7 @@ void CSWGuiTargetActionMenu::PopulateMenus(CSWCCreature* pPC, int bDisabled, CSW
             if (m_aLists[i].m_nCount > 0) {
                 m_aActions[i].SetFrame(0, m_aLists[i].m_nCount > 1);
                 CSWGuiTargetAction* pAction = m_aLists[i].m_pData;
-                m_aActions[i].SetIcon(pAction->m_cIcon, 0, (pAction->m_nFlags & 1) && !bDisabled, 0);
+                m_aActions[i].SetIcon(pAction->m_cIcon, pAction->m_sName, (pAction->m_nFlags & 1) && !bDisabled, 0);
             } else {
                 m_aActions[i].SetFrame(1, 0);
             }
@@ -398,4 +398,160 @@ void CSWGuiTargetActionMenu::SetTarget(CSWCObject* pTarget)
     }
     SetNameLabel(sName);
     m_lblName.m_cText.m_fAlpha = 1.0f;
+}
+
+// NONMATCH (7): load scheduling only; the original reads the action frame's
+// top byte before storing the width. Inline, hoisted-local and reordered
+// statement shapes do not reproduce it.
+// FUNCTION: SWKOTOR 0x0068BF50
+void CSWGuiTargetActionMenu::Initialize(CSWGuiPanel* pPanel)
+{
+    m_pPanel = pPanel;
+    for (int i = 0; i < 3; i++) {
+        m_aActions[i].Initialize(pPanel, i, 1);
+    }
+    pPanel->InitControl(&m_lblName, "LBL_NAME", 0);
+    pPanel->InitControl(&m_lblNameBG, "LBL_NAMEBG", 0);
+    pPanel->InitControl(&m_lblBarBG, "LBL_HEALTHBG", 0);
+    pPanel->InitControl(&m_pbHealth, "PB_HEALTH", 0);
+    m_extent.width = m_lblName.m_extent.width;
+    unsigned char nBottom = m_lblName.m_extent.height + m_lblName.m_extent.top;
+    m_nBarGap = m_pbHealth.m_extent.top - nBottom;
+    m_nActionGap = m_aActions[0].m_btnFrame.m_extent.top - nBottom;
+    SetNameLabel("");
+}
+
+// FUNCTION: SWKOTOR 0x00689D80
+// NONMATCH: same family of ties as PopulateMenus: this / pPC frame slots
+// swapped, bDisabled kept in ebx and the list walked from +0x78 instead of
+// +0x74. Control flow, inlined SetIcon and calls agree; a list pointer
+// local made the register choice worse.
+void CSWGuiMainInterface::UpdateActions()
+{
+    CSWCCreature* pPC = g_pAppManager->GetClientExoApp()->GetParty()->GetPlayerCharacter();
+    CSWSCreature* pServer = pPC ? pPC->GetServerCreature() : 0;
+    CGameObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(m_nTargetId);
+    CSWCObject* pTarget = 0;
+    int bDisabled = 1;
+    if (!pPC) {
+        return;
+    }
+    if (pServer && !pServer->GetDead() && !pServer->GetDeadTemp()) {
+        bDisabled = 0;
+    }
+    if (pPC->m_idSelf != m_n68) {
+        m_n68 = pPC->m_idSelf;
+    }
+    if (pObject) {
+        // Slot 0x0c returns the client object (AsSWCObject).
+        pTarget = (CSWCObject*)pObject->AsActionTarget();
+    }
+    int i;
+    for (i = 0; i < 6; i++) {
+        for (int j = 0; j < m_aPersonal[i].m_nCount; j++) {
+            m_aPersonal[i].m_pData[j].Reset();
+        }
+        m_aPersonal[i].m_nCount = 0;
+        pPC->GetPersonalActions(i, m_aPersonal[i]);
+    }
+    m_cTargetMenu.PopulateMenus(pPC, bDisabled, pTarget);
+    for (i = 0; i < 4; i++) {
+        int bFound = 0;
+        for (int j = 0; j < m_aPersonal[i].m_nCount; j++) {
+            if (m_aPersonal[i].m_pData[j].m_nId == m_anPersonalSelected[i]) {
+                m_aPersonalActions[i].SetFrame(0, m_aPersonal[i].m_nCount > 1);
+                CSWGuiTargetAction* pAction = &m_aPersonal[i].m_pData[j];
+                m_aPersonalActions[i].SetIcon(pAction->m_cIcon, pAction->m_sName,
+                                              pAction->m_bEnabled && !bDisabled, 0);
+                bFound = 1;
+                break;
+            }
+        }
+        if (!bFound) {
+            if (m_aPersonal[i].m_nCount > 0) {
+                m_aPersonalActions[i].SetFrame(0, m_aPersonal[i].m_nCount > 1);
+                CSWGuiTargetAction* pAction = m_aPersonal[i].m_pData;
+                m_aPersonalActions[i].SetIcon(pAction->m_cIcon, pAction->m_sName,
+                                              pAction->m_bEnabled && !bDisabled, 0);
+            } else {
+                m_aPersonalActions[i].SetFrame(1, 0);
+            }
+        }
+    }
+    UpdateMessage();
+}
+
+// FUNCTION: SWKOTOR 0x00689610
+// NONMATCH: register allocation only: the original keeps the list pointer
+// on the stack and walks the search with the index in esi (later the
+// action pointer); ours holds the list in esi. Member, pointer and inline
+// search shapes tried (an inline search helper is not inlined).
+void CSWGuiTargetActionMenu::UseAction(int nSlot, int a2)
+{
+    CSWGuiTargetActionList* pList = &m_aLists[nSlot];
+    if (pList->m_nCount) {
+        CClientExoApp* pApp = g_pAppManager->m_pClientExoApp;
+        CSWCCreature* pPC = pApp->GetParty()->GetPlayerCharacter();
+        CSWGuiTargetAction* pAction = 0;
+        int nSelected = m_anSelected[m_nSelectedRow][nSlot];
+        if (nSelected != -1) {
+            for (int i = 0; i < pList->m_nCount; i++) {
+                if (pList->m_pData[i].m_nId == nSelected) {
+                    pAction = &pList->m_pData[i];
+                    break;
+                }
+            }
+        }
+        if (!pAction) {
+            pAction = pList->m_pData;
+        }
+        if (pPC && pAction) {
+            CGameObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(pAction->m_oidTarget);
+            if (pObject) {
+                CSWCActionTarget* pTarget = pObject->AsActionTarget();
+                if (pTarget) {
+                    if (pAction->m_bEnabled && pAction->m_pfnAction) {
+                        int bAttack = 0;
+                        if (!(pPC->m_nCombatFlags & 1)) {
+                            if (!pApp->GetCombatMode() && m_nSelectedRow == 3) {
+                                bAttack = 1;
+                            }
+                            pPC->StartPersonalAction();
+                            if ((m_nSelectedRow == 0 && pAction->m_nId == 0x3f5) || m_nSelectedRow == 3) {
+                                CSWGuiMainInterface* pMain = (CSWGuiMainInterface*)m_pPanel;
+                                pMain->m_fQueueTime = -1.0f;
+                                ((CSWGuiMainInterface*)m_pPanel)->SetCombatMessage(0xbc50);
+                            }
+                        } else if (pApp->GetPauseOnPersonalAction()) {
+                            pApp->GetInGameGui()->SetPaused(1, 10);
+                        }
+                        g_pAppManager->m_pClientExoApp->GetGuiManager()->PlayGuiSound(6);
+                        (pTarget->*pAction->m_pfnAction)(pAction->m_nId, pPC);
+                        m_aActions[nSlot].StartFlash();
+                        if (!(pPC->m_nCombatFlags & 1)) {
+                            if (bAttack) {
+                                pPC->SetAttackTarget(1);
+                            }
+                            if (pPC->GetServerCreature()) {
+                                pPC->GetServerCreature()->ClearAllActions(0);
+                            }
+                        }
+                    } else {
+                        if (pAction->m_nDisabledReason) {
+                            switch (pAction->m_nDisabledReason) {
+                            case 1: m_nNameStrRef = 0x96d5; break;
+                            case 2: m_nNameStrRef = 0x96d6; break;
+                            case 3: m_nNameStrRef = 0x96d7; break;
+                            case 4: m_nNameStrRef = 0xa5b6; break;
+                            case 5: m_nNameStrRef = 0xa602; break;
+                            case 6: m_nNameStrRef = 0xbb40; break;
+                            }
+                            m_fNameTimer = 5.0f;
+                        }
+                        g_pAppManager->m_pClientExoApp->GetGuiManager()->PlayGuiSound(2);
+                    }
+                }
+            }
+        }
+    }
 }

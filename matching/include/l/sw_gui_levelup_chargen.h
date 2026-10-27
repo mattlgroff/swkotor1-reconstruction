@@ -76,7 +76,9 @@ public:
 class CAurCamera {
 public:
     virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
+    virtual void v10(); virtual void v14();
+    virtual Vector SetPosition(Vector vPosition);   // 0x18 (descriptive)
+    virtual Quaternion SetOrientation(Quaternion qOrientation);    // 0x1c (descriptive)
     virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
     virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3c();
     virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4c();

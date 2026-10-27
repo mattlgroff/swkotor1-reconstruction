@@ -15,7 +15,14 @@ public:
     int num;
     int array_size;
 
-    CExoArrayList() { num = 0; array_size = 0; element = 0; }
+    CExoArrayList(int nSize = 0)
+    {
+        num = 0;
+        array_size = nSize;
+        element = 0;
+        if (array_size)
+            element = new T[array_size];
+    }
     ~CExoArrayList() { if (element) delete[] element; }
     void Allocate(int n);
     void AllocateOutOfLine(int n);      // 0x00437D60 (CExoArrayList<float>)
@@ -128,6 +135,7 @@ public:
 
     Vector() {}
     Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
+    Vector& operator/=(float f);                // 0x004A97D0
 };
 
 class Quaternion {
@@ -169,7 +177,8 @@ public:
     virtual void t00(); virtual void t04(); virtual void t08(); virtual void t0c();
     virtual void t10(); virtual void t14(); virtual void t18(); virtual void t1c();
     virtual void t20(); virtual void t24(); virtual void t28(); virtual void t2c();
-    virtual void t30(); virtual void t34(); virtual void t38(); virtual void t3c();
+    virtual void t30(); virtual void t34(); virtual void t38();
+    virtual unsigned char* GetData();   // +0x3c
     virtual void t40(); virtual void t44();
     virtual int GetWidth();             // +0x48
     virtual int GetHeight();            // +0x4c
@@ -183,9 +192,27 @@ public:
     virtual void t90(); virtual void t94(); virtual void t98(); virtual void t9c();
     virtual void ta0(); virtual void ta4();
     virtual void SetFrame(int nFrame);  // +0xa8
-
-    int GetNumFrames() { return GetNumFramesY() * GetNumFramesX(); }
+    virtual void UpdateImage(int nFlags, unsigned char* pData);    // +0xac, descriptive
+    virtual void FreeImage();           // +0xb0, descriptive
 };
+
+// Texture size helpers. They take the texture pointer by reference, so the
+// callers store it to a stack slot that is never read back (the original's
+// leading `push ecx`).
+static __forceinline int GetNumFrames(AurTexture* const& pTexture)
+{
+    return pTexture->GetNumFramesY() * pTexture->GetNumFramesX();
+}
+
+static __forceinline int GetPixelCount(AurTexture* const& pTexture)
+{
+    return pTexture->GetHeight() * pTexture->GetWidth();
+}
+
+static __forceinline int GetImageSize(AurTexture* const& pTexture)
+{
+    return pTexture->GetBytesPerPixel() * pTexture->GetHeight() * pTexture->GetWidth();
+}
 
 // vtable 0x00741C08, size 0x38.
 class TextureController {
@@ -196,7 +223,7 @@ public:
     virtual void Init() = 0;                        // +0x08
     virtual void ParseField(char* szField);         // +0x0c 0x00462B00
     virtual void v10();                             // 0x0041F250
-    virtual void v14();                             // 0x00460D70
+    virtual unsigned char* DistortImage(unsigned char* pHeight);   // +0x14 0x00460D70
     virtual void Distort();                         // +0x18 0x0045FD70
 
     AurTexture* m_pTexture;                 // +0x04
@@ -208,20 +235,35 @@ public:
     CExoArrayList<float> m_lChannelScale;       // +0x1c
     CExoArrayList<float> m_lChannelTranslate;   // +0x28
     unsigned char* m_pDistortData;          // +0x34
+
+    unsigned char* Height2Channel(unsigned char* pHeight, unsigned char* pOut); // 0x00461060
 };
 
 class RandomTextureController : public TextureController {
 public:
+    virtual void Update();                          // 0x00462800
     virtual void Init();                            // 0x004609F0
     unsigned char* m_p38;
     unsigned char* m_p3c;
 };
 
+// vtable 0x0073ED54, size 0x3c.
+class LifeTextureController : public TextureController {
+public:
+    virtual void Update();                          // 0x00460250
+    virtual void Init();                            // 0x00460120
+    unsigned char* m_pCells;                // +0x38
+};
+
 class RingDistortTextureController : public TextureController {
 public:
+    virtual void Update();                          // 0x00460A90
     virtual void Init();                            // 0x00460A50
     unsigned char* m_p38;
-    int m_n3c;
+    union {
+        int m_n3c;
+        float m_fPhase;                     // +0x3c
+    };
 };
 
 // vtable 0x00741D2C
@@ -235,15 +277,16 @@ public:
 
     int m_nWaterWidth;                      // +0x38
     int m_nWaterHeight;                     // +0x3c
-    float* m_p40;
-    float* m_p44;
-    float* m_p48;
-    char pad_0x4c[8];
+    float* m_p40;                           // +0x40 height grid
+    float* m_p44;                           // +0x44 next height grid
+    float* m_p48;                           // +0x48 velocity grid
+    float m_fForcePhase;                    // +0x4c
+    float m_fAnglePhase;                    // +0x50
     float m_fForceCycleSpeed;               // +0x54
     float m_fAngleCycleSpeed;               // +0x58
-    float* m_p5c;
-    float* m_p60;
-    char pad_0x64[4];
+    unsigned char* m_p5c;                   // +0x5c image
+    unsigned char* m_p60;                   // +0x60 second image
+    int m_nCounter;                         // +0x64
     int m_n68;                              // +0x68
 };
 
@@ -268,13 +311,14 @@ public:
     virtual void Update();                          // 0x00462520
     virtual void Init();                            // 0x00460560
     virtual void ParseField(char* szField);         // 0x00463400
+    virtual void BuildArturoImage();                // +0x1c 0x00460690
 
     int m_nArturoWidth;                     // +0x38
     int m_nArturoHeight;                    // +0x3c
     float* m_p40;
     float* m_p44;
     float* m_p48;
-    char pad_0x4c[4];
+    float m_fTime;                          // +0x4c, descriptive
     float* m_p50;
 };
 

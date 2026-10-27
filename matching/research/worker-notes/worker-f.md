@@ -225,3 +225,223 @@ ResolveOnHitEffect (1184, calls the ApplyOnHit* member table),
 ResolveSneakAttack, 0x005B92B0 SavingThrowRoll, 0x005B5EA0
 SendAttackSummaryFeedback; the s1/s3 queues above (walkmesh, encounter
 spawn, dialog server).
+
+## 2026-10-27 round s7: CSWSDialog server loaders, CSWSJournal, CSWSStore / CSWSWaypoint loaders
+
+Folder `matching/src/f`: 676/762 -> 690/783 (kotor-match -q -j 2).
+21 new annotations: 14 exact, 7 NONMATCH. No prior MATCH regressed
+(race_room.cpp's CSWFeat ctor stays NONMATCH 18).
+
+New `src/f/dialog_server.cpp` (own CSWSDialog layout: speaker-id cache
++0x84/+0x88 as CSWSDialogSpeaker {oid, CExoString}, stunt models +0x48/+0x4c,
+camera-angle table +0x9c..+0xf8, ambient track +0xfc; node classes
+CSWSDialogBase (0x84) + CSWSDialogCamera (0x24) = CSWSDialogNode, entry 0xb0 /
+reply 0xb4, reply links 0x18 (out-of-line ctor) / entry links 0x14 (inline ctor)):
+- Exact: 0x005A0E80 CSWSDialog ctor, 0x0059EAA0 LoadDialogCamera, 0x0059FF50
+  SetDialogDelay, 0x0059EF00 AddJournalEntry, 0x0059FC30 GetSpeaker (returns
+  the CSWSObject*, not int as dialog.cpp declares it; GetNearestObjectByTag
+  takes a float range here), 0x005A1050 BarkOneLine, 0x0059F5F0 LoadDialogBase.
+- NONMATCH: 0x005A27B0 Cleanup (5: reply loop `[edi+reg]` vs `[reg+edi]`; the
+  identical entry loop matches), 0x005A2AE0 LoadDialog (56: everything up to
+  the StuntList matches; the stunt `new[]` result lives in ebp zeroed before
+  the count test), 0x005A03C0 HandleReply (81, descriptive name; symbols.csv
+  only has FUN_005a03c0; stack slots of pPos/pClient/pFound rotated).
+
+New `src/f/journal_set.cpp`: exact 0x005C63F0 CSWSJournal::SetDate,
+0x005C6650 SetTime; NONMATCH 0x005C68B0 Destroy (8: frame 4 bytes larger,
+the LowerCase temporaries do not share a slot).
+
+New `src/f/store_items.cpp`: exact 0x005C7610 CSWSStore::AcquireItem;
+NONMATCH 0x005C6F70 SellItem (28: cl cross-jumps the three AcquireItem tails).
+New `src/f/store_template.cpp`: exact 0x005C7760 LoadFromTemplate, 0x005C6CD0
+SaveStore; NONMATCH 0x005C7180 LoadStore (70: the original parks pItem /
+nPosition in dead argument slots). New `src/f/waypoint_template.cpp`: exact
+0x005C83B0 CSWSWaypoint::LoadFromTemplate; NONMATCH 0x005C7F30 LoadWaypoint
+(15: identical code, frame 8 bytes larger). `race_room.cpp`: exact 0x005C7890
+CSWRace::CSWRace (function start missing from functions.csv; it follows
+CSWSStore::LoadFromTemplate's padding).
+(The checkpoint commit "AcquireItem exact" before "AcquireItem/LoadFromTemplate
+exact" was premature; AcquireItem became exact in the later one.)
+
+Lessons:
+
+- Declaring struct locals (CResStruct / CResList / loop elements) at function
+  top fixed whole-function stack layouts (LoadDialogBase 31 -> 0, LoadDialog
+  121 -> 56); MSVC packs block-scoped struct locals into temp slots otherwise.
+- "Search, then act" loops whose found branch jumps straight past the not-found
+  code: write `int bFound = 0; for (...) if (match) { ...; bFound = 1; break; }
+  if (!bFound) {...}` - cl threads the flag away (SetDate/SetTime, Destroy).
+  `for (...) if (match) break; if (i < n)` re-tests the index, and a `return`
+  inside the loop duplicates the destructor tail.
+- Getter vs direct member (`g_pAppManager->GetServerExoApp()` vs
+  `->m_pServerExoApp`) is per call site and interacts with neighbouring calls;
+  brute-forcing the 2^n combinations with a scratch script was fastest
+  (BarkOneLine 65 -> 0). A call argument computed into a named local first
+  (`int bIgnore = ...; client->BarkString(..., bIgnore)`) changes when the
+  `this` pointer is loaded; same for `unsigned long oid = pItem->m_oid;`
+  before `GetGameObject(oid)` (AcquireItem).
+- An inline flag getter (`GetFadeOnBark()`) moved a member test from ecx to eax.
+- `if (x == 2) a = 1; if (x == 1) {...} else {...}` reproduced the original
+  "cmp 2 / cmp 1 placed after the loop" layout where a switch gave a dec chain.
+- `if (!n) p = 0; else p = new T[n];` stores the known-zero count register;
+  the reverse order stores an immediate 0.
+- A CExoLinkedList head-object getter has two shapes: `void *p = head; if (p)
+  p = p->pObject;` and the ternary `head ? head->pObject : 0`.
+- An empty out-of-line SJournalEntry dtor must be inline (`~SJournalEntry() {}`)
+  in callers that destroy a local entry (SetDate).
+- `delete p` on a class with a virtual dtor emits the null test itself; an
+  explicit `if (p)` is not needed.
+
+Next in range: retry SellItem (separate AcquireItem tails), LoadStore and
+LoadWaypoint frame sizes; dialog server send paths 0x005A13D0
+SendDialogEntryNode (2096), 0x005A1C00 SendDialogReplyNode (2992), 0x005A3820
+SendDialogReplies (2032), 0x005A4010 SendDialogEntry (2128) - they share the
+dialog_server.cpp layout; 0x005C5A40 CSWSJournal::SetState (2480, 2DA/JRL);
+CSWRace::LoadFeatsTable 0x005C7AD0 (496) next to race_room.cpp; the s1/s3/s5
+queues (walkmesh, encounter spawn, combat).
+
+## 2026-10-27 round s8: CSWSDoor / CSWSTrigger / CSWSPlaceable geometry, ctors, loaders and savers
+
+Folder `matching/src/f`: 690/783 -> 710/808 (kotor-match -q -j 2).
+25 new annotations: 20 exact, 5 NONMATCH. No prior MATCH regressed.
+(The round was started by an earlier worker cut off at the usage limit; its
+WIP commit already held OpenDoor / placeable SetOrientation / GetBoundingBox.)
+
+Exact:
+- `door_s8.cpp` (own CSWSDoor / CSWSPlaceable / CSWSTrigger layouts): 0x00589C70
+  CSWSDoor::OpenDoor, 0x005853C0 CSWSPlaceable::SetOrientation, 0x0058CC60
+  CSWSTrigger::GetBoundingBox, 0x005897D0 CSWSDoor::InDoorArea, 0x00589980
+  CSWSDoor::CheckPlacement, 0x0058CE40 CSWSTrigger::InTrigger, 0x0058D8C0
+  CSWSTrigger::GetClosestPointWithinTrigger.
+- `trigger_geometry.cpp` 0x0058D060 CSWSTrigger::LoadGeometry; `trigger_create.cpp`
+  0x0058D210 CSWSTrigger::CreateNewGeometry; `trigger_ctor.cpp` 0x0058EAE0
+  CSWSTrigger::CSWSTrigger and 0x0058ED60 CSWSTrigger::GetLocName (function start
+  missing from functions.csv: `lea eax,[ecx+0x228]; ret` after the ctor);
+  `trigger_save.cpp` 0x0058E660 CSWSTrigger::SaveTrigger.
+- `door_ctor.cpp` 0x00589EE0 CSWSDoor::CSWSDoor, 0x0058A1B0 CSWSDoor::GetConversation
+  and 0x0058A1E0 CSWSDoor::GetLocName (both starts missing from functions.csv);
+  `door_load.cpp` 0x0058C5F0 CSWSDoor::LoadInstance (descriptive name; template
+  path or LoadDoor, then AddObjectToLookupTable); `door_save.cpp` 0x00588AD0
+  CSWSDoor::SaveDoor.
+- `placeable_ctor.cpp` 0x005877E0 CSWSPlaceable::CSWSPlaceable.
+- `res_mesh.cpp` 0x005CE8B0 CSWDoorSurfaceMesh::GetResRef ("%s%d" with the door
+  state at +0x88); `door_mesh_load.cpp` 0x005CE770 CSWDoorSurfaceMesh::LoadMeshBinary.
+
+NONMATCH: 0x005896E0 CSWSDoor::SetOrientation (2, q.z*q.w operand order),
+0x00584C20 CSWSPlaceable::GetNearestActionPoint (50, use-point addresses kept in
+ebx/ebp), 0x00589240 CSWSDoor::GetNearestActionPoint (82, the original spills the
+difference vectors before squaring), 0x00587170 CSWSPlaceable::AddToArea (21,
+load order and sete register in the 2nd/3rd 2DA lookups), 0x00586A70
+CSWSPlaceable::SavePlaceable (70 by count, really 5 lines: bearing slot / ecx
+scheduling at the end).
+
+Lessons:
+
+- A default/conversion argument written as an implicit conversion (`..., bSuccess, "")`
+  into a `const CResRef &` / `const CExoString &` parameter) recomputes the temporary's
+  address with `lea` before the push; an explicit `CResRef("")` pushes the ctor's eax.
+  Same for `WriteFieldCResRef(pStruct, m_sScripts[i], ...)` (CExoString -> CResRef).
+  Door LoadInstance went 0x5c-frame NONMATCH -> exact with it.
+- `(a / b) * c` and `a / b * c` compile differently: the parenthesised form keeps the
+  division first (InDoorArea). `nLast = m_n - 1` declared inside the loop body was
+  hoisted and spilled exactly like the original; declared before the loop cl
+  rematerialised it from the reloaded count.
+- Polygon loops over an index list: load `nIndex = m_pnIdx[i]` before computing j,
+  and form pB before pA (InTrigger).
+- Getter vs member again decides evaluation order: `g_pRules->Get2DArrays()->GetX()`
+  evaluates the object chain into eax/ecx before the pushes; an inline float getter
+  (`GetBearing()`, `GetHighlightHeight()`) turns a mov copy into fld/fstp.
+- `x = y = z = 0; w = 1` (chained) stores z, y, x, w - the Quaternion ctor order.
+- An int local whose address is passed (2DA GetINTEntry) lands in a dead argument
+  slot only when it is block-scoped (AddToArea PreciseUse).
+- Reusing one `Vector v` for position then orientation (instead of two locals)
+  reproduced SaveTrigger's shared stack slot; the struct locals (CResList, CResStruct)
+  at function top fixed the rest.
+- When cl inlines an out-of-line helper that the original calls (CResDWK::GetUsePoint
+  defined in res_mesh.cpp), move the caller to its own TU (door_mesh_load.cpp).
+- Field names: the savers give authoritative trigger/door names (trigger +0x230
+  LinkedTo, +0x238 LinkedToModule, +0x240 LinkedToFlags, +0x30c TransitionDestination;
+  door +0x2a0 Appearance, +0x2a1 GenericType, +0x390 LinkedToModule, +0x3c8
+  TransitionDestination). door_life.cpp / door_trigger.cpp still use older names for
+  some of these offsets (no byte impact).
+
+Next in range: retry the five NONMATCHes above; 0x0058C8A0 CSWSTrigger nearest
+outline point (960, x87), 0x00584EC0 CSWSPlaceable::AIActionCastSpell (448,
+argument-slot reuse), 0x00588690 CSWSPlaceable::AcquireItemsFromObject (688),
+0x0058DA80 trigger fields loader (3040), 0x0058A1F0 CSWSDoor::LoadDoor (4576),
+0x00587A70 / 0x00585670 placeable template / fields loaders; then the s7 queue
+(dialog server send paths, CSWSJournal::SetState, CSWRace::LoadFeatsTable).
+
+## 2026-10-27 round s9: level-up / experience / attack bonus, CTwoDimArrays drivers, misc
+
+Folder `matching/src/f`: 710/808 (s8 end) -> 720/828 (kotor-match -q -j 2).
+The round was started by an earlier worker cut off at the usage limit; its WIP
+commit held `stats_talent_random.cpp` (4 talent pickers, all NONMATCH, compiled).
+20 new annotations (4 from the WIP commit): 10 exact, 10 NONMATCH. No prior MATCH regressed.
+
+Exact:
+- `stats_levelup.cpp` (own copy of the stats layout, GetClass / GetClassLevel inline):
+  0x005AFB00 CSWSCreatureStats::FeatRequirementsMet, 0x005AF6A0 AddExperience,
+  0x005A7B60 GetRangedAttackBonus.
+- `two_dim_arrays_life.cpp`: 0x005BFB60 CTwoDimArrays::CTwoDimArrays, 0x005BFCC0
+  ~CTwoDimArrays, 0x005C5070 UnLoad2DArrays (keeps the +0x54 test / +0x50 unload
+  quirk), 0x005C4C20 Load2DArrays.
+- `race_room.cpp` 0x005C7AD0 CSWRace::LoadFeatTable (name from its diagnostic string).
+- `encounter_load.cpp` 0x00594310 CSWSEncounter::RemoveFromActiveCreatureCount.
+- `pathfind.cpp` 0x005CFC70 CAvoidCreature::IsPointInHex.
+
+NONMATCH: 0x005B2530 CanChooseFeat (32, nFeat register), 0x005AF950 ValidateLevelUp
+(22, edi/esi swap), 0x005AF480 SetExperience (61, level-down loop registers and the
+two CExoString slots swapped), 0x005A7770 GetMeleeAttackBonus (30, lea vs add for the
+DEX+STR sum, slot-lookup registers), 0x005CFAE0 CAvoidCreature::GetClosestPointTo (4,
+x87 pops of the last unrolled iteration), 0x00588690 CSWSPlaceable::AcquireItemsFromObject
+(105, first draft in `placeable_acquire.cpp`), and the four WIP talent pickers
+0x005AC370 (67), 0x005B23A0 GetCreatureTalent (6), 0x005AB9E0 (61), 0x005AC5D0 (116).
+
+Lessons:
+
+- Zero register: `int nPenalty; ... nPenalty = 0;` (declared at the top, assigned just
+  before its block) made cl keep 0 in the variable's register from the prologue and use
+  it for `push 0` / `cmp reg, 0` / `mov [x], 0` (GetRangedAttackBonus 23 -> 16 -> exact,
+  GetMeleeAttackBonus 60 -> 30). `int n = 0;` at the top does not (worker-k saw the same).
+- `g_pRules->m_pBaseItemArray->GetBaseItem(pItem->GetBaseItemType())` with an inline
+  `int GetBaseItemType() { return m_nBaseItem; }` loads the argument into eax before the
+  object chain (`mov eax,[x+0xc]; mov edx,[g]; mov ecx,[edx+0x34]; push eax`); the plain
+  member form uses ecx/edx. Fixed the last ranged-bonus diffs.
+- Inline getters for call arguments reproduce the original right-to-left argument
+  evaluation into stack temps when the first argument is itself an inline expansion
+  (FeatRequirementsMet: `GetSpellLevelRequirement(info.GetLevel(0), pFeat->GetMinSpellLevel(),
+  nClass, GetRace(), GetCHABase())`). With plain members cl evaluates the inline first.
+- A loop whose exit re-tests a found flag the compiler could prove zero: write
+  `for (i = 0; !bFound; i++) { if (i >= n) break; ... }`; do/while(!bFound) and the
+  for(;;) forms fold the test away.
+- Load2DArrays: every early-out `goto failed;` with `return 1; failed: return 0;` at the
+  end reproduced "fail block before the final return 1"; early `return 0`s put the block
+  after the first test, `&&` chains put `return 1` first.
+- Local declaration order decides byte-slot order in the frame (AddExperience: declaring
+  `nHighest`, then `nBest`, then `nFavored` fixed both the slots and the use of esi for
+  g_pRules); a member read cached by cl gets its spill slot after the named locals.
+- `(char)`-typed ternaries: `int nDEXMod; if (deb) { nDEXMod = m_nDEXMod; nDEXMod =
+  __min(nDEXMod, 0); } else nDEXMod = m_nDEXMod; bonus = (char)nDEXMod;` gives the
+  original `movsx ecx; setge; dec; and; movsx ebx, al`; `__min(m_nDEXMod, 0)` stays byte.
+- A Vector dot product `n.x*d.x + n.y*d.y + n.z*d.z` vs `d.x*n.x + ...` picks which
+  Normalize result gets the lower frame slot (IsPointInHex). A float literal
+  (3.402823466e+38F) instead of an extern constant lets cl compare against memory in the
+  first unrolled iteration (GetClosestPointTo 26 -> 4).
+- CSWSCreatureStats +0x28 is the level-stats list (CExoArrayList<CSWSStats*>): the
+  out-of-line 0x005A6170 named GetEffect in stats_getters.cpp is really GetLevelStats
+  (PC-only), inlined in SetExperience. stats_getters.cpp keeps the old name/type (no
+  byte impact).
+- 0x005A5DF0-style "TalentAllowed" expansion and the talent pickers are register ties;
+  the zero-register trick moved the prologue closer but not the loop body.
+
+Next in range (all remaining todo items are large or x87):
+- LevelUp 0x005AABF0 (1520) / LevelDown 0x005AB1E0 (1584): fit `stats_levelup.cpp`
+  (inline CExoArrayList Add/IndexOf/Remove on the class spell lists, ability switch).
+- Retry the near-misses above with the zero-register trick (SetExperience, ValidateLevelUp,
+  CanChooseFeat), AcquireItemsFromObject (list fields cached in esi/edi).
+- 0x005CF8D0 CAvoidCreature::SideClearOfObstructions (528, CWalkHitInfo + switch),
+  0x005CF1F0 (1120 x87), 0x00591CA0 SpawnCreatureFromSpawnList (1280, x87),
+  0x005950C0 AoE segment test (912, x87), 0x005A8BE0 GetDamageBonus (1136, debug strings),
+  0x005B92B0 SavingThrowRoll (960), dialog send paths 0x005A13D0 / 0x005A1C00 / 0x005A3820 /
+  0x005A4010, CSWSJournal::SetState 0x005C5A40.

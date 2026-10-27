@@ -3,6 +3,7 @@
 #define B_GAME_EFFECT_H
 
 class CResGFF;
+class CExoString;
 struct CResStruct;
 
 #pragma pack(push, 4)
@@ -14,6 +15,7 @@ public:
     void SetInteger(int nIndex, int nValue);                // 0x005036A0
     void SetFloat(int nIndex, float fValue);                // 0x005036D0
     void SetObjectID(int nIndex, unsigned long oid);        // 0x005036F0
+    void SetString(int nIndex, const CExoString& s);        // 0x00503730
     void SetCreator(unsigned long oid);                     // 0x00503A00
     void SetNumIntegers(int nNumIntegers);                  // 0x00503630
     void UpdateLinked();                                    // 0x00504240

@@ -26,6 +26,7 @@ public:
     char m_resRef[16];
     CResRef();                                      // 0x00405ed0
     CResRef(const char* szResRef);                  // 0x00406d80
+    CResRef(const CExoString& sResRef);             // 0x00406d60
     CResRef operator=(const CResRef& cResRef);      // 0x00406120
     int operator!=(const CResRef& cResRef) const;   // 0x00406dc0
     int IsValid() const;                            // 0x00406030
@@ -56,6 +57,13 @@ struct CSWGuiExtent {
     int width;
     int height;
     CSWGuiExtent() { left = top = width = height = 0; }
+    CSWGuiExtent(int nLeft, int nTop, int nWidth, int nHeight)
+    {
+        left = nLeft;
+        top = nTop;
+        width = nWidth;
+        height = nHeight;
+    }
 };
 
 template <class T>
@@ -95,7 +103,7 @@ public:
     virtual void SetColor(const Vector* pColor);    // 0x0c
     virtual void v10(); virtual void v14();
     virtual void SetText(const char* sText);        // 0x18
-    virtual void SetAlignment(int nAlign);          // 0x1c
+    virtual void SetAlignment(unsigned char nAlign); // 0x1c
     virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
     virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3c();
     virtual void v40();
@@ -194,6 +202,9 @@ public:
     int GetCornerSize();
     int GetInset() { return m_nPulse < GetCornerSize() ? m_nPulse : GetCornerSize(); }
     void SetFlags(int b2, int b3, int b4);
+    float GetF08() const { return m_f08; }
+    void SetStyle(int nStyle) { m_nStyle = nStyle; }
+    float GetEdgeScale() const { return m_fEdgeScale; }
 
     int m_nCornerSize;                              // 0x00
     int m_nPulse;                                   // 0x04
@@ -223,6 +234,14 @@ public:
                        const Vector* pColor);       // 0x004155b0
     void DrawFillCentered(int nHeight, int nWidth, int nX, int nY, float fAlpha,
                           const Vector* pColor);    // 0x004157f0
+    int GetCornerHeight()
+    {
+        CAurGUIImage* pCorner = m_pCorner;
+        if (pCorner && m_pEdge) {
+            return pCorner->GetHeight();
+        }
+        return 0;
+    }
 
     CSWGuiBorderParams m_cParams;                   // 0x14
     CAurGUIImage* m_pCorner;                        // 0x68
@@ -241,6 +260,7 @@ public:
     void SetB1(int b);
     void SetOwner(CSWGuiImage* pImage);
     float GetRotation() const { return m_f10; }
+    float GetF14() const { return m_f14; }
 
     CResRef m_cResRef;                              // 0x00
     float m_f10;                                    // 0x10
@@ -286,6 +306,7 @@ public:
     void SetAlignment(int nAlign);
     void SetOwner(CSWGuiText* pText);
     void SetHilight(int b) { m_bHilight = b; }
+    float GetAlpha() const { return m_fAlpha; }
 
     CExoString m_sText;                             // 0x00
     int m_nStrRef;                                  // 0x08
@@ -322,7 +343,6 @@ public:
 class CSWGuiEditText : public CSWGuiText {
 public:
     CSWGuiEditText();
-    virtual ~CSWGuiEditText();
     void RemoveLastChar();
     void AddNewChar(const char* sChar);
     void SetText(const CExoString& sText);
@@ -365,9 +385,22 @@ public:
 extern CTlkTable* g_pTlkTable;                      // 0x007a3a08
 extern unsigned char g_nGender;                     // 0x0073ecd0
 
+class CSWGuiSafePanel;
+class CSWGuiSafeLabel;
+
 class CSWGuiManager {
 public:
     void GetUpdatedFontName(char* sFont);           // 0x0040b360
+    void DrawPCBG(float fDelta);                    // 0x0040ae80
+    void DrawSafeRegion(float fDelta);              // 0x0040bec0
+    char pad_0x00[0x6c];
+    short m_nWidth;                                 // 0x6c
+    short m_nHeight;                                // 0x6e
+    char pad_0x70[0x04];
+    CExoString m_sResolution;                       // 0x74
+    CSWGuiSafeLabel* m_pBackground;                 // 0x7c
+    CSWGuiSafePanel* m_pSafePanel;                  // 0x80
+    CSWGuiSafeLabel* m_pSafeLabel;                  // 0x84
 };
 
 extern CSWGuiManager* g_pGuiManager;                // 0x007a39f4

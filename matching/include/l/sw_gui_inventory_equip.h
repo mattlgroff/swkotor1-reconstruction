@@ -29,8 +29,14 @@ public:
 };
 class CSWGuiRadioButton : public CSWGuiButton {
 public:
+#ifdef L_RADIO_BUTTON_INLINE
+    // The save/load entry inlines both (0x006B66F0 / 0x006BE360 bodies).
+    CSWGuiRadioButton() {}
+    virtual ~CSWGuiRadioButton() {}
+#else
     CSWGuiRadioButton(); // 0x006B66F0
     virtual ~CSWGuiRadioButton(); // 0x006BE360
+#endif
 };
 #ifdef L_INVENTORY_ENTRY_DTORS
 #define L_ENTRY_VTABLE __declspec(novtable)
@@ -54,6 +60,11 @@ class L_ENTRY_VTABLE CSWGuiStoreItemEntry : public CSWGuiButton {
 public:
     CSWGuiStoreItemEntry();
     __declspec(noinline) virtual ~CSWGuiStoreItemEntry();
+    void SetExtent(const CSWGuiExtent& extent);     // 0x04 (0x006B5270)
+    virtual void v9C();
+    virtual void Initialize(CSWGuiText* pText, CSWGuiBorder* pBorder,
+                            CSWGuiBorder* pHilight, int nWidth);    // 0xa0 (0x006B53F0)
+    void SetItem(unsigned long oidItem, int bUnused); // 0x006B7270
     unsigned long m_oidItem;
     CSWGuiBorder m_icon;
     CSWGuiBorder m_iconHighlight;
@@ -114,6 +125,15 @@ public:
         }
         m_pArray[m_nCount] = t;
         m_nCount++;
+    }
+    __forceinline void InsertInline(T t, int nPos)
+    {
+        int nIndex = m_nCount;
+        AddInline(t);
+        for (; nIndex > nPos; nIndex--) {
+            m_pArray[nIndex] = m_pArray[nIndex - 1];
+        }
+        m_pArray[nPos] = t;
     }
     __forceinline void AddInline(T t)
     {

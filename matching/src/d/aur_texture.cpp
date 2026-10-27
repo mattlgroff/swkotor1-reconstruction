@@ -904,3 +904,28 @@ int AurTextureGetMaxTexID()
 {
     return g_nAurTextureMaxTexID;
 }
+
+extern "C" double __cdecl sqrt(double x);
+#pragma intrinsic(sqrt)
+
+// Height map -> BGRA normal map (name from the playable build's comment).
+// FUNCTION: SWKOTOR 0x0041fec0
+unsigned char* __cdecl convertHeightFieldToNormalMap(unsigned char* pHeights, int nWidth, int nHeight,
+                                                     int nMapWidth, int nMapHeight, float fScale)
+{
+    unsigned char* pNormals = new unsigned char[nWidth * nHeight * 4];
+    for (int y = 0; y < nHeight; y++) {
+        for (int x = 0; x < nWidth; x++) {
+            unsigned char* pPixel = &pNormals[(y * nWidth + x) * 4];
+            float fCenter = pHeights[y * nMapWidth + x] / 255.0f;
+            float fDX = (fCenter - pHeights[y * nMapWidth + (x + 1) % nMapWidth] / 255.0f) * fScale;
+            float fDY = (fCenter - pHeights[((y + 1) % nMapHeight) * nMapWidth + x] / 255.0f) * fScale;
+            float fInv = 1.0f / (float)sqrt(fDY * fDY + fDX * fDX + 1.0f);
+            pPixel[2] = (unsigned char)(fInv * fDY * 127.0f + 128.0f);
+            pPixel[1] = (unsigned char)((fInv * -fDX) * 127.0f + 128.0f);
+            pPixel[0] = (unsigned char)(fInv * 127.0f + 128.0f);
+            pPixel[3] = 0xff;
+        }
+    }
+    return pNormals;
+}

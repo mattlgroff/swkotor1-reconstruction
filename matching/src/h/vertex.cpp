@@ -146,6 +146,69 @@ static inline void VertexAttribPointer(unsigned int nIndex, int nSize,
         g_pglVertexAttribPointerNV(nIndex, nSize, eType, 0, p);
 }
 
+static __forceinline void VertexAttribPointer(unsigned int nIndex, int nSize,
+                                              unsigned int eType, int nStride, const void* p)
+{
+    if (g_bARBVertexProgram)
+        g_pglVertexAttribPointerARB(nIndex, nSize, eType, 0, nStride, p);
+    else if (g_bNVVertexProgram && AurVertexProgramsAvailable())
+        g_pglVertexAttribPointerNV(nIndex, nSize, eType, nStride, p);
+}
+
+// NONMATCH: two `lea` encodings only: the original forms the second and
+// third tangent pointers as [offset + data + n]; every operand order and
+// type tried emits [data + offset + n].
+// FUNCTION: SWKOTOR 0x00478C20
+char* VertexPrimitiveFlat::ReconnectArraysVAR(char* p)
+{
+    int nVerts = m_pNode->m_nNumVertices;
+    PartTriMesh* pSource = m_pOwner->GetSource();
+    MdlNodeTriMesh* pNode = pSource->m_pNode->AsMdlNodeTriMesh();
+    if (pSource->m_b7c) {
+        glColorPointer(4, 0x1401, 0, p);
+        p += nVerts * 4;
+        if (g_bDisableTexCoordArray)
+            glDisableClientState(g_eColorArray);
+        else
+            glEnableClientState(g_eColorArray);
+    } else {
+        glDisableClientState(g_eColorArray);
+    }
+    switch (m_pNode->m_n182) {
+    case 4:
+        ActivateTextureStage(3);
+        glTexCoordPointer(2, 0x1406, pNode->m_nVertexStride, p + pNode->m_nUV3Offset);
+    case 3:
+        if (AurGLCaps710())
+            g_pfnClientActiveTexture(0x84c2);
+        g_nActiveTextureUnit = 2;
+        glTexCoordPointer(2, 0x1406, pNode->m_nVertexStride, p + pNode->m_nUV2Offset);
+    case 2:
+        if (AurGLCaps710())
+            g_pfnClientActiveTexture(0x84c1);
+        g_nActiveTextureUnit = 1;
+        glTexCoordPointer(2, 0x1406, pNode->m_nVertexStride, p + pNode->m_nUV1Offset);
+    case 1:
+        if (AurGLCaps710())
+            g_pfnClientActiveTexture(0x84c0);
+        g_nActiveTextureUnit = 0;
+        glTexCoordPointer(2, 0x1406, pNode->m_nVertexStride, p + pNode->m_nUVOffset);
+    }
+    if (m_pNode->m_n182 < 1)
+        glDisableClientState(g_eTexCoordArray);
+    else
+        glEnableClientState(g_eTexCoordArray);
+    glNormalPointer(0x1406, pNode->m_nVertexStride, p + pNode->m_nNormalOffset);
+    glVertexPointer(3, 0x1406, pNode->m_nVertexStride, p + pNode->m_nVertexOffset);
+    if (pSource->m_pMaterial->HasBumpMap() && m_pNode->HasBumpmap() && AurBumpMappingAvailable()) {
+        VertexAttribPointer(0xc, 3, 0x1406, pNode->m_nVertexStride, p + pNode->m_nTangentOffset);
+        VertexAttribPointer(0xd, 3, 0x1406, pNode->m_nVertexStride, p + pNode->m_nTangentOffset + 0xc);
+        VertexAttribPointer(0xe, 3, 0x1406, pNode->m_nVertexStride, p + pNode->m_nTangentOffset + 0x18);
+        ActivateTextureStage(0);
+    }
+    return p + pNode->m_nVertexStride * nVerts;
+}
+
 // FUNCTION: SWKOTOR 0x00478F50
 char* VertexPrimitiveSkinned::ReconnectArraysVAR(char* p)
 {
@@ -183,11 +246,11 @@ void VertexPrimitiveFlat::SetupVertexArrays()
 void VertexPrimitive::SetupVertexArraysStandard()
 {
     if (!m_pOwner->GetSource()->m_b7c)
-        glDisableClientState(g_eTexCoordArray);
+        glDisableClientState(g_eColorArray);
     else if (g_bDisableTexCoordArray)
-        glDisableClientState(g_eTexCoordArray);
+        glDisableClientState(g_eColorArray);
     else
-        glEnableClientState(g_eTexCoordArray);
+        glEnableClientState(g_eColorArray);
     SetupVertexArrays();
     m_bArraysSetup = 0;
 }

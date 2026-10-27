@@ -288,9 +288,9 @@ int CSWVirtualMachineCommands::ExecuteCommandActionResumeConversation(int nComma
 
 extern const float MOVE_AWAY_DEFAULT_RANGE;                 // 0x00746B10 (40.0f, name guessed)
 
-// NONMATCH (27): the original shares vDiff's slot with vFace (0x44 frame) and
-// keeps pObject in edi; ours keeps the constant 1 in edi. A non-inlined
-// MagnitudeSquared() temp fixed the frame but adds a call.
+// NONMATCH (24): the original keeps pObject in edi from the area check on;
+// ours keeps the constant 1 in edi. Scoping vDiff and the action block gives
+// the original 0x44 frame (shared vDiff/vFace slots).
 // FUNCTION: SWKOTOR 0x0052D090
 int CSWVirtualMachineCommands::ExecuteCommandActionMoveAwayFromLocation(int nCommandId, int nParameters)
 {
@@ -320,18 +320,22 @@ int CSWVirtualMachineCommands::ExecuteCommandActionMoveAwayFromLocation(int nCom
         CSWSArea* pArea = pObject->AsSWSCreature()->GetArea();
         CResRef cResRef;
         if (pArea) {
-            Vector vDiff = pObject->m_vPosition - vAwayFrom;
-            if (vDiff.z * vDiff.z + vDiff.y * vDiff.y + vDiff.x * vDiff.x > fMoveAwayRange * fMoveAwayRange) {
-                return 0;
+            {
+                Vector vDiff = pObject->m_vPosition - vAwayFrom;
+                if (!(vDiff.z * vDiff.z + vDiff.y * vDiff.y + vDiff.x * vDiff.x <= fMoveAwayRange * fMoveAwayRange)) {
+                    return 0;
+                }
             }
-            Vector vNewPosition = pArea->ComputeAwayVector(pObject->m_vPosition, vAwayFrom, fMoveAwayRange,
-                                                           pObject->AsSWSCreature()->m_n340);
-            Vector vFace(0.0f, 0.0f, 0.0f);
-            int nTen = 10;
-            pObject->AsSWSCreature()->AddMoveToPointAction(0xffff, vNewPosition, pArea->m_idSelf, OBJECT_INVALID, bRun,
-                                                           0.0f, 0, 0, 0, 0, 0, 1, 0, vFace, 0, 0, 0);
-            ((CSWSObject*)pObject)->AddAction(0x2c, 0xfffe, 2, &pLocation->m_vPosition[0], 2, &pLocation->m_vPosition[1],
-                                              2, &pLocation->m_vPosition[2], 1, &bRun, 2, &fMoveAwayRange, 1, &nTen);
+            {
+                Vector vNewPosition = pArea->ComputeAwayVector(pObject->m_vPosition, vAwayFrom, fMoveAwayRange,
+                                                               pObject->AsSWSCreature()->m_n340);
+                int nTen = 10;
+                Vector vFace(0.0f, 0.0f, 0.0f);
+                pObject->AsSWSCreature()->AddMoveToPointAction(0xffff, vNewPosition, pArea->GetId(), OBJECT_INVALID, bRun,
+                                                               0.0f, 0, 0, 0, 0, 0, 1, 0, vFace, 0, 0, 0);
+                ((CSWSObject*)pObject)->AddAction(0x2c, 0xfffe, 2, &pLocation->m_vPosition[0], 2, &pLocation->m_vPosition[1],
+                                                  2, &pLocation->m_vPosition[2], 1, &bRun, 2, &fMoveAwayRange, 1, &nTen);
+            }
             return 0;
         }
     }
@@ -657,7 +661,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionWait(int nCommandId, int nPar
     return 0;
 }
 
-// NONMATCH (27): stack-slot allocation and shared branch placement.
+// Matches with the inline GetId() accessor (round s10).
 // FUNCTION: SWKOTOR 0x0053FE00
 int CSWVirtualMachineCommands::ExecuteCommandActionMoveToLocation(int nCommandId, int nParameters)
 {
@@ -678,14 +682,19 @@ int CSWVirtualMachineCommands::ExecuteCommandActionMoveToLocation(int nCommandId
         pObject->AsSWSCreature()) {
         CSWSArea* pArea = pObject->AsSWSCreature()->GetArea();
         if (pArea) {
-            if (nCommandId == 0x15) fTimeout = 0.0f;
-            else if (nCommandId != 0x17e) return 0;
-            Vector vFacing(0.0f, 0.0f, 0.0f);
-            pObject->AsSWSCreature()->AddMoveToPointAction(0xffff, *(Vector*)pLocation->m_vPosition,
-                pArea->m_idSelf, OBJECT_INVALID, bRun, 0.0f, fTimeout, 0, 0, 0, 0, 0, 0, vFacing, 0, 0, 0);
+            unsigned long oidTarget = OBJECT_INVALID;
+            if (nCommandId == 0x15) {
+                Vector vFacing(0.0f, 0.0f, 0.0f);
+                pObject->AsSWSCreature()->AddMoveToPointAction(0xffff, *(Vector*)pLocation->m_vPosition,
+                    pArea->GetId(), oidTarget, bRun, 0.0f, 0.0f, 0, 0, 0, 0, 0, 0, vFacing, 0, 0, 0);
+            } else if (nCommandId == 0x17e) {
+                Vector vFacing(0.0f, 0.0f, 0.0f);
+                pObject->AsSWSCreature()->AddMoveToPointAction(0xffff, *(Vector*)pLocation->m_vPosition,
+                    pArea->GetId(), oidTarget, bRun, 0.0f, fTimeout, 0, 0, 0, 0, 0, 0, vFacing, 0, 0, 0);
+            }
             return 0;
         }
     }
-    if (pLocation) delete pLocation;
+    delete pLocation;
     return 0;
 }

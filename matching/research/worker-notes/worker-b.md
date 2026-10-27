@@ -535,3 +535,184 @@ localized-name field. CSWSItemSecondaryView and GetLocalizedName are
 explicitly descriptive source names for that secondary-base view, not Mac
 symbol claims. Candidate found by scanning aligned executable pointers in
 read-only data after screening the indexed pool.
+
+## Round s8 (2026-10-27): mid-size VM handlers
+
+Folder `kotor-match -q -j 2 matching/src/b`: 826/915 -> 835/929 MATCH.
+14 functions annotated, 9 new exact, 5 kept as NONMATCH. No prior MATCH
+regressed. Work list: the unannotated vm_action_names.inc handler starts in
+the bucket (none of these are in `functions.csv`; the matcher's padding
+check finds their ends).
+
+### New exact matches
+
+| Address | Handler | File |
+| --- | --- | --- |
+| 0x00544090 | ActionSpeakString | vm_commands_possessed_speak.cpp |
+| 0x0054B1E0 | SetJournalQuestEntryPicture | vm_commands_possessed_speak.cpp |
+| 0x00531AE0 | EffectDamage | vm_commands_effect_damage.cpp |
+| 0x00530CE0 | EffectAreaOfEffect | vm_commands_effect_damage.cpp |
+| 0x00545A70 | SetPartyLeader | vm_commands_party_leader.cpp |
+| 0x00544390 | StartNewModule | vm_commands_start_module.cpp |
+| 0x00536FE0 | GetCreatureTalentRandom/Best | vm_commands_talent.cpp |
+| 0x0052D5B0 | ActionStartConversation | vm_commands_start_conversation.cpp |
+| 0x00544970 | TakeGoldFromCreature | vm_commands_take_gold.cpp |
+
+### Kept NONMATCH
+
+- GetCasterLevel 0x00536AD0 (14): register choice in the two tail-merged
+  innate-spell lookups (shared flag, goto, switch and helper all tried).
+- GetNearestTrapToObject 0x0054A090 (20): the second pop jumps back to the
+  first pop's failure block; the original evaluates AsSWS*() before pushing
+  the id for CExoArrayList::count (0x004AF240). The x87 sum order z, x, y
+  was not reproduced either (several term orders and a Vector delta tried).
+- GetItemPossessedBy 0x0053A390 (2 instructions): lea ecx vs eax for the
+  operator== argument. The 8-aligned frame appeared on its own.
+- GetReflexAdjustedDamage 0x0053CC30 (20): in the original the 5-argument
+  path jumps into the 4-argument path's last StackPopObject after its push.
+- GetFirstEffect/GetNextEffect 0x00549180 (41): the original keeps the
+  "existing effect" flag in ebx; cl homes it on the stack across the
+  `new CGameEffect` EH region.
+
+### Lessons
+
+- Pops with destructors: separate `if (!pop) return` statements give the
+  original's shared in-place failure block (SetJournalQuestEntryPicture went
+  48 -> exact); `||` moves the block to the end (EffectAreaOfEffect wants
+  that).
+- `and esp, -8` frames came out naturally for GetItemPossessedBy,
+  SetJournalQuestEntryPicture and StartNewModule (CExoString locals plus a
+  by-value CExoString or Vector); no dead int64 local is needed.
+- Inline accessors decide load order again: party `GetCount()` /
+  `GetMemberId(i)` (SetPartyLeader), `pCreature->GetStats()` for the stats
+  call (GetCreatureTalent), direct `g_pAppManager->m_pServerExoApp` to load
+  the argument before the app pointer.
+- TakeGoldFromCreature: the base-item lookup must be inlined, but plain
+  `inline` (GetBaseItemFromRules) is not inlined in that large function; a
+  TU-local `__forceinline` helper with the `int nBaseItem` local matches.
+  A `switch` on the object type gives a subtract chain; the original is an
+  if/else chain.
+- Address-taken locals: move the declaration to the top when the original
+  gives it its own slot (ActionStartConversation's object pointer), and the
+  order of the copy statements after an out-parameter call decides the
+  out-parameter slots (GetCreatureTalent).
+- ActionStartConversation returns -2000 (the overflow code) for every pop
+  failure; kept as in the original.
+
+### Header changes
+
+- `sws_creature.h`: CSWSCreatureStats GetMemorizedSpellClass 0x005A6E30,
+  GetCreatureTalent 0x005B23A0 (name guessed); CSWSCreature GetStats()
+  inline, RemoveGold 0x004F3ED0; CGameObject +0x78 `m_nAILevel` (name
+  guessed); CSWSArea +0x12c `m_aTrapList`; CSWSFaction +0x00 `m_aMembers`;
+  CSWCCreature ClearAllActions 0x0063D470 (CSWCObject's) and +0x4 `m_idSelf`.
+- `sws_item.h`: placeable +0x318 `m_aTrapDetectedBy`, +0x324
+  `m_bHasInventory`, +0x36c `m_pItemRepository` (names guessed).
+- `sws_door.h`: +0x2dc `m_aTrapDetectedBy`.
+- `exo_array_list.h`: `count(T)` (0x004AF240 for <unsigned long>).
+- `sw_rules.h`: CSWSpell +0x3f `m_nInnateLevel` (name guessed).
+- `game_effect.h`: SetString 0x00503730.
+- `server_exo_app.h`: SetMoveToModulePending/String/StartWaypoint,
+  AddMoveToModuleMovie 0x005EDB50 (declared with CExoString const&: the
+  caller passes a CExoString address; the Mac map says CResRef const&).
+- `vm_commands.h`: new handler declarations.
+- Naming: bucket b's AsSWSTrigger/AsSWSAreaOfEffectObject names for vtable
+  slots 0x50/0x40 are swapped relative to buckets a and i (0x40 holds the
+  trap-detection list at +0x2a8, i.e. the trigger). Kept b's convention in
+  the new TUs; a rename across b is pending.
+
+### Next in-range queue
+
+Unannotated handler starts (size to next handler): 0x00542830 SetFacing
+(fcos/fsin, x87 compares), 0x0052FF20 DestroyObject (client party loop,
+ftol), 0x0052C960 ActionForceFollowObject (client formation), 0x00530360
+DoDoorAction, 0x0053FB00 ActionMoveToObject, 0x00545470 Versus*Effect,
+0x00548CA0 TouchAttack, 0x00549B50 GetFirst/NextItemInInventory, 0x00541CC0
+ResistForce, 0x0052E9F0 BeginConversation, 0x0052EE50 ActionCastSpell*,
+0x005313F0 EffectAssuredHit family, 0x0052F820 CreateObject, then the large
+indexed functions in todo.py. 0x0054A260 GetFirst/NextObjectInShape follows
+GetNearestTrapToObject and is not in functions.csv.
+
+## Round s10 (2026-10-27): remaining VM handlers, CSWSObject door/give AI actions, accessor sweep
+
+Folder `kotor-match -q -j 2 matching/src/b`: 845/946 -> 854/955 MATCH.
+(Round s9 ran out of usage before writing notes; its commits are in main:
+SetFacing, DoDoorAction, VersusAlignmentEffect, ActionMoveToObject,
+CreateItemOnFloor, AssignVisualEffectLists, DeleteLastUpdateObjectsForObject
+and others, see `git log --grep "b s9"`.)
+
+10 functions annotated: 4 new exact, 6 kept as NONMATCH. 5 prior NONMATCH
+promoted to MATCH by the accessor sweep below; no prior MATCH regressed.
+
+### New exact matches
+
+| Address | Function | File |
+| --- | --- | --- |
+| 0x0057BBF0 | CSWSObject::AIActionCloseDoor | sws_object_ai_doors.cpp |
+| 0x0057D490 | CSWSObject::AIActionOpenDoor | sws_object_ai_doors.cpp |
+| 0x0057B6A0 | CSWSObject::AIActionGiveItem | sws_object_ai_give.cpp |
+| 0x0054C0E0 | GetTrap*/SetTrapDetectedBy/SetTrapDisabled handler | vm_commands_trap.cpp |
+
+### Prior NONMATCH promoted (accessor sweep)
+
+0x0055EC70 CSWSItem::~CSWSItem, 0x00539940 GetIsDoorActionPossible,
+0x0053FE00 ActionMoveToLocation, 0x00577FA0 TestObjectUpdateDifferences,
+0x005364F0 GetGoodEvilValue.
+16 more NONMATCH dropped in diff count (e.g. AddGiveItemActions 9,
+GiveItem 12, GetClassByPosition 9, OpenInventory 8, CopyItem 9).
+
+### Kept NONMATCH (new)
+
+- GetFirstItemInInventory 0x00549B50 (109): index edi / creature ebx swapped.
+- BeginConversation 0x0052E9F0 (87): edi/esi/ebx rotation of target copy,
+  speaker copy and player. Needs both the out-param (memory) and a register
+  copy of each object (the original reads both).
+- ActionCastSpellAtObject 0x0052EE50 (51): original spills `this` at entry
+  and keeps the fake flag (later -1) in ebp; ours keeps the flag in memory.
+- CSWSItem::EventHandler 0x0055EE10 (14): not in functions.csv (the
+  AddAttackModifierProperties row spans it); slot 0x78 of CSWSItem's
+  CSWSObject vftable 0x00748CC0, `this` is the +0x10 base. Only the
+  possessor lookup's eax/edx differ.
+- CreateObject 0x0052F820 (63): scratch-register rotation from the
+  safe-location copy on.
+
+### Lessons
+
+- **Inline accessors change register allocation.** `GetId()` instead of
+  `m_idSelf` (added to b's CGameObject), `GetStats()`, CSWSItem
+  `GetPossessor()`/`GetStackSize()` turned OpenDoor (40), the trap handler
+  (64) and GiveItem (38) into exact matches. The sweep script
+  (`/private/tmp/claude-501/swk-b-s10/sweep.py`: per function, try each
+  substitution and pairs, keep only if no other function in the file gets
+  worse) promoted 5 old NONMATCH. Rerun it on new NONMATCH files.
+- A local pointer (`CSWSTriggerTrapView* p = ...; p->m_list.count(oid)`)
+  makes cl call the getter before pushing the argument; a direct
+  `obj->...->m_list.count(oid)` pushes the argument first.
+- `CExoString("")` passed directly gives `push eax` (ctor result); the
+  original's `lea` + bool + dtor shape came from
+  `{ CExoString s(""); bFailed = !Push(s); } if (bFailed) return ...`.
+- A dead `m_oidArea` load hoisted too early: read it into a local right
+  before the call.
+- Placeable/store/waypoint sizes for `new`: 0x454 / 0x258 / 0x240.
+
+### Header changes
+
+CGameObject: `GetId()`, slot 0x78 `EventHandler`, slot 0x7c
+`SetDialogDelay7C(int)`, +0xec `m_bEC`. CSWSObject: StartDialog 0x004CF490,
+ClearUpdateFlag. CSWSCreature: GetIsInUseRange, AddMoveToPointActionToFront,
+EvaluateLock, RemovePazaakCard, +0xa3c `m_nTotalWeight`; stats HasReadySpell.
+CSWSPlaceable: ctor, LoadFromTemplate, SetOrientation(Quaternion),
+AddToArea, AddCastFakeSpellActions, size 0x454. CSWSItem: EventHandler,
+GetStackSize, GetPossessor; CSWBaseItem +0x89 `m_nWeight`. CSWSDoor +0x2b8
+faction, +0x3c4. CSWSArea::ComputeHeight. CServerExoApp
+Get/SetActionConversation. CVirtualMachine::RunScriptSituation.
+CExoArrayList::AddUnique. CLastUpdateObject +0x4c. CSWSpell::GetSpellLevel.
+
+### Next in-range queue
+
+Unannotated VM handlers: 0x00540550 ActionPlayAnimation/PlayAnimation (x87),
+0x00549360 GetFirst/NextInPersistentObject, 0x0054A260 GetFirst/NextObjectInShape,
+0x0054B550 GetNearestCreature/Object*. AI actions: 0x0057BEC0 LockObject,
+0x0057D9D0 UnlockObject, 0x0057E8C0 UseObject, 0x0057D080 PlayAnimation (x87).
+0x005281B0 is an ebx-parameter static helper (skip). Rerun the accessor sweep
+on every remaining NONMATCH after adding new accessors.

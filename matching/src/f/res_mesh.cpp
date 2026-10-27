@@ -61,14 +61,36 @@ public:
     char pad_0x24[0x4];
 };
 
+class CExoString {
+public:
+    CExoString();
+    ~CExoString();
+    char *CStr() const;
+    void Format(const char *szFormat, ...);
+    char *m_sString;
+    unsigned long m_nBufferLength;
+};
+
+class CResRef {
+public:
+    CResRef operator=(const CExoString &s);
+    void CopyToString(CExoString &s) const;
+    char m_resRef[16];
+};
+
+class CResBWM;
+
 class CSWCollisionMesh {
 public:
     CSWCollisionMesh(unsigned short nA, unsigned short nB);
     virtual ~CSWCollisionMesh();
     Vector WorldToLocal(const Vector &v);
+    int LoadMeshBinary(CResBWM *pRes);
 
     int m_bTransformed;              // +0x04
-    char pad_0x8[0x18];
+    char pad_0x8[0x4];
+    CResRef m_cResRef;               // +0x0c
+    char pad_0x1c[0x4];
     Vector m_vPosition;              // +0x20
     Vector m_vOffset;                // +0x2c
     Quaternion m_qOrientation;       // +0x38
@@ -108,6 +130,10 @@ public:
     CSWDoorSurfaceMesh();
     virtual ~CSWDoorSurfaceMesh();
     void SetUsePoint(unsigned char n, Vector v);
+    int LoadMeshBinary(CResBWM *pRes);   // door_mesh_load.cpp
+    void GetResRef(CResRef *pResRef);
+
+    int m_nDoorState;                // +0x88
 };
 
 // FUNCTION: SWKOTOR 0x005CE070
@@ -225,3 +251,16 @@ int CResBWM::IsBinary()
 }
 
 // FUNCTION: SWKOTOR 0x005CEB50 SYMBOL: ??_GCResBWM@@UAEPAXI@Z
+
+// ---------------------------------------------------------------------------
+// CSWDoorSurfaceMesh loaders
+
+// FUNCTION: SWKOTOR 0x005CE8B0
+void CSWDoorSurfaceMesh::GetResRef(CResRef *pResRef)
+{
+    CExoString sName;
+    CExoString sResRef;
+    m_cResRef.CopyToString(sName);
+    sResRef.Format("%s%d", sName.CStr(), m_nDoorState);
+    *pResRef = sResRef;
+}

@@ -47,6 +47,13 @@ struct CResList : public CResStruct {
 class Vector {
 public:
     float x, y, z;
+    Vector() {}
+    Vector(float fX, float fY, float fZ)
+    {
+        x = fX;
+        y = fY;
+        z = fZ;
+    }
 };
 
 class CRes {
@@ -82,6 +89,7 @@ public:
     void DelIndex(int i);
     int IndexOf(T t);
     void Insert(T t, int nIndex);
+    void SetSize(int nSize);
     T& operator[](int i) { return element[i]; }
 };
 
@@ -153,7 +161,7 @@ public:
     virtual void SetExtent(CSWGuiExtent* pExtent);              // 0x04
     virtual void v08();
     virtual void SetHighlight(int bHighlight);                  // 0x0c
-    virtual void v10();
+    virtual int HandleMouseMove(int x, int y);                  // 0x10
     virtual void OnCaptureLost();                               // 0x14
     virtual void HandleLMouseDown();                            // 0x18
     virtual void HandleLMouseUp();                              // 0x1c
@@ -168,10 +176,10 @@ public:
     virtual CSWGuiNavigation* GetNavigation();                  // 0x4c
     virtual void v50(); virtual void v54();
     virtual int IsSelectable();                                 // 0x58
-    virtual void v5c(); virtual void v60(); virtual void v64(); virtual void v68();
+    virtual void v5c(); virtual int v60(); virtual void v64(); virtual void v68();
     virtual void v6c();
     virtual CSWGuiControl* GetScrollBar();                      // 0x70
-    virtual void v74(); virtual void v78();
+    virtual void v74(); virtual int v78();
     virtual void SetFocus(int bFocus);                          // 0x7c
     virtual int IsControl();                                    // 0x80
     virtual void HandleRMouseDown();                            // 0x84
@@ -183,7 +191,8 @@ public:
     virtual void HandleFocusEvent(int nArg);                    // 0x9c
 
     CSWGuiExtent m_extent;          // 0x04
-    char pad_0x14[0x20];
+    CSWGuiControl* m_pParentControl; // 0x14
+    char pad_0x18[0x1c];
     CSWGuiPanel* m_pParent;         // 0x34
     char pad_0x38[0x0c];
     unsigned long m_nFlags;         // 0x44
@@ -193,6 +202,7 @@ public:
     unsigned char m_nClickSound;    // 0x55
 
     void Initialize(class CSWGuiPanel* pPanel, CResGFF* pGFF, CResStruct* pStruct, int nArg); // 0x00418840
+    int HasChildControl(CSWGuiControl* pControl);   // 0x00418a20
     CSWGuiControl* GetOwner();                      // 0x00418a50
     CSWGuiControl* GetToolTipControl(int n);        // 0x0041a5e0
     void RefreshScroll();                           // 0x0041c400
@@ -299,7 +309,7 @@ public:
     virtual void v54(); virtual void v58(); virtual void v5c(); virtual void v60();
     virtual void v64();
     virtual void UpdateFonts();                     // 0x68
-    void SetText(int nText);                        // 0x00624ae0
+    void SetText(const CExoString& sText);          // 0x00624ae0
     void Show();                                    // 0x00624af0
     char pad_0x04[0x1a0];
 };
@@ -309,6 +319,7 @@ public:
     virtual ~CAurObject();
 };
 
+// Model slots used by the software mouse (CAurObject vtable).
 class CSWGuiMouse {
 public:
     virtual ~CSWGuiMouse();                                     // 0x00
@@ -318,7 +329,43 @@ public:
     virtual void v1c(); virtual void v20(); virtual void v24(); virtual void v28();
     virtual void v2c(); virtual void v30();
     virtual void SetTexture(char* sPart, char* sTexture);       // 0x34
+    virtual void v38(); virtual void v3c(); virtual void v40(); virtual void v44();
+    virtual void v48(); virtual void v4c(); virtual void v50(); virtual void v54();
+    virtual void v58();
+    virtual Vector SetPosition(Vector vPosition);               // 0x5c
+    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
+    virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7c();
+    virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8c();
+    virtual void v90(); virtual void v94(); virtual void v98(); virtual void v9c();
+    virtual void va0(); virtual void va4(); virtual void va8(); virtual void vac();
+    virtual void vb0(); virtual void vb4();
+    virtual void SetIllumination(Vector vColor, int b);        // 0xb8 (descriptive)
     void SetScale(float fScale);                                // 0x0043e150
+};
+
+class CAurCamera {
+public:
+    virtual ~CAurCamera();
+    virtual void v04(); virtual void v08(); virtual void v0c(); virtual void v10();
+    virtual void v14();
+    virtual Vector SetViewSize(Vector vSize);                   // 0x18 (descriptive)
+};
+
+// GUI scene holding the software mouse model (0x34 bytes, vtable of
+// CSWGuiDrawable / CSWGuiScene).
+class CSWGuiScene {
+public:
+    CSWGuiScene();                                              // 0x004174b0
+    virtual ~CSWGuiScene();                                     // 0x00
+    virtual void SetExtent(const CSWGuiExtent& extent);         // 0x04
+    virtual void v08();
+    virtual void Draw(float fDelta);                            // 0x0c
+    CSWGuiMouse* AddModel(const CExoString& sModel, int nIndex); // 0x00417620
+
+    CSWGuiExtent m_extent;          // 0x04
+    void* m_pScene;                 // 0x14
+    CAurCamera* m_pCamera;          // 0x18
+    char pad_0x1c[0x34 - 0x1c];
 };
 
 class CClientOptions {
@@ -364,6 +411,28 @@ public:
 };
 
 extern CAppManager* g_pAppManager;              // 0x007a39fc
+
+class CExoTimers {
+public:
+    unsigned long GetLowResolutionTimer();          // 0x005e9250
+};
+
+class CExoBase {
+public:
+    void* m_p00;
+    CExoTimers* m_pcExoTimers;                      // 0x04
+};
+
+extern CExoBase* g_pExoBase;                    // 0x007a39e0
+
+class CExoResMan {
+public:
+    int RemoveResourceImageFile(const CExoString& sName); // 0x00408830
+    char pad_0x00[0x34];
+    unsigned char m_nUnloadRims;                    // 0x34 (1: RIMS:CHARGEN, 2: RIMS:MAINMENU)
+};
+
+extern CExoResMan* g_pExoResMan;                // 0x007a39e8
 extern CSWGuiManager* g_pGuiManager;            // 0x007a39f4
 extern CExoInput* g_pExoInput;                  // 0x007a39e4
 extern int g_nScreenWidth;                      // 0x0078d1d4
@@ -393,7 +462,7 @@ public:
     unsigned long m_bCentred : 1;                   //      bit 2
     unsigned long m_bToolTipShown : 1;              //      bit 3
     unsigned long m_nFlagsRest : 28;
-    CSWGuiMouse* m_pMouseObject;                    // 0x20
+    CSWGuiScene* m_pMouseObject;                    // 0x20
     CSWGuiMouse* m_pMouse;                          // 0x24
     CResRef m_cCursor;                              // 0x28
     int m_nCursor;                                  // 0x38
@@ -433,7 +502,7 @@ public:
     void DeactivateSoftwareMouse();
     void HideSoftwareMouse();
     void SetSoftwareMouseCursor(int nCursor, int bCentred, int bPressed);
-    void ChangeToolTipText(int nText);
+    void ChangeToolTipText(const CExoString& sText);
     void ReloadToolTipPanel();
     void SaveMousePosition();
     static CExoString GetScreenResolutionString(int nWidth, int nHeight);
@@ -443,13 +512,13 @@ public:
     void DetermineNeedToDraw();
     int IsPanelOnTop(CSWGuiPanel* pPanel);
     void DrawPCBG(float fDelta);
-    CSWGuiMouse* ActivateSoftwareMouse();
+    int ActivateSoftwareMouse();
     CSWGuiMouse* ShowSoftwareMouse();
     int SetFocusControl(int nArg);
     void UpdateMouseOverControl();
     void GetUpdatedFontName(char* sName);
     void UpdateAllFonts();
-    void DisplayToolTip(int nText);
+    void DisplayToolTip(const CExoString& sText);
     void ResetToolTipTimer();
     void SetTemporarilyDisableToolTip(int bDisable);
     void AddPanel(CSWGuiPanel* pPanel, int nFlags, int bPlaySound);
@@ -469,6 +538,7 @@ public:
     int RemovePanel(CSWGuiPanel* pPanel);
     void GetSafeMargins(int* pX, int* pY);
     void DrawSafeRegion(float fDelta);              // 0x0040bec0
+    void HandleInputEvent(int nEvent, int bDown);   // 0x0040c8e0
     void Draw(float fDelta);
     void Update(float fDelta);
 };
