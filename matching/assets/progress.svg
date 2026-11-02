@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="604" viewBox="0 0 960 604" role="img" aria-labelledby="card-title card-desc">
   <title id="card-title">KOTOR decompilation progress</title>
-  <desc id="card-desc">Decompiled with Visual Studio 2022: 10,023 of 10,302 functions (97.3%: 8,237 with their own definition, 1,522 folded into others, 264 C runtime from the VS2022 library), builds the full game. Original Visual Studio .NET 2002 (MSVC 7.0) matching coverage: 8,202 of 10,302 functions (79.6%), 43.7% of code bytes. Source matches: 7,834 (76.0%); original stock LIBCMT.LIB: 368 (3.6%). Each address counts once. Relocation fields are masked during comparison; whole-executable identity is not established.</desc>
+  <desc id="card-desc">Decompiled with Visual Studio 2022: 10,024 of 10,302 functions (97.3%: 8,237 with their own definition, 1,523 folded into others, 264 C runtime from the VS2022 library), builds the full game. Original Visual Studio .NET 2002 (MSVC 7.0) matching coverage: 8,202 of 10,302 functions (79.6%), 43.7% of code bytes. Source matches: 7,834 (76.0%); original stock LIBCMT.LIB: 368 (3.6%). Each address counts once. Relocation fields are masked during comparison; whole-executable identity is not established.</desc>
   <rect x="1" y="1" width="958" height="602" rx="14" fill="#090909" stroke="#343434" stroke-width="1.5"/>
   <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif">
     <text x="23" y="34" font-size="15" fill="#dedede" font-weight="600">Star Wars: Knights of the Old Republic — two decompilations of swkotor.exe 1.0.3.0 (GOG)</text>
@@ -23,21 +23,21 @@
     <text x="505" y="154" font-size="12" fill="#c9c9c9">Matching coverage from source and original runtime.</text>
     <text x="39" y="204" font-size="34" fill="#6ba8ff" font-weight="700">97.3%</text>
     <text x="173" y="188" font-size="12.5" fill="#c9c9c9">of functions decompiled · builds the full game</text>
-    <text x="173" y="204" font-size="11.5" fill="#8a8a8a">10,023 / 10,302 · 279 not there yet</text>
+    <text x="173" y="204" font-size="11.5" fill="#8a8a8a">10,024 / 10,302 · 278 not there yet</text>
     <text x="505" y="204" font-size="34" fill="#5be3a8" font-weight="700">79.6%</text>
     <text x="639" y="188" font-size="12.5" fill="#c9c9c9">matching coverage: source + runtime</text>
     <text x="639" y="204" font-size="11.5" fill="#8a8a8a">8,202 / 10,302 · 43.7% of code bytes</text>
     <rect x="39" y="220" width="418" height="12" rx="6.0" fill="#272727"/>
     <rect x="39.00" y="220" width="349.24" height="12" fill="#6ba8ff"/>
-    <rect x="388.24" y="220" width="56.47" height="12" fill="#4c74ad"/>
-    <rect x="444.71" y="220" width="5.42" height="12" fill="#354e72"/>
+    <rect x="388.24" y="220" width="56.50" height="12" fill="#4c74ad"/>
+    <rect x="444.74" y="220" width="5.42" height="12" fill="#354e72"/>
     <rect x="39" y="220" width="418" height="12" rx="6.0" fill="none" stroke="#111214" stroke-width="2"/>
     <rect x="505" y="220" width="418" height="12" rx="6.0" fill="#272727"/>
     <rect x="505.00" y="220" width="173.35" height="12" fill="#5be3a8"/>
     <rect x="678.35" y="220" width="9.14" height="12" fill="#9aa5b1"/>
     <rect x="687.48" y="220" width="63.63" height="12" fill="#c9963a"/>
     <rect x="505" y="220" width="418" height="12" rx="6.0" fill="none" stroke="#111214" stroke-width="2"/>
-    <text x="39" y="250" font-size="10.5" fill="#8a8a8a">8,237 own definitions · 1,522 folded into callers · 264 runtime (VS2022 library)</text>
+    <text x="39" y="250" font-size="10.5" fill="#8a8a8a">8,237 own definitions · 1,523 folded into callers · 264 runtime (VS2022 library)</text>
     <text x="505" y="244" font-size="10.5" fill="#8a8a8a">Source: 7,834 (76.0%) · original runtime: 368 (3.6%)</text>
     <text x="505" y="260" font-size="10" fill="#8a8a8a">1,034 unmatched attempts · function matches; whole .exe pending</text>
     <text x="39" y="269" font-size="10" fill="#8a8a8a">Play reported, as far as we know; public retest pending. See STATUS.md.</text>
