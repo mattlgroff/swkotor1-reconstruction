@@ -15,7 +15,7 @@ Install these separately from their official sources:
 python -m pip install pefile==2024.8.26 capstone==5.0.7
 ```
 
-The c67 local math generator also requires [Capstone 5.0.7](https://pypi.org/project/capstone/5.0.7/) to decode the supported executable.
+The local math generator also requires [Capstone 5.0.7](https://pypi.org/project/capstone/5.0.7/) to decode the supported executable.
 
 Toolchains and Python packages retain their own licenses. The build does not download or install them, or download game files.
 
@@ -35,9 +35,11 @@ These identify the inputs; they do not identify a GOG installer build. Do not pl
 
 ## Local original-derived math dependency
 
-The c67 build combines authored reconstruction with a local dependency generated from the supported original executable. Its L1 math generator decodes the original VC7 CRT implementation of `pow`, `acos`, `asin`, `floor`, `ceil` and their support routines, and extracts the lookup tables they require. This is original-derived code, not an independently reconstructed source implementation. The authored x87 intrinsic adapters and generator are distributed; generated assembly, original byte encodings, tables and compiled objects are not.
+The playable build combines authored reconstruction with a local dependency generated from the supported original executable. Its L1 math generator decodes the original VC7 CRT implementation of `pow`, `acos`, `asin`, `floor`, `ceil` and their support routines, and extracts the lookup tables they require. This is original-derived code, not an independently reconstructed source implementation. The authored x87 intrinsic adapters and generator are distributed; generated assembly, original byte encodings, tables and compiled objects are not.
 
 Generation reads only the hash-validated installation and writes into the fresh private build output. Keep those outputs out of Git and do not redistribute them. A checkout alone cannot supply this dependency. The existing reconstructed acos/asin/pow wrappers retain their own callers; the L1 addition does not mean every game math call has moved away from the modern CRT. See [STATUS.md](STATUS.md) for coverage and verification limits.
+
+The c69/c70 arithmetic units compile with clang-cl using 80-bit `long double`, strict floating-point evaluation and SSE disabled. Their reviewed recipes are recorded in `build-manifest.json`; the public runner accepts those specific flags. The same automatically generated local L1 dependency supplies their math providers. These recipes do not extend the arithmetic coverage to the remaining game functions.
 
 ## Build
 

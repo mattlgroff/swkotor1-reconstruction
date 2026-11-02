@@ -19,6 +19,16 @@ std::uint32_t __fastcall kotor_fastcall_00617ad0(void* self, void*, void* target
 using namespace w4;
 
 namespace {
+// a2 (L3 t1): the vectors are copied as words (the original moves them with `mov`); only the two z components are
+// floats the original computes (fld / fadd / fstp dword). A word-typed form of SceneHitCheck passes the two vectors as
+// the same 12 stack bytes each (clang would expand a by-value float struct into float parameters).
+struct V3W { U32 x, y, z; };
+template <class F, class G> __forceinline F word_form(G* callee) {
+    void* volatile address = reinterpret_cast<void*>(callee);
+    return reinterpret_cast<F>(address);
+}
+__forceinline long double ld_word(U32 w) { float f; std::memcpy(&f, &w, 4); return f; }   // fld dword
+__forceinline void store_float(U32& w, long double v) { const float f = static_cast<float>(v); std::memcpy(&w, &f, 4); } // fstp dword to the slot
 void append_ignore(void* item) {                                                  // inlined CExoArrayList<Gob*>::Add
     U8* hit = scene_hit_info_007b93a8;
     const U32 count = lw(hit, 0x0C), alloc = lw(hit, 0x10);                       // [007B93B4], [007B93B8]
@@ -32,12 +42,12 @@ void append_ignore(void* item) {                                                
 
 extern "C" U32 __fastcall kotor_fastcall_00617ad0(void* self, void*, void* target) {
     if (target == nullptr) return 0;                                              // 00617AD6..00617AEA
-    W4Vector from, to;
+    V3W from, to;
     std::memcpy(&from, static_cast<U8*>(self) + 0x24, 12);                        // 00617AED..00617B05 [esp+1Ch..24h]
-    from.z = static_cast<float>(static_cast<double>(from.z) + 1.5f);              // 00617B09..00617B1F (0073F414)
+    store_float(from.z, ld_word(from.z) + 1.5f);                              // 00617B09..00617B1F (0073F414): fld, fadd, fstp dword
     std::memcpy(&to, static_cast<U8*>(target) + 0x24, 12);                        // 00617B00..00617B29 [esp+10h..18h]
-    const double height = vcall<double>(target, 0x140);                           // 00617B2D (ST0)
-    to.z = static_cast<float>(height + static_cast<double>(to.z));                // 00617B33..00617B3C
+    const long double height = vcall<float>(target, 0x140);                       // 00617B2D (ST0, kept unrounded)
+    store_float(to.z, height + ld_word(to.z));                                // 00617B33..00617B3C: fadd dword [esp+18h], fstp dword
     U8* hit = scene_hit_info_007b93a8;
     aurora_hit_info_clear_output_00456a60(hit, nullptr);                          // 00617B37..00617B40
     hit[0x5C] = 1;                                                                // 00617B47 [007B9404]
@@ -50,7 +60,7 @@ extern "C" U32 __fastcall kotor_fastcall_00617ad0(void* self, void*, void* targe
     for (;;) {
         aurora_hit_info_clear_output_00456a60(hit, nullptr);                      // 00617CB0..00617CB5
         void* scene = lp(lp(self, 0x20), 0x184);                                  // 00617CBE..00617CC1
-        result = kotor_cdecl_0060f1e0(scene, from, to, 0, hit);                   // 00617CC7..00617CF9
+        result = word_form<std::int32_t(__cdecl*)(void*, V3W, V3W, std::int32_t, void*)>(&kotor_cdecl_0060f1e0)(scene, from, to, 0, hit); // 00617CC7..00617CF9
         if (result != 2) break;                                                   // 00617D03..00617D06
         void* object = vcall<void*>(lp(hit, 0x38), 0x70);                         // 00617D0C..00617D14 [007B93E0]
         if (object == nullptr) { result = 1; break; }                             // 00617D19..00617D1B -> 00617DB4

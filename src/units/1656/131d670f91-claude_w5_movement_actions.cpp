@@ -6,6 +6,10 @@
 // Not reconstructed here: 0051F4F0 AIActionMoveToPoint (pathfinder / walk-update cascade far above the brief's
 // limit; see the report). Callees without any provider are reconstructed in the "shared helpers" section at the end
 // under kotor_fastcall_<addr>.
+// L3 MATH-TRIG-CPP t1 (2026-10-24): built as a long double (LD) unit (recipe + -mno-sse -ffp-model=strict
+// -mlong-double-80, PLAN-v3 1.1); 004BDF80 ComputeAwayVector is written in the PLAN-v3 writing rule. kotor_math.h
+// is the math declaration set of an LD unit; the other functions keep their double-rule source (x87 under the flags).
+#include "../../math/kotor_math.h"
 #include "842d6b1618-w5_t3.hpp"
 #include "5889fde5f1-w5_action_bodies.hpp"
 #include "4f622be2f2-w5_area_direct_line.hpp"
@@ -36,7 +40,6 @@ void __fastcall recovered_trigger_bounds_0058cc60(void* trigger, void*, void* x0
 Vector* __cdecl float_times_vector_00437a60(Vector* out, float scale, const Vector* v);  // operator*(float, Vector) [0555]
 int __cdecl crt_rand_006fc447();                                                         // rand [0479]
 void __fastcall c2da_005e9c10(void* list, void*, void* position);                        // CExoLinkedListInternal::Remove [0191] (no EAX)
-void __cdecl unresolved_ftol2_006fae8c();                                                // __ftol2 (ST0 -> EAX) [0064]
 
 // ---------------- reconstructed in this file (shared helpers, defined at the end) ----------------
 U __fastcall kotor_fastcall_004eb5a0(void* creature, void*, U group);                    // AddPathfindingWaitActionToFront RET 4
@@ -103,46 +106,49 @@ inline bool other_area(void* self, U area_id) {
     if (recovered_object_area_004cb120(self, nullptr) == nullptr) return false;
     return area_id != at<U>(recovered_object_area_004cb120(self, nullptr), 0x120);
 }
-inline double sq(float f) { return static_cast<double>(f) * f; }
-// x87 transcendental and __ftol2 exactly as the original executes them (ST0 in/out)
-// lane x87-trig (2026-10-24): the former x87_fcos / x87_fsin rounded the 64-bit-significand results to double;
-// 004BE05A/004BE060 feed them to fmul/fadd/fsub on the stack. Replaced by x87trig_004be041 (below).
 }  // namespace
-// 004BE041..004BE091 (one probe direction of the 8-way search): a = i * [00741C3C] (PC 53), [esp+20h] = (float)a,
-// c = cos(a) (the extended a), s = sin((float)a); rx = (float)(n.y*s + n.x*c) ([esp+A4h]); ry = n.y*c - n.x*s
-// stays on the stack in the original (a PC-53 result, carried exactly by the double). n = {[esp+80h], [esp+84h]}.
-// Precondition as in the original: PC = 53 bits, RC = nearest. No CALL inside the asm.
-extern "C" __declspec(noinline) void __cdecl x87trig_004be041(const int* i, const float* n, float* angle_f, float* rx,
-                                                             double* ry) {
-    __asm {
-        mov eax, i
-        mov ecx, n
-        fild dword ptr [eax]                   // 004BE041 [esp+24h]
-        fmul dword ptr k_quarter_pi_00741c3c       // 004BE050
-        mov eax, angle_f
-        fst dword ptr [eax]                    // 004BE056 [esp+20h]
-        fcos                                   // 004BE05A
-        fld dword ptr [eax]                    // 004BE05C
-        fsin                                   // 004BE060
-        fld dword ptr [ecx + 4]                // 004BE062 [esp+84h]
-        fmul st, st(1)                         // 004BE069 D8 C9
-        fld dword ptr [ecx]                    // 004BE06B [esp+80h]
-        fmul st, st(3)                         // 004BE072 D8 CB
-        faddp st(1), st                        // 004BE074 DE C1
-        mov eax, rx
-        fstp dword ptr [eax]                   // 004BE076 [esp+A4h]
-        fld dword ptr [ecx + 4]                // 004BE07D
-        fmulp st(2), st                        // 004BE084 DE CA
-        fld dword ptr [ecx]                    // 004BE086
-        fmul st, st(1)                         // 004BE08D
-        fsubp st(2), st                        // 004BE08F DE EA
-        fstp st(0)                             // 004BE091
-        mov eax, ry
-        fstp qword ptr [eax]                   // (ry stays on the stack in the original; exact under PC 53)
-    }
-}
+// L3 t1 (2026-10-24): field access for 004BDF80. The recipe is /Ob0, so w5_types.hpp `at` (plain inline) is a
+// call; `ref` is __forceinline (honoured under /Ob0): a direct memory operand, as in the original.
+namespace { template<class T> __forceinline T& ref(void* o, U off) { return *reinterpret_cast<T*>(static_cast<unsigned char*>(o) + off); } }
+// L3 t1 a2: 004BCB70 TestDirectLine takes the height band by value; the original pushes that dword with integer moves
+// (004BE176 mov edx, [edi+14h] ... push eax), no x87, so it is passed as its bits (the same stack word) to the same
+// callee through its real ABI (a float parameter would be loaded and stored by fld/fstp, which quiets a signalling NaN).
 namespace {
-inline U ftol2(double v) { U r; __asm { fld qword ptr v } __asm { call unresolved_ftol2_006fae8c } __asm { mov r, eax } return r; }
+__forceinline long double fbits_ld(U bits) { float f; std::memcpy(&f, &bits, 4); return f; }
+// The word of a float just stored to memory, read back with an integer load at once (a volatile read, so the
+// compiler cannot hold the float on the x87 stack across later calls and store it again there).
+__forceinline U stored_word(const float* f) { return *reinterpret_cast<const volatile U*>(f); }
+// The bits of a float object in memory (an integer load, as the original's mov).
+__forceinline U ubits(const float& f) { U u; std::memcpy(&u, &f, 4); return u; }
+// 004F8A50 AddMoveToPointActionToFront and 004F6000 GetIsInUseRange take floats by value; the original pushes those
+// dwords with integer moves / push imm (e.g. 0051031E..43, 00510558..66), so they are passed as their bits to the
+// same callee through its real ABI (a float parameter would be copied by fld/fstp or built by fldz).
+__forceinline U move_front_bits(void* c, U group, const Vector* point, U area_id, U target_id, U run, U range, U a6,
+                                U a7, U a8, U a9, U a10, U a11, U a12, const Vector* a13, U a14, U a15, U a16) {
+    return reinterpret_cast<U(__fastcall*)(void*, void*, U, const Vector*, U, U, U, U, U, U, U, U, U, U, U, const Vector*,
+                                           U, U, U)>(reinterpret_cast<void*>(&w5_creature_add_move_to_point_action_to_front_004f8a50))(
+        c, nullptr, group, point, area_id, target_id, run, range, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16);
+}
+// 004BDF80 ComputeAwayVector (this file) with the distance pushed as its bits (0050FE2B push edx / 00515768 push eax).
+__forceinline Vector* away_bits(void* area, Vector* out, const Vector* from, const Vector* target, U dist, void* pf) {
+    return reinterpret_cast<Vector*(__fastcall*)(void*, void*, Vector*, const Vector*, const Vector*, U, void*)>(
+        reinterpret_cast<void*>(&kotor_fastcall_004bdf80))(area, nullptr, out, from, target, dist, pf);
+}
+// 00637890 CSWParty::ResetAllFollowData(pos, float yaw, flag) with the yaw passed as its bits.
+__forceinline void reset_follow_bits(void* party, void* pos, U yaw, U flag) {
+    reinterpret_cast<void(__fastcall*)(void*, void*, void*, U, U)>(reinterpret_cast<void*>(&recovered_reset_all_follow_data_00637890))(
+        party, nullptr, pos, yaw, flag);
+}
+__forceinline U in_use_range_bits(void* c, U id, U extra, U flag) {
+    return reinterpret_cast<U(__fastcall*)(void*, void*, U, U, U)>(reinterpret_cast<void*>(&w5_creature_get_is_in_use_range_004f6000))(
+        c, nullptr, id, extra, flag);
+}
+__forceinline I direct_line_bits(void* area, const Vector* from, const Vector* to, const float* radius, U band, U flag, void* hit) {
+    return reinterpret_cast<I(__fastcall*)(void*, void*, const Vector*, const Vector*, const float*, U, U, void*)>(
+        reinterpret_cast<void*>(&w5_area_test_direct_line_004bcb70))(area, nullptr, from, to, radius, band, flag, hit);
+}
+}  // namespace
+namespace {
 // AddActionToFront(type, group, pairs[13]) through W1's 004CCB00 export (shape helper from w5_open_door.cpp)
 inline void front(void* self, U type, U group, std::initializer_list<U> list) {
     U pairs[26] = {};
@@ -182,10 +188,13 @@ U __fastcall w5_action_orient_camera_005137c0(void* self, void*, void* node) {
 U __fastcall w5_action_change_facing_point_0050fc90(void* self, void*, void* node) {
     if (blocked(self)) return k_failed_00745dc4;                                   // 0050FC96..C1
     Vector d;                                                                       // [esp+8]
-    d.x = static_cast<float>(static_cast<double>(at<float>(node, 0x38)) - at<float>(self, 0x90)); // 0050FCD1..E7
-    d.y = static_cast<float>(static_cast<double>(at<float>(node, 0x3c)) - at<float>(self, 0x94)); // 0050FCEB..F5
+    // L3 t1 a2 (writing rule): one float conversion per original store; the floats are copied into d.
+    const float dx = static_cast<float>(static_cast<long double>(ref<float>(node, 0x38)) - ref<float>(self, 0x90)); // 0050FCD1..E7
+    const float dy = static_cast<float>(static_cast<long double>(ref<float>(node, 0x3c)) - ref<float>(self, 0x94)); // 0050FCEB..F5
+    d.x = dx;
+    d.y = dy;
     d.z = 0.0f;                                                                     // 0050FCDF
-    if (sq(d.y) + sq(d.x) >= static_cast<double>(k_tiny_00747504)) {               // 0050FCF9..16 (test ah,1: C0 skips)
+    if (static_cast<long double>(dy) * dy + static_cast<long double>(dx) * dx >= k_tiny_00747504) { // 0050FCF9..16 (test ah,1: C0 skips)
         Vector n;                                                                   // [esp+14]
         w1x_object_set_orientation_004cd170(self, nullptr, normalize_004ab180(&n, &d)); // 0050FD18..2D
     }
@@ -206,7 +215,7 @@ U __fastcall w5_action_change_facing_object_0050fb60(void* self, void*, void* no
     Vector d;                                                                       // [esp+8]
     kotor_cdecl_00423bc0(&d, &target, vat(self, 0x90));                             // 0050FC14..23
     d.z = 0.0f;                                                                     // 0050FC37
-    if (sq(d.y) + sq(d.x) >= static_cast<double>(k_tiny_00747504)) {               // 0050FC28..50
+    if (static_cast<long double>(d.y) * d.y + static_cast<long double>(d.x) * d.x >= k_tiny_00747504) { // 0050FC28..50 (d from 00423BC0)
         Vector n;                                                                   // [esp+14]
         w1x_object_set_orientation_004cd170(self, nullptr, normalize_004ab180(&n, &d)); // 0050FC52..67
     }
@@ -223,14 +232,15 @@ U __fastcall w5_action_check_move_to_point_00510670(void* self, void*, void* nod
     const U run = at<U>(node, 0x4c);                                                // EBX
     void* obj = nullptr;                                                            // [esp+20] (unused afterwards)
     if (!lookup(area_id, &obj)) return k_failed_00745dc4;                           // 005106E6..01
-    const float range = at<float>(pathfind(self), 4);                               // 00510707..10 (over the node slot)
+    const U range = ref<U>(pathfind(self), 4);                                      // 00510707..10 (mov, over the node slot)
     const bool far_area = other_area(self, area_id);                                // 00510714..43 (EBP)
     Vector point = vec(x, y, z);                                                    // [esp+30]
     Vector d;                                                                       // [esp+24]
     kotor_cdecl_00423bc0(&d, vat(self, 0x90), &point);                              // 00510743..6C
     if (!far_area) {                                                                // 00510774..77
-        const double two_r = static_cast<double>(range) + range;                    // 00510779..7D
-        const double sum = (sq(d.z) + sq(d.y)) + sq(d.x);                           // 0051077F..99
+        const long double two_r = fbits_ld(range) + fbits_ld(range);                // 00510779..7D (fld ; fadd st,st)
+        const long double sum = (static_cast<long double>(d.z) * d.z + static_cast<long double>(d.y) * d.y) +
+                                static_cast<long double>(d.x) * d.x;                // 0051077F..99
         if (!(two_r * two_r <= sum)) return k_complete_00745dc0;                    // 0051079B..A8 (test ah,41h; jp)
     }
     // 005107AE..FB: re-queue itself. Original quirk: the type-1 run parameter is pushed by value (EBX) where
@@ -238,8 +248,8 @@ U __fastcall w5_action_check_move_to_point_00510670(void* self, void*, void* nod
     front(self, 0xa, group_of(node), {2, addr(&x), 2, addr(&y), 2, addr(&z), 3, addr(&area_id), 3, addr(&target), 1, run});
     Vector to = vec(x, y, z);                                                       // [esp+24] (reused)
     Vector zero = vec(0, 0, 0);                                                     // [esp+30]
-    w5_creature_add_move_to_point_action_to_front_004f8a50(self, nullptr, group_of(node), &to, area_id, target, run,
-        0.0f, 0.0f, 0, 0, 0, 0, 0, 0, &zero, 0, 0, 0);                              // 00510800..64
+    move_front_bits(self, group_of(node), &to, area_id, target, run,
+        0u, 0u, 0, 0, 0, 0, 0, 0, &zero, 0, 0, 0);                              // 00510800..64
     kotor_fastcall_004eb5a0(self, nullptr, group_of(node));                          // 00510869..72
     return k_complete_00745dc0;
 }
@@ -255,19 +265,19 @@ U __fastcall w5_action_check_move_to_point_radius_005108a0(void* self, void*, vo
     void* obj = nullptr;                                                            // [esp+28]
     if (!lookup(area_id, &obj)) return k_failed_00745dc4;                           // 00510910..35
     const bool far_area = other_area(self, area_id);                                // 0051093B..69
-    const float dxf = static_cast<float>(static_cast<double>(at<float>(self, 0x90)) - flt(x)); // 0051096B..79 [esp+38]
-    const double dy = static_cast<double>(at<float>(self, 0x94)) - flt(y);          // 0051097D (ST0, not stored)
+    const long double dxf = static_cast<float>(static_cast<long double>(ref<float>(self, 0x90)) - fbits_ld(x)); // 0051096B..79 [esp+38]
+    const long double dy = static_cast<long double>(ref<float>(self, 0x94)) - fbits_ld(y); // 0051097D (ST0, not stored)
     if (!far_area) {
-        const double r = static_cast<double>(flt(radius)) + k_radius_slack_0073dfec; // 00510985..89
-        const double sum = dy * dy + sq(dxf);                                       // 0051098F..9B
+        const long double r = fbits_ld(radius) + k_radius_slack_0073dfec;          // 00510985..89
+        const long double sum = dy * dy + dxf * dxf;                                // 0051098F..9B
         if (!(r * r < sum)) return k_complete_00745dc0;                             // 0051099D..AC (test ah,5; jp)
     }
     front(self, 0x12, group_of(node), {2, addr(&x), 2, addr(&y), 2, addr(&z), 3, addr(&area_id), 3, addr(&target),
                                        1, addr(&run), 2, addr(&radius), 1, addr(&flag)}); // 005109B6..A0D
     Vector to = vec(x, y, z);                                                       // [esp+38]
     Vector zero = vec(0, 0, 0);                                                     // [esp+2C]
-    w5_creature_add_move_to_point_action_to_front_004f8a50(self, nullptr, group_of(node), &to, area_id, target, run,
-        flt(radius), 0.0f, 0, 0, 0, 0, 0, 0, &zero, 0, 0, flag);                    // 00510A12..80
+    move_front_bits(self, group_of(node), &to, area_id, target, run,
+        radius, 0u, 0, 0, 0, 0, 0, 0, &zero, 0, 0, flag);                    // 00510A12..80
     kotor_fastcall_004eb5a0(self, nullptr, group_of(node));                          // 00510A85..8E
     return k_complete_00745dc0;
 }
@@ -290,12 +300,12 @@ U __fastcall w5_action_check_move_to_object_005101a0(void* self, void*, void* no
         if (area == nullptr) return k_failed_00745dc4;                              // 005102A5
     }
     if (area != recovered_object_area_004cb120(self, nullptr) ||                     // 005102AB..B4
-        w5_creature_get_is_in_use_range_004f6000(self, nullptr, id, 0.0f, 0) == 0) { // 005102B6..C8
+        in_use_range_bits(self, id, 0u, 0) == 0) { // 005102B6..C8
         front(self, 2, group_of(node), {3, addr(&id), 1, addr(&run)});              // 005102CE..19
         const U area_id = at<U>(area, 0x120);                                       // 005102F0
         Vector zero = vec(0, 0, 0);                                                 // [esp+28]
-        w5_creature_add_move_to_point_action_to_front_004f8a50(self, nullptr, group_of(node), &pos, area_id, id, run,
-            range, 0.0f, 0, 0, 0, 0, 0, 0, &zero, 0, 0, 0);                         // 0051031E..6D
+        move_front_bits(self, group_of(node), &pos, area_id, id, run,
+            ubits(range), 0u, 0, 0, 0, 0, 0, 0, &zero, 0, 0, 0);                         // 0051031E..6D
         kotor_fastcall_004eb5a0(self, nullptr, group_of(node));                      // 00510372..7B
     }
     w5_creature_set_lock_orientation_to_object_004f34a0(self, nullptr, k_object_invalid, 0); // 00510380..8A
@@ -326,18 +336,20 @@ U __fastcall w5_action_check_move_to_object_radius_005103b0(void* self, void*, v
     if (area == nullptr) return k_failed_00745dc4;                                  // 00510509..0B
     if (recovered_object_area_004cb120(self, nullptr) == nullptr) return k_failed_00745dc4; // 00510511..1A
     const bool far_area = area != recovered_object_area_004cb120(self, nullptr);    // 00510521..3A (EBP)
-    const double slack = static_cast<double>(flt(radius)) - use_range;              // 00510528..2C
-    float extra;                                                                    // node argument slot [E+4]
-    if (k_zero_0073d700 > slack) extra = 0.0f;                                      // 00510532..52 (test ah,41h)
-    else extra = static_cast<float>(slack);                                         // 00510554
-    const U in_range = w5_creature_get_is_in_use_range_004f6000(self, nullptr, id, extra, flag); // 00510558..69
+    const long double slack = fbits_ld(radius) - use_range;                         // 00510528..2C
+    U extra = 0;                                                                    // node argument slot [E+4]
+    if (!(k_zero_0073d700 > slack)) {                                               // 00510532..46 (fcomp ; test ah,41h ; jne)
+        const float e = static_cast<float>(slack);                                  // 00510554 fstp dword [esp+50h]
+        std::memcpy(&extra, &e, 4);
+    }                                                                               // else 0051054A mov dword [esp+50h], 0
+    const U in_range = in_use_range_bits(self, id, extra, flag);                    // 00510558..69 (mov eax, [esp+50h] ; push)
     if (!far_area && in_range != 0) return k_complete_00745dc0;                     // 0051056E..75
     front(self, 0x11, group_of(node), {3, addr(&id), 1, addr(&run), 2, addr(&range_bits), 2, addr(&radius),
                                        1, addr(&p48), 1, addr(&flag), 1, addr(&p50)}); // 0051057B..D5
     const U area_id = at<U>(area, 0x120);                                           // 0051059A
     Vector zero = vec(0, 0, 0);                                                     // [esp+3C]
-    w5_creature_add_move_to_point_action_to_front_004f8a50(self, nullptr, group_of(node), &pos, area_id, id, run,
-        flt(range_bits), 0.0f, 0, 0, 0, 0, 0, 1, &zero, 0, 0, p50);                 // 005105DA..32
+    move_front_bits(self, group_of(node), &pos, area_id, id, run,
+        range_bits, 0u, 0, 0, 0, 0, 0, 1, &zero, 0, 0, p50);                 // 005105DA..32
     kotor_fastcall_004eb5a0(self, nullptr, group_of(node));                          // 00510637..40
     return k_complete_00745dc0;
 }
@@ -346,18 +358,18 @@ U __fastcall w5_action_check_move_to_object_radius_005103b0(void* self, void*, v
 // 00510AB0 CSWSCreature::AIActionCheckMoveToFollowRadius: +38..40 point, +44 area id, +50 radius
 U __fastcall w5_action_check_move_to_follow_radius_00510ab0(void* self, void*, void* node) {
     if (blocked(self)) return k_failed_00745dc4;                                   // 00510AB4..E2
-    const float x = at<float>(node, 0x38), y = at<float>(node, 0x3c), z = at<float>(node, 0x40);
+    const U x = at<U>(node, 0x38), y = at<U>(node, 0x3c), z = at<U>(node, 0x40);    // [esp+1C], [8], [C] (mov)
     const U area_id = at<U>(node, 0x44);                                            // EDI
-    const float radius = at<float>(node, 0x50);                                     // [esp+10]
+    const U radius = at<U>(node, 0x50);                                             // [esp+10] (mov)
     void* obj = nullptr;                                                            // [esp+14]
     if (!lookup(area_id, &obj)) return k_failed_00745dc4;                           // 00510B03..2B
     const bool far_area = other_area(self, area_id);                                // 00510B31..5B
-    const double dx = static_cast<double>(at<float>(self, 0x90)) - x;               // 00510B5D..63
-    const double dy = static_cast<double>(at<float>(self, 0x94)) - y;               // 00510B67..6D
-    const double dz = static_cast<double>(at<float>(self, 0x98)) - z;               // 00510B71..77
+    const long double dx = static_cast<long double>(ref<float>(self, 0x90)) - fbits_ld(x); // 00510B5D..63
+    const long double dy = static_cast<long double>(ref<float>(self, 0x94)) - fbits_ld(y); // 00510B67..6D
+    const long double dz = static_cast<long double>(ref<float>(self, 0x98)) - fbits_ld(z); // 00510B71..77
     if (!far_area) {
-        const double r = static_cast<double>(radius) + k_radius_slack_0073dfec;     // 00510B7D..81
-        const double sum = (dz * dz + dy * dy) + dx * dx;                           // 00510B87..95
+        const long double r = fbits_ld(radius) + k_radius_slack_0073dfec;          // 00510B7D..81
+        const long double sum = (dz * dz + dy * dy) + dx * dx;                      // 00510B87..95
         if (!(r * r < sum)) return k_complete_00745dc0;                             // 00510B97..AA (test ah,5; jp)
     }
     const U client_id = kotor_fastcall_005eda50(client_app(), nullptr, at<U>(self, 4)); // 00510BB4..C0
@@ -391,7 +403,7 @@ U __fastcall w5_action_force_follow_object_005132e0(void* self, void*, void* nod
     U id = at<U>(node, 0x38), run = at<U>(node, 0x3c);                              // [esp+18], [esp+14]
     Vector offset = vec(at<U>(node, 0x40), at<U>(node, 0x44), 0);                   // [esp+28]: z = EAX (0 after the checks)
     U mode = at<U>(node, 0x48);                                                     // [esp+C]
-    const float last_x = at<float>(node, 0x4c), last_y = at<float>(node, 0x50);     // [esp+40], [esp+44]
+    const U last_x = at<U>(node, 0x4c), last_y = at<U>(node, 0x50);                 // [esp+40], [esp+44] (mov)
     U wait = 0x3e800000u;                                                           // [esp+10] 0.25
     void* obj = kotor_fastcall_004ae750(server_app(), nullptr, id);                 // 00513340..66 (EBX)
     if (obj == nullptr || as_object(obj) == nullptr) return k_failed_00745dc4;     // 00513368..79
@@ -403,16 +415,18 @@ U __fastcall w5_action_force_follow_object_005132e0(void* self, void*, void* nod
     Vector goal;                                                                    // [esp+34]
     vector_sum_00423b90(&goal, &leader, r);                                         // 005133C8..D3
     const U area_id = at<U>(as_object(obj), 0x8c);                                  // 005133D8..EA
-    Vector d;                                                                       // [esp+1C] (reused)
-    d.x = static_cast<float>(static_cast<double>(goal.x) - last_x);                 // 005133E2..F6
-    d.y = static_cast<float>(static_cast<double>(goal.y) - last_y);                 // 005133FA..02
-    d.z = goal.z;                                                                   // 00513406..0A
-    const double sum = (sq(d.z) + sq(d.y)) + sq(d.x);
+    // [esp+1C] d (reused): x, y one float conversion each; z an fld/fstp copy of goal.z (00513406..0A: quiets a
+    // signalling NaN). The sum (00513414..36 / 00513558..72, re-read from d) is formed once, before GetFollowRange.
+    const float dx = static_cast<float>(static_cast<long double>(goal.x) - fbits_ld(last_x)); // 005133E2..F6
+    const float dy = static_cast<float>(static_cast<long double>(goal.y) - fbits_ld(last_y)); // 005133FA..02
+    const float dz = static_cast<float>(static_cast<long double>(goal.z));          // 00513406..0A
+    const long double sum = (static_cast<long double>(dz) * dz + static_cast<long double>(dy) * dy) +
+                            static_cast<long double>(dx) * dx;
     if (mode == 0) {                                                                // 005133F0..0E
         mode = 1;                                                                   // 00513418
         if (!(sum <= k_follow_close_00747c48)) mode = 0;                            // 00513414..45 (test ah,41h; jnp)
     } else {
-        const double range = kotor_fastcall_00634a70(kotor_fastcall_005ed8b0(client_app(), nullptr), nullptr); // 00513544..53
+        const long double range = kotor_fastcall_00634a70(kotor_fastcall_005ed8b0(client_app(), nullptr), nullptr); // 00513544..53
         if (!(range * range <= sum)) return k_in_progress_00745dbc;                 // 00513558..81 (test ah,41h; jp)
         mode = 0;                                                                   // 005135D9
     }
@@ -420,8 +434,8 @@ U __fastcall w5_action_force_follow_object_005132e0(void* self, void*, void* nod
                                2, addr(&goal.x), 2, addr(&goal.y)});                // 0051344D..9F / 00513587..E1
     if (at<U>(self, 0xa88) != 0) wait = 0x3ccccccdu;                                // 005134A4..AE 0.025
     front(self, 0x1e, group_of(node), {2, addr(&wait)});                            // 005134B6..F8
-    w5_creature_add_move_to_point_action_to_front_004f8a50(self, nullptr, group_of(node), &goal, area_id, id, run,
-        0.0f, 0.0f, 0, 0, 0, 0, 0, 0, &offset, 0, 0, 0);                            // 005134FD..31 (a13 = &offset)
+    move_front_bits(self, group_of(node), &goal, area_id, id, run,
+        0u, 0u, 0, 0, 0, 0, 0, 0, &offset, 0, 0, 0);                            // 005134FD..31 (a13 = &offset)
     return k_complete_00745dc0;
 }
 
@@ -432,19 +446,19 @@ U __fastcall w5_action_check_move_away_from_location_0050fd50(void* self, void*,
     void* area = recovered_object_area_004cb120(self, nullptr);                     // 0050FDA3 (EBX)
     Vector from_loc = vec(at<U>(node, 0x38), at<U>(node, 0x3c), at<U>(node, 0x40)); // [esp+18]
     U run = at<U>(node, 0x44), dist = at<U>(node, 0x48), p4c = at<U>(node, 0x4c);   // [10], [C], [14]
-    const double dx = static_cast<double>(at<float>(self, 0x90)) - from_loc.x;      // 0050FDA8..BC
-    const double dy = static_cast<double>(at<float>(self, 0x94)) - from_loc.y;      // 0050FDC3..DC
-    const double dz = static_cast<double>(at<float>(self, 0x98)) - from_loc.z;      // 0050FDE0..EA
-    const double sum = (dz * dz + dy * dy) + dx * dx;                               // 0050FDEE..07
-    if (!(sq(flt(dist)) >= sum)) return k_complete_00745dc0;                        // 0050FE09..1E (test ah,1: C0)
+    const long double dx = static_cast<long double>(ref<float>(self, 0x90)) - from_loc.x; // 0050FDA8..BC
+    const long double dy = static_cast<long double>(ref<float>(self, 0x94)) - from_loc.y; // 0050FDC3..DC
+    const long double dz = static_cast<long double>(ref<float>(self, 0x98)) - from_loc.z; // 0050FDE0..EA
+    const long double sum = (dz * dz + dy * dy) + dx * dx;                          // 0050FDEE..07
+    if (!(fbits_ld(dist) * fbits_ld(dist) >= sum)) return k_complete_00745dc0;      // 0050FE09..1E (fcompp ; test ah,1)
     Vector away;                                                                    // [esp+30]
-    kotor_fastcall_004bdf80(area, nullptr, &away, vat(self, 0x90), &from_loc, flt(dist), pathfind(self)); // 0050FE24..39
+    away_bits(area, &away, vat(self, 0x90), &from_loc, dist, pathfind(self));       // 0050FE24..39 (push edx: the bits)
     const U area_id = at<U>(area, 0x120);                                           // 0050FE5A
     front(self, 0x2c, group_of(node), {2, addr(&from_loc.x), 2, addr(&from_loc.y), 2, addr(&from_loc.z),
                                        1, addr(&run), 2, addr(&dist), 1, addr(&p4c)}); // 0050FE3E..95
     Vector zero = vec(0, 0, 0);                                                     // [esp+24]
-    w5_creature_add_move_to_point_action_to_front_004f8a50(self, nullptr, group_of(node), &away, area_id,
-        k_object_invalid, run, 0.0f, 0.0f, 0, 0, 0, 0, 1, 0, &zero, 0, 0, 0);       // 0050FE9A..E6
+    move_front_bits(self, group_of(node), &away, area_id,
+        k_object_invalid, run, 0u, 0u, 0, 0, 0, 0, 1, 0, &zero, 0, 0, 0);       // 0050FE9A..E6
     kotor_fastcall_004eb5a0(self, nullptr, group_of(node));                          // 0050FEEB..F4
     return k_complete_00745dc0;
 }
@@ -481,22 +495,24 @@ U __fastcall w5_action_check_move_away_from_object_005155b0(void* self, void*, v
         }
         if (cancelled != 1) break;                                                  // 005156D8..DB
     }
-    Vector d;                                                                       // [esp+38]
-    d.x = static_cast<float>(static_cast<double>(at<float>(self, 0x90)) - target.x); // 005156DD..EF
-    d.y = static_cast<float>(static_cast<double>(at<float>(self, 0x94)) - target.y); // 005156F3..FA
-    d.z = static_cast<float>(static_cast<double>(at<float>(self, 0x98)) - target.z); // 005156FE..05
+    // [esp+38] d: one float conversion each; the sum (0051571A..34, re-read from d after GetArea) is formed before
+    // the call from the same floats.
+    const float dx = static_cast<float>(static_cast<long double>(ref<float>(self, 0x90)) - target.x); // 005156DD..EF
+    const float dy = static_cast<float>(static_cast<long double>(ref<float>(self, 0x94)) - target.y); // 005156F3..FA
+    const float dz = static_cast<float>(static_cast<long double>(ref<float>(self, 0x98)) - target.z); // 005156FE..05
+    const long double sum = (static_cast<long double>(dz) * dz + static_cast<long double>(dy) * dy) +
+                            static_cast<long double>(dx) * dx;
     if (obj_area != recovered_object_area_004cb120(self, nullptr)) return k_complete_00745dc0; // 00515709..14
-    const double sum = (sq(d.z) + sq(d.y)) + sq(d.x);                               // 0051571A..34
-    if (!(sq(flt(dist)) >= sum)) return k_complete_00745dc0;                        // 00515736..45 (test ah,1)
+    if (!(fbits_ld(dist) * fbits_ld(dist) >= sum)) return k_complete_00745dc0;      // 00515736..45 (fcompp ; test ah,1)
     if (retries < 1) return k_complete_00745dc0;                                    // 0051574B..52 (jl)
     retries = retries - 1;                                                          // 0051575E..60
     Vector away;                                                                    // [esp+44]
-    kotor_fastcall_004bdf80(obj_area, nullptr, &away, vat(self, 0x90), &target, flt(dist), pathfind(self)); // 00515758..76
+    away_bits(obj_area, &away, vat(self, 0x90), &target, dist, pathfind(self));    // 00515758..76 (push eax: the bits)
     const U area_id = at<U>(obj_area, 0x120);                                       // 00515793
     front(self, 3, group_of(node), {3, addr(&id), 1, addr(&run), 2, addr(&dist), 1, addr(&retries)}); // 0051577B..D3
     Vector zero = vec(0, 0, 0);                                                     // [esp+38]
-    w5_creature_add_move_to_point_action_to_front_004f8a50(self, nullptr, group_of(node), &away, area_id,
-        k_object_invalid, run, 0.0f, 0.0f, 0, 0, 0, 0, 1, 0, &zero, 0, 0, 0);       // 005157D8..2D
+    move_front_bits(self, group_of(node), &away, area_id,
+        k_object_invalid, run, 0u, 0u, 0, 0, 0, 0, 1, 0, &zero, 0, 0, 0);       // 005157D8..2D
     kotor_fastcall_004eb5a0(self, nullptr, group_of(node));                          // 00515832..3B
     return k_complete_00745dc0;
 }
@@ -528,14 +544,19 @@ U __fastcall w5_action_check_inter_area_pathfinding_0050ff20(void* self, void*, 
         if (recovered_object_area_004cb120(self, nullptr) != nullptr) {             // 00510051..5A
             kotor_fastcall_004c3ea0(server_get_module_004ae6b0(server_app(), nullptr), nullptr, pathfind(self)); // 00510060..77
             void* pf = pathfind(self);
-            const float gx = at<float>(pf, 0x5c), gy = at<float>(pf, 0x60);         // 00510082..88
-            const U gz = at<U>(pf, 0x64), goal_area = at<U>(pf, 0x70);
-            at<float>(pf, 0x5c) = static_cast<float>(static_cast<double>(gx) - k_five_00743264); // 0051008F..A0
-            at<U>(pathfind(self), 0xa4) = 1;                                        // 005100A3..B7
-            Vector goal = {gx, gy, flt(gz)};                                        // [esp+28]
+            // L3 t1 a2: x and y are loaded with fld (00510082/88) and stored into the goal with fstp (005100B3/C5:
+            // an x87 copy); z and the area by mov.
+            const long double gx = ref<float>(pf, 0x5c), gy = ref<float>(pf, 0x60);  // 00510082..88
+            const U gz = ref<U>(pf, 0x64), goal_area = ref<U>(pf, 0x70);
+            ref<float>(pf, 0x5c) = static_cast<float>(gx - k_five_00743264);        // 0051008F..A0
+            ref<U>(pathfind(self), 0xa4) = 1;                                       // 005100A3..B7
+            Vector goal;                                                            // [esp+28]
+            goal.x = static_cast<float>(gx);                                        // 005100B3 fstp dword [esp+28h]
+            goal.y = static_cast<float>(gy);                                        // 005100C5 fstp dword [esp+2Ch]
+            std::memcpy(&goal.z, &gz, 4);                                           // 005100E8 (mov)
             Vector zero = vec(0, 0, 0);                                             // [esp+1C]
-            w5_creature_add_move_to_point_action_to_front_004f8a50(self, nullptr, group_of(node), &goal, goal_area,
-                k_object_invalid, 0, 0.0f, 0.0f, 0, 0, 0, 0, 0, 0, &zero, 0, 0, 0); // 0051008B..10C
+            move_front_bits(self, group_of(node), &goal, goal_area,
+                k_object_invalid, 0, 0u, 0u, 0, 0, 0, 0, 0, 0, &zero, 0, 0, 0); // 0051008B..10C
             kotor_fastcall_004eb5a0(self, nullptr, group_of(node));                  // 00510111..1A
         }
     }
@@ -582,9 +603,10 @@ U __fastcall w5_action_jump_to_point_0051d600(void* self, void*, void* node) {
     if (at<U>(self, 4) == party_leader_server_id()) {                               // 0051D7D4..F9
         Vector facing = vec(face_x, face_y, 0);                                     // [esp+34]
         Vector n;                                                                   // [esp+40]
+        // Yaw (ST0) ; fstp dword (the argument slot); the bits are passed on (the float is not held across calls).
         const float yaw = static_cast<float>(kotor_m15a_yaw_004aa0f0(normalize_004ab180(&n, &facing))); // 0051D811..33
-        recovered_reset_all_follow_data_00637890(kotor_fastcall_005ed8b0(client_app(), nullptr), nullptr, &safe_pos,
-                                                 yaw, 1);                           // 0051D83A..48
+        const U yaw_bits = stored_word(&yaw);
+        reset_follow_bits(kotor_fastcall_005ed8b0(client_app(), nullptr), &safe_pos, yaw_bits, 1); // 0051D83A..48
     }
     void* player = kotor_fastcall_004b2a50(server_internal(), nullptr, at<U>(self, 4)); // 0051D84D..64 (EBP)
     if (area == recovered_object_area_004cb120(self, nullptr)) {                    // 0051D862..6D
@@ -628,9 +650,12 @@ U __fastcall w5_action_jump_to_object_0051d110(void* self, void*, void* node) {
         kotor_cdecl_00423bc0(&back, vat(door, 0x90), door_face);                    // 0051D2A9..B6
         Vector point;                                                               // [esp+70]
         copy_vector(&target, w5_door_get_nearest_action_point_00589240(door, nullptr, &point, &back, 1)); // 0051D2BE..E7
-        const float twice = static_cast<float>(static_cast<double>(at<float>(pathfind(self), 8)) + at<float>(pathfind(self), 8)); // 0051D2EB..FF
+        void* pf = pathfind(self);
+        const Vector* door_face2 = vat(door, 0x9c);
+        const long double half = ref<float>(pf, 8);                                 // 0051D2EB fld [pf+8]
+        const float twice = static_cast<float>(half + half);                        // 0051D2F4..FF fadd st,st ; fstp [esp]
         Vector scaled;                                                              // [esp+88]
-        const Vector* s = float_times_vector_00437a60(&scaled, twice, vat(door, 0x9c)); // 0051D2F6..03
+        const Vector* s = float_times_vector_00437a60(&scaled, twice, door_face2);   // 0051D2F6..03
         Vector moved;                                                               // [esp+64]
         copy_vector(&target, kotor_cdecl_00423bc0(&moved, &target, s));             // 0051D308..36
         Vector to_door;                                                             // [esp+7C]
@@ -669,9 +694,10 @@ U __fastcall w5_action_jump_to_object_0051d110(void* self, void*, void* node) {
     if (at<U>(self, 4) == party_leader_server_id()) {                               // 0051D43F..5B
         Vector facing = vec(face_x, face_y, 0);                                     // [esp+3C]
         Vector n;                                                                   // [esp+48]
+        // Yaw (ST0) ; fstp dword (the argument slot); the bits are passed on (the float is not held across calls).
         const float yaw = static_cast<float>(kotor_m15a_yaw_004aa0f0(normalize_004ab180(&n, &facing))); // 0051D473..95
-        recovered_reset_all_follow_data_00637890(kotor_fastcall_005ed8b0(client_app(), nullptr), nullptr, &safe_pos,
-                                                 yaw, 1);                           // 0051D49C..AA
+        const U yaw_bits = stored_word(&yaw);
+        reset_follow_bits(kotor_fastcall_005ed8b0(client_app(), nullptr), &safe_pos, yaw_bits, 1); // 0051D49C..AA
     }
     void* player = kotor_fastcall_004b2a50(server_internal(), nullptr, at<U>(self, 4)); // 0051D4AF..C4 (EDI)
     w1x_object_set_orientation_004cd170(self, nullptr, &orientation);              // 0051D4C6..CD
@@ -715,31 +741,47 @@ U __fastcall w5_action_random_walk_00515ac0(void* self, void*, void* node) {
     }
     front(self, 0x2d, group_of(node), {2, addr(&cx), 2, addr(&cy), 2, addr(&cz), 3, addr(&area_id)}); // 00515B4E..B0
     front(self, 0x1e, group_of(node), {2, addr(&wait)});                            // 00515BB5..FA
+    // L3 t1 a2 (writing rule): one float conversion per original store; a stored float read again after a call is
+    // kept as its widened value (so no stored float is reloaded from its slot); the floats the original copies with
+    // mov stay bits.
     Vector goal = vec(cx, cy, 0);                                                   // [esp+24]
     Vector dir = vec(0, 0, 0);                                                      // [esp+14]
     I tries = crt_rand_006fc447() % 15;                                             // 00515C2F..3C ([esp+20])
-    goal.x = static_cast<float>((static_cast<double>(tries) - k_seven_00747c6c) + goal.x); // 00515C40..4E
+    const float gx = static_cast<float>((static_cast<long double>(tries) - k_seven_00747c6c) + fbits_ld(cx)); // 00515C40..4E
+    goal.x = gx;
     tries = crt_rand_006fc447() % 15;                                               // 00515C52..63
-    goal.y = static_cast<float>((static_cast<double>(tries) - k_seven_00747c6c) + goal.y); // 00515C67..7A
-    at<U>(&goal, 8) = w1x_area_height_bits_004bc380(area, nullptr, &goal, 1, nullptr); // 00515C5F..85
+    const float gy = static_cast<float>((static_cast<long double>(tries) - k_seven_00747c6c) + fbits_ld(cy)); // 00515C67..7A
+    goal.y = gy;
+    const long double lgx = gx, lgy = gy;
+    // 00515C80..85: ComputeHeight (ST0) ; fstp dword [esp+2Ch]. The c65 provider of this name returns the float bits.
+    const U gz = w1x_area_height_bits_004bc380(area, nullptr, &goal, 1, nullptr);
+    std::memcpy(&goal.z, &gz, 4);
     Vector* here = vat(self, 0x90);                                                 // EDI
-    dir.x = static_cast<float>(static_cast<double>(goal.x) - here->x);              // 00515C89..A1
-    dir.y = static_cast<float>(static_cast<double>(goal.y) - here->y);              // 00515C9D..BC
-    dir.z = static_cast<float>(static_cast<double>(goal.z) - here->z);              // 00515CB1..C8
-    float length = static_cast<float>(kotor_cdecl_004ab100(&dir));                  // 00515CCC..D1 ([esp+10])
-    const float full_length = length;                                               // [esp+68]
-    const float min_length = static_cast<float>(static_cast<double>(length) * k_three_tenths_00746d38); // 00515CD5..F0 [esp+64]
+    const float dx = static_cast<float>(lgx - here->x);                             // 00515C89..95 (mov to [esp+14h])
+    const float dy = static_cast<float>(lgy - here->y);                             // 00515C9D..AD
+    const float dz = static_cast<float>(fbits_ld(gz) - here->z);                    // 00515CB1..C0
+    dir.x = dx; dir.y = dy; dir.z = dz;
+    // 00515CCC..F0: vector_magnitude ; fstp [esp+10h] (length) ; full_length = its bits ; min_length = (float)(length*0.3).
+    const float length_f = static_cast<float>(kotor_cdecl_004ab100(&dir));
+    long double length = length_f;
+    U full_length;                                                                  // [esp+68]
+    std::memcpy(&full_length, &length_f, 4);
+    const long double min_length = static_cast<float>(length * k_three_tenths_00746d38); // 00515CF0 [esp+64]
     Vector n;                                                                       // [esp+84]
-    copy_vector(&dir, normalize_004ab180(&n, &dir));                                // 00515CE3..19
-    at<void*>(area, 0x1ac) = pathfind(self);                                        // 00515D06..13
+    const Vector* nd = normalize_004ab180(&n, &dir);                                // 00515CE3..F8
+    copy_vector(&dir, nd);                                                          // 00515CFD..19 (mov)
+    long double ldx = nd->x, ldy = nd->y, ldz = nd->z;                              // dir as read at 00515E55..65
+    ref<void*>(area, 0x1ac) = pathfind(self);                                       // 00515D06..13
     tries = 0x14;                                                                   // 00515D48
-    float radius = at<float>(pathfind(self), 4);                                    // [esp+3C]
-    U band = at<U>(pathfind(self), 0x14);                                           // [esp+40]
-    I hit = w5_area_test_direct_line_004bcb70(area, nullptr, here, &goal, &radius, flt(band), 0, nullptr); // 00515D1D..50
+    float radius;                                                                   // [esp+3C] (mov copy of [pf+4])
+    std::memcpy(&radius, static_cast<unsigned char*>(pathfind(self)) + 4, 4);
+    U band = ref<U>(pathfind(self), 0x14);                                          // [esp+40]
+    I hit = direct_line_bits(area, here, &goal, &radius, band, 0, nullptr);         // 00515D1D..50
     while (hit != 1) {                                                              // 00515D55..58
-        const double shorter = static_cast<double>(length) * k_three_quarters_0073e31c; // 00515D60..64
-        length = static_cast<float>(shorter);                                       // 00515D6A (fst)
-        if (shorter < static_cast<double>(min_length)) {                            // 00515D6E..77 (unrounded ST0; test ah,5; jp)
+        // 00515D60..77: fld length ; fmul 0.75 ; fst length ; fcomp min_length (the unrounded product) ; test ah,5 ; jp.
+        const long double shorter = length * k_three_quarters_0073e31c;
+        length = static_cast<float>(shorter);
+        if (shorter < min_length) {
             (void)crt_rand_006fc447();                                              // 00515D7D (result unused)
             Vector up = vec(0, 0, 0x3f800000u);                                     // [esp+78]
             Vector c1;                                                              // [esp+90]
@@ -747,27 +789,31 @@ U __fastcall w5_action_random_walk_00515ac0(void* self, void*, void* node) {
             Vector up2 = vec(0, 0, 0x3f800000u);                                    // [esp+58]
             Vector c2;                                                              // [esp+9C]
             const Vector* r = vector_cross_004ab210(&c2, &up2, &dir);                // 00515DCA..F8
-            dir.x = static_cast<float>(-static_cast<double>(r->x));                 // 00515DFD..10
-            dir.y = static_cast<float>(-static_cast<double>(r->y));                 // 00515E14..25
-            dir.z = static_cast<float>(-static_cast<double>(r->z));                 // 00515E29..3E
-            length = full_length;                                                   // 00515E37..51
+            const float rx = static_cast<float>(-static_cast<long double>(r->x));   // 00515E03..0C fld ; fchs ; fstp (mov to dir.x)
+            const float ry = static_cast<float>(-static_cast<long double>(r->y));   // 00515E18..25
+            const float rz = static_cast<float>(-static_cast<long double>(r->z));   // 00515E29..3E
+            dir.x = rx; dir.y = ry; dir.z = rz;
+            ldx = rx; ldy = ry; ldz = rz;
+            length = fbits_ld(full_length);                                         // 00515E37..51 (mov)
         }
-        const double ax = static_cast<double>(dir.x) * length, ay = static_cast<double>(dir.y) * length; // 00515E55..61
-        const float az = static_cast<float>(static_cast<double>(dir.z) * length);   // 00515E65..6D
-        goal.x = static_cast<float>(ax + here->x);                                  // 00515E74..80
-        goal.y = static_cast<float>(ay + here->y);                                  // 00515E84..99
-        goal.z = static_cast<float>(static_cast<double>(az) + here->z);             // 00515E8B..AF
-        if (static_cast<double>(length) < k_one_0073d764) return k_complete_00745dc0; // 00515EA1..B8 (test ah,5; jnp)
+        // 00515E55..B8: ax, ay on the stack; az fstp [esp+8Ch]; the goal stored fstp then mov; fld length ; fcomp 1.0.
+        const long double ax = ldx * length, ay = ldy * length;
+        const long double az = static_cast<float>(ldz * length);                    // 00515E65..6D
+        const float nx = static_cast<float>(ax + here->x);                         // 00515E74..78
+        const float ny = static_cast<float>(ay + here->y);                         // 00515E84..87
+        const float nz = static_cast<float>(az + here->z);                         // 00515E8B..9D
+        goal.x = nx; goal.y = ny; goal.z = nz;
+        if (length < k_one_0073d764) return k_complete_00745dc0;                    // 00515EA1..B8 (test ah,5; jnp)
         const I before = tries;                                                     // 00515EBE..CB
         tries = tries - 1;
         if (before < 0) return k_complete_00745dc0;
-        radius = at<float>(pathfind(self), 4);                                      // 00515ED1..DC
-        band = at<U>(pathfind(self), 0x14);
-        hit = w5_area_test_direct_line_004bcb70(area, nullptr, here, &goal, &radius, flt(band), 0, nullptr); // 00515EDA..F9
+        std::memcpy(&radius, static_cast<unsigned char*>(pathfind(self)) + 4, 4);    // 00515ED1..DC
+        band = ref<U>(pathfind(self), 0x14);
+        hit = direct_line_bits(area, here, &goal, &radius, band, 0, nullptr);       // 00515EDA..F9
     }
     Vector zero = vec(0, 0, 0);                                                     // [esp+54]
-    w5_creature_add_move_to_point_action_to_front_004f8a50(self, nullptr, group_of(node), &goal, area_id,
-        k_object_invalid, 0, 0.0f, 0.0f, 0, 0, 0, 0, 1, 0, &zero, 0, 0, 0);         // 00515F07..5D
+    move_front_bits(self, group_of(node), &goal, area_id,
+        k_object_invalid, 0, 0u, 0u, 0, 0, 0, 0, 1, 0, &zero, 0, 0, 0);         // 00515F07..5D
     return k_complete_00745dc0;
 }
 
@@ -839,48 +885,60 @@ void __fastcall kotor_fastcall_004c63f0(void* module, void*, U id) {
 }
 
 // 005CEC90 CPathfindInformation::ComputeStepTolerance: +6C = ftol(+68 / +4), +68 itself when +4 == 0
+// L3 t1 a2: writing rule; the __ftol2 call (005CECA9, int64 truncation of ST0, low dword) is (U)(long long) (was MS
+// inline asm with a CALL to unresolved_ftol2_006fae8c).
 void __fastcall kotor_fastcall_005cec90(void* pf, void*) {
-    double v = at<float>(pf, 0x68);                                                 // 005CEC9C
-    if (!(at<float>(pf, 4) == k_zero_0073d700)) v = v / at<float>(pf, 4);           // 005CEC93..A6 (test ah,44h; jnp)
-    at<U>(pf, 0x6c) = ftol2(v);                                                     // 005CECA9..AE
+    long double v = ref<float>(pf, 0x68);                                           // 005CEC9C
+    if (!(ref<float>(pf, 4) == k_zero_0073d700)) v = v / ref<float>(pf, 4);         // 005CEC93..A6 (test ah,44h; jnp: NaN divides)
+    ref<U>(pf, 0x6c) = static_cast<U>(static_cast<long long>(v));                   // 005CECA9..AE
 }
 
 // 0058D8C0 CSWSTrigger::GetClosestPointWithinTrigger(point, out): 5x5 grid over the trigger bounds, nearest
 // (in xy, z of the probe = 0) grid point inside the trigger
 U __fastcall kotor_fastcall_0058d8c0(void* trigger, void*, const Vector* p, Vector* out) {
+    // L3 t1 a2 (writing rule). The loop variables x [esp+8] and y [esp+4] are floats the original keeps in memory
+    // (fst of the unrounded sum, compared unrounded); they are held as their bits (copied into the probe and the best
+    // point with integer moves, 0058D9BB..CD / 0058D9FB..05) and widened at each use.
     float min_x, min_y, max_x, max_y;                                               // [esp+4], [C], [14], [10]
-    float best = flt(0x51ba43b7u);                                                  // [esp+28] 1e11
+    long double best = fbits_ld(0x51ba43b7u);                                       // [esp+28] mov 1e11
     U best_x = 0, best_y = 0, best_z = 0;                                           // EBP, [esp+44], [esp+48]
     recovered_trigger_bounds_0058cc60(trigger, nullptr, &min_x, &min_y, &max_x, &max_y); // 0058D8C4..FC
-    float x = min_x;                                                                // [esp+8]
-    const float step_x = static_cast<float>((static_cast<double>(max_x) - min_x) * k_fifth_0073e46c); // 0058D901..17
-    const float step_y = static_cast<float>((static_cast<double>(max_y) - min_y) * k_fifth_0073e46c); // 0058D91B..29
+    U x;                                                                            // [esp+8]
+    std::memcpy(&x, &min_x, 4);                                                     // 0058D909..0D (mov)
+    const long double step_x = static_cast<float>((static_cast<long double>(max_x) - min_x) * k_fifth_0073e46c); // 0058D901..17
+    const long double step_y = static_cast<float>((static_cast<long double>(max_y) - min_y) * k_fifth_0073e46c); // 0058D91B..29
     if (!(min_x <= max_x)) return 0;                                                // 0058D92D..3A (test ah,41h; jp)
-    double x_sum;                                                                   // unrounded x87 x + step (compared, 0058DA30)
-    do {
-        float y = min_y;                                                            // 0058D950..5C [esp+4]
-        if (min_y <= max_y) {                                                       // 0058D958..65
-            const double dx = static_cast<double>(p->x) - x;                        // 0058D96F..75
-            const double dz = p->z;                                                 // 0058D981 (probe z = 0)
-            const float dz2 = static_cast<float>(dz * dz);                          // 0058D98C..92 [esp+30]
-            const float dx2 = static_cast<float>(dx * dx);                          // 0058D998..9C [esp+2C]
-            double y_sum;                                                           // unrounded x87 y + step (compared, 0058DA19)
-            do {
-                const double dy = static_cast<double>(p->y) - y;                    // 0058D9B0..B7
-                Vector probe = {x, y, 0.0f};                                        // [esp+58]
-                const double d = (dy * dy + dx2) + dz2;                             // 0058D9BD..D5
-                const float df = static_cast<float>(d);                             // 0058D9D9 [esp+34]
-                if (d < static_cast<double>(best) &&                                // 0058D9DD..E6 (test ah,5; jp)
+    for (;;) {
+        U y;                                                                        // [esp+4] (over min_x)
+        std::memcpy(&y, &min_y, 4);                                                 // 0058D954..5C (mov)
+        if (min_y <= max_y) {                                                       // 0058D950..65 (test ah,41h; jp)
+            const long double dx = static_cast<long double>(p->x) - fbits_ld(x);    // 0058D96F..75
+            const long double dz = p->z;                                            // 0058D981 (probe z = 0)
+            const long double dz2 = static_cast<float>(dz * dz);                    // 0058D98C..92 [esp+30]
+            const long double dx2 = static_cast<float>(dx * dx);                    // 0058D998..9C [esp+2C]
+            for (;;) {
+                const long double dy = static_cast<long double>(p->y) - fbits_ld(y); // 0058D9B0..B7
+                Vector probe;                                                       // [esp+58] (mov copies)
+                std::memcpy(&probe.x, &x, 4); std::memcpy(&probe.y, &y, 4); probe.z = 0.0f;
+                const long double d = (dy * dy + dx2) + dz2;                        // 0058D9BD..D5
+                const float df = static_cast<float>(d);                             // 0058D9D9 fst [esp+34]
+                if (d < best &&                                                     // 0058D9DD..E6 (test ah,5; jp)
                     w5_trigger_in_trigger_0058ce40(trigger, nullptr, &probe) == 1) { // 0058D9E8..F9
-                    best_x = bits(x); best_y = bits(y); best_z = 0; best = df;      // 0058D9FB..09
+                    best_x = x; best_y = y; best_z = 0; best = df;                  // 0058D9FB..09
                 }
-                y_sum = static_cast<double>(y) + step_y;               // 0058DA0D (fst keeps the unrounded sum)
-                y = static_cast<float>(y_sum);                                      // 0058DA15
-            } while (y_sum <= max_y);                                                  // 0058DA19..22 (test ah,41h; jnp)
+                // 0058DA0D..22: fld y ; fadd step_y ; fst y ; fcomp max_y (the unrounded sum) ; test ah,41h ; jnp.
+                const long double y_sum = fbits_ld(y) + step_y;
+                const float yf = static_cast<float>(y_sum);
+                std::memcpy(&y, &yf, 4);
+                if (!(y_sum <= max_y)) break;
+            }
         }
-        x_sum = static_cast<double>(x) + step_x;                       // 0058DA24 (fst keeps the unrounded sum)
-        x = static_cast<float>(x_sum);                                              // 0058DA2C
-    } while (x_sum <= max_x);                                                          // 0058DA30..39
+        // 0058DA24..39: the same for x.
+        const long double x_sum = fbits_ld(x) + step_x;
+        const float xf = static_cast<float>(x_sum);
+        std::memcpy(&x, &xf, 4);
+        if (!(x_sum <= max_x)) break;
+    }
     if (!(best < k_far_0074325c)) return 0;                                         // 0058DA3F..51 (test ah,5; jp)
     *out = vec(best_x, best_y, best_z);                                             // 0058DA53..64
     return 1;
@@ -896,102 +954,139 @@ void __fastcall kotor_fastcall_004c3ea0(void* module, void*, void* pf) {
     if (!lookup(*at<U*>(pf, 0xb0), &obj)) return;                                   // 004C3ED0..FC
     const U type = at<U8>(obj, 8);
     Vector goal;                                                                    // [esp+8]
-    Vector from = vec(at<U>(pf, 0x74), at<U>(pf, 0x78), at<U>(pf, 0x7c));           // [esp+14] (fld/fstp copies)
+    // [esp+14] from: x by mov (004C3F20/7D), y and z by fld/fstp dword (004C3F17..2F / 004C3F72..8C: an x87 copy,
+    // which quiets a signalling NaN). L3 t1 a2: was three integer copies.
+    Vector from;
+    std::memcpy(&from.x, static_cast<unsigned char*>(pf) + 0x74, 4);
     void* target;                                                                   // EDI
     if (type == k_type_trigger_00746636) {                                          // 004C3F02..10
         target = as_trigger(obj);                                                   // 004C3F12..14
+        from.y = static_cast<float>(static_cast<long double>(ref<float>(pf, 0x78))); // 004C3F17..23
+        from.z = static_cast<float>(static_cast<long double>(ref<float>(pf, 0x7c))); // 004C3F27..2F
         goal = vec(0, 0, 0);                                                        // 004C3F3A..4A
         if (kotor_fastcall_0058d8c0(target, nullptr, &from, &goal) != 1) return;     // 004C3F52..5A
-        at<U>(pf, 0x68) = 0;                                                        // 004C3F5C
+        ref<U>(pf, 0x68) = 0;                                                       // 004C3F5C
     } else if (type == k_type_door_00746639) {                                      // 004C3F65..6B
         target = as_door(obj);                                                      // 004C3F6D..6F
+        from.y = static_cast<float>(static_cast<long double>(ref<float>(pf, 0x78))); // 004C3F72..80
+        from.z = static_cast<float>(static_cast<long double>(ref<float>(pf, 0x7c))); // 004C3F84..8C
         w5_door_get_nearest_action_point_00589240(target, nullptr, &goal, &from, 1); // 004C3F72..97
-        at<float>(pf, 0x68) = static_cast<float>(static_cast<double>(at<float>(pf, 4)) + k_half_0073e9ac); // 004C3F9C..A5
+        ref<float>(pf, 0x68) = static_cast<float>(static_cast<long double>(ref<float>(pf, 4)) + k_half_0073e9ac); // 004C3F9C..A5
     } else {
         return;                                                                     // 004C3F6B
     }
-    at<float>(pf, 0x60) = goal.y; at<float>(pf, 0x64) = goal.z; at<float>(pf, 0x5c) = goal.x; // 004C3FA8..BC
+    // 004C3FA8..BC: the goal words by mov.
+    std::memcpy(static_cast<unsigned char*>(pf) + 0x60, &goal.y, 4);
+    std::memcpy(static_cast<unsigned char*>(pf) + 0x64, &goal.z, 4);
+    std::memcpy(static_cast<unsigned char*>(pf) + 0x5c, &goal.x, 4);
     kotor_fastcall_005cec90(pf, nullptr);                                            // 004C3FBF
     at<U>(pf, 0x70) = at<U>(pf, 0x80);                                              // 004C3FC4..CA
     at<U>(pf, 0x30) = at<U>(target, 4);                                             // 004C3FCD..D0
 }
 
-// 004BDF80 CSWSArea::ComputeAwayVector(out, from, away-from point, distance, pathfind): best of 8 directions
+// 004BDF80 CSWSArea::ComputeAwayVector(out, from, away-from point, distance, pathfind): best of 8 directions (RET 14h).
+// L3 t1 (2026-10-24): PLAN-v3 writing rule. Values the original keeps on the x87 stack are long double (including the
+// two-live 004BE05A fcos of the extended angle, held across the fsin of the stored float angle); every original
+// fstp/fst dword is an explicit (float); comparisons from the fnstsw masks; cos/sin are the kotor_math.h long double
+// overloads (L1). Replaces the x87-trig a2 helper x87trig_004be041. A float the original stores and reads again after
+// a call is held as a long double initialised from its (float) conversion.
 Vector* __fastcall kotor_fastcall_004bdf80(void* area, void*, Vector* out, const Vector* from, const Vector* target,
                                            float dist, void* pf) {
+    // L3 t1 a2: each original fstp/fst dword is one (float) conversion; a float that the original stores into the
+    // candidate [esp+10h] and reads back after a call is stored into `cand` and kept as its widened value (lx/ly/lz),
+    // so no stored float is reloaded from its slot (one round trip per original store).
     Vector d;                                                                       // [esp+44]
-    d.x = static_cast<float>(static_cast<double>(target->x) - from->x);             // 004BDF8F..A5
-    d.y = static_cast<float>(static_cast<double>(target->y) - from->y);             // 004BDFAA..C0
+    const float dx = static_cast<float>(static_cast<long double>(target->x) - from->x); // 004BDF8F..A5 fstp [esp+44h]
+    const float dy = static_cast<float>(static_cast<long double>(target->y) - from->y); // 004BDFAA..C0 fstp [esp+48h]
+    d.x = dx;
+    d.y = dy;
     d.z = 0.0f;                                                                     // 004BDFB8
-    const double tz = static_cast<double>(target->z) - from->z;                     // 004BDFC4..C7
-    const float base_sq = static_cast<float>((sq(d.y) + sq(d.x)) + tz * tz);        // 004BDFCA..E2 [esp+58]
+    // 004BDFC4..E2: tz kept on the stack; [esp+58] = (float)((d.y*d.y + d.x*d.x) + tz*tz).
+    const long double tz = static_cast<long double>(target->z) - from->z;
+    const long double base_sq = static_cast<float>((static_cast<long double>(dy) * dy + static_cast<long double>(dx) * dx) + tz * tz);
     Vector n;                                                                       // [esp+80]
     normalize_004ab180(&n, &d);                                                     // 004BDFE8
-    const float dist_sq = static_cast<float>(static_cast<double>(dist) * dist);     // 004BDFED..0C [esp+80]
-    const float dz = static_cast<float>(static_cast<double>(dist) * k_zero_0073d700); // 004BE013..31 [esp+28]
-    float best = 0.0f;                                                              // [esp+40]
+    const long double dist_sq = static_cast<float>(static_cast<long double>(dist) * dist); // 004BDFED..0C [esp+78]
+    const long double dz = static_cast<float>(static_cast<long double>(dist) * k_zero_0073d700); // 004BE013..31 [esp+28]
+    long double best = 0.0f;                                                        // 004BE025 mov [esp+40h], 0
     Vector result;                                                                  // [esp+34]
     copy_vector(&result, from);                                                     // 004BE002..39
     Vector cand = vec(0, 0, 0);                                                     // [esp+10] (written before every read)
     for (I i = 0; i < 8; ++i) {                                                     // 004BE041..6A
-        float angle_f, rx;                                                          // [esp+20] [esp+A4]
-        double ry;                                                                  // ST0 after 004BE091
-        x87trig_004be041(&i, &n.x, &angle_f, &rx, &ry);                             // 004BE041..91 (x87)
-        const double rxd = static_cast<double>(rx) * dist;                          // 004BE093..9A
-        const float rxd_f = static_cast<float>(rxd);                                // 004BE0A1 [esp+2C]
-        const float ryd_f = static_cast<float>(ry * dist);                          // 004BE0A5..AE [esp+20]
-        cand.x = static_cast<float>(rxd + from->x);                                 // 004BE0B6..BF
-        cand.y = static_cast<float>(static_cast<double>(ryd_f) + from->y);          // 004BE0C3..CD
-        cand.z = static_cast<float>(static_cast<double>(dz) + from->z);             // 004BE0D1..DB
+        // 004BE041..091: a = i * [00741C3C] ; fst [esp+20h] ; fcos (extended a) ; fsin ((float)a) ;
+        // rx = (float)(n.y*s + n.x*c) [esp+A4h] ; ry = n.y*c - n.x*s stays on the stack.
+        const long double a = static_cast<long double>(i) * k_quarter_pi_00741c3c;
+        const float angle_f = static_cast<float>(a);
+        const long double c = cos(a);
+        const long double s = sin(static_cast<long double>(angle_f));
+        const float rx = static_cast<float>(static_cast<long double>(n.y) * s + static_cast<long double>(n.x) * c);
+        const long double ry = static_cast<long double>(n.y) * c - static_cast<long double>(n.x) * s;
+        const long double rxd = static_cast<long double>(rx) * dist;                // 004BE093..9A
+        const long double rxd_f = static_cast<float>(rxd);                          // 004BE0A1 fst [esp+2Ch]
+        const long double ryd_f = static_cast<float>(ry * dist);                    // 004BE0A5..AE fstp [esp+20h]
+        float cx = static_cast<float>(rxd + from->x);                               // 004BE0B6..BF [esp+10h]
+        float cy = static_cast<float>(ryd_f + from->y);                             // 004BE0C3..CD [esp+14h]
+        float cz = static_cast<float>(dz + from->z);                                // 004BE0D1..DB [esp+18h]
         {
-            const double ex = static_cast<double>(target->x) - cand.x, ey = static_cast<double>(target->y) - cand.y;
-            const double ez = static_cast<double>(target->z) - cand.z;              // 004BE0DF..F0
-            if ((ez * ez + ey * ey) + ex * ex < static_cast<double>(dist_sq)) {     // 004BE0F4..13 (test ah,5; jp)
-                cand.x = static_cast<float>(static_cast<double>(rxd_f) + cand.x);   // 004BE115..34
-                cand.y = static_cast<float>(static_cast<double>(ryd_f) + cand.y);   // 004BE138..4F
-                cand.z = static_cast<float>(static_cast<double>(dz) + cand.z);      // 004BE140..5B
+            const long double ex = static_cast<long double>(target->x) - cx;        // 004BE0DF..F0
+            const long double ey = static_cast<long double>(target->y) - cy;
+            const long double ez = static_cast<long double>(target->z) - cz;
+            if ((ez * ez + ey * ey) + ex * ex < dist_sq) {                          // 004BE0F4..13 (fcomp ; test 5 ; jp)
+                cx = static_cast<float>(rxd_f + cx);                                // 004BE115..2C fstp [esp+6Ch] (mov to +10h)
+                cy = static_cast<float>(ryd_f + cy);                                // 004BE138..3C fstp [esp+70h] (mov to +14h)
+                cz = static_cast<float>(dz + cz);                                   // 004BE140..53 fstp [esp+74h] (mov to +18h)
             }
         }
         if (pf == nullptr) continue;                                                // 004BE15F..61
-        at<void*>(area, 0x1ac) = pf;                                                // 004BE167..6D
-        float radius = at<float>(pf, 4);                                            // [esp+64]
-        bool score = w5_area_test_direct_line_004bcb70(area, nullptr, from, &cand, &radius, at<float>(pf, 0x14), 1,
-                                                       nullptr) == 1;               // 004BE16B..99
+        cand.x = cx;
+        cand.y = cy;
+        cand.z = cz;
+        long double lx = cx, ly = cy, lz = cz;
+        ref<void*>(area, 0x1ac) = pf;                                               // 004BE167..6D
+        float radius;                                                               // [esp+64] (mov copy of [pf+4])
+        std::memcpy(&radius, static_cast<const char*>(pf) + 4, sizeof radius);
+        bool score = direct_line_bits(area, from, &cand, &radius, ref<U>(pf, 0x14), 1, nullptr) == 1; // 004BE16B..99
         if (!score) {
             U found = 0;                                                            // EBX
-            float scale = 1.0f;                                                     // [esp+1C]
+            long double scale = 1.0f;                                               // [esp+1C] (mov 3F800000h)
             for (;;) {
                 if (found != 0) break;                                              // 004BE1B0..B2
-                const float sx = static_cast<float>(static_cast<double>(rxd_f) * scale); // 004BE1B8..D4 [esp+C8]
-                const double sy = static_cast<double>(ryd_f) * scale;               // 004BE1DB
-                const double sz = static_cast<double>(dz) * scale;                  // 004BE1DF..E6
-                cand.x = static_cast<float>(static_cast<double>(sx) + from->x);     // 004BE1EA..FD
-                cand.y = static_cast<float>(sy + from->y);                          // 004BE1FB..20
-                cand.z = static_cast<float>(sz + from->z);                          // 004BE21D..33
-                float radius2 = at<float>(pf, 4);                                   // [esp+84]
-                if (w5_area_test_direct_line_004bcb70(area, nullptr, from, &cand, &radius2, at<float>(pf, 0x14), 1,
-                                                      nullptr) == 1)                // 004BE1CD..4D
+                const long double sx = static_cast<float>(rxd_f * scale);           // 004BE1B8..D4 fstp [esp+C8h]
+                const long double sy = ryd_f * scale;                               // 004BE1DB
+                const long double sz = dz * scale;                                  // 004BE1DF..E6
+                const float nx = static_cast<float>(sx + from->x);                  // 004BE1EA..F3 fstp [esp+5Ch] (mov to +10h)
+                const float ny = static_cast<float>(sy + from->y);                  // 004BE1FB..15 fstp [esp+60h] (mov to +14h)
+                const float nz = static_cast<float>(sz + from->z);                  // 004BE21D..2B fstp [esp+64h] (mov to +18h)
+                cand.x = nx;
+                cand.y = ny;
+                cand.z = nz;
+                lx = nx; ly = ny; lz = nz;
+                float radius2;                                                      // [esp+84] (mov copy of [pf+4])
+                std::memcpy(&radius2, static_cast<const char*>(pf) + 4, sizeof radius2);
+                if (direct_line_bits(area, from, &cand, &radius2, ref<U>(pf, 0x14), 1, nullptr) == 1) // 004BE1CD..4D
                     found = 1;                                                      // 004BE24F
-                scale = static_cast<float>(static_cast<double>(scale) * k_half_0073e9ac); // 004BE251..5B
-                if (!(static_cast<double>(scale) >= k_min_scale_0073dff4)) break;   // 004BE25F..6A (test ah,1; je)
+                // 004BE251..6A: fld [esp+1Ch] ; fmul 0.5 ; fst [esp+1Ch] ; fcomp 0.005 (the unrounded product) ; test 1 ; je.
+                const long double half = scale * k_half_0073e9ac;
+                scale = static_cast<float>(half);
+                if (!(half >= k_min_scale_0073dff4)) break;
             }
             if (found != 1) continue;                                               // 004BE270..73
-            const double ex = static_cast<double>(target->x) - cand.x, ey = static_cast<double>(target->y) - cand.y;
-            const double ez = static_cast<double>(target->z) - cand.z;              // 004BE279..8A
-            const double back = (ez * ez + ey * ey) + ex * ex;                      // 004BE28E..9C
-            if (!(back >= static_cast<double>(base_sq))) continue;                  // 004BE29E..AC (test bl,ah: C0)
+            const long double ex = static_cast<long double>(target->x) - lx;        // 004BE279..8A
+            const long double ey = static_cast<long double>(target->y) - ly;
+            const long double ez = static_cast<long double>(target->z) - lz;
+            if (!((ez * ez + ey * ey) + ex * ex >= base_sq)) continue;              // 004BE28E..AC (test bl,ah: C0)
             score = true;
         }
         Vector diff;                                                                // [esp+98]
-        diff.x = static_cast<float>(static_cast<double>(cand.x) - target->x);       // 004BE2B6..C5
-        diff.y = static_cast<float>(static_cast<double>(cand.y) - target->y);       // 004BE2CC..D3
-        diff.z = static_cast<float>(static_cast<double>(cand.z) - target->z);       // 004BE2DA..E1
-        double m = kotor_cdecl_004ab100(&diff);                                     // 004BE2E8
+        diff.x = static_cast<float>(lx - target->x);                                // 004BE2B6..C5
+        diff.y = static_cast<float>(ly - target->y);                                // 004BE2CC..D3
+        diff.z = static_cast<float>(lz - target->z);                                // 004BE2DA..E1
+        long double m = kotor_cdecl_004ab100(&diff);                                // 004BE2E8 vector_magnitude (ST0)
         if (i == 4) m = m * k_w256_007455d4;                                        // 004BE2F0..F5
         else if (i == 3 || i == 5) m = m * k_w64_007455cc;                          // 004BE2FD..05 / 004BE32B
         else if (i == 2 || i == 6) m = m * k_w16_007455d0;                          // 004BE307..0F / 004BE323
         else if (i == 1 || i == 7) m = m * k_w4_0073f404;                           // 004BE311..1B
-        if (!(m >= static_cast<double>(best))) continue;                          // 004BE331..3A (test ah,1)
+        if (!(m >= best)) continue;                                                 // 004BE331..3A (fcom ; test 1 ; jne)
         best = static_cast<float>(m);                                               // 004BE340
         result = cand;                                                              // 004BE33C..54
     }

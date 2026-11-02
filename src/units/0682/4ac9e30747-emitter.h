@@ -24,7 +24,10 @@
 //    renderer_gl_imports_gen.h; glEnable/glDisable = M40 adapters already declared by scene3d.h).
 #include "6c81d8874d-scene3d.h"          // lane-3d-render canonical 3D header (Cells, Vector/Quaternion, typed Scene/Gob tables)
 #include "7ee14b5ec3-model_vtables.hpp"  // lane-3d-model typed Part / PartEmitter tables (D39)
-#include <cmath>
+// Math declarations for the long-double build of particle_motion: <cmath> -> kotor_math.h (an LD
+// unit may not see <cmath>, whose long double overloads would define ?floor@@... etc.). std::floor -> the C floor
+// declared by kotor_math.h (L1), exact as before.
+#include "../../math/kotor_math.h"
 #include <climits>
 #include <cstdio>
 #include <cstring>
@@ -89,11 +92,11 @@ inline I fistp_nearest(double v) {
     if (!(v >= -2147483648.5 && v < 2147483647.5)) {
         if (!(v == v)) return INT_MIN;
     }
-    double r = std::floor(v);
+    double r = floor(v);
     const double d = v - r;
-    if (d > 0.5 || (d == 0.5 && std::floor(r * 0.5) * 2.0 != r)) r += 1.0;   // ties to even (r odd -> up)
+    if (d > 0.5 || (d == 0.5 && floor(r * 0.5) * 2.0 != r)) r += 1.0;   // ties to even (r odd -> up)
     if (!(r >= -2147483648.0 && r <= 2147483647.0)) return INT_MIN;
-    return static_cast<I>(r);
+    return static_cast<I>(static_cast<long long>(r));   // L3 (kmlint FA3, rule 6.4): r is integral and in int range, exact
 }
 // _ftol2 006FAE8C (chop; fistp qword -> EAX = low dword of the 64-bit truncation; NaN/|v|>=2^63 -> 0).
 inline I ftol2(double v) {

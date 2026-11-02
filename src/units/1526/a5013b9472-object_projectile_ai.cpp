@@ -28,6 +28,8 @@
 #include <cstdio>
 #include <cstring>
 #include <type_traits>
+// L3 MATH-TRIG-CPP t1 (2026-10-24): LD unit (recipe + -mno-sse -ffp-model=strict -mlong-double-80); math declarations.
+#include "../../math/kotor_math.h"
 
 using U = std::uint32_t;
 using B = std::uint8_t;
@@ -100,8 +102,6 @@ S* string_at(void* p, U n) { return static_cast<S*>(at(p, n)); }
 menu_resources::Ref* ref_at(void* p, U n) { return static_cast<menu_resources::Ref*>(at(p, n)); }
 U word_of(const void* p) { return static_cast<U>(reinterpret_cast<std::uintptr_t>(p)); }
 void* pointer_of(U word) { return reinterpret_cast<void*>(static_cast<std::uintptr_t>(word)); }
-U float_bits(float f) { U u; std::memcpy(&u, &f, sizeof u); return u; }
-float literal_float(const unsigned char* bytes) { float f; std::memcpy(&f, bytes, sizeof f); return f; }
 const KotorM15ObjectMethods_007516c8* object_table(const void* o) { return rd<const KotorM15ObjectMethods_007516c8*>(o, 0); }
 const aurora_model::GobVTable* gob_table(const void* g) { return rd<const aurora_model::GobVTable*>(g, 0); }
 const KotorM15eAnimBaseVtbl* model_table(const void* m) { return rd<const KotorM15eAnimBaseVtbl*>(m, 0); }
@@ -122,63 +122,17 @@ struct ServerCreatureSlots {
 static_assert(offsetof(ServerCreatureSlots, s094) == 0x94, "+94");
 
 // ---- minimal x87 helpers
-// fld qword; fsin; fstp dword (006D7CDF..006D7CE1; the argument is the double-exact ST0 of 006D7CCE..006D7CD9)
-__declspec(noinline) float x87_sin_to_float(double angle) {
-    float result;
-    __asm {
-        fld angle
-        fsin
-        fstp result
-    }
-    return result;
-}
-// fld qword; fcos; fstp dword (006D7D07..006D7D14)
-__declspec(noinline) float x87_cos_to_float(double angle) {
-    float result;
-    __asm {
-        fld angle
-        fcos
-        fstp result
-    }
-    return result;
-}
-// 0060D9C5..0060D9E2 / 0060D9FB..0060DA11: ((nz*cz) + (ny*cy)) + (nx*cx), dword operands, x87 NaN selection.
-// Under PC53 the value is double-exact (float products are exact; the sums round to 53 bits).
-__declspec(noinline) double x87_facing_dot(const float* unit, const float* facing) {
-    double result;
-    __asm {
-        mov eax, unit
-        mov edx, facing
-        fld dword ptr [eax + 8]
-        fmul dword ptr [edx + 8]
-        fld dword ptr [eax + 4]
-        fmul dword ptr [edx + 4]
-        faddp st(1), st
-        fld dword ptr [eax]
-        fmul dword ptr [edx]
-        faddp st(1), st
-        fstp result
-    }
-    return result;
-}
-// fld dword [esp+1Ch] (0060DA17): the 006FC0E0 operand as the caller's ST0
-__declspec(noinline) void x87_load_float(const float* source, crt_x87::Extended* st0) {
-    __asm {
-        mov eax, source
-        fld dword ptr [eax]
-        mov eax, st0
-        fstp tbyte ptr [eax]
-    }
-}
-// fstp dword [esp+1Ch] (0060DA20): the 006FC0E0 result
-__declspec(noinline) float x87_store_float(const crt_x87::Extended* st0) {
-    float result;
-    __asm {
-        mov eax, st0
-        fld tbyte ptr [eax]
-        fstp result
-    }
-    return result;
+// L3 t1 (2026-10-24): 006D7BC0 AIUpdate (ai_body) is plain C++ in the PLAN-v3 writing rule; this unit is an LD unit.
+// The inline-asm helpers x87_sin_to_float / x87_cos_to_float (006D7CDF / 006D7D07) are replaced by sin / cos of
+// kotor_math.h. Literal reads are __forceinline (the recipe is /Ob0) so each is a direct memory operand.
+__forceinline float l3lit(const unsigned char* bytes) { float v; std::memcpy(&v, bytes, sizeof v); return v; }
+// L3 t1 a2: the a1 inline-asm helpers x87_facing_dot / x87_load_float / x87_store_float and the t11b acos replica
+// crt_acos_x87_006fc0e0 are replaced by long double C++ and the L1 acos(long double) (METHOD.md); raw float words are
+// moved as U (the original's integer moves) with these force-inlined forms.
+__forceinline float float_of_word(U u) { float f; std::memcpy(&f, &u, sizeof f); return f; }
+__forceinline U word_of_float(float f) { U u; std::memcpy(&u, &f, sizeof u); return u; }
+__forceinline Vector vector_of_words(U x, U y, U z) {
+    Vector v; std::memcpy(&v.x, &x, 4); std::memcpy(&v.y, &y, 4); std::memcpy(&v.z, &z, 4); return v;
 }
 
 // 0060D790..0060D812: row = CExoString(number) (005E5BC0) through a temporary destroyed after the assignment
@@ -199,6 +153,39 @@ void assign_number(S* row, std::int32_t number) {
 }
 
 
+// 006D7CC4..006D7D14: Yaw(&o) (ST0) ; fsub dword [0073E40C] (90) ; fmul dword [007415F8] (deg->rad) ; fsin ;
+// fstp dword [esp+24h] (copied to facing y) ; Yaw(&o) again ; the same with fcos ; fstp dword [esp+40h] (facing x).
+__declspec(noinline) void facing_from_yaw(const Quaternion* orientation, float* facing) {
+    facing[1] = static_cast<float>(sin((static_cast<long double>(quaternion_yaw_004a9f40(orientation)) - l3lit(object_projectile_literal_0073e40c))
+                                       * l3lit(object_projectile_literal_007415f8)));
+    facing[0] = static_cast<float>(cos((static_cast<long double>(quaternion_yaw_004a9f40(orientation)) - l3lit(object_projectile_literal_0073e40c))
+                                       * l3lit(object_projectile_literal_007415f8)));
+}
+// 006D8185..006D81A1: Pitch (ST0) ; fstp dword [esp] ; Yaw (ST0) ; fstp dword [esp] (the two arguments) ;
+// YawPitchRoll(&turn, yaw, pitch, 0). The pitch crosses the Yaw call as a long double (exact), then each is stored
+// to float once as the original does.
+__declspec(noinline) const Quaternion* turn_of(const void* orientation_vector, Quaternion* turn) {
+    const long double pitch = kotor_m15a_pitch_004aa130(orientation_vector);
+    const long double yaw = kotor_m15a_yaw_004aa0f0(orientation_vector);
+    return yaw_pitch_roll_004acac0(turn, static_cast<float>(yaw), static_cast<float>(pitch), 0.0f);
+}
+// 0060D9B2..0060DA20 (0060D730): the unit direction (copied with mov), the facing dot ((z*z' + y*y') + x*x',
+// registers), clamped above at 1.0 (fcomp [0073D764] ; test ah,41h ; jne: greater -> mov 3F800000h, else the sum
+// again ; fstp dword [esp+1Ch]), then fld ; call 006FC0E0 (_CIacos, 80-bit; the L1 acos) ; fstp dword [esp+1Ch].
+// Returns the stored angle word.
+__declspec(noinline) U facing_angle(const Vector* n, const float* facing) {
+    float unit_words[3];                                                                     // [esp+10h] / [esp+14h] / [esp+18h] (mov)
+    std::memcpy(unit_words, n, sizeof unit_words);
+    const long double dot = (static_cast<long double>(unit_words[2]) * facing[2] + static_cast<long double>(unit_words[1]) * facing[1]) +
+                            static_cast<long double>(unit_words[0]) * facing[0];
+    const long double cosine = dot > l3lit(object_projectile_literal_0073d764) ? 1.0f : static_cast<float>(dot);
+    return word_of_float(static_cast<float>(acos(cosine)));
+}
+// 0060DAD7..0060DAE9: fld dword [esp+1Ch] ; fchs ; fstp dword (the angle argument), as a word.
+__declspec(noinline) U negated_word(U angle) {
+    return word_of_float(static_cast<float>(-static_cast<long double>(float_of_word(angle))));
+}
+
 enum class Exit { store_time, self_deleted };
 
 // 006D7C72..006D82D0: everything between the motion update and the final time store. Returns whether the object
@@ -213,11 +200,9 @@ Exit ai_body(void* self) {
         Quaternion orientation;                                                              // [esp+58h]
         (void)camera_table(camera)->s024_camera_get_orientation(camera, nullptr, word_of(&orientation));   // 006D7CB2..006D7CB9 (0045C470)
         if (rd<U>(self, 0x168) != 0) {                                                       // 006D7CBC..006D7CC2
-            const double ninety = literal_float(object_projectile_literal_0073e40c);         // fsub dword [0073E40C]
-            const double radians = literal_float(object_projectile_literal_007415f8);        // fmul dword [007415F8]
-            const float y = x87_sin_to_float((quaternion_yaw_004a9f40(&orientation) - ninety) * radians);   // 006D7CC4..006D7CE1
-            const float x = x87_cos_to_float((quaternion_yaw_004a9f40(&orientation) - ninety) * radians);   // 006D7CE5..006D7D14
-            const float facing[3] = {x, y, 0.0f};                                            // [esp+3Ch] (z = 0 at 006D7D0C)
+            float facing[3];                                                                 // [esp+3Ch] (z = 0 at 006D7D0C)
+            facing_from_yaw(&orientation, facing);                                           // 006D7CC4..006D7D14
+            facing[2] = 0.0f;
             object_table(self)->s088_set_orientation(self, nullptr, facing);                 // 006D7D18
         }
         const U elapsed = rd<U>(self, 0x44), remaining = rd<U>(self, 0x120);                // 006D7D1E..006D7D27
@@ -291,10 +276,16 @@ Exit ai_body(void* self) {
         wr<U>(self, 0x150, 0);                                                               // 006D7F54
     }
     if (gui_load_resref_is_valid_00406030(ref_at(self, 0x140), nullptr) == 1) {              // 006D7F5A..006D7F69
-        Vector where;                                                                        // 006D7F72..006D7F87 (three DWORD copies)
-        std::memcpy(&where, at(self, 0x24), sizeof where);
-        (void)kotor_m15_sound_play_3d_one_shot_005d5e10(kotor_cell_sound_007a39ec, nullptr, at(self, 0x140), where,
-                                                         0.0f, 0xeu, 0u, 0u, 0.0f, 0.0f);   // 006D7F6B..006D7F91
+        // 006D7F6B..006D7F91: push 0 x4 ; push 0Eh ; push 0 ; sub esp,0Ch ; three integer DWORD copies of the position
+        // [self+24h] ; push ref. L3 t1 a2: the by-value Vector is passed as the three words the original moves (a
+        // float-typed Vector argument is copied with fld/fstp dword by clang: a 4-byte spill, S1, and a quieted sNaN),
+        // through a word-typed pointer to the same declared function (the same stack image: 11 argument DWORDs).
+        using Play3dWords = U (__fastcall*)(void*, void*, void*, U, U, U, U, U, U, U, U, U);
+        const Play3dWords play = reinterpret_cast<Play3dWords>(reinterpret_cast<std::uintptr_t>(&kotor_m15_sound_play_3d_one_shot_005d5e10));
+        U where[3];
+        std::memcpy(where, at(self, 0x24), sizeof where);                                    // 006D7F78..006D7F87 (mov)
+        (void)play(kotor_cell_sound_007a39ec, nullptr, at(self, 0x140), where[0], where[1], where[2],
+                   0u, 0xeu, 0u, 0u, 0u, 0u);                                                // 006D7F6B..006D7F91 (0.0f words)
     }
     if (rd<U>(self, 0x154) == 0) {                                                           // 006D7F96..006D7F9C
         wr<U>(self, 0x120, 0);                                                               // 006D82D0
@@ -349,10 +340,8 @@ Exit ai_body(void* self) {
         }                                                                                    // ~shield 006D815E..006D8167 (state 0)
         (void)gob_table(own)->s098_gob_get_part_position(as_gob(own), nullptr, word_of(object_projectile_literal_00740c00),
                                                          word_of(&root_position), word_of(&root_orientation));   // 006D816C..006D817F
-        const float pitch = kotor_m15a_pitch_004aa130(at(self, 0x30));                       // 006D8185..006D8190
-        const float yaw = kotor_m15a_yaw_004aa0f0(at(self, 0x30));                           // 006D8193..006D8199
         Quaternion turn;                                                                     // [esp+58h]
-        const Quaternion* const q = yaw_pitch_roll_004acac0(&turn, yaw, pitch, 0.0f);       // 006D819C..006D81A1
+        const Quaternion* const q = turn_of(at(self, 0x30), &turn);                          // 006D8185..006D81A1
         root_orientation = *q;                                                               // 006D81A6..006D81BF
         U position_words[3], q_words[4];
         std::memcpy(position_words, &root_position, sizeof position_words);
@@ -436,7 +425,7 @@ U __fastcall object_projectile_0060d730(void* creature, void*, U flag, void* att
         float time = 0.0f;                                                                   // [esp+48h] = 0 (0060D8A6)
         (void)gob_table(slot)->s01c_gob_get_animation(as_gob(slot), nullptr, word_of(object_projectile_literal_00743318),
                                                       word_of(&time), 0u);                   // 0060D896..0060D8AE
-        if (time == literal_float(kLiteral_00740cbc)) {                                      // 0060D8B1..0060D8C0 (ordered equal)
+        if (time == l3lit(kLiteral_00740cbc)) {                                              // 0060D8B1..0060D8C0 fcomp ; test ah,44h ; jnp (ordered equal)
             (void)gob_table(slot)->s000_gob_destruct_gob(as_gob(slot), nullptr, 1u);          // 0060D8D8..0060D8DE
             wr<U>(creature, 0xfc + 4 * index, 0);                                            // 0060D8E0..0060D8E4
             break;
@@ -453,15 +442,10 @@ U __fastcall object_projectile_0060d730(void* creature, void*, U flag, void* att
     // 0060D9A4..0060DA20: cosine of the hit direction against the creature facing, clamped above at 1.0, then acos.
     Vector unit;                                                                             // [esp+78h]
     const Vector* const n = normalize_004ab180(&unit, direction);                            // 0060D9A4..0060D9AD
-    float unit_words[3];                                                                     // [esp+10h] / [esp+14h] / [esp+18h]
-    std::memcpy(unit_words, n, sizeof unit_words);
     const auto* const facing = static_cast<const float*>(at(creature, 0x30));               // EDI = creature+30h
-    const double dot = x87_facing_dot(unit_words, facing);
-    const float cosine = dot > 1.0 ? 1.0f : static_cast<float>(x87_facing_dot(unit_words, facing));   // 0060D9E4..0060DA13 (fcomp [0073D764])
-    crt_x87::Extended operand, result;
-    x87_load_float(&cosine, &operand);                                                       // 0060DA17
-    crt_acos_x87_006fc0e0(&operand, &result);                                                // 0060DA1B
-    const float angle = x87_store_float(&result);                                            // 0060DA20
+    // The angle is kept as the stored word: the original reloads it with fld only for the negation (0060DAD7) and
+    // moves it as a DWORD otherwise (0060DB7A).
+    const U angle = facing_angle(n, facing);                                                 // 0060D9B2..0060DA20
     void* const app = client();                                                              // 0060DA24..0060DA2C
     const U item_id = object_projectile_0060d070(creature, nullptr, rd<B>(attack, 0x28));    // 0060DA2F..0060DA36
     if (void* const item = kotor_m15_client_get_item_by_id_005ed5a0(app, nullptr, item_id))  // 0060DA3B..0060DA45
@@ -470,23 +454,26 @@ U __fastcall object_projectile_0060d730(void* creature, void*, U flag, void* att
     Vector facing_unit, axis;                                                                // [esp+6Ch] / [esp+84h]
     const Vector* const f = normalize_004ab180(&facing_unit, static_cast<const Vector*>(at(creature, 0x30)));   // 0060DA59..0060DA5F
     const Vector* const cross = vector_cross_004ab210(&axis, direction, f);                  // 0060DA64..0060DA71
-    const float zero = literal_float(object_projectile_literal_0073d700);                    // fld dword [0073D700]
-    const float one = 1.0f;                                                                  // 3F800000h immediates
+    // fld dword [0073D700] ; fcom [cross.z] ; test ah,41h ; jp (0 > z or unordered: second branch). The original then
+    // stores the loaded 0.0 with fst dword into the axis words; here the words are copied (the same bits, mov).
+    const U zero = 0u;                                                                       // the image word at 0073D700 (.rdata 00000000h: 0.0f)
+    const U one = 0x3f800000u;                                                               // 3F800000h immediates (1.0f)
     Quaternion first, second, product, scratch;
     const Quaternion* p;
-    if (cross->z >= zero) {                                                                  // 0060DA7C..0060DA91 (jp: 0 > z or unordered)
-        const Quaternion* const a = quaternion_construct_004ac960(&first, nullptr, Vector{one, zero, zero}, one);    // [esp+F0h] 0060DAD2
-        const Quaternion* const b = quaternion_construct_004ac960(&second, nullptr, Vector{zero, zero, one}, -angle);   // [esp+B0h] 0060DAD7..0060DB02 (fchs)
+    if (l3lit(object_projectile_literal_0073d700) <= cross->z) {                             // 0060DA76..0060DA91
+        const Quaternion* const a = quaternion_construct_004ac960(&first, nullptr, vector_of_words(one, zero, zero), float_of_word(one));    // [esp+F0h] 0060DAD2
+        const float negative = float_of_word(negated_word(angle));                          // 0060DAD7..0060DAE9
+        const Quaternion* const b = quaternion_construct_004ac960(&second, nullptr, vector_of_words(zero, zero, one), negative);   // [esp+B0h] 0060DB02
         p = quaternion_multiply_004a9ac0(&product, b, a);                                    // [esp+90h] 0060DB07..0060DB10
     } else {
-        const Quaternion* const a = quaternion_construct_004ac960(&first, nullptr, Vector{one, zero, zero}, one);    // [esp+A0h] 0060DB75
-        const Quaternion* const b = quaternion_construct_004ac960(&second, nullptr, Vector{zero, zero, one}, angle);   // [esp+C0h] 0060DB7A..0060DBA0
+        const Quaternion* const a = quaternion_construct_004ac960(&first, nullptr, vector_of_words(one, zero, zero), float_of_word(one));    // [esp+A0h] 0060DB75
+        const Quaternion* const b = quaternion_construct_004ac960(&second, nullptr, vector_of_words(zero, zero, one), float_of_word(angle));   // [esp+C0h] 0060DB7A..0060DBA0 (mov)
         p = quaternion_multiply_004a9ac0(&product, b, a);                                    // [esp+E0h] 0060DBA5..0060DBAE
     }
     U q_words[4];
     std::memcpy(q_words, p, sizeof q_words);                                                 // 0060DB15..0060DB2B / 0060DBB3..0060DBC9
     (void)gob_table(gob)->s060_gob_set_orientation(gob, nullptr, word_of(&scratch), q_words[0], q_words[1], q_words[2], q_words[3]);   // 0060DBD3..0060DBD8
-    (void)gob_table(gob)->s018_gob_play_animation(gob, nullptr, word_of(object_projectile_literal_00743318), float_bits(one), 1u, 0u);   // 0060DBDB..0060DBED
+    (void)gob_table(gob)->s018_gob_play_animation(gob, nullptr, word_of(object_projectile_literal_00743318), one, 1u, 0u);   // 0060DBDB..0060DBED
     wr(creature, 0xfc + 4 * index, gob);                                                     // 0060DBF0..0060DBF4
     return 1;                                                                                // ~cell, ~row, ~node 0060DBFB..0060DC2C
 }

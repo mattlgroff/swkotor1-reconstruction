@@ -2,6 +2,10 @@
 #include "32a11cddfd-area_vfx_native.hpp"
 using namespace kotor_w3;
 struct AreaVfxQuaternion { float w,x,y,z; };
+struct V3W { unsigned x,y,z; };   // a Vector3 as its three words: the original passes / copies vectors with `mov` (clang would expand a by-value float struct into fld/fstp dword)
+template<class F,class G> __forceinline F word_form(G* callee) { void* volatile address=reinterpret_cast<void*>(callee); return reinterpret_cast<F>(address); }
+// A float the original stores (fstp dword) to a stack slot and uses again after calls: one volatile store, read back as its word (no 4-byte x87 spill).
+struct StoredFloat { volatile float f; __forceinline unsigned word() const { return *reinterpret_cast<const volatile unsigned*>(&f); } };
 extern "C" {
 AreaVfxQuaternion* __cdecl rotation_arc_004ab630(AreaVfxQuaternion*,Vector3,Vector3);
 double __cdecl quaternion_yaw_004a9f40(const AreaVfxQuaternion*);
@@ -12,48 +16,19 @@ void __fastcall chit_info_destruct_00456b30(void*,void*);
 void* __fastcall area_vfx_hitcheck_list_005ed8c0(void*,void*);
 }
 namespace {
+// a2 (L3 t1): the inline-asm helpers are C++ under the writing rule (register values long double; one (float) per
+// original fst/fstp dword). 00690BCB..00690C2C: direction = player - position, each component stored as a float; the
+// squared length keeps the first x component as the stored float (reloaded, 00690C05) and y / z unrounded (ST0 kept).
 bool player_direction(const Vector3* player,const Vector3* position,Vector3* out) {
-    const float threshold=fbits(0x3727c5ac);
-    unsigned short status;
-    __asm {
-        mov ecx,player
-        mov edx,position
-        mov esi,out
-        fld dword ptr [ecx+8]
-        fsub dword ptr [edx+8]
-        fld dword ptr [ecx+4]
-        fsub dword ptr [edx+4]
-        fld dword ptr [ecx]
-        fsub dword ptr [edx]
-        fstp dword ptr [esi]
-        fst dword ptr [esi+4]
-        fld st(1)
-        fstp dword ptr [esi+8]
-        fld dword ptr [esi]
-        fmul dword ptr [esi]
-        fld st(1)
-        fmul st(2)
-        faddp st(1),st(0)
-        fld st(2)
-        fmul st(3)
-        faddp st(1),st(0)
-        fcomp dword ptr threshold
-        fnstsw ax
-        fstp st(0)
-        mov status,ax
-        fstp st(0)
-    }
-    return (status&0x4100u)==0;
-}
-float yaw_store(const AreaVfxQuaternion* rotation) {
-    float result;
-    __asm {
-        push rotation
-        call quaternion_yaw_004a9f40
-        add esp,4
-        fstp dword ptr result
-    }
-    return result;
+    const long double dz = static_cast<long double>(player->z) - position->z;     // fld [ecx+8] ; fsub [edx+8]
+    const long double dy = static_cast<long double>(player->y) - position->y;     // fld [ecx+4] ; fsub [edx+4]
+    const long double dx = static_cast<long double>(player->x) - position->x;     // fld [ecx] ; fsub [edx]
+    out->x = static_cast<float>(dx);                                              // 00690BE3 fstp dword [out]
+    out->y = static_cast<float>(dy);                                              // 00690BEF fst dword [out+4] (ST0 kept)
+    out->z = static_cast<float>(dz);                                              // 00690BFD fld st(1) ; fstp dword [out+8]
+    const long double sx = static_cast<long double>(out->x);                      // 00690C05 fld dword [out] (the stored x)
+    const long double length2 = (sx * sx + dy * dy) + dz * dz;                    // 00690C0D..00690C1B
+    return length2 > static_cast<long double>(fbits(0x3727c5ac));                 // fcomp [00747504] ; test ah,41h ; jne -> skip
 }
 struct HitLocal {
     unsigned char bytes[0x64];
@@ -76,11 +51,12 @@ extern "C" void __fastcall area_vfx_set_position_00690b00(void* self,void*,const
             if(player_direction(&player_position,position,&direction)) {
                 Vector3 normalized;
                 const Vector3* n=vector_normalized_004ab180(&normalized,&direction);
-                const Vector3 forward{0.0f,1.0f,0.0f};
+                const V3W forward{0u,0x3f800000u,0u};                           // 00690C6D..00690C98 mov dword 0 / 3f800000 / 0
+                V3W direction_words; std::memcpy(&direction_words,n,12);        // 00690C58..00690C67 mov x3
                 AreaVfxQuaternion arc;
-                rotation=*rotation_arc_004ab630(&arc,forward,*n);
+                rotation=*word_form<AreaVfxQuaternion*(__cdecl*)(AreaVfxQuaternion*,V3W,V3W)>(&rotation_arc_004ab630)(&arc,forward,direction_words);
                 AreaVfxQuaternion yaw;
-                rotation=*yaw_pitch_roll_004acac0(&yaw,yaw_store(&rotation),0.0f,0.0f);
+                rotation=*yaw_pitch_roll_004acac0(&yaw,static_cast<float>(quaternion_yaw_004a9f40(&rotation)),0.0f,0.0f); // 00690CCC call Yaw ; 00690CD1 fstp dword [esp] (the yaw argument)
             }
         }
         vslot<U(__fastcall*)(void*,void*,U)>(self,0xa8)(self,nullptr,3);
@@ -93,23 +69,18 @@ extern "C" void __fastcall area_vfx_set_position_00690b00(void* self,void*,const
             Vector3 hit_position{0.0f,0.0f,0.0f};
             st<U>(hit.bytes,0,1);
             st<void*>(hit.bytes,4,area_vfx_hitcheck_list_005ed8c0(client_app(),nullptr));
-            Vector3 start,end;
+            V3W start,end;
             std::memcpy(&start,position,12);std::memcpy(&end,position,12);
-            const float height=10.0f;
-            __asm {
-                mov eax,position
-                fld dword ptr [eax+8]
-                fadd dword ptr height
-                fstp dword ptr start.z
-                fld dword ptr [eax+8]
-                fsub dword ptr height
-                fstp dword ptr end.z
-            }
-            if(vslot<U(__fastcall*)(void*,void*,Vector3,Vector3,Vector3*,void*)>(scene,0x38)(scene,nullptr,start,end,&hit_position,hit.bytes)!=0) {
-                Vector3 normal;std::memcpy(&normal,at(hit.bytes,0x40),12);
-                const Vector3 up{0.0f,0.0f,1.0f};
+            const float height=10.0f;                                      // 007455C8
+            StoredFloat start_z,end_z;
+            start_z.f=static_cast<float>(static_cast<long double>(position->z)+height); // 00690D94..00690DA8: fld [..+8] ; fadd [007455C8] ; fstp dword
+            end_z.f=static_cast<float>(static_cast<long double>(position->z)-height);   // 00690DB5..00690DC9: fld ; fsub [007455C8] ; fstp dword
+            start.z=start_z.word(); end.z=end_z.word();
+            if(vslot<U(__fastcall*)(void*,void*,V3W,V3W,Vector3*,void*)>(scene,0x38)(scene,nullptr,start,end,&hit_position,hit.bytes)!=0) {
+                V3W normal;std::memcpy(&normal,at(hit.bytes,0x40),12);
+                const V3W up{0u,0u,0x3f800000u};                            // 00690E1F..00690E52
                 AreaVfxQuaternion arc,combined;
-                const AreaVfxQuaternion* a=rotation_arc_004ab630(&arc,up,normal);
+                const AreaVfxQuaternion* a=word_form<AreaVfxQuaternion*(__cdecl*)(AreaVfxQuaternion*,V3W,V3W)>(&rotation_arc_004ab630)(&arc,up,normal);
                 rotation=*quaternion_multiply_004a9ac0(&combined,a,&rotation);
             }
         }

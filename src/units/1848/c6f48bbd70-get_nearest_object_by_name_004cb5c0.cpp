@@ -8,23 +8,20 @@
 // 004CB64F is add esi,0x90, not +0x144.
 #include "65b8eb6bac-dialog_target_lookup_contracts.hpp"
 
-#include <emmintrin.h>
+#include "../../math/kotor_math.h"   // L1: long double sqrt (raw fsqrt on the 80-bit register value)
 
 static_assert(sizeof(void*) == 4, "004CB5C0 requires the original x86 pointer ABI");
 
 namespace {
 
-// 004CB755: fsqrt on the x87 stack with the assumed 53-bit precision control,
-// then a dword float store. sqrtsd is the correctly-rounded 53-bit square root
-// and the following float store is identical in that precision domain; it avoids
-// a CRT _sqrt import and any inline-assembly warning-as-error risk. The caller
-// still performs the original ordered compare before this step.
-float sqrt53_to_float(double value) {
-    const __m128d root = _mm_sqrt_sd(_mm_setzero_pd(), _mm_load_sd(&value));
-    double widened = 0.0;
-    _mm_store_sd(&widened, root);
-    return static_cast<float>(widened);
-}
+// a2 (L3 t1): register values are long double; the original keeps `best` as a float in a stack slot
+// ([esp+10h]: stored by fstp dword at 004CB602 / 004CB763, compared by fcom dword at 004CB74A): a volatile
+// StoredFloat, so there is exactly one (float) conversion per original store and no 4-byte x87 spill.
+struct StoredFloat {
+    volatile float f;
+    __forceinline long double value() const { return f; }   // fld / fcom dword [slot]
+};
+__forceinline long double ld_word(dtl::U32 w) { float f; std::memcpy(&f, &w, 4); return f; }   // fld dword
 
 }  // namespace
 
@@ -34,8 +31,9 @@ extern "C" dtl::U32 __fastcall kotor_fastcall_004cb5c0(
 
     // 004CB5D2 / 004CB5DF / 004CB602: sentinel best id, radius!=0 flag, radius^2.
     dtl::U32 best_id = 0x7F000000u;
-    bool radius_nonzero = (radius != 0.0f);
-    float best = radius * radius;
+    bool radius_nonzero = (static_cast<long double>(radius) != 0.0L);   // 004CB5C3..004CB5E6: fld ; fcomp 0 ; test ah,44h (equal -> 0; NaN -> 1)
+    StoredFloat best;
+    best.f = static_cast<float>(static_cast<long double>(radius) * radius);   // 004CB5EA..004CB602: fld ; fmul dword ; fstp dword [esp+10h]
 
     // 004CB5F7 / 004CB5EE / 004CB5FF / 004CB606: area-out slot, app/server read,
     // object array, then [this+0x8C].
@@ -110,27 +108,21 @@ extern "C" dtl::U32 __fastcall kotor_fastcall_004cb5c0(
                     // 004CB718..004CB746: dx/dy/dz and (dz^2+dy^2)+dx^2 in
                     // exactly this order. Products are exact in double; each
                     // add rounds to 53 bits like x87 PC=53.
-                    const double dx =
-                        static_cast<double>(as_float(cand_x)) -
-                        static_cast<double>(as_float(search_x));
-                    const double dy =
-                        static_cast<double>(as_float(cand_y)) -
-                        static_cast<double>(as_float(search_y));
-                    const double dz =
-                        static_cast<double>(as_float(cand_z)) -
-                        static_cast<double>(as_float(search_z));
-                    const double dist2 = (dz * dz + dy * dy) + dx * dx;
+                    const long double dx = ld_word(cand_x) - ld_word(search_x);   // 004CB71A..004CB71E fld ; fsub dword
+                    const long double dy = ld_word(cand_y) - ld_word(search_y);   // 004CB722..004CB726
+                    const long double dz = ld_word(cand_z) - ld_word(search_z);   // 004CB72A..004CB72E
+                    const long double dist2 = (dz * dz + dy * dy) + dx * dx;      // 004CB732..004CB740
 
                     // 004CB748..004CB753: radius==0 skips the comparison;
                     // otherwise accept only ordered dist2 <= best (NaN skips).
                     if (!radius_nonzero ||
-                        dist2 <= static_cast<double>(best)) {
+                        dist2 <= best.value()) {           // 004CB74A fcom dword [esp+10h] ; test ah,41h ; jp
                         // 004CB755..004CB763: fsqrt, candidate+4, flag=1,
                         // float best store. The original loads the id after
                         // fsqrt and before the best store.
-                        const float root = sqrt53_to_float(dist2);
+                        const long double root = sqrt(dist2);   // 004CB755 fsqrt
                         const dtl::U32 accepted_id = lw(candidate, 4);
-                        best = root;
+                        best.f = static_cast<float>(root);      // 004CB763 fstp dword [esp+10h]
                         best_id = accepted_id;
                         radius_nonzero = true;
                     }

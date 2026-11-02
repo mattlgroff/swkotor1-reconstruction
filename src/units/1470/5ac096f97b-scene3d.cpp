@@ -3,19 +3,27 @@
 // opengl32 entries are called through the real imports (original `call dword ptr [IAT]`); glEnable reuses the
 // M40 adapter kotor_renderer_init::glEnable_0073d390; gluPerspective comes from glu32 (DECISIONS D10).
 // Floating point: the original evaluates on the x87 stack; values the original rounds through a `fstp dword`
-// are rounded to float here, values it keeps on the FPU stack are kept in double. Byte equality is not claimed.
+// are rounded to float here; register intermediates use long double. Byte equality is not claimed.
+// kotor_math.h comes first: MSVC <new> and <cstdlib> can include <math.h>,
+// which kotor_math.h rejects when it comes first; <math.h> itself declares no long double overload of the standard
+// names (those are in <cmath>, never included), so the later inclusion is harmless (ldgate R2/R3 check the object).
+#include "../../math/kotor_math.h"
+#include "../../math/kotor_x87.h"
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
-
 #include <gl/GL.h>
 #include <gl/GLU.h>
-#include <cmath>
+// L3 MATH-TRIG-CPP t1 (2026-10-24): 0045C540 RenderScene, 00423C40 Quaternion::axis and 00456300
+// DoHighlightTriggers are written in the PLAN-v3 writing rule. kotor_math.h replaces <cmath> (an LD unit must not
+// include it); kotor_x87.h provides FloatToInt for the original's frndint helper (rule 6.12). The unit then needs
+// the reviewed clang long-double recipe recorded in the build manifest.
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
 #include "6ce15fd005-crt_acos_scene_adapter.h"
 #include <utility>
+#include <intrin.h>   // _AddressOfReturnAddress (L3 t1 a2: by-value Vector arguments read as raw stack words)
 #include <string.h>
 #include "aac3dc8237-scene3d.h"
 #include "16ea3f255d-render_pool.h"   // lane-renderer-bodies: RequestPoolManager (007A68A4 slot+10 GetPool), D32
@@ -54,7 +62,7 @@ constexpr U kSphereA_0073f4ec = 0x3F378D50, kSphereB_0073f4e8 = 0xBF378D50;   //
 constexpr U kShadowLift_007415c4 = 0x3FE00000;                       // 1.75f
 constexpr U kGlCw_0073f2c0 = 0x0900, kGlCcw_0073f2c4 = 0x0901;
 constexpr U kGlIncr_0073f2d4 = 0x1E02, kGlDecr_0073f2d8 = 0x1E03;
-constexpr U kTwoPi_00740c88 = 0x40C90FDB;                            // 6.2831855f
+// (00740C88 6.2831855f: kRsTwoPi_00740c88 below, L3 t1)
 constexpr U kGlPolygon_0073f34c = 7;                                  // .rdata 0073F34C (GL_QUADS)
 using BehaviorCtor = void* (__fastcall*)(void*, void*, void*, void*, void*);
 
@@ -68,7 +76,7 @@ constexpr U kGlGreater_0073f2b0 = 0x0204;             // glAlphaFunc func
 constexpr U kGlNormalArray_0073f39c = 0x8075;
 constexpr U kGlTexCoordArray_0073f398 = 0x8078;
 constexpr U kGlVertexArray_0073f3a4 = 0x8074;
-constexpr U kOrthoScale_0073dfec = 0x3C23D70A;        // 0.01f
+// (0073DFEC 0.01f: kRsOrthoScale_0073dfec below, L3 t1)
 constexpr U kHalf_0073e9ac = 0x3F000000;              // 0.5f
 constexpr U kDegToRad_007415f8 = 0x3C8EFA35;          // 0.0174533f
 constexpr U kMilli_0073d708 = 0x3A83126F;             // 0.001f
@@ -76,12 +84,32 @@ constexpr U kRadToNegDeg_0073f3f8 = 0xC2652EE1;       // -57.29578f
 constexpr U kMinusOne_00740cbc = 0xBF800000;          // -1.0f
 constexpr U kOne = 0x3F800000;                        // 1.0f (0073D764 and immediates)
 constexpr U kMinusOneImm = 0xBF800000;
+constexpr U kFloatZero_0073d700 = 0u;                 // .rdata 0073D700 0.0f
 constexpr double kAxisEpsilon_0073f3d8 = 1e-07;       // qword 3E7AD7F29ABCAF48
 
-inline float f(U bits) { return bits_to_float(bits); }
-// D30-FINAL: x87 runs PC_53/RC nearest (CW 027F). W = value on the FPU stack (double); S = original fstp dword.
-inline double W(float v) { return static_cast<double>(v); }
-inline float S(double v) { return static_cast<float>(v); }
+// L3 t1 a2: the D30-FINAL helpers as the PLAN-v3 writing rule (every FP function of this unit is converted by the LD
+// recipe): W = the value on the x87 stack (long double, 80-bit register), S = an original fstp dword point, f = an
+// image constant by its bit pattern. Force-inlined: under the /Ob0 recipe a plain inline helper is a call, which
+// forces the caller's live x87 values out of the registers.
+__forceinline float f(U bits) { float v; std::memcpy(&v, &bits, 4); return v; }
+__forceinline long double W(float v) { return v; }
+// L3 t1 a2: a float cell or raw float word read as the original does (fld dword [cell]); kotor_scene3d::bits_to_float is a
+// call returning ST0 under the /Ob0 recipe.
+__forceinline long double Wcell(const volatile U* cell) { return *reinterpret_cast<const volatile float*>(cell); }
+__forceinline float fbits(U bits) { float v; std::memcpy(&v, &bits, 4); return v; }
+__forceinline float S(long double v) { return static_cast<float>(v); }
+// L3 t1: field access in the converted functions as direct memory operands (/Ob0 makes field/f calls), and the image
+// constants they use as float / double values of the original's operand width.
+template<class T> __forceinline T& ref(void* o, U off) { return *reinterpret_cast<T*>(static_cast<unsigned char*>(o) + off); }
+// L3 t1 a2: every function of the unit reads its fields through ref / atf (force-inlined; kotor_scene3d::field / at are
+// calls under the /Ob0 recipe and forced the callers' live x87 values out of the registers: S1).
+__forceinline void* atf(void* o, U off) { return static_cast<unsigned char*>(o) + off; }
+constexpr float kRsOrthoScale_0073dfec = 0.00999999977648258209228515625f;   // 3C23D70A
+constexpr float kRsHalf_0073e9ac = 0.5f;                                     // 3F000000
+constexpr float kRsOne_0073d764 = 1.0f;                                      // 3F800000
+constexpr float kRsTwoPi_00740c88 = 6.283185482025146484375f;                // 40C90FDB
+constexpr double kRsHalfD_0073f3d0 = 0.5;                                    // qword 3FE0000000000000
+constexpr double kRsOneD_0073ede8 = 1.0;                                     // qword 3FF0000000000000
 inline void set_bits(void* object, U offset, U bits) { field<U>(object, offset) = bits; }
 // D41/D42: Scene and Gob dispatch goes through the published typed tables (vtable pointer reloaded per call).
 inline const SceneVTable* scene_vt(void* scene) { return *static_cast<const SceneVTable* const volatile*>(scene); }
@@ -90,107 +118,62 @@ inline aurora_model::Gob* as_gob(void* gob) { return static_cast<aurora_model::G
 inline const CameraVTable* camera_vt(void* camera) { return *static_cast<const CameraVTable* const volatile*>(camera); }
 inline const GuiSceneVTable* gui_scene_vt(void* gui_scene) { return *static_cast<const GuiSceneVTable* const volatile*>(gui_scene); }
 inline U word(const void* p) { return static_cast<U>(reinterpret_cast<std::uintptr_t>(p)); }
+// L3 t1 a2: by-value Vector arguments. The original copies them with integer moves (mov). clang's __fastcall /
+// __thiscall ABI expands a by-value Vector into three float parameters, loaded with fld dword (quiets a signalling NaN)
+// and held on the x87 stack across calls (4-byte spills, S1). A callee therefore reads the words from its own stack
+// argument slots (A2_STACK_ARGS()[0] is the first stack argument, the word above the return address), and a caller
+// calls the same entry through a word-typed pointer (same stack image, same `ret N`), as anim_contested 00438AF0 /
+// core46_camera 0045CC90.
+#define A2_STACK_ARGS() (reinterpret_cast<U*>(static_cast<unsigned char*>(_AddressOfReturnAddress()) + 4))
+// The pointer is read back through a volatile local: a callee of THIS object whose parameters are unnamed (it reads its
+// argument words itself) would otherwise let the optimizer see unused parameters and pass no argument words at all
+// (measured: 0044F470 -> 00437BA0 and 0045C3F0 -> 0045C030 pushed nothing). The call is then an indirect call.
+template<class To, class From> __forceinline To words_form(From f) { To volatile p = reinterpret_cast<To>(reinterpret_cast<std::uintptr_t>(f)); return p; }
+template<class F> __forceinline F opaque(F f) { F volatile p = f; return p; }
+// raw(): a word read that the compiler cannot merge with a float load of the same address (GVN forwarded such a value
+// and stored it with fld/fstp: 00450FA0's +108h radius).
+__forceinline U raw(const void* p) { return *static_cast<const volatile U*>(p); }
+__forceinline void copy_words3(void* dst, const void* src) {
+    const volatile U* s = static_cast<const volatile U*>(src); U* d = static_cast<U*>(dst);
+    const U x = s[0], y = s[1], z = s[2];
+    d[0] = x; d[1] = y; d[2] = z;
+}
+// One original `fstp dword` of a register value whose float is then only copied with integer moves.
+__forceinline U stored_bits(long double v) { const float s = static_cast<float>(v); U u; std::memcpy(&u, &s, 4); return u; }
+using MatrixWords = float* (__fastcall*)(float*, void*, U, U, U, U, U, U, U, U, U);          // 00437BA0, RET 24h
+using SetPositionWords = Vector* (__fastcall*)(void*, void*, Vector*, U, U, U);             // 0043F0C0 / 0045C030, RET 10h
+using HitCheckWords = I (__fastcall*)(void*, void*, U, U, U, U, U, U, Vector*, void*);      // 0043EB80 / 00456B60 / 0044FE00, RET 20h
+using BspHitWords = U (__cdecl*)(void*, U, U, U, U, U, U, Vector*, U (__cdecl*)(void*, Vector, Vector, Vector*));   // 004AD260
+using PartHitWords = U (__cdecl*)(void*, U, U, U, U, U, U, Vector*);                         // 0046B4C0
+// OpenGL entries whose float arguments the original pushes as raw words (mov / push): called through word-typed
+// pointers to the same import, so no fld/fstp copy quiets a signalling NaN.
+using GlWords3 = void (__stdcall*)(U, U, U);                 // glVertex3f / glColor3f / glTranslatef / glScalef / glNormal3f
+using GlWords2 = void (__stdcall*)(U, U);                    // glTexCoord2f
+using GlWords4 = void (__stdcall*)(U, U, U, U);              // glRotatef / glColor4f / glVertex4f
 // D52/D30-FINAL: x87 transcendental instructions of the original, executed on the x87 unit (D21 inline asm).
 // lane x87-trig (2026-10-24): the fptan (0045C72B/0045C74D/0045C76D/0045C78B) and fsin (004567B3) results are
 // consumed by further x87 instructions in the original with their full 64-bit significand; the former x87_tan /
 // x87_sin returned them rounded to double. Those sites now use the x87trig_* sequences below (after this
 // namespace). 00423C9F (fsin) is the scene_acos::axis_scale sequence, unchanged.
-// Memory operands of the x87trig_* sequences (bits from the pinned image).
-const U kX87Half_0073e9ac = 0x3F000000;               // 0.5f
-const U kX87One_0073d764 = 0x3F800000;                // 1.0f
+// L3 t1: the x87trig_* helpers and their memory-operand constants are replaced by plain C++ (RenderScene, DoHighlightTriggers).
 // frndint; fistp dword under the original CW (RC nearest-even) - D30-FINAL explicit round-to-nearest port.
-inline I x87_round(float value) {
-    I result;
-    __asm {
-        fld dword ptr value
-        frndint
-        fistp dword ptr result
-    }
+// L3 t1: rule 6.12 - the original's frndint sites are the one FloatToInt helper (kotor_x87.h, the original asm body).
+__forceinline I x87_round(float value) {
+    int result;
+    FloatToInt(&result, value);
     return result;
 }
 inline void scene_child_detach_attach(void* gob, void* scene) {
     // Shared tail of Gob::SetScene 0043F203..0043F239 and Gob::AttachToObject 00443934..00443968.
-    void* previous = field<void*>(gob, 0x68);
+    void* previous = ref<void*>(gob, 0x68);
     if (previous == scene) return;
     if (previous != nullptr) scene_vt(previous)->s0b4_scene_child_remove(previous, nullptr, gob);   // Scene::ChildRemove
-    field<void*>(gob, 0x68) = scene;
+    ref<void*>(gob, 0x68) = scene;
     if (scene != nullptr) scene_vt(scene)->s0b0_scene_child_add(scene, nullptr, gob);             // Scene::ChildAdd
     gob_vt(gob)->do_event(as_gob(gob), nullptr, "UpdateScenes", 0);                     // 00740AD8, Gob::DoEvent
 }
 } // namespace
 
-// ---- lane x87-trig (2026-10-24): original x87 sequences around fptan/fsin kept whole ----
-// fsin/fcos/fptan/fpatan always deliver a 64-bit significand (precision control does not apply to them). Each
-// helper keeps the transcendental together with the original's consuming x87 instructions and ends at the
-// original's dword store. Precondition as in the original: PC = 53 bits, RC = nearest (CRT
-// __initialize_default_precision in the rebuilt image). No CALL inside the asm; extern "C" __cdecl.
-// fptan operand: 004A96D0's ST0 (fld dword; fmul dword [007415F8]): a float x float product, exact in the double
-// that deg_to_rad_004a96d0 returns.
-extern "C" {
-// 0045C72B..0045C735: [esp+1Ch] = (float)-(tan(x) * [esp+18h])
-__declspec(noinline) void __cdecl x87trig_0045c72b(double x, const float* aspect, float* dst) {
-    __asm {
-        fld qword ptr x
-        fptan                                  // 0045C72B
-        fstp st(0)                             // 0045C72D
-        mov eax, aspect
-        fmul dword ptr [eax]                   // 0045C72F
-        fchs                                   // 0045C733
-        mov eax, dst
-        fstp dword ptr [eax]                   // 0045C735
-    }
-}
-// 0045C74D..0045C755: [esp+18h] = (float)(tan(x) * [esp+18h])
-__declspec(noinline) void __cdecl x87trig_0045c74d(double x, const float* aspect, float* dst) {
-    __asm {
-        fld qword ptr x
-        fptan                                  // 0045C74D
-        fstp st(0)                             // 0045C74F
-        mov eax, aspect
-        fmul dword ptr [eax]                   // 0045C751
-        mov eax, dst
-        fstp dword ptr [eax]                   // 0045C755
-    }
-}
-// 0045C76D..0045C773: [esp+20h] = (float)-tan(x)
-__declspec(noinline) void __cdecl x87trig_0045c76d(double x, float* dst) {
-    __asm {
-        fld qword ptr x
-        fptan                                  // 0045C76D
-        fstp st(0)                             // 0045C76F
-        fchs                                   // 0045C771
-        mov eax, dst
-        fstp dword ptr [eax]                   // 0045C773
-    }
-}
-// 0045C78B fptan .. 0045C7DF fstp st(0) .. 0045C7E1 fst dword [esp+34h] / 0045C7E5 fstp dword [esp+48h]: both
-// stores take the same ST0, so one dword result.
-__declspec(noinline) void __cdecl x87trig_0045c78b(double x, float* dst) {
-    __asm {
-        fld qword ptr x
-        fptan                                  // 0045C78B
-        fstp st(0)                             // 0045C7DF
-        mov eax, dst
-        fstp dword ptr [eax]                   // 0045C7E1 / 0045C7E5
-    }
-}
-// 00456793..004567DD (Scene::DoHighlightTriggers pulse): [esp+1Ch] =
-//   (float)((sin([t+C8h] * [scene+B4h]) + 1.0f) * [t+C0h] * 0.5f)
-__declspec(noinline) void __cdecl x87trig_004567b3(const void* trigger, const void* scene, float* dst) {
-    __asm {
-        mov eax, trigger
-        mov ecx, scene
-        fld dword ptr [eax + 0C8h]             // 00456793
-        fmul dword ptr [ecx + 0B4h]            // 0045679D
-        fsin                                   // 004567B3
-        fadd dword ptr kX87One_0073d764        // 004567CB
-        fmul dword ptr [eax + 0C0h]            // 004567D1
-        fmul dword ptr kX87Half_0073e9ac       // 004567D7
-        mov eax, dst
-        fstp dword ptr [eax]                   // 004567DD
-    }
-}
-}  // extern "C"
 
 // 0045F640 AurATIValidate: provided by lane-upload (D52); declaration in scene3d.h.
 
@@ -199,26 +182,26 @@ extern "C" {
 // ================================================================ GUI glue
 // 0067ACB0 CSWGui3DSceneView vtbl+38: mov eax,[ecx+5C]; add ecx,5Ch; jmp [eax+0Ch] (CSWGuiScene::Draw, RET 4).
 void __fastcall gui_3d_scene_view_draw_0067acb0(void* view, void*, U delta_bits) {
-    void* gui_scene = at(view, 0x5C);
+    void* gui_scene = atf(view, 0x5C);
     gui_scene_vt(gui_scene)->s00c_gui_scene_draw(gui_scene, nullptr, delta_bits);
 }
 
 // 00414FB0 CSWGuiScene::Draw (CSWGuiScene vtable 0073E3F0 slot+0C)
 void __fastcall gui_scene_draw_00414fb0(void* gui_scene, void*, U delta_bits) {
-    void* scene = field<void*>(gui_scene, 0x14);
+    void* scene = ref<void*>(gui_scene, 0x14);
     scene_vt(scene)->s01c_scene_animate(scene, nullptr, delta_bits);              // 00414FBD Scene::Animate(delta)
     const U accepted = kotor_AurGUISetupViewport_004592F0(             // 00414FDB
-        field<U>(gui_scene, 0x04), field<U>(gui_scene, 0x08), field<U>(gui_scene, 0x0C), field<U>(gui_scene, 0x10),
-        at(gui_scene, 0x28), 1u, kOne);                                // push 3F800000h; push 1; lea eax,[esi+28h]
+        ref<U>(gui_scene, 0x04), ref<U>(gui_scene, 0x08), ref<U>(gui_scene, 0x0C), ref<U>(gui_scene, 0x10),
+        atf(gui_scene, 0x28), 1u, kOne);                                // push 3F800000h; push 1; lea eax,[esi+28h]
     if (accepted == 0) return;                                         // 00414FE5
-    void* camera = field<void*>(gui_scene, 0x18);
+    void* camera = ref<void*>(gui_scene, 0x18);
     camera_vt(camera)->s008_camera_render_scene(camera, nullptr);       // 00414FEC Camera::RenderScene
     kotor_AurGUICloseViewport_00459580();                              // 00414FEF
 }
 
 // 00414F80 CSWGuiDrawable::~CSWGuiDrawable (reached here only as CSWGuiScene ctor unwind state 0)
 void __fastcall gui_drawable_destruct_00414f80(void* object, void*) {
-    field<void* const*>(object, 0) = gui_drawable_vtable_0073e324;     // mov [ecx],73E324h
+    ref<void* const*>(object, 0) = gui_drawable_vtable_0073e324;     // mov [ecx],73E324h
 }
 
 // 00416770 CExoArrayList::CExoArrayList(size)
@@ -238,41 +221,41 @@ void __fastcall exo_array_list_destruct_0056b6f0(PointerList* list, void*) {
 
 // 0047ABC0 CExoArrayList::~CExoArrayList variant: free(data) only when non-null; data left as is.
 void __fastcall exo_array_list_free_0047abc0(void* list, void*) {
-    void* data = field<void*>(list, 0);
+    void* data = ref<void*>(list, 0);
     if (data != nullptr) live_free(data);                             // 0047ABC4 / 0047ABC7
 }
 
 // 004174B0 CSWGuiScene::CSWGuiScene (member of CSWGuiMainMenu at +3BC via 0067C548; embedded at view+5C)
 void* __fastcall gui_scene_construct_004174b0(void* gui_scene, void*) {
-    field<U>(gui_scene, 0x10) = 0;                                     // 004174D0
-    field<U>(gui_scene, 0x0C) = 0;
-    field<U>(gui_scene, 0x08) = 0;
-    field<U>(gui_scene, 0x04) = 0;
-    field<const GuiSceneVTable*>(gui_scene, 0) = &gui_scene_vtable_0073e3f0;    // 004174E4 (EH state 0 already set at 004174E0)
-    PointerList* models = &field<PointerList>(gui_scene, 0x1C);
+    ref<U>(gui_scene, 0x10) = 0;                                     // 004174D0
+    ref<U>(gui_scene, 0x0C) = 0;
+    ref<U>(gui_scene, 0x08) = 0;
+    ref<U>(gui_scene, 0x04) = 0;
+    ref<const GuiSceneVTable*>(gui_scene, 0) = &gui_scene_vtable_0073e3f0;    // 004174E4 (EH state 0 already set at 004174E0)
+    PointerList* models = &ref<PointerList>(gui_scene, 0x1C);
     // EH (FuncInfo 00761454): state 0 -> 00414F80(this), state 1 -> 0056B6F0(this+1C). See EH note in NOTES.md.
     {
         exo_array_list_construct_00416770(models, nullptr, 0);         // 004174EA
         {                                                              // EH state 1 (004174F4)
-            field<U>(gui_scene, 0x28) = 0;                             // 004174F9..004174FF
-            field<U>(gui_scene, 0x2C) = 0;
-            field<U>(gui_scene, 0x30) = 0;
-            field<void*>(gui_scene, 0x14) = new_aur_scene_00458e70("scene");      // 00417502 (0073E460)
-            field<void*>(gui_scene, 0x18) = new_aur_camera_0045d930("camera");    // 0041750F (0073E458)
-            void* scene = field<void*>(gui_scene, 0x14);
-            if (scene == nullptr || field<void*>(gui_scene, 0x18) == nullptr) return gui_scene; // 0041751F / 00417523
+            ref<U>(gui_scene, 0x28) = 0;                             // 004174F9..004174FF
+            ref<U>(gui_scene, 0x2C) = 0;
+            ref<U>(gui_scene, 0x30) = 0;
+            ref<void*>(gui_scene, 0x14) = new_aur_scene_00458e70("scene");      // 00417502 (0073E460)
+            ref<void*>(gui_scene, 0x18) = new_aur_camera_0045d930("camera");    // 0041750F (0073E458)
+            void* scene = ref<void*>(gui_scene, 0x14);
+            if (scene == nullptr || ref<void*>(gui_scene, 0x18) == nullptr) return gui_scene; // 0041751F / 00417523
             scene_vt(scene)->s020_void_return_14(scene, nullptr, 0x0Au, 0x0Au, 5u, 1u, 0x41200000u);     // 00417534 (void_return_14)
-            scene = field<void*>(gui_scene, 0x14);
+            scene = ref<void*>(gui_scene, 0x14);
             scene_vt(scene)->s08c_scene_disable_visibility_graph(scene, nullptr);               // 0041753C DisableVisibilityGraph
-            scene = field<void*>(gui_scene, 0x14);
+            scene = ref<void*>(gui_scene, 0x14);
             scene_vt(scene)->s004_scene_set_fog(scene, nullptr, 0u);              // 00417548 SetFog(0)
-            void* camera = field<void*>(gui_scene, 0x18);
+            void* camera = ref<void*>(gui_scene, 0x18);
             camera_vt(camera)->s040_camera_set_clip_dist(camera, nullptr, f(0x3DCCCCCDu), f(0x461C4000u)); // 0041755A SetClipDist(0.1,10000)
-            camera = field<void*>(gui_scene, 0x18);
-            (void)camera_vt(camera)->s014_camera_attach_to_scene(camera, nullptr, field<void*>(gui_scene, 0x14)); // 00417566 AttachToScene
-            field<U>(gui_scene, 0x28) = cells.gui_scene_color_0078d3d8[0];  // 00417569
-            field<U>(gui_scene, 0x2C) = cells.gui_scene_color_0078d3d8[1];  // 00417571
-            field<U>(gui_scene, 0x30) = cells.gui_scene_color_0078d3d8[2];  // 0041757A
+            camera = ref<void*>(gui_scene, 0x18);
+            (void)camera_vt(camera)->s014_camera_attach_to_scene(camera, nullptr, ref<void*>(gui_scene, 0x14)); // 00417566 AttachToScene
+            ref<U>(gui_scene, 0x28) = cells.gui_scene_color_0078d3d8[0];  // 00417569
+            ref<U>(gui_scene, 0x2C) = cells.gui_scene_color_0078d3d8[1];  // 00417571
+            ref<U>(gui_scene, 0x30) = cells.gui_scene_color_0078d3d8[2];  // 0041757A
         }
     }
     return gui_scene;                                                  // 00417588 mov eax,esi
@@ -288,18 +271,18 @@ void* __cdecl new_aur_scene_00458e70(const char* name) {
 
 // 00458790 Scene::Scene(name)
 void* __fastcall scene_construct_00458790(void* scene, void*, const char* name) {
-    field<U>(scene, 0x08) = 0; field<U>(scene, 0x0C) = 0; field<U>(scene, 0x04) = 0;  // 004587B4..004587BA
-    field<const SceneVTable*>(scene, 0) = &scene_vtable_00741708;            // 004587BD
+    ref<U>(scene, 0x08) = 0; ref<U>(scene, 0x0C) = 0; ref<U>(scene, 0x04) = 0;  // 004587B4..004587BA
+    ref<const SceneVTable*>(scene, 0) = &scene_vtable_00741708;            // 004587BD
     // members zeroed in original order (004587CA..00458848)
     static const U zeroed[] = {0x58, 0x5C, 0x54, 0x74, 0x78, 0x7C, 0x88, 0x8C, 0x90, 0x98, 0x9C, 0x94, 0xA4, 0xA8,
                                0xAC, 0xB0, 0xC0, 0xC4, 0xBC, 0xCC, 0xD0, 0xC8, 0xF0, 0xF4, 0xEC};
-    for (U offset : zeroed) field<U>(scene, offset) = 0;
+    for (U offset : zeroed) ref<U>(scene, offset) = 0;
     // EH (FuncInfo 00763434): states 6..0 free lists EC/C8/BC, SafePointer A4, lists 94/54, base 00457990;
     // state 7 adds Gob dtor 0044B2F0(this+F8); 8 = MaxTree delete 0044AEC0(model); 9/10 = free. See NOTES.md.
-    gob_construct_00449440(static_cast<aurora_model::Gob*>(at(scene, 0xF8)), nullptr, "c_FocusGob");   // 00458861 (007416FC), EH state 6
+    gob_construct_00449440(static_cast<aurora_model::Gob*>(atf(scene, 0xF8)), nullptr, "c_FocusGob");   // 00458861 (007416FC), EH state 6
     {                                                                  // EH state 7 (00458872)
         char unique[64];                                               // [esp+44h], 64 bytes up to the frame top
-        char* scene_name = &field<char>(scene, 0x10);
+        char* scene_name = &ref<char>(scene, 0x10);
         scene_name[0] = 0;                                             // 0045887A mov byte [ebp],bl
         if (name != nullptr) {                                         // 0045886D
             std::sprintf(unique, "%s", name);                          // 0045888A (0073D5D0)
@@ -318,31 +301,31 @@ void* __fastcall scene_construct_00458790(void* scene, void*, const char* name) 
         if (model_memory != nullptr) {
             model = model_construct_0044aa70(static_cast<aurora_model::MaxTree*>(model_memory), nullptr, dummy);         // 00458932, EH state 8 (00716877)
         }
-        field<void*>(scene, 0x150) = model;                            // 0045894C (Gob+58)
-        (void)model_add_ref_0043e240(static_cast<aurora_model::MaxTree*>(model), nullptr, at(scene, 0xF8));       // 00458952 (ECX may be null, as original)
+        ref<void*>(scene, 0x150) = model;                            // 0045894C (Gob+58)
+        (void)model_add_ref_0043e240(static_cast<aurora_model::MaxTree*>(model), nullptr, atf(scene, 0xF8));       // 00458952 (ECX may be null, as original)
         set_bits(scene, 0x88, 0); set_bits(scene, 0x8C, 0); set_bits(scene, 0x90, 0);      // 0045896F..00458993
         set_bits(scene, 0x74, kOne); set_bits(scene, 0x78, kOne); set_bits(scene, 0x7C, kOne); // 004589A5..004589C2
-        field<U>(scene, 0x60) = 0;                                     // 004589BC
-        field<U>(scene, 0x6C) = 0;                                     // 004589BF
+        ref<U>(scene, 0x60) = 0;                                     // 004589BC
+        ref<U>(scene, 0x6C) = 0;                                     // 004589BF
         set_bits(scene, 0x64, 0x40A00000u);                            // 5.0f
         set_bits(scene, 0x68, 0x42200000u);                            // 40.0f
         set_bits(scene, 0x70, 0x3DCCCCCDu);                            // 0.1f
-        field<U>(scene, 0x50) = 0;                                     // 004589DA
+        ref<U>(scene, 0x50) = 0;                                     // 004589DA
         void* lights_memory = live_operator_new(0xF8);                 // 004589DD
         void* lights = nullptr;
         if (lights_memory != nullptr) {
             lights = light_manager_construct_004a38b0(lights_memory, nullptr);       // 004589F7, EH state 9 (00716882)
         }
-        field<void*>(scene, 0x80) = lights;                            // 00458A0D
+        ref<void*>(scene, 0x80) = lights;                            // 00458A0D
         void* wind_memory = live_operator_new(0x858);                  // 00458A13
         void* wind = nullptr;
         if (wind_memory != nullptr) {
             wind = wind_manager_construct_004a6640(wind_memory, nullptr);            // 00458A2D, EH state 10 (0071688D)
         }
-        field<void*>(scene, 0x84) = wind;                              // 00458A3E
-        safe_pointer_assign_00447fa0(at(scene, 0xA4), nullptr, aur_texture_get_normalization_cube_map_004233e0()); // 00458A44/00458A50
-        field<U16>(scene, 0xD8) = 1;                                   // 00458A55
-        field<U>(scene, 0xB4) = 0;                                     // 00458A5E
+        ref<void*>(scene, 0x84) = wind;                              // 00458A3E
+        safe_pointer_assign_00447fa0(atf(scene, 0xA4), nullptr, aur_texture_get_normalization_cube_map_004233e0()); // 00458A44/00458A50
+        ref<U16>(scene, 0xD8) = 1;                                   // 00458A55
+        ref<U>(scene, 0xB4) = 0;                                     // 00458A5E
         PointerList* scenes = cells.scene_list_007b9398;
         if (scenes->size == scenes->capacity) {                       // 00458A64..00458A6F
             const I capacity = scenes->capacity;
@@ -350,16 +333,16 @@ void* __fastcall scene_construct_00458790(void* scene, void*, const char* name) 
         }
         reinterpret_cast<void**>(static_cast<std::uintptr_t>(scenes->data))[scenes->size] = scene; // 00458A94
         scenes->size = scenes->size + 1;                              // 00458A97
-        field<U>(scene, 0xA0) = 0;                                     // 00458AA0
-        field<U8>(scene, 0xDA) = 1;                                    // 00458AA6
-        field<U8>(scene, 0xDB) = 0;                                    // 00458AAD
-        field<U>(scene, 0xDC) = 0;                                     // 00458AB3
+        ref<U>(scene, 0xA0) = 0;                                     // 00458AA0
+        ref<U8>(scene, 0xDA) = 1;                                    // 00458AA6
+        ref<U8>(scene, 0xDB) = 0;                                    // 00458AAD
+        ref<U>(scene, 0xDC) = 0;                                     // 00458AB3
         set_bits(scene, 0xE0, kOne);                                   // 00458AB9
-        field<U>(scene, 0xC0) = 0;                                     // 00458AC3
-        gob_set_scene_0043f200(at(scene, 0xF8), nullptr, scene);       // 00458AC9
-        field<U>(scene, 0xD4) = 0;                                     // 00458AD4
-        field<void*>(scene, 0xE4) = aur_texture_get_reference_00423a60("filmnoisetex", 0);  // 00458ADA (007416D4)
-        field<void*>(scene, 0xE8) = aur_texture_get_reference_00423a60("distortiontex", 0); // 00458AEB (007416C4)
+        ref<U>(scene, 0xC0) = 0;                                     // 00458AC3
+        gob_set_scene_0043f200(atf(scene, 0xF8), nullptr, scene);       // 00458AC9
+        ref<U>(scene, 0xD4) = 0;                                     // 00458AD4
+        ref<void*>(scene, 0xE4) = aur_texture_get_reference_00423a60("filmnoisetex", 0);  // 00458ADA (007416D4)
+        ref<void*>(scene, 0xE8) = aur_texture_get_reference_00423a60("distortiontex", 0); // 00458AEB (007416C4)
         if (aur_ati_fragment_shader_available_0045f560() != 0)       // 00458AF9
             vertex_program_manager_reset_004a2470();                   // 00458B02
     }
@@ -380,25 +363,25 @@ void __fastcall scene_animate_00451c80(void* scene, void*, U delta_bits) {
     *cells.animate_start_007b9298 = query_timer_0044f320();            // 00451C85..00451C96
     *cells.active_scene_007b92a0 = scene;                              // 00451C9C
     if (*cells.animations_0078e3b8 != 0 && *cells.interleaved_007b92f4 != 0) {   // 00451CA2 / 00451CAB
-        for (I index = field<I>(scene, 0xF0); index != 0;) {          // 00451CAD..00451CDC
+        for (I index = ref<I>(scene, 0xF0); index != 0;) {          // 00451CAD..00451CDC
             --index;
-            if (index < field<I>(scene, 0xF0)) {                       // cmp edi,eax; jge (signed)
-                void* object = field<void**>(scene, 0xEC)[index];
+            if (index < ref<I>(scene, 0xF0)) {                       // cmp edi,eax; jge (signed)
+                void* object = ref<void**>(scene, 0xEC)[index];
                 slot<SlotU>(object, 0x14)(object, nullptr, delta_bits);
             }
         }
-        for (I index = field<I>(scene, 0x58); index != 0;) {          // 00451CDE..00451D02
+        for (I index = ref<I>(scene, 0x58); index != 0;) {          // 00451CDE..00451D02
             --index;
-            if (index < field<I>(scene, 0x58)) {
-                void* object = field<void**>(scene, 0x54)[index];
-                if (field<U8>(object, 0x16) == 0) (void)gob_vt(object)->animate(as_gob(object), nullptr, delta_bits); // 00451CF3
+            if (index < ref<I>(scene, 0x58)) {
+                void* object = ref<void**>(scene, 0x54)[index];
+                if (ref<U8>(object, 0x16) == 0) (void)gob_vt(object)->animate(as_gob(object), nullptr, delta_bits); // 00451CF3
             }
         }
     } else {
-        for (I index = field<I>(scene, 0x58); index != 0;) {          // 00451D06..00451D27
+        for (I index = ref<I>(scene, 0x58); index != 0;) {          // 00451D06..00451D27
             --index;
-            if (index < field<I>(scene, 0x58)) {
-                void* object = field<void**>(scene, 0x54)[index];
+            if (index < ref<I>(scene, 0x58)) {
+                void* object = ref<void**>(scene, 0x54)[index];
                 (void)gob_vt(object)->animate(as_gob(object), nullptr, delta_bits);
             }
         }
@@ -408,7 +391,7 @@ void __fastcall scene_animate_00451c80(void* scene, void*, U delta_bits) {
     const U start_low = static_cast<U>(*cells.animate_start_007b9298); // 00451D38 mov ecx,[007B9298]
     *cells.animate_end_007b9288 = end;                                 // 00451D3E / 00451D4F
     const I elapsed = static_cast<I>(static_cast<U>(end) - start_low); // sub eax,ecx; fild dword
-    *cells.animate_ms_007b92d0 = static_cast<float>(static_cast<double>(elapsed) * static_cast<double>(f(kMilli_0073d708)));
+    *cells.animate_ms_007b92d0 = static_cast<float>(static_cast<long double>(elapsed) * static_cast<long double>(f(kMilli_0073d708)));
 }
 
 // 004512D0 Scene::Render (vtbl+18)
@@ -416,16 +399,17 @@ void __fastcall scene_render_004512d0(void* scene, void*) {
     (void)kotor_renderer_init::ATIValidate_0045f640();                // 004512D9 (AL discarded)
     *cells.render_scene_007b935c = scene;                              // 004512DE
     *cells.render_start_007b9280 = query_timer_0044f320();             // 004512E4..004512F5
-    if (field<U>(scene, 0x50) == 0) scene_update_emitters_004511f0(scene, nullptr);   // 004512FB / 004512FF
+    if (ref<U>(scene, 0x50) == 0) scene_update_emitters_004511f0(scene, nullptr);   // 004512FB / 004512FF
     if (*cells.animations_0078e3b8 == 0 || *cells.interleaved_007b92f4 == 0)          // 00451304..00451312
-        field<U>(scene, 0x50) = field<U>(scene, 0x50) + 1;            // 00451314
+        ref<U>(scene, 0x50) = ref<U>(scene, 0x50) + 1;            // 00451314
     *cells.frame_mod3_0078e3f8 = (*cells.frame_mod3_0078e3f8 + 1) % 3;  // 00451317..0045132B (idiv, remainder)
     if (*cells.render_enabled_0078e3f4 != 0) {                         // 00451325 / 00451331
         *cells.counter_007b92e0 = 0;                                   // 00451337
         *cells.counter_007b9310 = 0;                                   // 0045133D
-        void* focus = at(scene, 0xF8);
+        void* focus = atf(scene, 0xF8);
         Vector returned;
-        gob_vt(focus)->s05c_gob_set_position(as_gob(focus), nullptr, &returned, field<Vector>(scene, 0xA8)); // 0045136F Gob::SetPosition
+        const U* at_a8 = &ref<U>(scene, 0xA8);                         // 0045134C..00451361 (mov copies to the argument)
+        words_form<SetPositionWords>(gob_vt(focus)->s05c_gob_set_position)(focus, nullptr, &returned, at_a8[0], at_a8[1], at_a8[2]); // 0045136F Gob::SetPosition
         *cells.texture_flag_0078e330 = 1;                              // 00451372
         (void)texture_make_current_00421ee0();                         // 00451379
         aur_texture_force_controller_update_00420e50();                // 0045137E
@@ -439,15 +423,13 @@ void __fastcall scene_render_004512d0(void* scene, void*) {
         kotor_renderer_init::glEnable_0073d390(*cells.gl_alpha_test_0078d44c);       // 004513D7
         glAlphaFunc(kGlGreater_0073f2b0, *cells.alpha_ref_007b92e8);   // 004513E6
         kotor_renderer_init::glEnable_0073d390(*cells.gl_lighting_0078d45c);         // 004513F3
-        if (field<U>(scene, 0xA0) == 0 && field<U>(scene, 0xCC) == 0) { // 004513F5 / 004513FD
+        if (ref<U>(scene, 0xA0) == 0 && ref<U>(scene, 0xCC) == 0) { // 004513F5 / 004513FD
             scene_vt(scene)->s120_scene_render_only_gobs(scene, nullptr);              // 00451409 Scene::RenderOnlyGobs
-            
             *cells.active_scene_007b92a0 = nullptr;                    // 0045140F
             glPopAttrib();                                             // 00451415
         } else {
-            wind_manager_update_timer_004a5e30(field<void*>(scene, 0x84), nullptr, *cells.frame_time_0078e574); // 0045142D
+            wind_manager_update_timer_004a5e30(ref<void*>(scene, 0x84), nullptr, *cells.frame_time_0078e574); // 0045142D
             scene_vt(scene)->s0b8_scene_render_single_pass(scene, nullptr);               // 00451436 Scene::RenderSinglePass
-            
             glPopAttrib();                                             // 0045143C
             const I a = *cells.stat_007b9344;                          // ecx
             const I b = *cells.stat_007b9340;                          // edx
@@ -463,11 +445,11 @@ void __fastcall scene_render_004512d0(void* scene, void*) {
             const U start_low = static_cast<U>(*cells.render_start_007b9280);
             *cells.render_end_007b9290 = end;
             const I elapsed = static_cast<I>(static_cast<U>(end) - start_low);
-            *cells.render_ms_007b92d4 = static_cast<float>(static_cast<double>(elapsed) * static_cast<double>(f(kMilli_0073d708)));
+            *cells.render_ms_007b92d4 = static_cast<float>(static_cast<long double>(elapsed) * static_cast<long double>(f(kMilli_0073d708)));
         }
     }
     if (*cells.animations_0078e3b8 != 0 && *cells.interleaved_007b92f4 != 0)          // 004514CA..004514D8
-        field<U>(scene, 0x50) = field<U>(scene, 0x50) + 1;            // 004514DA
+        ref<U>(scene, 0x50) = ref<U>(scene, 0x50) + 1;            // 004514DA
 }
 
 // ================================================================ Camera
@@ -480,30 +462,30 @@ void* __cdecl new_aur_camera_0045d930(const char* name) {
 
 // 0045C240 (unnamed) CAurCamera interface destructor: mov [ecx],7418F8h
 void __fastcall camera_base_destruct_0045c240(void* camera, void*) {
-    field<const CameraBaseVTable*>(camera, 0) = &camera_base_vtable_007418f8;
+    ref<const CameraBaseVTable*>(camera, 0) = &camera_base_vtable_007418f8;
 }
 
 // 0045D800 Camera::Camera(name)
 void* __fastcall camera_construct_0045d800(void* camera, void*, const char* name) {
-    field<const CameraBaseVTable*>(camera, 0) = &camera_base_vtable_007418f8;   // 0045D81F
+    ref<const CameraBaseVTable*>(camera, 0) = &camera_base_vtable_007418f8;   // 0045D81F
     // EH (FuncInfo 007636B8): state 0 -> 0045C240(this); 1 -> Gob dtor 0044B2F0(this+4); 2 -> 0047ABC0(this+1F8).
-    gob_construct_00449440(static_cast<aurora_model::Gob*>(at(camera, 4)), nullptr, name);              // 0045D835 (EH state 0 set at 0045D831)
-    field<const aurora_model::GobVTable*>(camera, 4) = &camera_gob_vtable_00741988;      // 0045D83A
-    field<const CameraVTable*>(camera, 0) = &camera_vtable_00741b20;          // 0045D846
-    PlaneList* planes = &field<PlaneList>(camera, 0x1F8);
+    gob_construct_00449440(static_cast<aurora_model::Gob*>(atf(camera, 4)), nullptr, name);              // 0045D835 (EH state 0 set at 0045D831)
+    ref<const aurora_model::GobVTable*>(camera, 4) = &camera_gob_vtable_00741988;      // 0045D83A
+    ref<const CameraVTable*>(camera, 0) = &camera_vtable_00741b20;          // 0045D846
+    PlaneList* planes = &ref<PlaneList>(camera, 0x1F8);
     planes->count = 0;                                                 // 0045D84C [ebx+4]
     planes->capacity = 0;                                              // 0045D84F [ebx+8]
     planes->data = nullptr;                                            // 0045D852 [ebx]
-    for (U offset = 0x204; offset <= 0x230; offset += 4) field<U>(camera, offset) = 0; // 0045D854..0045D896
+    for (U offset = 0x204; offset <= 0x230; offset += 4) ref<U>(camera, offset) = 0; // 0045D854..0045D896
     set_bits(camera, 0x1D0, 0x42340000u);                              // 0045D8A5 view angle 45.0
     set_bits(camera, 0x1DC, 0x3DCCCCCDu);                              // 0045D8AF near 0.1
     set_bits(camera, 0x1E0, 0x42C80000u);                              // 0045D8B9 far 100.0
     set_bits(camera, 0x1D8, kOne);                                     // 0045D8C3
-    field<U>(camera, 0x1D4) = 0;                                       // 0045D8CD
-    field<U>(camera, 0x1F0) = 0;                                       // 0045D8D3
-    field<U>(camera, 0x1EC) = 0;
-    field<U>(camera, 0x1E8) = 0;
-    field<U>(camera, 0x1E4) = 0;                                       // 0045D8E5
+    ref<U>(camera, 0x1D4) = 0;                                       // 0045D8CD
+    ref<U>(camera, 0x1F0) = 0;                                       // 0045D8D3
+    ref<U>(camera, 0x1EC) = 0;
+    ref<U>(camera, 0x1E8) = 0;
+    ref<U>(camera, 0x1E4) = 0;                                       // 0045D8E5
     plane_list_allocate_0045c270(planes, nullptr, 6);                  // 0045D8EB (EH state 2 set at 0045D8A0)
     planes->count = 6;                                                 // 0045D8F7
     return camera;
@@ -530,25 +512,29 @@ void __fastcall plane_list_allocate_0045c270(PlaneList* list, void*, I size) {
 }
 
 // 0045BEC0 Camera::SetClipDist (vtbl+40): raw DWORD stores
-void __fastcall camera_set_clip_dist_0045bec0(void* camera, void*, float near_clip, float far_clip) {
-    std::memcpy(at(camera, 0x1DC), &near_clip, 4);                     // 0045BEC8
-    std::memcpy(at(camera, 0x1E0), &far_clip, 4);                      // 0045BECE
+// L3 t1 a2: the argument words are copied with mov (0045BEC0..0045BECE); the float parameters were loaded with fld (S1-free
+// but an x87 copy, quieting a signalling NaN).
+void __fastcall camera_set_clip_dist_0045bec0(void* camera, void*, float, float) {
+    const U* a = A2_STACK_ARGS();
+    const U near_bits = a[0], far_bits = a[1];
+    ref<U>(camera, 0x1DC) = near_bits;                                 // 0045BEC8
+    ref<U>(camera, 0x1E0) = far_bits;                                  // 0045BECE
 }
 
 // 0045BEE0 Camera::SetViewAngle (vtbl+44)
-void __fastcall camera_set_view_angle_0045bee0(void* camera, void*, float angle) {
-    std::memcpy(at(camera, 0x1D0), &angle, 4);                         // 0045BEE4
+void __fastcall camera_set_view_angle_0045bee0(void* camera, void*, float) {
+    ref<U>(camera, 0x1D0) = A2_STACK_ARGS()[0];                        // 0045BEE0..0045BEE4 (mov)
 }
 
 // 0045C0A0 Camera::AttachToScene (vtbl+14)
 I __fastcall camera_attach_to_scene_0045c0a0(void* camera, void*, void* scene) {
-    gob_set_scene_0043f200(at(camera, 4), nullptr, scene);             // 0045C0A8
+    gob_set_scene_0043f200(atf(camera, 4), nullptr, scene);             // 0045C0A8
     return 1;                                                          // 0045C0AD
 }
 
 // 0045C200 Camera::AttachToObject: add ecx,4; jmp 00443820 (same three stack words, RET 0Ch, EAX passthrough)
 void* __fastcall camera_attach_to_object_0045c200(void* camera, void*, void* object, const char* part, I mode) {
-    return gob_attach_to_object_00443820(at(camera, 4), nullptr, object, part, mode);
+    return gob_attach_to_object_00443820(atf(camera, 4), nullptr, object, part, mode);
 }
 
 // 0043F200 Gob::SetScene
@@ -566,7 +552,7 @@ void* __fastcall gob_attach_to_object_00443820(void* gob, void*, void* object, c
         gob_vt(gob)->s058_gob_set_behavior(as_gob(gob), nullptr, nullptr);
         return nullptr;
     }
-    slot<SlotPartTransform>(part, 0x0C)(part, nullptr, at(gob, 0x78), at(gob, 0x84));  // 00443871
+    slot<SlotPartTransform>(part, 0x0C)(part, nullptr, atf(gob, 0x78), atf(gob, 0x84));  // 00443871
     U size = 0;
     BehaviorCtor construct = nullptr;
     switch (static_cast<U>(mode)) {                                    // 00443878 cmp eax,3; ja (unsigned); table 00443990
@@ -583,154 +569,179 @@ void* __fastcall gob_attach_to_object_00443820(void* gob, void*, void* object, c
         }
     }
     gob_vt(gob)->s058_gob_set_behavior(as_gob(gob), nullptr, behavior);                  // 00443931 Gob::SetBehavior
-    scene_child_detach_attach(gob, field<void*>(object, 0x68));        // 00443934..00443968
+    scene_child_detach_attach(gob, ref<void*>(object, 0x68));        // 00443934..00443968
     return behavior;                                                   // 0044397F mov eax,ebp
 }
 
 // 0045C540 Camera::RenderScene (vtbl+08)
+// L3 t1 (2026-10-24): PLAN-v3 writing rule (replaces the a1 helpers x87trig_0045c72b/74d/76d/78b). Register values
+// are long double, each original fstp dword an explicit (float), each original fstp qword (the gluPerspective /
+// glOrtho double arguments) an explicit (double); DegToRad 004A96D0's ST0 feeds tan unrounded (ret80: ARITH x4).
 void __fastcall camera_render_scene_0045c540(void* camera, void*) {
-    if (field<void*>(camera, 0x6C) == nullptr) return;                 // 0045C554 (Gob+68 scene)
+    if (ref<void*>(camera, 0x6C) == nullptr) return;                 // 0045C554 (Gob+68 scene)
     const U mode_index = (*cells.wireframe_007bb4f0 == 0) ? 1u : 0u;   // 0045C568 sete al
     glPolygonMode(kGlFrontAndBack_0073f2f4, kPolygonModes_0073f2e4[mode_index]); // 0045C577
     glMatrixMode(kGlModelview_0073f298); glPushMatrix();               // 0045C589 / 0045C591
     glMatrixMode(kGlProjection_0073f290); glPushMatrix();              // 0045C59A / 0045C59C
     GLint viewport[4];                                                 // [esp+58h]..[esp+64h]
     glGetIntegerv(0x0BA2, viewport);                                   // 0045C5A8 GL_VIEWPORT
-    double width, height;
-    if (field<I>(camera, 0x1EC) == 0 && field<I>(camera, 0x1F0) == 0) {          // 0045C5B6 / 0045C5C0
-        height = static_cast<double>(viewport[3]);                     // fild [esp+64h]
-        width = static_cast<double>(viewport[2]);                      // fild [esp+60h]
+    long double width, height;                                         // fild (exact)
+    if (ref<I>(camera, 0x1EC) == 0 && ref<I>(camera, 0x1F0) == 0) {    // 0045C5B6 / 0045C5C0
+        height = static_cast<long double>(viewport[3]);                // fild [esp+64h]
+        width = static_cast<long double>(viewport[2]);                 // fild [esp+60h]
     } else {
-        const I x = field<I>(camera, 0x1E4);
-        const I y = field<I>(camera, 0x1E8);
-        const I w = field<I>(camera, 0x1EC);
-        const I h = field<I>(camera, 0x1F0);
+        const I x = ref<I>(camera, 0x1E4);
+        const I y = ref<I>(camera, 0x1E8);
+        const I w = ref<I>(camera, 0x1EC);
+        const I h = ref<I>(camera, 0x1F0);
         if (x >= static_cast<I>(*cells.width_0078d1d4) || x + w < 0 ||           // 0045C5D2 / 0045C5E3
             y >= static_cast<I>(*cells.height_0078d1d8) || y + h < 0) {          // 0045C5EF / 0045C606
-            void* scene = field<void*>(camera, 0x6C);                  // 0045CC7B (matrices stay pushed, as original)
-            field<U>(scene, 0x50) = field<U>(scene, 0x50) + 1;        // 0045CC7E inc [esi+50h]
+            void* scene = ref<void*>(camera, 0x6C);                  // 0045CC7B (matrices stay pushed, as original)
+            ref<U>(scene, 0x50) = ref<U>(scene, 0x50) + 1;        // 0045CC7E inc [esi+50h]
             return;
         }
         aurora_viewport_00459170(static_cast<U>(x), static_cast<U>(y), static_cast<U>(w), static_cast<U>(h)); // 0045C610
-        height = static_cast<double>(field<I>(camera, 0x1F0));         // 0045C615
-        width = static_cast<double>(field<I>(camera, 0x1EC));          // 0045C61B
+        height = static_cast<long double>(ref<I>(camera, 0x1F0));      // 0045C615
+        width = static_cast<long double>(ref<I>(camera, 0x1EC));       // 0045C61B
     }
-    const float aspect = static_cast<float>(width / height);           // 0045C624 fdiv; fstp [esp+14h]
-    set_bits(camera, 0x1D8, float_to_bits(static_cast<float>(height * static_cast<double>(f(kOrthoScale_0073dfec))))); // 0045C630
+    // 0045C624..0045C630: fdiv st,st(1) ; fstp dword [esp+14h] (aspect) ; fmul dword [0073DFEC] ; fstp dword [esi+1D8h]
+    const long double aspect = S(width / height);                      // 0045C626 (held as its rounded value: [esp+14h])
+    ref<float>(camera, 0x1D8) = S(height * kRsOrthoScale_0073dfec);    // 0045C630
     glMatrixMode(kGlProjection_0073f290);                              // 0045C63D
     glLoadIdentity();                                                  // 0045C63F
-    const U near_bits = field<U>(camera, 0x1DC);                       // 0045C645
-    Plane* planes = field<PlaneList>(camera, 0x1F8).data;
+    const U near_bits = ref<U>(camera, 0x1DC);                       // 0045C645
+    Plane* planes = ref<PlaneList>(camera, 0x1F8).data;
     {   U* row = reinterpret_cast<U*>(&planes[0]);                     // 0045C661..0045C685
         row[0] = 0; row[1] = 0; row[2] = kOne; row[3] = near_bits; }
     {   U* row = reinterpret_cast<U*>(&planes[1]);                     // 0045C6A5..0045C6CD
         row[0] = 0; row[1] = 0; row[2] = kMinusOneImm;
-        row[3] = float_to_bits(-f(field<U>(camera, 0x1E0))); }         // fld far; fchs
-    const float fov = f(field<U>(camera, 0x1D0));
-    const float far_clip = f(field<U>(camera, 0x1E0));
-    const float near_clip = f(near_bits);
-    if (!(fov > 0.0f)) {                                               // 0045C6D6 fcomp 0; test ah,41h; jne (<=0 or unordered)
-        const float scale = f(field<U>(camera, 0x1D8));
-        gl_ortho_00404b60(0.0, static_cast<double>(aspect) * static_cast<double>(scale), 0.0,       // 0045C9FD
-                          static_cast<double>(scale), static_cast<double>(near_clip), static_cast<double>(far_clip));
-        const double right = static_cast<double>(aspect) * static_cast<double>(f(field<U>(camera, 0x1D8))); // 0045CA50
-        U* row = reinterpret_cast<U*>(&planes[2]);
+        ref<float>(row, 0xC) = S(-W(ref<float>(camera, 0x1E0))); }    // 0045C688 fld far ; fchs ; 0045C6C2 fstp dword
+    if (!(ref<float>(camera, 0x1D0) > 0.0f)) {                         // 0045C6D6 fcomp 0 ; test 41h ; jne (<= 0 or unordered)
+        // 0045C9CB..0045C9FD: glOrtho(0, aspect * [1D8h], 0, [1D8h], near, far) - every argument an fstp qword; the float
+        // fields widen exactly (fld dword ; fstp qword); right = aspect * [1D8h] is one (double) conversion (0045C9F6).
+        opaque(&gl_ortho_00404b60)(0.0, static_cast<double>(aspect * ref<float>(camera, 0x1D8)), 0.0,
+                          static_cast<double>(ref<float>(camera, 0x1D8)), static_cast<double>(ref<float>(camera, 0x1DC)),
+                          static_cast<double>(ref<float>(camera, 0x1E0)));
+        U* row = reinterpret_cast<U*>(ref<PlaneList>(camera, 0x1F8).data + 2);    // 0045CA06 (plane list re-read per row)
         row[0] = kMinusOneImm; row[1] = 0; row[2] = 0; row[3] = 0;     // 0045CA0F..0045CA4D
-        row = reinterpret_cast<U*>(&planes[3]);
-        row[0] = kOne; row[1] = 0; row[2] = 0; row[3] = float_to_bits(static_cast<float>(-right)); // 0045CA5F..0045CA9B
-        row = reinterpret_cast<U*>(&planes[4]);
+        const long double right_d = -(aspect * ref<float>(camera, 0x1D8));   // 0045CA02 / 0045CA50 fmul ; 0045CA67 fchs
+        row = reinterpret_cast<U*>(ref<PlaneList>(camera, 0x1F8).data + 3);       // 0045CA56
+        row[0] = kOne; row[1] = 0; row[2] = 0;                         // 0045CA5F..0045CA8A
+        ref<float>(row, 0xC) = S(right_d);                             // 0045CA8D fstp
+        row = reinterpret_cast<U*>(ref<PlaneList>(camera, 0x1F8).data + 4);       // 0045CA9E
         row[0] = 0; row[1] = kMinusOneImm; row[2] = 0; row[3] = 0;     // 0045CAA7..0045CAE5
-        row = reinterpret_cast<U*>(&planes[5]);
-        row[0] = 0; row[1] = kOne; row[2] = 0; row[3] = float_to_bits(-f(field<U>(camera, 0x1D8))); // 0045CAFC..0045CB30
+        const long double top_d = -W(ref<float>(camera, 0x1D8));       // 0045CAE8 fld ; 0045CAF4 fchs
+        row = reinterpret_cast<U*>(ref<PlaneList>(camera, 0x1F8).data + 5);       // 0045CAEE
+        row[0] = 0; row[1] = kOne; row[2] = 0;                         // 0045CAFC..0045CB2D
+        ref<float>(row, 0xC) = S(top_d);                               // 0045CB25 fstp
     } else {
-        glu_perspective_0045c300(static_cast<double>(fov), static_cast<double>(aspect),             // 0045C70F
-                                 static_cast<double>(near_clip), static_cast<double>(far_clip));
-        const float half_fov = static_cast<float>(static_cast<double>(f(field<U>(camera, 0x1D0))) * static_cast<double>(f(kHalf_0073e9ac)));
-        float a, b, c, d;
-        x87trig_0045c72b(deg_to_rad_004a96d0(half_fov), &aspect, &a);  // 0045C726..0045C735 [esp+1Ch] after shift
-        x87trig_0045c74d(deg_to_rad_004a96d0(                           // 0045C739..0045C755 overwrites aspect slot
-            static_cast<float>(static_cast<double>(f(field<U>(camera, 0x1D0))) * static_cast<double>(f(kHalf_0073e9ac)))), &aspect, &b);
-        x87trig_0045c76d(deg_to_rad_004a96d0(                           // 0045C759..0045C773
-            static_cast<float>(static_cast<double>(f(field<U>(camera, 0x1D0))) * static_cast<double>(f(kHalf_0073e9ac)))), &c);
-        x87trig_0045c78b(deg_to_rad_004a96d0(                           // 0045C777..0045C7E5 fst [esp+34h] / fstp [esp+48h]
-            static_cast<float>(static_cast<double>(f(field<U>(camera, 0x1D0))) * static_cast<double>(f(kHalf_0073e9ac)))), &d);
-        const Vector origin{0.0f, 0.0f, 0.0f};
-        Vector normal;
-        Vector p{a, d, -1.0f}, q{a, c, -1.0f};
-        normal_of_004aca00(&normal, &origin, &p, &q);                  // 0045C7E9 left
-        { U* row = reinterpret_cast<U*>(&planes[2]); std::memcpy(row, &normal, 12); row[3] = 0; }
-        p = Vector{b, c, -1.0f}; q = Vector{b, d, -1.0f};
-        normal_of_004aca00(&normal, &origin, &p, &q);                  // 0045C876 right
-        { U* row = reinterpret_cast<U*>(&planes[3]); std::memcpy(row, &normal, 12); row[3] = 0; }
-        p = Vector{b, d, -1.0f}; q = Vector{a, d, -1.0f};
-        normal_of_004aca00(&normal, &origin, &p, &q);                  // 0045C903 top
-        { U* row = reinterpret_cast<U*>(&planes[4]); std::memcpy(row, &normal, 12); row[3] = 0; }
-        p = Vector{a, c, -1.0f}; q = Vector{b, c, -1.0f};
-        normal_of_004aca00(&normal, &origin, &p, &q);                  // 0045C996 bottom
-        { U* row = reinterpret_cast<U*>(&planes[5]); std::memcpy(row, &normal, 12); row[3] = 0; }
+        // 0045C6ED..0045C70F: gluPerspective(fov, aspect, near, far) - every argument an fstp qword; the float fields widen
+        // exactly; aspect (the [esp+14h] float) is one (double) conversion of its register value (0045C702).
+        opaque(&glu_perspective_0045c300)(static_cast<double>(ref<float>(camera, 0x1D0)), static_cast<double>(aspect),
+                                 static_cast<double>(ref<float>(camera, 0x1DC)), static_cast<double>(ref<float>(camera, 0x1E0)));
+        // Four times: fld [esi+1D0h] ; fmul dword [0073E9AC] ; fstp dword [esp] (one (float) each) ; call DegToRad (ST0) ;
+        // fptan ; fstp st(0). The four results are stored as the original's a / b / c / d floats (a = -(tan * aspect),
+        // b = tan * aspect, c = -tan, d = tan stored twice) and copied with mov into the NormalOf argument vectors.
+        // The four NormalOf argument vectors are frame words (volatile: each float is stored at once, as the original's
+        // stack slots; a float held across the next DegToRad / tan call was spilled through 4 bytes, S1).
+        volatile U ad[3], ac[3], bc[3], bd[3];
+        const long double t_a = tan(static_cast<long double>(deg_to_rad_004a96d0(S(W(ref<float>(camera, 0x1D0)) * kRsHalf_0073e9ac))));   // 0045C714..0045C72D
+        const U a = stored_bits(-(t_a * aspect));                      // 0045C72F fmul [esp+18h] ; fchs ; 0045C735 fstp [esp+1Ch]
+        ad[0] = a; ac[0] = a;
+        const long double t_b = tan(static_cast<long double>(deg_to_rad_004a96d0(S(W(ref<float>(camera, 0x1D0)) * kRsHalf_0073e9ac))));   // 0045C739..0045C74F
+        const U b = stored_bits(t_b * aspect);                         // 0045C751 fmul [esp+18h] ; 0045C755 fstp [esp+18h]
+        bc[0] = b; bd[0] = b;
+        const long double t_c = tan(static_cast<long double>(deg_to_rad_004a96d0(S(W(ref<float>(camera, 0x1D0)) * kRsHalf_0073e9ac))));   // 0045C759..0045C76F
+        const U c = stored_bits(-t_c);                                 // 0045C771 fchs ; 0045C773 fstp [esp+20h]
+        ac[1] = c; bc[1] = c;
+        const long double t_d = tan(static_cast<long double>(deg_to_rad_004a96d0(S(W(ref<float>(camera, 0x1D0)) * kRsHalf_0073e9ac))));   // 0045C777..0045C78B
+        ad[1] = stored_bits(t_d);                                      // 0045C7E1 fst [esp+34h]
+        bd[1] = stored_bits(t_d);                                      // 0045C7E5 fstp [esp+48h] (the unrounded ST0 again)
+        ad[2] = kMinusOneImm; ac[2] = kMinusOneImm; bc[2] = kMinusOneImm; bd[2] = kMinusOneImm;   // 0045C7B7.. (mov -1.0)
+        U origin[3] = {0, 0, 0};                                       // 0045C7C7..0045C7D7
+        U normal[3];
+        const auto plane_row = [camera](U index, const Vector* n) {    // 0045C7EE..0045C821 (list re-read; d = 0)
+            U* row = reinterpret_cast<U*>(ref<PlaneList>(camera, 0x1F8).data + index);
+            const U* w = reinterpret_cast<const U*>(n);
+            const U x = w[0], y = w[1], z = w[2];
+            row[0] = x; row[1] = y; row[2] = z; row[3] = 0;
+        };
+        const auto vec = [](volatile U* w) { return reinterpret_cast<Vector*>(const_cast<U*>(w)); };
+        plane_row(2, normal_of_004aca00(vec(normal), vec(origin), vec(ad), vec(ac)));   // 0045C7E9 left
+        plane_row(3, normal_of_004aca00(vec(normal), vec(origin), vec(bc), vec(bd)));   // 0045C876 right
+        plane_row(4, normal_of_004aca00(vec(normal), vec(origin), vec(bd), vec(ad)));   // 0045C903 top
+        plane_row(5, normal_of_004aca00(vec(normal), vec(origin), vec(ac), vec(bc)));   // 0045C996 bottom
     }
     if (*cells.alt_view_007bb4f4 != 0)                                 // 0045CB33
         gl_set_view_transform_00425ca0(cells.alt_view_position_007bb504, cells.alt_view_orientation_0078e440);
     else
-        gl_set_view_transform_00425ca0(&field<Vector>(camera, 0x7C), &field<Quaternion>(camera, 0x88)); // 0045CB53
-    for (U offset = 0; offset < 0x60; offset += 0x10) {                // 0045CB63..0045CBBC
-        Plane* plane = reinterpret_cast<Plane*>(reinterpret_cast<unsigned char*>(field<PlaneList>(camera, 0x1F8).data) + offset);
+        gl_set_view_transform_00425ca0(&ref<Vector>(camera, 0x7C), &ref<Quaternion>(camera, 0x88)); // 0045CB53
+#pragma clang loop unroll(disable)
+    for (U offset = 0; offset < 0x60; offset += 0x10) {                // 0045CB63..0045CBBC (kept a loop: one in-loop fstp)
+        Plane* plane = reinterpret_cast<Plane*>(reinterpret_cast<unsigned char*>(ref<PlaneList>(camera, 0x1F8).data) + offset);
         Vector rotated;
-        quaternion_rotate_004a9bb0(&rotated, &field<Quaternion>(camera, 0x88), reinterpret_cast<const Vector*>(plane));
-        plane->a = rotated.x; plane->b = rotated.y; plane->c = rotated.z;
-        plane = reinterpret_cast<Plane*>(reinterpret_cast<unsigned char*>(field<PlaneList>(camera, 0x1F8).data) + offset);
-        const Vector& position = field<Vector>(camera, 0x7C);
-        double distance = static_cast<double>(plane->d) - static_cast<double>(plane->c) * static_cast<double>(position.z);
-        distance -= static_cast<double>(plane->b) * static_cast<double>(position.y);
-        distance -= static_cast<double>(plane->a) * static_cast<double>(position.x);
-        plane->d = static_cast<float>(distance);                        // 0045CBB9
+        quaternion_rotate_004a9bb0(&rotated, &ref<Quaternion>(camera, 0x88), reinterpret_cast<const Vector*>(plane));
+        copy_words3(plane, &rotated);                                  // 0045CB78..0045CB85 (raw dword moves)
+        plane = reinterpret_cast<Plane*>(reinterpret_cast<unsigned char*>(ref<PlaneList>(camera, 0x1F8).data) + offset);
+        // 0045CB8E..0045CBB9: ((d - c*pz) - b*py) - a*px ; fstp dword [plane+0Ch]
+        const long double distance = (static_cast<long double>(plane->d) - static_cast<long double>(plane->c) * ref<float>(camera, 0x84))
+                                     - static_cast<long double>(plane->b) * ref<float>(camera, 0x80);
+        plane->d = S(distance - static_cast<long double>(plane->a) * ref<float>(camera, 0x7C));   // 0045CBB9 fstp
     }
-    const Plane* chosen = field<PlaneList>(camera, 0x1F8).data + *cells.plane_index_007bb4ec;   // 0045CBC4 shl 4
+    const Plane* chosen = ref<PlaneList>(camera, 0x1F8).data + *cells.plane_index_007bb4ec;   // 0045CBC4 shl 4
     std::memcpy(cells.plane_normal_007bb4f8, chosen, 12);              // 0045CBD6..0045CBEE
-    *cells.plane_distance_007bb4e4 = chosen->d;                        // 0045CBF8
-    field<U>(camera, 0x1F4) = 1;                                       // 0045CBFE
+    *cells.plane_distance_007bb4e4 = S(W(chosen->d));                  // 0045CBF4..0045CBF8 fld ; fstp dword (an x87 copy)
+    ref<U>(camera, 0x1F4) = 1;                                       // 0045CBFE
     *cells.current_camera_007bb4e8 = camera;                           // 0045CC0F
     glMatrixMode(kGlModelview_0073f298);                               // 0045CC15
-    void* scene = field<void*>(camera, 0x6C);
+    void* scene = ref<void*>(camera, 0x6C);
     scene_vt(scene)->s018_scene_render(scene, nullptr);                       // 0045CC1C Scene::Render
     glMatrixMode(kGlProjection_0073f290); glPopMatrix();               // 0045CC26 / 0045CC2E
     glMatrixMode(kGlModelview_0073f298); glPopMatrix();                // 0045CC37 / 0045CC39
     *cells.current_camera_007bb4e8 = nullptr;                          // 0045CC3B
-    if (field<U>(camera, 0x1EC) != 0 || field<U>(camera, 0x1F0) != 0) // 0045CC4B / 0045CC55
+    if (ref<U>(camera, 0x1EC) != 0 || ref<U>(camera, 0x1F0) != 0) // 0045CC4B / 0045CC55
         glViewport(viewport[0], viewport[1], viewport[2], viewport[3]); // 0045CC6D
 }
 
 // ================================================================ math / GL wrappers
 // 004A96D0 DegToRad: fld [esp+4]; fmul [007415F8]; ret (ST0)
-double __cdecl deg_to_rad_004a96d0(float degrees) { return W(degrees) * W(f(kDegToRad_007415f8)); }   // ST0 wide (D30-FINAL)
+// L3 t1 a2: the product of two floats is exact in 53 bits, so the double-typed product IS the original's ST0 (no
+// long double -> double conversion, which was a qword round trip with no original store: S3).
+double __cdecl deg_to_rad_004a96d0(float degrees) { return static_cast<double>(degrees) * static_cast<double>(f(kDegToRad_007415f8)); }
 
 // 0045C300 _gluPerspective: re-pushes four doubles to GLU32 gluPerspective (thunk 0070C126)
-void __cdecl glu_perspective_0045c300(double fovy, double aspect, double z_near, double z_far) {
-    gluPerspective(fovy, aspect, z_near, z_far);
+// L3 t1 a2: the eight argument words are re-pushed with mov (0045C300..0045C327); double parameters were re-pushed
+// with fld/fstp qword (quiets a signalling NaN).
+void __cdecl glu_perspective_0045c300(double, double, double, double) {
+    using GluPerspectiveWords = void (__stdcall*)(U, U, U, U, U, U, U, U);
+    const U* a = A2_STACK_ARGS();
+    words_form<GluPerspectiveWords>(&gluPerspective)(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7]);   // 0045C328 (thunk 0070C126)
 }
 
 // 00404B60 _glOrtho: re-pushes six doubles to opengl32 glOrtho (IAT 0073D234)
-void __cdecl gl_ortho_00404b60(double left, double right, double bottom, double top, double z_near, double z_far) {
-    glOrtho(left, right, bottom, top, z_near, z_far);
+// L3 t1 a2: the twelve argument words are re-pushed with mov (00404B60..00404B9B), as 0045C300.
+void __cdecl gl_ortho_00404b60(double, double, double, double, double, double) {
+    using GlOrthoWords = void (__stdcall*)(U, U, U, U, U, U, U, U, U, U, U, U);
+    const U* a = A2_STACK_ARGS();
+    words_form<GlOrthoWords>(&glOrtho)(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11]);   // 00404B9C
 }
 
 // 004AB210 vectorCrossProduct(out, p, q) = p x q
 Vector* __cdecl vector_cross_004ab210(Vector* out, const Vector* p, const Vector* q) {
-    const double z = static_cast<double>(p->x) * q->y - static_cast<double>(p->y) * q->x;
-    const double y = static_cast<double>(p->z) * q->x - static_cast<double>(q->z) * p->x;
-    const double x = static_cast<double>(p->y) * q->z - static_cast<double>(p->z) * q->y;
+    const long double z = static_cast<long double>(p->x) * q->y - static_cast<long double>(p->y) * q->x;
+    const long double y = static_cast<long double>(p->z) * q->x - static_cast<long double>(q->z) * p->x;
+    const long double x = static_cast<long double>(p->y) * q->z - static_cast<long double>(p->z) * q->y;
     out->x = static_cast<float>(x); out->y = static_cast<float>(y); out->z = static_cast<float>(z);   // 004AB242..004AB247
     return out;                                                        // EAX = out (004AB23C)
 }
 
 // 004AB100 vector_magnitude: sqrt((x*x + y*y) + z*z) in ST0
-double __cdecl vector_magnitude_004ab100(const Vector* v) {
-    // Original register operation order, including NaN operand selection.
-    // At the game's PC53 setting the float-derived result is exactly a double;
-    // this typed return seam cannot discard significand or exponent bits.
-    double magnitude;
+// L3 t1 a2: the reviewed asm body (unchanged instructions) as a naked function ending in the original's `ret`, so ST0 is
+// returned as the original leaves it; the former `fstp qword [magnitude]` + `return magnitude` was a qword round trip
+// with no original store (S3). The asm has no CALL. Extern callers keep the `double` declaration (ST0 return).
+__declspec(naked) double __cdecl vector_magnitude_004ab100(const Vector*) {
     __asm {
-        mov eax, v
+        mov eax, dword ptr [esp+4]
         fld dword ptr [eax+8]
         fld dword ptr [eax+4]
         fld dword ptr [eax]
@@ -746,9 +757,8 @@ double __cdecl vector_magnitude_004ab100(const Vector* v) {
         fstp st(3)
         fstp st(0)
         fstp st(0)
-        fstp magnitude
+        ret
     }
-    return magnitude;
 }
 
 // 004ACA00 NormalOf(out, a, b, c) = normalize((b-a) x (c-b)); zero length -> (1,0,0)
@@ -757,15 +767,15 @@ Vector* __cdecl normal_of_004aca00(Vector* out, const Vector* a, const Vector* b
     const Vector e2{S(W(b->x) - W(a->x)), S(W(b->y) - W(a->y)), S(W(b->z) - W(a->z))};   // 004ACA2F..004ACA51
     Vector cross;
     vector_cross_004ab210(&cross, &e2, &e1);                           // 004ACA56
-    const double magnitude = vector_magnitude_004ab100(&cross);        // 004ACA60
+    const long double magnitude = vector_magnitude_004ab100(&cross);        // 004ACA60
     if (magnitude == 0.0) {                                            // fcom 0; test ah,44h; jp (equal only)
         out->x = f(kOne); out->y = 0.0f; out->z = 0.0f;                // 004ACA7D..004ACA86
         return out;
     }
-    const double inverse = 1.0 / magnitude;                            // 004ACA8D fdivr [0073D764]
-    out->x = static_cast<float>(static_cast<double>(cross.x) * inverse);
-    out->y = static_cast<float>(static_cast<double>(cross.y) * inverse);
-    out->z = static_cast<float>(static_cast<double>(cross.z) * inverse);
+    const long double inverse = 1.0 / magnitude;                            // 004ACA8D fdivr [0073D764]
+    out->x = static_cast<float>(static_cast<long double>(cross.x) * inverse);
+    out->y = static_cast<float>(static_cast<long double>(cross.y) * inverse);
+    out->z = static_cast<float>(static_cast<long double>(cross.z) * inverse);
     return out;
 }
 
@@ -780,13 +790,13 @@ Vector* __cdecl quaternion_rotate_004a9bb0(Vector* out, const Quaternion* q, con
     const float xx = S(W(q->x) * W(q->x)), yy = S(W(q->y) * W(q->y)), zz = S(W(q->z) * W(q->z));  // [esp] [esp+10h] [esp+0Ch]
     const float yx = S(W(q->y) * W(q->x)), zx = S(W(q->z) * W(q->x)), xw = S(W(q->x) * W(q->w));  // [esp+14h] [esp+20h] [esp+8]
     const float zy = S(W(q->z) * W(q->y)), yw = S(W(q->y) * W(q->w)), zw = S(W(q->z) * W(q->w));  // [esp+4] [esp+1Ch] [esp+18h]
-    const double vx = v->x, vy = v->y, vz = v->z;
-    const double t1 = (1.0 - 2.0 * (static_cast<double>(yy) + xx)) * vz + 2.0 * (static_cast<double>(zx) - yw) * vx +
-                      2.0 * (static_cast<double>(zy) + xw) * vy;      // 004A9C56..004A9C84
-    const double t2 = (1.0 - 2.0 * (static_cast<double>(zz) + xx)) * vy + 2.0 * (static_cast<double>(zw) + yx) * vx +
-                      2.0 * (static_cast<double>(zy) - xw) * vz;      // 004A9C86..004A9CB4
-    const double t3 = (1.0 - 2.0 * (static_cast<double>(zz) + yy)) * vx + 2.0 * (static_cast<double>(yx) - zw) * vy +
-                      2.0 * (static_cast<double>(yw) + zx) * vz;      // 004A9CB6..004A9CE8
+    const long double vx = v->x, vy = v->y, vz = v->z;
+    const long double t1 = (1.0 - 2.0 * (static_cast<long double>(yy) + xx)) * vz + 2.0 * (static_cast<long double>(zx) - yw) * vx +
+                      2.0 * (static_cast<long double>(zy) + xw) * vy;      // 004A9C56..004A9C84
+    const long double t2 = (1.0 - 2.0 * (static_cast<long double>(zz) + xx)) * vy + 2.0 * (static_cast<long double>(zw) + yx) * vx +
+                      2.0 * (static_cast<long double>(zy) - xw) * vz;      // 004A9C86..004A9CB4
+    const long double t3 = (1.0 - 2.0 * (static_cast<long double>(zz) + yy)) * vx + 2.0 * (static_cast<long double>(yx) - zw) * vy +
+                      2.0 * (static_cast<long double>(yw) + zx) * vz;      // 004A9CB6..004A9CE8
     out->x = static_cast<float>(t3); out->y = static_cast<float>(t2); out->z = static_cast<float>(t1); // 004A9CEA..004A9CEF
     return out;
 }
@@ -801,20 +811,20 @@ Quaternion* __cdecl quaternion_negate_w_004a9b50(Quaternion* out, const Quaterni
 
 // 004AA9C0 MakeMatrix4x4(out[16], translation, quaternion)
 float* __cdecl make_matrix4x4_004aa9c0(float* m, const Vector* t, const Quaternion* q) {
-    const double xx = static_cast<double>(q->x) * q->x, yy = static_cast<double>(q->y) * q->y;   // FPU stack
-    const double zz = static_cast<double>(q->z) * q->z, yx = static_cast<double>(q->y) * q->x;
+    const long double xx = static_cast<long double>(q->x) * q->x, yy = static_cast<long double>(q->y) * q->y;   // FPU stack
+    const long double zz = static_cast<long double>(q->z) * q->z, yx = static_cast<long double>(q->y) * q->x;
     const float zx = S(W(q->z) * W(q->x)), wx = S(W(q->w) * W(q->x)), zy = S(W(q->z) * W(q->y)), wy = S(W(q->w) * W(q->y)); // fstp dword
-    const double wz = static_cast<double>(q->w) * q->z;
+    const long double wz = static_cast<long double>(q->w) * q->z;
     U* bits = reinterpret_cast<U*>(m);
     bits[3] = 0; bits[7] = 0; bits[11] = 0;                            // 004AAA15..004AAA1D
     m[0] = static_cast<float>(1.0 - 2.0 * (zz + yy));
     m[1] = static_cast<float>(2.0 * (wz + yx));
-    m[2] = static_cast<float>(2.0 * (static_cast<double>(zx) - wy));
+    m[2] = static_cast<float>(2.0 * (static_cast<long double>(zx) - wy));
     m[4] = static_cast<float>(2.0 * (yx - wz));
     m[5] = static_cast<float>(1.0 - 2.0 * (zz + xx));
-    m[6] = static_cast<float>(2.0 * (static_cast<double>(zy) + wx));
-    m[8] = static_cast<float>(2.0 * (static_cast<double>(wy) + zx));
-    m[9] = static_cast<float>(2.0 * (static_cast<double>(zy) - wx));
+    m[6] = static_cast<float>(2.0 * (static_cast<long double>(zy) + wx));
+    m[8] = static_cast<float>(2.0 * (static_cast<long double>(wy) + zx));
+    m[9] = static_cast<float>(2.0 * (static_cast<long double>(zy) - wx));
     m[10] = static_cast<float>(1.0 - 2.0 * (yy + xx));
     const U* translation = reinterpret_cast<const U*>(t);
     bits[12] = translation[0]; bits[13] = translation[1]; bits[14] = translation[2];   // 004AAA90..004AAAA0
@@ -823,20 +833,29 @@ float* __cdecl make_matrix4x4_004aa9c0(float* m, const Vector* t, const Quaterni
 }
 
 // 00423C40 Quaternion::axis(out) (thiscall, RET 4)
+// L3 t1 (2026-10-24): PLAN-v3 writing rule (replaces the a2-verified scene_acos helper sequence for this function; the
+// helpers stay for 00425D19 / 0046F169). acos is the kotor_math.h long double overload (_CIacos semantics: the 80-bit
+// argument, the 80-bit result; L1, until then the reviewed t11b replica).
 Vector* __fastcall quaternion_axis_00423c40(const Quaternion* q, void*, Vector* out) {
-    const float x = q->x; // 00423C46/50 raw MOV; y/z are FLD/FSTP DWORD.
-    float y, z;
-    scene_acos::save_component(&q->y, &y);
-    scene_acos::save_component(&q->z, &z);
-    const auto angle = scene_acos::twice(scene_acos::evaluate(q->w));
-    if (scene_acos::axis_is_small(angle, kAxisEpsilon_0073f3d8)) {
-        out->x = f(kOne); out->y = 0.0f; out->z = 0.0f;
+    // 00423C43..00423C54: the three components are copied before out is written (out may alias q): x by MOV, y and z by
+    // fld/fstp dword. Each is only ever multiplied later, so they are held as register values here.
+    const long double x = ref<float>(const_cast<Quaternion*>(q), 4);
+    const long double y = ref<float>(const_cast<Quaternion*>(q), 8);
+    const long double z = ref<float>(const_cast<Quaternion*>(q), 0xC);
+    // 00423C58..00423C5F: fld w ; call _CIacos ; fadd st,st
+    const long double r = acos(static_cast<long double>(ref<float>(const_cast<Quaternion*>(q), 0)));
+    const long double angle = r + r;
+    // 00423C61..00423C81: fld st(0) ; fcom 0 ; test 5 ; jp (skip fchs unless less) ; fcomp qword 1e-7 ; test 5 ; jp
+    const long double magnitude = (angle < 0.0f) ? -angle : angle;
+    if (magnitude < kAxisEpsilon_0073f3d8) {
+        out->x = f(kOne); out->y = 0.0f; out->z = 0.0f;                // 00423C83..00423C90 (raw dwords)
         return out;
     }
-    const auto scale = scene_acos::axis_scale(angle);
-    out->x = scene_acos::scale_component(x, scale);
-    out->y = scene_acos::scale_component(y, scale);
-    out->z = scene_acos::scale_component(z, scale);
+    // 00423C99..00423CA1: fmul qword 0.5 ; fsin ; fdivr qword 1.0
+    const long double scale = kRsOneD_0073ede8 / sin(angle * kRsHalfD_0073f3d0);
+    out->x = static_cast<float>(x * scale);                            // 00423CA7..00423CAD
+    out->y = static_cast<float>(y * scale);                            // 00423CAF..00423CB5
+    out->z = static_cast<float>(z * scale);                            // 00423CB8..00423CBE
     return out;
 }
 
@@ -856,10 +875,19 @@ void __cdecl gl_set_view_transform_00425ca0(const Vector* position, const Quater
     } else {
         Vector axis;
         quaternion_axis_00423c40(orientation, nullptr, &axis);         // 00425D19
-        const auto angle = scene_acos::twice(scene_acos::evaluate(orientation->w));  // 00425D2F facos; fadd
-        glRotatef(scene_acos::degrees(angle, f(kRadToNegDeg_0073f3f8)), axis.x, axis.y, axis.z); // 00425D40
+        // L3 t1 a2: real L1 acos(long double) (_CIacos 006FC0E0 on the 80-bit operand loaded from w), then
+        // 00425D34 fadd st,st ; 00425D37 fmul dword [0073F3F8] ; 00425D3D fstp dword (the angle argument).
+        const long double arc = acos(W(orientation->w));                 // 00425D1E fld [esi] ; 00425D2F call 006FC0E0
+        const U degrees = stored_bits((arc + arc) * f(kRadToNegDeg_0073f3f8));   // 00425D34..00425D3D fstp [esp]
+        const U* ax = reinterpret_cast<const U*>(&axis);
+        words_form<GlWords4>(&glRotatef)(degrees, ax[0], ax[1], ax[2]);   // 00425D20..00425D40 (axis pushed as dwords)
     }
-    glTranslatef(-position->x, -position->y, -position->z);            // 00425D66
+    // L3 t1 a2 (2026-11-01, value gate): fld ; fchs ; fstp dword per word (00425D4A..00425D63, z first). The float negation
+    // compiled to an integer sign flip here, which keeps a signalling NaN the original quiets.
+    const U tz = stored_bits(-W(position->z));                         // 00425D4A..00425D52
+    const U ty = stored_bits(-W(position->y));                         // 00425D56..00425D5B
+    const U tx = stored_bits(-W(position->x));                         // 00425D5F..00425D63
+    words_form<GlWords3>(&glTranslatef)(tx, ty, tz);                   // 00425D66
 }
 
 // 0044F320 QueryTimer: microseconds as signed 64-bit (EDX:EAX)
@@ -877,14 +905,17 @@ I64 __cdecl query_timer_0044f320() {
 }
 
 // ================================================================ per-frame core: RenderSinglePass
+}   // extern "C" (L3 t1 a2: closed around the C++-linkage helpers below; LD1)
 namespace {
 // Shared timing tail: end = QueryTimer(); [7B9288]=end; ms = (I)(end.lo - [7B9298].lo) * 0.001f; then restart [7B9298].
-inline double pass_elapsed_ms() {
+// L3 t1 a2: force-inlined and long double (it was a /Ob0 call returning double: a qword round trip, S3); C++ linkage
+// (outside the file's extern "C" block; LD1).
+__forceinline long double pass_elapsed_ms() {
     const I64 end = query_timer_0044f320();
     const U start_low = static_cast<U>(*cells.animate_start_007b9298);
     *cells.animate_end_007b9288 = end;
     const I elapsed = static_cast<I>(static_cast<U>(end) - start_low);
-    return static_cast<double>(elapsed) * static_cast<double>(f(kMilli_0073d708));
+    return static_cast<long double>(elapsed) * static_cast<long double>(f(kMilli_0073d708));
 }
 inline void pass_restart() { *cells.animate_start_007b9298 = query_timer_0044f320(); }
 // 004516A1..004516C1 (also 0045171E.., 0045184F..): clear stencil to (1<<(bits-1))-1, mask 0xFF, glClear(STENCIL)
@@ -900,6 +931,7 @@ constexpr U kBlendSrc_0073f270 = 0x0302, kBlendDst_0073f274 = 0x0303;
 constexpr U kGlFront_0073f2ec = 0x0404, kGlAmbient_0073f2fc = 0x1200, kGlDiffuse_0073f300 = 0x1201, kGlEmission_0073f304 = 0x1600;
 constexpr U kGlAlways_0073f2bc = 0x0207, kGlKeep_0073f2c8 = 0x1E00, kGlReplace_0073f2d0 = 0x1E01;
 }
+extern "C" {
 
 // 004AAAB0 Homogenize(v, &w): copies v.xyz and *w into the static float[4] at 00831F18, returns it.
 float* __cdecl homogenize_004aaab0(const Vector* v, const float* w) {
@@ -918,31 +950,38 @@ I __cdecl aur_get_available_stencil_bits_0045fd00() {
 }
 
 // 00437BA0 Matrix::Matrix(Vector r0, Vector r1, Vector r2) by value, RET 24h: zero 9 then rows.
-float* __fastcall matrix_construct_00437ba0(float* out, void*, Vector r0, Vector r1, Vector r2) {
+float* __fastcall matrix_construct_00437ba0(float* out, void*, Vector, Vector, Vector) {
+    const U* r = A2_STACK_ARGS();                                      // r0, r1, r2 words [esp+4]..[esp+24h]
     U* m = reinterpret_cast<U*>(out);
     for (int i = 0; i < 9; ++i) m[i] = 0;                              // 00437BA8..00437BBF
-    std::memcpy(m + 0, &r0, 12); std::memcpy(m + 3, &r1, 12); std::memcpy(m + 6, &r2, 12); // 00437BC4..00437BFB
+    for (int i = 0; i < 9; ++i) m[i] = r[i];                           // 00437BC4..00437BFB (mov)
     return out;
 }
 
 // 0044F470 Quaternion::getmatrix(out 3x3) thiscall RET 4
+// L3 t1 a2: the thirteen original fstp dword stores are the thirteen (float) conversions; the nine matrix words are passed
+// to Matrix::Matrix as the stack words the original fills with mov (0044F538..0044F58A); y2, yx, wz, z2 are held as
+// their rounded values (the original reloads them from [esp+8] / [esp+10h] / [esp+0Ch] / [esp+4]).
 float* __fastcall quaternion_get_matrix_0044f470(const Quaternion* q, void*, float* out) {
-    const double xz = static_cast<double>(q->x) * q->z, wy = static_cast<double>(q->y) * q->w;   // FPU stack
-    const float a = static_cast<float>(2.0 * (wy + xz));                               // [esp+14h]
-    const double yz = static_cast<double>(q->y) * q->z, wx = static_cast<double>(q->x) * q->w;
-    const float b = static_cast<float>(2.0 * (yz - wx));                               // [esp+18h]
-    const float y2 = S(W(q->y) * W(q->y));                                              // [esp+8] fstp dword
-    const double xx = static_cast<double>(q->x) * q->x;                                // stays on stack
-    const float c = static_cast<float>(1.0 - 2.0 * (static_cast<double>(y2) + xx));    // [esp+1Ch]
-    const float yx = S(W(q->y) * W(q->x)), wz = S(W(q->w) * W(q->z));                   // [esp+10h] [esp+0Ch]
-    const float d = static_cast<float>(2.0 * (static_cast<double>(yx) - wz));         // [esp+20h]
-    const float z2 = S(W(q->z) * W(q->z));                                              // [esp+4]
-    const float e = static_cast<float>(1.0 - 2.0 * (static_cast<double>(z2) + xx));    // [esp+24h]
-    const float ff = static_cast<float>(2.0 * (wx + yz));                              // [esp+28h]
-    const float g = static_cast<float>(1.0 - 2.0 * (static_cast<double>(z2) + y2));    // [esp+2Ch]
-    const float h = static_cast<float>(2.0 * (static_cast<double>(wz) + yx));          // [esp+30h]
-    const float i = static_cast<float>(2.0 * (xz - wy));                               // 0044F532..0044F57D
-    return matrix_construct_00437ba0(out, nullptr, Vector{g, h, i}, Vector{d, e, ff}, Vector{a, b, c}); // 0044F58F
+    const long double xz = static_cast<long double>(q->x) * q->z, wy = static_cast<long double>(q->y) * q->w;   // 0044F473..0044F47D
+    const U a = stored_bits(2.0 * (wy + xz));                                   // 0044F485 fstp [esp+14h]
+    const long double yz = static_cast<long double>(q->y) * q->z, wx = static_cast<long double>(q->x) * q->w;   // 0044F489..0044F492
+    const U b = stored_bits(2.0 * (yz - wx));                                   // 0044F49A fstp [esp+18h]
+    const long double y2 = S(W(q->y) * W(q->y));                                // 0044F4A5 fstp [esp+8]
+    const long double xx = static_cast<long double>(q->x) * q->x;               // stays on the stack
+    const U c = stored_bits(1.0 - 2.0 * (y2 + xx));                             // 0044F4C0 fstp [esp+1Ch]
+    const long double yx = S(W(q->y) * W(q->x));                                // 0044F4CA fstp [esp+10h]
+    const long double wz = S(W(q->w) * W(q->z));                                // 0044F4D3 fstp [esp+0Ch]
+    const U d = stored_bits(2.0 * (yx - wz));                                   // 0044F4E1 fstp [esp+20h]
+    const long double z2 = S(W(q->z) * W(q->z));                                // 0044F4EC fstp [esp+4]
+    const U e = stored_bits(1.0 - 2.0 * (z2 + xx));                             // 0044F500 fstp [esp+24h]
+    const U ff = stored_bits(2.0 * (wx + yz));                                  // 0044F50A fstp [esp+28h]
+    const U g = stored_bits(1.0 - 2.0 * (z2 + y2));                             // 0044F520 fstp [esp+2Ch]
+    const U h = stored_bits(2.0 * (wz + yx));                                   // 0044F52E fstp [esp+30h]
+    const U i = stored_bits(2.0 * (xz - wy));                                   // 0044F532..0044F57D fstp [esp+58h]
+    volatile U w[9];                                                            // the words as frame words (stored once,
+    w[0] = g; w[1] = h; w[2] = i; w[3] = d; w[4] = e; w[5] = ff; w[6] = a; w[7] = b; w[8] = c;   // copied with mov)
+    return words_form<MatrixWords>(&matrix_construct_00437ba0)(out, nullptr, w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8]); // 0044F58F
 }
 
 // 004514F0 Scene::RenderSinglePass (Scene vtbl+B8)
@@ -952,12 +991,17 @@ void __fastcall scene_render_single_pass_004514f0(void* scene, void*) {
     if (aur_nv2x_level_shaders_available_0045fbd0()) {                 // 004514F9
         void* camera = *cells.current_camera_007bb4e8;
         float m[9];
-        quaternion_get_matrix_0044f470(&field<Quaternion>(camera, 0x88), nullptr, m);   // 00451517
+        quaternion_get_matrix_0044f470(&ref<Quaternion>(camera, 0x88), nullptr, m);   // 00451517
         camera = *cells.current_camera_007bb4e8;                       // 0045151C reload
-        const Vector position = field<Vector>(camera, 0x7C);
-        gl_program_env_parameter_0044f820(0x5C, m[0], m[3], m[6], position.x);         // 0045153F
-        gl_program_env_parameter_0044f820(0x5B, m[1], m[4], m[7], position.y);         // 00451556
-        gl_program_env_parameter_0044f820(0x5A, m[2], m[5], m[8], position.z);         // 0045156D
+        // L3 t1 a2: every argument is a raw word pushed from a register loaded with mov (00451522..0045156B); the
+        // float-typed call loaded them with fld dword (quiets a signalling NaN) and held them across the calls (S1).
+        using ProgramEnvWords = void (__cdecl*)(U, U, U, U, U);
+        const U* mw = reinterpret_cast<const U*>(m);
+        const U* position = &ref<U>(camera, 0x7C);
+        const U px = position[0], py = position[1], pz = position[2];  // 00451529..0045152E (eax, edi, ebx)
+        words_form<ProgramEnvWords>(&gl_program_env_parameter_0044f820)(0x5C, mw[0], mw[3], mw[6], px);   // 0045153F
+        words_form<ProgramEnvWords>(&gl_program_env_parameter_0044f820)(0x5B, mw[1], mw[4], mw[7], py);   // 00451556
+        words_form<ProgramEnvWords>(&gl_program_env_parameter_0044f820)(0x5A, mw[2], mw[5], mw[8], pz);   // 0045156D
         const ProgramParameter4f set = (*cells.programs_0078e5ec != 0)                 // 00451572
             ? *cells.program_env_parameter_007bb850 : *cells.program_parameter_nv_007bb7ac;
         set(0x8620, 0x59, 0.0f, 0.0f, 0.0f, f(kOne));                 // 00451590 / 00451598
@@ -978,7 +1022,7 @@ void __fastcall scene_render_single_pass_004514f0(void* scene, void*) {
     if (*cells.static_geometry_0078e400 != 0) scene_vt(scene)->s0c4_scene_render_static_geometry(scene, nullptr);  // 00451651 RenderStaticGeometry
     {
         float w = f(kOne);                                             // 00451663
-        glLightModelfv(0x0B53, homogenize_004aaab0(&field<Vector>(scene, 0x88), &w));    // 0045166B / 00451679
+        glLightModelfv(0x0B53, homogenize_004aaab0(&ref<Vector>(scene, 0x88), &w));    // 0045166B / 00451679
     }
     glDisableClientState(kGlColorArray_0073f3a0);                      // 00451682
     glDisable_0073d22c(0x0B57);                                        // 00451689
@@ -990,7 +1034,7 @@ void __fastcall scene_render_single_pass_004514f0(void* scene, void*) {
     *cells.pass_ms_007b92b8 = static_cast<float>(pass_elapsed_ms());   // 004516DD..00451703
     pass_restart();                                                    // 00451709
     clear_stencil();                                                   // 00451719..00451740 (unconditional)
-    if (field<U>(scene, 0xD4) != 0 && *cells.shadows_0078e3a8 != 0)    // 00451746 / 00451750
+    if (ref<U>(scene, 0xD4) != 0 && *cells.shadows_0078e3a8 != 0)    // 00451746 / 00451750
         (void)scene_vt(scene)->s0bc_scene_render_shadows(scene, nullptr, 0, 1, 1, 0);       // 00451765 RenderShadows
     *cells.pass_ms_007b92bc = static_cast<float>(pass_elapsed_ms());   // 0045176B..00451791
     pass_restart();
@@ -1005,7 +1049,7 @@ void __fastcall scene_render_single_pass_004514f0(void* scene, void*) {
         clear_stencil();
         (void)scene_vt(scene)->s118_scene_do_highlight_triggers(scene, nullptr, 1);                  // 0045187D DoHighlightTriggers(1)
     }
-    *cells.pass_ms_007b92b8 = static_cast<float>(pass_elapsed_ms() + static_cast<double>(*cells.pass_ms_007b92b8)); // 004518A9 fadd
+    *cells.pass_ms_007b92b8 = static_cast<float>(pass_elapsed_ms() + static_cast<long double>(*cells.pass_ms_007b92b8)); // 004518A9 fadd
     pass_restart();
     (void)scene_vt(scene)->s110_scene_do_emitter_bucket(scene, nullptr);                      // 004518C9 DoEmitterBucket
     scene_vt(scene)->s0e8_scene_do_light_saber_bucket(scene, nullptr);                       // 004518D3 DoLightSaberBucket
@@ -1014,12 +1058,12 @@ void __fastcall scene_render_single_pass_004514f0(void* scene, void*) {
     pass_restart();
     (void)scene_vt(scene)->s0cc_scene_render_motion_blur(scene, nullptr);                       // 0045191E RenderMotionBlur
     (void)scene_vt(scene)->s0e4_scene_do_distortion_buckets(scene, nullptr);                       // 00451928 DoDistortionBuckets
-    gl_set_film_noise_texture_00426650(field<void*>(scene, 0xE4));     // 00451935
-    *cells.distortion_texture_007a68d8 = field<void*>(scene, 0xE8);    // 00451940
-    if (field<U>(scene, 0xD4) != 0)                                    // 0045194F
+    gl_set_film_noise_texture_00426650(ref<void*>(scene, 0xE4));     // 00451935
+    *cells.distortion_texture_007a68d8 = ref<void*>(scene, 0xE8);    // 00451940
+    if (ref<U>(scene, 0xD4) != 0)                                    // 0045194F
         gl_frame_buffer_modifications_00437520(*cells.framebuffer_mode_007fbfc4 > 0 ? 0x3Fu : 0x1Fu); // 00451953..00451968
     scene_vt(scene)->s0c8_scene_render_lens_flares(scene, nullptr);                       // 00451974 RenderLensFlares
-    if (field<U>(scene, 0xD4) != 0) {                                  // 0045197A
+    if (ref<U>(scene, 0xD4) != 0) {                                  // 0045197A
         glDisable_0073d22c(*cells.gl_depth_test_0078d474);             // 0045198A
         glDisable_0073d22c(*cells.gl_lighting_0078d45c);               // 00451993
         gl_frame_buffer_modifications2_004361f0(0x1F);                 // 00451997
@@ -1063,7 +1107,7 @@ I __cdecl aur_get_stencil_clear_value_0045fd20() {
 // 00450C30 Scene::RenderStaticGeometry (Scene vtbl+C4)
 void __fastcall scene_render_static_geometry_00450c30(void* scene, void*) {
     aur_vertex_program_make_current_004a23b0();                        // 00450C37
-    void* lights = field<void*>(scene, 0x80);
+    void* lights = ref<void*>(scene, 0x80);
     slot<SlotVoid>(lights, 0x08)(lights, nullptr);                     // 00450C44 LightManager vtbl+08
     float material[8];                                                 // [esp+0Ch]..[esp+28h]
     U* bits = reinterpret_cast<U*>(material);
@@ -1095,15 +1139,17 @@ void __fastcall scene_render_dynamic_geometry_00450b50(void* scene, void*) {
 
 // 00450D60 Scene::RenderOnlyGobs (Scene vtbl+120)
 void __fastcall scene_render_only_gobs_00450d60(void* scene, void*) {
-    void* lights = field<void*>(scene, 0x80);
+    void* lights = ref<void*>(scene, 0x80);
     slot<SlotVoid>(lights, 0x04)(lights, nullptr);                     // 00450D6C LightManager vtbl+04
     kotor_renderer_init::glDisable_0073d22c(*cells.gl_alpha_test_0078d44c); // 00450D76
     aur_vertex_program_make_current_004a23b0();                        // 00450D7C
-    for (I index = 0; index < field<I>(scene, 0x58); ++index) {        // 00450D81..00450DD4 (count re-read, signed)
-        void* gob = field<void**>(scene, 0x54)[index];
-        light_manager_get_nearest_lights_004a3770(field<void*>(scene, 0x80), nullptr, scene,
-            field<Vector>(gob, 0x78), f(0x40000000u), 0);              // 00450DBC (2.0f, 0)
-        gob = field<void**>(scene, 0x54)[index];                       // 00450DC4 reload
+    for (I index = 0; index < ref<I>(scene, 0x58); ++index) {        // 00450D81..00450DD4 (count re-read, signed)
+        void* gob = ref<void**>(scene, 0x54)[index];
+        using NearestLightsWords = void (__fastcall*)(void*, void*, void*, U, U, U, U, U);   // 004A3770, RET 18h
+        const U* p = &ref<U>(gob, 0x78);                               // 00450D9D..00450DB2 (mov copies)
+        words_form<NearestLightsWords>(&light_manager_get_nearest_lights_004a3770)(ref<void*>(scene, 0x80), nullptr, scene,
+            p[0], p[1], p[2], 0x40000000u, 0);                         // 00450DBC (2.0f, 0)
+        gob = ref<void**>(scene, 0x54)[index];                       // 00450DC4 reload
         gob_vt(gob)->s010_gob_render(gob, nullptr, 0);                       // 00450DCB Gob::Render(0)
     }
 }
@@ -1112,15 +1158,15 @@ void __fastcall scene_render_only_gobs_00450d60(void* scene, void*) {
 void __fastcall scene_do_gob_buckets_00457b90(void* scene, void*) {
     using SlotVecU = void (__fastcall*)(void*, void*, const Vector*, U);
     using SlotUU = void (__fastcall*)(void*, void*, U, U);
-    using SlotUVec = void (__fastcall*)(void*, void*, U, Vector);
+    using SlotUVecWords = void (__fastcall*)(void*, void*, U, U, U, U);   // lights vtbl+28 (U, Vector by value)
     Vector position;                                                   // [esp+14h]..[esp+1Ch]
     *cells.gob_bucket_flag_007b92fc = 0;                               // 00457BAD
     reinterpret_cast<U*>(&position)[0] = 0; reinterpret_cast<U*>(&position)[1] = 0; reinterpret_cast<U*>(&position)[2] = 0; // 00457BB7..00457BC7
     qsort_006fbe00(*cells.gob_bucket_007fbfcc, static_cast<U>(*cells.gob_bucket_count_007fbfd0), 4, gob_order_cmp_00450270); // 00457BCF (006FBE00, D34)
     *cells.gob_bucket_snapshot_007b92ec = *cells.gob_bucket_count_007fbfd0;   // 00457BDA
-    void* lights = field<void*>(scene, 0x80);
-    field<U>(lights, 0xE0) = 0;                                        // 00457BE6
-    field<U>(lights, 0xEC) = 0;                                        // 00457BF0
+    void* lights = ref<void*>(scene, 0x80);
+    ref<U>(lights, 0xE0) = 0;                                        // 00457BE6
+    ref<U>(lights, 0xEC) = 0;                                        // 00457BF0
     for (I index = *cells.gob_bucket_count_007fbfd0; index != 0;) {    // 00457BFA..00457E77
         --index;                                                       // 00457C10
         (*cells.callback_0078e39c)();                                  // 00457C15 call [0078E39C]
@@ -1132,17 +1178,17 @@ void __fastcall scene_do_gob_buckets_00457b90(void* scene, void*) {
         }
         if (!gob_visibility_check_004579c0(gob, nullptr)) continue;   // 00457C5C
         if (*cells.depth_toggle_007b92f0 != 0) {                       // 00457C69
-            void* model = field<void*>(gob, 0x58);
-            if (model != nullptr && ((field<U8>(model, 0x50) >> 2) & 1) != 0)       // 00457C72..00457C82
+            void* model = ref<void*>(gob, 0x58);
+            if (model != nullptr && ((ref<U8>(model, 0x50) >> 2) & 1) != 0)       // 00457C72..00457C82
                 kotor_renderer_init::glDisable_0073d22c(*cells.gl_depth_test_0078d474);  // 00457C8B
         }
-        Vector* gob_position = &field<Vector>(gob, 0x78);              // ebp
+        Vector* gob_position = &ref<Vector>(gob, 0x78);              // ebp
         position = *gob_position;                                      // 00457C94..00457CA8
-        lights = field<void*>(scene, 0x80);
+        lights = ref<void*>(scene, 0x80);
         if (gob_is_in_cutscene_0043e8a0(gob, nullptr)) {               // 00457CAC
-            void* part = find_part_0043fe00(static_cast<aurora_model::Part*>(field<void*>(gob, 0x6C)), "cutscenedummy");  // 00457CC2 (00740C8C)
+            void* part = find_part_0043fe00(static_cast<aurora_model::Part*>(ref<void*>(gob, 0x6C)), "cutscenedummy");  // 00457CC2 (00740C8C)
             if (part == nullptr) {
-                slot<SlotVecU>(lights, 0x38)(lights, nullptr, gob_position, field<U>(gob, 0x138)); // 00457CDE
+                slot<SlotVecU>(lights, 0x38)(lights, nullptr, gob_position, ref<U>(gob, 0x138)); // 00457CDE
             } else {
                 U guard = *cells.cutscene_guard_007b9440;              // 00457CE6
                 if ((guard & 1u) == 0) {                               // static Vector 7B9434 = 0
@@ -1155,37 +1201,38 @@ void __fastcall scene_do_gob_buckets_00457b90(void* scene, void*) {
                     q[3] = 0; q[2] = 0; q[1] = 0; q[0] = kOne;         // 00457D26..00457D44 (stores 7B9430,742C,7428,7424)
                 }
                 slot<SlotPartTransform>(part, 0x0C)(part, nullptr, cells.cutscene_position_007b9434, cells.cutscene_orientation_007b9424); // 00457D5C
-                lights = field<void*>(scene, 0x80);
-                slot<SlotVecU>(lights, 0x38)(lights, nullptr, cells.cutscene_position_007b9434, field<U>(gob, 0x138)); // 00457D73
+                lights = ref<void*>(scene, 0x80);
+                slot<SlotVecU>(lights, 0x38)(lights, nullptr, cells.cutscene_position_007b9434, ref<U>(gob, 0x138)); // 00457D73
                 position = *cells.cutscene_position_007b9434;          // 00457D76..00457D8F
             }
         } else {
-            slot<SlotVecU>(lights, 0x38)(lights, nullptr, gob_position, field<U>(gob, 0x138)); // 00457DA5
+            slot<SlotVecU>(lights, 0x38)(lights, nullptr, gob_position, ref<U>(gob, 0x138)); // 00457DA5
         }
-        lights = field<void*>(scene, 0x80);
+        lights = ref<void*>(scene, 0x80);
         slot<SlotVecU>(lights, 0x00)(lights, nullptr, &position, 0);   // 00457DB7
-        lights = field<void*>(scene, 0x80);
-        if (field<U>(gob, 0x178) != 0)                                 // 00457DB9
-            slot<SlotUU>(lights, 0x24)(lights, nullptr, 3, field<U>(gob, 0x178)); // 00457DCE
+        lights = ref<void*>(scene, 0x80);
+        if (ref<U>(gob, 0x178) != 0)                                 // 00457DB9
+            slot<SlotUU>(lights, 0x24)(lights, nullptr, 3, ref<U>(gob, 0x178)); // 00457DCE
         else
             slot<SlotU>(lights, 0x20)(lights, nullptr, 3);             // 00457DD7
         if (*cells.focus_lights_007b9300 != 0 &&                       // 00457DDA
-            _strnicmp(&field<char>(gob, 0x38), "c_focusgob", 10) == 0) {   // 00457DEE (007416B8)
-            lights = field<void*>(scene, 0x80);
-            slot<SlotUVec>(lights, 0x28)(lights, nullptr, 3, *gob_position); // 00457E1A
+            _strnicmp(&ref<char>(gob, 0x38), "c_focusgob", 10) == 0) {   // 00457DEE (007416B8)
+            lights = ref<void*>(scene, 0x80);
+            const U* gp = reinterpret_cast<const U*>(gob_position);    // the position words, mov-copied (00457DF7..00457E17)
+            slot<SlotUVecWords>(lights, 0x28)(lights, nullptr, 3, gp[0], gp[1], gp[2]); // 00457E1A
         }
         kotor_renderer_init::glEnable_0073d390(*cells.gl_blend_0078d448);  // 00457E2E
         glBlendFunc(kBlendSrc_0073f270, kBlendDst_0073f274);           // 00457E3D
         if (*cells.render_gobs_0078e3c4 != 0) gob_vt(gob)->s010_gob_render(gob, nullptr, 0);  // 00457E52 Gob::Render(0)
         if (*cells.depth_toggle_007b92f0 != 0 &&                       // 00457E55 (no null check of gob+58, as original)
-            ((field<U8>(field<void*>(gob, 0x58), 0x50) >> 2) & 1) != 0)
+            ((ref<U8>(ref<void*>(gob, 0x58), 0x50) >> 2) & 1) != 0)
             kotor_renderer_init::glEnable_0073d390(*cells.gl_depth_test_0078d474);  // 00457E73
     }
     if (*cells.animations_0078e3b8 != 0 && *cells.interleaved_007b92f4 != 0) {  // 00457E7D..00457E8D
-        for (I index = field<I>(scene, 0x58); index != 0;) {           // 00457E8F..00457EB1
+        for (I index = ref<I>(scene, 0x58); index != 0;) {           // 00457E8F..00457EB1
             --index;
-            if (index < field<I>(scene, 0x58)) {
-                void* object = field<void**>(scene, 0x54)[index];
+            if (index < ref<I>(scene, 0x58)) {
+                void* object = ref<void**>(scene, 0x54)[index];
                 (void)gob_vt(object)->animate(as_gob(object), nullptr, *cells.frame_time_0078e574); // 00457EAC
             }
         }
@@ -1268,15 +1315,15 @@ void __cdecl qsort_006fbe00(void* base, U num, U width, int (__cdecl* comp)(cons
 int __cdecl gob_order_cmp_00450270(const void* pa, const void* pb) {
     void* a = *static_cast<void* const*>(pa);
     void* b = *static_cast<void* const*>(pb);
-    const float da = field<float>(a, 0xD8), db = field<float>(b, 0xD8);
+    const float da = ref<float>(a, 0xD8), db = ref<float>(b, 0xD8);
     if (da < db) return -1;                                            // 0045027B..00450297 (test ah,5; jp)
     if (da > db) return 1;                                             // 00450299..004502B3 (test ah,41h)
-    const U8 fa = field<U8>(field<void*>(a, 0x58), 0x50);             // 004502B4 (model+50)
-    const U8 fb = field<U8>(field<void*>(b, 0x58), 0x50);
+    const U8 fa = ref<U8>(ref<void*>(a, 0x58), 0x50);             // 004502B4 (model+50)
+    const U8 fb = ref<U8>(ref<void*>(b, 0x58), 0x50);
     if ((fa & 1) != 0) { if ((fb & 1) == 0) return -1; }               // 004502C2..004502D8
     else if ((fb & 1) != 0) return 1;                                  // 004502D9
     if (*cells.order_by_flag_0078e3b4 != 0) {                          // 004502DD
-        const U8 ca = field<U8>(a, 0x17F), cb = field<U8>(b, 0x17F);
+        const U8 ca = ref<U8>(a, 0x17F), cb = ref<U8>(b, 0x17F);
         if (ca != 0) { if (cb == 0) return -1; }                       // 004502E6..004502F8
         else if (cb != 0) return 1;                                    // 004502FE
     }
@@ -1289,7 +1336,7 @@ int __cdecl gob_order_cmp_00450270(const void* pa, const void* pb) {
     const U8 a3 = (fa >> 3) & 1, b3 = (fb >> 3) & 1;                   // 0045035A..00450362
     if (a3 != 0) { if (b3 == 0) return -1; }
     else if (b3 != 0) return 1;
-    return (field<float>(a, 0x104) > field<float>(b, 0x104)) ? 1 : -1; // 0045037B..00450391 (test ah,41h; je -> 1)
+    return (ref<float>(a, 0x104) > ref<float>(b, 0x104)) ? 1 : -1; // 0045037B..00450391 (test ah,41h; je -> 1)
 }
 
 // 00423B90 vectorSum(out, a, b)
@@ -1317,44 +1364,50 @@ Vector* __cdecl vector_sum_00423b90(Vector* out, const Vector* a, const Vector* 
 // 004579C0 Gob::VisibilityCheck -> AL = byte [gob+18]
 bool __fastcall gob_visibility_check_004579c0(void* gob, void*) {
     if (*cells.visibility_test_007b92f8 == 0) return true;            // 004579CE / 004579E7
-    void* model = field<void*>(gob, 0x58);
-    if (model != nullptr && ((field<U8>(model, 0x50) >> 6) & 1) != 0) return true;   // 004579E9..004579FA
+    void* model = ref<void*>(gob, 0x58);
+    if (model != nullptr && ((ref<U8>(model, 0x50) >> 6) & 1) != 0) return true;   // 004579E9..004579FA
     if (gob_vt(gob)->s190_gob_is_always_rendering(as_gob(gob), nullptr) != 0) return true;        // 00457A00 Gob::IsAlwaysRendering
     void* camera = *cells.current_camera_007bb4e8;
     Vector delta;                                                      // [esp+0Ch]
     {
-        const Vector& p = field<Vector>(gob, 0x78);
-        const float z = S(W(field<float>(camera, 0x84)) - W(p.z));     // 00457A0F
-        const float y = S(W(field<float>(camera, 0x80)) - W(p.y));     // 00457A1F
-        const float x = S(W(field<float>(camera, 0x7C)) - W(p.x));     // 00457A29
-        delta.x = x; delta.y = y; delta.z = z;
+        // L3 t1 a2: the three differences stay on the x87 stack and are stored x, y, z (one (float) each, 00457A2E..00457A36).
+        const Vector& p = ref<Vector>(gob, 0x78);
+        const long double z = W(ref<float>(camera, 0x84)) - W(p.z);   // 00457A0F..00457A18
+        const long double y = W(ref<float>(camera, 0x80)) - W(p.y);   // 00457A1F..00457A26
+        const long double x = W(ref<float>(camera, 0x7C)) - W(p.x);   // 00457A29..00457A2C
+        delta.x = static_cast<float>(x);                               // 00457A2E fstp [esp+10h]
+        delta.y = static_cast<float>(y);                               // 00457A32 fstp [esp+14h]
+        delta.z = static_cast<float>(z);                               // 00457A36 fstp [esp+18h]
     }
-    const double distance = vector_magnitude_004ab100(&delta);         // 00457A3A
-    if (static_cast<double>(field<float>(gob, 0x138)) / distance * 2.0 > static_cast<double>(*cells.visibility_ratio_0078e3c0)) { // 00457A48..00457A59
-        field<U>(gob, 0x1C) = 0;                                       // 00457A5B
-        field<U8>(gob, 0x18) = 1;                                      // 00457A62
+    const long double distance = vector_magnitude_004ab100(&delta);         // 00457A3A
+    if (static_cast<long double>(ref<float>(gob, 0x138)) / distance * 2.0 > static_cast<long double>(*cells.visibility_ratio_0078e3c0)) { // 00457A48..00457A59
+        ref<U>(gob, 0x1C) = 0;                                       // 00457A5B
+        ref<U8>(gob, 0x18) = 1;                                      // 00457A62
         return true;                                                   // 00457A66
     }
-    const double elapsed = W(bits_to_float(*cells.frame_time_0078e574)) + W(field<float>(gob, 0x1C));   // 00457A80..00457A86
-    field<float>(gob, 0x1C) = S(elapsed);                              // 00457A89 fst (ST0 stays wide)
+    const long double elapsed = Wcell(cells.frame_time_0078e574) + W(ref<float>(gob, 0x1C));   // 00457A80..00457A86
+    ref<float>(gob, 0x1C) = S(elapsed);                              // 00457A89 fst (ST0 stays wide)
     if (elapsed > W(*cells.visibility_interval_0078e3bc)) {            // 00457A8C fcomp on the wide value
         alignas(4) unsigned char hit[0x64];                            // [esp+30h]..[esp+93h] (stack bound, inferred)
-        field<U>(gob, 0x1C) = 0;                                       // 00457AAA
+        ref<U>(gob, 0x1C) = 0;                                       // 00457AAA
         aurora_hit_info_construct_004578f0(hit, nullptr, 0, 0xBFFFFFFFu, 0); // 00457AB1 (0, raw -1.9999999f, 0)
-        field<U>(hit, 0) = 1;                                          // 00457AD4 [esp+3Ch]=1
+        ref<U>(hit, 0) = 1;                                          // 00457AD4 [esp+3Ch]=1
         Vector zero;                                                   // [esp+18h]..[esp+20h]
         reinterpret_cast<U*>(&zero)[0] = 0; reinterpret_cast<U*>(&zero)[1] = 0; reinterpret_cast<U*>(&zero)[2] = 0;
         Vector offset;                                                 // [esp+24h]
-        quaternion_rotate_004a9bb0(&offset, &field<Quaternion>(gob, 0x84), &field<Vector>(gob, 0x13C)); // 00457AF4
-        vector_sum_00423b90(&delta, &field<Vector>(gob, 0x78), &offset);   // 00457B00
-        void* scene = field<void*>(gob, 0x68);
-        const Vector eye = field<Vector>(*cells.current_camera_007bb4e8, 0x7C);
-        const I blocked = scene_vt(scene)->s038_scene_hit_check(scene, nullptr, eye, delta, &zero, hit); // 00457B4E Scene::HitCheck
-        field<U8>(gob, 0x18) = (blocked == 0) ? 1 : 0;                 // 00457B51 sete
+        quaternion_rotate_004a9bb0(&offset, &ref<Quaternion>(gob, 0x84), &ref<Vector>(gob, 0x13C)); // 00457AF4
+        vector_sum_00423b90(&delta, &ref<Vector>(gob, 0x78), &offset);   // 00457B00
+        void* scene = ref<void*>(gob, 0x68);
+        // L3 t1 a2: start = the camera position words, end = the delta words, both copied with mov (00457B1B..00457B4B).
+        const U* eye = &ref<U>(*cells.current_camera_007bb4e8, 0x7C);
+        const U* end = reinterpret_cast<const U*>(&delta);
+        const I blocked = words_form<HitCheckWords>(scene_vt(scene)->s038_scene_hit_check)(scene, nullptr, eye[0], eye[1], eye[2],
+            end[0], end[1], end[2], &zero, hit);                       // 00457B4E Scene::HitCheck
+        ref<U8>(gob, 0x18) = (blocked == 0) ? 1 : 0;                 // 00457B51 sete
         chit_info_destruct_00456b30(hit, nullptr);                     // 00457B68
     }
-    if (field<U8>(gob, 0x18) == 0) *cells.gob_bucket_flag_007b92fc = *cells.gob_bucket_flag_007b92fc + 1;  // 00457B74 inc [007B92FC]
-    return field<U8>(gob, 0x18) != 0;                                  // 00457B7A mov al,[esi+18h]
+    if (ref<U8>(gob, 0x18) == 0) *cells.gob_bucket_flag_007b92fc = *cells.gob_bucket_flag_007b92fc + 1;  // 00457B74 inc [007B92FC]
+    return ref<U8>(gob, 0x18) != 0;                                  // 00457B7A mov al,[esi+18h]
 }
 
 // 0045F710 AurMultiTextureAvailable: cached (caps & mask 0078E484) == mask in [0078E514]
@@ -1372,12 +1425,12 @@ I __cdecl aur_multi_texture_available_0045f710() {
 void __fastcall scene_do_fog_00450de0(void* scene, void*) {
     using kotor_renderer_init::glEnable_0073d390;
     auto fog_mode = [scene]() {                                        // 00450E0B..00450E2A / 00450ED1..00450EF0
-        const U mode = field<U>(scene, 0x6C);
+        const U mode = ref<U>(scene, 0x6C);
         const U index = (mode == 0) ? 0u : ((mode != 1) ? 2u : 1u);    // setne cl; inc ecx
         glFogi(0x0B65, static_cast<GLint>(kFogModes_0073f25c[index]));
     };
     if (*cells.force_fog_007b930c == 0) {                              // 00450DE0 / 00450DEE
-        if (field<U>(scene, 0x60) == 0) {                              // 00450DF4
+        if (ref<U>(scene, 0x60) == 0) {                              // 00450DF4
             kotor_renderer_init::glDisable_0073d22c(*cells.gl_fog_0078d450);  // 00450EB1
             return;
         }
@@ -1389,14 +1442,14 @@ void __fastcall scene_do_fog_00450de0(void* scene, void*) {
             float color[4] = {0.0f, 0.0f, 0.0f, 0.0f};                // 00450E44..00450E54
             glFogfv(*cells.gl_fog_color_0078d490, color);              // 00450E69
         } else {
-            glFogfv(*cells.gl_fog_color_0078d490, &field<float>(scene, 0x74));  // 00450E64 (reads scene+74..+80, as original)
+            glFogfv(*cells.gl_fog_color_0078d490, &ref<float>(scene, 0x74));  // 00450E64 (reads scene+74..+80, as original)
         }
-        glFogf(*cells.gl_fog_start_0078d484, field<float>(scene, 0x64));  // 00450E83
-        glFogf(*cells.gl_fog_end_0078d488, field<float>(scene, 0x68));    // 00450E93
-        glFogf(*cells.gl_fog_density_0078d48c, field<float>(scene, 0x70)); // 00450EA2
+        glFogf(*cells.gl_fog_start_0078d484, ref<float>(scene, 0x64));  // 00450E83
+        glFogf(*cells.gl_fog_end_0078d488, ref<float>(scene, 0x68));    // 00450E93
+        glFogf(*cells.gl_fog_density_0078d48c, ref<float>(scene, 0x70)); // 00450EA2
         return;
     }
-    field<U>(scene, 0x60) = 1;                                         // 00450EBD
+    ref<U>(scene, 0x60) = 1;                                         // 00450EBD
     glEnable_0073d390(*cells.gl_fog_0078d450);                         // 00450ECB
     fog_mode();
     {
@@ -1427,10 +1480,10 @@ void __fastcall scene_do_bin_bucket_00450150(void* scene, void*) {
     for (I material = 0; material < *cells.grass_materials_00831e48; ++material) {   // 004501EF..00450241
         if (!aur_grass_material_in_use_004a6840(static_cast<U>(material))) continue; // 004501F9
         for (I bin = 0; bin < *cells.bin_count_0080aa6c; ++bin) {      // 00450205..00450237
-            void* wind = field<void*>(scene, 0x84);
+            void* wind = ref<void*>(scene, 0x84);
             void* camera = *cells.current_camera_007bb4e8;
             void* triangle_bin = (*cells.bins_0080aa68)[bin];
-            triangle_bin_render_grass_polys_004a6d30(triangle_bin, nullptr, static_cast<U>(material), &field<Vector>(camera, 0x7C), wind); // 0045022A
+            triangle_bin_render_grass_polys_004a6d30(triangle_bin, nullptr, static_cast<U>(material), &ref<Vector>(camera, 0x7C), wind); // 0045022A
         }
     }
     glAlphaFunc(kGlGreater_0073f2b0, *cells.alpha_ref_007b92e8);       // 00450251
@@ -1492,7 +1545,7 @@ void __fastcall scene_do_mesh_buckets_00455710(void*, void*) {
     PointerList* parts = cells.part_list_00827f40;
     for (I index = 0; index < parts->size; ++index) {                  // 0045573C..00455787 (size re-read)
         void* part = reinterpret_cast<void**>(static_cast<std::uintptr_t>(parts->data))[index];
-        void* material = field<void*>(part, 0x44);
+        void* material = ref<void*>(part, 0x44);
         material_bind_texture0_0047adf0(material, nullptr);            // 0045575F
         material_set_blending_mode_0047af70(material, nullptr, 0);     // 0045576A
         part_prepare(part);                                            // 00455773 / 0045577C
@@ -1505,13 +1558,13 @@ void __fastcall scene_do_mesh_buckets_00455710(void*, void*) {
         PointerList* bucket = &buckets[bucket_index];                  // lea ebx,[eax+eax*2]; shl 2
         if (bucket->size == 0) continue;                               // 004557C3
         void* first = reinterpret_cast<void**>(static_cast<std::uintptr_t>(bucket->data))[0];
-        void* material = field<void*>(first, 0x44);
+        void* material = ref<void*>(first, 0x44);
         material_bind_texture0_0047adf0(material, nullptr);            // 004557DC
         material_set_blending_mode_0047af70(material, nullptr, 0);     // 004557E5
         for (I j = 0; j < bucket->size; ++j) {                         // 004557F2..004558C9 (size re-read)
             void* part = reinterpret_cast<void**>(static_cast<std::uintptr_t>(bucket->data))[j];
             part_prepare(part);                                        // 00455821 / 0045582A
-            const U owner = field<U>(part, 0x80);                      // 0045582D
+            const U owner = ref<U>(part, 0x80);                      // 0045582D
             if (owner == 0) continue;                                  // 00455839
             if (local_count(animated, owner) != 0) continue;           // 0045584E
             local_append(animated, owner);
@@ -1520,17 +1573,17 @@ void __fastcall scene_do_mesh_buckets_00455710(void*, void*) {
     PointerList* bucket0 = &buckets[0];                                // 008194E0 / 008194E4
     for (I j = 0; j < bucket0->size; ++j) {                            // 004558E4..004559BB
         void* part = reinterpret_cast<void**>(static_cast<std::uintptr_t>(bucket0->data))[j];
-        if (j == 0) material_bind_texture0_0047adf0(field<void*>(part, 0x44), nullptr);    // 0045590B / 00455910
+        if (j == 0) material_bind_texture0_0047adf0(ref<void*>(part, 0x44), nullptr);    // 0045590B / 00455910
         part_prepare(part);                                            // 00455919 / 00455922
-        if (local_count(animated, field<U>(part, 0x80)) != 0) continue;   // 00455925..00455940
-        local_append(animated, field<U>(part, 0x80));                  // 00455942..004559AB (no null test here)
+        if (local_count(animated, ref<U>(part, 0x80)) != 0) continue;   // 00455925..00455940
+        local_append(animated, ref<U>(part, 0x80));                  // 00455942..004559AB (no null test here)
     }
     glEnableClientState(kGlTexCoordArray_0073f398);                    // 004559C7
     for (I n = 0; n < animated.size; ++n) {                            // 004559CD..004559F2
         void* object = reinterpret_cast<void*>(static_cast<std::uintptr_t>(animated.data[n]));
         if (object == nullptr) continue;                               // 004559D6
-        field<U>(object, 0x50) = field<U>(object, 0x54);               // 004559DA..004559DD
-        field<U>(object, 0x8C) = kMeshResetValue_00740a70;             // 004559E3..004559E9 (.rdata 00740A70 = 4)
+        ref<U>(object, 0x50) = ref<U>(object, 0x54);               // 004559DA..004559DD
+        ref<U>(object, 0x8C) = kMeshResetValue_00740a70;             // 004559E3..004559E9 (.rdata 00740A70 = 4)
     }
     if (ordering.data != 0) live_free(reinterpret_cast<void*>(static_cast<std::uintptr_t>(ordering.data))); // 00455A02
     if (animated.data != nullptr) live_free(animated.data);            // 00455A17
@@ -1559,131 +1612,152 @@ void __cdecl gl_transform_0046f060(const Vector* position, const Quaternion* ori
         guard |= 2u; *cells.transform_guard_0082809c = guard;
         U* q = reinterpret_cast<U*>(cells.transform_orientation_00828080); q[3] = 0; q[2] = 0; q[1] = 0; q[0] = kOne;
     }
-    *cells.transform_position_00828090 = *position;                    // 0046F112..0046F12C
-    glTranslatef(position->x, position->y, position->z);               // 0046F132
-    *cells.transform_orientation_00828080 = *orientation;              // 0046F138..0046F163
+    const U* pw = reinterpret_cast<const U*>(position);
+    const U px = pw[0], py = pw[1], pz = pw[2];                        // 0046F112..0046F126 (mov)
+    U* cp = reinterpret_cast<U*>(cells.transform_position_00828090); cp[0] = px; cp[1] = py; cp[2] = pz;   // 0046F118..0046F12C
+    words_form<GlWords3>(&glTranslatef)(px, py, pz);                   // 0046F129..0046F132 (push edx/ecx/eax)
+    {   const U* ow = reinterpret_cast<const U*>(orientation);         // 0046F138..0046F163 (mov)
+        U* co = reinterpret_cast<U*>(cells.transform_orientation_00828080);
+        const U w = ow[0], x = ow[1], y = ow[2], z = ow[3];
+        co[0] = w; co[1] = x; co[2] = y; co[3] = z; }
     Vector axis;
     quaternion_axis_00423c40(cells.transform_orientation_00828080, nullptr, &axis);   // 0046F169
-    const auto angle = scene_acos::twice(scene_acos::evaluate(cells.transform_orientation_00828080->w));  // 0046F16E..0046F188
-    glRotatef(scene_acos::degrees(angle, f(kRadToDeg_00742ef8)), axis.x, axis.y, axis.z);  // 0046F194
+    // L3 t1 a2: real L1 acos(long double), then 0046F188 fadd st,st ; 0046F18B fmul dword [00742EF8] ; fstp dword.
+    const long double arc = acos(W(cells.transform_orientation_00828080->w));   // 0046F16E fld ; 0046F183 call 006FC0E0
+    const U degrees = stored_bits((arc + arc) * f(kRadToDeg_00742ef8));     // 0046F188..0046F191 fstp [esp]
+    const U* ax = reinterpret_cast<const U*>(&axis);
+    words_form<GlWords4>(&glRotatef)(degrees, ax[0], ax[1], ax[2]);         // 0046F174..0046F194 (axis pushed as dwords)
 }
 
 // 00473EA0 Gob::PartDraw(part, flag), RET 8. The original inlines two recursion levels (00473F74.., 00474031..)
 // and recurses at 004740D6; this is the recursive source form with the same order of effects.
 void __fastcall gob_part_draw_00473ea0(void* gob, void*, void* part, U flag) {
-    if (field<U8>(part, 0x2C) == 0) return;                            // 00473EA8
-    const Vector saved = *cells.part_draw_vector_0078e8ac;             // 00473EB7..00473ED0
+    if (ref<U8>(part, 0x2C) == 0) return;                            // 00473EA8
+    // L3 t1 a2: saved and restored as three dwords (the original's mov copies; a Vector copy is three float
+    // registers spilled as 4-byte values across the draw calls, S1, and quiets a signalling NaN).
+    U saved[3];
+    std::memcpy(saved, cells.part_draw_vector_0078e8ac, 12);           // 00473EB7..00473ED0
     glPushMatrix();                                                    // 00473ED4
     if (*cells.transform_enabled_0078e5f0 != 0)                        // 00473EDA
-        gl_transform_0046f060(&field<Vector>(part, 0x08), &field<Quaternion>(part, 0x14), 0);   // 00473EED
-    const float scale = field<float>(part, 0x24);
-    glScalef(scale, scale, scale);                                     // 00473F01 (nested levels: _glScalef 00459150)
+        gl_transform_0046f060(&ref<Vector>(part, 0x08), &ref<Quaternion>(part, 0x14), 0);   // 00473EED
+    const U scale = ref<U>(part, 0x24);                              // 00473EF5 mov edx,[ebp+24h]
+    words_form<GlWords3>(&glScalef)(scale, scale, scale);              // 00473EFA..00473F01 (nested levels: _glScalef 00459150)
     const bool skip = slot<SlotI>(part, 0x2C)(part, nullptr) != 0 &&   // 00473F0C
-                      field<void*>(part, 0x04) != nullptr &&           // 00473F13
-                      field<U8>(field<void*>(part, 0x04), 0x189) == 0; // 00473F1A
+                      ref<void*>(part, 0x04) != nullptr &&           // 00473F13
+                      ref<U8>(ref<void*>(part, 0x04), 0x189) == 0; // 00473F1A
     if (!skip) {
         slot<SlotVoid>(part, 0x60)(part, nullptr);                     // 00473F29
         slot<SlotU>(part, 0x64)(part, nullptr, flag);                  // 00473F36
     }
     if (*cells.part_depth_0078e5e0 != 0) {                             // 00473F39
         *cells.part_depth_0078e5e0 = *cells.part_depth_0078e5e0 - 1;   // 00473F49
-        for (I index = 0; index < field<I>(part, 0x34); ++index)       // 00473F4F..00474160 (count re-read)
-            gob_part_draw_00473ea0(gob, nullptr, field<void**>(part, 0x30)[index], flag);
+        for (I index = 0; index < ref<I>(part, 0x34); ++index)       // 00473F4F..00474160 (count re-read)
+            gob_part_draw_00473ea0(gob, nullptr, ref<void**>(part, 0x30)[index], flag);
         *cells.part_depth_0078e5e0 = *cells.part_depth_0078e5e0 + 1;   // 00474168
     }
     glPopMatrix();                                                     // 0047416F
-    *cells.part_draw_vector_0078e8ac = saved;                          // 00474175..0047418D
+    std::memcpy(cells.part_draw_vector_0078e8ac, saved, 12);           // 00474175..0047418D
 }
 
 // 00474C90 Gob::ProxyPartDraw(part_ignored, flag), RET 8: always draws from gob+6C.
 void __fastcall gob_proxy_part_draw_00474c90(void* gob, void*, void*, U flag) {
     using kotor_renderer_init::glEnable_0073d390;
-    void* proxy = field<void*>(gob, 0x170);
-    if (proxy == nullptr || !(field<float>(proxy, 0x94) < f(kOne))) {  // 00474C9E / 00474CAA (test ah,5; jp)
-        gob_part_draw_00473ea0(gob, nullptr, field<void*>(gob, 0x6C), flag);   // 00474DF9
+    void* proxy = ref<void*>(gob, 0x170);
+    if (proxy == nullptr || !(ref<float>(proxy, 0x94) < f(kOne))) {  // 00474C9E / 00474CAA (test ah,5; jp)
+        gob_part_draw_00473ea0(gob, nullptr, ref<void*>(gob, 0x6C), flag);   // 00474DF9
         return;
     }
     glEnable_0073d390(*cells.gl_fog_0078d450);                         // 00474CC3
-    const float fade = field<float>(proxy, 0x94);
+    const float fade = ref<float>(proxy, 0x94);
     const float square = S(W(fade) * W(fade));                         // 00474CE0 fstp [esp+10h]
-    void* scene = field<void*>(gob, 0x68);
+    void* scene = ref<void*>(gob, 0x68);
     // 4th component read by glFogfv is the return address slot in the original ([esp+1Ch]): deviation -> 0.
-    float color[4] = {S(W(square) * W(field<float>(scene, 0x74))), S(W(square) * W(field<float>(scene, 0x78))),
-                      S(W(square) * W(field<float>(scene, 0x7C))), 0.0f};   // 00474D0A..00474D12; 4th: D43
+    float color[4] = {S(W(square) * W(ref<float>(scene, 0x74))), S(W(square) * W(ref<float>(scene, 0x78))),
+                      S(W(square) * W(ref<float>(scene, 0x7C))), 0.0f};   // 00474D0A..00474D12; 4th: D43
     glFogfv(*cells.gl_fog_color_0078d490, color);                      // 00474D16
-    glFogf(*cells.gl_fog_density_0078d48c, S(W(field<float>(field<void*>(gob, 0x68), 0x70)) * 2.0));   // 00474D2A fadd st,st; fstp
-    glFogf(*cells.gl_fog_start_0078d484, S(W(field<float>(field<void*>(gob, 0x68), 0x64)) * W(field<float>(field<void*>(gob, 0x170), 0x94)))); // 00474D3F..00474D4C
-    glFogf(*cells.gl_fog_end_0078d488, static_cast<float>(static_cast<double>(field<float>(field<void*>(gob, 0x68), 0x68)) *
-        static_cast<double>(field<float>(field<void*>(gob, 0x170), 0x94)) + static_cast<double>(f(0x3DCCCCCDu))));   // 00474D6B (+[0073E798] 0.1)
-    gob_part_draw_00473ea0(gob, nullptr, field<void*>(gob, 0x6C), flag);   // 00474D82
-    if (field<U>(field<void*>(gob, 0x68), 0x60) == 0)                  // 00474D8F
+    glFogf(*cells.gl_fog_density_0078d48c, S(W(ref<float>(ref<void*>(gob, 0x68), 0x70)) * 2.0));   // 00474D2A fadd st,st; fstp
+    glFogf(*cells.gl_fog_start_0078d484, S(W(ref<float>(ref<void*>(gob, 0x68), 0x64)) * W(ref<float>(ref<void*>(gob, 0x170), 0x94)))); // 00474D3F..00474D4C
+    glFogf(*cells.gl_fog_end_0078d488, static_cast<float>(static_cast<long double>(ref<float>(ref<void*>(gob, 0x68), 0x68)) *
+        static_cast<long double>(ref<float>(ref<void*>(gob, 0x170), 0x94)) + static_cast<long double>(f(0x3DCCCCCDu))));   // 00474D6B (+[0073E798] 0.1)
+    gob_part_draw_00473ea0(gob, nullptr, ref<void*>(gob, 0x6C), flag);   // 00474D82
+    if (ref<U>(ref<void*>(gob, 0x68), 0x60) == 0)                  // 00474D8F
         kotor_renderer_init::glDisable_0073d22c(*cells.gl_fog_0078d450);    // 00474D97
-    glFogf(*cells.gl_fog_density_0078d48c, field<float>(field<void*>(gob, 0x68), 0x70));  // 00474DAE
-    glFogf(*cells.gl_fog_start_0078d484, field<float>(field<void*>(gob, 0x68), 0x64));    // 00474DC1
-    glFogf(*cells.gl_fog_end_0078d488, field<float>(field<void*>(gob, 0x68), 0x68));      // 00474DD3
-    glFogfv(*cells.gl_fog_color_0078d490, &field<float>(field<void*>(gob, 0x68), 0x74));  // 00474DE3
+    glFogf(*cells.gl_fog_density_0078d48c, ref<float>(ref<void*>(gob, 0x68), 0x70));  // 00474DAE
+    glFogf(*cells.gl_fog_start_0078d484, ref<float>(ref<void*>(gob, 0x68), 0x64));    // 00474DC1
+    glFogf(*cells.gl_fog_end_0078d488, ref<float>(ref<void*>(gob, 0x68), 0x68));      // 00474DD3
+    glFogfv(*cells.gl_fog_color_0078d490, &ref<float>(ref<void*>(gob, 0x68), 0x74));  // 00474DE3
 }
 
 // 00478260 Gob::Render(propagate), RET 4 (Gob vtable 00741268 slot+10)
 void __fastcall gob_render_00478260(void* gob, void*, U propagate) {
     auto keep_transform = [gob]() {                                    // 00478300..00478338 / 0047855E..00478596
-        field<Vector>(gob, 0x94) = field<Vector>(gob, 0x78);
-        field<Quaternion>(gob, 0xA0) = field<Quaternion>(gob, 0x84);
+        ref<Vector>(gob, 0x94) = ref<Vector>(gob, 0x78);
+        ref<Quaternion>(gob, 0xA0) = ref<Quaternion>(gob, 0x84);
     };
     if (*cells.render_enabled_0078e860 == 0) return;                   // 0047826E / 00478285
-    if (field<void*>(gob, 0x6C) == nullptr) { keep_transform(); return; }   // 0047828E
+    if (ref<void*>(gob, 0x6C) == nullptr) { keep_transform(); return; }   // 0047828E
     if (*cells.render_flagged_0078e85c == 0) {                         // 00478292
-        void* model = field<void*>(gob, 0x58);
-        if (model != nullptr && ((field<U8>(model, 0x50) >> 2) & 1) != 0) { keep_transform(); return; }  // 0047829B..004782E8
+        void* model = ref<void*>(gob, 0x58);
+        if (model != nullptr && ((ref<U8>(model, 0x50) >> 2) & 1) != 0) { keep_transform(); return; }  // 0047829B..004782E8
     }
-    if (field<U8>(gob, 0x166) == 0 && *cells.render_all_00828024 == 0) { keep_transform(); return; }   // 004782ED..004782FE
+    if (ref<U8>(gob, 0x166) == 0 && *cells.render_all_00828024 == 0) { keep_transform(); return; }   // 004782ED..004782FE
     if (*cells.fade_test_0082806c != 0 &&                              // 00478340
-        ((field<U8>(field<void*>(gob, 0x58), 0x50) >> 3) & 1) != 0 &&  // 0047834D..00478359
+        ((ref<U8>(ref<void*>(gob, 0x58), 0x50) >> 3) & 1) != 0 &&  // 0047834D..00478359
         *cells.active_scene_007b92a0 != nullptr) {                     // 0047835F
-        const Vector eye = field<Vector>(*cells.current_camera_007bb4e8, 0x7C);  // 0047836C..0047837A
-        Vector target = field<Vector>(*cells.active_scene_007b92a0, 0xA8);       // 0047837D..0047839F
+        // L3 t1 a2: eye and target are raw words (the original's mov copies 0047836C..0047839F); Gob::HitCheck receives
+        // them as stack words (004783B4..004783D7) and shortens the target local in place (&target, 004783AF).
+        U eye[3];
+        copy_words3(eye, atf(*cells.current_camera_007bb4e8, 0x7C));   // 0047836C..0047837A (edi, ebp, ebx)
+        U target[3];
+        copy_words3(target, atf(*cells.active_scene_007b92a0, 0xA8)); // 0047837D..0047839F ([esp+10h]..[esp+18h])
         alignas(4) unsigned char hit[0x64];                            // [esp+28h] (stack bound, inferred)
         aurora_hit_info_construct_004578f0(hit, nullptr, 0, 0xBFFFFFFFu, 0); // 004783A3
-        field<U8>(hit, 0x5D) = 0;                                      // 004783E7
-        const I blocked = gob_vt(gob)->s08c_gob_hit_check(as_gob(gob), nullptr, eye, target, &target, hit);  // 004783EF Gob::HitCheck
-        const double step = static_cast<double>(bits_to_float(*cells.frame_time_0078e574)) / static_cast<double>(*cells.fade_time_0078e5a0); // 004783F5..004783FD
-        const double faded = (blocked != 0) ? static_cast<double>(field<float>(gob, 0xDC)) - step
-                                            : static_cast<double>(field<float>(gob, 0xDC)) + step;  // 00478405 / 0047840D
-        field<float>(gob, 0xDC) = static_cast<float>(faded);           // 00478413
-        const float value = field<float>(gob, 0xDC);
-        const float upper = (f(kOne) < value) ? f(kOne) : value;      // 00478419..00478434
-        const float lower = *cells.fade_minimum_0078e858;
-        field<float>(gob, 0xDC) = (lower > upper) ? lower : ((f(kOne) < value) ? f(kOne) : value);   // 0047843A..00478478
+        ref<U8>(hit, 0x5D) = 0;                                      // 004783E7
+        const I blocked = words_form<HitCheckWords>(gob_vt(gob)->s08c_gob_hit_check)(gob, nullptr, eye[0], eye[1], eye[2],
+            target[0], target[1], target[2], reinterpret_cast<Vector*>(target), hit);  // 004783EF Gob::HitCheck
+        const long double step = Wcell(cells.frame_time_0078e574) / static_cast<long double>(*cells.fade_time_0078e5a0); // 004783F5..004783FD
+        const long double faded = (blocked != 0) ? static_cast<long double>(ref<float>(gob, 0xDC)) - step   // 00478405 fsubr [esi+DCh]
+                                                 : step + static_cast<long double>(ref<float>(gob, 0xDC));  // 0047840D fadd [esi+DCh]
+        ref<float>(gob, 0xDC) = static_cast<float>(faded);           // 00478413 fstp
+        // 00478419..00478478: upper = (1 < v) ? 1 : v (test 5; jp: NaN keeps v); lower > upper (test 41h; jne) ? lower :
+        // the same choice re-read from [esi+DCh]; every candidate is a float loaded with fld and stored with fstp.
+        const long double one = W(f(kOne));
+        const long double value = W(ref<float>(gob, 0xDC));
+        const long double upper = (one < value) ? one : value;          // 00478419..0047843A
+        const long double lower = W(*cells.fade_minimum_0078e858);      // 0047843A fld [0078E858]
+        const long double again = W(ref<float>(gob, 0xDC));
+        ref<float>(gob, 0xDC) = static_cast<float>((lower > upper) ? lower : ((one < again) ? one : again));   // 00478478 fstp
         chit_info_destruct_00456b30(hit, nullptr);                     // 00478489
     }
-    (void)gob_vt(gob)->do_event(as_gob(gob), nullptr, "GetPersonalRadius", word(at(gob, 0x108)));   // 0047849E (00742F30)
-    (void)gob_vt(gob)->do_event(as_gob(gob), nullptr, "GetCreatureRadius", word(at(gob, 0x10C)));   // 004784B4 (00742F1C)
-    (void)gob_vt(gob)->do_event(as_gob(gob), nullptr, "GetPath", word(at(gob, 0x110)));             // 004784CA (00742F14)
+    (void)gob_vt(gob)->do_event(as_gob(gob), nullptr, "GetPersonalRadius", word(atf(gob, 0x108)));   // 0047849E (00742F30)
+    (void)gob_vt(gob)->do_event(as_gob(gob), nullptr, "GetCreatureRadius", word(atf(gob, 0x10C)));   // 004784B4 (00742F1C)
+    (void)gob_vt(gob)->do_event(as_gob(gob), nullptr, "GetPath", word(atf(gob, 0x110)));             // 004784CA (00742F14)
     *cells.gob_render_count_00827fac = *cells.gob_render_count_00827fac + 1;            // 004784D0
-    field<U8>(gob, 0x13) = 1;                                          // 004784D6
+    ref<U8>(gob, 0x13) = 1;                                          // 004784D6
     glPushMatrix();                                                    // 004784DA
     if (*cells.transform_enabled_0078e5f0 != 0)                        // 004784E0
-        gl_transform_0046f060(&field<Vector>(gob, 0x78), &field<Quaternion>(gob, 0x84), 1);   // 004784F6
-    const U scale_bits = field<U>(gob, 0x1B4);
+        gl_transform_0046f060(&ref<Vector>(gob, 0x78), &ref<Quaternion>(gob, 0x84), 1);   // 004784F6
+    const U scale_bits = ref<U>(gob, 0x1B4);
     if (scale_bits != kOne) {                                          // 00478504 (bitwise compare with 3F800000h)
-        const float scale = bits_to_float(scale_bits);
+        const float scale = fbits(scale_bits);
         glScalef(scale, scale, scale);                                 // 00478512
     }
-    if (field<U8>(gob, 0x164) != 0) {                                  // 00478518
-        material_bind_texture0_0047adf0(field<void*>(gob, 0x168), nullptr);   // 00478528
-        material_set_blending_mode_0047af70(field<void*>(gob, 0x168), nullptr, 0);   // 00478535
+    if (ref<U8>(gob, 0x164) != 0) {                                  // 00478518
+        material_bind_texture0_0047adf0(ref<void*>(gob, 0x168), nullptr);   // 00478528
+        material_set_blending_mode_0047af70(ref<void*>(gob, 0x168), nullptr, 0);   // 00478535
     }
-    gob_proxy_part_draw_00474c90(gob, nullptr, field<void*>(gob, 0x6C), 0);  // 00478542
-    if (field<U8>(gob, 0x155) != 0)                                    // 00478547
+    gob_proxy_part_draw_00474c90(gob, nullptr, ref<void*>(gob, 0x6C), 0);  // 00478542
+    if (ref<U8>(gob, 0x155) != 0)                                    // 00478547
         int_list_add_00444fe0(cells.deferred_gobs_007fbf90, nullptr, static_cast<U>(reinterpret_cast<std::uintptr_t>(gob)));  // 00478557
     else
         keep_transform();                                              // 0047855E..00478596
     if (*cells.debug_spheres_00828060 == 1) {                          // 00478599
         float color[3] = {f(kOne), f(kOne), 0.0f};                     // [esp+1Ch..24h] after pushes
-        gl_draw_sphere_bound_00431a50(field<float>(gob, 0x138), at(gob, 0x13C), color, f(kOne), 1);  // 004785D7
+        // L3 t1 a2: the radius argument is fld [esi+138h] ; fstp dword [esp] (004785A2 / 004785BC), an x87 copy.
+        gl_draw_sphere_bound_00431a50(S(W(ref<float>(gob, 0x138))), atf(gob, 0x13C), color, f(kOne), 1);  // 004785D7
     }
-    if (*cells.debug_frames_0082805c != 0 || field<U16>(gob, 0xC8) != 0)   // 004785DF..004785F0
-        gl_draw_axis_aligned_frame_0046ef10(at(gob, 0x120), at(gob, 0x12C), at(gob, 0x148));   // 00478607
+    if (*cells.debug_frames_0082805c != 0 || ref<U16>(gob, 0xC8) != 0)   // 004785DF..004785F0
+        gl_draw_axis_aligned_frame_0046ef10(atf(gob, 0x120), atf(gob, 0x12C), atf(gob, 0x148));   // 00478607
     glPopMatrix();                                                     // 0047860F
     if (static_cast<U8>(propagate) != 0)                               // 00478615 byte test of the argument
         (void)gob_vt(gob)->do_event(as_gob(gob), nullptr, "propagaterender", 0);   // 0047862B (00742F04)
@@ -1691,16 +1765,17 @@ void __fastcall gob_render_00478260(void* gob, void*, U propagate) {
 
 // ================================================================ core batch 8 (menu-frame reached Gob/Scene slots)
 // 0043F0C0 Gob::SetPosition(Vector by value) -> hidden return, Gob vtbl+5C, RET 10h
-Vector* __fastcall gob_set_position_0043f0c0(aurora_model::Gob* gob, void*, Vector* out, Vector position) {
-    field<Vector>(gob, 0x78) = position;                               // 0043F0C4..0043F0D7
-    *out = position;                                                   // 0043F0DF..0043F0E6
+Vector* __fastcall gob_set_position_0043f0c0(aurora_model::Gob* gob, void*, Vector* out, Vector) {
+    const U* p = A2_STACK_ARGS() + 1;                                  // position words [esp+8]..[esp+10h]
+    copy_words3(atf(gob, 0x78), p);                                    // 0043F0C4..0043F0D7 (mov)
+    copy_words3(out, p);                                               // 0043F0DF..0043F0E6 (mov)
     return out;                                                        // 0043F0DA mov eax,[esp+8]
 }
 
 // 0043F1D0 Gob::SetBehavior(behavior), Gob vtbl+58, RET 4: replace, then tail-call old behavior's deleting dtor(1)
 U __fastcall gob_set_behavior_0043f1d0(aurora_model::Gob* gob, void*, void* behavior) {
-    void* previous = field<void*>(gob, 0x188);                         // 0043F1D6
-    field<void*>(gob, 0x188) = behavior;                               // 0043F1DE
+    void* previous = ref<void*>(gob, 0x188);                         // 0043F1D6
+    ref<void*>(gob, 0x188) = behavior;                               // 0043F1DE
     if (previous == nullptr) return word(gob);                         // 0043F1E4 (EAX = this from 0043F1D4)
     return slot<SlotDelete>(previous, 0x00)(previous, nullptr, 1);     // 0043F1E8 [esp+4]=1; jmp [eax]
 }
@@ -1714,7 +1789,7 @@ U8 __fastcall gob_is_always_rendering_0043e8b0(aurora_model::Gob* gob, void*) { 
 // 004402F0 Gob::GetPart(name) (Gob vtbl+10C), RET 4: "root" -> root part, else FindPart(root, name)
 void* __fastcall gob_get_part_004402f0(aurora_model::Gob* gob, void*, const char* name) {
     const int differs = _stricmp("root", name);                        // 004402FE (00740C00)
-    void* root = field<void*>(gob, 0x6C);                              // 00440308
+    void* root = ref<void*>(gob, 0x6C);                              // 00440308
     if (differs == 0) return root;                                     // 0044030B
     return find_part_0043fe00(static_cast<aurora_model::Part*>(root), name);   // 0044030F
 }
@@ -1723,25 +1798,25 @@ void* __fastcall gob_get_part_004402f0(aurora_model::Gob* gob, void*, const char
 
 // 00455670 Scene::ChildAdd(gob) (Scene vtbl+B0), RET 4
 U __fastcall scene_child_add_00455670(void* scene, void*, void* gob) {
-    if (field<void*>(gob, 0x58) != nullptr) {                          // 00455675
+    if (ref<void*>(gob, 0x58) != nullptr) {                          // 00455675
         scene_bsp_add_gob_0046c420(scene, gob);                        // 00455682
-        scene_list_special_parts_r_004531a0(scene, nullptr, field<void*>(gob, 0x6C));  // 00455690
+        scene_list_special_parts_r_004531a0(scene, nullptr, ref<void*>(gob, 0x6C));  // 00455690
     }
-    int_list_add_00444fe0(&field<PointerList>(scene, 0x54), nullptr, word(gob));   // 00455695..004556BF (same growth/store sequence)
+    int_list_add_00444fe0(&ref<PointerList>(scene, 0x54), nullptr, word(gob));   // 00455695..004556BF (same growth/store sequence)
     const U animated = gob_vt(gob)->s160_gob_return_zero(as_gob(gob), nullptr);    // 004556C6 vtbl+160
-    if (animated != 0) int_list_add_00444fe0(&field<PointerList>(scene, 0xEC), nullptr, word(gob)); // 004556D0..00455703
+    if (animated != 0) int_list_add_00444fe0(&ref<PointerList>(scene, 0xEC), nullptr, word(gob)); // 004556D0..00455703
     return animated;                                                   // EAX = vtbl+160 result
 }
 
 // 00453900 Scene::ChildRemove(gob) (Scene vtbl+B4), RET 4
 U __fastcall scene_child_remove_00453900(void* scene, void*, void* gob) {
-    if (field<void*>(gob, 0x58) != nullptr) {                          // 00453905
+    if (ref<void*>(gob, 0x58) != nullptr) {                          // 00453905
         scene_bsp_remove_gob_0046c4a0(scene, gob);                     // 00453911
-        unlist_special_parts_00453550(scene, nullptr, field<void*>(gob, 0x6C));   // 0045391F
+        unlist_special_parts_00453550(scene, nullptr, ref<void*>(gob, 0x6C));   // 0045391F
     }
-    field<PointerList>(scene, 0x54).RemoveReverse32(word(gob));        // 00453928 (lane-aurres 00445080)
+    ref<PointerList>(scene, 0x54).RemoveReverse32(word(gob));        // 00453928 (lane-aurres 00445080)
     const U animated = gob_vt(gob)->s160_gob_return_zero(as_gob(gob), nullptr);    // 00453931
-    if (animated != 0) field<PointerList>(scene, 0xEC).RemoveReverse32(word(gob));  // 00453942
+    if (animated != 0) ref<PointerList>(scene, 0xEC).RemoveReverse32(word(gob));  // 00453942
     return animated;
 }
 
@@ -1763,13 +1838,13 @@ void __fastcall scene_do_light_saber_bucket_00450440(void* scene, void*) {
     kotor_renderer_init::glEnable_0073d390(*cells.gl_blend_0078d448);  // 0045044A
     for (I index = 0; index < cells.saber_bucket_007fbff0->size; ++index) {   // 00450450..004504BE
         void* gob = reinterpret_cast<void**>(static_cast<std::uintptr_t>(cells.saber_bucket_007fbff0->data))[index];
-        Vector* position = &field<Vector>(gob, 0x78);                  // 00450478
-        void* lights = field<void*>(scene, 0x80);
-        slot<SlotVecU>(lights, 0x38)(lights, nullptr, position, field<U>(gob, 0x138));   // 0045047C
-        lights = field<void*>(scene, 0x80);
+        Vector* position = &ref<Vector>(gob, 0x78);                  // 00450478
+        void* lights = ref<void*>(scene, 0x80);
+        slot<SlotVecU>(lights, 0x38)(lights, nullptr, position, ref<U>(gob, 0x138));   // 0045047C
+        lights = ref<void*>(scene, 0x80);
         slot<SlotVecU>(lights, 0x00)(lights, nullptr, position, 0);   // 0045048A
-        lights = field<void*>(scene, 0x80);
-        if (field<U>(gob, 0x178) != 0) slot<SlotUU>(lights, 0x24)(lights, nullptr, 3, field<U>(gob, 0x178));  // 004504A1
+        lights = ref<void*>(scene, 0x80);
+        if (ref<U>(gob, 0x178) != 0) slot<SlotUU>(lights, 0x24)(lights, nullptr, 3, ref<U>(gob, 0x178));  // 004504A1
         else slot<SlotU>(lights, 0x20)(lights, nullptr, 3);            // 004504AA
         gob_vt(gob)->s010_gob_render(gob, nullptr, 0);                 // 004504B3 Gob::Render(0)
     }
@@ -1782,18 +1857,25 @@ void __fastcall wind_manager_fill_noise_field_004a57c0(void* wind, void*, float*
     (void)wind;
     std::memset(field, 0, 0x100 * 4);                                  // 004A57C7..004A57D7 rep stos 100h dwords
     I step = 0x10;                                                     // 004A57D2 / [esp+14h]
+#pragma clang loop unroll(disable)
     for (;;) {
         if (step <= 0x10) {                                            // 004A57E5 jg
             I row_start = 0, row_offset = 0;                           // [esp+10h] / [esp+18h]
             const I divisor = 500 / (0x10 / step);                     // 004A57F4..004A580A (idiv twice)
+#pragma clang loop unroll(disable)
             for (I row_end = step; ; ) {                               // ebp
                 I col_start = 0;                                       // esi
+#pragma clang loop unroll(disable)
                 for (I col_end = step; ; ) {                           // edi
                     const I r = crt_rand_006fc447() % divisor;         // 004A5814 call 006FC447 (D52: lane-3d-model port); idiv remainder
-                    const float value = S(static_cast<double>(r) * W(f(kMilli_0073d708)));  // fild; fmul; fstp [esp+20h]
+                    const float value = S(static_cast<long double>(r) * W(f(kMilli_0073d708)));  // fild; fmul; fstp [esp+20h]
                     if (row_start < row_end) {                         // 004A581E jge
                         float* row = field + row_offset + col_start;   // 004A583E lea edx,[ecx+eax*4]
+                        // L3 t1 a2: loops kept loops (the original's 004A5847..004A5874 / 004A5850..004A586E), so the one
+                        // in-loop fstp appears once (clang unrolled the inner loop into extra round trips, S3).
+#pragma clang loop unroll(disable)
                         for (I rows = row_end - row_start; rows != 0; --rows, row += 0x10) {   // 004A5847..004A5874
+#pragma clang loop unroll(disable)
                             for (I c = 0; c < col_end - col_start; ++c)                        // 004A5850..004A586E
                                 row[c] = S(W(value) + W(row[c]));     // fld value; fadd [eax-4]; fstp
                         }
@@ -1815,31 +1897,31 @@ void __fastcall wind_manager_fill_noise_field_004a57c0(void* wind, void*, float*
 
 // 004A5E30 WindManager::updateTimer(raw float delta), RET 4
 void __fastcall wind_manager_update_timer_004a5e30(void* wind, void*, U delta_bits) {
-    const double delta = W(bits_to_float(delta_bits));                 // 004A5E30 fld [esp+4]
-    const double timer = delta + W(field<float>(wind, 0x844));         // 004A5E3A
-    field<float>(wind, 0x844) = S(timer);                              // 004A5E43 fst (ST stays wide)
-    if (timer > W(field<float>(wind, 0x848))) {                        // 004A5E49 fcomp; test ah,41h
-        const U next = field<U>(wind, 0x834);                          // 004A5E56
-        const U current = field<U>(wind, 0x830);
-        field<U>(wind, 0x830) = next;                                  // 004A5E62
-        field<U>(wind, 0x834) = current;                               // 004A5E6B
+    const long double delta = W(fbits(delta_bits));                 // 004A5E30 fld [esp+4]
+    const long double timer = delta + W(ref<float>(wind, 0x844));         // 004A5E3A
+    ref<float>(wind, 0x844) = S(timer);                              // 004A5E43 fst (ST stays wide)
+    if (timer > W(ref<float>(wind, 0x848))) {                        // 004A5E49 fcomp; test ah,41h
+        const U next = ref<U>(wind, 0x834);                          // 004A5E56
+        const U current = ref<U>(wind, 0x830);
+        ref<U>(wind, 0x830) = next;                                  // 004A5E62
+        ref<U>(wind, 0x834) = current;                               // 004A5E6B
         wind_manager_fill_noise_field_004a57c0(wind, nullptr, reinterpret_cast<float*>(static_cast<std::uintptr_t>(current))); // 004A5E71
-        field<U>(wind, 0x844) = 0;                                     // 004A5E76
+        ref<U>(wind, 0x844) = 0;                                     // 004A5E76
     }
-    field<float>(wind, 0x840) = S(W(field<float>(wind, 0x844)) / W(field<float>(wind, 0x848)));   // 004A5E7C..004A5E8B
-    const float vx = S(delta * W(field<float>(wind, 0x18)));           // 004A5E91..004A5E98
-    const float vy = S(delta * W(field<float>(wind, 0x1C)));           // 004A5EA0..004A5EA7
-    const float vz = S(delta * W(field<float>(wind, 0x20)));           // 004A5EAB..004A5EBB
-    field<float>(wind, 0x24) = vx; field<float>(wind, 0x28) = vy; field<float>(wind, 0x2C) = vz;  // 004A5EB6..004A5EC3
-    for (I index = 0; index < field<I>(wind, 0x10); ++index) {         // 004A5EC6..004A5F37 (count re-read)
-        unsigned char* entries = field<unsigned char*>(wind, 0x0C);
+    ref<float>(wind, 0x840) = S(W(ref<float>(wind, 0x844)) / W(ref<float>(wind, 0x848)));   // 004A5E7C..004A5E8B
+    const float vx = S(delta * W(ref<float>(wind, 0x18)));           // 004A5E91..004A5E98
+    const float vy = S(delta * W(ref<float>(wind, 0x1C)));           // 004A5EA0..004A5EA7
+    const float vz = S(delta * W(ref<float>(wind, 0x20)));           // 004A5EAB..004A5EBB
+    ref<float>(wind, 0x24) = vx; ref<float>(wind, 0x28) = vy; ref<float>(wind, 0x2C) = vz;  // 004A5EB6..004A5EC3
+    for (I index = 0; index < ref<I>(wind, 0x10); ++index) {         // 004A5EC6..004A5F37 (count re-read)
+        unsigned char* entries = ref<unsigned char*>(wind, 0x0C);
         float& remaining = *reinterpret_cast<float*>(entries + index * 0x18 + 0x10);
         remaining = S(W(remaining) - delta);                           // 004A5ED6..004A5EE2
-        if (field<float>(field<unsigned char*>(wind, 0x0C) + index * 0x18, 0x10) < 0.0f) {   // 004A5EE7..004A5EF6 (remove when < 0)
-            const I count = field<I>(wind, 0x10) - 1;                  // 004A5EF8..004A5F02
-            field<I>(wind, 0x10) = count;
+        if (ref<float>(ref<unsigned char*>(wind, 0x0C) + index * 0x18, 0x10) < 0.0f) {   // 004A5EE7..004A5EF6 (remove when < 0)
+            const I count = ref<I>(wind, 0x10) - 1;                  // 004A5EF8..004A5F02
+            ref<I>(wind, 0x10) = count;
             for (I j = index; j < count; ++j) {                        // 004A5F05..004A5F20
-                unsigned char* base = field<unsigned char*>(wind, 0x0C) + j * 0x18;
+                unsigned char* base = ref<unsigned char*>(wind, 0x0C) + j * 0x18;
                 std::memcpy(base, base + 0x18, 0x18);                  // rep movs 6 dwords (forward)
             }
             --index;                                                   // 004A5F26 dec ebp (revisit slot)
@@ -1855,9 +1937,9 @@ PointerList* __cdecl aur_texture_get_ordering_00421970() {
     PointerList* ordered = cells.texture_ordered_007a47a4;             // data 7A47A4 / size 7A47A8
     for (I i = 0; i < ordered->size; ++i) {                            // 00421971..00421AAF (size re-read)
         void* texture = reinterpret_cast<void**>(static_cast<std::uintptr_t>(ordered->data))[i];   // 004219A6
-        if (field<U8>(texture, 0xE1) != 0) continue;                   // 004219A9
-        for (I k = 0; k < static_cast<I>(field<std::int16_t>(texture, 0xC4)) * static_cast<I>(field<std::int16_t>(texture, 0xC2)); ++k) {  // movsx; imul (re-evaluated)
-            const I id = field<I*>(texture, 0x40)[k];                  // 004219D5
+        if (ref<U8>(texture, 0xE1) != 0) continue;                   // 004219A9
+        for (I k = 0; k < static_cast<I>(ref<std::int16_t>(texture, 0xC4)) * static_cast<I>(ref<std::int16_t>(texture, 0xC2)); ++k) {  // movsx; imul (re-evaluated)
+            const I id = ref<I*>(texture, 0x40)[k];                  // 004219D5
             if (id >= 0x1388 || id <= 0) continue;                     // 004219D8 jge / 004219E6 jle (signed)
             if (ids->size == ids->capacity) {                          // 004219F1
                 const I capacity = ids->capacity != 0 ? ids->capacity + ids->capacity : 8;
@@ -1870,7 +1952,7 @@ PointerList* __cdecl aur_texture_get_ordering_00421970() {
             }
             reinterpret_cast<U*>(static_cast<std::uintptr_t>(ids->data))[ids->size] = static_cast<U>(id);   // 00421A5F
             ids->size = ids->size + 1;                                 // 00421A6F
-            const U reread = static_cast<U>(field<I*>(texture, 0x40)[k]);  // 00421A75..00421A78
+            const U reread = static_cast<U>(ref<I*>(texture, 0x40)[k]);  // 00421A75..00421A78
             if (reread > *cells.texture_max_id_007a46bc) *cells.texture_max_id_007a46bc = reread;   // 00421A7B jbe (unsigned)
         }
     }
@@ -1886,19 +1968,21 @@ void __cdecl transform_0046f6b0(const Vector* position, const Quaternion* orient
 // 00450FA0 RenderPersonalSpace(scene) (cdecl): debug spheres for flagged objects; depth test off around the loop
 void __cdecl render_personal_space_00450fa0(void* scene) {
     kotor_renderer_init::glDisable_0073d22c(*cells.gl_depth_test_0078d474);   // 00450FAA
-    for (I index = 0; index < field<I>(scene, 0x58); ++index) {        // 00450FB4..004510BA (count re-read)
-        void* gob = field<void**>(scene, 0x54)[index];
-        if (*cells.personal_space_all_007b9314 == 0 && field<U8>(gob, 0x154) == 0) continue;   // 00450FD0..00450FE7
-        if (!(field<float>(gob, 0x108) > 0.0f)) continue;              // 00450FED..00450FFE (test ah,41h)
+    for (I index = 0; index < ref<I>(scene, 0x58); ++index) {        // 00450FB4..004510BA (count re-read)
+        void* gob = ref<void**>(scene, 0x54)[index];
+        if (*cells.personal_space_all_007b9314 == 0 && ref<U8>(gob, 0x154) == 0) continue;   // 00450FD0..00450FE7
+        if (!(ref<float>(gob, 0x108) > 0.0f)) continue;              // 00450FED..00450FFE (test ah,41h)
         glPushMatrix();                                                // 00451004
-        transform_0046f6b0(&field<Vector>(gob, 0x78), &field<Quaternion>(gob, 0x84), 1);   // 00451013
+        transform_0046f6b0(&ref<Vector>(gob, 0x78), &ref<Quaternion>(gob, 0x84), 1);   // 00451013
         float color[3]; Vector center;                                 // [esp+10h] / [esp+1Ch]
         reinterpret_cast<U*>(&center)[0] = 0; reinterpret_cast<U*>(&center)[1] = 0; reinterpret_cast<U*>(&center)[2] = 0;
         color[0] = f(kOne); color[1] = f(0x3F19999Au); color[2] = f(kOne); // 00451046..00451056 (1, 0.6, 1)
         gl_draw_sphere_bound_00431a50(f(kMilli_0073d708), &center, color, f(kOne), 0);       // 0045105E (radius raw 3A83126F)
-        gl_draw_sphere_bound_00431a50(field<float>(gob, 0x108), &center, color, f(kOne), 0); // 0045107B
+        using SphereWords = void (__cdecl*)(U, const void*, const float*, U, U);
+        words_form<SphereWords>(&gl_draw_sphere_bound_00431a50)(raw(atf(gob, 0x108)), &center, color, kOne, 0);   // 00451063 mov ; 0045107B
+        // (the third radius, +10Ch, is fld/fstp-copied by the original: 00451080 / 0045109B)
         color[1] = 0.0f;                                               // 0045109E [esp+28h]=0
-        gl_draw_sphere_bound_00431a50(field<float>(gob, 0x10C), &center, color, f(kOne), 0); // 004510A6
+        gl_draw_sphere_bound_00431a50(S(W(ref<float>(gob, 0x10C))), &center, color, f(kOne), 0); // 00451080..004510A6 (x87 copy)
         glPopMatrix();                                                 // 004510AE
     }
     kotor_renderer_init::glEnable_0073d390(*cells.gl_depth_test_0078d474);    // 004510C9
@@ -1911,12 +1995,13 @@ void __cdecl render_paths_004510e0(void* scene) {
     kotor_renderer_init::glDisable_0073d22c(*cells.gl_lighting_0078d45c);     // 00451105
     kotor_renderer_init::glDisable_0073d22c(*cells.gl_texture_2d_0078d458);   // 0045110E
     glColor3f(f(0x3F19999Au), f(kOne), f(kOne));                       // 0045111F (0.6, 1, 1)
-    for (I index = 0; index < field<I>(scene, 0x58); ++index) {        // 00451129..004511BB
-        void* gob = field<void**>(scene, 0x54)[index];
+    for (I index = 0; index < ref<I>(scene, 0x58); ++index) {        // 00451129..004511BB
+        void* gob = ref<void**>(scene, 0x54)[index];
         glBegin(3);                                                    // 0045114E GL_LINE_STRIP
-        for (I point = 0; point < field<I>(gob, 0x114) / 3; ++point) { // 00451154..004511A1 (signed /3 via 55555556h, re-evaluated)
-            const float* v = reinterpret_cast<const float*>(field<unsigned char*>(gob, 0x118) + point * 0x0C);
-            glVertex3f(v[0], v[1], v[2]);                              // 00451185
+        for (I point = 0; point < ref<I>(gob, 0x114) / 3; ++point) { // 00451154..004511A1 (signed /3 via 55555556h, re-evaluated)
+            const float* v = reinterpret_cast<const float*>(ref<unsigned char*>(gob, 0x118) + point * 0x0C);
+            const U* vw = reinterpret_cast<const U*>(v);
+            words_form<GlWords3>(&glVertex3f)(vw[0], vw[1], vw[2]);    // 00451176..00451185 (mov pushes)
         }
         glEnd();                                                       // 004511A7
     }
@@ -1927,10 +2012,10 @@ void __cdecl render_paths_004510e0(void* scene) {
 
 // 00456B30 CHitInfo::~CHitInfo: unregister from the owner list (+38), free the result buffer (+8)
 void __fastcall chit_info_destruct_00456b30(void* hit, void*) {
-    void* owner = field<void*>(hit, 0x38);                             // 00456B33
+    void* owner = ref<void*>(hit, 0x38);                             // 00456B33
     if (owner != nullptr)                                              // 00456B3B
-        field<PointerList>(owner, 0x04).RemoveReverse32(word(at(hit, 0x38)));   // 00456B41 Remove([+38]+4, &hit+38)
-    void* data = field<void*>(hit, 0x08);                              // 00456B46
+        ref<PointerList>(owner, 0x04).RemoveReverse32(word(atf(hit, 0x38)));   // 00456B41 Remove([+38]+4, &hit+38)
+    void* data = ref<void*>(hit, 0x08);                              // 00456B46
     if (data != nullptr) live_free(data);                              // 00456B4E
 }
 
@@ -1941,7 +2026,7 @@ void __fastcall scene_render_lens_flares_00457ec0(void* scene, void*) {
     if (*cells.lens_flares_0078e3f0 == 0) return;                      // 00457EDB / 00457EEC
     PointerList lights;                                                // E-7C (data) / E-78 (size)
     int_list_copy_construct_0046d250(&lights, nullptr,
-        light_manager_get_lens_flare_lights_004a28b0(field<void*>(scene, 0x80), nullptr));   // 00457EF8 / 00457F05
+        light_manager_get_lens_flare_lights_004a28b0(ref<void*>(scene, 0x80), nullptr));   // 00457EF8 / 00457F05
     U guard = *cells.flare_guard_007b9458;
     if ((guard & 1u) == 0) {                                           // 00457F0A
         *cells.flare_guard_007b9458 = guard | 1u;                      // 00457F1A
@@ -1952,19 +2037,31 @@ void __fastcall scene_render_lens_flares_00457ec0(void* scene, void*) {
     glEnable_0073d390(*cells.gl_blend_0078d448);                       // 00457F71
     glBlendFunc(kGlOne_0073f278, kGlOne_0073f278);                     // 00457F7A
     glEnable_0073d390(*cells.gl_texture_2d_0078d458);                  // 00457F86
-    if (field<U>(scene, 0x60) != 0) glDisable_0073d22c(*cells.gl_fog_0078d450);   // 00457F8C..00457F98
+    if (ref<U>(scene, 0x60) != 0) glDisable_0073d22c(*cells.gl_fog_0078d450);   // 00457F8C..00457F98
     glMatrixMode(kGlModelview_0073f294); glPushMatrix(); glLoadIdentity();          // 00457FA6..00457FB4
     glMatrixMode(kGlModelview_0073f298); glPushMatrix(); glLoadIdentity();          // 00457FBD..00457FC5
     glTranslatef(0.0f, 0.0f, f(0xC0000000u));                          // 00457FCE (0, 0, -2)
+    // L3 t1 a2 (writing rule, re-derived from 00457FD4..004586F3): register values are long double; each original
+    // fstp/fst dword is one (float) conversion at that point; values the original only copies with mov (the HitCheck
+    // vectors, the divisor word, tx / ty, the colour words, the size) are held as raw words, so no float value is kept
+    // in an x87 register across the GL / pool calls (was: 4-byte spills, S1) and no copy goes through fld/fstp.
+    using DivideWords = Vector* (__cdecl*)(Vector*, const Vector*, U);   // 00437A90 operator/(Vector, float)
+    using GlTranslateWords = void (__stdcall*)(U, U, U);
     for (I i = 0; i < lights.size; ++i) {                              // 00457FD4..004586F3 (E-AC)
         void* light = reinterpret_cast<void**>(static_cast<std::uintptr_t>(lights.data))[i];  // ebx (E-D8)
         void* camera = *cells.current_camera_007bb4e8;
-        const Vector* light_position = &field<Vector>(light, 0x94);    // edi
-        Vector delta;                                                  // E-BC..E-B4
-        delta.z = S(W(field<float>(light, 0x9C)) - W(field<float>(camera, 0x84)));   // 00457FFF..00458005
-        delta.y = S(W(light_position->y) - W(field<float>(camera, 0x80)));
-        delta.x = S(W(light_position->x) - W(field<float>(camera, 0x7C)));
-        if (vector_magnitude_004ab100(&delta) > W(field<float>(field<void*>(light, 0x04), 0x50))) continue;  // 0045803C test ah,41h; je skip
+        const Vector* light_position = &ref<Vector>(light, 0x94);    // edi
+        Vector delta;                                                  // E-BC..E-B4 ([esp+50h])
+        {
+            const long double z = W(ref<float>(light, 0x9C)) - W(ref<float>(camera, 0x84));   // 00457FFF..00458005
+            const long double y = W(light_position->y) - W(ref<float>(camera, 0x80));          // 00458011..00458018
+            const long double x = W(light_position->x) - W(ref<float>(camera, 0x7C));          // 0045801E..00458020
+            delta.x = static_cast<float>(x);                           // 00458028 fstp
+            delta.y = static_cast<float>(y);                           // 0045802C fstp
+            delta.z = static_cast<float>(z);                           // 00458030 fstp
+        }
+        // 00458034..00458047: fcomp [flare+50h] ; test ah,41h ; je -> next light when the magnitude is greater (ordered)
+        if (static_cast<long double>(vector_magnitude_004ab100(&delta)) > W(ref<float>(ref<void*>(light, 0x04), 0x50))) continue;
         if (*cells.flare_hit_test_0078e3e4 != 0) {                     // 0045804D
             U g = *cells.flare_guard_007b9458;
             if ((g & 2u) == 0) {                                       // 00458059 static Vector 7B9448 = 0
@@ -1973,111 +2070,140 @@ void __fastcall scene_render_lens_flares_00457ec0(void* scene, void*) {
             }
             void* memory = live_operator_new(0x64);                    // 00458089
             void* hit = (memory != nullptr) ? aurora_hit_info_construct_004578f0(memory, nullptr, 0, 0xBFFFFFFFu, 0) : nullptr;  // 004580AA
-            field<U>(hit, 0x14) = 0;                                   // 004580BE (null hit faults, as original)
-            field<U>(hit, 0x58) = 1;                                   // 004580C1
-            const Vector eye = field<Vector>(*cells.current_camera_007bb4e8, 0x7C);
+            ref<U>(hit, 0x14) = 0;                                   // 004580BE (null hit faults, as original)
+            ref<U>(hit, 0x58) = 1;                                   // 004580C1
+            const U* lp = reinterpret_cast<const U*>(light_position);
             I blocked;
-            if (*cells.flare_hit_order_0078e3ec != 0)                  // 004580D8 (camera -> light)
-                blocked = scene_vt(scene)->s038_scene_hit_check(scene, nullptr, eye, *light_position, cells.flare_hit_vector_007b9448, hit);
-            else                                                       // 00458100 (light -> camera)
-                blocked = scene_vt(scene)->s038_scene_hit_check(scene, nullptr, *light_position, eye, cells.flare_hit_vector_007b9448, hit);  // 0045812C
+            if (*cells.flare_hit_order_0078e3ec != 0) {                // 004580D8 (camera -> light): end = light words
+                const U ex = lp[0], ey = lp[1], ez = lp[2];            // 004580E4..004580F3
+                const U* eye = &ref<U>(*cells.current_camera_007bb4e8, 0x7C);   // 004580F6..0045812C
+                blocked = words_form<HitCheckWords>(scene_vt(scene)->s038_scene_hit_check)(scene, nullptr, eye[0], eye[1], eye[2],
+                    ex, ey, ez, cells.flare_hit_vector_007b9448, hit);
+            } else {                                                   // 00458100 (light -> camera): end = camera words
+                const U* eye = &ref<U>(*cells.current_camera_007bb4e8, 0x7C);
+                const U ex = eye[0], ey = eye[1], ez = eye[2];         // 00458100..00458115
+                blocked = words_form<HitCheckWords>(scene_vt(scene)->s038_scene_hit_check)(scene, nullptr, lp[0], lp[1], lp[2],
+                    ex, ey, ez, cells.flare_hit_vector_007b9448, hit);  // 0045812C
+            }
             chit_info_destruct_00456b30(hit, nullptr);                 // 0045812F..00458155 (inlined dtor)
             live_free(hit);                                            // 00458159
-            const double step = W(*cells.flare_fade_rate_0078e3e8) * W(bits_to_float(*cells.frame_time_0078e574));  // 0045815E..00458164
+            const long double step = W(*cells.flare_fade_rate_0078e3e8) * Wcell(cells.frame_time_0078e574);  // 0045815E..00458164
             if (blocked != 0) {                                        // 0045816D
-                double faded = W(field<float>(light, 0x88)) - step;    // 00458171 fsubr
-                if (!(faded > 0.0)) faded = 0.0;                       // 00458177..00458186
-                field<float>(light, 0x88) = S(faded);                  // 0045818C fst
+                long double faded = W(ref<float>(light, 0x88)) - step;    // 00458171 fsubr
+                if (!(faded > 0.0)) faded = W(f(kFloatZero_0073d700));      // 00458177..00458186 (test 41h; je keeps > 0)
+                ref<float>(light, 0x88) = static_cast<float>(faded);  // 0045818C fst
                 if (faded == 0.0) continue;                            // 00458194 fcomp 0; test ah,44h; jnp -> next light
             } else {
-                double faded = step + W(field<float>(light, 0x88));    // 004581A7
-                if (!(faded < 1.0)) faded = 1.0;                       // 004581AD..004581BC
-                field<float>(light, 0x88) = S(faded);                  // 004581C2
+                long double faded = step + W(ref<float>(light, 0x88));    // 004581A7 fadd
+                if (!(faded < 1.0)) faded = W(f(kOne));                // 004581AD..004581BC (test 5; jnp keeps < 1)
+                ref<float>(light, 0x88) = static_cast<float>(faded);  // 004581C2 fstp
             }
         }
         // 004581CA: light direction in camera space -> screen-plane projection point
         camera = *cells.current_camera_007bb4e8;
-        void* flare = field<void*>(light, 0x04);                       // esi
+        void* flare = ref<void*>(light, 0x04);                       // esi
         Vector to_light;                                               // E-64..E-5C
-        to_light.z = S(W(light_position->z) - W(field<float>(camera, 0x84)));
-        to_light.y = S(W(light_position->y) - W(field<float>(camera, 0x80)));
-        to_light.x = S(W(light_position->x) - W(field<float>(camera, 0x7C)));
+        {
+            const long double z = W(light_position->z) - W(ref<float>(camera, 0x84));   // 004581CF..004581D2
+            const long double y = W(light_position->y) - W(ref<float>(camera, 0x80));   // 004581DB..004581E5
+            const long double x = W(light_position->x) - W(ref<float>(camera, 0x7C));   // 004581EC..004581F3
+            to_light.x = static_cast<float>(x);                        // 004581FF fstp
+            to_light.y = static_cast<float>(y);                        // 00458206 fstp
+            to_light.z = static_cast<float>(z);                        // 0045820D fstp
+        }
         Quaternion inverse;                                            // E-1C
-        quaternion_negate_w_004a9b50(&inverse, &field<Quaternion>(camera, 0x88));   // 00458214
+        quaternion_negate_w_004a9b50(&inverse, &ref<Quaternion>(camera, 0x88));   // 00458214
         Vector view;                                                   // E-F4
         quaternion_rotate_004a9bb0(&view, &inverse, &to_light);        // 00458222
-        const float distance = S(vector_magnitude_004ab100(&view));    // 0045822C / 00458231 fstp E-B0
+        const U distance_bits = stored_bits(vector_magnitude_004ab100(&view));   // 0045822C / 00458231 fstp E-B0
+        const long double distance = fbits(distance_bits);
         Vector direction;                                              // E-34 -> copied to E-F4
-        const Vector* divided = vector_divide_00437a90(&direction, &view, distance);   // 00458247
-        view = *divided;                                               // 0045824C..00458264
-        double facing = (W(view.y) + W(view.x)) * W(0.0f) - W(view.z) * W(f(kOne));   // 00458259..0045827B
-        if (!(facing > 0.0)) facing = 0.0;                             // 0045827D..0045828C
-        const float facing_squared = S(facing * facing);               // 00458296..004582A8 (E-C4)
+        const Vector* divided = words_form<DivideWords>(&vector_divide_00437a90)(&direction, &view, distance_bits);   // 00458235..00458247 (mov push)
+        copy_words3(&view, divided);                                   // 0045824C..00458264
+        // 00458259..0045827B: (y + x) * 0.0 - z * 1.0 (fmul [0073D700] ; fmul [0073D764] ; fsubp)
+        long double facing = (W(view.y) + W(view.x)) * W(f(kFloatZero_0073d700)) - W(view.z) * W(f(kOne));
+        if (!(facing > 0.0)) facing = W(f(kFloatZero_0073d700));            // 0045827D..0045828C (test 41h; je keeps > 0)
+        const long double facing_squared = S(facing * facing);         // 00458296..004582A8 fstp (E-C4)
         Vector origin; Vector plane_normal;                            // E-70 / E-58
         reinterpret_cast<U*>(&origin)[0] = 0; reinterpret_cast<U*>(&origin)[1] = 0; reinterpret_cast<U*>(&origin)[2] = 0;
         reinterpret_cast<U*>(&plane_normal)[0] = 0; reinterpret_cast<U*>(&plane_normal)[1] = 0; reinterpret_cast<U*>(&plane_normal)[2] = kMinusOneImm;
         Vector hit_point;                                              // E-28
         const Vector* projected = plane_line_intersection_004ab250(&hit_point, &plane_normal, f(0x40000000u), &origin, &view);  // 00458300 (d = 2.0)
-        view = *projected;                                             // 00458305..00458315
+        copy_words3(&view, projected);                                 // 00458305..00458315
         Vector screen;                                                 // E-F4 after 0045832E..00458360
-        screen.x = S(-W(view.x)); screen.y = S(-W(view.y)); screen.z = S(-W(view.z));
-        if (field<I>(flare, 0x58) == 0) continue;                      // 00458364 / 00458369
-        for (I j = 0; j < field<I>(flare, 0x58); ++j) {                // 0045836F..004586DB (count re-read)
-            void* texture = field<void**>(flare, 0x54)[j];
+        {
+            const long double nz = -W(view.z);                         // 00458319..0045831D
+            const long double ny = -W(view.y);                         // 00458322..00458326
+            const long double nx = -W(view.x);                         // 00458328..0045832C
+            screen.x = static_cast<float>(nx);                         // 0045832E fstp [esp+80h] (-> [esp+18h] by mov)
+            screen.y = static_cast<float>(ny);                         // 00458340 fstp [esp+84h]
+            screen.z = static_cast<float>(nz);                         // 00458352 fstp [esp+88h]
+        }
+        if (ref<I>(flare, 0x58) == 0) continue;                      // 00458364 / 00458369
+        for (I j = 0; j < ref<I>(flare, 0x58); ++j) {                // 0045836F..004586DB (count re-read)
+            void* texture = ref<void**>(flare, 0x54)[j];
             slot<SlotVoid>(texture, 0xB4)(texture, nullptr);           // 0045839D CAurTexture::Bind (lane-upload texture_bind_004214b0)
-            const double position = W(field<float*>(flare, 0x6C)[j]);  // 004583A6
-            const float* color = reinterpret_cast<const float*>(field<unsigned char*>(flare, 0x78) + j * 0x0C);   // 004583B1..004583B6
-            const double fade = W(field<float>(light, 0x88));          // E-C0 (raw copy of +88)
-            const float ty = S(W(screen.y) * position);                // 004583C2 (E-E4)
-            const float tx = S(position * W(screen.x));                // 004583CA (E-4C)
-            const double cz = W(color[2]) + W(field<float>(light, 0x54));   // 004583D1..004583D4
-            const double cy = W(color[1]) + W(field<float>(light, 0x50));
-            const float cx = S(W(color[0]) + W(field<float>(light, 0x4C)));  // 004583E2 fstp E-40
-            const float bz = S(cz * fade);                             // 004583EB / 004583EF (E-D4)
-            const double gy = cy * fade;                               // 004583F3
-            const double rx = W(cx) * fade;                            // 004583F7..004583FE
-            const float blue_k = S(W(bz) * W(facing_squared));         // 00458402..0045840A
-            const float green_k = S(gy * W(facing_squared));           // 00458410..00458414 (E-FC)
-            const double red_k = rx * W(facing_squared);               // 00458418
-            const double spread = W(field<float>(flare, 0x50)) - W(distance);   // 0045841C..0045841F
-            const float spread_stored = S(spread);                     // 00458423 fst E-80
-            const float blue = S(W(blue_k) * spread);                  // 00458430 (E-A8 / E-98)
-            const float green = S(W(green_k) * spread);                // 00458442 (E-D4 / E-9C)
-            const float red = S(red_k * spread);                       // 00458452 (E-A0)
-            float rgb[3];                                              // E-D0 (r) / E-CC (g) / E-C8 (b)
-            const float base = field<float>(flare, 0x50);
-            if (base == 0.0f) {                                        // 00458458..00458466 (fcom 0; test ah,44h; jnp)
-                rgb[0] = red; rgb[1] = green; rgb[2] = blue;           // 0045849C..004584B2 raw copies
+            const long double position = W(ref<float*>(flare, 0x6C)[j]);  // 004583A6
+            const float* color = reinterpret_cast<const float*>(ref<unsigned char*>(flare, 0x78) + j * 0x0C);   // 004583B1..004583B6
+            const long double fade = W(ref<float>(light, 0x88));          // E-C0 ([esp+4Ch], a mov copy of +88)
+            const U ty = stored_bits(W(screen.y) * position);          // 004583AD..004583C2 fstp [esp+28h]
+            const U tx = stored_bits(position * W(screen.x));          // 004583C6..004583CA fstp [esp+0C0h]
+            const long double cz = W(color[2]) + W(ref<float>(light, 0x54));   // 004583D1..004583D4
+            const long double cy = W(color[1]) + W(ref<float>(light, 0x50));   // 004583D7..004583DA
+            const long double cx = S(W(color[0]) + W(ref<float>(light, 0x4C)));   // 004583DD..004583E2 fstp [esp+0CCh]
+            const long double bz = S(cz * fade);                       // 004583EB..004583EF fstp [esp+38h]
+            const long double gy = cy * fade;                          // 004583F3
+            const long double rx = cx * fade;                          // 004583F7..004583FE
+            const long double blue_k = S(bz * facing_squared);         // 00458402..0045840A fstp [esp+38h]
+            const long double green_k = S(gy * facing_squared);        // 0045840E..00458414 fstp [esp+10h]
+            const long double red_k = rx * facing_squared;             // 00458418
+            const long double base_reg = W(ref<float>(flare, 0x50));
+            const long double spread = base_reg - distance;            // 0045841C..0045841F
+            const long double spread_stored = S(spread);               // 00458423 fst [esp+8Ch]
+            const U blue = stored_bits(blue_k * spread);               // 0045842A..00458430 fstp [esp+64h]
+            const U green = stored_bits(green_k * spread);             // 00458434..00458442 fstp [esp+38h]
+            const U red = stored_bits(red_k * spread);                 // 0045844A..00458452 fstp [esp+6Ch]
+            volatile U rgb[3];                                         // [esp+3Ch] r / [esp+40h] g / [esp+44h] b (frame words: stored once, re-read per use)
+            const long double base = W(ref<float>(flare, 0x50));       // 00458458
+            if (base == 0.0) {                                         // 0045845B fcom 0; test ah,44h; jnp (equal)
+                rgb[0] = red; rgb[1] = green; rgb[2] = blue;           // 0045849C..004584B2 mov copies
             } else {
-                const float inverse_base = S(W(f(kOne)) / W(base));    // 00458468..00458470
-                rgb[2] = S(W(inverse_base) * W(blue));                 // 00458476..0045847A
-                rgb[1] = S(W(inverse_base) * W(green));
-                rgb[0] = S(W(inverse_base) * W(red));
+                const long double inverse_base = S(W(f(kOne)) / base); // 00458468..00458470 fstp [esp+10h]
+                const long double nb = inverse_base * fbits(blue);     // 00458476..0045847A
+                const long double ng = inverse_base * fbits(green);    // 0045847E..00458482
+                const long double nr = inverse_base * fbits(red);      // 00458486..0045848A
+                rgb[0] = stored_bits(nr);                              // 0045848E fstp [esp+3Ch]
+                rgb[1] = stored_bits(ng);                              // 00458492 fstp [esp+40h]
+                rgb[2] = stored_bits(nb);                              // 00458496 fstp [esp+44h]
             }
+#pragma clang loop unroll(disable)
             for (int c = 0; c < 3; ++c) {                              // 004584B6..0045854A clamp to [0,1]
-                if (rgb[c] < 0.0f) rgb[c] = 0.0f;
-                else if (rgb[c] > f(kOne)) rgb[c] = f(kOne);
+                if (W(fbits(rgb[c])) < 0.0) rgb[c] = 0;                // fcomp 0; test 5; jp (less, ordered) -> mov 0
+                else if (W(fbits(rgb[c])) > 1.0) rgb[c] = kOne;        // fcomp 1; test 41h; jne (greater, ordered) -> mov 1.0
             }
-            const float size = S(W(field<float*>(flare, 0x60)[j]) / W(base) * W(spread_stored) * W(*cells.flare_size_scale_0078e3e0));  // 00458552..00458568 (E-FC)
+            const U size = stored_bits(W(ref<float*>(flare, 0x60)[j]) / W(ref<float>(flare, 0x50)) * spread_stored
+                                       * W(*cells.flare_size_scale_0078e3e0));   // 00458552..00458568 fstp [esp+10h]
             glPushMatrix();                                            // 0045856C
-            glTranslatef(tx, ty, 0.0f);                                // 00458580
+            words_form<GlTranslateWords>(&glTranslatef)(tx, ty, 0u);   // 00458572..00458580 (mov pushes)
             U g = *cells.flare_guard_007b9458;
             if ((g & 4u) == 0) {                                       // 00458586
                 *cells.flare_guard_007b9458 = g | 4u;
                 *cells.flare_pool_b_007b9444 = aurora_pool_request_00423ee0(0, 0x60, 0x42, 0x1011, cells.flare_pool_b_007b9444); // 004585AD
             }
             unsigned char* vertex = static_cast<unsigned char*>(aurora_pool_lock_00423f10(*cells.flare_pool_b_007b9444, 0, 0, 1));  // 004585CD
-            const I r = x87_round(S(W(rgb[0]) * W(f(kByte_0073ede4))));   // 004585D2..004585ED (fstp; fld; frndint; fistp)
-            const I gr = x87_round(S(W(rgb[1]) * W(f(kByte_0073ede4))));  // 004585EF..00458607
-            const I b = x87_round(S(W(rgb[2]) * W(f(kByte_0073ede4))));   // 00458609..00458621
+            const I r = x87_round(S(W(fbits(rgb[0])) * W(f(kByte_0073ede4))));   // 004585D2..004585ED (fstp; fld; frndint; fistp)
+            const I gr = x87_round(S(W(fbits(rgb[1])) * W(f(kByte_0073ede4))));  // 004585EF..00458607
+            const I b = x87_round(S(W(fbits(rgb[2])) * W(f(kByte_0073ede4))));   // 00458609..00458621
             const U packed = (((static_cast<U>(b) | 0xFFFFFF00u) << 8 | static_cast<U>(gr)) << 8) | static_cast<U>(r);   // 00458623..0045863D
+            const long double size_reg = fbits(size);
             vertex += 0x10;                                            // 00458641
+#pragma clang loop unroll(disable)
             for (U corner = 0; corner < 4; ++corner, vertex += 0x18) { // 00458644..004586A6
                 *reinterpret_cast<U*>(vertex - 4) = packed;            // 00458646 colour
-                *reinterpret_cast<float*>(vertex) = (corner == 0 || corner == 3) ? 0.0f : f(kOne);        // 00458649..00458661 u
-                *reinterpret_cast<float*>(vertex + 4) = (corner < 2) ? 0.0f : f(kOne);                    // 0045865E..00458675 v
-                *reinterpret_cast<float*>(vertex - 0x10) = (corner == 0 || corner == 3) ? -size : size;   // 00458673..0045868E x
-                *reinterpret_cast<float*>(vertex - 0x0C) = (corner < 2) ? -size : size;                   // 00458691..00458699 y
+                *reinterpret_cast<U*>(vertex) = (corner == 0 || corner == 3) ? 0u : kOne;               // 00458649..00458661 u (fld 0 / 1 ; fstp)
+                *reinterpret_cast<U*>(vertex + 4) = (corner < 2) ? 0u : kOne;                           // 0045865E..00458675 v
+                *reinterpret_cast<float*>(vertex - 0x10) = static_cast<float>((corner == 0 || corner == 3) ? -size_reg : size_reg);   // 00458673..0045868E x
+                *reinterpret_cast<float*>(vertex - 0x0C) = static_cast<float>((corner < 2) ? -size_reg : size_reg);                   // 00458691..00458699 y
                 *reinterpret_cast<U*>(vertex - 8) = 0;                 // 0045869C z
             }
             (void)aurora_pool_unlock_00423f30(*cells.flare_pool_b_007b9444);   // 004586AF
@@ -2088,7 +2214,7 @@ void __fastcall scene_render_lens_flares_00457ec0(void* scene, void*) {
     glBlendFunc(kBlendSrc_0073f270, kBlendDst_0073f274);               // 00458713
     glEnable_0073d390(*cells.gl_depth_test_0078d474);                  // 0045871F
     glEnable_0073d390(*cells.gl_lighting_0078d45c);                    // 00458728
-    if (field<U>(scene, 0x60) != 0) glEnable_0073d390(*cells.gl_fog_0078d450);    // 0045872A..00458739
+    if (ref<U>(scene, 0x60) != 0) glEnable_0073d390(*cells.gl_fog_0078d450);    // 0045872A..00458739
     glMatrixMode(kGlModelview_0073f298); glPopMatrix();                // 00458742 / 0045874A
     glMatrixMode(kGlModelview_0073f294); glPopMatrix();                // 00458753 / 00458755
     if (lights.data != 0) live_free(reinterpret_cast<void*>(static_cast<std::uintptr_t>(lights.data)));   // 0045875E..0045876E
@@ -2097,105 +2223,128 @@ void __fastcall scene_render_lens_flares_00457ec0(void* scene, void*) {
 // 0046B7C0 ConstructCameraFadePlane(scene). Original convention: scene in EAX (0046B7C7 mov esi,eax), RET 0.
 // Exported as cdecl(scene) per lane-3d-bsp (its naked construct_camera_fade_plane_eax_entry_0046b7c0 adapts EAX callers).
 void __cdecl construct_camera_fade_plane_0046b7c0(void* scene) {
-    using SlotOut = U (__fastcall*)(void*, void*, Vector*);           // camera vtbl+20 GetPosition(out), RET 4
-    using SlotPlanes = void (__fastcall*)(void*, void*, const Plane*, const Plane*);   // camera vtbl+90 SetFadePlanes, RET 8
+    // L3 t1 a2 (writing rule, re-derived from 0046B7C0..0046BBBC; B = esp after `push esi`): register values are long
+    // double; each of the original's 28 fstp/fst dword stores is one (float) conversion at that point. A stored value
+    // the original reloads later (fld / fsub / fmul from its slot) is held as its stored word (stored_bits) and read
+    // back with fbits, so the conversion is the only x87 round trip of that store (a float-typed stack local added a
+    // second, store-to-slot round trip); values only passed by pointer are stored as floats.
     void* camera = *cells.current_camera_007bb4e8;                     // 0046B7C9
-    void* behavior = (camera != nullptr) ? field<void*>(camera, 0x18C) : nullptr;      // 0046B7D2
-    if (behavior == nullptr || slot<SlotI>(behavior, 0x1C)(behavior, nullptr) == 0) { // 0046B7DE
-        field<U>(scene, 0xB8) = kFadeOff_00741568;                     // 0046B7E5..0046B7EB
+    void* behavior = (camera != nullptr) ? ref<void*>(camera, 0x18C) : nullptr;      // 0046B7D2
+    // L3 t1 a2: the behaviour slot +1C answers the follow behaviour (0 = none); the original passes that answer, not the
+    // behaviour, to GetTargetWorldPosition (0046B7E1 test eax,eax ; 0046B7FE mov ecx,eax).
+    void* follow = (behavior != nullptr)
+        ? reinterpret_cast<void*>(static_cast<std::uintptr_t>(static_cast<U>(slot<SlotI>(behavior, 0x1C)(behavior, nullptr)))) : nullptr;  // 0046B7DE
+    if (follow == nullptr) {
+        ref<U>(scene, 0xB8) = kFadeOff_00741568;                     // 0046B7E5..0046B7EB
         return;
     }
-    Vector target;                                                     // E-3C
-    behavior_camera_follow_get_target_world_position_0049f0e0(behavior, nullptr, &target);   // 0046B800
+    Vector target;                                                     // B+68h
+    behavior_camera_follow_get_target_world_position_0049f0e0(follow, nullptr, &target);   // 0046B7FE..0046B800
     camera = *cells.current_camera_007bb4e8;
-    Vector eye;                                                        // E-64
+    Vector eye;                                                        // B+40h
     camera_vt(camera)->s020_camera_get_position(camera, nullptr, &eye);               // 0046B812 Camera::GetPosition
-    Vector delta;                                                      // E-7C
-    delta.x = S(W(target.x) - W(eye.x));                               // 0046B815..0046B826
-    delta.y = S(W(target.y) - W(eye.y));                               // 0046B82B..0046B833
-    delta.z = S(W(target.z) - W(eye.z));                               // 0046B837..0046B83F
-    Vector unit;                                                       // E-88
-    normalize_004ab180(&unit, &delta);                                 // 0046B843
-    const double length = std::sqrt(W(unit.y) * W(unit.y) + W(unit.x) * W(unit.x));   // 0046B848..0046B85D
-    const float length_stored = S(length);                             // 0046B85F fst E-24
-    if (length < kFadeMinimum_00742ef0) {                              // 0046B866 fcomp qword 0.4; test ah,5; jp
-        field<U>(scene, 0xB8) = kFadeOff_00741568;                     // 0046B873
+    volatile U delta[3];                                               // B+28h..B+30h (frame words)
+    delta[0] = stored_bits(W(target.x) - W(eye.x));                    // 0046B815..0046B826 fstp
+    delta[1] = stored_bits(W(target.y) - W(eye.y));                    // 0046B82B..0046B833 fstp
+    delta[2] = stored_bits(W(target.z) - W(eye.z));                    // 0046B837..0046B83F fstp
+    Vector unit;                                                       // B+1Ch..B+24h
+    normalize_004ab180(&unit, reinterpret_cast<const Vector*>(const_cast<U*>(delta))); // 0046B843
+    // 0046B848..0046B85D: uy*uy + ux*ux ; fsqrt (L1 sqrt on the register value)
+    const long double length = sqrt(W(unit.y) * W(unit.y) + W(unit.x) * W(unit.x));
+    const U length_stored = stored_bits(length);                       // 0046B85F fst [B+80h] (reloaded 0046BADA)
+    if (length < kFadeMinimum_00742ef0) {                              // 0046B866 fcomp qword 0.4 (the unrounded ST0); test ah,5; jp
+        ref<U>(scene, 0xB8) = kFadeOff_00741568;                     // 0046B873
         return;
     }
-    reinterpret_cast<U*>(&unit)[2] = 0;                                // 0046B894 E-80 = 0
-    reinterpret_cast<U*>(&delta)[2] = 0;                               // 0046B89C E-74 = 0
+    reinterpret_cast<U*>(&unit)[2] = 0;                                // 0046B894 B+24h = 0
+    delta[2] = 0;                                                      // 0046B89C B+30h = 0
     U guard = *cells.fade_plane_guard_00827f74;
     if ((guard & 1u) == 0) {                                           // 0046B887..0046B8A4 static Vector 827F68 = (0,0,1)
         *cells.fade_plane_guard_00827f74 = guard | 1u;
         U* v = reinterpret_cast<U*>(cells.fade_plane_up_00827f68); v[0] = 0; v[1] = 0; v[2] = kOne;
     }
-    const double s = W(*cells.fade_plane_width_0078e5c0);
-    Vector side;                                                       // E-A0..E-98
-    side.x = S(-W(unit.y) * s);                                        // 0046B8CA..0046B8EC
-    side.y = S(W(unit.x) * s);                                         // 0046B8F0..0046B8F6
-    side.z = S(s * W(0.0f));                                           // 0046B8FA..0046B906
-    Vector other;                                                      // E-94..E-8C
-    other.x = S(-W(side.x)); other.y = S(-W(side.y)); other.z = S(-W(side.z));   // 0046B90A..0046B924
-    const double keep = W(f(kOne)) - W(*cells.fade_plane_fraction_0078e5bc);     // 0046B928..0046B92E
-    Vector cross_in;                                                   // E-58
+    U side[3];                                                         // B+4h..B+0Ch
+    side[0] = stored_bits(-W(unit.y) * W(*cells.fade_plane_width_0078e5c0));          // 0046B8CA..0046B8EC fchs ; fmul ; fstp
+    side[1] = stored_bits(W(unit.x) * W(*cells.fade_plane_width_0078e5c0));           // 0046B8D5..0046B8F6
+    side[2] = stored_bits(W(*cells.fade_plane_width_0078e5c0) * W(f(kFloatZero_0073d700)));   // 0046B8FA..0046B906
+    U other[3];                                                        // B+10h..B+18h
+    other[0] = stored_bits(-W(fbits(side[0])));                        // 0046B90A..0046B910
+    other[1] = stored_bits(-W(fbits(side[1])));                        // 0046B914..0046B91A
+    other[2] = stored_bits(-W(fbits(side[2])));                        // 0046B91E..0046B924
+    Vector cross_in;                                                   // B+4Ch..B+54h
     {
-        const double dx = W(delta.x) * keep;                           // 0046B934..0046B938
-        const float dy = S(W(delta.y) * keep);                         // 0046B93A..0046B940 (E-6C)
-        const float dz = S(keep * W(0.0f));                            // 0046B944..0046B94C (E-68, constant 0.0)
-        cross_in.x = S(dx - W(side.x));                                // 0046B950..0046B954
-        cross_in.y = S(W(dy) - W(side.y));                             // 0046B958..0046B960
-        cross_in.z = S(W(dz) - W(side.z));                             // 0046B964..0046B96C
+        const long double keep = W(f(kOne)) - W(*cells.fade_plane_fraction_0078e5bc);   // 0046B928..0046B92E
+        const long double dx = W(fbits(delta[0])) * keep;              // 0046B934..0046B938
+        const U dy = stored_bits(W(fbits(delta[1])) * keep);           // 0046B93A..0046B940 fstp [B+38h]
+        const U dz = stored_bits(keep * W(f(kFloatZero_0073d700)));    // 0046B944..0046B94C fstp [B+3Ch] (constant 0.0)
+        cross_in.x = S(dx - W(fbits(side[0])));                        // 0046B950..0046B954
+        cross_in.y = S(W(fbits(dy)) - W(fbits(side[1])));              // 0046B958..0046B960
+        cross_in.z = S(W(fbits(dz)) - W(fbits(side[2])));              // 0046B964..0046B96C
     }
-    Vector crossed, normal1;                                           // E-4C / E-30
+    Vector crossed, normal1;                                           // B+58h / B+74h
     vector_cross_004ab210(&crossed, cells.fade_plane_up_00827f68, &cross_in);    // 0046B970
     normalize_004ab180(&normal1, &crossed);                            // 0046B97E
-    Plane plane1;                                                      // E-10..E-4
+    Plane plane1;                                                      // B+94h..B+A0h
     {
-        const double px = W(side.x) + W(eye.x), py = W(side.y) + W(eye.y), pz = W(side.z) + W(eye.z);   // 0046B983..0046B9B3
-        plane1.a = normal1.x; plane1.b = normal1.y; plane1.c = normal1.z;          // 0046B9AC..0046B9C7
-        plane1.d = S(-((W(normal1.z) * pz + W(normal1.y) * py) + W(normal1.x) * px));   // 0046B9BE..0046B9E8
+        const long double px = W(fbits(side[0])) + W(eye.x);          // 0046B983..0046B987
+        const long double py = W(fbits(side[1])) + W(eye.y);          // 0046B992..0046B99D
+        const long double pz = W(fbits(side[2])) + W(eye.z);          // 0046B9A8..0046B9B3
+        copy_words3(&plane1, &normal1);                                // 0046B98B..0046B9C7 (mov)
+        plane1.d = S(-((W(normal1.z) * pz + W(normal1.y) * py) + px * W(normal1.x)));   // 0046B9BE..0046B9E8
     }
+    Vector cross_in2;                                                  // B+4Ch (copied by mov from B+4h..B+0Ch)
     {
-        const double dx = W(delta.x) * keep;                           // 0046BA04..0046BA08
-        const float dy = S(W(delta.y) * keep);                         // 0046BA0A..0046BA10 (E-48)
-        const float dz = S(keep * W(delta.z));                         // 0046BA14..0046BA1A (E-44, zeroed delta.z)
-        cross_in.x = S(dx - W(other.x));                               // 0046BA1E..0046BA2E
-        cross_in.y = S(W(dy) - W(other.y));                            // 0046BA2A..0046BA4E
-        cross_in.z = S(W(dz) - W(other.z));                            // 0046BA3F..0046BA5F
+        const long double keep = W(f(kOne)) - W(*cells.fade_plane_fraction_0078e5bc);   // 0046B9F8..0046B9FE
+        const long double dx = W(fbits(delta[0])) * keep;              // 0046BA04..0046BA08
+        const U dy = stored_bits(W(fbits(delta[1])) * keep);           // 0046BA0A..0046BA10 fstp [B+5Ch]
+        const U dz = stored_bits(keep * W(fbits(delta[2])));           // 0046BA14..0046BA1A fstp [B+60h] (the zeroed delta.z)
+        U in[3];
+        in[0] = stored_bits(dx - W(fbits(other[0])));                  // 0046BA1E..0046BA22 fstp [B+4h] -> mov
+        in[1] = stored_bits(W(fbits(dy)) - W(fbits(other[1])));        // 0046BA2A..0046BA3B fstp [B+8h] -> mov
+        in[2] = stored_bits(W(fbits(dz)) - W(fbits(other[2])));        // 0046BA3F..0046BA57 fstp [B+0Ch] -> mov
+        copy_words3(&cross_in2, in);                                   // 0046BA26..0046BA5F
     }
-    Vector normal2;                                                    // E-70
-    vector_cross_004ab210(&crossed, cells.fade_plane_up_00827f68, &cross_in);    // 0046BA63
+    Vector normal2;                                                    // B+34h
+    // L3 t1 a2: the operands are (cross_in2, up) here (0046B9EF push 827F68h last argument; 0046BA3A push &cross_in2),
+    // the reverse of the first plane's (up, cross_in) at 0046B8E6..0046B8EB.
+    vector_cross_004ab210(&crossed, &cross_in2, cells.fade_plane_up_00827f68);   // 0046BA63
     normalize_004ab180(&normal2, &crossed);                            // 0046BA6E
-    Plane plane2;                                                      // E-20..E-14
+    Plane plane2;                                                      // B+84h..B+90h
     {
-        const double px = W(other.x) + W(eye.x), py = W(other.y) + W(eye.y), pz = W(other.z) + W(eye.z);  // 0046BA73..0046BA96
-        plane2.a = normal2.x; plane2.b = normal2.y; plane2.c = normal2.z;          // 0046BA9A..0046BAB4
-        plane2.d = S(-((W(normal2.z) * pz + W(normal2.y) * py) + W(normal2.x) * px));   // 0046BAA1..0046BAC9
+        const long double px = W(fbits(other[0])) + W(eye.x);         // 0046BA73..0046BA77
+        const long double py = W(fbits(other[1])) + W(eye.y);         // 0046BA7F..0046BA87
+        const long double pz = W(fbits(other[2])) + W(eye.z);         // 0046BA8F..0046BA96
+        copy_words3(&plane2, &normal2);                                // 0046BA7B..0046BAB4 (mov)
+        plane2.d = S(-((W(normal2.z) * pz + W(normal2.y) * py) + px * W(normal2.x)));   // 0046BAA1..0046BAC9
     }
-    const double inverse = W(f(kOne)) / W(length_stored);              // 0046BAD4..0046BADA
-    const float nx = S(W(unit.x) * inverse);                           // 0046BAE1..0046BAE7 (E-94)
-    const float ny = S(W(unit.y) * inverse);                           // 0046BAEB..0046BB07 (E-90)
-    field<U>(scene, 0xB8) = kFadeOn_0074156c;                          // 0046BAEF..0046BAF7
-    const float nz = S(inverse * W(unit.z));                           // 0046BB0F..0046BB21 (E-8C, unit.z == 0)
+    const long double inverse = W(f(kOne)) / W(fbits(length_stored));  // 0046BAD4..0046BADA fdiv [B+80h]
+    const U nx = stored_bits(W(unit.x) * inverse);                     // 0046BAE1..0046BAE7 fstp [B+10h]
+    const U ny = stored_bits(W(unit.y) * inverse);                     // 0046BAEB..0046BB07 fstp [B+14h]
+    ref<U>(scene, 0xB8) = kFadeOn_0074156c;                          // 0046BAEF..0046BAF7
+    const U nz = stored_bits(inverse * W(unit.z));                     // 0046BB0F..0046BB21 fstp [B+18h] (unit.z == 0)
     camera = *cells.current_camera_007bb4e8;                           // 0046BAFD
-    Plane* plane3 = &field<Plane>(camera, 0x204);                      // 0046BB1B
-    const double sigma = W(*cells.fade_plane_offset_007fbf64);
-    const double a = W(delta.x) * sigma;                               // 0046BB25..0046BB2D
-    const double b = W(delta.y) * sigma;                               // 0046BB37..0046BB3B
-    const float c = S(sigma * W(delta.z));                             // 0046BB41..0046BB4B (E-44)
-    const float tx = S(W(target.x) - a);                               // 0046BB4F..0046BB55 fstp [esp+8]
-    const double ty = W(target.y) - b;                                 // 0046BB59..0046BB5F (kept wide)
-    plane3->a = nx; plane3->b = ny; plane3->c = nz;                    // 0046BB67..0046BB74
-    const double tz_term = (W(target.z) - W(c)) * W(nz);               // 0046BB63..0046BB70
-    const double sum = (tz_term + ty * W(ny)) + W(tx) * W(nx);         // 0046BB77..0046BB87
-    plane3->d = S(-sum);                                               // 0046BB89..0046BB93
+    U* plane3 = &ref<U>(camera, 0x204);                              // 0046BB1B
+    const long double sigma = W(*cells.fade_plane_offset_007fbf64);
+    const long double a = W(fbits(delta[0])) * sigma;                  // 0046BB25..0046BB2D
+    const long double b = W(fbits(delta[1])) * sigma;                  // 0046BB37..0046BB3B
+    const U c = stored_bits(sigma * W(fbits(delta[2])));               // 0046BB41..0046BB4B fstp [B+60h]
+    const U tx = stored_bits(W(target.x) - a);                         // 0046BB4F..0046BB55 fstp [B+4h]
+    const long double ty = W(target.y) - b;                            // 0046BB59..0046BB5F (kept wide)
+    plane3[0] = nx; plane3[1] = ny; plane3[2] = nz;                    // 0046BB67..0046BB74 (mov)
+    const long double tz_term = (W(target.z) - W(fbits(c))) * W(fbits(nz));   // 0046BB63..0046BB70
+    const long double sum = (tz_term + ty * W(fbits(ny))) + W(fbits(tx)) * W(fbits(nx));   // 0046BB77..0046BB87
+    plane3[3] = stored_bits(-sum);                                     // 0046BB89..0046BB93 fstp [B+64h] -> mov
     camera = *cells.current_camera_007bb4e8;
     camera_vt(camera)->s090_camera_set_fade_planes(camera, nullptr, &plane1, &plane2); // 0046BBAE Camera::SetFadePlanes
 }
 
 // ================================================================ core batch 14 (small per-frame/consumer helpers)
 // 00459150 _glScalef(x, y, z): cdecl re-push to opengl32 glScalef
-void __cdecl gl_scalef_00459150(float x, float y, float z) { glScalef(x, y, z); }
+// L3 t1 a2: the three argument words are re-pushed with mov (00459150..0045915F).
+void __cdecl gl_scalef_00459150(float, float, float) {
+    const U* a = A2_STACK_ARGS();
+    words_form<GlWords3>(&glScalef)(a[0], a[1], a[2]);
+}
 
 // 0044FCF0 Scene::SetObjectScale(gob, scale) (Scene vtbl+10), RET 8: gob vtbl+CC(scale, 1)
 U __fastcall scene_set_object_scale_0044fcf0(void*, void*, void* gob, U scale_bits) {
@@ -2203,12 +2352,15 @@ U __fastcall scene_set_object_scale_0044fcf0(void*, void*, void* gob, U scale_bi
 }
 
 // 0044FD40 Scene::GetObjectScale(gob) (Scene vtbl+14), RET 4: fld [gob+1B4] (ST0)
-double __fastcall scene_get_object_scale_0044fd40(void*, void*, void* gob) { return W(field<float>(gob, 0x1B4)); }
+// L3 t1 a2: returned as the float widened to double (exact: fld dword ; ret, as the original); the long double -> double
+// conversion was a qword round trip with no original store (S3).
+double __fastcall scene_get_object_scale_0044fd40(void*, void*, void* gob) { return static_cast<double>(ref<float>(gob, 0x1B4)); }
 
 // 0045C030 Camera::SetPosition(Vector) (Camera vtbl+18), RET 10h -> out
-Vector* __fastcall camera_set_position_0045c030(void* camera, void*, Vector* out, Vector position) {
-    field<Vector>(camera, 0x7C) = position;                            // 0045C034..0045C047
-    *out = position;                                                   // 0045C04F..0045C056
+Vector* __fastcall camera_set_position_0045c030(void* camera, void*, Vector* out, Vector) {
+    const U* p = A2_STACK_ARGS() + 1;                                  // position words [esp+8]..[esp+10h]
+    copy_words3(atf(camera, 0x7C), p);                                 // 0045C034..0045C047 (mov)
+    copy_words3(out, p);                                               // 0045C04F..0045C056 (mov)
     return out;                                                        // 0045C04A
 }
 
@@ -2216,7 +2368,7 @@ Vector* __fastcall camera_set_position_0045c030(void* camera, void*, Vector* out
 U __fastcall part_draw_004714b0(void* part, void*, U) {
     if (*cells.render_all_00828024 == 0) return 0;                     // 004714B0..004714BA (EAX = the zero cell value)
     float color[3] = {f(kOne), 0.0f, 0.0f};                            // 004714D1..004714E1 (1,0,0)
-    gl_draw_sphere_bound_00431a50(f(0x3DCCCCCDu), at(part, 0x08), color, f(kOne), 1);   // 004714E9 (0.1, part+8)
+    gl_draw_sphere_bound_00431a50(f(0x3DCCCCCDu), atf(part, 0x08), color, f(kOne), 1);   // 004714E9 (0.1, part+8)
     return 0;   // EAX = DrawSphereBound's leftover in the original (no defined value; callers ignore it)
 }
 
@@ -2248,7 +2400,7 @@ void __cdecl gl_render_objects_vtc_quad_00431db0(U pool, U count) {
     const unsigned char* vertex = static_cast<const unsigned char*>(kotor_renderer_gl_cells::pool_007a68a4->GetPool(static_cast<I>(pool)));  // 00431E6A
     for (I n = static_cast<I>(count); n > 0; --n, vertex += 0x18) {    // 00431E71..00431EA3
         glColor4ubv(vertex + 0x0C);                                    // 00431E8A
-        glTexCoord2f(*reinterpret_cast<const float*>(vertex + 0x10), *reinterpret_cast<const float*>(vertex + 0x14));   // 00431E93
+        words_form<GlWords2>(&glTexCoord2f)(*reinterpret_cast<const U*>(vertex + 0x10), *reinterpret_cast<const U*>(vertex + 0x14));   // 00431E8C..00431E93 (mov pushes)
         glVertex3fv(reinterpret_cast<const float*>(vertex));           // 00431E99
     }
     glEnd();                                                           // 00431EA9 jmp
@@ -2274,10 +2426,10 @@ void __cdecl render_squares_00426000(U pool_index) {
 
 // 004A9AC0 operator*(Quaternion a, Quaternion b) -> out (cdecl, EAX = out)
 Quaternion* __cdecl quaternion_multiply_004a9ac0(Quaternion* out, const Quaternion* a, const Quaternion* b) {
-    const double z = ((W(b->y) * W(a->x) + W(b->z) * W(a->w)) - W(b->x) * W(a->y)) + W(a->z) * W(b->w);   // 004A9AC8..004A9AE2
-    const double y = ((W(b->y) * W(a->w) - W(b->z) * W(a->x)) + W(a->y) * W(b->w)) + W(b->x) * W(a->z);   // 004A9AE4..004A9AFE
-    const double x = ((W(b->z) * W(a->y) + W(b->x) * W(a->w)) + W(a->x) * W(b->w)) - W(a->z) * W(b->y);   // 004A9B00..004A9B1A
-    const double w = ((W(a->w) * W(b->w) - W(b->x) * W(a->x)) - W(a->y) * W(b->y)) - W(b->z) * W(a->z);   // 004A9B1C..004A9B3A
+    const long double z = ((W(b->y) * W(a->x) + W(b->z) * W(a->w)) - W(b->x) * W(a->y)) + W(a->z) * W(b->w);   // 004A9AC8..004A9AE2
+    const long double y = ((W(b->y) * W(a->w) - W(b->z) * W(a->x)) + W(a->y) * W(b->w)) + W(b->x) * W(a->z);   // 004A9AE4..004A9AFE
+    const long double x = ((W(b->z) * W(a->y) + W(b->x) * W(a->w)) + W(a->x) * W(b->w)) - W(a->z) * W(b->y);   // 004A9B00..004A9B1A
+    const long double w = ((W(a->w) * W(b->w) - W(b->x) * W(a->x)) - W(a->y) * W(b->y)) - W(b->z) * W(a->z);   // 004A9B1C..004A9B3A
     out->w = S(w); out->x = S(x); out->y = S(y); out->z = S(z);       // 004A9B3C..004A9B44
     return out;
 }
@@ -2286,21 +2438,23 @@ Quaternion* __cdecl quaternion_multiply_004a9ac0(Quaternion* out, const Quaterni
 // 004A6840 AurGrassMaterialInUse(index): index > count-1 -> false, else byte [materials + index*54h + 50h]
 bool __cdecl aur_grass_material_in_use_004a6840(U material) {
     if (static_cast<I>(material) > *cells.grass_materials_00831e48 - 1) return false;   // 004A6840..004A684E (signed jle)
-    return field<U8>(*cells.grass_material_table_00831e44, material * 0x54u + 0x50u) != 0;   // 004A6853..004A685C (AL)
+    return ref<U8>(*cells.grass_material_table_00831e44, material * 0x54u + 0x50u) != 0;   // 004A6853..004A685C (AL)
 }
 
 // 0049DA00 PartTrigger::DrawVolume (thiscall, RET 0): three DrawFromVerts lists (+80 mode 4, +8C mode 8, +98 mode 8)
 void __fastcall part_trigger_draw_volume_0049da00(void* part, void*) {
-    gl_draw_from_verts_00451d70(4, &field<PointerList>(part, 0x80));   // 0049DA0C
-    gl_draw_from_verts_00451d70(8, &field<PointerList>(part, 0x8C));   // 0049DA1A
-    gl_draw_from_verts_00451d70(8, &field<PointerList>(part, 0x98));   // 0049DA28
+    gl_draw_from_verts_00451d70(4, &ref<PointerList>(part, 0x80));   // 0049DA0C
+    gl_draw_from_verts_00451d70(8, &ref<PointerList>(part, 0x8C));   // 0049DA1A
+    gl_draw_from_verts_00451d70(8, &ref<PointerList>(part, 0x98));   // 0049DA28
 }
 
 // 0049DA40 PartTrigger::Draw(flag) (PartTrigger table +64), RET 4
 void __fastcall part_trigger_draw_0049da40(void* part, void*, U) {
-    const double alpha = W(*cells.trigger_alpha_008304b8) + W(field<float>(part, 0x58));   // 0049DA43..0049DA4C
+    const long double alpha = W(*cells.trigger_alpha_008304b8) + W(ref<float>(part, 0x58));   // 0049DA43..0049DA4C
     float color[4];                                                    // [esp+4]..[esp+10h]
-    color[0] = field<float>(part, 0x4C); color[1] = field<float>(part, 0x50); color[2] = field<float>(part, 0x54);  // 0049DA4F..0049DA6A
+    {   U* cw = reinterpret_cast<U*>(color);                           // 0049DA4F..0049DA6A (mov copies)
+        const U r = ref<U>(part, 0x4C), g = ref<U>(part, 0x50), b = ref<U>(part, 0x54);
+        cw[0] = r; cw[1] = g; cw[2] = b; }
     color[3] = S(alpha);                                               // 0049DA58 fst
     if (alpha == 0.0) return;                                        // 0049DA60 fcomp 0; test ah,44h; jnp (EAX = fnstsw word)
     glPushAttrib(0x40040);                                             // 0049DA7F
@@ -2308,11 +2462,11 @@ void __fastcall part_trigger_draw_0049da40(void* part, void*, U) {
     kotor_renderer_init::glDisable_0073d22c(*cells.gl_texture_2d_0078d458);   // 0049DA9A
     kotor_renderer_init::glDisable_0073d22c(*cells.gl_lighting_0078d45c);     // 0049DAA3
     glColor4fv(color);                                                 // 0049DAAA
-    gl_draw_from_verts_00451d70(9, &field<PointerList>(part, 0x74));   // 0049DAB6 (LINE_LOOP)
+    gl_draw_from_verts_00451d70(9, &ref<PointerList>(part, 0x74));   // 0049DAB6 (LINE_LOOP)
     kotor_renderer_init::glEnable_0073d390(*cells.gl_blend_0078d448); // 0049DAC5
-    if (field<U8>(part, 0xCC) != 0) glBlendFunc(kGlOne_0073f278, kGlOne_0073f278);   // 0049DAD6..0049DAEC
+    if (ref<U8>(part, 0xCC) != 0) glBlendFunc(kGlOne_0073f278, kGlOne_0073f278);   // 0049DAD6..0049DAEC
     else glBlendFunc(kBlendSrc_0073f270, kBlendDst_0073f274);         // 0049DADF..0049DAEC
-    gl_draw_from_verts_00451d70(3, &field<PointerList>(part, 0xD0));   // 0049DAFB (LINE_STRIP)
+    gl_draw_from_verts_00451d70(3, &ref<PointerList>(part, 0xD0));   // 0049DAFB (LINE_STRIP)
     glPopAttrib();                                                     // 0049DB03
 }
 
@@ -2328,12 +2482,14 @@ U* walk_mesh_colors(volatile U* guard, U** storage, bool inverse) {
         table = *storage;                                              // 0046F24B
     }
     const float* row = cells.walkmesh_colors_0078e6a8;                 // ecx = 78E6AC - 4
+    // L3 t1 a2: the three channel conversions written in line (0046F270..0046F2B8 / 0046F370..0046F3C8: fld [row] (fld 1 ;
+    // fsub [row]) ; fmul 255 ; fstp dword [esp+18h] ; FloatToInt), so each is one (float) at its original store; the loop
+    // is kept a loop (one static store each).
+#pragma clang loop unroll(disable)
     for (int n = 0; n < 32; ++n, row += 3) {                           // 0046F270..0046F2E4 (until 78E82C)
-        const auto channel = [inverse](float value) {
-            const double v = inverse ? (W(f(kOne)) - W(value)) : W(value);              // 0046F370 fld 1; fsub
-            return x87_round(S(v * W(f(kByte_0073ede4))));             // fmul 255; fstp; fld; frndint; fistp
-        };
-        const I r = channel(row[0]), g = channel(row[1]), b = channel(row[2]);
+        const I r = x87_round(S((inverse ? (W(f(kOne)) - W(row[0])) : W(row[0])) * W(f(kByte_0073ede4))));   // 0046F279 / 0046F37F
+        const I g = x87_round(S((inverse ? (W(f(kOne)) - W(row[1])) : W(row[1])) * W(f(kByte_0073ede4))));   // 0046F291 / 0046F39D
+        const I b = x87_round(S((inverse ? (W(f(kOne)) - W(row[2])) : W(row[2])) * W(f(kByte_0073ede4))));   // 0046F2AA / 0046F3BC
         table[n] = (((static_cast<U>(b) | 0xFFFFFF00u) << 8 | static_cast<U>(g)) << 8) | static_cast<U>(r);  // 0046F2BA..0046F2D6
     }
     return table;                                                      // EAX = table (set before the loop)
@@ -2345,29 +2501,37 @@ U* __cdecl get_walk_mesh_colors_0046f200() { return walk_mesh_colors(cells.walkm
 U* __cdecl get_inverse_walk_mesh_colors_0046f300() { return walk_mesh_colors(cells.walkmesh_inverse_guard_008280ec, cells.walkmesh_inverse_table_008280e8, true); }
 
 // 004AB630 RotationArc(out, Vector from, Vector to) -> out (static result 00831F64)
-Quaternion* __cdecl rotation_arc_004ab630(Quaternion* out, Vector from, Vector to) {
+// L3 t1 a2: `from` and `to` are normalized in place in their own stack argument slots (004AB670 lea ecx,[esp+14h] /
+// 004AB679 lea ecx,[esp+20h]) and read from there; clang's by-value Vector parameters were copied into locals with
+// fld/fstp dword (quiets a signalling NaN; four extra dword round trips, S3).
+Quaternion* __cdecl rotation_arc_004ab630(Quaternion* out, Vector, Vector) {
+    U* const args = A2_STACK_ARGS();                                   // out, from [1..3], to [4..6]
+    Vector* const from = reinterpret_cast<Vector*>(args + 1);
+    Vector* const to = reinterpret_cast<Vector*>(args + 4);
     U guard = *cells.rotation_arc_guard_00831f74;
     if ((guard & 1u) == 0) {                                           // 004AB630..004AB666 static Quaternion = (1,0,0,0)
         *cells.rotation_arc_guard_00831f74 = guard | 1u;
         U* q = reinterpret_cast<U*>(cells.rotation_arc_00831f64); q[3] = 0; q[2] = 0; q[1] = 0; q[0] = kOne;
     }
-    vector_normalize_004ab130(&from, nullptr);                         // 004AB674 (lane-3d-model)
-    vector_normalize_004ab130(&to, nullptr);                           // 004AB67D
+    vector_normalize_004ab130(from, nullptr);                          // 004AB674 (lane-3d-model)
+    vector_normalize_004ab130(to, nullptr);                            // 004AB67D
     Vector axis;                                                       // [esp] (E-C)
-    vector_cross_004ab210(&axis, &from, &to);                          // 004AB691
-    const double d = (W(to.z) * W(from.z) + W(to.x) * W(from.x)) + W(to.y) * W(from.y);   // 004AB696..004AB6B3
+    vector_cross_004ab210(&axis, from, to);                            // 004AB691
+    const long double d = (W(to->z) * W(from->z) + W(to->x) * W(from->x)) + W(to->y) * W(from->y);   // 004AB696..004AB6B3
     if (d < W(f(kMinusOne_00740cbc)) || d == W(f(kMinusOne_00740cbc))) {   // 004AB6B5 fcom -1; test ah,41h; jp (> or NaN computes)
         U* o = reinterpret_cast<U*>(out); o[0] = 0; o[1] = kOne; o[2] = 0; o[3] = 0;   // 004AB6CA..004AB6D6
         return out;
     }
-    const double s = std::sqrt((d + W(f(kOne))) * 2.0);                // 004AB6DD..004AB6E7
-    const double inverse = W(f(kOne)) / s;                             // 004AB6E9..004AB6EF
+    const long double s = static_cast<long double>(sqrt(static_cast<long double>((d + W(f(kOne))) * 2.0)));   // 004AB6DD..004AB6E7 (L3: as above)
+    const long double inverse = W(f(kOne)) / s;                             // 004AB6E9..004AB6EF
     Quaternion* q = cells.rotation_arc_00831f64;
     q->x = S(W(axis.x) * inverse);                                     // 004AB6F1..004AB6F7
     q->y = S(W(axis.y) * inverse);                                     // 004AB6FD..004AB703
     q->z = S(inverse * W(axis.z));                                     // 004AB709..004AB70D
     q->w = S(s * W(f(kHalf_0073e9ac)));                                // 004AB713..004AB719
-    *out = *q;                                                         // 004AB71F..004AB73F
+    const U* qw = reinterpret_cast<const U*>(q);
+    U* o = reinterpret_cast<U*>(out);
+    o[0] = qw[0]; o[1] = qw[1]; o[2] = qw[2]; o[3] = qw[3];            // 004AB71F..004AB73F (mov, w x y z)
     return out;
 }
 
@@ -2395,17 +2559,26 @@ void __cdecl gl_draw_sphere_bound_00431a50(float radius, const void* center, con
     if (static_cast<U8>(billboard) != 0) {                             // 00431A68 byte test
         float m[16];                                                   // [esp+4]
         glGetFloatv(0x0BA6, m);                                        // 00431A7A GL_MODELVIEW_MATRIX
-        std::swap(m[1], m[4]); std::swap(m[2], m[8]); std::swap(m[6], m[9]);   // 00431A80..00431AC4 (raw dword moves)
-        std::memcpy(&m[12], center, 12);                               // 00431A84..00431AB0
+        // 00431A80..00431AC4: each swap is an x87 copy one way (fld m[1] ; fstp m[4]) and a mov the other way (m[1] =
+        // the old m[4] word), as the original.
+        U* mw = reinterpret_cast<U*>(m);
+        {   const U old4 = mw[4]; mw[4] = stored_bits(W(m[1])); mw[1] = old4; }    // 00431A80 / 00431A94..00431A98 / 00431ABC
+        {   const U old8 = mw[8]; mw[8] = stored_bits(W(m[2])); mw[2] = old8; }    // 00431A9C / 00431AA4..00431AA8 / 00431AC0
+        {   const U old9 = mw[9]; mw[9] = stored_bits(W(m[6])); mw[6] = old9; }    // 00431AAC / 00431AB4..00431AB8 / 00431AC4
+        copy_words3(&mw[12], center);                                  // 00431A84..00431AB0
         glPushMatrix();                                                // 00431AC8
         glMatrixMode(0x1700);                                          // 00431AD3
         glMultMatrixf(m);                                              // 00431ADE
     }
-    glColor3f(color[0], color[1], color[2]);                           // 00431AF6
-    const float r = S(W(radius) * W(scale));                           // 00431AFC..00431B06
-    const float a = S(W(r) * W(f(kSphereA_0073f4ec)));                 // 00431B21..00431B2D (0.717)
-    const float b = S(W(r) * W(f(kSphereB_0073f4e8)));                 // 00431B40..00431B4C (-0.717)
-    const float nr = S(-W(r));                                         // 00431B58..00431B60
+    {   const U* cw = reinterpret_cast<const U*>(color);               // 00431AE4..00431AF5 (mov pushes)
+        words_form<GlWords3>(&glColor3f)(cw[0], cw[1], cw[2]); }       // 00431AF6
+    // L3 t1 a2: r, a, b and -r live in the original's frame (fstp dword, reloaded for every glVertex3f push); they are
+    // frame variables here too (volatile: one store each, reloaded per use) instead of float registers spilled as
+    // 4-byte values across the GL calls (S1).
+    volatile float r = S(W(radius) * W(scale));                        // 00431AFC..00431B06
+    volatile float a = S(W(r) * W(f(kSphereA_0073f4ec)));              // 00431B21..00431B2D (0.717)
+    volatile float b = S(W(r) * W(f(kSphereB_0073f4e8)));              // 00431B40..00431B4C (-0.717)
+    volatile float nr = S(-W(r));                                      // 00431B58..00431B60
     glBegin(2);                                                        // 00431B0A GL_LINE_LOOP
     glVertex3f(0.0f, r, 0.0f);                                         // 00431B1F
     glVertex3f(a, a, 0.0f);                                            // 00431B37
@@ -2423,23 +2596,26 @@ void __cdecl gl_draw_sphere_bound_00431a50(float radius, const void* center, con
 
 // 0046EF10 GLRender::DrawAxisAlignedFrame(min, max, colour): two loops and four edges
 void __cdecl gl_draw_axis_aligned_frame_0046ef10(const void* minimum, const void* maximum, const void* colour) {
-    const float* a = static_cast<const float*>(minimum);
-    const float* b = static_cast<const float*>(maximum);
-    const float* c = static_cast<const float*>(colour);
+    // L3 t1 a2: every glColor3f / glVertex3f argument is a word the original pushes with mov (0046EF28..0046F037): word-typed
+    // calls (the float calls loaded each with fld dword, quieting a signalling NaN).
+    const U* a = static_cast<const U*>(minimum);
+    const U* b = static_cast<const U*>(maximum);
+    const U* c = static_cast<const U*>(colour);
+    const GlWords3 vertex = words_form<GlWords3>(&glVertex3f);
     kotor_renderer_init::glDisable_0073d22c(0x0DE1);                   // 0046EF1F
     kotor_renderer_init::glDisable_0073d22c(0x0B50);                   // 0046EF26
-    glColor3f(c[0], c[1], c[2]);                                       // 0046EF37
+    words_form<GlWords3>(&glColor3f)(c[0], c[1], c[2]);                // 0046EF37
     glBegin(2);                                                        // 0046EF45
-    glVertex3f(a[0], a[1], a[2]); glVertex3f(a[0], b[1], a[2]); glVertex3f(b[0], b[1], a[2]); glVertex3f(b[0], a[1], a[2]);
+    vertex(a[0], a[1], a[2]); vertex(a[0], b[1], a[2]); vertex(b[0], b[1], a[2]); vertex(b[0], a[1], a[2]);
     glEnd();                                                           // 0046EF89
     glBegin(2);                                                        // 0046EF91
-    glVertex3f(a[0], a[1], b[2]); glVertex3f(b[0], a[1], b[2]); glVertex3f(b[0], b[1], b[2]); glVertex3f(a[0], b[1], b[2]);
+    vertex(a[0], a[1], b[2]); vertex(b[0], a[1], b[2]); vertex(b[0], b[1], b[2]); vertex(a[0], b[1], b[2]);
     glEnd();                                                           // 0046EFC7
     glBegin(1);                                                        // 0046EFCF GL_LINES
-    glVertex3f(a[0], a[1], a[2]); glVertex3f(a[0], a[1], b[2]);
-    glVertex3f(b[0], a[1], a[2]); glVertex3f(b[0], a[1], b[2]);
-    glVertex3f(b[0], b[1], a[2]); glVertex3f(b[0], b[1], b[2]);
-    glVertex3f(a[0], b[1], a[2]); glVertex3f(a[0], b[1], b[2]);
+    vertex(a[0], a[1], a[2]); vertex(a[0], a[1], b[2]);
+    vertex(b[0], a[1], a[2]); vertex(b[0], a[1], b[2]);
+    vertex(b[0], b[1], a[2]); vertex(b[0], b[1], b[2]);
+    vertex(a[0], b[1], a[2]); vertex(a[0], b[1], b[2]);
     glEnd();                                                           // 0046F039
     kotor_renderer_init::glEnable_0073d390(0x0B50);                    // 0046F04A
     kotor_renderer_init::glEnable_0073d390(0x0DE1);                    // 0046F051
@@ -2447,78 +2623,95 @@ void __cdecl gl_draw_axis_aligned_frame_0046ef10(const void* minimum, const void
 
 // ================================================================ core batch 16 (gated-off, link-required)
 // 0044FE00 Scene::HitCheckGob(start, end, Vector* out, CHitInfo* hit) (thiscall, RET 20h): nearest gob hit
-I __fastcall scene_hit_check_gob_0044fe00(void* scene, void*, Vector start, Vector end, Vector* out, void* hit) {
+// L3 t1 a2: start / end are the raw stack words (A2_STACK_ARGS()[0..2] / [3..5]); Gob::HitCheck receives them as the
+// words the original copies with mov (0044FEC4..0044FEFB) and shortens `end` in place through its own argument slot
+// (0044FEC7 lea ecx,[esp+28h] = &end); `*out = end` is a mov copy (0044FF2A..0044FF3B).
+I __fastcall scene_hit_check_gob_0044fe00(void* scene, void*, Vector, Vector, Vector* out, void* hit) {
+    U* const args = A2_STACK_ARGS();
+    const U* start = args;                                             // [esp+18h]..[esp+20h] after the five pushes
+    U* end = args + 3;                                                 // [esp+24h]..[esp+2Ch]
     I result = 0;                                                      // [esp+10h]
-    for (I index = 0; index < field<I>(scene, 0x58); ++index) {        // 0044FE14..0044FF14 (count re-read)
-        void* gob = field<void**>(scene, 0x54)[index];
-        void* model = field<void*>(gob, 0x58);
+    for (I index = 0; index < ref<I>(scene, 0x58); ++index) {        // 0044FE14..0044FF14 (count re-read)
+        void* gob = ref<void**>(scene, 0x54)[index];
+        void* model = ref<void*>(gob, 0x58);
         if (model != nullptr) {                                        // 0044FE29
-            if ((field<U8>(model, 0x50) & 1u) != 0 && field<U8>(hit, 0x60) == 0) continue;   // 0044FE2D..0044FE38
-            if (field<U8>(gob, 0x17C) != 0) continue;                  // 0044FE3E
-            const U8 flags = field<U8>(model, 0x50);                   // 0044FE4C (word load, low byte tested)
+            if ((ref<U8>(model, 0x50) & 1u) != 0 && ref<U8>(hit, 0x60) == 0) continue;   // 0044FE2D..0044FE38
+            if (ref<U8>(gob, 0x17C) != 0) continue;                  // 0044FE3E
+            const U8 flags = ref<U8>(model, 0x50);                   // 0044FE4C (word load, low byte tested)
             if (((flags >> 1) & 1u) != 0) continue;                    // 0044FE52
             if (((flags >> 7) & 1u) != 0) continue;                    // 0044FE5D..0044FE67 (bit stored into the hit-arg slot byte)
         }
-        if (field<U8>(hit, 0x5C) != 0 && model != nullptr) {           // 0044FE6D..0044FE76
-            const U16 word = field<U16>(model, 0x50);                  // 0044FE78
+        if (ref<U8>(hit, 0x5C) != 0 && model != nullptr) {           // 0044FE6D..0044FE76
+            const U16 word = ref<U16>(model, 0x50);                  // 0044FE78
             if (((word >> 2) & 1u) != 0) continue;
             if (((word >> 4) & 1u) != 0) continue;
             if (((word >> 5) & 1u) != 0 && ((word >> 10) & 1u) == 0) continue;   // 0044FE94..0044FEA7
         }
         I ignored = 0;                                                 // 0044FEA9..0044FEC2 hit+8/+C ignore list
-        const PointerList& ignore = field<PointerList>(hit, 0x08);
+        const PointerList& ignore = ref<PointerList>(hit, 0x08);
         for (I n = 0; n < ignore.size; ++n)
             if (reinterpret_cast<void**>(static_cast<std::uintptr_t>(ignore.data))[n] == gob) ++ignored;
         if (ignored != 0) continue;
-        const I r = gob_vt(gob)->s08c_gob_hit_check(as_gob(gob), nullptr, start, end, &end, hit);   // 0044FF00 (shortens end)
+        const I r = words_form<HitCheckWords>(gob_vt(gob)->s08c_gob_hit_check)(gob, nullptr, start[0], start[1], start[2],
+            end[0], end[1], end[2], reinterpret_cast<Vector*>(end), hit);   // 0044FF00 (shortens end)
         if (r != 0) result = r;                                        // 0044FF0A
     }
-    if (result != 0 && out != nullptr) *out = end;                     // 0044FF1A..0044FF3B
+    if (result != 0 && out != nullptr) copy_words3(out, end);          // 0044FF1A..0044FF3B
     return result;                                                     // 0044FF3E mov eax,ecx
 }
 
 // 00456B60 Scene::HitCheck(start, end, Vector* out, CHitInfo* hit) (Scene vtbl+38, RET 20h)
-I __fastcall scene_hit_check_00456b60(void* scene, void*, Vector start, Vector end, Vector* out, void* hit) {
+// L3 t1 a2: start / end are the raw stack words (A2_STACK_ARGS()[0..2] / [3..5]); every callee receives them as the
+// words the original copies with mov, and `end` is shortened in place through its own argument slot (&end = lea
+// [esp+24h]-relative, 00456BAF / 00456C6B / 00456D07); the result copies are mov copies.
+I __fastcall scene_hit_check_00456b60(void* scene, void*, Vector, Vector, Vector* out, void* hit) {
+    U* const args = A2_STACK_ARGS();
+    U* start = args;                                                   // [esp+18h]..[esp+20h] after the five pushes
+    U* end = args + 3;                                                 // [esp+24h]..[esp+2Ch]
+    Vector* const end_slot = reinterpret_cast<Vector*>(end);
     if (hit == nullptr) {                                              // 00456B68
         hit = cells.scene_hit_info_007b93a8;                           // 00456B73 static CHitInfo
         aurora_hit_info_clear_output_00456a60(hit, nullptr);           // 00456B7A (lane-3d-model)
     }
     *cells.bsp_hit_info_007fbf48 = hit;                                // 00456B83
     void* hit_gob = nullptr;                                           // [esp+34h] reused as the gob result
-    if (field<U8>(hit, 0x5F) == 0) {                                   // 00456B89..00456B96
-        if (field<I>(scene, 0xCC) == 0) {                              // 00456B9C (no rooms: whole-scene BSP)
-            if (bsp_hit_check_004ad260(field<void*>(scene, 0xA0), start, end, &end, hit_part_on_bsp_node_0046b4c0) != 0) {  // 00456BE9
-                field<Vector>(hit, 0x1C) = end;                        // 00456BFF..00456C15
-                field<U>(hit, 0x18) = 1;
-                if (out != nullptr) *out = end;                        // 00456C18..00456C22
+    if (ref<U8>(hit, 0x5F) == 0) {                                   // 00456B89..00456B96
+        if (ref<I>(scene, 0xCC) == 0) {                              // 00456B9C (no rooms: whole-scene BSP)
+            if (words_form<BspHitWords>(&bsp_hit_check_004ad260)(ref<void*>(scene, 0xA0), start[0], start[1], start[2],
+                    end[0], end[1], end[2], end_slot, hit_part_on_bsp_node_0046b4c0) != 0) {  // 00456BE9
+                copy_words3(atf(hit, 0x1C), end);                      // 00456BFF..00456C15
+                ref<U>(hit, 0x18) = 1;
+                if (out != nullptr) copy_words3(out, end);             // 00456C18..00456C22
             }
         }
-        for (I index = 0; index < field<I>(scene, 0xCC); ++index) {    // 00456C25..00456CED
-            void* room = field<void**>(scene, 0xC8)[index];
-            if (box_intersect_004aa610(&start, &end, &field<Vector>(room, 0x1C), &field<Vector>(room, 0x28)) == 0) continue;  // 00456C5B
-            if (hit_part_on_bsp_node_0046b4c0(room, start, end, &end) == 0) continue;   // 00456C9F
-            field<Vector>(hit, 0x1C) = end;                            // 00456CAD..00456CC8
-            field<U>(hit, 0x18) = 1;
-            if (out != nullptr) *out = end;                            // 00456CCD..00456CD8
-            field<void*>(hit, 0x54) = room;                            // 00456CDB
+        for (I index = 0; index < ref<I>(scene, 0xCC); ++index) {    // 00456C25..00456CED
+            void* room = ref<void**>(scene, 0xC8)[index];
+            if (box_intersect_004aa610(reinterpret_cast<const Vector*>(start), end_slot, &ref<Vector>(room, 0x1C), &ref<Vector>(room, 0x28)) == 0) continue;  // 00456C5B
+            if (words_form<PartHitWords>(&hit_part_on_bsp_node_0046b4c0)(room, start[0], start[1], start[2],
+                    end[0], end[1], end[2], end_slot) == 0) continue;   // 00456C9F
+            copy_words3(atf(hit, 0x1C), end);                          // 00456CAD..00456CC8
+            ref<U>(hit, 0x18) = 1;
+            if (out != nullptr) copy_words3(out, end);                 // 00456CCD..00456CD8
+            ref<void*>(hit, 0x54) = room;                            // 00456CDB
         }
     }
     *cells.bsp_hit_info_007fbf48 = nullptr;                            // 00456CF3
-    if (field<U>(hit, 0x00) == 0) {                                    // 00456CFD
-        const I r = scene_hit_check_gob_0044fe00(scene, nullptr, start, end, &end, hit);   // 00456D3C
+    if (ref<U>(hit, 0x00) == 0) {                                    // 00456CFD
+        const I r = words_form<HitCheckWords>(&scene_hit_check_gob_0044fe00)(scene, nullptr, start[0], start[1], start[2],
+            end[0], end[1], end[2], end_slot, hit);                     // 00456D3C
         hit_gob = reinterpret_cast<void*>(static_cast<std::uintptr_t>(static_cast<U>(r)));
         if (r != 0) {
-            field<Vector>(hit, 0x1C) = end;                            // 00456D49..00456D68
-            field<U>(hit, 0x18) = 2;
-            if (out != nullptr) *out = end;                            // 00456D6D..00456D72
+            copy_words3(atf(hit, 0x1C), end);                          // 00456D49..00456D68
+            ref<U>(hit, 0x18) = 2;
+            if (out != nullptr) copy_words3(out, end);                 // 00456D6D..00456D72
         }
     }
-    void* owner = field<void*>(hit, 0x38);                             // 00456D75 unregister old SafePointer
-    if (owner != nullptr) field<PointerList>(owner, 0x04).RemoveReverse32(word(at(hit, 0x38)));   // 00456D7F..00456DB6 (inlined Remove)
-    field<void*>(hit, 0x38) = hit_gob;                                 // 00456DBE
+    void* owner = ref<void*>(hit, 0x38);                             // 00456D75 unregister old SafePointer
+    if (owner != nullptr) ref<PointerList>(owner, 0x04).RemoveReverse32(word(atf(hit, 0x38)));   // 00456D7F..00456DB6 (inlined Remove)
+    ref<void*>(hit, 0x38) = hit_gob;                                 // 00456DBE
     if (hit_gob != nullptr)                                            // 00456DC0..00456DEC register &hit+38 with the gob
-        int_list_add_00444fe0(&field<PointerList>(hit_gob, 0x04), nullptr, word(at(hit, 0x38)));
-    return field<I>(hit, 0x18);                                        // 00456DEF
+        int_list_add_00444fe0(&ref<PointerList>(hit_gob, 0x04), nullptr, word(atf(hit, 0x38)));
+    return ref<I>(hit, 0x18);                                        // 00456DEF
 }
 
 // 00451A50 Scene::RenderShadows(a1, a2, cast, clear) (Scene vtbl+BC, RET 10h)
@@ -2539,9 +2732,9 @@ U __fastcall scene_render_shadows_00451a50(void* scene, void*, U, U, U cast, U c
                *cells.soft_enabled_0078dae9 != 0;
     };
     if (cast != 0) {                                                   // 00451AB4
-        void* light = field<void*>(field<void*>(scene, 0x270), 0x1C);  // 00451AC6..00451ACC
+        void* light = ref<void*>(ref<void*>(scene, 0x270), 0x1C);  // 00451AC6..00451ACC
         if (light != nullptr &&
-            W(field<float>(scene, 0xB0)) + W(f(kShadowLift_007415c4)) < W(field<float>(light, 0x9C))) {   // 00451AD7..00451AEE
+            W(ref<float>(scene, 0xB0)) + W(f(kShadowLift_007415c4)) < W(ref<float>(light, 0x9C))) {   // 00451AD7..00451AEE
             if (soft()) gl_set_up_soft_shadows_0042d1c0();             // 00451B21
             glStencilMask(0xFF);                                       // 00451B2B
             glEnable_0073d390(*cells.gl_stencil_test_0078d470);        // 00451B38
@@ -2558,7 +2751,7 @@ U __fastcall scene_render_shadows_00451a50(void* scene, void*, U, U, U cast, U c
             glColorMask(1, 1, 1, 1);                                   // 00451BAD
             glStencilMask(0);                                          // 00451BBB
             (void)scene_vt(scene)->s100_scene_render_stencil_shadows_for_this_light(scene, nullptr, word(light),
-                field<U>(field<void*>(scene, 0x270), 0x20), static_cast<U>(bits));   // 00451BD1
+                ref<U>(ref<void*>(scene, 0x270), 0x20), static_cast<U>(bits));   // 00451BD1
             if (soft()) gl_finish_soft_shadows_0042d9a0();             // 00451C04
             glStencilMask(0xFF);                                       // 00451C0E
         }
@@ -2583,29 +2776,29 @@ U __fastcall part_aabb_draw_00471560(void* part, void*, U) {
     if ((guard & 1u) == 0) { *cells.aabb_guard_00828118 = guard | 1u; *cells.aabb_colors_00828114 = get_walk_mesh_colors_0046f200(); }          // 0047158C..004715AE
     guard = *cells.aabb_guard_00828118;
     if ((guard & 2u) == 0) { *cells.aabb_guard_00828118 = guard | 2u; *cells.aabb_inverse_colors_00828110 = get_inverse_walk_mesh_colors_0046f300(); } // 004715B7..004715D4
-    void* node = field<void*>(part, 0x04);                             // 004715E8
+    void* node = ref<void*>(part, 0x04);                             // 004715E8
     glDisable_0073d22c(*cells.gl_texture_2d_0078d458);                 // 004715EC
     glDisable_0073d22c(*cells.gl_lighting_0078d45c);                   // 004715F5
     glColor4f(0.0f, 0.0f, 0.0f, 0.0f);                                 // 004715FF
     if (node == nullptr) return 0;                                     // 00471605
-    if (field<U>(part, 0x40) == 0) {                                   // 0047160D
+    if (ref<U>(part, 0x40) == 0) {                                   // 0047160D
         glPushMatrix();                                                // 00471618
-        transform_0046f6b0(&field<Vector>(part, 0x08), &field<Quaternion>(part, 0x14), 0);   // 0047161E..00471751 (inlined)
+        transform_0046f6b0(&ref<Vector>(part, 0x08), &ref<Quaternion>(part, 0x14), 0);   // 0047161E..00471751 (inlined)
     }
-    *cells.aabb_face_count_00827fb0 = *cells.aabb_face_count_00827fb0 + field<U>(node, 0x5C);   // 00471757..00471768
-    const PointerList* faces = &field<PointerList>(node, 0x58);
-    const Vector* vertices = field<const Vector*>(node, 0x198);
+    *cells.aabb_face_count_00827fb0 = *cells.aabb_face_count_00827fb0 + ref<U>(node, 0x5C);   // 00471757..00471768
+    const PointerList* faces = &ref<PointerList>(node, 0x58);
+    const Vector* vertices = ref<const Vector*>(node, 0x198);
     gl_draw_triangles_004318f0(faces, vertices, *cells.aabb_colors_00828114);            // 00471779
     glFrontFace(kGlCw_0073f2c0);                                       // 0047178E
-    gl_draw_triangles_004318f0(faces, field<const Vector*>(node, 0x198), *cells.aabb_inverse_colors_00828110);   // 0047179F
+    gl_draw_triangles_004318f0(faces, ref<const Vector*>(node, 0x198), *cells.aabb_inverse_colors_00828110);   // 0047179F
     glFrontFace(kGlCcw_0073f2c4);                                      // 004717AE
     glPolygonMode(kGlFront_0073f2ec, kPolygonModes_0073f2e4[0]);       // 004717C3 (FRONT, LINE)
-    gl_draw_triangles_004318f0(faces, field<const Vector*>(node, 0x198), *cells.aabb_inverse_colors_00828110);   // 004717D4
+    gl_draw_triangles_004318f0(faces, ref<const Vector*>(node, 0x198), *cells.aabb_inverse_colors_00828110);   // 004717D4
     glFrontFace(kGlCw_0073f2c0);                                       // 004717E2
-    gl_draw_triangles_004318f0(faces, field<const Vector*>(node, 0x198), *cells.aabb_colors_00828114);           // 004717F3
+    gl_draw_triangles_004318f0(faces, ref<const Vector*>(node, 0x198), *cells.aabb_colors_00828114);           // 004717F3
     glFrontFace(kGlCcw_0073f2c4);                                      // 00471801
     glPolygonMode(kGlFront_0073f2ec, kPolygonModes_0073f2e4[1]);       // 00471811 (FRONT, FILL)
-    if (field<U>(part, 0x40) == 0) glPopMatrix();                      // 00471813..0047181F
+    if (ref<U>(part, 0x40) == 0) glPopMatrix();                      // 00471813..0047181F
     glEnable_0073d390(*cells.gl_texture_2d_0078d458);                  // 00471832
     glEnable_0073d390(*cells.gl_lighting_0078d45c);                    // 0047183B
     return 0;   // EAX = glEnable leftover in the original (no defined value)
@@ -2619,7 +2812,8 @@ U __fastcall scene_do_highlight_triggers_00456300(void* scene, void*, U flag) {
     PointerList triggers{};                                            // [esp+20h]: data/size/capacity = 0 (00456328..00456330)
     const I bits = aur_get_available_stencil_bits_0045fd00();          // 0045633B
     if (bits == 0) return 0;                                           // 00456346
-    field<float>(scene, 0xB4) = S(W(bits_to_float(*cells.frame_time_0078e574)) * W(f(kTwoPi_00740c88)) + W(field<float>(scene, 0xB4)));  // 0045634C..0045635E
+    // L3 t1: 0045634C..0045635E fld [0078E574] ; fmul dword [00740C88] ; fadd [scene+B4h] ; fstp dword [scene+B4h]
+    ref<float>(scene, 0xB4) = static_cast<float>(Wcell(cells.frame_time_0078e574) * kRsTwoPi_00740c88 + ref<float>(scene, 0xB4));
     if (*cells.trigger_highlight_0078e614 != 0) {                      // 00456364
         glDisable_0073d22c(*cells.gl_blend_0078d448);                  // 0045637E
         glDisable_0073d22c(*cells.gl_texture_2d_0078d458);             // 00456387
@@ -2627,8 +2821,8 @@ U __fastcall scene_do_highlight_triggers_00456300(void* scene, void*, U flag) {
         glDisable_0073d22c(*cells.gl_alpha_test_0078d44c);             // 00456398
         for (I i = 0; i < cells.trigger_list_0080aa74->size; ++i) {    // 0045639A..0045640A
             void* trigger = reinterpret_cast<void**>(static_cast<std::uintptr_t>(cells.trigger_list_0080aa74->data))[i];
-            if (field<U8>(trigger, 0xA8) == 0) continue;               // 004563B9
-            if (static_cast<U8>(flag) != field<U8>(trigger, 0xB0)) continue;   // 004563C3..004563D0
+            if (ref<U8>(trigger, 0xA8) == 0) continue;               // 004563B9
+            if (static_cast<U8>(flag) != ref<U8>(trigger, 0xB0)) continue;   // 004563C3..004563D0
             int_list_add_00444fe0(&triggers, nullptr, word(trigger));  // 004563D2..004563FE (same growth sequence)
         }
         const U reference = 1u << static_cast<U>(bits - 1);            // 0045641C..00456428 (E-A0)
@@ -2652,13 +2846,18 @@ U __fastcall scene_do_highlight_triggers_00456300(void* scene, void*, U flag) {
             glColorMask(1, 1, 1, 1);                                   // 00456506
             PointerList quad{};                                        // [esp+10h]: data/size/capacity = 0 (00456508..00456512)
             const auto corner = [&quad](U plane_a, U plane_b) {        // cross(plane[a], plane[b]) -> normalize -> append
-                Plane* planes = field<PlaneList>(*cells.current_camera_007bb4e8, 0x1F8).data;
+                Plane* planes = ref<PlaneList>(*cells.current_camera_007bb4e8, 0x1F8).data;
                 Vector crossed, direction;
                 vector_cross_004ab210(&crossed, reinterpret_cast<const Vector*>(&planes[plane_a]), reinterpret_cast<const Vector*>(&planes[plane_b]));
-                const Vector v = *normalize_004ab180(&direction, &crossed);
+                // L3 t1 a2: the normalized vector is copied as three words (mov, 0045654D..00456555 / 004565B4..004565BE ..),
+                // held across the allocate call and stored with mov (00456579..0045657E ..); a float copy was three x87
+                // values spilled through 4 bytes (S1) and quieted a signalling NaN.
+                const U* n = reinterpret_cast<const U*>(normalize_004ab180(&direction, &crossed));
+                const U vx = n[0], vy = n[1], vz = n[2];
                 if (quad.size == quad.capacity)                        // (first append: capacity 0 == size 0 -> 8)
                     vector_list_allocate_00421310(&quad, nullptr, quad.capacity != 0 ? quad.capacity + quad.capacity : 8);
-                reinterpret_cast<Vector*>(static_cast<std::uintptr_t>(quad.data))[quad.size] = v;
+                U* slot3 = reinterpret_cast<U*>(static_cast<std::uintptr_t>(quad.data)) + 3 * static_cast<U>(quad.size);
+                slot3[0] = vx; slot3[1] = vy; slot3[2] = vz;
                 quad.size = quad.size + 1;
             };
             corner(5, 2);                                              // 0045653A / 00456562 (plane+50 x plane+20)
@@ -2666,19 +2865,29 @@ U __fastcall scene_do_highlight_triggers_00456300(void* scene, void*, U flag) {
             corner(4, 3);                                              // 00456629 (plane+40 x plane+30)
             corner(2, 4);                                              // 004566AD (plane+20 x plane+40)
             glPushMatrix();                                            // 0045670D
-            const Vector eye = field<Vector>(*cells.current_camera_007bb4e8, 0x7C);
-            glTranslatef(eye.x, eye.y, eye.z);                         // 00456736
+            // L3 t1 a2: the camera position words are pushed with mov (00456713..00456729): a word-typed call (a float
+            // call loaded them with fld dword, which quiets a signalling NaN).
+            using GlTranslateWords = void (__stdcall*)(U, U, U);
+            const U* eye = &ref<U>(*cells.current_camera_007bb4e8, 0x7C);
+            const U ex = eye[0], ey = eye[1], ez = eye[2];
+            words_form<GlTranslateWords>(&glTranslatef)(ex, ey, ez);   // 00456736
             glEnable_0073d390(*cells.gl_blend_0078d448);               // 00456743
             glBlendFunc(kBlendSrc_0073f270, kBlendDst_0073f274);       // 00456756
             glStencilFunc(kGlLequal_0073f2ac, static_cast<GLint>(reference), 0xFFFFFFFFu);   // 0045676A
             glStencilOp(kGlKeep_0073f2c8, kGlKeep_0073f2c8, kGlKeep_0073f2c8);              // 00456778
             void* t = reinterpret_cast<void**>(static_cast<std::uintptr_t>(triggers.data))[k];
-            if (field<U8>(t, 0xC4) != 0) {                             // 00456789 pulsing alpha
-                float pulse;                                           // [esp+1Ch]
-                x87trig_004567b3(t, scene, &pulse);                    // 00456793..004567DD (x87)
-                glColor4f(field<float>(t, 0xB4), field<float>(t, 0xB8), field<float>(t, 0xBC), pulse);   // 004567ED
+            if (ref<U8>(t, 0xC4) != 0) {                             // 00456789 pulsing alpha
+                // L3 t1: 00456793..004567DD fld [t+C8h] ; fmul [scene+B4h] ; fsin ; fadd 1.0f ; fmul [t+C0h] ; fmul 0.5f ;
+                // fstp dword [esp+1Ch] (replaces the a1 helper x87trig_004567b3)
+                // L3 t1 a2: the colour words +B4/+B8/+BC are pushed with mov (004567A3..004567EC) and pulse as the stored
+                // word ([esp+1Ch], 004567E1): a word-typed call.
+                using GlColor4Words = void (__stdcall*)(U, U, U, U);
+                const U r = ref<U>(t, 0xB4), g = ref<U>(t, 0xB8), b = ref<U>(t, 0xBC);
+                const U pulse = stored_bits((sin(static_cast<long double>(ref<float>(t, 0xC8)) * ref<float>(scene, 0xB4)) + kRsOne_0073d764)
+                                            * ref<float>(t, 0xC0) * kRsHalf_0073e9ac);
+                words_form<GlColor4Words>(&glColor4f)(r, g, b, pulse);   // 004567ED
             } else {
-                glColor4fv(&field<float>(t, 0xB4));                    // 004567FB
+                glColor4fv(&ref<float>(t, 0xB4));                    // 004567FB
             }
             glBegin(kGlPolygon_0073f34c);                              // 00456808
             for (I n = 0; n < quad.size; ++n)                          // 0045680E..0045681F (size snapshot in esi)
@@ -2713,12 +2922,12 @@ void __fastcall gui_scene_void_return_0c_005c5630(void*, void*, U, U, U) {}
 
 // 0045C330 Camera::~Camera (body): restore vtables, free the plane list, destroy the Gob, base vtable
 void __fastcall camera_destruct_0045c330(void* camera, void*) {
-    field<const CameraVTable*>(camera, 0) = &camera_vtable_00741b20;  // 0045C353
-    field<const aurora_model::GobVTable*>(camera, 4) = &camera_gob_vtable_00741988;   // 0045C359
-    Plane* planes = field<PlaneList>(camera, 0x1F8).data;              // 0045C35F
+    ref<const CameraVTable*>(camera, 0) = &camera_vtable_00741b20;  // 0045C353
+    ref<const aurora_model::GobVTable*>(camera, 4) = &camera_gob_vtable_00741988;   // 0045C359
+    Plane* planes = ref<PlaneList>(camera, 0x1F8).data;              // 0045C35F
     if (planes != nullptr) live_free(planes);                          // 0045C367..0045C372
-    gob_destruct_0044b2f0(as_gob(at(camera, 4)), nullptr);             // 0045C381
-    field<const CameraBaseVTable*>(camera, 0) = &camera_base_vtable_007418f8;   // 0045C38A
+    gob_destruct_0044b2f0(as_gob(atf(camera, 4)), nullptr);             // 0045C381
+    ref<const CameraBaseVTable*>(camera, 0) = &camera_base_vtable_007418f8;   // 0045C38A
 }
 // 0045D910 Camera scalar deleting destructor (Camera vtbl+00), RET 4
 U __fastcall camera_destruct_deleting_0045d910(void* camera, void*, U flags) {
@@ -2728,7 +2937,7 @@ U __fastcall camera_destruct_deleting_0045d910(void* camera, void*, U flags) {
 }
 // 0045C250 CAurCamera scalar deleting destructor (interface vtbl+00), RET 4
 U __fastcall camera_base_destruct_deleting_0045c250(void* camera, void*, U flags) {
-    field<const CameraBaseVTable*>(camera, 0) = &camera_base_vtable_007418f8;   // 0045C258
+    ref<const CameraBaseVTable*>(camera, 0) = &camera_base_vtable_007418f8;   // 0045C258
     if ((static_cast<U8>(flags) & 1u) != 0) live_free(camera);         // 0045C25E..0045C261
     return word(camera);                                               // 0045C269
 }
@@ -2738,33 +2947,33 @@ void* __fastcall camera_as_aur_object_0045c440(void* camera, void*) { return cam
 U __fastcall camera_return_zero_00401590(void*, void*, U, U, U, U) { return 0; }
 // 0045C450 Camera::GetPosition(out) (Camera vtbl+20), RET 4
 Vector* __fastcall camera_get_position_0045c450(void* camera, void*, Vector* out) {
-    *out = field<Vector>(camera, 0x7C);                                // 0045C454..0045C467
+    *out = ref<Vector>(camera, 0x7C);                                // 0045C454..0045C467
     return out;                                                        // 0045C450 mov eax,[esp+4]
 }
 // 0045C160 Camera::BehaviorMessage -> Gob::BehaviorMessage(this+4) (tail jmp)
 U __fastcall camera_behavior_message_0045c160(void* camera, void*, U message) {
-    return gob_behavior_message_0043f5a0(as_gob(at(camera, 4)), nullptr, message);
+    return gob_behavior_message_0043f5a0(as_gob(atf(camera, 4)), nullptr, message);
 }
 // 00641DB0 self_return (ICF; Camera vtbl+70): mov eax,ecx
 void* __fastcall camera_self_return_00641db0(void* self, void*) { return self; }
 // 0045C210 Camera::AttachToPart -> Gob::AttachToPart(this+4) (tail jmp, RET 0Ch)
 U __fastcall camera_attach_to_part_0045c210(void* camera, void*, U a, U b, U c) {
-    return gob_attach_to_part_004439a0(as_gob(at(camera, 4)), nullptr, a, b, c);
+    return gob_attach_to_part_004439a0(as_gob(atf(camera, 4)), nullptr, a, b, c);
 }
 // 0045C230 Camera::SetBehavior -> Gob::SetBehavior(this+4)
 U __fastcall camera_set_behavior_0045c230(void* camera, void*, void* behavior) {
-    return gob_set_behavior_0043f1d0(as_gob(at(camera, 4)), nullptr, behavior);
+    return gob_set_behavior_0043f1d0(as_gob(atf(camera, 4)), nullptr, behavior);
 }
 // 0045C220 Camera::GetBehavior -> Gob::GetBehavior(this+4)
 U __fastcall camera_get_behavior_0045c220(void* camera, void*, U a) {
-    return gob_get_behavior_0043f130(as_gob(at(camera, 4)), nullptr, a);
+    return gob_get_behavior_0043f130(as_gob(atf(camera, 4)), nullptr, a);
 }
 // 0045C530 Camera::ViewVolumeSet: mov eax,[ecx+1F4h]
 U __fastcall camera_view_volume_set_0045c530(void* camera, void*) { return field<U>(camera, 0x1F4); }
 // 0045C4E0 Camera::SetFadePlanes(p1, p2) (Camera vtbl+90), RET 8: raw copies to +214 / +224
 void __fastcall camera_set_fade_planes_0045c4e0(void* camera, void*, const Plane* first, const Plane* second) {
-    std::memcpy(at(camera, 0x214), first, 16);                         // 0045C4E4..0045C4FE
-    std::memcpy(at(camera, 0x224), second, 16);                        // 0045C501..0045C51E
+    std::memcpy(atf(camera, 0x214), first, 16);                         // 0045C4E4..0045C4FE
+    std::memcpy(atf(camera, 0x224), second, 16);                        // 0045C501..0045C51E
 }
 
 // ---- Camera-embedded Gob table 00741988 thunks (this = camera+4)
@@ -2786,8 +2995,9 @@ void* __fastcall camera_gob_attach_to_object_0045c3c0(void* gob, void*, void* ob
 }
 U __fastcall camera_gob_attach_to_part_0045c3d0(aurora_model::Gob* gob, void*, U a, U b, U c) { return camera_attach_to_part_0045c210(camera_of(gob), nullptr, a, b, c); }
 U __fastcall camera_gob_set_behavior_0045c3e0(aurora_model::Gob* gob, void*, void* behavior) { return camera_set_behavior_0045c230(camera_of(gob), nullptr, behavior); }
-Vector* __fastcall camera_gob_set_position_0045c3f0(aurora_model::Gob* gob, void*, Vector* out, Vector position) {
-    return camera_set_position_0045c030(camera_of(gob), nullptr, out, position);
+Vector* __fastcall camera_gob_set_position_0045c3f0(aurora_model::Gob* gob, void*, Vector* out, Vector) {
+    const U* p = A2_STACK_ARGS() + 1;                                  // sub ecx,4 ; jmp 0045C030 (the words passed on)
+    return words_form<SetPositionWords>(&camera_set_position_0045c030)(camera_of(gob), nullptr, out, p[0], p[1], p[2]);
 }
 U __fastcall camera_gob_set_orientation_0045c400(aurora_model::Gob* gob, void*, U a, U b, U c, U d, U e) {
     return camera_set_orientation_0045c060(camera_of(gob), nullptr, a, b, c, d, e);
@@ -2814,15 +3024,71 @@ constexpr I kSaberRing_00740a4c = 20, kSaberRows_00740a48 = 20, kSaberBlade_0074
 constexpr U kGlQuadStrip_0073f350 = 8;                                   // GL_QUAD_STRIP
 constexpr U kOne_0073d764 = 0x3F800000u, kZero_0073d700 = 0u;   // kMinusOne_00740cbc defined above
 inline I16 ring_back(I16 index) { return index < 0 ? static_cast<I16>(index + kSaberRing_00740a4c) : index; }   // add cx/ax,[00740A4C]
+// L3 t1 a2 (writing rule, re-derived from 00471860..004738B5): the original copies every glTexCoord2f / glNormal3f /
+// glVertex4f argument either with mov (raw words) or with fld ; fstp dword (an x87 copy, which quiets a signalling NaN),
+// differently per call site. The helpers below are the patterns; each call site uses the one its original code has.
+// saber_texcoord_x87: both texcoords fld/fstp-copied (00471A12..00471A32, 00471C3C..00471C62, 004730F3..0047310D,
+// 00473210..0047322A, 004735F1..0047360B): two (float) conversions, one per original store, at five original sites.
+__declspec(noinline) void saber_texcoord_x87(const float* tc) {
+    const U v = stored_bits(W(tc[1]));                                 // fld [tc+4] ; fstp dword
+    const U u = stored_bits(W(tc[0]));                                 // fld [tc] ; fstp dword
+    words_form<GlWords2>(&glTexCoord2f)(u, v);
+}
+__forceinline void saber_texcoord_raw(const float* tc) {               // mov copies (e.g. 00471A96..00471AB3)
+    const U u = raw(&tc[0]), v = raw(&tc[1]);
+    words_form<GlWords2>(&glTexCoord2f)(u, v);
+}
+__forceinline void saber_normal_raw(const Vector* n) {                 // mov copies (00471A38..00471A55 and the other three)
+    const U x = raw(&n->x), y = raw(&n->y), z = raw(&n->z);
+    words_form<GlWords3>(&glNormal3f)(x, y, z);
+}
+__forceinline void saber_vertex_raw(const U* v) {                      // mov copies of a local result, w = 1.0
+    words_form<GlWords4>(&glVertex4f)(v[0], v[1], v[2], kOne_0073d764);
+}
+// The simple path's vertices: x and z by mov, y through fld ; fstp dword (00471A5B..00471A90, 00471AD9..00471B05,
+// 00471C00..00471C32, 00471C8B..00471CBC): one (float) conversion at four original sites.
+__declspec(noinline) void saber_vertex_y87(const Vector* v) {
+    const U x = raw(&v->x), z = raw(&v->z);
+    const U y = stored_bits(W(v->y));
+    words_form<GlWords4>(&glVertex4f)(x, y, z, kOne_0073d764);
+}
+// The original's inlined part-local transform (twelve copies, e.g. 00472162..00472236): the vertex is copied with mov,
+// rotated by q (004A9BB0), the position p added (x, y kept on the x87 stack, z stored first), the part world
+// position subtracted, and the result rotated by the conjugate (004A9B50) of the part world orientation. Four (float)
+// conversions, one per original store, at each of the twelve sites.
+__declspec(noinline) void saber_to_local(U* out, const void* q, const volatile U* p, const Vector* v,
+                                         const Vector* world_position, const Quaternion* world_orientation) {
+    U vw[3];
+    copy_words3(vw, v);
+    Vector rotated;
+    quaternion_rotate_004a9bb0(&rotated, static_cast<const Quaternion*>(q), reinterpret_cast<const Vector*>(vw));
+    const long double sx = W(fbits(p[0])) + W(rotated.x);             // fld [p.x] ; fadd [r.x]
+    const long double sy = W(fbits(p[1])) + W(rotated.y);             // fld [p.y] ; fadd [r.y]
+    const long double sz = S(W(fbits(p[2])) + W(rotated.z));          // fld [p.z] ; fadd [r.z] ; fstp dword (stored first)
+    U wr[3];
+    wr[0] = stored_bits(sx - W(world_position->x));                    // fsub [wp.x] ; fstp dword
+    wr[1] = stored_bits(sy - W(world_position->y));                    // fsub [wp.y] ; fstp dword
+    wr[2] = stored_bits(sz - W(world_position->z));                    // fld ; fsub [wp.z] ; fstp dword
+    Quaternion inverse;
+    const Quaternion* conj = quaternion_negate_w_004a9b50(&inverse, world_orientation);
+    Vector local;
+    quaternion_rotate_004a9bb0(&local, conj, reinterpret_cast<const Vector*>(wr));
+    copy_words3(out, &local);                                          // mov copies of the result
+}
+using SlerpWords = Quaternion* (__cdecl*)(Quaternion*, U, U, U, U, const void*, U);   // 004A9E00 (out, Quaternion by value, to*, t)
+using ArcWords = Quaternion* (__cdecl*)(Quaternion*, U, U, U, U, U, U);                // 004AB630 (out, Vector, Vector)
+__forceinline void copy_words4(volatile U* d, const volatile U* s) { const U a = s[0], b = s[1], c = s[2], e = s[3]; d[0] = a; d[1] = b; d[2] = c; d[3] = e; }
+__forceinline void copy_w3(volatile U* d, const volatile U* s) { const U a = s[0], b = s[1], c = s[2]; d[0] = a; d[1] = b; d[2] = c; }
 }
 
 U __fastcall part_lightsaber_draw_00471860(void* part, void*, U) {
     using kotor_renderer_init::glEnable_0073d390;
     using kotor_renderer_init::glDisable_0073d22c;
     if (*cells.saber_enabled_0078e840 == 0) return 0;                  // 00471866..0047187A (EAX = 0)
-    aurora_model::MdlNode* node = aurora_node_as_saber_0043e3a0(field<aurora_model::MdlNode*>(part, 0x04), nullptr);   // 00471883
-    Vector world_position{0.0f, 0.0f, 0.0f};                           // E-388 (004718B3..004718C3)
-    Quaternion world_orientation{f(kOne_0073d764), 0.0f, 0.0f, 0.0f};  // E-2C8 (004718CB..004718EC)
+    aurora_model::MdlNode* node = aurora_node_as_saber_0043e3a0(ref<aurora_model::MdlNode*>(part, 0x04), nullptr);   // 00471883
+    Vector world_position; Quaternion world_orientation;               // E-388 / E-2C8
+    {   U* p = reinterpret_cast<U*>(&world_position); p[0] = 0; p[1] = 0; p[2] = 0;          // 0047189B..004718C3
+        U* q = reinterpret_cast<U*>(&world_orientation); q[3] = 0; q[2] = 0; q[1] = 0; q[0] = kOne_0073d764; }   // 004718CB..004718EC
     slot<SlotPartTransform>(part, 0x0C)(part, nullptr, &world_position, &world_orientation);   // 004718F7
     glDisable_0073d22c(*cells.gl_cull_face_0078d454);                  // 00471906
     if (*cells.saber_additive_00828028 != 0) {                         // 00471908..0047190F
@@ -2831,31 +3097,38 @@ U __fastcall part_lightsaber_draw_00471860(void* part, void*, U) {
         glStencilMask(0);                                              // 00471928
     }
     if (*cells.saber_lit_00828038 == 0) glDisable_0073d22c(*cells.gl_lighting_0078d45c);   // 0047192E..0047193E
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);                                 // 00471954
+    words_form<GlWords4>(&glColor4f)(kOne_0073d764, kOne_0073d764, kOne_0073d764, kOne_0073d764);   // 00471940..00471954
     glPolygonMode(kGlFrontAndBack_0073f2f4, kPolygonModes_0073f2e4[*cells.saber_wireframe_00828034 == 0 ? 1 : 0]);   // 0047195A..00471976 (sete)
-    const Vector* vertices = field<const Vector*>(node, 0x19C);        // 0047197C
-    const float* texcoords = field<const float*>(node, 0x1A0);         // 00471982
-    const Vector* normals = field<const Vector*>(node, 0x1A4);         // 0047198D
-    const float* times = &field<float>(part, 0x98);
-    const Vector* positions = &field<Vector>(part, 0xFC);
-    const Quaternion* orientations = &field<Quaternion>(part, 0x228);
+    const Vector* vertices = ref<const Vector*>(node, 0x19C);        // 0047197C
+    const float* texcoords = ref<const float*>(node, 0x1A0);         // 00471982
+    const Vector* normals = ref<const Vector*>(node, 0x1A4);         // 0047198D
+    const float* times = &ref<float>(part, 0x98);
+    const Vector* positions = &ref<Vector>(part, 0xFC);
+    const Quaternion* orientations = &ref<Quaternion>(part, 0x228);
     const I half = kSaberBlade_00740a50 / 2;                           // movsx; cdq; sub; sar 1
     const I first = kSaberStrip_00740a54 * kSaberRows_00740a48 + kSaberBlade_00740a50;   // 00471B60..00471B78 / E-314
-    auto vertex1 = [](const Vector& v) { glVertex4f(v.x, v.y, v.z, f(kOne_0073d764)); };
-    auto texcoord = [&](I index) { glTexCoord2f(texcoords[2 * index], texcoords[2 * index + 1]); };
-    auto normal = [&](I index) { glNormal3f(normals[index].x, normals[index].y, normals[index].z); };
 
-    if (*cells.saber_simple_0078e828 != 0 && field<I16>(part, 0x3BC) < 2) {   // 00471988..004719AD
+    if (*cells.saber_simple_0078e828 != 0 && ref<I16>(part, 0x3BC) < 2) {   // 00471988..004719AD
         glBegin(kGlQuadStrip_0073f350);                                // 004719CC
+#pragma clang loop unroll(disable)
         for (I i = 0; i < half; ++i) {                                 // 004719D2..00471B42
-            texcoord(i); normal(i); vertex1(vertices[i]);              // 00471A32 / 00471A55 / 00471A90
-            texcoord(i + half); normal(i + half); vertex1(vertices[i + half]);   // 00471AB3 / 00471AD3 / 00471B05
+            saber_texcoord_x87(&texcoords[2 * i]);                     // 00471A12..00471A32
+            saber_normal_raw(&normals[i]);                             // 00471A38..00471A55
+            saber_vertex_y87(&vertices[i]);                            // 00471A5B..00471A90
+            saber_texcoord_raw(&texcoords[2 * (i + half)]);            // 00471A96..00471AB3
+            saber_normal_raw(&normals[i + half]);                      // 00471AB9..00471AD3
+            saber_vertex_y87(&vertices[i + half]);                     // 00471AD9..00471B05
         }
         glEnd();                                                       // 00471B4E
         glBegin(kGlQuadStrip_0073f350);                                // 00471B5A
+#pragma clang loop unroll(disable)
         for (I i = first; i < first + half; ++i) {                     // 00471B7A..00471D0B (bound re-read each pass)
-            texcoord(i + half); normal(i + half); vertex1(vertices[i + half]);   // 00471BDA / 00471BFA / 00471C32
-            texcoord(i); normal(i); vertex1(vertices[i]);              // 00471C62 / 00471C85 / 00471CBC
+            saber_texcoord_raw(&texcoords[2 * (i + half)]);            // 00471BC7..00471BDA
+            saber_normal_raw(&normals[i + half]);                      // 00471BE0..00471BFA
+            saber_vertex_y87(&vertices[i + half]);                     // 00471C00..00471C32
+            saber_texcoord_x87(&texcoords[2 * i]);                     // 00471C3C..00471C62
+            saber_normal_raw(&normals[i]);                             // 00471C68..00471C85
+            saber_vertex_y87(&vertices[i]);                            // 00471C8B..00471CBC
         }
         glEnd();                                                       // 00471D11
         glPolygonMode(kGlFrontAndBack_0073f2f4, kPolygonModes_0073f2e4[1]);   // 00471D24
@@ -2867,204 +3140,260 @@ U __fastcall part_lightsaber_draw_00471860(void* part, void*, U) {
         return 0;   // EAX = glStencilMask leftover in the original (no defined value)
     }
 
-    // ---- trail path (00471D57)
-    // Part-local point: rotate v by q (004A9BB0), add p, subtract the part world position, rotate by the
-    // conjugate (004A9B50) of the part world orientation. The x/y sums stay in ST (PC_53); z is stored first.
-    auto to_local = [&](const Quaternion& q, const Vector& p, const Vector& v) -> Vector {
-        Vector rotated{};
-        quaternion_rotate_004a9bb0(&rotated, &q, &v);
-        const Vector world_relative{S((W(p.x) + W(rotated.x)) - W(world_position.x)),
-                                    S((W(p.y) + W(rotated.y)) - W(world_position.y)),
-                                    S(W(S(W(p.z) + W(rotated.z))) - W(world_position.z))};
-        Quaternion inverse{};
-        const Quaternion* inverse_ptr = quaternion_negate_w_004a9b50(&inverse, &world_orientation);
-        Vector local{};
-        quaternion_rotate_004a9bb0(&local, inverse_ptr, &world_relative);
-        return local;
-    };
-
+    // ---- trail path (00471D57). Frame words (volatile U: stored once, re-read per use, as the original's slots).
     *cells.saber_strip_count_00828030 = 0;                             // 00471D57
-    float accumulated = 0.0f;                                          // E-3A4 (00471D5D)
-    Vector offsets[4] = {};                                            // E-1D4 (00471D65..00471D7D)
-    const Vector blade{S(W(vertices[half].x) - W(vertices[0].x)),      // E-2AC (00471D95..00471DCF)
-                       S(W(vertices[half].y) - W(vertices[0].y)),
-                       S(W(vertices[half].z) - W(vertices[0].z))};
-    for (Vector& offset : offsets) offset = blade;                     // 00471DC1..00471E24
-    const float length = S(vector_magnitude_004ab100(&offsets[0]));    // 00471E2B / 00471E30 fstp E-37C
-    const U16 current = field<U16>(part, 0x3B8);                       // 00471E36
+    long double accumulated = W(f(kZero_0073d700));                    // [esp+20h] = 0 (00471D5D), held as its stored value
+    volatile U offsets[4][3];                                          // E-1D4 [esp+1F0h]
+    volatile U blade[3];                                               // [esp+118h]
+    blade[0] = stored_bits(W(vertices[half].x) - W(vertices[0].x));    // 00471D95..00471D99 fstp
+    blade[1] = stored_bits(W(vertices[half].y) - W(vertices[0].y));    // 00471DA0..00471DA6 fstp
+    blade[2] = stored_bits(W(vertices[half].z) - W(vertices[0].z));    // 00471DAD..00471DCF fstp
+#pragma clang loop unroll(disable)
+    for (int j = 0; j < 4; ++j) copy_w3(offsets[j], blade);            // 00471DB0..00471E24 (mov)
+    const long double length = S(vector_magnitude_004ab100(reinterpret_cast<const Vector*>(const_cast<U*>(offsets[0]))));   // 00471E2B / 00471E30 fstp [esp+48h]
+    const U16 current = ref<U16>(part, 0x3B8);                       // 00471E36
     I16 newer = ring_back(static_cast<I16>(current - 1));              // 00471E40..00471E4F (cx)
-    I16 older = ring_back(static_cast<I16>(current - 2));              // 00471E56..00471E68 (word E-39C)
-    Vector position = positions[newer];                                // E-350 (00471ECF..00471EE5)
-    Quaternion orientation = orientations[newer];                      // E-338 (00471EE9..00471F10)
-    for (I k = 1; k < field<I16>(part, 0x3BC); ++k) {                  // 00471F31..00471F45 / 0047242D..0047243F
-        const I a = older, b = newer;                                  // 00471F60 / 00471F63 (E-2E8, E-36C)
-        double fraction_wide = W(*cells.saber_step_0078e838) / (W(times[a]) - W(times[b]));   // 00471F66..00471F7F
-        float fraction = S(fraction_wide);                             // 00471F85 fst E-3B4
-        if (fraction_wide < W(f(kOne_0073d764))) {                     // 00471F89..00471F94 (jp)
+    I16 older = ring_back(static_cast<I16>(current - 2));              // 00471E56..00471E68 (word [esp+28h])
+    volatile U position[3];                                            // [esp+74h]
+    volatile U orientation[4];                                         // [esp+8Ch]
+    volatile U previous_position[3];                                   // [esp+10Ch]
+    volatile U previous_orientation[4];                                // [esp+174h]
+    previous_orientation[3] = 0; previous_orientation[2] = 0; previous_orientation[1] = 0; previous_orientation[0] = kOne_0073d764;   // 00471EA3..00471EC4
+    copy_w3(position, reinterpret_cast<const U*>(&positions[newer]));  // 00471ECF..00471EE5 (mov)
+    copy_words4(orientation, reinterpret_cast<const U*>(&orientations[newer]));   // 00471EE9..00471F10 (mov)
+    const auto to_local = [&](volatile U* out, const volatile U* q, const volatile U* p, const Vector* v) {
+        saber_to_local(const_cast<U*>(out), const_cast<const U*>(q), p, v, &world_position, &world_orientation);
+    };
+#pragma clang loop unroll(disable)
+    for (I k = 1; k < ref<I16>(part, 0x3BC); ++k) {                  // 00471F31..00471F45 / 0047242D..0047243F
+        const I a = older, b = newer;                                  // 00471F60 / 00471F63
+        long double fraction_wide = W(*cells.saber_step_0078e838) / (W(times[a]) - W(times[b]));   // 00471F66..00471F7F (fsub ; fdivr)
+        volatile U fraction; fraction = stored_bits(fraction_wide);    // 00471F85 fst [esp+10h] (a frame word)
+        if (fraction_wide < W(f(kOne_0073d764))) {                     // 00471F89..00471F94 (test 5; jp)
             for (;;) {
-                const double accumulated_wide = W(*cells.saber_step_0078e838) + W(accumulated);   // 00471FA0..00471FA6
-                accumulated = S(accumulated_wide);                     // 00471FAA
-                if (accumulated_wide > W(*cells.saber_max_accum_00798b30)) break;   // 00471FAE..00471FB9
-                const Vector previous_position = position;             // E-2B8 (00471FCB..00471FF2)
-                const Quaternion previous_orientation = orientation;   // E-250 (00471FE4..00472015)
+                const long double accumulated_wide = W(*cells.saber_step_0078e838) + accumulated;   // 00471FA0..00471FA6
+                accumulated = S(accumulated_wide);                     // 00471FAA fst [esp+20h]
+                if (accumulated_wide > W(*cells.saber_max_accum_00798b30)) break;   // 00471FAE..00471FB9 (test 41h; je)
+                copy_w3(previous_position, position);                  // 00471FBF..00472015 (mov)
+                copy_words4(previous_orientation, orientation);
+                const long double fr = W(fbits(fraction));
                 const Vector& to = positions[a];
                 const Vector& from = positions[b];
-                const double inverse_fraction = W(f(kOne_0073d764)) - W(fraction);   // 0047204C
-                position.x = S(inverse_fraction * W(from.x) + W(fraction) * W(to.x));                  // 00472072 fadd st,st(2)
-                position.y = S(W(S(inverse_fraction * W(from.y))) + W(fraction) * W(to.y));            // 0047205F / 00472087
-                position.z = S(W(S(inverse_fraction * W(from.z))) + W(S(W(fraction) * W(to.z))));     // 0047206B / 00472045 / 004720A5
-                Quaternion slerped{};
-                orientation = *quaternion_slerp_004a9e00(&slerped, orientations[b], &orientations[a], fraction);   // 004720EB
+                const long double ftx = fr * W(to.x);                  // 00471FC3 / 00472020 fmul [to.x]
+                const long double fty = fr * W(to.y);                  // 00472026..0047202E
+                const long double ftz = S(fr * W(to.z));               // 00472034..00472045 fstp [esp+154h]
+                const long double inverse_fraction = W(f(kOne_0073d764)) - fr;   // 0047204C..00472052
+                const long double ifx = inverse_fraction * W(from.x);  // 00472056..00472058
+                const long double ify = S(inverse_fraction * W(from.y));   // 0047205A..0047205F fstp [esp+0A4h]
+                const long double ifz = S(inverse_fraction * W(from.z));   // 00472066..0047206B fstp [esp+0A8h]
+                position[0] = stored_bits(ifx + ftx);                  // 00472072..00472083 fadd st,st(2) ; fstp [esp+68h] -> mov
+                position[1] = stored_bits(ify + fty);                  // 0047207C..00472093 fadd st,st(1) ; fstp [esp+6Ch] -> mov
+                position[2] = stored_bits(ifz + ftz);                  // 0047209D..004720B4 fadd [esp+154h] ; fstp -> mov
+                const U* ob = reinterpret_cast<const U*>(&orientations[b]);
+                Quaternion slerped;
+                const Quaternion* s = words_form<SlerpWords>(&quaternion_slerp_004a9e00)(&slerped, raw(&ob[0]), raw(&ob[1]), raw(&ob[2]), raw(&ob[3]),
+                                                                        &orientations[a], fraction);   // 004720A4..004720EB
+                copy_words4(orientation, reinterpret_cast<const U*>(s));   // 004720F0..00472118 (mov)
                 *cells.saber_strip_count_00828030 = *cells.saber_strip_count_00828030 + 1;   // 0047211F..00472127
                 glBegin(kGlQuadStrip_0073f350);                        // 0047212D
+#pragma clang loop unroll(disable)
                 for (I j = 0; j < kSaberStrip_00740a54; ++j) {         // 00472133..004723C0
-                    texcoord(first + j);                               // 00472175
-                    const Vector near_vertex = to_local(orientation, position, vertices[first + j]);   // 004721B9..0047222F
-                    vertex1(near_vertex);                              // 00472253
-                    offsets[j] = near_vertex;                          // 00472259..0047226C
-                    texcoord(first + j);                               // 00472282
-                    const Vector far_vertex = to_local(previous_orientation, previous_position, vertices[first + j]);   // 004722C6..00472345
-                    vertex1(far_vertex);                               // 00472369
-                    offsets[j] = Vector{S(W(offsets[j].x) - W(far_vertex.x)), S(W(offsets[j].y) - W(far_vertex.y)),
-                                        S(W(offsets[j].z) - W(far_vertex.z))};   // 0047236F..004723A9
+                    saber_texcoord_raw(&texcoords[2 * (first + j)]);   // 00472162..00472175
+                    volatile U near_vertex[3];
+                    to_local(near_vertex, orientation, position, &vertices[first + j]);   // 0047217B..00472236
+                    saber_vertex_raw(const_cast<const U*>(near_vertex));                   // 00472240..00472253
+                    copy_w3(offsets[j], near_vertex);                  // 00472259..0047226C (mov)
+                    saber_texcoord_raw(&texcoords[2 * (first + j)]);   // 0047226F..00472282
+                    volatile U far_vertex[3];
+                    to_local(far_vertex, previous_orientation, previous_position, &vertices[first + j]);   // 00472288..0047234C
+                    saber_vertex_raw(const_cast<const U*>(far_vertex));                    // 00472356..00472369
+                    offsets[j][0] = stored_bits(W(fbits(offsets[j][0])) - W(fbits(far_vertex[0])));   // 0047236F..00472377 fstp [esp+5Ch] -> mov
+                    offsets[j][1] = stored_bits(W(fbits(offsets[j][1])) - W(fbits(far_vertex[1])));   // 0047237F..00472386 fstp [esp+60h] -> mov
+                    offsets[j][2] = stored_bits(W(fbits(offsets[j][2])) - W(fbits(far_vertex[2])));   // 0047238A..0047239A fstp [esp+64h] -> mov
                 }
                 glEnd();                                               // 004723D8
-                fraction_wide = W(*cells.saber_step_0078e838) / (W(times[a]) - W(times[b])) + W(fraction);   // 004723DE..004723F6
-                fraction = S(fraction_wide);                           // 004723FA
-                if (!(fraction_wide < W(f(kOne_0073d764)))) break;     // 004723FE..00472409 (jnp loops)
+                fraction_wide = W(*cells.saber_step_0078e838) / (W(times[a]) - W(times[b])) + W(fbits(fraction));   // 004723DE..004723F6
+                fraction = stored_bits(fraction_wide);                 // 004723FA fst [esp+10h]
+                if (!(fraction_wide < W(f(kOne_0073d764)))) break;     // 004723FE..00472409 (test 5; jnp loops)
             }
         }
-        newer = older;                                                 // 0047240F / 00471F52 (word E-3B4)
+        newer = older;                                                 // 0047240F / 00471F52 (word [esp+10h])
         older = ring_back(static_cast<I16>(older - 1));                // 00472417..00472428
     }
+#pragma clang loop unroll(disable)
     for (I j = 0; j < kSaberStrip_00740a54; ++j) {                     // 00472445..00472542
-        const double magnitude_wide = vector_magnitude_004ab100(&offsets[j]);   // 00472463
-        const float magnitude = S(magnitude_wide);                     // 00472468 fst E-3B4
+        const long double magnitude_wide = vector_magnitude_004ab100(reinterpret_cast<const Vector*>(const_cast<U*>(offsets[j])));   // 00472463
+        const U magnitude = stored_bits(magnitude_wide);               // 00472468 fst [esp+10h]
         if (magnitude_wide == W(f(kZero_0073d700))) continue;          // 0047246C..0047247A (test ah,44h; jnp)
-        if (W(*cells.saber_min_ratio_0078e83c) * W(length) > W(magnitude)) {   // 00472480..00472493
-            offsets[j] = blade;                                        // 00472495..004724B1
+        if (W(*cells.saber_min_ratio_0078e83c) * length > W(fbits(magnitude))) {   // 00472480..00472493 (test 41h; jne)
+            copy_w3(offsets[j], blade);                                // 00472495..004724B1 (mov)
         } else {
-            const double inverse = W(f(kOne_0073d764)) / W(magnitude); // 004724B9..004724C1
-            const double x = inverse * W(offsets[j].x);                // 004724C7 (ST)
-            const float y = S(inverse * W(offsets[j].y));              // 004724CE fstp E-320
-            const float z = S(inverse * W(offsets[j].z));              // 004724DA fstp E-31C
-            offsets[j].x = S(x * W(length));                           // 004724E1..004724FA
-            offsets[j].y = S(W(y) * W(length));                        // 004724F3..00472519
-            offsets[j].z = S(W(z) * W(length));                        // 00472507..0047252A
+            const long double inverse = W(f(kOne_0073d764)) / W(fbits(magnitude)); // 004724B9..004724C1
+            const long double x = inverse * W(fbits(offsets[j][0]));   // 004724C5..004724C7 (ST)
+            const long double y = S(inverse * W(fbits(offsets[j][1])));   // 004724C9..004724CE fstp [esp+0A4h]
+            const long double z = S(inverse * W(fbits(offsets[j][2])));   // 004724D5..004724DA fstp [esp+0A8h]
+            offsets[j][0] = stored_bits(x * length);                   // 004724E1..004724FA fstp [esp+80h] -> mov
+            offsets[j][1] = stored_bits(y * length);                   // 004724F3..00472519 fstp [esp+84h] -> mov
+            offsets[j][2] = stored_bits(z * length);                   // 00472507..0047252A fstp [esp+88h] -> mov
         }
     }
     glBegin(kGlQuadStrip_0073f350);                                    // 0047254F
+#pragma clang loop unroll(disable)
     for (I j = 0; j < half; ++j) {                                     // 00472555..0047280D
-        texcoord(first + half + j);                                    // 004725BA (E-36C)
-        const Vector tip = to_local(orientation, position, vertices[first + j]);   // 004725FE..00472677
-        vertex1(Vector{S(W(offsets[j].x) + W(tip.x)), S(W(tip.y) + W(offsets[j].y)), S(W(tip.z) + W(offsets[j].z))});   // 0047267C..004726D1
-        texcoord(first + j);                                           // 004726EE (E-398)
-        vertex1(to_local(orientation, position, vertices[first + j])); // 00472729..004727C9
+        saber_texcoord_raw(&texcoords[2 * (first + half + j)]);        // 004725A7..004725BA
+        volatile U tip[3];
+        to_local(tip, orientation, position, &vertices[first + j]);    // 004725C0..0047267C
+        U sum[3];
+        sum[0] = stored_bits(W(fbits(offsets[j][0])) + W(fbits(tip[0])));   // 00472680..0047268D fstp [esp+0B4h]
+        sum[1] = stored_bits(W(fbits(tip[1])) + W(fbits(offsets[j][1])));   // 00472694..0047269A fstp [esp+0B8h]
+        sum[2] = stored_bits(W(fbits(tip[2])) + W(fbits(offsets[j][2])));   // 004726A1..004726BC fstp [esp+0BCh]
+        saber_vertex_raw(sum);                                         // 004726C3..004726D1
+        saber_texcoord_raw(&texcoords[2 * (first + j)]);               // 004726D7..004726EE
+        volatile U base_vertex[3];
+        to_local(base_vertex, orientation, position, &vertices[first + j]);   // 004726F4..004727AC
+        saber_vertex_raw(const_cast<const U*>(base_vertex));           // 004727AF..004727C9
     }
     glEnd();                                                           // 00472813
 
     if (*cells.saber_glow_0078e834 != 0) {                             // 00472819..00472820
-        accumulated = 0.0f;                                            // 00472836
-        const U16 now = field<U16>(part, 0x3B8);                       // 0047282F
-        I16 p1 = ring_back(static_cast<I16>(now - 1));                 // 0047283E..0047284D (word E-3B4)
-        I16 p2 = ring_back(static_cast<I16>(now - 2));                 // 00472852..00472864 (di / word E-39C)
-        Vector pa = positions[p1];                                     // E-368 (004728F4..0047291A)
-        Quaternion qa = orientations[p1];                              // E-304 (00472911..00472935)
-        Vector pb = positions[p2];                                     // E-35C (00472943..0047296D)
-        Quaternion qb = orientations[p2];                              // E-2A0 (00472960..004729A5)
-        Quaternion qc{f(kOne_0073d764), 0.0f, 0.0f, 0.0f};             // E-2D8 (004728C8..004728E9)
-        position = pa;                                                 // E-350 (00472984..004729CE)
-        orientation = qa;                                              // E-338 (00472990..004729E0)
-        for (I k = 1; k < field<I16>(part, 0x3BC); ++k) {              // 004729B7..004729EB / 0047347F..00473491
-            // extrapolated position T = 2*pa - pb (E-344): doubling in ST, -pb via fmul -1.0f (00740CBC)
-            const double two_x = W(pa.x) + W(pa.x), two_y = W(pa.y) + W(pa.y);   // 004729F1..00472A03
-            const float two_z = S(W(pa.z) + W(pa.z));                  // 00472A0C..00472A25 fstp E-148
-            const double minus_x = W(pb.x) * W(f(kMinusOne_00740cbc)); // 00472A2C..00472A31
-            const float minus_y = S(W(pb.y) * W(f(kMinusOne_00740cbc)));   // 00472A3E..00472A5B fstp E-170
-            const float minus_z = S(W(pb.z) * W(f(kMinusOne_00740cbc)));   // 00472A62..00472A6D fstp E-16C
-            const Vector target{S(minus_x + two_x), S(W(minus_y) + two_y), S(W(minus_z) + W(two_z))};   // 00472A74..00472A9F
-            const Vector b0 = to_local(qb, pb, vertices[0]);           // 00472AA6..00472B1C (E-1EC)
-            const Vector b3 = to_local(qb, pb, vertices[3]);           // 00472B30..00472BF6 (vertices+24h)
-            const Vector from_edge{S(W(b3.x) - W(b0.x)), S(W(b3.y) - W(b0.y)), S(W(b3.z) - W(b0.z))};   // 00472BFB..00472C60 (E-284)
-            const Vector a0 = to_local(qa, pa, vertices[0]);           // 00472C25..00472CF9 (E-1E0)
-            const Vector a3 = to_local(qa, pa, vertices[3]);           // 00472D0D..00472DD0
-            const Vector to_edge{S(W(a3.x) - W(a0.x)), S(W(a3.y) - W(a0.y)), S(W(a3.z) - W(a0.z))};   // 00472DD5..00472E40 (E-25C)
-            Quaternion arc{};
-            qc = *rotation_arc_004ab630(&arc, from_edge, to_edge);     // 00472E68..00472E8A (E-2D8)
-            Quaternion product{};
-            qc = *quaternion_multiply_004a9ac0(&product, &qa, &qc);    // 00472EAC..00472EE0
-            const float* time_older = &times[p2];                      // 00472ED6..00472EF3 (E-378)
-            const float* time_newer = &times[p1];                      // 00472ED1..00472EF9 (E-374)
-            double fraction_wide = W(*cells.saber_step_0078e838) / (W(*time_older) - W(*time_newer));   // 00472EEE..00472EFD
-            float fraction = S(fraction_wide);                         // 00472F03
-            if (fraction_wide < W(f(kOne_0073d764))) {                 // 00472F07..00472F12
+        accumulated = W(f(kZero_0073d700));                            // 00472836 [esp+20h] = 0
+        const U16 now = ref<U16>(part, 0x3B8);                       // 0047282F
+        I16 p1 = ring_back(static_cast<I16>(now - 1));                 // 0047283E..0047284D (word [esp+10h])
+        I16 p2 = ring_back(static_cast<I16>(now - 2));                 // 00472852..00472864 (di / word [esp+28h])
+        volatile U qb[4], qa[4], qc[4];                                // [esp+124h] / [esp+0C0h] / [esp+0ECh]
+        qb[3] = 0; qb[2] = 0; qb[1] = 0; qb[0] = kOne_0073d764;        // 00472870..00472891
+        qa[3] = 0; qa[2] = 0; qa[1] = 0; qa[0] = kOne_0073d764;        // 0047289C..004728BD
+        qc[3] = 0; qc[2] = 0; qc[1] = 0; qc[0] = kOne_0073d764;        // 004728C8..004728E9
+        volatile U pa[3], pb[3];                                       // [esp+5Ch] / [esp+68h]
+        copy_w3(pa, reinterpret_cast<const U*>(&positions[p1]));       // 004728F4..0047291A
+        copy_words4(qa, reinterpret_cast<const U*>(&orientations[p1]));   // 00472906..00472935
+        copy_w3(pb, reinterpret_cast<const U*>(&positions[p2]));       // 0047293C..0047296D
+        copy_words4(qb, reinterpret_cast<const U*>(&orientations[p2]));   // 00472955..004729A5
+        copy_w3(position, pa);                                         // 00472984..004729CE
+        copy_words4(orientation, qa);                                  // 00472990..004729E0
+#pragma clang loop unroll(disable)
+        for (I k = 1; k < ref<I16>(part, 0x3BC); ++k) {              // 004729B7..004729EB / 0047347F..00473491
+            // extrapolated target T = 2*pa - pb: doubling in ST, -pb via fmul -1.0f (00740CBC)
+            const long double two_x = W(fbits(pa[0])) + W(fbits(pa[0]));   // 004729F1..004729F7 (fadd st,st)
+            const long double two_y = W(fbits(pa[1])) + W(fbits(pa[1]));   // 004729FC..00472A03
+            const long double two_z = S(W(fbits(pa[2])) + W(fbits(pa[2])));   // 00472A0C..00472A25 fstp [esp+27Ch]
+            const long double minus_x = W(fbits(pb[0])) * W(f(kMinusOne_00740cbc));   // 00472A2C..00472A31
+            const long double minus_y = S(W(fbits(pb[1])) * W(f(kMinusOne_00740cbc)));   // 00472A3E..00472A5B fstp [esp+254h]
+            const long double minus_z = S(W(fbits(pb[2])) * W(f(kMinusOne_00740cbc)));   // 00472A62..00472A6D fstp [esp+258h]
+            volatile U target[3];                                      // [esp+80h]
+            target[0] = stored_bits(minus_x + two_x);                  // 00472A74..00472A76 fadd st,st(2) ; fstp
+            target[1] = stored_bits(minus_y + two_y);                  // 00472A7D..00472A86 fadd st,st(1) ; fstp
+            target[2] = stored_bits(minus_z + two_z);                  // 00472A91..00472A9F fadd [esp+27Ch] ; fstp
+            volatile U b0[3], b3[3], a0[3], a3[3];
+            to_local(b0, qb, pb, &vertices[0]);                        // 004729F5..00472B21 ([esp+1E4h])
+            to_local(b3, qb, pb, &vertices[3]);                        // 00472B30..00472BFB
+            volatile U from_edge[3];
+            from_edge[0] = stored_bits(W(fbits(b3[0])) - W(fbits(b0[0])));   // 00472C01..00472C16 fstp [esp+14Ch]
+            from_edge[1] = stored_bits(W(fbits(b3[1])) - W(fbits(b0[1])));   // 00472C21..00472C3B fstp [esp+150h]
+            from_edge[2] = stored_bits(W(fbits(b3[2])) - W(fbits(b0[2])));   // 00472C42..00472C60 fstp [esp+154h]
+            to_local(a0, qa, pa, &vertices[0]);                        // 00472C25..00472CFE ([esp+1F0h])
+            to_local(a3, qa, pa, &vertices[3]);                        // 00472D0D..00472DD5
+            volatile U to_edge[3];
+            to_edge[0] = stored_bits(W(fbits(a3[0])) - W(fbits(a0[0])));   // 00472DDB..00472DF0 fstp [esp+174h]
+            to_edge[1] = stored_bits(W(fbits(a3[1])) - W(fbits(a0[1])));   // 00472DFE..00472E14 fstp [esp+184h]
+            to_edge[2] = stored_bits(W(fbits(a3[2])) - W(fbits(a0[2])));   // 00472E1B..00472E32 fstp [esp+188h]
+            Quaternion arc;
+            const Quaternion* arc_result = words_form<ArcWords>(&rotation_arc_004ab630)(&arc, from_edge[0], from_edge[1], from_edge[2],
+                                                                                        to_edge[0], to_edge[1], to_edge[2]);   // 00472E0D..00472E68 (mov)
+            copy_words4(qc, reinterpret_cast<const U*>(arc_result));   // 00472E6D..00472E9C
+            Quaternion product;
+            const Quaternion* product_result = quaternion_multiply_004a9ac0(&product, reinterpret_cast<const Quaternion*>(const_cast<U*>(qa)),
+                                                                            reinterpret_cast<const Quaternion*>(const_cast<U*>(qc)));   // 00472E94..00472EAC
+            copy_words4(qc, reinterpret_cast<const U*>(product_result));   // 00472EB1..00472EE0
+            const float* time_older = &times[p2];                      // 00472ED6..00472EF3
+            const float* time_newer = &times[p1];                      // 00472ED1..00472EF9
+            long double fraction_wide = W(*cells.saber_step_0078e838) / (W(*time_older) - W(*time_newer));   // 00472EEE..00472EFD
+            volatile U fraction; fraction = stored_bits(fraction_wide);   // 00472F03 fst [esp+10h] (a frame word)
+            if (fraction_wide < W(f(kOne_0073d764))) {                 // 00472F07..00472F12 (test 5; jp)
                 for (;;) {
-                    const double accumulated_wide = W(*cells.saber_step_0078e838) + W(accumulated);   // 00472F20..00472F26
-                    accumulated = S(accumulated_wide);                 // 00472F2A
+                    const long double accumulated_wide = W(*cells.saber_step_0078e838) + accumulated;   // 00472F20..00472F26
+                    accumulated = S(accumulated_wide);                 // 00472F2A fst [esp+20h]
                     if (accumulated_wide > W(*cells.saber_max_accum_00798b30)) break;   // 00472F2E..00472F39
-                    const Vector previous_position = position;         // E-2B8 (00472F46..00472F88)
-                    const Quaternion previous_orientation = orientation;   // E-250 (00472F6C..00472FCF)
-                    const double scaled_x = W(target.x) * W(fraction); // 00472F3F..00472F4A (ST)
-                    const double scaled_y = W(fraction) * W(target.y); // 00472F52..00472F5A (ST)
-                    const float scaled_z = S(W(fraction) * W(target.z));   // 00472F68..00472F8F fstp E-184
-                    const double inverse_fraction = W(f(kOne_0073d764)) - W(fraction);   // 00472F96..00472FA3
-                    const double pax = W(pa.x) * inverse_fraction;     // 00472FAE..00472FC0
-                    const float pay = S(inverse_fraction * W(pa.y));   // 00472FCB fstp E-23C
-                    const float paz = S(inverse_fraction * W(pa.z));   // 00472FDF fstp E-238
-                    position.x = S(pax + scaled_x);                    // 00472FEA..00473001
-                    position.y = S(W(pay) + scaled_y);                 // 00472FFA..00473023
-                    position.z = S(W(paz) + W(scaled_z));              // 00473030..00473057
-                    Quaternion slerped{};
-                    orientation = *quaternion_slerp_004a9e00(&slerped, qa, &qc, fraction);   // 00473081..004730A6
+                    copy_w3(previous_position, position);              // 00472F46..00472F88 (mov)
+                    copy_words4(previous_orientation, orientation);    // 00472F6C..00472FCF (mov)
+                    const long double fr = W(fbits(fraction));
+                    const long double scaled_x = W(fbits(target[0])) * fr;     // 00472F3F..00472F4A
+                    const long double scaled_y = fr * W(fbits(target[1]));     // 00472F52..00472F5A
+                    const long double scaled_z = S(fr * W(fbits(target[2])));  // 00472F68..00472F8F fstp [esp+240h]
+                    const long double inverse_fraction = W(f(kOne_0073d764)) - fr;   // 00472F96..00472FA3
+                    const long double pax = W(fbits(pa[0])) * inverse_fraction;   // 00472FAE..00472FC0
+                    const long double pay = S(inverse_fraction * W(fbits(pa[1])));   // 00472FC2..00472FD6 fstp [esp+188h]
+                    const long double paz = S(inverse_fraction * W(fbits(pa[2])));   // 00472FDD..00472FE3 fstp [esp+18Ch]
+                    position[0] = stored_bits(pax + scaled_x);         // 00472FEA..00473001 fstp [esp+0B4h] -> mov
+                    position[1] = stored_bits(pay + scaled_y);         // 00472FFA..00473023 fstp [esp+0BCh] -> mov
+                    position[2] = stored_bits(paz + scaled_z);         // 00473030..00473057 fstp [esp+0D4h] -> mov
+                    Quaternion slerped;
+                    const Quaternion* s = words_form<SlerpWords>(&quaternion_slerp_004a9e00)(&slerped, qa[0], qa[1], qa[2], qa[3],
+                                                                            const_cast<const U*>(qc), fraction);   // 00473005..00473081
+                    copy_words4(orientation, reinterpret_cast<const U*>(s));   // 00473086..004730A6
                     *cells.saber_strip_count_00828030 = *cells.saber_strip_count_00828030 + 1;   // 004730AD..004730BD
                     glBegin(kGlQuadStrip_0073f350);                    // 004730C3
+#pragma clang loop unroll(disable)
                     for (I j = 0; j < kSaberStrip_00740a54; ++j) {     // 004730C9..00473373
-                        texcoord(j);                                   // 0047310D
-                        const Vector far_vertex = to_local(previous_orientation, previous_position, vertices[j]);   // 00473151..004731D0
-                        vertex1(far_vertex);                           // 004731F4
-                        offsets[j] = far_vertex;                       // 004731FA..0047320D
-                        texcoord(j);                                   // 0047322A
-                        const Vector near_vertex = to_local(orientation, position, vertices[j]);   // 0047326E..004732ED
-                        vertex1(near_vertex);                          // 00473311
-                        offsets[j] = Vector{S(W(offsets[j].x) - W(near_vertex.x)), S(W(offsets[j].y) - W(near_vertex.y)),
-                                            S(W(offsets[j].z) - W(near_vertex.z))};   // 00473317..00473370
+                        saber_texcoord_x87(&texcoords[2 * j]);         // 004730F3..0047310D
+                        volatile U far_vertex[3];
+                        to_local(far_vertex, previous_orientation, previous_position, &vertices[j]);   // 00473113..004731D5
+                        saber_vertex_raw(const_cast<const U*>(far_vertex));                            // 004731DA..004731F4
+                        copy_w3(offsets[j], far_vertex);               // 004731FA..0047320D (mov)
+                        saber_texcoord_x87(&texcoords[2 * j]);         // 00473210..0047322A
+                        volatile U near_vertex[3];
+                        to_local(near_vertex, orientation, position, &vertices[j]);   // 00473230..004732F2
+                        saber_vertex_raw(const_cast<const U*>(near_vertex));         // 004732F7..00473311
+                        offsets[j][0] = stored_bits(W(fbits(offsets[j][0])) - W(fbits(near_vertex[0])));   // 00473317..00473323 fstp [esp+0A0h] -> mov
+                        offsets[j][1] = stored_bits(W(fbits(offsets[j][1])) - W(fbits(near_vertex[1])));   // 00473331..00473338 fstp [esp+0A4h] -> mov
+                        offsets[j][2] = stored_bits(W(fbits(offsets[j][2])) - W(fbits(near_vertex[2])));   // 0047333F..00473352 fstp [esp+0A8h] -> mov
                     }
                     glEnd();                                           // 00473384
-                    fraction_wide = W(*cells.saber_step_0078e838) / (W(*time_older) - W(*time_newer)) + W(fraction);   // 0047338A..0047339C
-                    fraction = S(fraction_wide);                       // 004733A0
+                    fraction_wide = W(*cells.saber_step_0078e838) / (W(*time_older) - W(*time_newer)) + W(fbits(fraction));   // 0047338A..0047339C
+                    fraction = stored_bits(fraction_wide);             // 004733A0 fst [esp+10h]
                     if (!(fraction_wide < W(f(kOne_0073d764)))) break; // 004733A4..004733AF
                 }
             }
-            pb = pa;                                                   // 004733B5..004733FE
-            qb = qa;                                                   // 004733C5..00473409
-            pa = target;                                               // 004733E1..00473440
-            qa = qc;                                                   // 00473434..00473466
-            p1 = p2;                                                   // 0047341E..0047343B (word E-3B4)
+            copy_w3(pb, pa);                                           // 004733B5..004733FE
+            copy_words4(qb, qa);                                       // 004733C5..00473409
+            copy_w3(pa, target);                                       // 004733E1..00473440
+            copy_words4(qa, qc);                                       // 00473434..00473466
+            p1 = p2;                                                   // 0047341E..0047343B (word [esp+10h])
             p2 = ring_back(static_cast<I16>(p2 - 1));                  // 0047343F..0047347A
         }
         glBegin(kGlQuadStrip_0073f350);                                // 0047349D
+#pragma clang loop unroll(disable)
         for (I j = 0; j < half; ++j) {                                 // 004734A3..0047384E
-            const double magnitude_wide = vector_magnitude_004ab100(&offsets[j]);   // 004734E5
-            const float magnitude = S(magnitude_wide);                 // 004734EA fst E-3B4
-            if (magnitude_wide != W(f(kZero_0073d700))) {              // 004734EE..004734FC
-                if (W(*cells.saber_min_ratio_0078e83c) * W(length) > W(magnitude)) {   // 00473502..00473515
-                    offsets[j] = Vector{-blade.x, -blade.y, -blade.z}; // 00473517..00473565 (fchs)
+            const long double magnitude_wide = vector_magnitude_004ab100(reinterpret_cast<const Vector*>(const_cast<U*>(offsets[j])));   // 004734E5
+            const U magnitude = stored_bits(magnitude_wide);           // 004734EA fst [esp+10h]
+            if (magnitude_wide != W(f(kZero_0073d700))) {              // 004734EE..004734FC (test 44h; jnp skips when equal)
+                if (W(*cells.saber_min_ratio_0078e83c) * length > W(fbits(magnitude))) {   // 00473502..00473515
+                    offsets[j][0] = stored_bits(-W(fbits(blade[0])));  // 00473517..00473524 fld ; fchs ; fstp [esp+0A0h] -> mov
+                    offsets[j][1] = stored_bits(-W(fbits(blade[1])));  // 00473532..0047353D
+                    offsets[j][2] = stored_bits(-W(fbits(blade[2])));  // 00473544..00473557
                 } else {
-                    const double inverse = W(f(kOne_0073d764)) / W(magnitude);   // 0047356D..00473577
-                    const double x = inverse * W(offsets[j].x);        // 0047357F..00473581 (ST)
-                    const float y = S(inverse * W(offsets[j].y));      // 00473583..00473588 fstp E-274
-                    const float z = S(inverse * W(offsets[j].z));      // 0047358F..00473594 fstp E-270
-                    const float minus_length = -length;                // 0047359B..004735A1 fst E-370
-                    offsets[j].x = S(W(minus_length) * x);             // 004735A5..004735B5
-                    offsets[j].y = S(W(minus_length) * W(y));          // 004735B9..004735DD
-                    offsets[j].z = S(W(minus_length) * W(z));          // 004735CB..004735EE
+                    const long double inverse = W(f(kOne_0073d764)) / W(fbits(magnitude));   // 0047356D..00473577
+                    const long double x = inverse * W(fbits(offsets[j][0]));    // 0047357F..00473581 (ST)
+                    const long double y = S(inverse * W(fbits(offsets[j][1])));   // 00473583..00473588 fstp [esp+150h]
+                    const long double z = S(inverse * W(fbits(offsets[j][2])));   // 0047358F..00473594 fstp [esp+154h]
+                    const long double minus_length = S(-length);       // 0047359B..004735A1 fchs ; fst [esp+54h]
+                    offsets[j][0] = stored_bits(minus_length * x);     // 004735A5..004735B5 fmul st(1) ; fstp -> mov
+                    offsets[j][1] = stored_bits(minus_length * y);     // 004735B9..004735DD
+                    offsets[j][2] = stored_bits(minus_length * z);     // 004735CB..004735EE
                 }
             }
-            texcoord(j);                                               // 0047360B
-            vertex1(to_local(orientation, position, vertices[j]));     // 0047364F..004736EF
-            texcoord(half + j);                                        // 0047370C (E-38C)
-            const Vector tip = to_local(orientation, position, vertices[j]);   // 00473750..004737CC
-            vertex1(Vector{S(W(offsets[j].x) + W(tip.x)), S(W(offsets[j].y) + W(tip.y)), S(W(offsets[j].z) + W(tip.z))});   // 004737D1..0047382A
+            saber_texcoord_x87(&texcoords[2 * j]);                     // 004735F1..0047360B
+            volatile U base_vertex[3];
+            to_local(base_vertex, orientation, position, &vertices[j]);   // 00473611..004736D0
+            saber_vertex_raw(const_cast<const U*>(base_vertex));       // 004736D5..004736EF
+            saber_texcoord_raw(&texcoords[2 * (half + j)]);            // 004736F5..0047370C
+            volatile U tip[3];
+            to_local(tip, orientation, position, &vertices[j]);        // 00473712..004737CC
+            U sum[3];
+            sum[0] = stored_bits(W(fbits(offsets[j][0])) + W(fbits(tip[0])));   // 004737D1..004737E5 fstp [esp+16Ch]
+            sum[1] = stored_bits(W(fbits(offsets[j][1])) + W(fbits(tip[1])));   // 004737EC..004737F2 fstp [esp+170h]
+            sum[2] = stored_bits(W(fbits(offsets[j][2])) + W(fbits(tip[2])));   // 004737F9..00473815 fstp [esp+174h]
+            saber_vertex_raw(sum);                                     // 0047381C..0047382A
         }
         glEnd();                                                       // 00473854
     }

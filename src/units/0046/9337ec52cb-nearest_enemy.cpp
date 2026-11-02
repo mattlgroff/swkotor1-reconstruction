@@ -27,53 +27,32 @@ void copy_position(void* out, const void* object) {
     write<U>(out, 4, read<U>(object, 0x94));
     write<U>(out, 8, read<U>(object, 0x98));
 }
+// a2 (L3 t1): the inline-asm helpers are C++ under the writing rule (register values long double, one (float)
+// conversion per original fst/fstp dword; the compares are the original fcomp + test ah,mask outcomes). The original
+// has these blocks inline in 004F2DE0 (the helpers are calls under /Ob0).
+__forceinline long double ld_word(U w) { float f; std::memcpy(&f, &w, 4); return f; }   // fld dword
+__forceinline U float_word(float f) { U w; std::memcpy(&w, &f, 4); return w; }
+// 004F3052..004F305D / 004F3327..004F332C: vector_magnitude(difference) (cdecl, result in ST0), fstp dword [esp+20h].
 U distance_bits(const float* difference) {
-    U result;
-    __asm { push difference }
-    __asm { call kotor_cdecl_004ab100 }
-    __asm { add esp, 4 }
-    __asm { fstp dword ptr result }
-    return result;
+    const float distance = kotor_cdecl_004ab100(difference);
+    return float_word(distance);
 }
+// 004F3078..004F3096 / 004F3347..004F3365: fld [distance] ; fsub [self radius] ; fsub [candidate radius] ; fst dword
+// [adjusted] (ST0 kept) ; fcomp dword [*best] ; test ah,5 ; jp skip -> proceeds only when the UNROUNDED adjusted value
+// compares ordered-less than *best (C0 alone).
 U subtract_radii_less(U distance, U self_radius, U candidate_radius, U threshold, U* stored_distance) {
-    U result;
-    U stored;
-    __asm {
-        fld dword ptr distance
-        fsub dword ptr self_radius
-        fsub dword ptr candidate_radius
-        fst dword ptr stored
-        fcomp dword ptr threshold
-        fnstsw ax
-        test ah, 5
-        setnp al
-        movzx eax, al
-        mov result, eax
-    }
-    *stored_distance = stored; // original comparison uses unrounded ST0; accepted threshold uses stored DWORD
-    return result;
+    const long double adjusted = (ld_word(distance) - ld_word(self_radius)) - ld_word(candidate_radius);
+    *stored_distance = float_word(static_cast<float>(adjusted));          // 004F3089 / 004F3358 fst dword
+    return adjusted < ld_word(threshold) ? 1u : 0u;                       // original comparison uses unrounded ST0; accepted threshold uses stored DWORD
 }
+// 004F30AE..004F30C0 / 004F30E4..004F30F0 (and the backward arm's 004F3377..004F3398 / 004F33BD..004F33C9): fld z ; fadd [0073F414] (1.5) ; fstp dword.
 U height_bits(U z) {
-    const float height = 1.5f; // original0073F414 DWORD3FC00000
-    U result;
-    __asm { fld dword ptr z }
-    __asm { fadd dword ptr height }
-    __asm { fstp dword ptr result }
-    return result;
+    return float_word(static_cast<float>(ld_word(z) + 1.5f));            // original0073F414 DWORD3FC00000
 }
+// 004F3156..004F316B / 004F342C..004F3441: fld high ; fsub low ; fcomp dword [*best] ; test ah,41h ; jne -> true only when
+// the difference is ordered-greater (neither C0 nor C3; unordered does not stop this side).
 bool axis_exceeded(U high, U low, U threshold) {
-    U result;
-    __asm {
-        fld dword ptr high
-        fsub dword ptr low
-        fcomp dword ptr threshold
-        fnstsw ax
-        test ah, 41h
-        sete al
-        movzx eax, al
-        mov result, eax
-    }
-    return result != 0; // original ordered-greater only; unordered does not stop this side
+    return (ld_word(high) - ld_word(low)) > ld_word(threshold);
 }
 
 // Shared source mechanics for the two original scan arms; native call/reload order remains explicit.
@@ -153,7 +132,7 @@ bool inspect_candidate(void* self, void* object, U id, U reference, bool backwar
 }
 
 // Original004F2DE0..004F3496,1718bytes, RET0C/nativefastcall@20.
-extern "C" std::uint32_t __fastcall kotor_fastcall_004f2de0(void* self, void*, float radius,
+extern "C" std::uint32_t __fastcall kotor_fastcall_004f2de0(void* self, void*, U radius_bits,
                                                          U excluded, U reference) {
     if (recovered_object_area_004cb120(self, nullptr) == nullptr) return 0x7F000000u;
     void* const area = recovered_object_area_004cb120(self, nullptr);
@@ -170,7 +149,7 @@ extern "C" std::uint32_t __fastcall kotor_fastcall_004f2de0(void* self, void*, f
     }
     if (signed_bits(index) >= count) return 0x7F000000u;
 
-    U best; std::memcpy(&best, &radius, sizeof best);
+    U best = radius_bits;   // a2: the radius is a stack word the original copies with mov (not a float parameter: fld/fstp would quiet a signalling NaN)
     U closest = 0x7F000000u;
     U backward_index = index, forward_index = index;
     U backward_offset = index * 4u, forward_offset = index * 4u;

@@ -3,7 +3,7 @@
 namespace kotor_scene3d { struct Vector; }
 namespace kotor_world_los { using Vector = kotor_scene3d::Vector; }
 extern "C" {
-std::uint32_t __fastcall kotor_fastcall_004f2de0(void*, void*, float, std::uint32_t, std::uint32_t);
+std::uint32_t __fastcall kotor_fastcall_004f2de0(void*, void*, std::uint32_t /*radius: a float, taken as its raw word (a2: 004F2DE0 copies it with mov)*/, std::uint32_t, std::uint32_t);
 void* __fastcall recovered_object_area_004cb120(void*, void*);
 void* __fastcall kotor_fastcall_004ae750(void*, void*, std::uint32_t);
 void* __fastcall kotor_fastcall_004ae770(void*, void*, std::uint32_t);

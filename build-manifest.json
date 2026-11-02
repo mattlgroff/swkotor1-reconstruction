@@ -1012,9 +1012,10 @@
           "source": "src/units/0046/9337ec52cb-nearest_enemy.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
+            "/showIncludes",
             "--no-default-config",
             "--target=i686-pc-windows-msvc",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -1025,6 +1026,9 @@
             "/WX",
             "/std:c++17",
             "/clang:-ffp-contract=off",
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80",
             "/clang:-fms-compatibility-version=19.44",
             "/clang:-Wno-invalid-offsetof"
           ]
@@ -1565,9 +1569,10 @@
           "source": "src/units/0073/2112e8a6c0-area_vfx_position.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
+            "/showIncludes",
             "--target=i686-pc-windows-msvc",
             "--no-default-config",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -1578,8 +1583,10 @@
             "/WX",
             "/std:c++17",
             "/clang:-fms-compatibility-version=19.44",
-            "/showIncludes",
             "/clang:-ffp-contract=off",
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80",
             "/clang:-Wno-invalid-offsetof"
           ]
         },
@@ -2048,9 +2055,10 @@
           "source": "src/units/0095/3b685312f2-module_camera.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
+            "/showIncludes",
             "--target=i686-pc-windows-msvc",
             "--no-default-config",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -2062,7 +2070,9 @@
             "/std:c++17",
             "/clang:-fms-compatibility-version=19.44",
             "/clang:-ffp-contract=off",
-            "/showIncludes",
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80",
             "/clang:-Wno-invalid-offsetof"
           ]
         },
@@ -2740,9 +2750,10 @@
           "source": "src/units/0124/0c95429000-safe_location.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
+            "/showIncludes",
             "--target=i686-pc-windows-msvc",
             "--no-default-config",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -2757,7 +2768,9 @@
             "/clang:-Wno-invalid-offsetof",
             "/clang:-Wno-unused-function",
             "/clang:-ffp-contract=off",
-            "/Brepro"
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80"
           ]
         },
         {
@@ -12938,9 +12951,14 @@
         },
         {
           "source": "src/units/0679/beedd0bd1c-anim_contested.cpp",
-          "compiler": "msvc",
+          "compiler": "clang-cl",
           "flags": [
             "/nologo",
+            "/showIncludes",
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-ffp-contract=off",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -12950,8 +12968,11 @@
             "/W4",
             "/WX",
             "/std:c++17",
-            "/showIncludes",
-            "/D_CRT_SECURE_NO_WARNINGS"
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80",
+            "/clang:-Wno-invalid-offsetof"
           ]
         },
         {
@@ -12992,9 +13013,14 @@
         },
         {
           "source": "src/units/0682/c2373a91cd-particle_motion.cpp",
-          "compiler": "msvc",
+          "compiler": "clang-cl",
           "flags": [
             "/nologo",
+            "/showIncludes",
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-ffp-contract=off",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -13004,8 +13030,11 @@
             "/W4",
             "/WX",
             "/std:c++17",
-            "/showIncludes",
-            "/D_CRT_SECURE_NO_WARNINGS"
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80",
+            "/clang:-Wno-invalid-offsetof"
           ]
         },
         {
@@ -13699,9 +13728,14 @@
         },
         {
           "source": "src/units/0719/adf4db38c9-m46_camera.cpp",
-          "compiler": "msvc",
+          "compiler": "clang-cl",
           "flags": [
             "/nologo",
+            "/showIncludes",
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-ffp-contract=off",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -13711,8 +13745,11 @@
             "/W4",
             "/WX",
             "/std:c++17",
-            "/showIncludes",
-            "/D_CRT_SECURE_NO_WARNINGS"
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80",
+            "/clang:-Wno-invalid-offsetof"
           ]
         },
         {
@@ -18620,9 +18657,10 @@
           "source": "src/derived/0811-m15-l0-leaves/78276c3d71a36d31_m15_leaves.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
+            "/showIncludes",
             "--target=i686-pc-windows-msvc",
             "--no-default-config",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -18635,7 +18673,12 @@
             "/D_CRT_SECURE_NO_WARNINGS",
             "/clang:-fms-compatibility-version=19.44",
             "/clang:-Wno-invalid-offsetof",
-            "/clang:-Wno-unused-function"
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80"
           ]
         },
         {
@@ -21492,9 +21535,10 @@
           "source": "src/derived/0958-mesh_position_native/eb3d82cef9d6f6f8_mesh_position_native.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
+            "/showIncludes",
             "--target=i686-pc-windows-msvc",
             "--no-default-config",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -21506,7 +21550,13 @@
             "/std:c++17",
             "/D_CRT_SECURE_NO_WARNINGS",
             "/clang:-fms-compatibility-version=19.44",
-            "/clang:-Wno-invalid-offsetof"
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80"
           ]
         },
         {
@@ -25051,9 +25101,10 @@
           "source": "src/derived/1126-trigger_geometry_native/49a2fa0225e45f38_trigger_geometry_native.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
+            "/showIncludes",
             "--target=i686-pc-windows-msvc",
             "--no-default-config",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -25065,7 +25116,13 @@
             "/std:c++17",
             "/D_CRT_SECURE_NO_WARNINGS",
             "/clang:-fms-compatibility-version=19.44",
-            "/clang:-Wno-invalid-offsetof"
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80"
           ]
         },
         {
@@ -25093,9 +25150,10 @@
           "source": "src/derived/1128-trigger_bounds_native/8a827938889bdf87_trigger_bounds_native.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
+            "/showIncludes",
             "--target=i686-pc-windows-msvc",
             "--no-default-config",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -25107,7 +25165,13 @@
             "/std:c++17",
             "/D_CRT_SECURE_NO_WARNINGS",
             "/clang:-fms-compatibility-version=19.44",
-            "/clang:-Wno-invalid-offsetof"
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-function",
+            "/clang:-Wno-uninitialized-const-pointer",
+            "/clang:-ffp-contract=off",
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80"
           ]
         },
         {
@@ -27238,9 +27302,10 @@
           "source": "src/units/1393/9b95e6b1aa-camera_stick.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
+            "/showIncludes",
             "--target=i686-pc-windows-msvc",
             "--no-default-config",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -27256,7 +27321,9 @@
             "/clang:-Wno-unused-function",
             "/clang:-Wno-uninitialized-const-pointer",
             "/clang:-ffp-contract=off",
-            "/showIncludes"
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80"
           ]
         },
         {
@@ -27338,9 +27405,10 @@
           "source": "src/units/1397/bb9bd63cc4-can_see.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
+            "/showIncludes",
             "--target=i686-pc-windows-msvc",
             "--no-default-config",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -27356,7 +27424,9 @@
             "/clang:-Wno-unused-function",
             "/clang:-Wno-uninitialized-const-pointer",
             "/clang:-ffp-contract=off",
-            "/showIncludes"
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80"
           ]
         },
         {
@@ -27833,9 +27903,10 @@
           "source": "src/units/1417/81ae44bc3b-w5_area_direct_line.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
+            "/showIncludes",
             "--target=i686-pc-windows-msvc",
             "--no-default-config",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -27850,7 +27921,9 @@
             "/clang:-Wno-invalid-offsetof",
             "/clang:-Wno-unused-function",
             "/clang:-Wno-uninitialized-const-pointer",
-            "/showIncludes"
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80"
           ]
         },
         {
@@ -29039,9 +29112,14 @@
         },
         {
           "source": "src/units/1470/5ac096f97b-scene3d.cpp",
-          "compiler": "msvc",
+          "compiler": "clang-cl",
           "flags": [
             "/nologo",
+            "/showIncludes",
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-ffp-contract=off",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -29051,8 +29129,12 @@
             "/W4",
             "/WX",
             "/std:c++17",
-            "/showIncludes",
-            "/D_CRT_SECURE_NO_WARNINGS"
+            "/D_CRT_SECURE_NO_WARNINGS",
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80",
+            "/clang:-Wno-invalid-offsetof",
+            "/clang:-Wno-unused-local-typedef"
           ]
         },
         {
@@ -29172,9 +29254,10 @@
           "source": "src/units/1476/56e80822a0-creature_anim.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
+            "/showIncludes",
             "--target=i686-pc-windows-msvc",
             "--no-default-config",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -29190,7 +29273,9 @@
             "/clang:-Wno-unused-function",
             "/clang:-Wno-uninitialized-const-pointer",
             "/clang:-ffp-contract=off",
-            "/showIncludes"
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80"
           ]
         },
         {
@@ -29362,9 +29447,10 @@
           "source": "src/units/1485/66e33acf48-w3_trigger_geometry.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
+            "/showIncludes",
             "--target=i686-pc-windows-msvc",
             "--no-default-config",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -29379,8 +29465,10 @@
             "/clang:-Wno-invalid-offsetof",
             "/clang:-Wno-unused-function",
             "/clang:-Wno-uninitialized-const-pointer",
-            "/showIncludes",
-            "/clang:-ffp-contract=off"
+            "/clang:-ffp-contract=off",
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80"
           ]
         },
         {
@@ -30376,10 +30464,10 @@
           "source": "src/units/1526/a5013b9472-object_projectile_ai.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
             "/showIncludes",
             "--no-default-config",
             "--target=i686-pc-windows-msvc",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -30390,6 +30478,9 @@
             "/WX",
             "/std:c++17",
             "/clang:-ffp-contract=off",
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80",
             "/clang:-fms-compatibility-version=19.44",
             "/clang:-Wno-invalid-offsetof"
           ]
@@ -30442,10 +30533,10 @@
           "source": "src/units/1529/00bdb4faa5-object_projectile_motion.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
             "/showIncludes",
             "--no-default-config",
             "--target=i686-pc-windows-msvc",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -30456,6 +30547,9 @@
             "/WX",
             "/std:c++17",
             "/clang:-ffp-contract=off",
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80",
             "/clang:-fms-compatibility-version=19.44",
             "/clang:-Wno-invalid-offsetof"
           ]
@@ -31824,8 +31918,12 @@
           "source": "src/units/1592/2e96f1e3e4-camera_navigate.cpp",
           "compiler": "clang-cl",
           "flags": [
-            "--target=i686-pc-windows-msvc",
             "/nologo",
+            "/showIncludes",
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-ffp-contract=off",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -31835,10 +31933,9 @@
             "/W4",
             "/WX",
             "/std:c++17",
-            "/arch:IA32",
-            "/fp:strict",
-            "/showIncludes",
-            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80",
             "/clang:-Wno-invalid-offsetof"
           ]
         },
@@ -33122,9 +33219,10 @@
           "source": "src/units/1656/131d670f91-claude_w5_movement_actions.cpp",
           "compiler": "clang-cl",
           "flags": [
+            "/nologo",
+            "/showIncludes",
             "--target=i686-pc-windows-msvc",
             "--no-default-config",
-            "/nologo",
             "/O2",
             "/Ob0",
             "/Oy-",
@@ -33139,7 +33237,9 @@
             "/clang:-Wno-invalid-offsetof",
             "/clang:-Wno-unused-function",
             "/clang:-Wno-uninitialized-const-pointer",
-            "/showIncludes"
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80"
           ]
         },
         {
@@ -37760,9 +37860,14 @@
         },
         {
           "source": "src/units/1848/c6f48bbd70-get_nearest_object_by_name_004cb5c0.cpp",
-          "compiler": "msvc",
+          "compiler": "clang-cl",
           "flags": [
             "/nologo",
+            "/showIncludes",
+            "--target=i686-pc-windows-msvc",
+            "--no-default-config",
+            "/clang:-fms-compatibility-version=19.44",
+            "/clang:-ffp-contract=off",
             "/O2",
             "/Ob2",
             "/Oy-",
@@ -37773,8 +37878,10 @@
             "/WX",
             "/std:c++17",
             "/D_CRT_SECURE_NO_WARNINGS",
-            "/Brepro",
-            "/showIncludes"
+            "/clang:-mno-sse",
+            "/clang:-ffp-model=strict",
+            "/clang:-mlong-double-80",
+            "/clang:-Wno-invalid-offsetof"
           ]
         },
         {
@@ -40627,11 +40734,11 @@
         },
         {
           "path": "src/units/0046/1c46e7f795-nearest_enemy.h",
-          "sha256": "d39c7b31b33339304fbe45f46cdb3ff7863e739181ff70388f75ff03e29a35a8"
+          "sha256": "3dc7794206feda344a0dd82d7d180a702f12576d7cd0f6ce660e0885bb6ad950"
         },
         {
           "path": "src/units/0046/9337ec52cb-nearest_enemy.cpp",
-          "sha256": "7e5bac9dad5cbedf59b28ed057fcb0840bf24678e8d456fbdbf55eb14928f0f6"
+          "sha256": "8fb725b03253ef03a51970cd96f82d1551aacbbed0e9b98b37538fb6deb7127c"
         },
         {
           "path": "src/units/0047/16efa2bd01-attack_producer.cpp",
@@ -41407,7 +41514,7 @@
         },
         {
           "path": "src/units/0073/2112e8a6c0-area_vfx_position.cpp",
-          "sha256": "c6dd8523118c2183b7e32f7f2eb5925d5dc39dcea0a0a508889bf99aa3ab0a05"
+          "sha256": "309076a2e46c685400ed68a58d1a25074c4033d2f54b972e854f45d5ec55815d"
         },
         {
           "path": "src/units/0073/32a11cddfd-area_vfx_native.hpp",
@@ -41911,7 +42018,7 @@
         },
         {
           "path": "src/units/0095/3b685312f2-module_camera.cpp",
-          "sha256": "c8dfb484e273ceb8a407bb50ac62644f43bfdfd2127c5934183b99f12e1e0e92"
+          "sha256": "0fff69f6601a8a1858a866e8f938b8ad298bb55137f9a26dcc2eaae26b0bb3ae"
         },
         {
           "path": "src/units/0095/65f181dde8-w4_frame.hpp",
@@ -42423,7 +42530,7 @@
         },
         {
           "path": "src/units/0124/0c95429000-safe_location.cpp",
-          "sha256": "9401498b6a341d900fbb406fa664a3fc4662fa35220474f16e773ee6609fe2d9"
+          "sha256": "04e77c24e78c7868ecca570d66dee91c206659b150ac5d3d4cd236f6ecf47226"
         },
         {
           "path": "src/units/0124/0e76439f1a-safe_location.hpp",
@@ -61971,7 +62078,7 @@
         },
         {
           "path": "src/units/0679/beedd0bd1c-anim_contested.cpp",
-          "sha256": "46c6170721468056355c285f569997b34ed02b865e4d7a410860d640edad1515"
+          "sha256": "b3144eec5a5214fc13ace1c21220ce630ec141be5cf5c53fc90d8e6d30a500dc"
         },
         {
           "path": "src/units/0680/05d1437c75-growth.h",
@@ -62059,7 +62166,7 @@
         },
         {
           "path": "src/units/0682/4ac9e30747-emitter.h",
-          "sha256": "2b206f4c86861feb090d6470791b3b37517435fca40593630e84b332768295f6"
+          "sha256": "011b829bea5cde82a3bbe4001f8e10c83646de21407fcfed79c4da791103b919"
         },
         {
           "path": "src/units/0682/6c81d8874d-scene3d.h",
@@ -62075,7 +62182,7 @@
         },
         {
           "path": "src/units/0682/c2373a91cd-particle_motion.cpp",
-          "sha256": "4e90c1bbc7593d378eb813092f299735697b5053dbf370fb4abe173f09866158"
+          "sha256": "58994ee02dc31aace62fed131a6eca9492c0bce2cb04ba1acd128a1b2cefc9c7"
         },
         {
           "path": "src/units/0683/05d1437c75-growth.h",
@@ -63875,7 +63982,7 @@
         },
         {
           "path": "src/units/0719/adf4db38c9-m46_camera.cpp",
-          "sha256": "cffe60e543d0fe4aa12b359bdd9ef5b77401b7e1a212403abaef724beee17ffb"
+          "sha256": "f87f252ab23e0f67fc607556559f955d902ebac61a59d66545b6e11191d7d1d7"
         },
         {
           "path": "src/units/0719/b313dbc5e8-vtables2_gen.h",
@@ -74083,7 +74190,7 @@
         },
         {
           "path": "src/units/1393/9b95e6b1aa-camera_stick.cpp",
-          "sha256": "fa2c786bc027633ea1295bae2aa3da61388dc7d186edf83278ef8ef16c2b8053"
+          "sha256": "96990e70b722fea10184c635a9d0e995e86f0c1c08276c23229d3194a8dc80cc"
         },
         {
           "path": "src/units/1394/097d96e71e-camera.hpp",
@@ -74159,7 +74266,7 @@
         },
         {
           "path": "src/units/1397/bb9bd63cc4-can_see.cpp",
-          "sha256": "6eaa6e41c02f3e506faa0cf950a442dfabac8461efaad7502cbe8b5dc0961897"
+          "sha256": "a5cfce593eddbf043f856198e777807814b29955ee17bb1c02c4184958c7b3ec"
         },
         {
           "path": "src/units/1398/0cdbed471d-w4_providers.hpp",
@@ -74523,7 +74630,7 @@
         },
         {
           "path": "src/units/1417/81ae44bc3b-w5_area_direct_line.cpp",
-          "sha256": "178967294f652a0c0a33e9e300c53e1cfc5fd340a2027b4c2d61c6004ccab4c9"
+          "sha256": "135402f1433a12e473ed748d5f884dc11a842abda805d940ee5989e8c9bd5720"
         },
         {
           "path": "src/units/1418/1a370ea669-w5_foreign.hpp",
@@ -76315,7 +76422,7 @@
         },
         {
           "path": "src/units/1470/5ac096f97b-scene3d.cpp",
-          "sha256": "bd29d0f4ce1e3e1b7b2442dd8e424dc5fa3871fd536b10b31df42e05d89e01f0"
+          "sha256": "ad0c215ddd1f4a119c27d7b0b944ea4374a8d8feec01bee383a0fb0c1f008637"
         },
         {
           "path": "src/units/1470/6ce15fd005-crt_acos_scene_adapter.h",
@@ -76547,7 +76654,7 @@
         },
         {
           "path": "src/units/1476/56e80822a0-creature_anim.cpp",
-          "sha256": "51442633f6460ba23b090a4c8b26476fbea6db4ca927692ac0bcb6069d3d8e2a"
+          "sha256": "ba9d7e62733c9f5ff9ba7f2896d67e89ae901f9bd6833277a2e5b09d211dea28"
         },
         {
           "path": "src/units/1476/6a3402d64b-w4_native.hpp",
@@ -76883,7 +76990,7 @@
         },
         {
           "path": "src/units/1485/66e33acf48-w3_trigger_geometry.cpp",
-          "sha256": "0b9ec017b9c5afe5884d0ced5f6456d55ec13578f1dad8f93f4ca0ae70b24da2"
+          "sha256": "103d9b10f9a6a16cae215bd1c725c4b0cabca161d80127f0163f3efd0f3cf235"
         },
         {
           "path": "src/units/1485/84acc80030-w3_trigger.h",
@@ -78651,7 +78758,7 @@
         },
         {
           "path": "src/units/1526/a5013b9472-object_projectile_ai.cpp",
-          "sha256": "b519f7b906cf5c499665ff450178f1540218327eed64195d22709da46704b217"
+          "sha256": "8fb2a055fdfdf39f2558d4df70d94d1ac9b7ff7b02a4c7558f03d74f9fa8e68d"
         },
         {
           "path": "src/units/1526/a9f6c72f90-object_projectile_providers.h",
@@ -78751,7 +78858,7 @@
         },
         {
           "path": "src/units/1529/00bdb4faa5-object_projectile_motion.cpp",
-          "sha256": "464de51a7658dc0b8a9b920ac883e85b29311a3f595c99103d71714e4dd013d9"
+          "sha256": "fb95afb373c391752b2f7dc2f14b7f828ff7277d779788421228924ec8a6640b"
         },
         {
           "path": "src/units/1529/39ad3a0c4b-growth.h",
@@ -81383,7 +81490,7 @@
         },
         {
           "path": "src/units/1592/2e96f1e3e4-camera_navigate.cpp",
-          "sha256": "c44abd03da3b2993bcbc48dff15138b4cf5468457faf74299837bbe0e20d7fc4"
+          "sha256": "a08fb405ec40804d6f8a1d589cbe1d6c0ea69dec03f13efea22934e3ddf76d24"
         },
         {
           "path": "src/units/1592/39ad3a0c4b-growth.h",
@@ -82271,7 +82378,7 @@
         },
         {
           "path": "src/units/1656/131d670f91-claude_w5_movement_actions.cpp",
-          "sha256": "778312c83d6f61821ad614e5e57d793c39192a0505f6a7e4ff086d1a0cf8a167"
+          "sha256": "434e1c3aa86e04c5807cf3755b0061894fbf20a0bbd2d8982ce8e23bc6f3f348"
         },
         {
           "path": "src/units/1656/1a370ea669-w5_foreign.hpp",
@@ -86475,7 +86582,7 @@
         },
         {
           "path": "src/units/1848/c6f48bbd70-get_nearest_object_by_name_004cb5c0.cpp",
-          "sha256": "6f34af63c393e211582da72d8eda72dbad4f275e91e1c5dfe40486cb9b238983"
+          "sha256": "3c2d759585da3965c5c1629a3f5546ed3cc54555ea23de5e91583f8c97d89cb3"
         },
         {
           "path": "src/units/1849/65b8eb6bac-dialog_target_lookup_contracts.hpp",
@@ -89163,7 +89270,7 @@
         },
         {
           "path": "src/derived/0958-mesh_position_native/eb3d82cef9d6f6f8_mesh_position_native.cpp",
-          "sha256": "8705aa027af7384bb406a9fe83bd6057673ea897b0c8867577112e43ec6253c1"
+          "sha256": "385f11cc2f22e0d511507bd17300722d81e800371cbb16dfc41d4201c818f66b"
         },
         {
           "path": "src/derived/0959-area_creatures/4f727ab50b1551ae_server_mainloop.hpp",
@@ -90811,7 +90918,7 @@
         },
         {
           "path": "src/derived/1126-trigger_geometry_native/49a2fa0225e45f38_trigger_geometry_native.cpp",
-          "sha256": "20cda8a2fb54c1b47aa99db297f89d63b54e0a584df1c57f7c306b2512144577"
+          "sha256": "e23c1708693a6338682f2386a89a4debf5ef00a039056735ca34b880d429aaf9"
         },
         {
           "path": "src/derived/1126-trigger_geometry_native/d6da090c8d2fc425_trigger_geometry.hpp",
@@ -90831,7 +90938,7 @@
         },
         {
           "path": "src/derived/1128-trigger_bounds_native/8a827938889bdf87_trigger_bounds_native.cpp",
-          "sha256": "d0ea145bc7bda73cc5b15466e241b11ae5b88d18a39a7dfc8d0b1e68506ab9dd"
+          "sha256": "106be930e6f175525e180a413ecc14bcb8a41691338cafe328359cbe527d159b"
         },
         {
           "path": "src/derived/1129-trigger_fields/16f5f8684a7abb38_trigger_fields.cpp",

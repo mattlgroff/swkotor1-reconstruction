@@ -6,90 +6,13 @@
 
 using namespace kotor_anim3d;
 
-namespace {
-inline float f32(double value) { return static_cast<float>(value); }
-}
 
-// ---- lane x87-trig (2026-10-24): slerp's x87 sequences kept whole ----
-// The former x87_acos (main path of 006FC0E0 only) and x87_sin returned their results rounded to double; the
-// original stores the 64-bit-significand acos/fsin results straight to dword (004A9E74, 004A9EB6) or divides them
-// first (004A9EC8, 004A9EED). acos now runs through the accepted t11b replica of 006FC0E0 (_CIacos, ST0 in/out,
-// transported as 80-bit images); each fsin stays with its consuming x87 instructions and ends at the original's
-// dword store. Precondition as in the original: PC = 53 bits, RC = nearest. No CALL inside the asm.
-namespace x87trig {
-#pragma pack(push, 1)
-struct X80 { unsigned char bytes[10]; };   // FSTP TBYTE image (same layout as crt_x87::Extended)
-#pragma pack(pop)
-const unsigned kZero_0073d700 = 0u;        // 0.0f
-}
-extern "C" {
-// 006FC0E0 _CIacos: t11b provider (t11b-crt_acos_006fc0e0-observed.obj), ST0 at entry -> ST0 at RET.
-void __cdecl crt_acos_x87_006fc0e0(const x87trig::X80* st0_in, x87trig::X80* st0_out);
-// 004A9E6B: fld dword ptr [esp+4] (the 80-bit operand image handed to 006FC0E0).
-__declspec(noinline) void __cdecl x87trig_004a9e6b(const float* c, x87trig::X80* st0) {
-    __asm {
-        mov eax, c
-        fld dword ptr [eax]                    // 004A9E6B
-        mov eax, st0
-        fstp tbyte ptr [eax]
-    }
-}
-// 004A9E74..004A9E7E: fst dword ptr [esp+4] (angle); fcomp dword ptr [0073D700]; fnstsw ax -> returned in AX.
-__declspec(noinline) unsigned __cdecl x87trig_004a9e74(const x87trig::X80* st0, float* angle) {
-    unsigned short status;
-    __asm {
-        mov eax, st0
-        fld tbyte ptr [eax]
-        mov eax, angle
-        fst dword ptr [eax]                    // 004A9E74
-        fcomp dword ptr x87trig::kZero_0073d700  // 004A9E78
-        fnstsw ax                              // 004A9E7E
-        mov status, ax
-    }
-    return status;
-}
-// 004A9EAB..004A9EB6: [esp+0Ch] = (float)sin(angle)
-__declspec(noinline) void __cdecl x87trig_004a9eb0(const float* angle, float* sine) {
-    __asm {
-        mov eax, angle
-        fld dword ptr [eax]                    // 004A9EAB
-        fsin                                   // 004A9EB0
-        mov eax, sine
-        fstp dword ptr [eax]                   // 004A9EB6
-    }
-}
-// 004A9EBA..004A9ECC: [esp+8] = (float)(angle * t); scale = (float)(sin(angle * t) / sine)
-__declspec(noinline) void __cdecl x87trig_004a9ec6(const float* angle, const float* t, const float* sine, float* at,
-                                                   float* scale) {
-    __asm {
-        mov eax, angle
-        fld dword ptr [eax]                    // 004A9EBA
-        mov eax, t
-        fmul dword ptr [eax]                   // 004A9EBE
-        mov eax, at
-        fst dword ptr [eax]                    // 004A9EC2
-        fsin                                   // 004A9EC6
-        mov eax, sine
-        fdiv dword ptr [eax]                   // 004A9EC8
-        mov eax, scale
-        fstp dword ptr [eax]                   // 004A9ECC
-    }
-}
-// 004A9ED6..004A9EF1: scale = (float)(sin(angle - at) / sine)
-__declspec(noinline) void __cdecl x87trig_004a9ee3(const float* angle, const float* at, const float* sine, float* scale) {
-    __asm {
-        mov eax, angle
-        fld dword ptr [eax]                    // 004A9ED6
-        mov eax, at
-        fsub dword ptr [eax]                   // 004A9EDA
-        fsin                                   // 004A9EE3
-        mov eax, sine
-        fdiv dword ptr [eax]                   // 004A9EED
-        mov eax, scale
-        fstp dword ptr [eax]                   // 004A9EF1
-    }
-}
-}  // extern "C"
+// ---- L3 MATH-TRIG-CPP t1 (2026-10-24): 004A9E00 slerp in plain C++ ----
+// This unit is built as a long double (LD) unit (clang LD recipe, PLAN-v3 1.1); kotor_math.h replaces <cmath>. The
+// x87-trig a1 helpers x87trig_004a9e6b/_004a9e74/_004a9eb0/_004a9ec6/_004a9ee3 and the explicit 006FC0E0 transport are
+// replaced by acos(long double) / sin(long double) (kotor_math.h, bound to the local L1 dependency).
+#include "../../math/kotor_math.h"
+#include <intrin.h>   // _AddressOfReturnAddress (00438AF0, a2)
 
 extern "C" {
 // 00437CC0 CExoArrayList<Quaternion>::Allocate(int capacity), RET 4. New elements are identity quaternions (w = 1).
@@ -118,17 +41,28 @@ void __fastcall quaternion_list_add_00438af0(PointerList* list, void*, Quaternio
         const I grow = (list->capacity != 0) ? list->capacity * 2 : 0x10;    // 00438AFB..00438B03
         quaternion_list_allocate_00437cc0(list, nullptr, grow);              // 00438B08..00438B0B
     }
-    std::memcpy(reinterpret_cast<unsigned char*>(static_cast<std::uintptr_t>(list->data)) + 16 * list->size, &value, 16);   // 00438B10..00438B32
+    // L3 t1 a2: the original copies the by-value Quaternion with four integer moves (00438B15..00438B32) from its
+    // stack argument. clang's __fastcall ABI expands the struct into four float parameters, which it loads with
+    // fld dword: that quiets a signalling NaN and spilled 4-byte x87 values across the Allocate call (S1). The words
+    // are read as U from the argument's own stack slots instead (the first stack argument is the word above the
+    // return address, as [esp+8] after the original's push esi), so the copy is bit-exact for every input.
+    (void)value;
+    const U* words = reinterpret_cast<const U*>(static_cast<unsigned char*>(_AddressOfReturnAddress()) + 4);   // [esp+8]..[esp+14h]
+    U* dst = reinterpret_cast<U*>(static_cast<std::uintptr_t>(list->data) + 16u * static_cast<U>(list->size));   // 00438B10..00438B1C
+    dst[0] = words[0]; dst[1] = words[1]; dst[2] = words[2]; dst[3] = words[3];   // 00438B22..00438B32
     list->size = list->size + 1;                                             // 00438B35
 }
 
 // 004A9B80 quaternionScalarMult(Quaternion* out, Quaternion* q, float s) cdecl -> out.
 Quaternion* __cdecl quaternion_scalar_multiply_004a9b80(Quaternion* out, const Quaternion* q, float s) {
-    const double z = static_cast<double>(s) * q->z;                         // 004A9B84..004A9B88
-    const double y = static_cast<double>(s) * q->y;                         // 004A9B8B..004A9B8F
-    const double x = static_cast<double>(s) * q->x;                         // 004A9B92..004A9B96
-    const double w = static_cast<double>(s) * q->w;                         // 004A9B99..004A9B9D
-    out->w = f32(w); out->x = f32(x); out->y = f32(y); out->z = f32(z);     // 004A9BA3..004A9BAB
+    // L3 t1 a2: PLAN-v3 writing rule (register values long double, stores float): the four products stay on the x87
+    // stack and are stored w, x, y, z as the original (no qword spill of a product).
+    const long double z = static_cast<long double>(s) * q->z;                // 004A9B84..004A9B88
+    const long double y = static_cast<long double>(s) * q->y;                // 004A9B8B..004A9B8F
+    const long double x = static_cast<long double>(s) * q->x;                // 004A9B92..004A9B96
+    const long double w = static_cast<long double>(s) * q->w;                // 004A9B99..004A9B9D
+    out->w = static_cast<float>(w); out->x = static_cast<float>(x);         // 004A9BA3..004A9BA5
+    out->y = static_cast<float>(y); out->z = static_cast<float>(z);         // 004A9BA8..004A9BAB
     return out;                                                              // 004A9B9F
 }
 
@@ -139,38 +73,37 @@ double __cdecl quaternion_dot_004a9d30(const Quaternion* a, const Quaternion* b)
 }
 
 // 004A9E00 slerp(Quaternion* out, Quaternion from, Quaternion* to, float t) cdecl -> out.
+// L3 t1: PLAN-v3 writing rule. test 5;jp == !(a < b); test 1;je continues when a < b or unordered; test 44h;jp == !(a == b).
 Quaternion* __cdecl quaternion_slerp_004a9e00(Quaternion* out, Quaternion from, const Quaternion* to, float t) {
-    double cosine = quaternion_dot_004a9d30(&from, to);                      // 004A9E04..004A9E0E
-    if (cosine < static_cast<double>(kZero_0073d700)) {                      // 004A9E13..004A9E21
-        from.x = -from.x; from.y = -from.y; from.z = -from.z; from.w = -from.w;   // 004A9E23..004A9E47 (fchs; fstp)
-        if (cosine < static_cast<double>(kZero_0073d700)) cosine = -cosine;  // 004A9E4B..004A9E58
+    long double cosine = quaternion_dot_004a9d30(&from, to);                // 004A9E04..004A9E0E (ST0)
+    if (cosine < kZero_0073d700) {                                           // 004A9E13..004A9E21 fcom ; test 5 ; jp
+        from.x = static_cast<float>(-static_cast<long double>(from.x));     // 004A9E23..004A9E47 fld ; fchs ; fstp dword
+        from.y = static_cast<float>(-static_cast<long double>(from.y));
+        from.z = static_cast<float>(-static_cast<long double>(from.z));
+        from.w = static_cast<float>(-static_cast<long double>(from.w));
+        if (cosine < kZero_0073d700) cosine = -cosine;                       // 004A9E4B..004A9E58 fcom ; test 5 ; jp ; fchs
     }
-    const float c = f32(cosine);                                             // 004A9E5A fst [esp+4]
-    if (cosine < kOneDouble_0073ede8 || cosine != cosine) {                  // 004A9E5E..004A9E69 (test ah,1; je)
-        x87trig::X80 operand, arc;
-        x87trig_004a9e6b(&c, &operand);                                      // 004A9E6B fld [esp+4]
-        crt_acos_x87_006fc0e0(&operand, &arc);                               // 004A9E6F call 006FC0E0
-        float angle;                                                         // [esp+4]
-        const unsigned status = x87trig_004a9e74(&arc, &angle);             // 004A9E74..004A9E7E fst; fcomp; fnstsw
-        const unsigned flags = (status >> 8) & 0x44u;                        // 004A9E80 test ah,44h
-        if (flags == 0u || flags == 0x44u) {                                 // 004A9E83 jp (even parity: > 0, < 0, unordered)
-            float sine;                                                      // [esp+0Ch]
-            x87trig_004a9eb0(&angle, &sine);                                 // 004A9EAB..004A9EB6
-            float at, s1;                                                    // [esp+8], call argument
-            x87trig_004a9ec6(&angle, &t, &sine, &at, &s1);                   // 004A9EBA..004A9ECC
+    const float c = static_cast<float>(cosine);                              // 004A9E5A fst dword [esp+4] (ST0 kept)
+    if (!(cosine >= kOneDouble_0073ede8)) {                                  // 004A9E5E..004A9E69 fcomp qword 1.0 ; test 1 ; je
+        const long double arc = acos(static_cast<long double>(c));          // 004A9E6B..004A9E6F fld [esp+4] ; call 006FC0E0
+        const long double angle = static_cast<float>(arc);                   // 004A9E74 fst dword [esp+4] (ST0 kept)
+        if (!(arc == kZero_0073d700)) {                                      // 004A9E78..004A9E83 fcomp 0 ; test 44h ; jp
+            const long double sine = static_cast<float>(sin(angle));         // 004A9EAB..004A9EB6 fld ; fsin ; fstp dword [esp+10h]
+            const long double angle_t = angle * t;                           // 004A9EBA..004A9EBE fld ; fmul [t]
+            const long double at = static_cast<float>(angle_t);              // 004A9EC2 fst dword [esp+0Ch] (ST0 kept)
+            const float s1 = static_cast<float>(sin(angle_t) / sine);        // 004A9EC6..004A9ECC fsin ; fdiv ; fstp dword
             Quaternion toward;                                               // [esp+20h]
             const Quaternion* a = quaternion_scalar_multiply_004a9b80(&toward, to, s1);   // 004A9ECF..004A9ED1
-            float s0;                                                        // call argument
-            x87trig_004a9ee3(&angle, &at, &sine, &s0);                       // 004A9ED6..004A9EF1
+            const float s0 = static_cast<float>(sin(angle - at) / sine);     // 004A9ED6..004A9EF1 fld ; fsub ; fsin ; fdiv ; fstp
             Quaternion away;                                                 // [esp+30h]
             const Quaternion* b = quaternion_scalar_multiply_004a9b80(&away, &from, s0); // 004A9EF4..004A9EF6
             Quaternion sum;                                                  // [esp+10h]
             const Quaternion* r = quaternion_add_004a9d00(&sum, b, a);       // 004A9EFE..004A9F04
-            *out = *r;                                                       // 004A9F09..004A9F2A
+            std::memcpy(out, r, sizeof *out);                                // 004A9F09..004A9F2A (integer moves)
             return out;
         }
     }
-    *out = from;                                                             // 004A9E85..004A9EA3
+    std::memcpy(out, &from, sizeof *out);                                    // 004A9E85..004A9EA3 (integer moves)
     return out;
 }
 

@@ -2,7 +2,10 @@
 // update, Move/Rotate) and the CSWCObject animation predicates / fire-and-forget queue they use.
 // x87: every original FPU-stack intermediate is a double; every `fstp dword` an explicit (float).
 #include "a5e2cda8f5-creature.hpp"
-#include <cmath>
+// L3 MATH-TRIG-CPP t1 (2026-10-24): built as a long double (LD) unit (recipe + /clang:-mno-sse /clang:-ffp-model=strict
+// /clang:-mlong-double-80). 00611850 RotateCreatureToOrientation is written in the PLAN-v3 writing rule; math through
+// kotor_math.h (no <cmath>). The other functions keep their double-rule source; under the LD flags their FP code is x87.
+#include "../../math/kotor_math.h"
 
 using namespace w4;
 using namespace w4c;
@@ -14,7 +17,19 @@ void* gso(void* c) { return kotor_m15a_object_get_server_object_0063d4b0(c, null
 void* screature(void* c) { void* s = gso(c); return s ? vcall<void*>(gso(c), 0x30) : nullptr; }   // GSO ? GSO->+30h : 0
 void set_animation(void* c, U32 anim, U32 a, U32 b) { vcall<void, U32, U32, U32>(c, 0x9C, anim, a, b); }
 void add_fire_forget(void* c, U32 anim, U32 a) { vcall<void, U32, U32>(c, 0xA0, anim, a); }
-double u32_to_x87(U32 v) { return static_cast<double>(v); }   // fild dword; fadd 2^32 if negative == unsigned value
+// L3 t1 a2 (writing rule): field access in the FP functions. The recipe is /Ob0, so the w4_native.hpp accessors are
+// real calls (a float result held across one is a 4-byte x87 spill); `at` is __forceinline (honoured under /Ob0), so a
+// field is a direct memory operand as in the original.
+template <class T> __forceinline T& at(void* o, U32 off) { return *reinterpret_cast<T*>(static_cast<U8*>(o) + off); }
+// A float whose bits the original copies with integer moves (mov to a stack slot) and later reads as an x87 memory
+// operand: kept as its U32 bits, widened only at the use.
+__forceinline long double fbits(U32 bits) { float f; std::memcpy(&f, &bits, 4); return f; }
+// 0063C0E0 CSWCObject::GetAnimationLength (RET 4) leaves its result in ST0 (1.0f, or the anim base's +38h virtual).
+// creature.hpp declares it `float`; it is called through its real return register as `double` (replaces the inline-asm
+// helper w4c::anim_length_st0 of w4-creature_ai.obj, a CALL inside __asm); every use multiplies it at once.
+__forceinline double anim_length_0063c0e0(void* o, U32 anim) {
+    return reinterpret_cast<double(__fastcall*)(void*, void*, U32)>(reinterpret_cast<void*>(&kotor_fastcall_0063c0e0))(o, nullptr, anim);
+}
 // 2DA predicate shape shared by AnimationPause/Overlay/Attack/FireAndForget: anim base slot +E0h translates the
 // id, then animations.2da ([[rules]+B8h]+3Ch) column `column` must be non-zero.
 U32 anim_table_flag(void* o, U32 anim_arg, U32 column) {
@@ -82,8 +97,10 @@ extern "C" U32 __fastcall kotor_fastcall_0063c610(void* o, void*, std::uint16_t*
     I32 remaining = static_cast<I32>(total - elapsed);                                       // 0063C70C..0063C70E
     if (remaining < 0x32) remaining = 0x32;                                                  // 0063C710..0063C71E
     *duration = static_cast<U32>(remaining);                                                 // 0063C730
-    *speed = static_cast<float>(u32_to_x87(total) * static_cast<double>(lf(lp(o, 0x5C), 0x14)) /
-                                static_cast<double>(remaining));                             // 0063C72C..0063C753
+    // 0063C72C..0063C753: fild total (+2^32 if negative: the unsigned value) ; fmul dword [q+14h] ; fild remaining
+    // (signed) ; fdivp ; fstp dword [speed].
+    *speed = static_cast<float>(static_cast<long double>(total) * at<float>(lp(o, 0x5C), 0x14) /
+                                static_cast<long double>(remaining));
     return 1;
 }
 
@@ -101,7 +118,7 @@ extern "C" void __fastcall kotor_fastcall_0063c9c0(void* o, void*) {
     U8* last = B(lp(o, 0x5C)) + (count - 1u) * 0x1C;                                         // 0063CA3D..0063CAA7
     sw(last, 0x00, 0);
     const std::uint16_t idle = 0x2710; std::memcpy(last + 4, &idle, 2);
-    sw(last, 0x08, 0); sw(last, 0x0C, 0); sw(last, 0x10, 0x1F4); sf(last, 0x14, 1.0f); sw(last, 0x18, 0);
+    sw(last, 0x08, 0); sw(last, 0x0C, 0); sw(last, 0x10, 0x1F4); sw(last, 0x14, 0x3F800000u); sw(last, 0x18, 0); // 0063CA95 mov dword, 3F800000h (1.0f)
     sb(o, 0x60, static_cast<U8>(count - 1));                                                 // 0063CAAB
 }
 
@@ -123,11 +140,15 @@ extern "C" void __fastcall kotor_fastcall_0060ba10(void* c, void*) {
     }
     if (target == nullptr) return;                                                           // 0060BA46..0060BA4C
     W4Vector d;                                                                              // [esp+8]
-    d.x = static_cast<float>(static_cast<double>(lf(target, 0x24)) - lf(c, 0x24));          // 0060BA4E..0060BA54
-    d.y = static_cast<float>(static_cast<double>(lf(target, 0x28)) - lf(c, 0x28));          // 0060BA58..0060BA5E
-    const double dz = static_cast<double>(lf(target, 0x2C)) - lf(c, 0x2C);                  // 0060BA62..0060BA65 (ST)
-    const double sum = (static_cast<double>(d.x) * d.x + static_cast<double>(d.y) * d.y) + dz * dz; // 0060BA68..0060BA7E
-    if (jcc_jne(sum, 1e-5f, 0x41)) return;                                                   // 0060BA80..0060BA8D
+    // L3 t1 a2 (writing rule): d.x / d.y are the original's fstp dword [esp+8] / [esp+0Ch], reloaded as fmul operands.
+    // Each is one float conversion (the original store); the float is then copied into d unchanged.
+    const float dx = static_cast<float>(static_cast<long double>(at<float>(target, 0x24)) - at<float>(c, 0x24)); // 0060BA4E..0060BA54
+    const float dy = static_cast<float>(static_cast<long double>(at<float>(target, 0x28)) - at<float>(c, 0x28)); // 0060BA58..0060BA5E
+    const long double dz = static_cast<long double>(at<float>(target, 0x2C)) - at<float>(c, 0x2C);               // 0060BA62..0060BA65 (ST)
+    const long double sum = (static_cast<long double>(dx) * dx + static_cast<long double>(dy) * dy) + dz * dz;    // 0060BA68..0060BA7E
+    if (!(sum > 1e-5f)) return;                                                              // 0060BA80..0060BA8D (test 41h ; jne)
+    d.x = dx;
+    d.y = dy;
     d.z = 0.0f;                                                                              // 0060BA99
     W4Vector n;
     kotor_fastcall_0060b3c0(c, nullptr, vector_normalized_004ab180(&n, &d));                 // 0060BA8F..0060BAAC
@@ -140,29 +161,28 @@ extern "C" void __fastcall kotor_fastcall_0060bdf0(void* c, void*, W4Vector* tar
     if (delta < remaining) {                                                                 // 0060BDFD..0060BDFF
         const U32 left = remaining - delta;                                                  // 0060BE01
         sw(c, 0x1E8, left);                                                                  // 0060BE03
-        const double dx = static_cast<double>(lf(c, 0x1DC)) - lf(c, 0x24);                   // 0060BE09..0060BE0F
-        const double dy = static_cast<double>(lf(c, 0x1E0)) - lf(c, 0x28);                  // 0060BE12..0060BE18
-        const float dzf = static_cast<float>(static_cast<double>(lf(c, 0x1E4)) - lf(c, 0x2C)); // 0060BE1B..0060BE24
-        const float dyy = static_cast<float>(dy * dy);                                       // 0060BE28..0060BE2C
-        const double dxx = dx * dx;                                                          // 0060BE32..0060BE34
-        const double sum = (static_cast<double>(dzf) * dzf + dxx) + dyy;                     // 0060BE36..0060BE40
-        if (jcc_jp(sum, 1e-5f, 0x05) && !jcc_je(static_cast<double>(dyy) + dxx, 36.0f, 0x01)) { // 0060BE44..0060BE84
+        // L3 t1 a2 (writing rule): register values long double; each fstp dword an explicit (float).
+        const long double dx = static_cast<long double>(at<float>(c, 0x1DC)) - at<float>(c, 0x24);   // 0060BE09..0060BE0F
+        const long double dy = static_cast<long double>(at<float>(c, 0x1E0)) - at<float>(c, 0x28);   // 0060BE12..0060BE18
+        const long double dzf = static_cast<float>(static_cast<long double>(at<float>(c, 0x1E4)) - at<float>(c, 0x2C)); // 0060BE1B..0060BE24 fstp [esp+1Ch]
+        const long double dyy = static_cast<float>(dy * dy);                                 // 0060BE28..0060BE2C fstp [esp+4]
+        const long double dxx = dx * dx;                                                     // 0060BE32..0060BE34
+        const long double sum = (dzf * dzf + dxx) + dyy;                                     // 0060BE36..0060BE40
+        // 0060BE44..0060BE4F fcomp 1e-5 ; test 5 ; jp (snap when sum < 1e-5) ; 0060BE71..0060BE84 fld dyy ; fadd dxx ;
+        // fcomp 36 ; test 1 ; je (snap when >= 36).
+        if (!(sum < 1e-5f) && !(dyy + dxx >= 36.0f)) {
             snap = false;
-            const double frac = u32_to_x87(left) / u32_to_x87(left + delta);                 // 0060BE86..0060BEAC
-            const double ax = static_cast<double>(lf(c, 0x24)) - target->x;                  // 0060BEB7..0060BEBA
-            const double ay = static_cast<double>(lf(c, 0x28)) - target->y;                  // 0060BEBC..0060BEBF
-            const float azf = static_cast<float>(static_cast<double>(lf(c, 0x2C)) - target->z); // 0060BEC2..0060BEC8
-            const float xf = static_cast<float>(ax * frac);                                  // 0060BECC..0060BED0
-
-
-
-            const double yfrac = ay * frac;                                                  // 0060BED4
-
-            const float zf = static_cast<float>(static_cast<double>(azf) * frac);            // 0060BED6..0060BEDC
+            const long double frac = static_cast<long double>(left) / static_cast<long double>(left + delta); // 0060BE86..0060BEAC
+            const long double ax = static_cast<long double>(at<float>(c, 0x24)) - target->x;  // 0060BEB7..0060BEBA
+            const long double ay = static_cast<long double>(at<float>(c, 0x28)) - target->y;  // 0060BEBC..0060BEBF
+            const long double azf = static_cast<float>(static_cast<long double>(at<float>(c, 0x2C)) - target->z); // 0060BEC2..0060BEC8
+            const long double xf = static_cast<float>(ax * frac);                            // 0060BECC..0060BED0
+            const long double yfrac = ay * frac;                                             // 0060BED4
+            const long double zf = static_cast<float>(azf * frac);                           // 0060BED6..0060BEDC
             W4Vector out;                                                                    // [esp+14h]
-            out.x = static_cast<float>(static_cast<double>(xf) + target->x);                 // 0060BEE0..0060BEE6
+            out.x = static_cast<float>(xf + target->x);                                      // 0060BEE0..0060BEE6
             out.y = static_cast<float>(yfrac + target->y);                                   // 0060BEEA..0060BEED
-            out.z = static_cast<float>(static_cast<double>(zf) + target->z);                 // 0060BEF3..0060BEFC
+            out.z = static_cast<float>(zf + target->z);                                      // 0060BEF3..0060BEFC
             vcall<void, W4Vector*>(c, 0x8C, &out);                                           // 0060BEFA..0060BF00 SetPosition
         }
     }
@@ -172,58 +192,22 @@ extern "C" void __fastcall kotor_fastcall_0060bdf0(void* c, void*, W4Vector* tar
     }
 }
 
-// ---- lane x87-trig (2026-10-24): 00611E22..00611E70 kept as the original x87 sequences ----
-// The fcos results (00611E24, 00611E52) and the fsin result (00611E56) feed fcompp / fmul / fsub / fadd with their
-// 64-bit significands; w4::x87_fcos / x87_fsin rounded them to double first. The turn angle itself (00611E0A..
-// 00611E1C: fild/fadd 2^32, fmulp, fmul dword) is a PC-53 result that the double `angle` carries exactly.
-// Precondition as in the original: PC = 53 bits, RC = nearest. No CALL inside the asm; extern "C" __cdecl.
-// 00611E22..00611E2C: fld st(0); fcos; fld dword [esp+40h]; fcompp; fnstsw ax -> AX (the angle copy stays in ST0
-// in the original and is popped here; the caller keeps it as `angle`).
-extern "C" __declspec(noinline) unsigned __cdecl x87trig_00611e24(double angle, const float* dotf) {
-    unsigned short status;
-    __asm {
-        fld qword ptr angle
-        fld st(0)                              // 00611E22
-        fcos                                   // 00611E24
-        mov eax, dotf
-        fld dword ptr [eax]                    // 00611E26 [esp+40h]
-        fcompp                                 // 00611E2A
-        fnstsw ax                              // 00611E2C
-        mov status, ax
-        fstp st(0)
-    }
-    return status;
+// ---- L3 t1 (2026-10-24): 00611850 in plain C++ (replaces the x87-trig a2 helpers x87trig_00611e24 / x87trig_00611e52) ----
+namespace {
+// (field access: `at`, defined at the top of the file)
+// 004AA0F0 Yaw(Vector*) leaves its fmul result in ST0 (a PC-53 value: fpatan * [00742EF8]). creature.hpp declares it
+// `float`, which would let the compiler treat the unrounded ST0 as an exact float; it is called here through its real
+// return width (double), so an explicit (float) is the original's fstp dword and an arithmetic use sees the full value.
+__forceinline double yaw_004aa0f0(const void* v) {
+    return reinterpret_cast<double(__cdecl*)(const void*)>(reinterpret_cast<void*>(&kotor_m15a_yaw_004aa0f0))(v);
 }
-// 00611E4C..00611E70: a = angle * sign; x = cos(a) * o.x - sin(a) * [c+34h]; y = sin(a) * o.x + cos(a) * [c+34h].
-extern "C" __declspec(noinline) void __cdecl x87trig_00611e52(double angle, const float* sign, const float* orientation,
-                                                             const void* c, float* x, float* y) {
-    __asm {
-        fld qword ptr angle
-        mov eax, sign
-        fmul dword ptr [eax]                   // 00611E4C [esp+0Ch]
-        fld st(0)                              // 00611E50
-        fcos                                   // 00611E52
-        fxch st(1)                             // 00611E54
-        fsin                                   // 00611E56
-        mov eax, orientation
-        mov ecx, c
-        fld st(1)                              // 00611E58
-        fmul dword ptr [eax]                   // 00611E5A [edi]
-        fld st(1)                              // 00611E5C
-        fmul dword ptr [ecx + 34h]             // 00611E5E
-        fsubp st(1), st                        // 00611E61 DE E9
-        mov edx, x
-        fstp dword ptr [edx]                   // 00611E63 [esp+14h]
-        fmul dword ptr [eax]                   // 00611E67
-        fxch st(1)                             // 00611E69
-        fmul dword ptr [ecx + 34h]             // 00611E6B
-        faddp st(1), st                        // 00611E6E DE C1
-        mov edx, y
-        fstp dword ptr [edx]                   // 00611E70 [esp+18h]
-    }
-}
+}  // namespace
 
 // 00611850 CSWCCreature::RotateCreatureToOrientation(Vector* desired) (RET 4).
+// L3 t1: PLAN-v3 writing rule. Values the original keeps on the x87 stack are long double (the turn angle, both
+// two-live 64-bit cos/sin results of 00611E52/00611E56, the yaw difference); each fstp/fst dword is an explicit
+// (float); comparisons are spelled from the fnstsw masks (ST0 against the operand: test 41h;jne == !(a > b),
+// test 5;jp == !(a < b), test 1;jne == !(a >= b), test 41h;jp == !(a <= b), test 41h;je == a > b).
 extern "C" void __fastcall kotor_fastcall_00611850(void* c, void*, W4Vector* desired) {
     if (gso(c) != nullptr && vcall<void*>(gso(c), 0x30) != nullptr) {                        // 00611856..00611873
         if (kotor_fastcall_005b4880(screature(c), nullptr) != 0) return;                     // 00611879..0061189F IsDebilitated
@@ -249,42 +233,53 @@ extern "C" void __fastcall kotor_fastcall_00611850(void* c, void*, W4Vector* des
     if (combat_turn) {
         void* sc = kotor_m15a_creature_get_server_creature_0060fb20(c, nullptr);             // 00611A01..00611A08
         W4Vector current; std::memcpy(&current, B(sc) + 0x9C, 12);                           // 00611A0A..00611A25
-        const float yaw_desired = static_cast<float>(yaw_st0(desired));                      // 00611A24..00611A2E (fstp to arg slot)
-        double d = static_cast<double>(yaw_desired) - yaw_st0(&current);                     // 00611A32..00611A3C
-        float slot = static_cast<float>(d);                                                  // 00611A49
-        if (!jcc_jne(d, 180.0f, 0x41)) { d -= 360.0f; slot = static_cast<float>(d); }        // 00611A43..00611A5A
-        if (!jcc_jp(d, -180.0f, 0x05)) { d += 360.0f; slot = static_cast<float>(d); }        // 00611A5E..00611A71
-        const double turn = u32_to_x87(lw(c, 0x44)) * static_cast<double>(kotor_cell_turn_rate_007a25f4); // 00611A7B..00611A92/00611ABA
-        if (!jcc_jp(d, 0.0f, 0x05)) {                                                        // 00611A75..00611A83 (d < 0)
-            const double limit = -turn;                                                      // 00611A98
-            if (!jcc_jp(slot, limit, 0x05)) slot = static_cast<float>(limit);                // 00611A9A..00611AA7
+        // 00611A29..00611A3C: Yaw(desired) -> fstp dword [esp+40h] ; Yaw(&current) ; fsubr dword [esp+44h].
+        const long double yaw_desired = static_cast<float>(yaw_004aa0f0(desired));
+        long double d = yaw_desired - static_cast<long double>(yaw_004aa0f0(&current));
+        // [esp+3Ch] `slot` is the stored float itself (reloaded by fld at 00611A9A/00611AC0, pushed by mov at 00611ACF).
+        float slot = static_cast<float>(d);                                                  // 00611A49 fst dword [esp+3Ch]
+        if (d > 180.0f) { d = d - 360.0f; slot = static_cast<float>(d); }                    // 00611A43..00611A5A (test 41h ; jne)
+        if (d < -180.0f) { d = d + 360.0f; slot = static_cast<float>(d); }                   // 00611A5E..00611A71 (test 5 ; jp)
+        // 00611A7B..00611A92 / 00611AAD..00611ABA: fild [esi+44h] (+2^32 if negative: the unsigned value) ; fmul [007A25F4].
+        const long double turn = static_cast<long double>(at<U32>(c, 0x44)) * kotor_cell_turn_rate_007a25f4;
+        // Both clamps reach the one store 00611AA7 fstp dword [esp+3Ch] (the -turn path falls into it, the +turn path
+        // jumps to it from 00611ACB), so the clamp value is selected first and converted once.
+        long double clamp = turn;
+        bool clamped;
+        if (d < 0.0f) {                                                                      // 00611A75..00611A83 (fcomp 0 ; test 5 ; jp)
+            clamp = -turn;                                                                   // 00611A98 fchs
+            clamped = slot < clamp;                                                          // 00611A9A..00611AA5 (test 5 ; jp)
         } else {
-            if (jcc_je(slot, turn, 0x41)) slot = static_cast<float>(turn);                   // 00611AC0..00611ACB
+            clamped = slot > clamp;                                                          // 00611AC0..00611ACB (test 41h ; je)
         }
+        if (clamped) slot = static_cast<float>(clamp);                                       // 00611AA7 fstp dword [esp+3Ch]
         W4Quaternion q;                                                                      // [esp+28h]
-        yaw_pitch_roll_004acac0(&q, slot, 0.0f, 0.0f);                                       // 00611ACF..00611AE2
+        yaw_pitch_roll_004acac0(&q, slot, 0.0f, 0.0f);                                       // 00611ACF..00611AE2 (push the stored word)
         W4Vector rotated;                                                                    // [esp+10h]
         quaternion_rotate_004a9bb0(&rotated, &q, &current);                                  // 00611AEA..00611AF0
-        w1x_object_set_orientation_004cd170(sc, nullptr, &rotated);                                      // 00611AF8..00611AFF CSWSObject::SetOrientation
+        w1x_object_set_orientation_004cd170(sc, nullptr, &rotated);                          // 00611AF8..00611AFF CSWSObject::SetOrientation
         vcall<void, W4Vector*>(c, 0x88, &rotated);                                           // 00611B04..00611B0D
         return;
     }
     // 00611B1B..00611EB7: turn toward `desired` in the horizontal plane.
     W4Vector* orientation = V(c, 0x30);                                                      // edi
-    W4Vector flat = {desired->x, desired->y, 0.0f};                                          // 00611B22..00611B40
+    W4Vector flat;                                                                           // 00611B22..00611B40 (dword copies)
+    std::memcpy(&flat, desired, 8);
+    flat.z = 0.0f;
     W4Vector n_tmp;
     const W4Vector* nn = vector_normalized_004ab180(&n_tmp, &flat);                          // 00611B48
-    W4Vector n = *nn;                                                                        // 00611B4D..00611B6B (stored over `flat`)
+    W4Vector n;
+    std::memcpy(&n, nn, 12);                                                                 // 00611B4D..00611B6B (stored over `flat`)
     W4Vector cross_out;
     const W4Vector* cr = vector_cross_004ab210(&cross_out, orientation, &n);                 // 00611B87
-    float sign = 1.0f;                                                                       // 00611B98
-    if (jcc_jne(cr->z, 0.0f, 0x01)) sign = -1.0f;                                            // 00611B8C..00611BA7
-    const double dot = (static_cast<double>(n.y) * orientation->y + static_cast<double>(n.z) * orientation->z) +
-                       static_cast<double>(n.x) * orientation->x;                            // 00611BAF..00611BC6
-    const float dotf = static_cast<float>(dot);                                              // 00611BC8 (arg slot)
-    const float yaw_o = static_cast<float>(yaw_st0(orientation));                            // 00611BCC..00611BD5
-    const double yaw_diff = std::fabs(static_cast<double>(yaw_o) - yaw_st0(&n));             // 00611BD9..00611BE6
-    if (!jcc_jp(dotf, 1.0f, 0x05) && !jcc_jne(yaw_diff, 15.0f, 0x41)) {                      // 00611BE8..00611C08
+    long double sign = 1.0f;                                                                 // 00611B98 mov dword [esp+0Ch], 3F800000
+    if (!(cr->z >= 0.0f)) sign = -1.0f;                                                      // 00611B8C..00611BA7 (test 1 ; je)
+    // 00611BAF..00611BC8: (n.y*o.y + n.z*o.z) + n.x*o.x -> fstp dword [esp+44h].
+    const long double dotf = static_cast<float>((static_cast<long double>(n.y) * orientation->y + static_cast<long double>(n.z) * orientation->z) +
+                                                static_cast<long double>(n.x) * orientation->x);
+    const long double yaw_o = static_cast<float>(yaw_004aa0f0(orientation));                // 00611BCC..00611BD5 fstp dword [esp+14h]
+    const long double yaw_diff = fabs(yaw_o - static_cast<long double>(yaw_004aa0f0(&n)));   // 00611BDA..00611BE6 fsubr ; fabs
+    if (dotf < 1.0f && yaw_diff > 15.0f) {                                                   // 00611BE8..00611C08 (test 5 ; jp / test 41h ; jne)
         const std::uint16_t anim = lh(c, 0x48);                                              // 00611C0E
         const bool turnable = anim == 0x2710 || anim == 0x2711 || anim == 0x2746 || anim == 0x2745 ||
                               (anim >= 0x2736 && anim <= 0x273A) || anim == 0x27AA || anim == 0x27AB || anim == 0x272E;
@@ -292,7 +287,7 @@ extern "C" void __fastcall kotor_fastcall_00611850(void* c, void*, W4Vector* des
             if (anim == 0x2746 || anim == 0x2745)                                            // 00611C5E..00611C68
                 kotor_m15a_object_abort_fire_forget_animation_0063cad0(c, nullptr, 0);       // 00611C6A..00611C6E
             const std::uint16_t now = lh(c, 0x48);                                           // 00611C82
-            const U32 turn_anim = jcc_jp(sign, 0.0f, 0x05) ? 0x16Fu : 0x170u;                // 00611C73..00611C86
+            const U32 turn_anim = !(sign < 0.0f) ? 0x16Fu : 0x170u;                          // 00611C73..00611C86 (test 5 ; jp)
             const bool standing = now == 0x2710 || (now >= 0x2736 && now <= 0x273A) || now == 0x27AA ||
                                   now == 0x27AB || now == 0x272E;
             if (standing) {                                                                  // 00611CE2 / 00611D82
@@ -305,22 +300,30 @@ extern "C" void __fastcall kotor_fastcall_00611850(void* c, void*, W4Vector* des
             }
         }
     }
-    // 00611DC2..00611E04: turn rate factor.
-    double rate = (1.0 - static_cast<double>(dotf)) * 3.0;                                   // 00611DC8..00611DD2
-    if (lh(c, 0x48) == 0x2714) rate = rate + rate;                                           // 00611DC2/00611DD8..00611DDC
-    if (!jcc_jp(rate, 0.55f, 0x41)) rate = static_cast<double>(0.55f);                       // 00611DDE..00611DED
-    else if (!jcc_jne(rate, 1.0f, 0x01)) rate = 1.0;                                         // 00611DF5..00611E04
-    const double angle = rate * u32_to_x87(lw(c, 0x44)) * static_cast<double>(0.004f);      // 00611E0A..00611E1C
+    // 00611DC2..00611E04: fld 1.0 ; fsub [esp+40h] (dotf) ; fmul [00740C84] 3 ; doubled for anim 2714h ; clamp.
+    long double rate = (1.0f - dotf) * 3.0f;
+    if (lh(c, 0x48) == 0x2714) rate = rate + rate;                                           // 00611DD8..00611DDC fld st(0) ; faddp
+    if (rate <= 0.55f) rate = 0.55f;                                                         // 00611DDE..00611DED (fcom ; test 41h ; jp)
+    else if (rate >= 1.0f) rate = 1.0f;                                                      // 00611DF5..00611E04 (fcom ; test 1 ; jne)
+    // 00611E0A..00611E1C: fild [esi+44h] (+2^32 if negative) ; fmulp ; fmul [0074F4EC] 0.004f.
+    const long double angle = rate * static_cast<long double>(at<U32>(c, 0x44)) * 0.004f;
     W4Vector out;                                                                            // [esp+14h]
-    if ((x87trig_00611e24(angle, &dotf) & 0x0100u) == 0) {                                  // 00611E22..00611E31 test ah,1; jne
-        out = *desired;                                                                      // 00611E33..00611E46
+    // 00611E22..00611E31: fld st(0) ; fcos ; fld dotf ; fcompp ; test 1 ; jne (rotate unless dotf >= cos(angle)).
+    if (dotf >= cos(angle)) {
+        std::memcpy(&out, desired, 12);                                                      // 00611E33..00611E46
     } else {
-        x87trig_00611e52(angle, &sign, &orientation->x, c, &out.x, &out.y);                  // 00611E4C..00611E70 (x87)
+        // 00611E4C..00611E70: a = angle * sign ; cos(a) and sin(a) both live (two-live site) ;
+        // x = cos*o.x - sin*o.y -> fstp dword [esp+14h] ; y = sin*o.x + cos*o.y -> fstp dword [esp+18h].
+        const long double a = angle * sign;
+        const long double ca = cos(a);
+        const long double sa = sin(a);
+        out.x = static_cast<float>(ca * orientation->x - sa * at<float>(c, 0x34));
+        out.y = static_cast<float>(sa * orientation->x + ca * at<float>(c, 0x34));
     }
     out.z = 0.0f;                                                                            // 00611E7E
     W4Vector norm;
     const W4Vector* r = vector_normalized_004ab180(&norm, &out);                             // 00611E74..00611E86
-    out = *r;                                                                                // 00611E8B..00611E9D
+    std::memcpy(&out, r, 12);                                                                // 00611E8B..00611E9D
     vcall<void, W4Vector*>(c, 0x88, &out);                                                   // 00611EA4..00611EAB SetOrientation
 }
 
@@ -369,8 +372,10 @@ extern "C" void __fastcall kotor_fastcall_0061a670(void* c, void*) {
     if (kotor_m15a_object_animation_looping_0063c300(c, nullptr, lh(c, 0x48)) != 1) return;  // 0061A6D5..0061A6E6
     U32 anim_slot = 0;          // [esp+8]: only the low word is written by the callee (high word: see receipt)
     U32 data = 0, duration = 0; // [esp+0Ch], [esp+18h]
-    float speed = 0.0f;         // [esp+10h]
-    if (kotor_fastcall_0063c610(c, nullptr, reinterpret_cast<std::uint16_t*>(&anim_slot), &speed, &duration, &data) != 1) return; // 0061A6EC..0061A70A
+    // [esp+10h]: the callee's float; the original passes its bits on with `mov eax, [esp+14h] ; push eax` (0061A909),
+    // no x87 (L3 t1 a2: was a float local copied through fld/fstp by the f_bits call, which quiets a signalling NaN).
+    U32 speed = 0;
+    if (kotor_fastcall_0063c610(c, nullptr, reinterpret_cast<std::uint16_t*>(&anim_slot), reinterpret_cast<float*>(&speed), &duration, &data) != 1) return; // 0061A6EC..0061A70A
     const std::uint16_t anim = static_cast<std::uint16_t>(anim_slot);
     void* free_a = nullptr;     // ebp
     void* free_b = nullptr;     // [esp+14h]
@@ -418,7 +423,7 @@ extern "C" void __fastcall kotor_fastcall_0061a670(void* c, void*) {
     if (kotor_fastcall_0063c410(c, nullptr, anim_slot) != 0)                                 // 0061A8E6..0061A8F4
         vcall<void, U32, U32>(lp(c, 0x68), 0x44, anim_slot, 1);                              // 0061A8FB..0061A902
     else
-        vcall<void, U32, U32, U32, U32>(lp(c, 0x68), 0x54, anim_slot, f_bits(speed), out_of_place ? 3u : 1u, 0); // 0061A907..0061A91D
+        vcall<void, U32, U32, U32, U32>(lp(c, 0x68), 0x54, anim_slot, speed, out_of_place ? 3u : 1u, 0); // 0061A907..0061A91D
     sw(c, 0x64, duration);                                                                   // 0061A920..0061A92A
     if (data != 0) kotor_fastcall_00617470(c, nullptr, pt(data), 1);                         // 0061A92D..0061A934
     kotor_fastcall_0063c9c0(c, nullptr);                                                     // 0061A939..0061A93B
@@ -444,25 +449,32 @@ extern "C" void __fastcall kotor_fastcall_00615960(void* c, void*) {
         vcall<void, U32>(lp(c, 0x68), 0xD0, 0);                                              // 00615A0E..00615A15
         return;
     }
-    float scale = lf(lp(c, 0x21C), 0x5C);                                                    // 00615A1F..00615A2E [esp+8]
+    // L3 t1 a2 (writing rule). [esp+8] `scale` is copied with integer moves (00615A25..00615A2E, 00615BBE/00615C39
+    // for the walk/run speed) and read as an fdiv/fdivr memory operand: kept as its bits. Each test is
+    // fld x ; fcomp 0 ; test ah,M ; jcc: test 41h;jne falls through for x > 0, test 5;jp for x < 0, test 44h;jp for
+    // x == 0 (NaN takes the jump in all three).
+    U32 scale = lw(lp(c, 0x21C), 0x5C);                                                      // 00615A1F..00615A2E [esp+8]
     (void)kotor_fastcall_005ed8b0(client_app(), nullptr);                                    // 00615A28..00615A35 (unused)
     if (lb(c, 0x2D4) & 1) {                                                                  // 00615A3A..00615A41
         void* stats = lp(c, 0x21C);
-        if (!jcc_jne(lf(c, 0x3B0), lf(stats, 0x60), 0x41)) sw(c, 0x3B0, lw(stats, 0x60));     // 00615A43..00615A5C
+        if (at<float>(c, 0x3B0) > at<float>(stats, 0x60)) sw(c, 0x3B0, lw(stats, 0x60));     // 00615A43..00615A5C (test 41h ; jne)
     }
-    const auto fwd = [&] { return static_cast<double>(lf(c, 0x3B0)); };
-    const auto side = [&] { return static_cast<double>(lf(c, 0x3B4)); };
-    auto play = [&](U32 anim, double value) {
-        sw(c, 0x3BC, anim); sf(c, 0x4C, static_cast<float>(value)); set_animation(c, anim, 0, 0);
-    };
-    const double inv = -1.0 / static_cast<double>(scale);                                    // fld [-1]; fdiv [esp+8]
-    // Each test is fld x; fcomp 0; test ah,M; jcc (see dis/00615960.asm).
-    if (!jcc_jne(fwd(), 0.0f, 0x41) && jcc_je(side(), 0.0f, 0x41)) { play(0x2776, side() / scale); return; }   // 00615A62..00615A86 -> 00615D8B
-    if (!jcc_jne(fwd(), 0.0f, 0x41) && !jcc_jp(side(), 0.0f, 0x05)) { play(0x2777, inv * side()); return; }     // 00615A8C..00615AB0 -> 00615AB2
-    if (!jcc_jne(fwd(), 0.0f, 0x41) && !jcc_jp(side(), 0.0f, 0x44)) {                                           // 00615AE6..00615B0E
+    // The eight tests select the animation (each test re-reads +3B0h / +3B4h); 2776h and 2777h are reached from two
+    // tests each and share one store (00615D8B / 00615AB2), as in the original.
+    U32 play = 0;                                                                            // 0: stand (00615E0D)
+    if (at<float>(c, 0x3B0) > 0.0f && at<float>(c, 0x3B4) > 0.0f) play = 0x2776;            // 00615A62..00615A86 -> 00615D8B
+    else if (at<float>(c, 0x3B0) > 0.0f && at<float>(c, 0x3B4) < 0.0f) play = 0x2777;       // 00615A8C..00615AB0 -> 00615AB2
+    else if (at<float>(c, 0x3B0) > 0.0f && at<float>(c, 0x3B4) == 0.0f) play = 1;           // 00615AE6..00615B0E -> 00615B14
+    else if (at<float>(c, 0x3B0) == 0.0f && at<float>(c, 0x3B4) < 0.0f) play = 0x2779;      // 00615C8D..00615CB1 -> 00615CB3
+    else if (at<float>(c, 0x3B0) == 0.0f && at<float>(c, 0x3B4) > 0.0f) play = 0x2778;      // 00615CE7..00615D0B -> 00615D0D
+    else if (at<float>(c, 0x3B0) < 0.0f && at<float>(c, 0x3B4) > 0.0f) play = 0x2777;       // 00615D3B..00615D5F -> 00615AB2
+    else if (at<float>(c, 0x3B0) < 0.0f && at<float>(c, 0x3B4) < 0.0f) play = 0x2776;       // 00615D65..00615D89 -> 00615D8B
+    else if (at<float>(c, 0x3B0) < 0.0f && at<float>(c, 0x3B4) == 0.0f) play = 0x2714;      // 00615DB9..00615DDD -> 00615DDF
+    if (play == 1) {
         // 00615B14..00615C8C: walk or run forward.
-        (void)kotor_m15e_creature_get_pause_ready_animation_0060f020(c, nullptr);                                // 00615B19 (overwritten)
-        const bool run = !jcc_jp(static_cast<double>(kotor_cell_drive_run_ratio_007a22f4) * scale, fwd(), 0x05); // 00615B1E..00615B39
+        (void)kotor_m15e_creature_get_pause_ready_animation_0060f020(c, nullptr);            // 00615B19 (overwritten)
+        // 00615B1E..00615B39: fld [007A22F4] ; fmul [scale] ; fcomp [esi+3B0h] ; test 5 ; jp (run when ratio*scale < fwd).
+        const bool run = static_cast<long double>(kotor_cell_drive_run_ratio_007a22f4) * fbits(scale) < at<float>(c, 0x3B0);
         auto injured_anim = [&]() {
             return lw(c, 0x3A4) != 0 && kotor_fastcall_00614b60(c, nullptr) != 0 &&
                    !(lb(kotor_fastcall_005ed700(client_app(), nullptr), 0x6D) == 5 &&
@@ -470,29 +482,39 @@ extern "C" void __fastcall kotor_fastcall_00615960(void* c, void*) {
         };
         U32 anim;
         if (run) {
-            anim = injured_anim() ? 0x276Eu : ((lb(c, 0x2D4) & 1) ? 0x2795u : 0x2714u);                          // 00615B4E..00615BAF
-            sb(c, 0x3E0, 1);                                                                                     // 00615BB7
-            scale = lf(lp(c, 0x21C), 0x64);                                                                      // 00615BB1..00615BC1
+            anim = injured_anim() ? 0x276Eu : ((lb(c, 0x2D4) & 1) ? 0x2795u : 0x2714u);      // 00615B4E..00615BAF
+            sb(c, 0x3E0, 1);                                                                 // 00615BB7
+            scale = lw(lp(c, 0x21C), 0x64);                                                  // 00615BB1..00615BC1
         } else {
-            anim = injured_anim() ? 0x276Du : ((lb(c, 0x2D4) & 1) ? 0x2795u : 0x2712u);                          // 00615BC7..00615C2A
-            sb(c, 0x3E0, 0);                                                                                     // 00615C32
-            scale = lf(lp(c, 0x21C), 0x60);                                                                     // 00615C2C..00615C3C
+            anim = injured_anim() ? 0x276Du : ((lb(c, 0x2D4) & 1) ? 0x2795u : 0x2712u);      // 00615BC7..00615C2A
+            sb(c, 0x3E0, 0);                                                                 // 00615C32
+            scale = lw(lp(c, 0x21C), 0x60);                                                  // 00615C2C..00615C3C
         }
-        const double len = anim_length_st0(c, anim) * static_cast<double>(0.001f);                               // 00615C40..00615C48
-        const double value = fwd() / (static_cast<double>(scale) / len);                                         // 00615C53..00615C57
-        const U32 blend = lw(c, 0x3BC) == 0x276F ? 0u : 1u;                                                      // 00615C4E/00615C63..00615C70
-        sf(c, 0x4C, static_cast<float>(value));                                                                  // 00615C74
-        sw(c, 0x3BC, anim);                                                                                      // 00615C7D
-        set_animation(c, anim, blend, 0);                                                                        // 00615C72..00615C83
+        // 00615C40..00615C57: GetAnimationLength (ST0) ; fmul [0073D708] 0.001 ; fdivr [scale] ; fdivr [esi+3B0h].
+        const long double len = static_cast<long double>(anim_length_0063c0e0(c, anim)) * 0.001f;
+        const long double value = at<float>(c, 0x3B0) / (fbits(scale) / len);
+        const U32 blend = lw(c, 0x3BC) == 0x276F ? 0u : 1u;                                  // 00615C4E/00615C63..00615C70
+        at<float>(c, 0x4C) = static_cast<float>(value);                                      // 00615C74
+        sw(c, 0x3BC, anim);                                                                  // 00615C7D
+        set_animation(c, anim, blend, 0);                                                    // 00615C72..00615C83
         return;
     }
-    if (!jcc_jp(fwd(), 0.0f, 0x44) && !jcc_jp(side(), 0.0f, 0x05)) { play(0x2779, inv * side()); return; }      // 00615C8D..00615CDD
-    if (!jcc_jp(fwd(), 0.0f, 0x44) && !jcc_jne(side(), 0.0f, 0x41)) { play(0x2778, side() / scale); return; }    // 00615CE7..00615D31
-    if (!jcc_jp(fwd(), 0.0f, 0x05) && jcc_je(side(), 0.0f, 0x41)) { play(0x2777, inv * side()); return; }       // 00615D3B..00615D5F -> 00615AB2
-    if (!jcc_jp(fwd(), 0.0f, 0x05) && !jcc_jp(side(), 0.0f, 0x05)) { play(0x2776, side() / scale); return; }    // 00615D65..00615D89 -> 00615D8B
-    if (!jcc_jp(fwd(), 0.0f, 0x05) && !jcc_jp(side(), 0.0f, 0x44)) { play(0x2714, fwd() / scale); return; }     // 00615DB9..00615E03
+    // play: +3BCh = anim ; fstp dword [esi+4Ch] ; SetAnimation(anim, 0, 0) (vtable +9Ch).
+    switch (play) {
+    case 0x2777:   // 00615AB2..00615AD9: fld -1.0 ; fdiv [scale] ; fmul [esi+3B4h] ; fstp [esi+4Ch]
+        sw(c, 0x3BC, 0x2777); at<float>(c, 0x4C) = static_cast<float>(-1.0f / fbits(scale) * at<float>(c, 0x3B4)); set_animation(c, 0x2777, 0, 0); return;
+    case 0x2779:   // 00615CB3..00615CDA: the same form
+        sw(c, 0x3BC, 0x2779); at<float>(c, 0x4C) = static_cast<float>(-1.0f / fbits(scale) * at<float>(c, 0x3B4)); set_animation(c, 0x2779, 0, 0); return;
+    case 0x2778:   // 00615D0D..00615D2E: fld [esi+3B4h] ; fdiv [scale] ; fstp [esi+4Ch]
+        sw(c, 0x3BC, 0x2778); at<float>(c, 0x4C) = static_cast<float>(at<float>(c, 0x3B4) / fbits(scale)); set_animation(c, 0x2778, 0, 0); return;
+    case 0x2776:   // 00615D8B..00615DAC: the same form
+        sw(c, 0x3BC, 0x2776); at<float>(c, 0x4C) = static_cast<float>(at<float>(c, 0x3B4) / fbits(scale)); set_animation(c, 0x2776, 0, 0); return;
+    case 0x2714:   // 00615DDF..00615E00: fld [esi+3B0h] ; fdiv [scale] ; fstp [esi+4Ch]
+        sw(c, 0x3BC, 0x2714); at<float>(c, 0x4C) = static_cast<float>(at<float>(c, 0x3B0) / fbits(scale)); set_animation(c, 0x2714, 0, 0); return;
+    default: break;
+    }
     // 00615E0D..00615E79: stand.
-    sf(c, 0x4C, 1.0f);                                                                       // 00615E0F
+    sw(c, 0x4C, 0x3F800000u);                                                                // 00615E0F mov dword [esi+4Ch], 3F800000h (1.0f)
     const U32 ready = kotor_m15e_creature_get_pause_ready_animation_0060f020(c, nullptr);    // 00615E16
     const std::uint16_t di = static_cast<std::uint16_t>(ready);
     if (di != 0x2711 && di != 0x276C && lb(kotor_fastcall_005ed700(client_app(), nullptr), 0x6D) != 5) { // 00615E1D..00615E3D
@@ -513,23 +535,27 @@ extern "C" void __fastcall kotor_fastcall_00615e80(void* c, void*) {
     const I32 index = recovered_party_index_006349c0(kotor_fastcall_005ed8b0(client_app(), nullptr), nullptr, lw(c, 4)); // 00615F30..00615F4B
     if (index != 1 && index != 2) return;                                                    // 00615F50..00615F59
     U8* member = B(kotor_fastcall_005ed8b0(client_app(), nullptr)) + static_cast<U32>(index) * 0x88 + 0x24; // 00615F5F..00615F7A (ebp)
-    const float follow_speed = lf(member, 0x48);                                             // 00615F7E..00615F81 [esp+10h]
-    const double threshold = static_cast<double>(lf(c, 0x210)) * kotor_cell_drive_run_ratio_007a22f4; // 00615F6E..00615F93 (ST)
+    // L3 t1 a2 (writing rule). [esp+10h] follow speed: copied with `mov eax, [ebp+48h] ; mov [esp+10h], eax`
+    // (00615F7E..00615F81) and read as an fld / fdivr memory operand: kept as its bits.
+    const U32 follow_speed = lw(member, 0x48);                                               // 00615F7E..00615F81 [esp+10h]
+    // 00615F6E/00615F93: fld [esi+210h] ; fmul [007A22F4] (stays in ST until the compares).
+    const long double threshold = static_cast<long double>(at<float>(c, 0x210)) * kotor_cell_drive_run_ratio_007a22f4;
     void* stats = lp(c, 0x21C);
-    const float walk_ms = static_cast<float>(static_cast<double>(lf(stats, 0x60)) * 1000.0f); // 00615F99..00615FA2 [esp+1Ch]
-    const float run_ms = static_cast<float>(static_cast<double>(lf(stats, 0x64)) * 1000.0f);  // 00615FA6..00615FAF [esp+18h]
+    const float walk_f = static_cast<float>(static_cast<long double>(at<float>(stats, 0x60)) * 1000.0f); // 00615F99..00615FA2 fstp [esp+1Ch]
+    const long double walk_ms = walk_f;
+    const long double run_ms = static_cast<float>(static_cast<long double>(at<float>(stats, 0x64)) * 1000.0f);  // 00615FA6..00615FAF fstp [esp+18h]
     U32 anim;
-    double value;
+    long double value;
     bool apply = true;                                                                       // ebx
-    if (!jcc_jp(follow_speed, 0.0001f, 0x41)) {                                              // 00615FB3..00615FC2 (<= 0.0001)
+    if (fbits(follow_speed) <= 0.0001f) {                                                    // 00615FB3..00615FC2 (fcomp ; test 41h ; jp)
         if (lw(pt(frame_R4_005ed690(client_app(), nullptr)), 0xB4) != 0 &&
             kotor_fastcall_0063c4a0(c, nullptr, lh(c, 0x48)) != 0) {                         // 00615FC4..00615FEE
-            value = 0.0;                                                                     // 00615FF0 fld [esp+14h] (= 0)
-            anim = f_bits(walk_ms);                                                          // 00615FF4 (sic: float bits used as the id)
+            value = 0.0f;                                                                    // 00615FF0 fld [esp+14h] (= 0)
+            std::memcpy(&anim, &walk_f, 4);                                                  // 00615FF4 mov edi, [esp+1Ch] (sic: the float bits used as the id)
             apply = false;                                                                   // 00615FF8
         } else {
             anim = kotor_m15e_creature_get_pause_ready_animation_0060f020(c, nullptr);       // 00615FFF..00616001
-            value = 1.0;                                                                     // 00616006
+            value = 1.0f;                                                                    // 00616006 fld [0073D764]
         }
     } else {
         auto injured = [&]() {
@@ -537,17 +563,18 @@ extern "C" void __fastcall kotor_fastcall_00615e80(void* c, void*) {
                    !(lb(kotor_fastcall_005ed700(client_app(), nullptr), 0x6D) == 5 &&
                      c == frame_GetCharacter_006346c0(kotor_fastcall_005ed8b0(client_app(), nullptr), nullptr, 0));
         };
-        if (jcc_jne(follow_speed, threshold, 0x01)) {                                        // 00616013..00616026 (below run threshold)
+        // 00616013..00616026: fld [esp+10h] ; fcomp st(1) ; test 1 ; jne (walk when below the threshold, or NaN).
+        if (!(fbits(follow_speed) >= threshold)) {
             anim = injured() ? 0x276Du : ((lb(c, 0x2D4) & 1) ? 0x2795u : 0x2712u);           // 0061609B..006160F8
-            value = static_cast<double>(follow_speed) /
-                    (static_cast<double>(walk_ms) / (anim_length_st0(c, anim) * static_cast<double>(0.001f))); // 006160FA..0061610C
+            // 006160FA..0061610C: GetAnimationLength ; fmul 0.001 ; fdivr [esp+1Ch] ; fdivr [esp+10h].
+            value = fbits(follow_speed) / (walk_ms / (static_cast<long double>(anim_length_0063c0e0(c, anim)) * 0.001f));
         } else {
             anim = injured() ? 0x276Eu : ((lb(c, 0x2D4) & 1) ? 0x2795u : 0x2714u);           // 00616028..00616085
-            value = static_cast<double>(follow_speed) /
-                    (static_cast<double>(run_ms) / (anim_length_st0(c, anim) * static_cast<double>(0.001f))); // 00616087..0061610C
+            // 00616087..0061610C: GetAnimationLength ; fmul 0.001 ; fdivr [esp+18h] ; fdivr [esp+10h].
+            value = fbits(follow_speed) / (run_ms / (static_cast<long double>(anim_length_0063c0e0(c, anim)) * 0.001f));
         }
     }
-    sf(c, 0x4C, static_cast<float>(value));                                                  // 00616112
+    at<float>(c, 0x4C) = static_cast<float>(value);                                          // 00616112
     sw(c, 0x3BC, anim);                                                                      // 00616115
     if (apply) set_animation(c, anim, 0, 0);                                                 // 00616110..00616126
     kotor_fastcall_00611850(c, nullptr, reinterpret_cast<W4Vector*>(member + 0x4C));         // 0061612C..00616132
@@ -585,11 +612,7 @@ extern "C" void __fastcall kotor_fastcall_0063c760(void* o, void*, U32 anim, U32
         U8* grown = static_cast<U8*>(live_operator_new(capacity * 0x1C));                     // 0063C7BE..0063C7C9
         if (grown != nullptr)
             vector_constructor_iterator_00401130(grown, 0x1C, capacity, reinterpret_cast<void*>(&kotor_fastcall_0063bfd0)); // 0063C7DE..0063C7E7
-
-
-
         for (U32 i = 0; i < lh(o, 0x5A); ++i) {                                              // 0063C7F0..0063C858
-
             U8* dst = grown + i * 0x1C; const U8* src = static_cast<const U8*>(lp(o, 0x5C)) + i * 0x1C;
             std::memcpy(dst + 0x00, src + 0x00, 4);
             std::memcpy(dst + 0x04, src + 0x04, 2);                                          // word copy only
@@ -600,7 +623,11 @@ extern "C" void __fastcall kotor_fastcall_0063c760(void* o, void*, U32 anim, U32
         std::memcpy(B(o) + 0x5A, &cap16, 2);                                                 // 0063C866
         sw(o, 0x5C, ad(grown));                                                              // 0063C86B
     }
-    U32 start_day = 0, start_tick = 0;                                                       // arg1 slot [esp+30h], [esp+10h]
+    // AddWorldTimes' outputs are the `anim` argument slot [esp+30h] (reused; anim is already in ebp) and the local
+    // [esp+10h], which nothing writes before. When 004ADF50 fails (tick or delay >= ticks per day, 004ADF90) it writes
+    // neither: the original then stores the anim argument as the start day (reproduced) and stack garbage as the
+    // start tick (indeterminate; 0 here). L3 t1 a2: was start_day = 0.
+    U32 start_day = anim, start_tick = 0;                                                    // [esp+30h], [esp+10h]
     (void)kotor_fastcall_004adf50(frame_GetWorldTimer_005ed4f0(client_app(), nullptr), nullptr, day, tick, 0, delay,
                                   &start_day, &start_tick);                                  // 0063C86E..0063C899
     I32 i = static_cast<I32>(lb(o, 0x60)) - 1;                                               // 0063C89E..0063C8A2
@@ -618,7 +645,9 @@ extern "C" void __fastcall kotor_fastcall_0063c760(void* o, void*, U32 anim, U32
     sw(e, 0x08, start_day);                                                                  // 0063C96D
     sw(e, 0x0C, start_tick);                                                                 // 0063C978
     sw(e, 0x10, duration);                                                                   // 0063C983
-    sf(e, 0x14, speed);                                                                      // 0063C94F/0063C98F (float load/store: exact)
+    // 0063C94F fld dword [esp+38h] (the speed argument) ... 0063C98F fstp dword [ebx+ecx+14h]: an x87 copy (it quiets a
+    // signalling NaN), written as the widening and the one float store (L3 t1 a2: was sf(), a float held across calls).
+    at<float>(e, 0x14) = static_cast<float>(static_cast<long double>(speed));
     sw(e, 0x18, data);                                                                       // 0063C99A
     sb(o, 0x60, static_cast<U8>(lb(o, 0x60) + 1));                                           // 0063C99E
 }

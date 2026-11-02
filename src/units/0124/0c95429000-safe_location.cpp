@@ -10,7 +10,10 @@ constexpr U kDoorPad = 0x3c23d70au;     // [0073DFEC] 0.01f
 constexpr U kFloorDrop = 0x3dcccccdu;   // [0073E798] 0.1f
 constexpr double kStepBias = 0.01;      // [00743310] qword 3F847AE147AE147B
 constexpr U kRayTop = 0x447a0000u, kRayBottom = 0xc47a0000u;   // 1000.0f / -1000.0f (00581A84 / 00581AA2)
-float F(U u) { float f; std::memcpy(&f, &u, 4); return f; }
+// a2 (L3 t1): the compares are C++ on long double register values (fld dword ; fcomp dword ; fnstsw ; test ah,mask),
+// unrounded and NaN-exact: lt is the ordered less (test ah,5 -> C0 alone), not_gt the negation of the ordered greater
+// (test ah,41h -> C0 or C3 or unordered).
+long double F(U u) { float f; std::memcpy(&f, &u, 4); return f; }   // fld dword
 bool lt(U a, U b) { return F(a) < F(b); }                  // fcomp; test ah,5 -> C0 alone (ordered a < b)
 bool not_gt(U a, U b) { return !(F(a) > F(b)); }           // fcomp; test ah,41h -> C0 or C3 or unordered
 // NoNonWalkPolysInDoors per-box rejection on one axis (0050CAB4..0050CB24 pattern): both ends below the minimum, or
