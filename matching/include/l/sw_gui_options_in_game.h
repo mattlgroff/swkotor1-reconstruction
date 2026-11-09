@@ -32,6 +32,8 @@ public:
     // padding + params.
     CSWGuiBorder& GetBorder() { return *(CSWGuiBorder*)&pad_0x5c[0x10]; }
     CSWGuiBorder& GetHilight() { return *(CSWGuiBorder*)pad_0xe0; }
+    void SetFillImage(const CResRef& cImage) { m_cBorderParams.SetFillImage(cImage, 0); }
+    void SetHilightFillImage(const CResRef& cImage) { m_cHilightParams.SetFillImage(cImage, 0); }
     char pad_0x5c[0x24];
     CSWGuiBorderParams m_cBorderParams;             // 0x80 (m_cBorder + 0x14)
     char pad_0xd4[0xc];

@@ -49,6 +49,7 @@ public:
 
 class CSWGuiScriptSelect : public CSWGuiPanel {
 public:
+    void OnPanelAdded();                            // 0x48 (0x006E9B90)
     CSWGuiScriptSelect(CSWGuiManager* pManager);    // 0x006EA000
     ~CSWGuiScriptSelect();                          // 0x006E9AC0
     virtual void HandleInputEvent(int nEvent, int bDown);   // 0x3c (0x006E9BC0)

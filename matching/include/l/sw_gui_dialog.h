@@ -81,6 +81,7 @@ public:
     short m_nHeight;                                // 0x6e
 
     void PlayGuiSound(char nSound);                 // 0x0040A140
+    void PlayGuiSoundI(unsigned char nSound);       // 0x0040A140 (PlayGuiSound, unsigned argument)
     CSWGuiPanel* PopModalPanel();                    // 0x0040BE00
     void GetSafeMargins(int* pX, int* pY);          // 0x00409EE0
     static CExoString GetScreenResolutionString(int nWidth, int nHeight);  // 0x0040A3E0
@@ -231,6 +232,8 @@ public:
         };
     };
     char pad_0x20[0x34];
+    // The fill image resref (+0x40) is declared as padding.
+    const CResRef& GetFillImage() { return *(const CResRef*)&pad_0x20[0x20]; }
 };
 
 class CSWGuiBorder;
@@ -377,6 +380,7 @@ public:
     int m_bMessagePending;                          // 0xbb0
     char pad_0xbb4[0xc];
     unsigned char m_nAbilityMode;                   // 0xbc0
+    unsigned char m_nInventoryFilter;               // 0xbc1 (descriptive)
 
     void InitializeMap(); // 0x0062B0A0
     void HideLetterbox();                           // 0x0062AB90
@@ -389,6 +393,7 @@ public:
     CSWGuiInGameMap* GetMapPanel(int nPanel, int b);    // 0x0062B060
     void ShowExamineBox(unsigned long nStrRef, int bFlag);  // 0x0062D3E0
     void HideStoreGui();                            // 0x0062E4A0
+    int HideContainerGui();                         // 0x0062D510
     void SetupPauseGuiExtent(void* pExtent);        // 0x0062B100
     void HideSoloMode();                            // 0x0062E6D0
     int GetBarkBubbleVisible(int* pTop);            // 0x0062EBE0
@@ -538,6 +543,7 @@ public:
                             const CExoString& sSaveName);   // 0x005ED670
     unsigned char GetTutorialFlag(int nFlag);       // 0x005EDFF0
     void HideLoadScreen(int a, int b);              // 0x005EDA90
+    class CSWCItem* GetItemByGameObjectID(unsigned long oid);  // 0x005ED5A0
 };
 
 class CServerInfo {
@@ -576,6 +582,7 @@ public:
     CServerInfo* GetServerInfo();                   // 0x004AEC90
     CSWPartyTable* GetPartyTable();                 // 0x004AEE70
     CExoLinkedList<CSWSClient>* GetPlayerList();    // 0x004AED90
+    class CGameObjectArray* GetObjectArray();       // 0x004AED70
 };
 
 class CAppManager {

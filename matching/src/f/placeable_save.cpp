@@ -209,6 +209,7 @@ public:
 // FUNCTION: SWKOTOR 0x00586A70
 int CSWSPlaceable::SavePlaceable(CResGFF *pGFF, CResStruct *pStruct)
 {
+    CResStruct cElement;
     CResList cList;
     pGFF->WriteFieldCExoString(pStruct, m_sTag, "Tag");
     pGFF->WriteFieldCExoLocString(pStruct, *GetLocName(), "LocName");
@@ -271,7 +272,6 @@ int CSWSPlaceable::SavePlaceable(CResGFF *pGFF, CResStruct *pStruct)
     if (m_pItemRepository->m_nItemCount > 0) {
         pGFF->AddList(&cList, pStruct, "ItemList");
         for (unsigned long i = 0; i < m_pItemRepository->m_nItemCount; i++) {
-            CResStruct cElement;
             pGFF->AddListElement(&cElement, &cList, 0);
             CSWSItem *pItem = m_pItemRepository->ItemListGetItem(i);
             pGFF->WriteFieldDWORD(&cElement, pItem->m_nObjectId, "ObjectId");

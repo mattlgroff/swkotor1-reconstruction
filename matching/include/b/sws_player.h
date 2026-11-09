@@ -26,6 +26,8 @@ public:
     void ClearSpellAddDeleteLists();                            // 0x005CAC30
     void ClearFeats();                                          // 0x005CAB60
     unsigned char GetKnownSpellUsesLeft(int nClass, int nLevel); // 0x005CA070
+    int GetKnownSpell(unsigned char nList, unsigned char nLevel, unsigned char nIndex); // 0x005CA740
+    unsigned short GetNumberKnownSpells(unsigned char nList) { return (unsigned short)m_aKnownSpells[nList].num; }
 
     char pad_0x0[0x18];
     CExoArrayList<unsigned short> m_aFeats;                     // 0x18
@@ -34,7 +36,10 @@ public:
     char pad_0x3c[0x40 - 0x3c];
     CSWSActionQueueEntry m_aActionQueue[10];                    // 0x40
     CExoArrayList<CSWSCreatureVisibility*> m_aVisibility;      // 0x158
-    char pad_0x164[0x1b0 - 0x164];
+    CExoArrayList<unsigned long> m_aKnownSpells[2];             // 0x164
+    CExoArrayList<unsigned long> m_aKnownSpellsDeleted[2];      // 0x17c
+    CExoArrayList<unsigned long> m_aKnownSpellsAdded[2];        // 0x194
+    char pad_0x1ac[0x1b0 - 0x1ac];
     CExoArrayList<CSWSStats_SpellLikeAbility>* m_pSpellLikeAbilities; // 0x1b0
 };
 
@@ -59,6 +64,47 @@ public:
     unsigned long m_n150;                                       // 0x150 (name guessed)
 };
 
+// Party member entry of the player's party update list (player +0x10).
+// Descriptive name; no Mac symbol names the class.
+class CLastUpdatePartyObject {
+public:
+    CResRef m_cPortrait;                                        // 0x00
+    unsigned short m_nPortraitId;                               // 0x10
+    char pad_0x12[0x14 - 0x12];
+    int m_bUpdated;                                             // 0x14
+    char pad_0x18[0x1c - 0x18];
+    unsigned short m_nPartyState;                               // 0x1c
+    unsigned char m_n1E;                                        // 0x1e
+    char pad_0x1f[0x20 - 0x1f];
+    unsigned short m_n20;                                       // 0x20
+    char pad_0x22[0x24 - 0x22];
+    int m_n24;                                                  // 0x24
+    short m_nCurrentHitPoints;                                  // 0x28
+    short m_n2A;                                                // 0x2a
+    short m_n2C;                                                // 0x2c
+    short m_nMaxHitPoints;                                      // 0x2e
+    unsigned char m_nReputation;                                // 0x30
+    char pad_0x31[0x34 - 0x31];
+    int m_n34;                                                  // 0x34
+    unsigned char m_bPlayerCharacter;                           // 0x38
+    char pad_0x39[0x3c - 0x39];
+    unsigned long m_oidArea;                                    // 0x3c
+    float m_fX;                                                 // 0x40
+    float m_fY;                                                 // 0x44
+    char pad_0x48[0x4c - 0x48];
+    int m_bIsPC;                                                // 0x4c
+    int m_b50;                                                  // 0x50
+    int m_bLeader;                                              // 0x54
+    int m_bSingletonParty;                                      // 0x58
+    int m_n5C;                                                  // 0x5c
+    int m_bPoisoned;                                            // 0x60
+    int m_n64;                                                  // 0x64
+    short m_nForcePointsBonus;                                  // 0x68
+    short m_nMaxForcePointsBase;                                // 0x6a
+    short m_nCurrentForcePoints;                                // 0x6c
+    short m_nMaxForcePoints;                                    // 0x6e
+};
+
 // 0xc-byte entry of the client info list (dtor 0x0059EA20).
 class CSWSPlayerClientEntry {
 public:
@@ -70,6 +116,7 @@ public:
 class CSWSPlayerClientInfo {
 public:
     CSWSPlayerClientInfo() { m_bDirty = 1; m_n0 = 0; }
+    void SetFullUpdate(int bFullUpdate) { m_n0 = bFullUpdate; }  // name guessed
 
     int m_n0;                                                   // 0x00
     CExoArrayList<CSWSPlayerClientEntry> m_aEntries;            // 0x04

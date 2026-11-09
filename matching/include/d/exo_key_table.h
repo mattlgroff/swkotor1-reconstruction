@@ -561,6 +561,8 @@ public:
     CExoStringList* GetResOfType(unsigned short nType, CRes* pRes); // 0x00408c60
     CExoStringList* GetResOfType(unsigned short nType, int bOnlyBif); // 0x00407390
     int ReadRaw(CRes* pRes, int nSize, char* pBuffer);         // 0x00408e30
+    int WipeDirectory(const CExoString& sDirectory, int bFiles, int bRemoveDirectory, int bSubDirectories,
+                      int bRemoveSubDirectories);       // 0x00408e90
     int ServiceFromDirectoryRaw(CRes* pRes, int nSize, char* pBuffer);     // 0x00408080
     int ServiceFromEncapsulatedRaw(CRes* pRes, int nSize, char* pBuffer);  // 0x004082d0
     int ServiceFromImageRaw(CRes* pRes, int nSize, char* pBuffer);         // 0x00408390

@@ -716,3 +716,110 @@ Unannotated VM handlers: 0x00540550 ActionPlayAnimation/PlayAnimation (x87),
 0x0057D9D0 UnlockObject, 0x0057E8C0 UseObject, 0x0057D080 PlayAnimation (x87).
 0x005281B0 is an ebx-parameter static helper (skip). Rerun the accessor sweep
 on every remaining NONMATCH after adding new accessors.
+
+## Round s11 (2026-11-09/10): CSWSMessage senders and handlers, CCombatInformation
+
+Folder `kotor-match -q -j 2 matching/src/b`: 854/955 -> 870/974 MATCH.
+19 functions annotated (all were `todo` rows of functions.csv): 16 new exact,
+3 kept as NONMATCH. No prior MATCH regressed, no prior NONMATCH promoted.
+
+### New exact matches
+
+| Address | Function | File |
+| --- | --- | --- |
+| 0x00567CB0 | CSWSMessage::StoreValuesInLastUpdatePartyObject (name guessed) | sws_message_party_store.cpp |
+| 0x0056B400 | SendServerToPlayerPlayModuleCharacterListResponse | sws_message_char_list_response.cpp |
+| 0x0056F160 | SendServerToPlayerExamineGui_MineData (name guessed) | sws_message_examine_mine.cpp |
+| 0x0056EBE0 | SendServerToPlayerExamineGui_CreatureData (name guessed) | sws_message_examine_creature.cpp |
+| 0x00570230 | SendServerToPlayerDebugInfo_Creature (name guessed) | sws_message_debug_creature.cpp |
+| 0x00568030 | SendServerToPlayerPlayerList_Add | sws_message_player_list.cpp |
+| 0x0056FE40 | SendServerToPlayerPlayerList_All | sws_message_player_list.cpp |
+| 0x00520A10 | HandlePlayerToServerChatMessage | sws_message_handle_chat.cpp |
+| 0x005244E0 | HandlePlayerToServerLoginMessage | sws_message_handle_login.cpp |
+| 0x005278D0 | HandlePlayerToServerJournalMessage | sws_message_handle_journal.cpp |
+| 0x00524800 | HandlePlayerToServerModuleMessage | sws_message_handle_module.cpp |
+| 0x00527560 | HandlePlayerToServerLevelUpMessage | sws_message_handle_levelup.cpp |
+| 0x00552A00 | CCombatInformation::operator= | combat_info_assign.cpp |
+| 0x00550F30 | CCombatInformation::SaveData | combat_info_save.cpp |
+| 0x00552350 | CCombatInformation::LoadData (1712 bytes) | combat_info_load.cpp |
+| 0x00578200 | SendServerToPlayerGameObjUpdate | sws_message_game_obj_update.cpp |
+
+### Kept NONMATCH
+
+- WriteGameObjUpdate_PartyAIState 0x005779F0 (31): `this` (ebp) and the
+  player object (ebx) are swapped, and the original loads the update flags
+  straight into ebx. Flag copy, declaration order, loop form, accessors tried.
+- SendServerToPlayerExamineGui_ItemData 0x0056EE40 (85): same shape, player
+  (edi) and item (ebp) swapped, which also swaps the loop counter and the
+  passive count.
+- ComputeLastUpdate_GuiKnownSpells 0x00570930 (15): the original has one
+  more stack local (frame 0x14): a second copy of the matched count.
+
+### Lessons
+
+- **Byte-returning inline getters make the byte temporaries.** The pattern
+  `mov dl,[esi+N]; mov [esp+X],dl; mov eax,[esp+X]; push eax` for an
+  `unsigned char` argument is an inline getter returning `unsigned char`
+  (`GetNumAttacks()`), not the member itself (which gives `xor edx,edx; mov
+  dl,..` and hoisted `lea`s). An int or dword getter gives the plain
+  `mov eax,[esi+N]; push eax`. This turned LoadData from 228 differences
+  into an exact match; check old NONMATCH with this byte-temp pattern.
+- **A literal passed where a class is expected** (`""` for a `const
+  CExoString&` or a by-value `CResRef`) is constructed in place and passed
+  with `lea`; an explicit `CExoString("")`/`CResRef("")` temporary passes the
+  constructor's return value (`push eax`) or copies the 16 bytes.
+- `GetStats()`, `GetId()`, `GetInventory()`, `GetAILevel()` again decide the
+  scratch registers and even block layout (creature examine: the separate
+  early-return block only appeared with `GetStats()`).
+- A `unsigned char` loop counter over a constant bound (`for (unsigned char
+  c = 0; c < 18; c++)`) gives the original's down-counter plus up-counter.
+  `for (; nCount != 0; nCount--)` gives `test al,al; je` + `dec ebx; jne`.
+- Early `if (this == &other) return *this;` gives the delayed `push
+  ebx/ebp` prologue; the nested `if (this != &other) {...}` pushes all four
+  registers at entry.
+- Merged return tails: the block written as `if (ok && ok2) { return f(); }
+  return 0;` owns the shared epilogue; the other branch with early returns
+  jumps into it (module handler). `if (n != 0 && Get(..)) { return Send(); }
+  return 0;` puts the `return 0` copy last (player list).
+- A local pointer before the call (`CSWSDoor* pDoor = pObject->AsSWSDoor();
+  WriteBYTE(pDoor->m_nTrapType, 8);`) evaluates the getter before `push 8`.
+- Original quirks kept: LoadData drops the `ArcaneSpellFail` value and reads
+  both lists from the parent struct; PartyAIState advances the party list
+  with the object list's `GetNext` in the test helper (0x0056E850).
+
+### Header changes
+
+- `sws_creature.h`: CGameObject slots 0x80 `GetTemplateResRef` (name
+  guessed), 0x88 `GetGender`, 0xc8 `GetPortrait`, 0xd0 `GetPortraitId`,
+  `GetAILevel()`, +0xe0/+0xe4 shorts; CSWSCreature +0x39c, +0x930, +0x9e4,
+  +0x9f0..0x9fc party state, `GetInventory()`; stats +0x58 description,
+  +0x122, +0x16e portrait CResRef, `GetPortrait()`, GetKnownSpell,
+  GetNumberKnownSpells, ValidateLevelUp (Mac 1/2); CSWSFaction +0x18 name,
+  GetMemberList, GetSingletonParty; CSWSObject::GetDamageLevel; CSWSModule
+  GetNextWorldJournalEntryID. Includes `b/res_gff.h` now.
+- `sws_player.h`: `CLastUpdatePartyObject` (0x70 bytes, descriptive name),
+  known-spell lists at +0x164/+0x17c/+0x194, `SetFullUpdate`.
+- `sws_message.h`: new declarations; `SendServerToPlayerGameObjUpdate` and
+  its wrapper 0x00578520 now take `CSWSPlayer*` (Mac debug map);
+  `SendServerToPlayerChatMessage` is the Mac name and `unsigned char` first
+  parameter of the existing `ChatMessage` (same 0x00571960).
+- `server_exo_app.h`: LoadCharacterStart/Finish, SaveGame, LoadGame,
+  RunModule, InitiateModuleForPlayer, Get/SetLoadingModule, SetSaveGameName,
+  ResolvePlayerByFirstName.
+- `server_info.h`: `B_COMBAT_INFO_NODE_INLINE` (inline node constructor and
+  assignment), byte getters named after the GFF labels.
+- `sws_item.h`: `B_ITEM_REPOSITORY_OPAQUE_GET_ITEM_AT`, item accessors,
+  placeable trap fields; `sws_door.h` trap fields; `sw_rules.h`
+  `m_pClasses` (+0xac), `GetAA()`; `res_gff.h` Read/WriteFieldCHAR.
+
+### Next in-range queue
+
+Same file family, not attempted: 0x0056E850 TestPartyUpdateDifferences (912
+bytes; x87 distance test and an unfolded `abs(1)+abs(0) <= 3`), 0x0056E360
+WriteRepositoryUpdate, 0x00577670 WriteGameObjUpdate_MajorGUIPanels,
+0x00567850 SortObjectsForGameObjectUpdate, 0x00572A20
+TestPlayerUpdateDifferences, 0x00577B60 SendServerToPlayerJournalFullUpdate,
+0x0056CD20 SendServerToPlayerArea_ClientArea, 0x0056DC60 TestObjectVisible,
+0x00552C50 CSWRules::CSWRules. Then the s10 queue (AI lock/unlock/use
+actions, remaining VM handlers). Retry old NONMATCH that show the byte
+temporary or `push eax` after a constructor with the two lessons above.

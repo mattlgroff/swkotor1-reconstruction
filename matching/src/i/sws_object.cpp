@@ -527,3 +527,10 @@ void CSWSObject::RemoveEffectTarget(unsigned long oid)
         m_lstEffectTargets.Remove(oid);
     }
 }
+
+// Hidden start (functions.csv merges it into 0x004CB160).
+// FUNCTION: SWKOTOR 0x004CB190
+unsigned char CSWSObject::GetGender()
+{
+    return g_nDefaultGender;
+}

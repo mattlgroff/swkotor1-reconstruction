@@ -74,6 +74,19 @@ public:
     CExoString GetPlayerListString();                                  // 0x004AE8D0
     CExoString GetModuleName();                                       // 0x004AE6C0
     int GetButtonMashCheck();                                           // 0x004AF070
+    int SaveGame(unsigned long nSlot, const CExoString& sName, class CSWSPlayer* pPlayer,
+                 int bArg);                                             // 0x004AE6E0
+    int LoadGame(unsigned long nSlot, const CExoString& sName, const CExoString& sModule,
+                 class CSWSPlayer* pPlayer);                            // 0x004AE6F0
+    int RunModule();                                                    // 0x004AE8C0
+    void InitiateModuleForPlayer(void* pPlayer);                        // 0x004AE930
+    int GetLoadingModule();                                             // 0x004AECF0
+    void SetLoadingModule(int bLoading);                                // 0x004AED00
+    void SetSaveGameName(const CExoString& sName);                      // 0x004AF0E0
+    int LoadCharacterStart(unsigned char nType, class CSWSPlayer* pPlayer, class CResRef cResRef,
+                           void* pData, unsigned long nSize);           // 0x004AE700
+    int LoadCharacterFinish(class CSWSPlayer* pPlayer, int bArg);       // 0x004AE740
+    unsigned long ResolvePlayerByFirstName(const CExoString& sName);    // 0x004AE9E0
     void SetButtonMashCheck(int bCheck);                                // 0x004AF080
     CExoString GetLastConversation();                                   // 0x004AEFE0 (name guessed)
 #ifdef B_OUT_OF_LINE_FACTION_MANAGER

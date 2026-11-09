@@ -125,3 +125,36 @@ int LightManager::GetNearestLights(Scene* pScene, Vector vPos, float fRadius, in
     }
     return nEnabled;
 }
+
+// Hidden start after SetupVertexProgramLights (functions.csv merges it into
+// 0x004A30F7): the list-driven sibling of 0x004A36B0, vtable +0x44.
+// FUNCTION: SWKOTOR 0x004A35B0
+void LightManager::SetupLightsForThisPositionAndRadiusIn(Vector* pPos, float fRadius,
+                                                         CExoArrayList<Light*>* pList)
+{
+    m_lRenderLights.num = 0;
+    for (int i = 0; i < pList->num; i++) {
+        Light* pLight = pList->element[i];
+        if (pLight->m_fRadius <= 0.0f) {
+            continue;
+        }
+        if (!pLight->m_bAffectDynamic && !pLight->m_bAffectStatic) {
+            continue;
+        }
+        if (pLight->m_vColor.x == 0.0f && pLight->m_vColor.y == 0.0f && pLight->m_vColor.z == 0.0f) {
+            continue;
+        }
+        float fDX = pLight->m_vPosition.x - pPos->x;
+        if (fDX < 0.0f) {
+            fDX = -fDX;
+        }
+        float fGapX = fDX - pLight->m_fRadius;
+        float fDY = pLight->m_vPosition.y - pPos->y;
+        if (fDY < 0.0f) {
+            fDY = -fDY;
+        }
+        if (fGapX < fRadius + fRadius && fDY - pLight->m_fRadius < fRadius + fRadius) {
+            AddRenderLight(pLight);
+        }
+    }
+}

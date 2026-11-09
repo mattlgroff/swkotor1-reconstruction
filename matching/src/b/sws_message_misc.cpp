@@ -19,9 +19,9 @@ CSWSMessage::~CSWSMessage()
 // (emitted with the vtable of the constructor above)
 
 // FUNCTION: SWKOTOR 0x00578520
-void CSWSMessage::SendGameObjectUpdate(unsigned long nPlayerId)
+void CSWSMessage::SendGameObjectUpdate(CSWSPlayer* pPlayer)
 {
-    SendServerToPlayerGameObjUpdate(nPlayerId, INVALID_OBJECT_ID);
+    SendServerToPlayerGameObjUpdate(pPlayer, INVALID_OBJECT_ID);
 }
 
 // FUNCTION: SWKOTOR 0x00578540

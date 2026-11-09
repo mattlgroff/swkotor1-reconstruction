@@ -1,6 +1,8 @@
 // CSWCCreature leaves (nwccreature.o, worker C s3) with a translation-unit
 // local creature layout; the shared creature base is not changed.
 
+#include <string.h>
+
 class CExoString {
 public:
     CExoString();                                   // 0x005B3190
@@ -15,6 +17,7 @@ public:
 
 class C2DA {
 public:
+    int GetFLOATEntry(int nRow, const CExoString& sColumn, float* pValue);   // 0x00413430
     int GetINTEntry(int nRow, const CExoString& sColumn, int* pValue);   // 0x00413660
     int GetCExoStringEntry(const CExoString& sRow, const CExoString& sColumn, CExoString* pValue);   // 0x00413DE0
 };
@@ -27,6 +30,7 @@ public:
     C2DA* m_pVisualEffects;                         // 0x88
 
     C2DA* GetVisualEffects() { return m_pVisualEffects; }
+    C2DA* GetAppearanceTable() { return m_pAppearanceTable; }
 };
 
 class CSWBaseItem;
@@ -57,6 +61,7 @@ public:
 extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
 
 class CSWCCreature;
+class CSWCItem;
 
 class CGob {
 public:
@@ -66,6 +71,31 @@ public:
     virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
     virtual void v40(); virtual void v44(); virtual void v48();
     virtual void SetVisible(int bVisible);          // 0x4c
+    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
+    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
+    virtual CSWCItem* GetItem();                    // 0x70
+    virtual void v74(); virtual void v78(); virtual void v7C();
+    virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
+    virtual void v90(); virtual void v94(); virtual void v98(); virtual void v9C();
+    virtual void vA0(); virtual void vA4(); virtual void vA8(); virtual void vAC();
+    virtual void vB0(); virtual void vB4(); virtual void vB8(); virtual void vBC();
+    virtual void vC0();
+    virtual void SetRenderGroup(int nGroup);        // 0xc4 (descriptive)
+};
+
+// Attaches equipped-item models to the creature's hand nodes.
+class CSWCAnimBase {
+public:
+    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
+    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
+    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
+    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
+    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
+    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
+    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
+    virtual void v70(); virtual void v74(); virtual void v78();
+    virtual void AttachItem(unsigned long oidItem, const CExoString& sNode, int bRightHand,
+                            float fScale);          // 0x7c (descriptive)
 };
 
 // The client object part of an item (CSWCItem + 0x10).
@@ -83,6 +113,11 @@ public:
     virtual void ShowEquipped(int b);               // 0x84 (descriptive)
     virtual void v88(); virtual void v8C(); virtual void v90(); virtual void v94();
     virtual CGob* FindPart(unsigned long nPart, int bRecurse);   // 0x98
+
+    void StartFlash();                              // 0x0063D540 (CSWCObject)
+    void StopFlash();                               // 0x0063D550 (CSWCObject)
+
+    unsigned long GetId() { return m_idSelf; }
 
     unsigned long m_idSelf;                         // 0x14 of the item
 };
@@ -105,6 +140,7 @@ public:
 class CClientExoApp {
 public:
     CSWCItem* GetItemByGameObjectID(unsigned long oid);   // 0x005ED5A0
+    CSWCCreature* GetPlayerCreature();              // 0x005ED540
 };
 
 class CAppManager {
@@ -128,9 +164,17 @@ public:
     virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
-    virtual void v90(); virtual void v94(); virtual void v98();
+    virtual void v90(); virtual void v94();
+    virtual CGob* FindPart(unsigned long nPart, int bRecurse);      // 0x98
     virtual void SetAnimation(unsigned short nAnim, int a, int b);  // 0x9c
+    virtual void vA0(); virtual void vA4(); virtual void vA8(); virtual void vAC();
+    virtual void vB0(); virtual void vB4(); virtual void vB8(); virtual void vBC();
+    virtual void vC0(); virtual void vC4(); virtual void vC8();
+    virtual int HasVisualEffect(int nEffect);       // 0xcc
 
+    CSWCAnimBase* GetAnimBase();                    // 0x0063C070
+    unsigned short GetCurrentAnimation();           // 0x0063C060
+    int AnimationLooping(unsigned short nAnim);     // 0x0063C300 (CSWCObject)
     void EquipToInventorySlot(unsigned long nSlot, CSWCItem* pItem);
     void SetOverrideLightsaberState(int bState, int a, int b);
     void BlurWeapon(int bBlur);
@@ -149,10 +193,14 @@ public:
     unsigned short GetAppearanceType() { return m_pAppearance->m_nAppearanceType; }
 
     unsigned long m_idSelf;                         // 0x04
-    char pad_0x8[0x21c - 0x8];
+    char pad_0x8[0x138 - 0x8];
+    int m_n138;                                     // 0x138
+    char pad_0x13c[0x21c - 0x13c];
     CCreatureAppearanceS3* m_pAppearance;           // 0x21c
     unsigned long m_aEquippedItems[15];             // 0x220 (by slot bit)
-    char pad_0x25c[0x14];
+    char pad_0x25c[0x268 - 0x25c];
+    unsigned long m_oidShownRightWeapon;            // 0x268 (descriptive)
+    unsigned long m_oidShownLeftWeapon;             // 0x26c (descriptive)
     int m_aLastInstant[15];                         // 0x270 (by slot bit)
     char pad_0x2ac[0x2cc - 0x2ac];
     int m_bBlurWeapon;                              // 0x2cc
@@ -529,5 +577,128 @@ void CSWCCreature::SetAttackAnimationData(int nBaseItem, int nAttackType, int bR
                 pItem->SetSpecialAttackModel(sModel, sNode);
             }
         }
+    }
+}
+
+class CAurObject;
+
+// Model-event callback (Mac name) that re-attaches the equipped weapon models
+// to the hands. Needs GetLastInstant earlier in this translation unit: the
+// original keeps the item in edx across that call.
+// NONMATCH (38 insns, one register choice): the original keeps the left item
+// in edi from its lookup on and compares the right id from its stack slot;
+// ours caches the right id in edi and loads the left item later.
+// FUNCTION: SWKOTOR 0x00610F40
+void SwitchWeaponEvent(CAurObject* pObject, char* sEvent, void* pData)
+{
+    CSWCCreature* pCreature = (CSWCCreature*)pData;
+    int bForce = 0;
+    int bLoading = 0;
+    int bPowered = 1;
+    if (sEvent) {
+        if (strcmp(sEvent, "AppearanceForceUpdate") == 0) {
+            bForce = 1;
+            if (pCreature && !pCreature->m_n138) {
+                bPowered = 0;
+            }
+        }
+        if (strcmp(sEvent, "Loading") == 0) {
+            bLoading = 1;
+            bPowered = 0;
+        }
+    }
+    CSWCItem* pOldItem = 0;
+    if (!pCreature) {
+        return;
+    }
+    unsigned long aoidWeapon[2];
+    aoidWeapon[0] = pCreature->GetEquippedItemID(0x10);
+    CSWCItem* pRight = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(aoidWeapon[0]);
+    aoidWeapon[1] = pCreature->GetEquippedItemID(0x20);
+    CSWCItem* pLeft = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(aoidWeapon[1]);
+    float fScale;
+    if (!g_pRules->Get2DArrays()->GetAppearanceTable()->GetFLOATEntry(pCreature->GetAppearanceType(), "WEAPONSCALE",
+                                                                      &fScale)) {
+        fScale = 1.0f;
+    }
+    if (pCreature->m_oidShownRightWeapon != aoidWeapon[0] || bForce) {
+        if (pRight) {
+            CGob* pModel = pRight->m_cObject.FindPart(0xff, 1);
+            pRight->SetEquippedBy(pCreature);
+            pRight->m_oidPossessor = pCreature->m_idSelf;
+            if (pModel) {
+                if (pCreature == g_pAppManager->GetClientExoApp()->GetPlayerCreature()) {
+                    pModel->SetRenderGroup(2);
+                } else {
+                    pModel->SetRenderGroup(4);
+                }
+                if (pCreature->HasVisualEffect(0x1f40)) {
+                    CSWCItem* pShown =
+                        g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(pCreature->m_oidShownRightWeapon);
+                    if (pShown) {
+                        pShown->m_cObject.StopFlash();
+                    }
+                    pRight->m_cObject.StartFlash();
+                }
+                pCreature->GetAnimBase()->AttachItem(pRight->m_cObject.GetId(), "rhand", 1, fScale);
+                if (pCreature->AnimationLooping(pCreature->GetCurrentAnimation())) {
+                    pCreature->SetAnimation(pCreature->GetCurrentAnimation(), 0, 0);
+                }
+                pRight->SetPowered(bPowered, 0, !pCreature->GetLastInstant(0x10), bLoading | bForce);
+            }
+        } else {
+            CGob* pPart = pCreature->FindPart(0xf7, 1);
+            if (pPart) {
+                pOldItem = pPart->GetItem();
+                if (pOldItem) {
+                    pOldItem->m_oidPossessor = 0x7f000000;
+                }
+            }
+            if (pOldItem) {
+                pOldItem->SetPowered(0, 0, !pCreature->GetLastInstant(0x10), bLoading | bForce);
+            }
+            pCreature->GetAnimBase()->AttachItem(0x7f000000, "", 1, 1.0f);
+        }
+        pCreature->m_oidShownRightWeapon = aoidWeapon[0];
+    }
+    if (pCreature->m_oidShownLeftWeapon != aoidWeapon[1] || bForce) {
+        if (pLeft) {
+            CGob* pModel = pLeft->m_cObject.FindPart(0xff, 1);
+            pLeft->SetEquippedBy(pCreature);
+            pLeft->m_oidPossessor = pCreature->m_idSelf;
+            if (pModel) {
+                if (pCreature == g_pAppManager->GetClientExoApp()->GetPlayerCreature()) {
+                    pModel->SetRenderGroup(2);
+                } else {
+                    pModel->SetRenderGroup(4);
+                }
+                if (pCreature->HasVisualEffect(0x1f40)) {
+                    CSWCItem* pShown =
+                        g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(pCreature->m_oidShownLeftWeapon);
+                    if (pShown) {
+                        pShown->m_cObject.StopFlash();
+                    }
+                    pLeft->m_cObject.StartFlash();
+                }
+                pCreature->GetAnimBase()->AttachItem(pLeft->m_cObject.GetId(), "lhand", 0, fScale);
+                if (pCreature->AnimationLooping(pCreature->GetCurrentAnimation())) {
+                    pCreature->SetAnimation(pCreature->GetCurrentAnimation(), 0, 0);
+                }
+                pLeft->SetPowered(bPowered, 0, !pCreature->GetLastInstant(0x20), 0);
+            }
+        } else {
+            CGob* pPart = pCreature->FindPart(0xfb, 1);
+            if (pPart) {
+                pOldItem = pPart->GetItem();
+                if (pOldItem) {
+                    pOldItem->m_oidPossessor = 0x7f000000;
+                }
+            }
+            if (pOldItem) {
+                pOldItem->SetPowered(0, 0, !pCreature->GetLastInstant(0x10), 0);
+            }
+            pCreature->GetAnimBase()->AttachItem(0x7f000000, "", 0, 1.0f);
+        }
+        pCreature->m_oidShownLeftWeapon = aoidWeapon[1];
     }
 }

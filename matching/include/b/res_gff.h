@@ -66,6 +66,8 @@ public:
     int GetListElement(CResStruct* pStruct, CResList* pList, unsigned long nIndex); // 0x00411990
     unsigned char ReadFieldBYTE(CResStruct* pStruct, char* szLabel, int& bSuccess,
                                 unsigned char nDefault);                // 0x00411A60
+    char ReadFieldCHAR(CResStruct* pStruct, char* szLabel, int& bSuccess,
+                       char nDefault);                                  // 0x00411AD0
     short ReadFieldSHORT(CResStruct* pStruct, char* szLabel, int& bSuccess,
                          short nDefault);                               // 0x00411BB0
     int ReadFieldINT(CResStruct* pStruct, char* szLabel, int& bSuccess,
@@ -85,6 +87,7 @@ public:
     int AddList(CResList* pList, CResStruct* pStruct, char* szLabel);   // 0x00412450
     int AddListElement(CResStruct* pStruct, CResList* pList, unsigned long nType); // 0x004124E0
     int WriteFieldBYTE(CResStruct* pStruct, unsigned char nValue, char* szLabel); // 0x00412620
+    int WriteFieldCHAR(CResStruct* pStruct, char nValue, char* szLabel); // 0x00412670
     int WriteFieldWORD(CResStruct* pStruct, unsigned short nValue, char* szLabel); // 0x004126C0
     int WriteFieldFLOAT(CResStruct* pStruct, float fValue, char* szLabel); // 0x00412870
     int WriteFieldCExoLocString(CResStruct* pStruct, CExoLocString& lsValue, char* szLabel); // 0x00412A10

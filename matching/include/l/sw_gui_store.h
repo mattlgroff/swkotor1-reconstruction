@@ -11,7 +11,11 @@ class CSWSObject;
 // Sort key read from the base item (+0x30) when the store lists group items.
 class CSWBaseItem {
 public:
-    char pad_0x0[0x30];
+    char pad_0x0[0x4];
+    int m_nEquipableSlots;                          // 0x04 (descriptive)
+    char pad_0x8[0x1b - 0x8];
+    unsigned char m_n1B;                            // 0x1b
+    char pad_0x1c[0x30 - 0x1c];
     unsigned char m_nInventorySortOrder;            // 0x30 (descriptive)
 };
 

@@ -201,6 +201,7 @@ public:
     void AddKnownSpell(unsigned char nClass, unsigned long nSpell);     // 0x005AA9B0
     void AddFeat(unsigned short nFeat);             // 0x005AA810
     void SetSkillRank(unsigned char nSkill, char nRank);    // 0x005A54C0
+    void AutoLevelUp(int bArg);                     // 0x005B27E0
     char GetSkillRankBase(unsigned char nSkill);    // 0x005A5FD0 (placeholder name)
     char pad_0x0[0x89];
     unsigned char m_nNumClasses;                    // 0x89
@@ -598,6 +599,9 @@ public:
     void SetCharacter(CSWCCreature* pCreature);     // 0x006ADB00
     void OnChangeCharacter(CSWGuiControl* pControl);    // 0x006ADC80
     void UpdatePortraits();                         // 0x006ABEC0
+    void OnSwitchLeft(CSWGuiControl* pControl);     // 0x006AC3E0
+    void SetButtonColor(CSWGuiControl* pControl);   // 0x006AC8D0
+    void OnSwitchRight(CSWGuiControl* pControl);    // 0x006AC660
 
     CExoArrayList<CSWSkillListEntry> m_lstSkills;   // 0x64
     CSWGuiInGameSkillEntry m_aEntries[10];          // 0x70

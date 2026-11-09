@@ -28,7 +28,7 @@ public:
     int m_nVertices;                                                 // +0x130
     Vector* m_pVertices;                                             // +0x134
     PartTrigger* m_pAurPartTrigger;                                  // +0x138
-    int m_n13C;                                                      // +0x13C
+    unsigned long m_n13C;                                            // +0x13C (removal delay, ms)
     CExoString m_sTransitionTag;                                     // +0x140
     unsigned char m_n148;                                            // +0x148
     char pad_0x149[3];
@@ -38,8 +38,11 @@ public:
     unsigned long GetTransitionMode();                               // 0x006912E0, descriptive
     void PlayAnimation(unsigned long, void*, int);                   // 0x006911B0
     void CalculatePosition();                                        // 0x00691560, descriptive
-    int GetScreenPosition(float*);                                   // 0x006916B0, descriptive
+    unsigned char GetCenterReticlePoint(Vector&);                    // 0x006916B0, descriptive
+    unsigned char GetReticlePoint(Vector&);                          // 0x00691B00 (overrides CSWCObject 0x0063D560)
     void UpdateAnimation();                                          // 0x00691970, descriptive
+    virtual void AIUpdate();                                         // 0x00692410 (slot 0x74)
+    void UpdateDetection();                                          // 0x006920B0, descriptive
     int IntersectSegment(const Vector&, const Vector&, Vector*);     // 0x00691A30, descriptive
     void AddToRenderList(int);                                       // 0x00691CC0, descriptive
     void RemoveFromRenderList();                                     // 0x00691D80

@@ -6,6 +6,9 @@ CSWGuiRadioButton::CSWGuiRadioButton() {}
 // FUNCTION: SWKOTOR 0x006BE360
 CSWGuiRadioButton::~CSWGuiRadioButton() {}
 
+// FUNCTION: SWKOTOR 0x006B60D0 SYMBOL: ??_GCSWGuiRadioButton@@UAEPAXI@Z
+// Emitted by the radio button destructor above.
+
 // FUNCTION: SWKOTOR 0x006B7EE0
 CSWGuiInGameItemEntry::CSWGuiInGameItemEntry()
 {

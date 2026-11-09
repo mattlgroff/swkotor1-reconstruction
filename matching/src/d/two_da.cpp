@@ -5,6 +5,11 @@
 
 extern "C" int __cdecl _stricmp(const char* a, const char* b);
 extern "C" int __cdecl sscanf(const char* s, const char* fmt, ...);
+extern "C" char* __cdecl _strupr(char* s);
+extern "C" char* __cdecl _strlwr(char* s);
+extern "C" int __cdecl strcmp(const char* a, const char* b);
+extern "C" unsigned int __cdecl strlen(const char* s);
+#pragma intrinsic(strcmp, strlen)
 
 struct C2DAHeader {
     unsigned long m_nFileType;      // 0x00 "2DA "
@@ -18,6 +23,11 @@ public:
     virtual ~CRes2DA();                             // 0x0041d760
     virtual int OnResourceFreed();                  // 0x0041d770
     virtual int OnResourceServiced();               // 0x0041d790
+
+    char* Get2DADataPtr();                          // 0x00404dd0 (descriptive)
+    unsigned long Get2DASize();                     // 0x00710e50 (descriptive)
+
+    int IsBinary() { return m_bBinary; }
 
     int m_bLoaded;                  // 0x28
     unsigned long m_nDataSize;      // 0x2c
@@ -67,6 +77,7 @@ public:
     int SkipNewLines(char** ppText, unsigned long* pRemaining);
     unsigned long GetLineLength(char* pText, unsigned long nSize);
     void Unload2DArray();
+    int Load2DArray();
 
     CExoString m_sDefaultValue;         // 0x1c
     int m_nNumRows;                     // 0x24
@@ -238,6 +249,9 @@ int C2DA::GetINTEntry(int nRow, const CExoString& sColumn, int* pValue)
     return 1;
 }
 
+// Load2DArray calls this out of line (its two header scans are open-coded
+// with an index), so it must not be an auto-inline candidate.
+#pragma auto_inline(off)
 // FUNCTION: SWKOTOR 0x004137b0
 unsigned long C2DA::GetLineLength(char* pText, unsigned long nSize)
 {
@@ -248,6 +262,8 @@ unsigned long C2DA::GetLineLength(char* pText, unsigned long nSize)
     }
     return i;
 }
+
+#pragma auto_inline(on)
 
 // FUNCTION: SWKOTOR 0x004137e0
 int C2DA::GetNextToken(char** ppText, unsigned long* pRemaining, char* pToken, unsigned long* pSkipped)
@@ -454,6 +470,186 @@ C2DA::C2DA(CResRef cResRef, int bAutoRequest)
     m_pColumnLabelOffsets = 0;
     m_pLabelData = 0;
     SetResRef(cResRef, bAutoRequest);
+}
+
+// FUNCTION: SWKOTOR 0x004143b0
+int C2DA::Load2DArray()
+{
+    unsigned long nSize;
+    char* pData;
+    char* pLine;
+    unsigned long nLineLength;
+    unsigned long nSkipped;
+    char szToken[256];
+    int i;
+    unsigned long n;
+
+    Unload2DArray();
+    if (!m_pRes->Demand()) {
+        return 0;
+    }
+    pData = m_pRes->Get2DADataPtr();
+    nSize = m_pRes->Get2DASize();
+    m_bBinary = m_pRes->IsBinary();
+    SkipNewLines(&pData, &nSize);
+    pLine = pData;
+    for (n = 0; n < nSize; n++) {
+        if (pData[n] == '\n' || pData[n] == '\r') {
+            break;
+        }
+    }
+    nLineLength = n;
+    GetNextToken(&pLine, &nLineLength, szToken, &nSkipped);
+    _strupr(szToken);
+    if (!strcmp(szToken, "DEFAULT:")) {
+        GetNextToken(&pLine, &nLineLength, szToken, &nSkipped);
+        m_sDefaultValue = szToken;
+        pData = pLine;
+        nSize -= n;
+    }
+    else if (!strcmp(szToken, "DEFAULT")) {
+        GetNextToken(&pLine, &nLineLength, szToken, &nSkipped);
+        if (szToken[0] == ':') {
+            if (strlen(szToken + 1) < 1) {
+                GetNextToken(&pLine, &nLineLength, szToken, &nSkipped);
+                m_sDefaultValue = szToken;
+            }
+            else {
+                m_sDefaultValue = szToken + 1;
+            }
+        }
+        else {
+            m_sDefaultValue = szToken;
+        }
+        nSize -= n;
+    }
+    SkipNewLines(&pData, &nSize);
+    m_nNumColumns = 0;
+    pLine = pData;
+    for (n = 0; n < nSize; n++) {
+        if (pData[n] == '\n' || pData[n] == '\r') {
+            break;
+        }
+    }
+    nLineLength = n;
+    while (GetNextToken(&pLine, &nLineLength, szToken, &nSkipped)) {
+        m_nNumColumns++;
+    }
+    if (m_nNumColumns <= 0) {
+        m_bLoaded = 1;
+        Unload2DArray();
+        return 0;
+    }
+    if (m_bBinary) {
+        int nPos;
+        m_pLabelData = pData;
+        m_pColumnLabelOffsets = new unsigned short[m_nNumColumns];
+        nPos = 0;
+        for (i = 0; i < m_nNumColumns; i++) {
+            m_pColumnLabelOffsets[i] = nPos;
+            while (pData[nPos] != '\t' && pData[nPos] != 0) {
+                nPos++;
+            }
+            pData[nPos] = 0;
+            nPos++;
+        }
+        nPos++;
+        m_nNumRows = *(int*)(pData + nPos);
+        nPos += 4;
+        m_pRowLabelOffsets = new unsigned short[m_nNumRows];
+        for (i = 0; i < m_nNumRows; i++) {
+            m_pRowLabelOffsets[i] = nPos;
+            while (pData[nPos] != '\t' && pData[nPos] != 0) {
+                nPos++;
+            }
+            pData[nPos] = 0;
+            nPos++;
+        }
+        pData += nPos;
+        pLine = pData + m_nNumColumns * m_nNumRows * 2 + 2;
+        m_pCellOffsets = (unsigned short*)pData;
+        m_pBinaryData = pLine;
+        m_bLoaded = 1;
+        return 1;
+    }
+    m_pColumnLabel = new CExoString[m_nNumColumns];
+    if (!m_pColumnLabel) {
+        m_bLoaded = 1;
+        Unload2DArray();
+        return 0;
+    }
+    i = 0;
+    while (GetNextToken(&pData, &nSize, szToken, &nSkipped)) {
+        m_pColumnLabel[i] = _strlwr(szToken);
+        i++;
+    }
+    SkipNewLines(&pData, &nSize);
+    m_nNumRows = 0;
+    char* pRows = pData;
+    unsigned long nRowsSize = nSize;
+    while (nSize != 0) {
+        n = GetLineLength(pData, nSize);
+        pData += n;
+        nSize -= n;
+        SkipNewLines(&pData, &nSize);
+        m_nNumRows++;
+    }
+    pData = pRows;
+    nSize = nRowsSize;
+    if (m_nNumRows == 0) {
+        m_bLoaded = 1;
+        m_pRes->Release();
+        return 1;
+    }
+    m_pRowLabel = new CExoString[m_nNumRows];
+    if (!m_pRowLabel) {
+        m_bLoaded = 1;
+        Unload2DArray();
+        return 0;
+    }
+    m_pArrayData = new CExoString*[m_nNumRows];
+    if (!m_pRowLabel) {
+        m_bLoaded = 1;
+        Unload2DArray();
+        return 0;
+    }
+    for (i = 0; i < m_nNumRows; i++) {
+        m_pArrayData[i] = new CExoString[m_nNumColumns];
+        if (!m_pArrayData[i]) {
+            m_bLoaded = 1;
+            Unload2DArray();
+            return 0;
+        }
+    }
+    int nRow = 0;
+    while (nSize != 0) {
+        nLineLength = GetLineLength(pData, nSize);
+        char* pToken;
+        pToken = pData;
+        nRowsSize = nSize;
+        GetNextToken(&pToken, &nRowsSize, szToken, &nSkipped);
+        m_pRowLabel[nRow] = _strlwr(szToken);
+        for (i = 0; i < m_nNumColumns;) {
+            if (GetNextToken(&pToken, &nRowsSize, szToken, &nSkipped)) {
+                if (!strcmp(szToken, "****")) {
+                    m_pArrayData[nRow][i++] = "";
+                }
+                else {
+                    m_pArrayData[nRow][i++] = szToken;
+                }
+            }
+            else {
+                m_pArrayData[nRow][i++] = m_sDefaultValue;
+            }
+        }
+        pData += nLineLength;
+        nSize -= nLineLength;
+        SkipNewLines(&pData, &nSize);
+        nRow++;
+    }
+    m_pRes->Release();
+    m_bLoaded = 1;
+    return 1;
 }
 
 // FUNCTION: SWKOTOR 0x00414a30 SYMBOL: ??_GC2DA@@UAEPAXI@Z

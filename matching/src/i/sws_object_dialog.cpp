@@ -17,6 +17,7 @@ public:
     int IsFadingInDialog();                         // 0x0062ABB0
     int IsAnimationPlayingInDialog();               // 0x0062D570
     void UpdateDialogLipSync();                     // 0x0062FA30
+    void SetGlobalDialogState(int nState);          // 0x0062EC60
     char pad_0x0[0xc0];
     void* m_pc0;                                    // 0xc0 (placeholder name)
 };
@@ -91,6 +92,21 @@ int CSWSObject::UpdateDialog()
     }
     else if (m_pDialog->m_p60 && !g_pAppManager->m_pClientExoApp->IsSoundPlayingInDialog()) {
         StopDialog();
+    }
+    return 1;
+}
+
+// Hidden start (functions.csv merges it into 0x004CC360).
+// Vtable +0x74; the name is the placeholder its callers already use.
+// FUNCTION: SWKOTOR 0x004CC390
+int CSWSObject::RunActionNode(CSWSObjectActionNode* pNode, int bFlag)
+{
+    if (pNode->m_nActionId == 0x18) {
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->SetGlobalDialogState(0);
+        return 1;
+    }
+    if (pNode->m_nActionId == 0x20) {
+        m_n50 = 0;
     }
     return 1;
 }

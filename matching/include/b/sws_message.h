@@ -29,6 +29,7 @@ class CNetLayer {
 public:
     int SendMessageToPlayer(unsigned long nPlayerId, unsigned char* pData,
                             unsigned long nSize, unsigned long nFlags);  // 0x005D4CB0
+    class CNetLayerPlayerInfo* GetPlayerInfo(unsigned long nPlayerId);  // 0x005D5170
 };
 
 // .rdata player id used by broadcasts (0x0074C52C).
@@ -49,6 +50,7 @@ public:
     unsigned long ReadDWORD(int nBits);                                 // 0x004D6780
     float ReadFLOAT(float fScale, int nBits);                           // 0x004D67B0
     CExoString ReadCExoString(int nBits);                               // 0x004D67E0
+    unsigned char* ReadVOIDPtr(unsigned long nSize);                    // 0x004D6200
 
     void WriteBOOL(int bValue);                                         // 0x004D68E0
     void WriteBYTE(unsigned char nValue, int nBits);                    // 0x004D62C0
@@ -140,11 +142,40 @@ public:
     int SendServerToPlayerPlayModuleCharacterListResponse(unsigned long nPlayerId,
                                                           unsigned long oidCharacter,
                                                           int bAdd); // 0x0056B400
+    void StoreValuesInLastUpdatePartyObject(CSWSCreature* pPlayerCreature,
+                                            class CLastUpdatePartyObject* pLast,
+                                            CSWSCreature* pCreature,
+                                            unsigned long nFlags);      // 0x00567CB0 (name guessed)
+    int WriteGameObjUpdate_PartyAIState(CSWSPlayer* pPlayer);            // 0x005779F0
+    void TestPartyUpdateDifferences(CSWSPlayer* pPlayer, CSWSCreature* pCreature,
+                                    class CLastUpdatePartyObject** ppLast,
+                                    unsigned long* pFlags);             // 0x0056E850 (name guessed)
+    int SendServerToPlayerExamineGui_MineData(CSWSPlayer* pPlayer, unsigned long oid,
+                                              CSWSCreature* pCreature, int bArg); // 0x0056F160 (name guessed)
+    int SendServerToPlayerExamineGui_CreatureData(CSWSPlayer* pPlayer, unsigned long oid); // 0x0056EBE0 (name guessed)
+    int SendServerToPlayerExamineGui_ItemData(CSWSPlayer* pPlayer, unsigned long oid); // 0x0056EE40 (name guessed)
+    int SendServerToPlayerDebugInfo_Creature(CSWSPlayer* pPlayer, unsigned long oidCreature); // 0x00570230 (name guessed)
+    int HandlePlayerToServerChatMessage(CSWSPlayer* pPlayer, unsigned char nMinor); // 0x00520A10
+    // Mac debug name and parameter types of ChatMessage below (same function).
+    int SendServerToPlayerChatMessage(unsigned char nTalkVolume, unsigned long oidSpeaker,
+                                      CExoString sText, unsigned long oidTarget,
+                                      const CExoString& sName);         // 0x00571960
+    int HandlePlayerToServerLoginMessage(CSWSPlayer* pPlayer, unsigned char nMinor); // 0x005244E0
+    int HandlePlayerToServerJournalMessage(CSWSPlayer* pPlayer, unsigned char nMinor); // 0x005278D0
+    int SendServerToPlayerJournalFullUpdate(CSWSPlayer* pPlayer);       // 0x00577B60
+    int HandlePlayerToServerModuleMessage(CSWSPlayer* pPlayer, unsigned char nMinor); // 0x00524800
+    int HandlePlayerToServerLevelUpMessage(CSWSPlayer* pPlayer, unsigned char nMinor); // 0x00527560
+    int ComputeLastUpdate_GuiKnownSpells(CSWSCreature* pCreature,
+                                         CSWSPlayerLastUpdateObject* pLast); // 0x00570930
     virtual ~CSWSMessage();                                             // 0x005209A0
     unsigned long ReadOBJECTIDServer();                                 // 0x00578540
-    void SendGameObjectUpdate(unsigned long nPlayerId);                 // 0x00578520 (name guessed)
-    int SendServerToPlayerGameObjUpdate(unsigned long nPlayerId,
-                                        unsigned long oidArg);          // 0x00578200
+    void SendGameObjectUpdate(CSWSPlayer* pPlayer);                     // 0x00578520 (name guessed)
+    int SendServerToPlayerGameObjUpdate(CSWSPlayer* pPlayer,
+                                        unsigned long oidArg);          // 0x00578200 (Mac debug map 2/2)
+    class CSWSPlayerLUOSortedObjectList* SortObjectsForGameObjectUpdate(
+        CSWSPlayer* pPlayer, CSWSObject* pObserver, CGameObjectArray* pArray,
+        int* pCount);                                                   // 0x00567850 (Mac debug map 2/2)
+    void WriteGameObjUpdate_MajorGUIPanels(CSWSPlayer* pPlayer);        // 0x00577670 (Mac debug map 2/2)
     void WriteOBJECTIDServer(unsigned long oid);                        // 0x00578570
     void WriteCExoLocStringServer(const CExoLocString& sString,
                                   unsigned char nGender);               // 0x005785C0

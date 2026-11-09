@@ -337,47 +337,6 @@ int CSWSAreaOfEffectObject::LoadEffect(CResGFF *pRes, CResStruct *pStruct)
     return 1;
 }
 
-// NONMATCH (35): the original copies GetPosition's returned temporary into
-// registers (x ecx, y ebp, z stack) instead of using the local in place.
-// FUNCTION: SWKOTOR 0x00594D80
-int CSWSAreaOfEffectObject::SaveEffect(CResGFF *pRes, CResStruct *pStruct)
-{
-    pRes->WriteFieldCExoString(pStruct, m_sTag, "Tag");
-    pRes->WriteFieldINT(pStruct, m_nAreaEffectId, "AreaEffectId");
-    pRes->WriteFieldDWORD(pStruct, GetLastSpellId(), "SpellId");
-    pRes->WriteFieldBYTE(pStruct, m_nShape, "Shape");
-    pRes->WriteFieldBYTE(pStruct, m_nMetaMagicType, "MetaMagicType");
-    pRes->WriteFieldINT(pStruct, m_nSpellSaveDC, "SpellSaveDC");
-    pRes->WriteFieldINT(pStruct, m_nSpellLevel, "SpellLevel");
-    if (m_nShape == 0) {
-        pRes->WriteFieldFLOAT(pStruct, GetRadius(), "Radius");
-    } else if (m_nShape == 1) {
-        pRes->WriteFieldFLOAT(pStruct, m_fLength, "Length");
-        pRes->WriteFieldFLOAT(pStruct, m_fWidth, "Width");
-    }
-    pRes->WriteFieldDWORD(pStruct, m_oidCreator, "CreatorId");
-    pRes->WriteFieldDWORD(pStruct, m_oidLinkedTo, "LinkedToObject");
-    pRes->WriteFieldDWORD(pStruct, m_oidLastEntered, "LastEntered");
-    pRes->WriteFieldDWORD(pStruct, m_oidLastLeft, "LastLeft");
-    pRes->WriteFieldDWORD(pStruct, m_nDuration, "Duration");
-    pRes->WriteFieldBYTE(pStruct, m_nDurationType, "DurationType");
-    pRes->WriteFieldDWORD(pStruct, m_nLastHeartbeatDay, "LastHrtbtDay");
-    pRes->WriteFieldDWORD(pStruct, m_nLastHeartbeatTime, "LastHrtbtTime");
-    pRes->WriteFieldCExoString(pStruct, m_sScriptHeartbeat, "OnHeartbeat");
-    pRes->WriteFieldCExoString(pStruct, m_sScriptUserDefined, "OnUserDefined");
-    pRes->WriteFieldCExoString(pStruct, m_sScriptOnEnter, "OnObjEnter");
-    pRes->WriteFieldCExoString(pStruct, m_sScriptOnExit, "OnObjExit");
-    Vector vPosition = GetPosition();
-    pRes->WriteFieldFLOAT(pStruct, vPosition.x, "PositionX");
-    pRes->WriteFieldFLOAT(pStruct, vPosition.y, "PositionY");
-    pRes->WriteFieldFLOAT(pStruct, vPosition.z, "PositionZ");
-    Vector vOrientation = m_vOrientation;
-    pRes->WriteFieldFLOAT(pStruct, vOrientation.x, "OrientationX");
-    pRes->WriteFieldFLOAT(pStruct, vOrientation.y, "OrientationY");
-    pRes->WriteFieldFLOAT(pStruct, vOrientation.z, "OrientationZ");
-    return 1;
-}
-
 // FUNCTION: SWKOTOR 0x00595450
 int CSWSAreaOfEffectObject::InSubAreas(Vector vPosition)
 {

@@ -30,6 +30,9 @@ public:
 };
 
 class CSWCObject;
+class CAurPart;
+class CSWCModuleCamera;
+class CSWGuiManager;
 class PartTrigger;
 class Scene;
 
@@ -56,6 +59,10 @@ public:
     virtual void vC8(); virtual void vCC();
     virtual void vD0(); virtual void vD4(); virtual void vD8();
     virtual void EnableRenderOrder();              // +0xDC, descriptive
+    virtual void vE0(); virtual void vE4(); virtual void vE8(); virtual void vEC();
+    virtual void vF0(); virtual void vF4(); virtual void vF8(); virtual void vFC();
+    virtual void v100(); virtual void v104(); virtual void v108();
+    virtual CAurPart* FindPart(const char*);       // +0x10C (placeholder name, as bucket n)
 };
 
 class CSWCAnimBase {
@@ -113,6 +120,12 @@ public:
     virtual void v98(); virtual void v9C(); virtual void vA0();
     virtual int Hilite(Vector*, int, int, int);                      // +0xA4 (0x0063CB00)
     virtual int UnHilite(int);                                       // +0xA8 (0x0063CB30)
+    virtual void vAC();
+    virtual void vB0(); virtual void vB4(); virtual void vB8(); virtual void vBC();
+    virtual void vC0(); virtual void vC4(); virtual void vC8(); virtual void vCC();
+    virtual void vD0(); virtual void vD4(); virtual void vD8(); virtual void vDC();
+    virtual void vE0(); virtual void vE4();
+    virtual void UnknownE8();                                        // +0xE8 (empty in the base)
 
     unsigned long m_oid;                                             // +0x04
     char pad_0x8[0x20 - 0x8];
@@ -128,7 +141,9 @@ public:
     CSWCAnimBase* m_pModel;                                          // +0x68
     char pad_0x6c[0xe4 - 0x6c];
     int m_nE4;                                                       // +0xE4
-    char pad_0xe8[0xfc - 0xe8];
+    char pad_0xe8[0xf0 - 0xe8];
+    unsigned long m_nCountdown;                                      // +0xF0
+    char pad_0xf4[0xfc - 0xf4];
 
     float GetAnimationLength(unsigned long);                         // 0x0063C0E0
     int AnimationLooping(unsigned short);                            // 0x0063C300
@@ -145,6 +160,7 @@ class CGameObjectArray {
 public:
     unsigned char AddInternalObject(unsigned long*, CGameObject*, int); // 0x004D80E0
     unsigned char Delete(unsigned long);                              // 0x004D8290
+    unsigned char Delete(unsigned long, CGameObject**);               // 0x004D81A0
 };
 
 class CClientAIMaster {
@@ -170,7 +186,9 @@ class CClientExoApp {
 public:
     CWorldTimer* GetWorldTimer();                                    // 0x005ED4F0
     CSWCModule* GetModule();                                         // 0x005ED530
+    CSWCModuleCamera* GetModuleCamera();                             // 0x005ED560
     CGameObjectArray* GetGameObjectArray();                          // 0x005ED570
+    CSWGuiManager* GetGuiManager();                                  // 0x005EDA40
     CClientAIMaster* GetClientAIMaster();                            // 0x005ED6B0
 };
 
@@ -182,5 +200,6 @@ public:
 };
 
 extern CAppManager* g_pAppManager;                                   // 0x007A39FC
+extern const unsigned char g_nObjectArraySuccess;                    // 0x0074666C
 
 #endif

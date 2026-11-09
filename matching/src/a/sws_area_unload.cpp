@@ -15,6 +15,13 @@ public:
     void RemoveObjectFromLookupTable(CExoString* pTag, unsigned long oid); // 0x004C5EF0
 };
 
+// Element of the 0x144 list: its implicit destructor is the out-of-line 0x005063B0
+// (a jump to CExoLocString::~CExoLocString; no functions.csv row). Descriptive type name.
+struct CSWSAreaNameEntry {
+    CExoLocString m_sName;
+};
+
+// FUNCTION: SWKOTOR 0x005063B0 SYMBOL: ??1CSWSAreaNameEntry@@QAE@XZ
 // FUNCTION: SWKOTOR 0x0050C0E0
 void CSWSArea::UnloadArea()
 {
@@ -31,7 +38,7 @@ void CSWSArea::UnloadArea()
     delete[] m_pAreaData28;
     m_pAreaData28 = NULL;
     while (!m_lNames.IsEmpty()) {
-        CExoLocString* pName = m_lNames.RemoveHead();
+        CSWSAreaNameEntry* pName = (CSWSAreaNameEntry*)m_lNames.RemoveHead();
         delete pName;
     }
     delete[] m_pAreaData160;

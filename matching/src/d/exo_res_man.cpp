@@ -1310,3 +1310,63 @@ int CExoResMan::UpdateResourceDirectory(const CExoString& sName)
 {
     return UpdateKeyTable(sName, 2);
 }
+
+extern "C" __declspec(dllimport) int __stdcall RemoveDirectoryA(const char* pPath);
+
+// Parameter names are descriptive (the Mac build only gives the types).
+// FUNCTION: SWKOTOR 0x00408e90
+int CExoResMan::WipeDirectory(const CExoString& sDirectory, int bFiles, int bRemoveDirectory, int bSubDirectories,
+                              int bRemoveSubDirectories)
+{
+    CExoString sResolved;
+    int nResult = 1;
+    int i;
+    if (bFiles) {
+        CExoArrayList<CExoString> aFiles;
+        CExoString sFile;
+        g_pExoBase->GetDirectoryList(&aFiles, sDirectory, 0xffff, 0, 0);
+        for (i = 0; i < aFiles.num; i++) {
+            sFile = aFiles[i];
+            unsigned short nType = g_pExoResMan->GetResTypeFromFile(sFile);
+            if (nType != 0xffff) {
+                int nDot = sFile.Find('.', 0);
+                if (nDot < 0) {
+                    return 0;
+                }
+                if (!RemoveFile(sDirectory + "\\" + sFile.SubString(0, nDot), nType)) {
+                    return 0;
+                }
+            }
+        }
+    }
+    if (bRemoveSubDirectories) {
+        CExoArrayList<CExoString> aFiles;
+        CExoString sFile;
+        g_pExoBase->GetDirectoryList(&aFiles, sDirectory, 0xffff, 1, 0);
+        for (i = 0; i < aFiles.num; i++) {
+            sFile = aFiles[i];
+            if (!WipeDirectory(sDirectory + "\\" + sFile, bFiles, 1, 1, 1)) {
+                return 0;
+            }
+        }
+    }
+    else if (bSubDirectories) {
+        CExoArrayList<CExoString> aFiles;
+        CExoString sFile;
+        g_pExoBase->GetDirectoryList(&aFiles, sDirectory, 0xffff, 1, 0);
+        for (i = 0; i < aFiles.num; i++) {
+            sFile = aFiles[i];
+            if (!WipeDirectory(sDirectory + "\\" + sFile, bFiles, 0, 1, 0)) {
+                return 0;
+            }
+        }
+    }
+    if (bRemoveDirectory) {
+        sResolved = g_pExoBase->m_pcExoAliasList->ResolveFileName(sDirectory, 0xffff);
+        if (sResolved.GetLength() == 0) {
+            return 0;
+        }
+        nResult = RemoveDirectoryA(sResolved.CStr());
+    }
+    return nResult;
+}

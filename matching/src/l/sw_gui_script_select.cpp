@@ -160,3 +160,10 @@ CSWGuiScriptSelect::CSWGuiScriptSelect(CSWGuiManager* pManager)
     m_lbStates.SetListFlag0(1);
     SetActiveControl(&m_lbStates, 0);
 }
+
+// FUNCTION: SWKOTOR 0x006E9B90
+void CSWGuiScriptSelect::OnPanelAdded()
+{
+    CSWGuiPanel::OnPanelAdded();
+    g_pAppManager->m_pClientExoApp->ShowTutorialWindow(10, 0x7f000000, 0x7f000000, 0);
+}

@@ -71,6 +71,11 @@ public:
     int SmoothSelectionRestartable(int nCount, float* pPoints, int* pnOut,
                                    float** ppOut);  // 0x004C13E0
     int SmoothPointsOnPathRestartable();            // 0x004C17A0
+    int SmoothSelectionPass(int nCount, float* pPoints, int* pnOut, float** ppOut, int bArg5,
+                            int bArg6);             // 0x004C0180 (placeholder name)
+    void SmoothSelectionPasses(int nCount, float* pPoints, int* pnOut,
+                               float** ppOut);      // 0x004C15F0 (placeholder name)
+    int SmoothPointsOnPath();                       // 0x004C1670
 
     char m_pad0[0x1ac];
     CPathfindInformation* m_pPathfindInformation;   // +0x1ac
@@ -163,4 +168,64 @@ int CSWSArea::SmoothPointsOnPathRestartable()
     m_pPathfindInformation->m_n224 = 0;
     m_pPathfindInformation->SetSmoothPass3(NULL);
     return 0;
+}
+
+// Hidden starts (functions.csv merges both into 0x004C13E0): the
+// non-restartable versions of the two functions above.
+// FUNCTION: SWKOTOR 0x004C15F0
+void CSWSArea::SmoothSelectionPasses(int nCount, float* pPoints, int* pnOut, float** ppOut)
+{
+    float* pFirst;
+    float* pSecond;
+    SmoothSelectionPass(nCount, pPoints, &nCount, &pPoints, 1, 0);
+    pFirst = pPoints;
+    SmoothSelectionPass(nCount, pFirst, &nCount, &pPoints, 1, 1);
+    pSecond = pPoints;
+    SmoothSelectionPass(nCount, pSecond, pnOut, ppOut, 0, 1);
+    delete[] pFirst;
+    delete[] pSecond;
+}
+
+// FUNCTION: SWKOTOR 0x004C1670
+int CSWSArea::SmoothPointsOnPath()
+{
+    if (m_pPathfindInformation->m_pSmoothedPoints != NULL) {
+        delete[] m_pPathfindInformation->m_pSmoothedPoints;
+        m_pPathfindInformation->m_pSmoothedPoints = NULL;
+        m_pPathfindInformation->m_nSmoothedPoints = 0;
+    }
+    int nPoints = m_pPathfindInformation->m_nPoints;
+    float* pPoints = m_pPathfindInformation->m_pPoints;
+    if (nPoints == 0) {
+        m_pPathfindInformation->m_nSmoothedPoints = 0;
+        m_pPathfindInformation->m_pSmoothedPoints = NULL;
+        return 1;
+    }
+    if (m_pPathfindInformation->m_bNoSmoothing == 1) {
+        float* pCopy = new float[nPoints];
+        for (int i = 0; i < nPoints; i++) {
+            pCopy[i] = pPoints[i];
+        }
+        m_pPathfindInformation->m_pSmoothedPoints = pCopy;
+        m_pPathfindInformation->m_nSmoothedPoints = nPoints;
+        return 1;
+    }
+    int nSelected;
+    float* pSelected;
+    {
+        int nTemp;
+        float* pTemp;
+        SmoothSelectionPasses(nPoints, pPoints, &nTemp, &pTemp);
+        pSelected = pTemp;
+        nSelected = nTemp;
+    }
+    {
+        float* pOut;
+        int nOut;
+        SmoothCornerOptimize(nSelected, pSelected, &nOut, &pOut);
+        m_pPathfindInformation->m_pSmoothedPoints = pOut;
+        m_pPathfindInformation->m_nSmoothedPoints = nOut;
+    }
+    delete[] pSelected;
+    return 1;
 }

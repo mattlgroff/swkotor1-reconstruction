@@ -501,3 +501,111 @@ SelectNearestObject (2368 B), 005FA5A0, 00618C20 GetEquipmentForcePowers
 needs the full creature layout), 0060E7D0 EvaluateNewWayPoints, 005E8CF0
 CExoBaseInternal::GetDirectoryList. Retry SelectNearestObject/005F3AD0 only
 with a register-allocation idea.
+
+## Worker C s10 (branch claude/worker-c-s10), 2026-11-10
+
+Folder canonical check (`kotor-match -q -j 2 matching/src/c`): **952/1082 ->
+958/1091**. No prior MATCH regressed, no prior NONMATCH got worse, no address
+annotated twice (checked against main's status.csv). 0x0061DB60
+(CClientOptions constructor) was already NONMATCH 5 on main and is unchanged.
+
+- 9 NEW attempts, **6 NEW exact**, 3 retained NONMATCH, 0 promotions.
+- New exact (23,264 bytes): 0061FBA0 CClientExoAppInternal::LoadPlayBackEvents
+  (client_exo_app_internal_playback_s10.cpp), 005E6D20
+  CExoBaseInternal::InitResTypes (exo_base_internal_res_types_s10.cpp; Mac
+  name CreateResourceExtensionTable), 005E7A90 CExoBaseInternal::LoadAliases
+  (exo_base_internal_aliases_s10.cpp), 0061B780 CClientOptions::SaveOptions
+  (client_options_save_s10.cpp), 0061DBE0 CClientOptions::LoadOptions
+  (appended to client_options_r10.cpp), 005F1F70
+  CClientExoAppInternal::InitializeSoundOptions
+  (client_exo_app_internal_sound_s10.cpp).
+- NONMATCH (diff insns): 00616A20 CSWCCreature constructor (3 real: the
+  m_f1FC = 1.0f store is scheduled ahead of the imul of the random idle delay;
+  in sw_c_combat_attack_data.cpp), 00610F40 SwitchWeaponEvent (38, one
+  register choice: the original keeps the left item in edi and the right
+  weapon id only in its stack slot; in sw_c_creature_s3.cpp), 005E1880
+  CExoInputInternal constructor (146 reported; the first 0x98d bytes including
+  all 130 key-map stores are identical, only the 6-class loop's empty-list
+  temporary differs; exo_input_internal_ctor_s10.cpp).
+- Naming for the coordinator: symbols.csv has older call-site guesses for
+  three of these addresses (`CClientOptions::IsLoaded` for 0x0061DBE0,
+  `CClientUnknown700::Unknown61b780` for 0x0061B780, `LoadAliases(void*)`
+  returning int for 0x005E7A90). The Mac names and the bodies here say
+  LoadOptions / SaveOptions (both return 1) and
+  `void LoadAliases(const CExoString&)`. CExoSound's constructor is called
+  with two raw byte variables, so its first two parameters are unsigned char
+  (bucket j declares four unsigned longs). CClientExoApp::SetTexturePack takes
+  an unsigned char. client_options_r10.cpp's m_aTexturePackBits[11] (+0x60) is
+  the "Movies Shown" table, m_nBrightness (+0x50) is Mouse Sensitivity,
+  m_nGamma (+0x18) is Brightness, +0x49 receives the sound system's EAX level.
+- Not source / not attempted: 0x005E50C0 is the DirectInput8Create import
+  thunk (unchanged from s9).
+
+Lessons (verified this batch):
+- **`and esp, -8` frames are not a data-type effect.** Probes with __int64,
+  double, 8-aligned structs and by-value aggregates never aligned the frame,
+  yet LoadAliases, SaveOptions, LoadOptions and InitializeSoundOptions (only
+  CExoString temporaries and calls) came out aligned on their own. Treat an
+  aligned frame as something that appears once the function body is right
+  (many EH temporaries), not as something to force.
+- **Large table-driven functions are the cheapest remaining wins.** Generate
+  the statements from the disassembly (scratch script reading the original's
+  string/constant operands): InitResTypes (88 entries), LoadAliases (33),
+  SaveOptions (43 + loop), LoadOptions (43 + loop), the input constructor's
+  130 key-map stores all matched first or second compile.
+- `AddAlias(sFile, "A", "B", "C")`-style calls with implicit CExoString
+  temporaries reproduce the original's right-to-left construction, slot
+  rotation and EH state numbering exactly.
+- **Same-TU inlining of small setters.** LoadOptions expands SetShadows,
+  SetSoftShadows, SetGrass, SetVSync and SetLargeFont in line; it matched only
+  in the file that defines them (client_options_r10.cpp). Setters that exist
+  only expanded (auto level-up, auto-save, far-clip trio, texture quality) are
+  in-class inlines there, named descriptively.
+- A byte passed on to an `unsigned char` parameter goes through a stack byte
+  (`mov byte [tmp], al / mov edx, [tmp] / push edx`). That temp takes part in
+  the stack layout: getting the parameter types right (inline setter taking
+  unsigned char, callee taking unsigned char) fixed every CExoString slot in
+  LoadOptions and the frame size in InitializeSoundOptions.
+- Inline accessors once more: `g_pAppManager->GetClientExoApp()->Set(x)` loads
+  the app before evaluating the argument; an inline CClientExoApp setter that
+  calls GetClientOptions() inside gives app load, argument call, options call.
+- **Declaration order and scope steer the zero register.** A counter declared
+  inside the block that uses it (LoadPlayBackEvents' newline counter) shares
+  the function's zero register; declared at function top it went to the stack.
+  In InitializeSoundOptions the three ints had to be declared after the
+  strings in the order nEAX, nForceSoftware, nSoundInit for the EH-state zero
+  to share nSoundInit's register. Sweep the declaration order when only the
+  first `xor reg, reg` differs.
+- Function-scope versus block-scope address-taken locals changes store/load
+  scheduling after a call (LoadPlayBackEvents: sscanf targets nParam1/nParam2
+  at function scope gave store, load, store).
+- sscanf("%d") into an `unsigned short` local reproduced the original's stack
+  layout (the original is sloppy about scanf target types).
+- `strcmp(s, "literal") == 0` is the inline `repe cmpsb` with a constant
+  count and a zeroed scratch register; memcmp with a constant size gives
+  cmpsd/cmpsw instead.
+- MSVC 7.0 does turn `for (i = 0; i < N; i++) a[i] = 0;` into `rep stosd`
+  (N = 12, 17) or N inline stores from a fresh zero register (N = 4); memset
+  orders its operand loads differently.
+- In a long straight-line constructor the statement order is not the store
+  order: constants needed later reserve their register from the statement
+  that first uses them. In the creature constructor the byte flags and
+  `m_n1F4 = 1` come before the three Vector assignments in the source although
+  their stores are emitted after them.
+- A callee defined earlier in the same file is known not to throw:
+  `new CSWCCombatAttackData` in the creature constructor has no EH state, so
+  the constructor lives in sw_c_combat_attack_data.cpp.
+
+Next in-range queue (27 functions left in todo, all large): 006123E0
+CSWCCreature::SaveCharGenCreature (GFF field writes, 177 calls, no x87 -
+table-style, best next candidate), 005F8550 CClientExoAppInternal::
+StartServices (ini reads + resource directories, 64 branches), 005EAB00
+CExoIniInternal::WriteIniEntry, 005EEB10 SetEventDescriptions (8 KB, 2DA
+driven key bindings), 005E8CF0 GetDirectoryList, 00617470 PlayHitSound (both
+no longer blocked by the aligned frame), 00618C20 GetEquipmentForcePowers,
+0060E7D0 EvaluateNewWayPoints, 005E24E0 CExoInputInternal::GetEvents. Retry
+the three s10 NONMATCHes only with a new idea: for the input constructor, how
+a per-iteration empty CExoArrayList temporary gets built once before the loop
+and freed as a known-null pointer; for SwitchWeaponEvent, what keeps the right
+weapon id out of edi; for the creature constructor, what keeps the 1.0f store
+behind the imul.

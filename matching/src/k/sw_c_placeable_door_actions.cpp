@@ -19,12 +19,14 @@ void CSWCPlaceable::ActionMenuUse(int,CSWCCreature*)
  if (g_pAppManager->GetClientExoApp()->GetInGameGui()->CanPerformAction())
   message->SendPlayerToServer_06_0B(m_oid);
 }
-// NONMATCH: tutorial-call register allocation / global-load scheduling (three shapes tried).
 // FUNCTION: SWKOTOR 0x006826A0
 void CSWCPlaceable::ActionMenuOpen(int,CSWCCreature* creature)
 {
- if (creature && !g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x21,creature->m_oid,m_oid,0))
-  creature->PerformAttack(m_oid);
+ if (creature) {
+  unsigned long target=m_oid, actor=creature->m_oid;
+  if(!g_pAppManager->GetClientExoApp()->ShowTutorialWindow(0x21,actor,target,0))
+   creature->PerformAttack(m_oid);
+ }
 }
 // FUNCTION: SWKOTOR 0x00683D00
 void CSWCDoor::SetAnimation(int anim)
@@ -70,13 +72,12 @@ void CSWCDoor::ActionMenuLock(int,CSWCCreature* creature)
  message->SendPlayerToServer_06_0C(m_oid,0x7f000000);
  g_pAppManager->GetClientExoApp()->DelayNextEnemyAutoPause();
 }
-// NONMATCH: tutorial-call register allocation / global-load scheduling (three shapes tried).
 // FUNCTION: SWKOTOR 0x00683E90
 void CSWCDoor::ActionMenuOpen(int,CSWCCreature* creature)
 {
  if(creature) {
   unsigned long target=m_oid, actor=creature->m_oid;
-  if(!g_pAppManager->m_pClientExoApp->ShowTutorialWindow(0x21,actor,target,1)) {
+  if(!g_pAppManager->GetClientExoApp()->ShowTutorialWindow(0x21,actor,target,1)) {
   creature->ClearAllActions(); creature->PerformAttack(m_oid);
   g_pAppManager->m_pClientExoApp->DelayNextEnemyAutoPause();
   }

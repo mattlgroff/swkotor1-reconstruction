@@ -1,3 +1,116 @@
+# Worker K round s6 — anim id map, reticle points, door animation, 2DA promotions
+
+Branch `claude/worker-k-s6` (local only), base `e2504cd8`. Folder K canonical
+`kotor-match -q -j 2 matching/src/k`: **495/553 -> 508/561**. New
+annotations 8: NEW exact 5, new NONMATCH 3; prior NONMATCH promotions 8.
+No prior MATCH regressed and no other old NONMATCH distance changed (checked
+against the merged status.csv). No shared reports or other buckets touched.
+
+## NEW exact (5)
+
+- 0069F630 CSWCAnimBase::GetBoundingExtent (slot 0xd8, 18 bytes) and
+  0069F650 CSWCAnimBase::ServerToClientAnimation (slot 0xe0, 3408 bytes
+  with 13 jump tables) (`sw_c_anim_base_anim_map.cpp`). functions.csv
+  lists one 3440-byte span at 0069F630; 0069F650 is not in the table.
+- 00691B00 CSWCTrigger::GetReticlePoint (`sw_c_trigger_reticle.cpp`) and
+  00682FF0 CSWCPlaceable::GetReticlePoint (`sw_c_placeable_reticle.cpp`),
+  both modelled on the matched CSWCObject::GetReticlePoint (0063D560,
+  bucket n). Neither is in functions.csv.
+- 00684030 CSWCDoor::UpdateAnimation (`sw_c_door_animation.cpp`).
+
+## Promoted (8)
+
+00691970 CSWCTrigger::UpdateAnimation, 00691CC0 AddToRenderList, 006914D0
+SetCursor, 00682C60 CSWCPlaceable::SetShadow, 00682E20 SetAppearance,
+00682F20 GetCanSeeHeight, 006826A0 CSWCPlaceable::ActionMenuOpen, 00683E90
+CSWCDoor::ActionMenuOpen.
+
+## New NONMATCH (3)
+
+0069E8D0 CSWCAnimBase::PlayAnimOnModel (36, register allocation only;
+layout and both jump tables agree), 00692410 CSWCTrigger::AIUpdate (10,
+scratch-register rotation; not in functions.csv), 006832A0
+CSWCPlaceable::UpdateAnimation (21; the three sound-column arms push before
+the tail merge).
+
+## Header changes (k only)
+
+- `sw_c_anim_base.h`: MapAnimation(nSet, nAnim, nType) declaration (the
+  body inlined into ServerToClientAnimation; descriptive name).
+- `sw_c_client_object.h`: CSWCObject slots up to 0xe8 (UnknownE8),
+  m_nCountdown 0xf0, CAurObject::FindPart 0x10c, two-argument
+  CGameObjectArray::Delete, GetModuleCamera / GetGuiManager,
+  g_nObjectArraySuccess.
+- `sw_c_trigger.h`: AIUpdate, UpdateDetection (006920B0, descriptive),
+  GetReticlePoint, 006916B0 renamed GetCenterReticlePoint (returns unsigned
+  char, takes Vector&); m_n13C is unsigned.
+- `sw_c_placeable_door.h`: Vector 3-float ctor and unary minus,
+  m_pArea / m_vPosition / m_vOrientation / m_bOutOfPlace / m_n54 /
+  m_nFireForgetTime, slot 0x9c SetAnimationSlot, anim-base slots 0x60-0x70,
+  fire-and-forget helpers, C2DAs door / sound tables, inline accessors
+  CSWRules::Get2DArrays, C2DAs::GetPlaceableSounds,
+  CSWSPlaceable::GetAppearance, CAurObject::FindPart.
+
+## Lessons (MSVC 7.0)
+
+- Finding work: the function table hides starts. A linear scan for
+  16-byte-aligned starts that follow a `ret` + padding found 0069F650,
+  00692410, 00691B00, 00682FF0, 0069F1E0 and 006943D0 inside larger spans.
+- Giant `switch` returning ids: write `nAnim = N; break;` (not `return N`)
+  so every arm is `mov eax, N; pop; ret`. cl groups case bodies by dispatch
+  cluster and keeps source order inside a cluster, so emitting the cases in
+  the original's block-address order reproduces the layout.
+- Identical arms are tail-merged across both switches. Which copy survives:
+  the first one, except that (a) the body right after a table dispatch is
+  pinned, so shared arms must not be first in their cluster in the second
+  switch (put them after that switch's own arms), and (b) a body that
+  repeats a constant under two labels far apart is two source bodies
+  (`case 0x28a0: ... case 0x28a2: ...`), not one body with two labels.
+  For a nested switch duplicated in both halves, give 7 and 9 separate
+  bodies in the second copy and put the unique case last in the first.
+- `mov dl, [ecx+0xc6]` held in a register and compared later: the values
+  are by-value parameters of an inlined helper (`__forceinline`, a plain
+  `inline` is not expanded at 3 KB). A local copy folds into `cmp mem, 1`.
+- `movzx eax, al` before returning an unsigned char needs a real merge of
+  two values: an `int bFound = 0` flag set in the success arm, then
+  `if (!bFound) nResult = Fallback(v); return (unsigned char)nResult;`.
+- The fire-and-forget animation slot is read back as a full word
+  (`mov eax, [esp+N]; mov [esi+0x48], ax; push eax`): declare it `int` and
+  pass `(unsigned short*)&animation`. This fixed the old trigger miss too.
+- `xor edx, edx` + four stores for a 16-byte record: `memset(&c, 0,
+  sizeof(c))`. `= { 0.0f }` stores the first element as an immediate.
+- Two inline accessors (`g_pRules->Get2DArrays()->GetPlaceables()`) put the
+  table in EAX before the pushes; with an implicit column string
+  (`"ShadowSize"`, not `CExoString("ShadowSize")`) this promoted the three
+  placeable 2DA functions and SetCursor. An inline byte accessor
+  (`server->GetAppearance()`) gives `mov al, [..]; movzx eax, al; push`.
+- `g_pAppManager->GetClientExoApp()->X()` gives `mov ecx, [g]; mov ecx,
+  [ecx+4]` before the pushes; oid locals (`target = m_oid, actor =
+  creature->m_oid`) fix the argument registers of the tutorial calls.
+- Door sound lookup: a table local and a column local in each arm
+  (`p = g_pRules->m_p2DArrays; nColumn = g_...; pSounds = p->m_pPlaceable
+  Sounds; pSounds->Get(...)`) lets cl merge the three calls after the
+  loads; `nRow = m_n124; if (nRow == 0) { nRow = m_n125; pTable = ...; }`
+  keeps the row in EAX for both arms.
+- An if-chain on `(unsigned short)animation` gives the 16-bit `cmp ax`
+  chain with reversed arm layout; a `switch` gives a jump table.
+- matchcmp reads the function name within a few lines of the annotation:
+  a NONMATCH comment longer than six lines between `// FUNCTION:` and the
+  definition makes the function unresolved ("0 symbol matches").
+
+## Next in-range queue
+
+Still unannotated starts: 0069F1E0 (0x443, x87), 006943D0
+CSWGuiMapHider::Draw (x87), 006916B0 GetCenterReticlePoint (x87), 006920B0
+trigger detection (0x353, x87 + EH). Integer-heavy and plausible: 006837D0
+placeable target menu (992), 00693F60 CSWGuiMapHider ctor (880; border /
+image temporaries), 00694D50 / 00695180 map ctors, 00687860
+UpdatePortraits (1504), 0068A310 UpdateParty (2048), 0068C100 main
+interface ctor (4784). Near misses worth one more idea: 006832A0 (get the
+table load ahead of the pushes), 00692410 (register rotation), 0069E8D0
+(register allocation), 00684410 CSWCDoor::GetTargetActions (try the
+accessor forms), 00696F60 RequestHeadAppearance.
+
 # Worker K round s5 — main interface, CSWCAnimBase, wield thunks
 
 Branch `claude/worker-k-s5` (local only). Folder K canonical

@@ -257,6 +257,7 @@ public:
     int GetBoundingRect(CAurObject* pModel, CSWGuiExtent* pExtent);  // 0x0069EDC0
     int SetModelV12C(CAurObject* pModel, int n);
     void SetGroundTilt(Vector* pNormal, Vector* pOrientation);  // 0x0069DE90
+    unsigned short MapAnimation(unsigned char nSet, unsigned short nAnim, unsigned char nType);  // inlined into 0x0069F650 (descriptive)
 
     unsigned short m_aTextureIndices[10];           // 0x14
     unsigned char m_nTextureCount;                  // 0x28

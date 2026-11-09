@@ -365,6 +365,11 @@ public:
     ItemPropertyRemoveFn* m_pRemoveFunctions;   // 0x8: 60 entries
 
     void InitializeItemProperties();
+    // vtable slots 0x8 / 0xc (no functions.csv rows); declared non-virtual like InitializeItemProperties.
+    int ApplyItemProperty(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
+                          unsigned long nSlot, int bLoadingGame);                      // 0x004E5410
+    int RemoveItemProperty(CSWSItem* pItem, CSWItemProperty* pProperty, CSWSCreature* pCreature,
+                           unsigned long nSlot);                                       // 0x004E5450
     // Handlers without a functions.csv row yet (named by table index / behaviour).
     int ApplyBonusFeat(CSWSItem*, CSWItemProperty*, CSWSCreature*, unsigned long, int);   // 0x004E6D50
     int ApplyProperty29(CSWSItem*, CSWItemProperty*, CSWSCreature*, unsigned long, int);  // 0x004E62D0

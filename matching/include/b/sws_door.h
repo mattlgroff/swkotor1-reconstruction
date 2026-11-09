@@ -28,7 +28,12 @@ public:
     int m_bKeyRequired;                                     // 0x2d8
     CExoArrayList<unsigned long> m_aTrapDetectedBy;         // 0x2dc (name guessed)
     int m_bTrapped;                                         // 0x2e8 (name guessed)
-    char pad_0x2ec[0x3c0 - 0x2ec];
+    unsigned char m_nTrapDisarmDC;                          // 0x2ec (name guessed)
+    char pad_0x2ed[0x2f8 - 0x2ed];
+    unsigned char m_nTrapType;                              // 0x2f8 (name guessed)
+    char pad_0x2f9[0x2fc - 0x2f9];
+    int m_bTrapDisarmable;                                  // 0x2fc (name guessed)
+    char pad_0x300[0x3c0 - 0x300];
     int m_n3C0;                                             // 0x3c0 (no door actions when set)
     int m_bAutoRemoveKey;                                   // 0x3c4 (name guessed)
 };

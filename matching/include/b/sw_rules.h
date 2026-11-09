@@ -82,7 +82,7 @@ public:
     char pad_0xa6[0xaa - 0xa6];
     unsigned char m_nAA;        // 0xaa
     unsigned char m_nNumSkills; // 0xab
-    char pad_0xac[0xb0 - 0xac];
+    class CSWClass* m_pClasses; // 0xac (0x1a0-byte entries)
     class CSWRace* m_pRaces;    // 0xb0 (0x34-byte entries)
     char pad_0xb4[0xb8 - 0xb4];
     CTwoDimArrays* m_p2DArrays; // 0xb8
@@ -97,6 +97,7 @@ public:
     unsigned long GetWeightedDamageAmount(unsigned long nRoll, unsigned long nMax, unsigned long bAttackerPC, unsigned long bDefenderPC, unsigned long nPercent); // 0x00550D10
 
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
+    unsigned char GetAA() { return m_nAA; }                 // byte getter (member name unknown)
     class CSWBaseItemArray* GetBaseItemArray() { return m_pBaseItemArray; }
 };
 

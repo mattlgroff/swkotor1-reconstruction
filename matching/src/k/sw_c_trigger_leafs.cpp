@@ -80,12 +80,14 @@ class C2DAs {
 public:
     char pad_0x0[0x4c];
     C2DA* m_pCursors;                              // +0x4C
+    C2DA* GetCursors() { return m_pCursors; }
 };
 
 class CSWRules {
 public:
     char pad_0x0[0xb8];
     C2DAs* m_p2DArrays;                            // +0xB8
+    C2DAs* Get2DArrays() { return m_p2DArrays; }
 };
 
 extern CSWRules* g_pRules;                         // 0x007A3A28
@@ -97,7 +99,7 @@ void CSWCTrigger::SetCursor(unsigned char nRow)
     int found;
     {
         CExoString column("CursorID");
-        found = g_pRules->m_p2DArrays->m_pCursors->GetINTEntry(nRow, column, &value);
+        found = g_pRules->Get2DArrays()->GetCursors()->GetINTEntry(nRow, column, &value);
     }
     if (found)
         m_nCursor = (unsigned short)value;

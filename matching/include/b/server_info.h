@@ -4,6 +4,9 @@
 
 #include "b/exo_string.h"
 #include "b/exo_array_list.h"
+#ifdef B_COMBAT_INFO_NODE_INLINE
+#include "b/sw_rules.h"
+#endif
 
 struct CServerOption {
     char* m_szName;                                 // 0x0
@@ -26,7 +29,30 @@ public:
 
 class CCombatInformationNode {
 public:
+#ifdef B_COMBAT_INFO_NODE_INLINE
+    // Inlined into CCombatInformation::operator= (out of line at 0x0054F260).
+    CCombatInformationNode()
+    {
+        m_n0 = 0;
+        m_n1 = 0;
+        m_n2 = 0;
+        m_n3 = 0;
+        m_n4 = g_pRules->m_nAA;
+    }
+    CCombatInformationNode& operator=(const CCombatInformationNode& other)
+    {
+        if (this != &other) {
+            m_n0 = other.m_n0;
+            m_n1 = other.m_n1;
+            m_n2 = other.m_n2;
+            m_n3 = other.m_n3;
+            m_n4 = other.m_n4;
+        }
+        return *this;
+    }
+#else
     CCombatInformationNode();                       // 0x0054F260
+#endif
     int operator!=(CCombatInformationNode& other);  // 0x0054F280
 
     unsigned char m_n0;
@@ -41,6 +67,28 @@ public:
     CCombatInformation();                           // 0x00552280
     ~CCombatInformation();                          // 0x00550E00
     int operator!=(CCombatInformation& other);      // 0x005512D0
+    CCombatInformation& operator=(CCombatInformation& other); // 0x00552A00
+    int SaveData(class CResGFF* pGFF, struct CResStruct* pStruct); // 0x00550F30
+    int LoadData(class CResGFF* pGFF, struct CResStruct* pStruct); // 0x00552350
+    // Byte getters named after the saved field labels (LoadData passes the
+    // current values through them as defaults).
+    unsigned char GetNumAttacks() { return m_n0; }
+    unsigned char GetOnHandAttackMod() { return m_n1; }
+    unsigned char GetOnHandDamageMod() { return m_n2; }
+    unsigned char GetOffHandAttackMod() { return m_n3; }
+    unsigned char GetOffHandDamageMod() { return m_n4; }
+    unsigned char GetForceResistance() { return m_n5; }
+    unsigned char GetArcaneSpellFail() { return m_n6; }
+    unsigned char GetArmorCheckPen() { return m_n7; }
+    unsigned char GetUnarmedDamDice() { return m_n8; }
+    unsigned char GetUnarmedDamDie() { return m_n9; }
+    unsigned char GetOnHandCritRng() { return m_nA; }
+    unsigned char GetOnHandCritMult() { return m_nB; }
+    unsigned char GetOffHandCritRng() { return m_n10; }
+    unsigned char GetOffHandCritMult() { return m_n11; }
+    int GetOffHandWeaponEq() { return m_nC; }
+    unsigned long GetLeftEquip() { return m_oid30; }
+    unsigned long GetRightEquip() { return m_oid2C; }
 
     unsigned char m_n0;                             // 0x00
     unsigned char m_n1;

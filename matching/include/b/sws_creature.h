@@ -7,6 +7,7 @@
 #include "b/exo_loc_string.h"
 #include "b/exo_array_list.h"
 #include "b/exo_linked_list.h"
+#include "b/res_gff.h"
 
 class CSWSArea;
 class CSWCCreature;
@@ -182,6 +183,8 @@ public:
     unsigned long GetWorstAC(unsigned long oidSource, int bMustBeVisible); // 0x005BF340
     unsigned long GetBestAC(unsigned long oidSource, int bMustBeVisible);  // 0x005BF480
     unsigned long GetLeader();                              // 0x005BF5C0
+    int GetMemberList(unsigned long** ppMembers);           // 0x005BE780
+    int GetSingletonParty();                                // 0x005BF690
     unsigned long GetFactionMember(int nIndex, unsigned long bPCOnly); // 0x005BF6E0
     void AddMember(unsigned long oidMember, int bArg);      // 0x005BFA70
     void RemoveMember(unsigned long oidMember);             // 0x005BF920
@@ -189,6 +192,7 @@ public:
     CExoArrayList<unsigned long> m_aMembers;                // 0x00 (name guessed)
     char pad_0xc[0x14 - 0xc];
     int m_nCurrentMember;                                   // 0x14 (GetNextFactionMember cursor)
+    CExoString m_sName;                                     // 0x18 (name guessed)
 };
 
 // Spell-like ability entry of the creature stats (0xc bytes).
@@ -223,7 +227,9 @@ public:
     char pad_0x24[0x34 - 0x24];
     CExoLocString m_lsFirstName;                            // 0x34
     CExoLocString m_lsLastName;                             // 0x3c
-    char pad_0x44[0x68 - 0x44];
+    char pad_0x44[0x58 - 0x44];
+    CExoLocString m_lsDescription;                          // 0x58 (name guessed)
+    char pad_0x60[0x68 - 0x60];
     int m_nExperience;                                      // 0x68
     int m_bIsPC;                                            // 0x6c
     char pad_0x70[0x78 - 0x70];
@@ -246,19 +252,22 @@ public:
     char m_nWisdomModifier;                                 // 0xf2 (name guessed)
     char pad_0xf3[0xf4 - 0xf3];
     char m_nCharismaModifier;                               // 0xf4 (name guessed)
-    char pad_0xf5[0x124 - 0xf5];
+    char pad_0xf5[0x122 - 0xf5];
+    short m_nMaxForcePointsBase;                            // 0x122 (name guessed)
     short m_nForcePointsBonus;                              // 0x124 (name guessed)
     short m_nCurrentForcePoints;                            // 0x126 (name guessed)
     CExoArrayList<CSWSStats_SpellLikeAbility>* m_pSpellLikeAbilities; // 0x128
     char pad_0x12c[0x13a - 0x12c];
     unsigned short m_nAIStyle;                              // 0x13a
-    char pad_0x13c[0x17e - 0x13c];
+    char pad_0x13c[0x16e - 0x13c];
+    CResRef m_cPortrait;                                    // 0x16e
     short m_nGoodEvil;                                      // 0x17e
     char pad_0x180[0x186 - 0x180];
     unsigned short m_nAppearanceType;                       // 0x186 (name guessed)
     char pad_0x188[0x194 - 0x188];
     int m_n194;                                             // 0x194 (read by VM command 0x0053C010)
 
+    CResRef GetPortrait() { return m_cPortrait; }
     unsigned short GetNumFeats() { return (unsigned short)m_lstFeats.num; }
     unsigned short GetNumBonusFeats() { return (unsigned short)m_lstBonusFeats.num; }
     unsigned short GetFeat(unsigned short nIndex);          // 0x005A6920
@@ -292,6 +301,9 @@ public:
     int ReadStatsFromGff(CResGFF* pRes, CResStruct* pStruct, void* pArg); // 0x005AFCE0
     void ReadSpellsFromGff(CResGFF* pRes, CResStruct* pStruct); // 0x005AEB30
     int CanLevelUp();                                       // 0x005A6810
+    unsigned long GetKnownSpell(unsigned char nList, unsigned char nLevel, unsigned char nIndex); // 0x005A6750
+    unsigned short GetNumberKnownSpells(unsigned char nList, unsigned char nLevel); // 0x005A67A0
+    int ValidateLevelUp(class CSWLevelStats* pLevelStats);  // 0x005AF950 (Mac name 1/2)
     void AutoLevelUp(int bArg);                             // 0x005B27E0
     unsigned long GetExpNeededForNextLevel();               // 0x005A5490
     void AddClass(unsigned char nClass, unsigned char nArg); // 0x005A5D10
@@ -369,8 +381,9 @@ public:
     virtual void EventHandler(unsigned long nEventId, unsigned long nCallerObjectId, void* pScript,
                               unsigned long nCalendarDay, unsigned long nTimeOfDay); // 0x78
     virtual void SetDialogDelay7C(int nMilliseconds);       // 0x7c (name guessed)
-    virtual void v32();
-    virtual void v33(); virtual void v34();
+    virtual class CResRef GetTemplateResRef();              // 0x80 (name guessed)
+    virtual void v33();
+    virtual unsigned char GetGender();                      // 0x88
     virtual CExoLocString* GetFirstName();                  // 0x8c
     virtual CExoLocString* GetLastName();                   // 0x90
     virtual int GetObjectState94();                      // 0x94
@@ -381,8 +394,13 @@ public:
     virtual unsigned long GetLastSpellId();                 // 0xb8 (placeholder name, as in bucket a)
     virtual void v47();
     virtual void SetDialogOwner(unsigned long oid);         // 0xc0 (name guessed)
+    virtual void v49();
+    virtual class CResRef GetPortrait();                    // 0xc8
+    virtual void v51();
+    virtual unsigned short GetPortraitId();                 // 0xd0
 
     unsigned long GetId() { return m_idSelf; }
+    int GetAILevel() { return m_nAILevel; }
 
     unsigned long m_idSelf;                                 // 0x4
     unsigned char m_nObjectType;                            // 0x8
@@ -399,7 +417,11 @@ public:
     Vector m_vOrientation;                                  // 0x9c
     char pad_0xa8[0xd4 - 0xa8];
     int m_nD4;                                              // 0xd4 (items: 10001)
-    char pad_0xd8[0xe8 - 0xd8];
+    char pad_0xd8[0xe0 - 0xd8];
+    short m_nE0;                                            // 0xe0 (party update; name unknown)
+    char pad_0xe2[0xe4 - 0xe2];
+    short m_nE4;                                            // 0xe4 (party update; name unknown)
+    char pad_0xe6[0xe8 - 0xe6];
     int m_bCommandable;                                     // 0xe8
     int m_bEC;                                              // 0xec (name guessed)
     int m_bF0;                                              // 0xf0
@@ -434,6 +456,7 @@ public:
     void DeleteWorldJournalEntry(unsigned long nIndex);     // 0x004C8170
     void DeleteWorldJournalEntryStrref(unsigned long nStrref); // 0x004C8230
     void DeleteWorldJournalAllEntries();                    // 0x004C82F0
+    int GetNextWorldJournalEntryID();                       // 0x004C61D0
     void UpdateTime(unsigned long nDay, unsigned long nTime, unsigned long nDelta); // 0x004C6210
 
     char pad_0x24[0x5c - 0x24];
@@ -481,6 +504,7 @@ public:
     void SetTag(CExoString& sTag);                          // 0x00553040
     void RemoveEffectByCreator(unsigned long nCreator);     // 0x004D0820
     int GetIsPaused();                                      // 0x0063E7F0 (shared `return 0`)
+    unsigned char GetDamageLevel();                         // 0x004CB020
     int StartDialog(unsigned long oidTarget, const CExoString& sDialog,
                     int bPrivate);                          // 0x004CF490 (name guessed)
     void ClearUpdateFlag(unsigned long nBit);               // 0x004CC250
@@ -546,6 +570,7 @@ class CSWSEvent;
 class CSWSCreature : public CSWSObject {
 public:
     CSWSCreatureStats* GetStats() { return m_pStats; }
+    CSWInventory* GetInventory() { return m_pInventory; }
     int RemoveItem(class CSWSItem* pItem, int a2, int a3, int a4); // 0x00510EF0
     void AddExperience(int nXP);                            // 0x004EF930
     void CancelCombat(int bArg);                            // 0x004FDAA0
@@ -692,7 +717,9 @@ public:
     unsigned long m_oidLastTrapDetected;                    // 0x370 (name guessed)
     char pad_0x374[0x384 - 0x374];
     unsigned long m_n384;                                   // 0x384
-    char pad_0x388[0x3a8 - 0x388];
+    char pad_0x388[0x39c - 0x388];
+    int m_n39C;                                             // 0x39c (1: skipped by the party update)
+    char pad_0x3a0[0x3a8 - 0x3a0];
     CSWSActionQueueEntry m_aActionQueue[10];                // 0x3a8
     char pad_0x4c0[0x4d1 - 0x4c0];
     unsigned char m_bPlayerCharacter;                       // 0x4d1
@@ -731,7 +758,9 @@ public:
     int m_bLastPerceptionVanished;                          // 0x910 (name guessed)
     char pad_0x914[0x920 - 0x914];
     CExoArrayList<CSWSCreatureVisibility*> m_aVisibility;  // 0x920
-    char pad_0x92c[0x964 - 0x92c];
+    char pad_0x92c[0x930 - 0x92c];
+    int m_n930;                                             // 0x930 (party update; name unknown)
+    char pad_0x934[0x964 - 0x934];
     int m_n964;                                             // 0x964 (name guessed)
     int m_n968;                                             // 0x968 (name guessed)
     char pad_0x96c[0x9c8 - 0x96c];
@@ -742,7 +771,15 @@ public:
     char pad_0x9da[0x9dc - 0x9da];
     int m_n9DC;                                             // 0x9dc
     int m_bPoisoned;                                        // 0x9e0
-    char pad_0x9e4[0xa00 - 0x9e4];
+    int m_n9E4;                                             // 0x9e4 (party update; name unknown)
+    char pad_0x9e8[0x9f0 - 0x9e8];
+    unsigned short m_nPartyState;                           // 0x9f0 (bit 0x40 read; name guessed)
+    unsigned char m_n9F2;                                   // 0x9f2
+    char pad_0x9f3[0x9f4 - 0x9f3];
+    int m_n9F4;                                             // 0x9f4
+    char pad_0x9f8[0x9fc - 0x9f8];
+    unsigned short m_n9FC;                                  // 0x9fc
+    char pad_0x9fe[0xa00 - 0x9fe];
     int m_nAIStateFlags;                                    // 0xa00 (bit 2: dialog paused)
     char pad_0xa04[0xa10 - 0xa04];
     unsigned char m_nA10;                                   // 0xa10

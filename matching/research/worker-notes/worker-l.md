@@ -652,3 +652,113 @@ NONMATCH:
   (0x006C2F80, 0x006C33A0, 0x006C3630, 0x006C3EA0, 0x006C4D70, 0x006C5370,
   0x006C6500); title movies 0x006DCE80-0x006DDAF0; projectile modes
   0x006D4520-0x006D55F0; RK4 / camera helpers 0x006D0A40-0x006D30C0.
+
+## Inventory, equipment and container callbacks (2026-11-09, worker-l-s11)
+
+- Whole folder: **679/753 -> 727/805**. 52 functions annotated, **48 NEW
+  exact**, 4 retained NONMATCH, no prior MATCH regressed.
+- Header `l/sw_gui_inventory.h` (on top of `sw_gui_store.h`): equip slot
+  table, CSWCCreatureStats race, CSWCCreaturePortraitVirtuals (slot 0x148),
+  CSWSCombatRound, CSWCMessage, CSWSArea/CSWCArea, CSWCItem. Header
+  `l/sw_gui_in_game_character.h` (on top of `sw_gui_in_game_abilities.h`):
+  the portrait buttons of CSWGuiInGameCharacter (+0x4B2C/+0x4CF0/+0x5078,
+  member index +0x59F0).
+- MATCH, inventory (`sw_gui_inventory.cpp`, `_switch.cpp`): 0x006B2A80
+  SetNextFilter, 0x006B2C90 CheckFilter, 0x006B2DC0 UpdatePortraits,
+  0x006B2EC0 OnChangeCharacter, 0x006B2FD0 OnSwitchLeft, 0x006B3250
+  OnSwitchRight, 0x006B3ED0 HandleInputEvent, 0x006B4430 OnPanelRemoved,
+  0x006B4BB0 Draw, and the message-box refusals 0x006B26E0 / 0x006B2740 /
+  0x006B27A0 / 0x006B2800 / 0x006B2860.
+- MATCH, container (same file): 0x006B5250 OnPanelRemoved, 0x006B51D0
+  OnPanelAdded, 0x006B7170 GiveItem, 0x006B92F0 HandleInputEvent.
+- MATCH, item entry (`sw_gui_inventory_entry.cpp`): 0x006B4D40 Draw,
+  0x006B4DB0 Initialize, 0x006B5060 SetCanUse; 0x006B60D0
+  ??_GCSWGuiRadioButton (emitted by the existing radio dtor).
+- MATCH, equip (`sw_gui_equip.cpp`, `_switch.cpp`): 0x006B4C90
+  GetSlotItemIdIndex, 0x006B5600 GetIcon, 0x006B56B0 SetDescription,
+  0x006B5890 EquipItem(CSWSItem*), 0x006B5910 UnequipItem, 0x006B59F0
+  ShowCantEquipMessage, 0x006B60F0 OnSwitchLeft, 0x006B6370 OnSwitchRight,
+  0x006B65E0 CopyItem, 0x006B66A0 ItemExists, 0x006B7590 SetCharacter,
+  0x006B7680 ShowDescription, 0x006B7E30 CloseDescription, 0x006B8E10
+  OnPanelRemoved, 0x006B9160 OnOKPressed, 0x006B91C0 AddItemEntryToList,
+  0x006BA820 OnChangeCharacter.
+- MATCH, other panels: abilities 0x006AC3E0 OnSwitchLeft, 0x006AC660
+  OnSwitchRight, 0x006AC8D0 SetButtonColor
+  (`sw_gui_in_game_abilities_switch.cpp`); character 0x006AEC80
+  DoAutoLevelup, 0x006AECD0 SetLabelBonusPenaltyColour, 0x006AF350
+  OnChangeCharacter, 0x006AF450 OnSwitchLeft, 0x006AF6D0 OnSwitchRight
+  (`sw_gui_in_game_character_switch.cpp`); 0x006E9B90
+  CSWGuiScriptSelect::OnPanelAdded.
+- NONMATCH kept: 0x006B5760 EquipItem(oid) (13; the original pushes the base
+  item type before loading g_pRules and computes `bClear == 0` before the
+  object's vptr load; accessor/local/early-return shapes all gave the same
+  schedule), 0x006B8EB0 OnSlotSelected (44; pControl in ebx vs ebp, and my
+  four message-box blocks tail-merge where the original keeps the 0x5E2 and
+  0xA568 copies with the vptr load before the strref push), 0x006B25E0
+  inventory OnControlSelected (27; pure esi/edi swap of `this` and the
+  server/message-box pointer), 0x006B3D10 inventory OnControlEntered (15;
+  ebx/ebp swap of item id and item, pControl load order).
+- functions.csv lacks the starts 0x006B25E0, 0x006B26E0, 0x006B2740,
+  0x006B27A0, 0x006B2800, 0x006B2860, 0x006B2FD0, 0x006B3250, 0x006B3D10,
+  0x006B4D40, 0x006B4DB0, 0x006B51D0, 0x006B60F0, 0x006B6370, 0x006B7170,
+  0x006B8EB0, 0x006B9160, 0x006BA820, 0x006AC3E0, 0x006AC660, 0x006AC8D0,
+  0x006AEC80, 0x006AF450, 0x006AF6D0, 0x006E9B90 (they sit inside larger
+  rows: 0x006B2EC0, 0x006B4C90, 0x006B5060, 0x006B60D0, 0x006B6DC0,
+  0x006B8E10, 0x006ABEC0, 0x006AF350 are much shorter than listed).
+  Unannotated starts seen but not attempted: 0x006AE5F0, 0x006AEAC0,
+  0x006AED90, 0x006AEDE0, 0x006B0E40, 0x006B2250, 0x006BA3F0, 0x006BB740,
+  0x006BB7B0, 0x006BCF50, 0x006C5510, 0x006D10D0, 0x006D14D0, 0x006D1FC0.
+- Naming: descriptive OnCantEquip/OnNotUseable/OnNotUseableOnHawk/
+  OnFullHealth/OnSquadFullHealth (inventory refusals), OnSlotSelected,
+  OnItemSelected, GiveItem, CSWCCreature::CanEquipItem (0x00616520),
+  CSWSArea +0x2B0 m_bNoEquipChange, CSWSCreature +0x4E0 m_bCombatState,
+  CSWBaseItem +0x04 m_nEquipableSlots, CGuiInGame +0xBC1
+  m_nInventoryFilter, CSWCMessage::SendPlayerToServerCloseContainer
+  (0x00677630). Equip 0x006B7680 is ShowDescription (was
+  SetDescriptionVisible), 0x006B9160 OnOKPressed.
+- Shared-header changes (whole folder verified): CSWGuiManager
+  PlayGuiSoundI(unsigned char); CGuiInGame m_nInventoryFilter and
+  HideContainerGui; CServerExoApp::GetObjectArray; CClientExoApp
+  GetItemByGameObjectID; CSWGuiBorderParams::GetFillImage() (+0x40);
+  CGameObject slot 0x38 AsSWSItem, CGameObjectArray; CSWParty m_nMembers /
+  GetPartyMember; CSWCObject +0x20 m_pArea; CSWCCreature CanEquipItem /
+  PerformGiveItem; CSWRules::GetBaseItemArray; CSWGuiButton SetFillImage /
+  SetHilightFillImage wrappers; CExoArrayList SetSize / AddUnique;
+  CSWSItem ctor/CompareItem/CopyItem, bit 7 of +0x288, size 0x29C;
+  CSWSCreature +0x1CC, +0x4E0, +0x9C8, +0xAB0, +0xAC0 and the action
+  queue calls; CItemRepository::ClearNewItems; CSWBaseItem +0x04, +0x1B;
+  CSWGuiContainer m_nMode is a byte; inventory +0x1DD8..+0x1DE4 fields.
+- Lessons: (1) Three spellings of the app pointer give three schedules:
+  `g_pAppManager->m_pXExoApp->F(a)` loads the pointer after the argument,
+  `GetXExoApp()` gives `mov eax,[g]; mov edx,arg; mov ecx,[eax+N]`, and a
+  `CXExoApp* p = ...;` local loads the pointer before the pushes. Mixed use
+  inside one function is common (ItemExists, GiveItem, ShowDescription).
+  (2) The compiler reuses an argument's stack slot for an address-taken
+  local when the argument is dead (ItemExists `&pObject` at [esp+4]).
+  (3) `xor eax,eax; mov al,[m]; push eax` is an `unsigned char` parameter;
+  a `char` or `int` parameter gives movzx or no extension. (4) Ten visible
+  bits written one after another (store before the next load) need a
+  pointer helper (`SetControlVisible(&label, b)`), direct bitfield writes
+  interleave two at a time. (5) `for (..; cond && !bFound; ..)` reproduces
+  the `test ebp,ebp; jne exit` at the top of the body. (6) A string that is
+  destroyed at the end of each if/else arm (shared dtor tail, `lea` pushed)
+  is a named local in that arm, not a temporary. (7) matchcmp masks call
+  targets and global addresses: read the colour/global addresses from the
+  original listing (SetLabelBonusPenaltyColour matched with the wrong
+  colours until checked).
+- The inventory (0x006B40C0) and equip (0x006B8840) destructors have real
+  bodies (ClearControls, delete the entries, count = 0) and inline the
+  CSWGuiLabel destructor (vtable 0x0073E5B8, text at +0xD0, border at
+  +0x5C, then CSWGuiControl::~CSWGuiControl 0x00419A20); they need a label
+  class with real CSWGuiBorder/CSWGuiText members and an implicit dtor.
+- Next in-range queue: the 4 NONMATCHes above; equip HandleInputEvent
+  0x006BA3F0, UpdatePortraits 0x006B5B60, OnItemSelected 0x006B7920,
+  OnEnterSlot 0x006B9470, UpdateInventory 0x006B9970; inventory
+  PopulateItemListBox 0x006B4810 and 0x006B44D0; container SetContainer
+  0x006B8130, SetupGiveMode 0x006B8410, ctor 0x006B6DC0; the two panel
+  dtors with the inline label dtor; character HandleInputEvent 0x006B2250,
+  RotateCharacter 0x006AED90/0x006AEDE0; dialog camera family
+  0x006BB590-0x006BB7B0 and 0x006BCF50 (no header yet); debug
+  CSWGuiCreateItemSubMenu 0x006BDDE0-0x006BE2B0; earlier queues (save/load
+  LoadGame 0x006CB0E0, party selection 0x006BE560/0x006BEEB0/0x006BF5B0,
+  upgrade remainder, title movies, RK4 / camera helpers).

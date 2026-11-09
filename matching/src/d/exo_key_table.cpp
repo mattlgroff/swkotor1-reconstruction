@@ -278,7 +278,6 @@ CExoStringList* CExoKeyTable::GetKeysOfType(unsigned short nType)
     return pResult;
 }
 
-// NONMATCH: 12 insns; register choice (eax/ecx/edx) for &cResRef and the array cookie
 // FUNCTION: SWKOTOR 0x0040F200
 int CExoKeyTable::AddDirectoryContents(int nFlags)
 {
@@ -298,7 +297,8 @@ int CExoKeyTable::AddDirectoryContents(int nFlags)
         if (nType != 0xffff) {
             g_pExoResMan->GetResRefFromFile(cResRef, sFile);
             if (cResRef != "") {
-                AddKey(&cResRef, nType, (m_nTableID | 0xfffffc00) << 20, nFlags);
+                unsigned long nID = (m_nTableID | 0xfffffc00) << 20;
+                AddKey(&cResRef, nType, nID, nFlags);
             }
         }
     }
@@ -419,4 +419,304 @@ unsigned long CExoKeyTable::GetEntryCount(int bAll)
         }
     }
     return nCount;
+}
+
+// Selects operator=(const char (&)[16]) (0x00406170), which MSVC 7.0 finds
+// ambiguous with the const char* overload (same idiom as res_ref_copy.cpp).
+typedef CResRef (CResRef::*PFN_ASSIGN_ARRAY)(const char (&)[16]);
+
+struct ERF_KEY_ENTRY {
+    char resRef[16];        // 0x00
+    unsigned long nID;      // 0x10
+    unsigned long nType;    // 0x14
+};
+
+// NONMATCH: 13 (really 3 insns, the last failed open): the original has
+// "call delete; add esp, 4; mov [esi], 0; jmp" there, cl sinks the add esp
+// into the shared return-0 tail. Everything else lines up.
+// Each failed open is "delete pFile; pFile = 0;" followed by a separate
+// pointer test: that block boundary keeps the delete/new stack cleanups apart
+// and puts every "nType = k" block in the gap of the next new-expression.
+// FUNCTION: SWKOTOR 0x0040f3c0
+int CExoKeyTable::AddEncapsulatedContents(int nFlags)
+{
+    CExoString sUnused1;
+    CExoString sUnused2;
+    CResRef cResRef;
+    ERF_HEADER header;
+    unsigned char nType;
+
+    CExoFile* pFile = new CExoFile(m_sName, 2062, "rb");
+    if (pFile == 0) {
+        m_nTableType = 0;
+        return 0;
+    }
+    if (!pFile->IsOpen()) {
+        delete pFile;
+        pFile = 0;
+    }
+    if (pFile) {
+        nType = 4;
+    }
+    else {
+        pFile = new CExoFile(m_sName, 2011, "rb");
+        if (pFile == 0) {
+            m_nTableType = 0;
+            return 0;
+        }
+        if (!pFile->IsOpen()) {
+            delete pFile;
+            pFile = 0;
+        }
+        if (pFile) {
+            nType = 0;
+        }
+        else {
+            pFile = new CExoFile(m_sName, 2057, "rb");
+            if (pFile == 0) {
+                m_nTableType = 0;
+                return 0;
+            }
+            if (!pFile->IsOpen()) {
+                delete pFile;
+                pFile = 0;
+            }
+            if (pFile) {
+                nType = 1;
+            }
+            else {
+                pFile = new CExoFile(m_sName, 9997, "rb");
+                if (pFile == 0) {
+                    m_nTableType = 0;
+                    return 0;
+                }
+                if (!pFile->IsOpen()) {
+                    delete pFile;
+                    pFile = 0;
+                }
+                if (pFile) {
+                    nType = 2;
+                }
+                else {
+                    pFile = new CExoFile(m_sName, 2061, "rb");
+                    if (pFile == 0) {
+                        m_nTableType = 0;
+                        return 0;
+                    }
+                    if (!pFile->IsOpen()) {
+                        delete pFile;
+                        pFile = 0;
+                    }
+                    if (pFile == 0) {
+                        m_nTableType = 0;
+                        return 0;
+                    }
+                    nType = 3;
+                }
+            }
+        }
+    }
+    pFile->Read(&header, sizeof(header), 1);
+    if (nType == 2) {
+        if (header.nFileType != ' FRE') {
+            m_nTableType = 0;
+            delete pFile;
+            return 0;
+        }
+    }
+    else if (nType == 3) {
+        if (header.nFileType != ' KAH') {
+            m_nTableType = 0;
+            delete pFile;
+            return 0;
+        }
+    }
+    else if (header.nFileType != ' DOM') {
+        m_nTableType = 0;
+        delete pFile;
+        return 0;
+    }
+    if (header.nVersion != '0.1V') {
+        m_nTableType = 0;
+        delete pFile;
+        return 0;
+    }
+    if (header.nEntryCount <= 0) {
+        m_nTableType = 0;
+        delete pFile;
+        return 0;
+    }
+    m_nTableSize = (unsigned long)(header.nEntryCount * 1.2);
+    m_pTable = AllocateTable(m_nTableSize);
+    if (m_pTable == 0) {
+        m_nTableType = 0;
+        delete pFile;
+        return 0;
+    }
+    pFile->Seek(header.nOffsetToKeyList, 0);
+    for (unsigned long i = 0; i < header.nEntryCount; i++) {
+        ERF_KEY_ENTRY key;
+        pFile->Read(&key, sizeof(key), 1);
+        (cResRef.*(PFN_ASSIGN_ARRAY)&CResRef::operator=)(key.resRef);
+        key.nID = (key.nID & 0xfffff) | ((m_nTableID | 0xfffff800) << 20);
+        AddKey(&cResRef, (unsigned short)key.nType, key.nID, nFlags);
+    }
+    delete pFile;
+    m_nFiles = 1;
+    m_ppResFile = new CExoBaseResFile*[1];
+    if (m_ppResFile == 0) {
+        return 0;
+    }
+    m_ppResFile[0] = new CExoEncapsulatedFile();
+    if (m_ppResFile[0] == 0) {
+        delete m_ppResFile;
+        m_ppResFile = 0;
+        return 0;
+    }
+    m_ppResFile[0]->m_sFileName = m_sName;
+    m_ppResFile[0]->LoadHeader(nType);
+    return 1;
+}
+
+struct KEY_HEADER {
+    unsigned long nFileType;            // 0x00
+    unsigned long nVersion;             // 0x04
+    unsigned long nBifCount;            // 0x08
+    unsigned long nKeyCount;            // 0x0c
+    unsigned long nOffsetToFileTable;   // 0x10
+    unsigned long nOffsetToKeyTable;    // 0x14
+};
+
+struct KEY_FILE_ENTRY {
+    unsigned long nSize;                // 0x00
+    unsigned long nNameOffset;          // 0x04
+    unsigned short nNameSize;           // 0x08
+    unsigned short nDrives;             // 0x0a
+};
+
+struct KEY_KEY_ENTRY {
+    char resRef[16];                    // 0x00
+    unsigned short nType;               // 0x10
+    unsigned long nID;                  // 0x14
+};
+
+void* __cdecl ExoMalloc(unsigned int nSize);    // 0x005e9350
+void __cdecl ExoFree(void* pMemory);            // 0x005e9360 (descriptive)
+
+// FUNCTION: SWKOTOR 0x0040fb80
+int CExoKeyTable::AddKeyTableContents(int nFlags)
+{
+    CExoString sDrive;
+    CExoString sBifName;
+    CExoString sDir;
+    CResRef cResRef;
+    KEY_HEADER header;
+    KEY_KEY_ENTRY key;
+    unsigned long i;
+
+    CExoFile* pFile = new CExoFile(m_sName, 9999, "rb");
+    if (pFile == 0) {
+        m_nTableType = 0;
+        return 0;
+    }
+    if (!pFile->IsOpen()) {
+        m_nTableType = 0;
+        delete pFile;
+        return 0;
+    }
+    pFile->Read(&header, sizeof(header), 1);
+    if (header.nFileType != ' YEK') {
+        m_nTableType = 0;
+        delete pFile;
+        return 0;
+    }
+    if (header.nVersion != '  1V') {
+        m_nTableType = 0;
+        delete pFile;
+        return 0;
+    }
+    if (header.nBifCount <= 0 && header.nKeyCount <= 0) {
+        m_nTableType = 0;
+        delete pFile;
+        return 0;
+    }
+    m_nTableSize = 1023 - (long)((float)header.nKeyCount * -1.1764705882352942);
+    m_pTable = AllocateTable(m_nTableSize);
+    if (m_pTable == 0) {
+        m_nTableType = 0;
+        delete pFile;
+        return 0;
+    }
+    unsigned long nFileTableSize = header.nOffsetToKeyTable - header.nOffsetToFileTable;
+    char* pBuffer = (char*)ExoMalloc(nFileTableSize);
+    if (pBuffer == 0) {
+        m_nTableType = 0;
+        delete m_pTable;
+        m_pTable = 0;
+        delete pFile;
+        return 0;
+    }
+    pFile->Seek(header.nOffsetToFileTable, 0);
+    pFile->Read(pBuffer, nFileTableSize, 1);
+    int nColon = m_sName.Find(':', 0);
+    if (nColon <= 0) {
+        return 0;
+    }
+    sDrive = m_sName.SubString(0, nColon);
+    m_nFiles = header.nBifCount;
+    m_ppResFile = new CExoBaseResFile*[m_nFiles];
+    if (m_ppResFile == 0) {
+        delete m_pTable;
+        m_pTable = 0;
+        ExoFree(pBuffer);
+        delete pFile;
+        return 0;
+    }
+    for (i = 0; i < header.nBifCount; i++) {
+        KEY_FILE_ENTRY* pEntry = &((KEY_FILE_ENTRY*)pBuffer)[i];
+        m_ppResFile[i] = new CExoResFile();
+        if (m_ppResFile[i] == 0) {
+            delete m_ppResFile;
+            m_ppResFile = 0;
+            delete m_pTable;
+            m_pTable = 0;
+            ExoFree(pBuffer);
+            delete pFile;
+            return 0;
+        }
+        m_ppResFile[i]->m_nResType = pEntry->nDrives;
+        m_ppResFile[i]->m_nSize = pEntry->nSize;
+        pEntry->nNameOffset -= header.nOffsetToFileTable;
+        sBifName = pBuffer + pEntry->nNameOffset;
+        int nDot = sBifName.Find('.', 0);
+        if (nDot < 0) {
+            delete m_ppResFile;
+            m_ppResFile = 0;
+            delete m_pTable;
+            m_pTable = 0;
+            ExoFree(pBuffer);
+            delete pFile;
+            return 0;
+        }
+        m_ppResFile[i]->m_sFileName = sDrive + ":" + sBifName.SubString(0, nDot);
+        if (m_ppResFile[i]->m_nResType != 1) {
+            if (!LocateBifFile(m_ppResFile[i]->m_sFileName)) {
+                sDir = "CD0:";
+                m_ppResFile[i]->m_sFileName = sDir + sBifName.SubString(0, nDot);
+            }
+        }
+        m_ppResFile[i]->LoadHeader(0);
+    }
+    pFile->Seek(header.nOffsetToKeyTable, 0);
+    for (i = 0; i < header.nKeyCount; i++) {
+        pFile->Read(key.resRef, 16, 1);
+        pFile->Read(&key.nType, 2, 1);
+        pFile->Read(&key.nID, 4, 1);
+        (cResRef.*(PFN_ASSIGN_ARRAY)&CResRef::operator=)(key.resRef);
+        key.nID &= 0x3fffffff;
+        AddKey(&cResRef, key.nType, key.nID, nFlags);
+    }
+    delete pFile;
+    ExoFree(pBuffer);
+    return 1;
 }

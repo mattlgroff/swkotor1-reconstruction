@@ -93,15 +93,37 @@ public:
 class CClientExoApp {
 public:
     CSWParty* GetParty();                           // 0x005ED8B0
-    void SetTexturePack(int nPack);                 // 0x005ED8F0
+    void SetTexturePack(unsigned char nPack);       // 0x005ED8F0
     void SetMouseMode(unsigned char nMode);         // 0x005EE150
     void SaveOptions();                             // 0x005EDF70
+};
+
+struct CSWPartyTable {
+    void AutoLevelUpNPCs();                         // 0x00563B90
+};
+
+class CServerExoApp {
+public:
+    CSWPartyTable* GetPartyTable();                 // 0x004AEE70 (descriptive)
 };
 
 class CAppManager {
 public:
     void* m_pUnknown00;
     CClientExoApp* m_pClientExoApp;                 // 0x04
+    CServerExoApp* m_pServerExoApp;                 // 0x08
+
+    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
+};
+
+class CExoIni {
+public:
+    CExoIni();                                      // 0x005E6750
+    ~CExoIni();                                     // 0x005E67E0
+    int ReadIniEntry(CExoString& sValue, const CExoString& sFile, const CExoString& sSection,
+                     const CExoString& sKey);       // 0x005E67C0
+
+    void* m_pcExoIniInternal;                       // 0x00
 };
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
@@ -122,6 +144,7 @@ void AurDisableShadows();                           // 0x0044F080
 void AurSetAnisotropy(int n);                       // 0x0044F2C0
 void AurSetAntiAliasingMode(int n);                 // 0x0044F2F0
 unsigned char AurCheckFrameBufferModificationsAvailable();  // 0x0045FAB0
+void AurATIUnlockSoftShadowsForHotFix();            // 0x0044EF90
 
 class CClientOptions {
 public:
@@ -238,6 +261,43 @@ public:
     void SetBrightnessDefaults();
     void SetFarClipDefaults();
     void SetDefaults();
+
+    // Inline setters seen only expanded inside LoadOptions (descriptive names).
+    void SetAutoLevelUp(int b)
+    {
+        m_b8Bit0 = b;
+        if (m_b8Bit0 && g_pAppManager->m_pServerExoApp) {
+            g_pAppManager->m_pServerExoApp->GetPartyTable()->AutoLevelUpNPCs();
+        }
+    }
+    void SetAutoSave(int b) { m_b8Bit2 = b; }
+    void SetTextureQuality(unsigned char n)
+    {
+        m_nTexturePack = n;
+        g_pAppManager->GetClientExoApp()->SetTexturePack(n);
+    }
+    void SetFarClip(float f)
+    {
+        if (g_fFarClipOverride != -1.0f) {
+            g_fFarClipOverride = f;
+        }
+        m_fFarClip = f;
+    }
+    void SetFarClip2(float f)
+    {
+        if (g_fFarClipOverride2 != -1.0f) {
+            g_fFarClipOverride2 = f;
+        }
+        m_fFarClip2 = f;
+    }
+    void SetFarClip3(float f)
+    {
+        if (g_fFarClipOverride3 != -1.0f) {
+            g_fFarClipOverride3 = f;
+        }
+        m_fFarClip3 = f;
+    }
+    int LoadOptions();
 };
 
 // FUNCTION: SWKOTOR 0x0061D1C0
@@ -616,4 +676,153 @@ CClientOptions::CClientOptions()
     m_b14Bit10 = 1;
     m_n10 = 1;
     SetDefaults();
+}
+
+// Reads every option from swkotor.ini over the defaults (Mac name). The small
+// setters defined earlier in this file are expanded in line here, as in the
+// original object file.
+// FUNCTION: SWKOTOR 0x0061DBE0
+int CClientOptions::LoadOptions()
+{
+    SetDefaults();
+    CExoIni cIni;
+    CExoString sValue;
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Difficulty Level")) {
+        m_bUnknown04 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Auto Level Up NPCs")) {
+        SetAutoLevelUp(sValue.AsINT());
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Mouse Look")) {
+        m_b8Bit1 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "AutoSave")) {
+        m_b8Bit2 = sValue.AsINT();
+        SetAutoSave(m_b8Bit2);
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Reverse Minigame YAxis")) {
+        m_b8Bit3 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Combat Movement")) {
+        m_b8Bit4 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Mouse Sensitivity")) {
+        m_nBrightness = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Enable Mouse Teleporting To Buttons")) {
+        m_n10 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Hide Unequippable")) {
+        m_b14Bit0 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Tutorial Popups")) {
+        m_b14Bit1 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Subtitles")) {
+        m_b14Bit2 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Mini Map")) {
+        m_b14Bit3 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Floating Numbers")) {
+        m_b14Bit4 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Status Summary")) {
+        m_b14Bit5 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Use Small Fonts")) {
+        SetLargeFont(sValue.AsINT());
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Hide InGame GUI")) {
+        m_b14Bit9 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Autopause Options", "End Of Combat Round")) {
+        m_b14Bit11 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Autopause Options", "Enemy Sighted")) {
+        m_b14Bit12 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Autopause Options", "Mine Sighted")) {
+        m_b14Bit13 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Autopause Options", "Party Killed")) {
+        m_b14Bit14 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Autopause Options", "Action Menu")) {
+        m_b14Bit15 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Autopause Options", "New Target Selected")) {
+        m_b14Bit16 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "Brightness")) {
+        m_nGamma = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "Shadows")) {
+        SetShadows(sValue.AsINT());
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "AllowSoftShadows")) {
+        if (sValue.AsINT() == 1) {
+            AurATIUnlockSoftShadowsForHotFix();
+        }
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "Soft Shadows")) {
+        SetSoftShadows(sValue.AsINT());
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "Grass")) {
+        SetGrass(sValue.AsINT());
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "Texture Quality")) {
+        SetTextureQuality(sValue.AsINT());
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "Frame Buffer")) {
+        SetFrameBuffer(sValue.AsINT());
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Graphics Options", "V-Sync")) {
+        SetVSync(sValue.AsINT());
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Music Volume")) {
+        m_nMusicVolume = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Voiceover Volume")) {
+        m_nVoiceVolume = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Sound Effects Volume")) {
+        m_nSoundVolume = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Sound Options", "Movie Volume")) {
+        m_nMovieVolume = sValue.AsINT();
+    }
+    ApplySoundOptions();
+    CExoString sKey;
+    for (int i = 0; i < 11; i++) {
+        sKey.Format("Movie%2d", i);
+        cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Movies Shown", sKey.CStr());
+        m_aTexturePackBits[i] = sValue.AsINT();
+    }
+    m_n90 = 0;
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "EnableCheats")) {
+        m_n90 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Keyboard Camera DPS")) {
+        SetFarClip(sValue.AsFLOAT());
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Keyboard Camera Acceleration")) {
+        SetFarClip2(sValue.AsFLOAT());
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Keyboard Camera Deceleration")) {
+        SetFarClip3(sValue.AsFLOAT());
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Enable Tooltips")) {
+        m_b14Bit10 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "Reverse Mouse Buttons")) {
+        m_n54 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "EnableScreenShot")) {
+        m_n58 = sValue.AsINT();
+    }
+    if (cIni.ReadIniEntry(sValue, ".\\swkotor.ini", "Game Options", "GUIsInScreenShot")) {
+        m_b5CBit0 = sValue.AsINT();
+    }
+    return 1;
 }

@@ -61,6 +61,7 @@ public:
     CSWSkill* m_pSkills;                            // 0xb4
     CTwoDimArrays* m_p2DArrays;                     // 0xb8
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
+    class CSWBaseItemArrayL* GetBaseItemArray() { return m_pBaseItems; }
     unsigned short GetFeatId(unsigned short nIndex) { return m_pFeatIds[nIndex]; }
     unsigned char GetNumSkills() { return m_nNumSkills; }
 };
@@ -74,6 +75,8 @@ class CSWCCreature : public CSWCObject {
 public:
     CSWCCreature();                                 // 0x00616A20
     CSWSCreature* AsServerCreature();               // 0x0060FB20
+    void PerformGiveItem(unsigned long oidItem, unsigned long oidTarget, int nCount);   // 0x0060EEA0
+    int CanEquipItem(class CSWSItem* pItem, int bEquipped, int nSlot);  // 0x00616520 (descriptive)
     class CSWCAnimBase* GetAnimBase();              // 0x0063C070
     void CGPauseCycle(float fDelta, int bReset);    // 0x0060F7C0
     void SetAppearance(struct CSWCCreatureAppearance* pAppearance, int nPart, int bLoad);  // 0x006134C0

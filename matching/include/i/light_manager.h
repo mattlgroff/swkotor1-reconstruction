@@ -159,6 +159,12 @@ public:
     virtual void v04();
     virtual void GetLocalTransform(Vector* pPos, Quaternion* pOrient);  // +0x08
     virtual void GetWorldTransform(Vector* pPos, Quaternion* pOrient);  // +0x0c
+    virtual void v10();
+    virtual void v14();
+    virtual void v18();
+    virtual void v1c();
+    virtual void v20();
+    virtual Light* AsLight();                                           // +0x24 (placeholder name)
 
     LightNode* m_pNode;                                 // +0x04
     char pad_0x08[0x40 - 0x8];
@@ -170,8 +176,9 @@ public:
     char pad_0x60[0x68 - 0x60];
     int m_bAmbientOnly;                                 // +0x68
     int m_bAffectDynamic;                               // +0x6c
-    int m_bAffectStatic;                                // +0x70
-    char pad_0x74[0x80 - 0x74];
+    int m_bAffectStatic;                                // +0x70 (0, 1 or 2 in LightCompare)
+    int m_nSortPriority;                                // +0x74 (placeholder name; 0 = use the node's)
+    char pad_0x78[0x80 - 0x78];
     float m_fPriority;                                  // +0x80 (placeholder name)
     char pad_0x84[0x8c - 0x84];
     float m_fMultiplier;                                // +0x8c

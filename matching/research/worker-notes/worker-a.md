@@ -587,3 +587,75 @@ GetFilteredEffectList (no src/), 004FA100 placement, 004EE440 GetUseRange,
 00501950 invisibility check, 0051B050 UpdateVisibleList, 005155B0 /
 005103B0 / 0050FF20 movement actions, 004D4620 EndCombatRound, 004D09E0
 DoDamageReduction, 004D1730 UpdateEffectList.
+
+# Worker A, round s9 (2026-11-09)
+
+Branch claude/worker-a-s9 (local) from main e2504cd8. Two parts: the next
+queue items (creature movement/damage helpers), then a sweep for function
+starts that functions.csv does not list (so todo.py never showed them).
+
+Folder `kotor-match -q -j 2 matching/src/a`: 568/701 -> **589/724**.
+23 attempted, 21 NEW exact, 2 retained NONMATCH, 0 prior MATCH regressions,
+no prior NONMATCH diff count changed (checked against status.csv).
+
+NEW exact (21):
+- 004EDBA0 ForceMoveToPoint (Mac name), 0051B940 UpdateSubareasOnJumpPosition,
+  004F1460 Fn4F1460 (ComputeAIState; placeholder name kept, it is in symbols.csv).
+- No functions.csv row (found by scanning .rdata pointers and call targets):
+  004D8320 / 004D8360 CSWSEffectListHandler::OnApplyEffect / OnRemoveEffect,
+  004E5410 / 004E5450 CSWSItemPropertyHandler::ApplyItemProperty /
+  RemoveItemProperty (vtable slots 0x8/0xc of 0x00744274 / 0x00744284),
+  CSWSCreature vtable 0x007470C8: 004EB6B0 (slot 0x8, placeholder
+  Set350And388AndA8), 004F8290 (0x80 GetResRef44), 004F82E0 (0x84), 004F82F0
+  (0x88), 004F8310 / 004F8330 (0x8c/0x90 GetFirstName/GetLastName), 004F8350 /
+  004F8360 (0xb8/0xbc), 004F8280 (0xc4 GetLockOrientationToObject), 004F8370
+  (0xc8 GetPortrait), 004F83C0 (0xcc SetPortrait), 004F14F0 (0xd8
+  UpdateEffectPtrs, inside the 004F1460 row), 0050D340 CSWSArea::AsSWSArea
+  (game-object base at +0x11c), 005063B0 implicit destructor of the 0x144
+  list element (SYMBOL ??1CSWSAreaNameEntry@@QAE@XZ, descriptive type name;
+  before this, ~CExoLocString was recorded as the delete target in UnloadArea).
+  Names without a Mac/debug-map entry are descriptive or placeholders.
+
+Retained NONMATCH: 004FB9E0 BroadcastSpellCast (16: the original keeps a dead
+store of the GetFromList920 result in the loop-counter slot; only a volatile
+local reproduces it, not kept), 004F3830 DoDamage (51: effect type word read
+twice without CSE, scratch-register choice for app-manager/rules loads).
+
+Lessons:
+- functions.csv misses many small starts. /private/tmp scripts are gone, but
+  the method is: collect E8 call targets plus every .rdata dword that points
+  into .text, drop annotated addresses, sort by distance to the next known
+  start. Jump tables (004D9100, 004F0F50) and mid-function pointers show up
+  too; check the bytes before annotating.
+- Still unannotated starts: 004FAB00 ClearAction (vtable slot 0x74; the csv
+  row says 004FAB0D), 004FE210 (slot 0x70), 004FECE0 (slot 0x78), 004E43C0,
+  adjustor thunks 0050D350 / 0050D360 (need the real CSWSArea destructor
+  hierarchy).
+- Three Vector copies whose single components are passed by address:
+  `Vector v = p->GetPosition(); f(&v.x); v = p->GetPosition(); f(&v.y);
+  Vector v2 = p->GetPosition(); f(&v2.z);` (inline by-value getter).
+- `g_pAppManager->GetServer()->F(list[i])` (inline getter on the app manager)
+  loads the list element base before the app manager; the direct member
+  loads it after.
+- CExoArrayList ctor store order num, array_size, element comes from
+  `{ num = 0; array_size = 0; element = 0; }` (fixed three stores in the
+  0051B7B0 attempt; its diff count is unchanged at 7).
+- x87: `if (magsq > r * r) continue;` gives `test ah,5 / jnp`; `<=` gives
+  `test ah,1 / jne`.
+- Dispatch through a member-function-pointer table: `int nType = p->m_nType;
+  if (p->m_nType < 0x6e && table[nType])` keeps the 16-bit compare plus the
+  separate movzx and prevents the tail jump an `unsigned short` local produces.
+- An override of a virtual introduced by a non-first base compiles to
+  `lea eax,[ecx-offset]` for `return this;` in a unit that declares only the
+  base shape.
+- A `struct { CExoLocString s; }` element gives the out-of-line implicit
+  destructor that is a single jmp.
+- Header: CGameObject +0xc name storage; stats +0x34..+0x64, +0x12c..+0x162
+  effect start indices, +0x16e portrait; creature +0x80/+0x84 current action,
+  +0xa8, +0x350, +0x388, +0x8f0, +0x950 list, +0x9f4; rules +0x8c spell
+  array; C2DAs +0x7c; CSWSCreature virtuals 0x80-0x90 and 0xb8-0xc8 named.
+
+Next in-range queue: ClearAction 004FAB00 (if-chain over action ids),
+004FE210 / 004FECE0 virtuals, 004F1C40 PostProcess, 004FB1E0
+ApplyDeathExperience, 00501950 GetInvisible, 004FC210 UseItem, 00514270
+AIActionCounterSpell, 004FA100 AddToArea, then the larger lists from s7/s8.

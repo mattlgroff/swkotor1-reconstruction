@@ -445,3 +445,95 @@ Next in range (all remaining todo items are large or x87):
   0x005950C0 AoE segment test (912, x87), 0x005A8BE0 GetDamageBonus (1136, debug strings),
   0x005B92B0 SavingThrowRoll (960), dialog send paths 0x005A13D0 / 0x005A1C00 / 0x005A3820 /
   0x005A4010, CSWSJournal::SetState 0x005C5A40.
+
+## 2026-11-09 round s10: GFF savers, stats ctor, body bag, placeable template, saver promotions
+
+Folder `matching/src/f`: 720/828 -> 729/836 (kotor-match -q -j 2).
+8 new annotations: 6 exact, 2 NONMATCH; 3 prior NONMATCH promoted. No prior MATCH regressed.
+
+New exact:
+- `encounter_save.cpp` 0x00591350 CSWSEncounter::SaveEncounter (first compile).
+- `stats_save.cpp` 0x005AEC90 CSWSCreatureStats::SaveClassInfo.
+- `stats_ctor.cpp` 0x005ACA80 CSWSCreatureStats::CSWSCreatureStats.
+- `placeable_bodybag.cpp` 0x005864B0 CSWSPlaceable::LoadBodyBag.
+- `placeable_template.cpp` 0x00587A70 CSWSPlaceable::LoadFromTemplate (only 0x124 bytes; the rest of
+  its functions.csv range is the next function).
+- `pathfind_side.cpp` 0x005CF8D0 CAvoidCreature::SideClearOfObstructions.
+
+Promoted: 0x00586A70 CSWSPlaceable::SavePlaceable (`placeable_save.cpp`), 0x00594D80
+CSWSAreaOfEffectObject::SaveEffect (moved to its own `aoe_save.cpp`), 0x005C7F30
+CSWSWaypoint::LoadWaypoint (`waypoint_template.cpp`).
+
+NONMATCH kept:
+- 0x005B1B90 CSWSCreatureStats::SaveStats (`stats_save.cpp`, 73 by count, 3 real spots: the
+  CurrentHitPoints spill is scheduled after `push 1; mov ecx, ebx`; CurrentForce has a
+  `mov eax, ebx` copy of the stats pointer before the inlined force-points getter; the left-weapon
+  GetString computes `add ecx, 0x3c` before `push 0`). ~60 compiles spent; everything else lines up.
+- 0x00587BA0 CSWSPlaceable::EventHandler (`placeable_template.cpp`, 175, first draft). Its function
+  start is missing from functions.csv (vtable +0x78, follows LoadFromTemplate's padding); it had to be
+  annotated for LoadFromTemplate to compare. Control flow follows the original; the 0..0x1d
+  signal-event switch shares one RunScript tail in the original (`add esi, <script>; jmp`).
+
+Screened and skipped: 0x00584EC0 CSWSPlaceable::AIActionCastSpell (redundant Vector copies parked in
+the node argument slot), LoadStore 0x005C7180 (zero register / frame 4 bytes smaller), SaveStats above.
+
+Lessons:
+
+- The stats / creature code is written with inline getters almost everywhere, and the getter's
+  RETURN TYPE shows in the bytes:
+  - `unsigned char` getter passed to a BYTE parameter: `mov dl,[m]; mov [slot],dl; mov eax,[slot]; push eax`
+    (materialised in a dead argument slot); a direct member read gives `xor eax,eax; mov al,[m]`.
+  - `int` getter passed to BYTE: `mov eax,[m]; push eax`; `unsigned short` getter: `xor eax,eax; mov ax,[m]`;
+    `char` getter passed to SHORT: `mov al,[m]; movsx cx,al`; `short` getter passed to SHORT through a
+    getter chain: `movsx eax, word ptr [..]`.
+  - A getter chain (`GetBaseCreature()->GetPlot()`, `GetBaseCreature()->GetStats()->GetForcePoints()`,
+    `g_pRules->Get2DArrays()->GetPlaceablesTable()`) keeps every link in eax (`mov eax,[esi+0x24];
+    mov eax,[eax+0xf8]`); `m_pBaseCreature->GetPlot()` uses ecx/edx for the pointer.
+  - Nested small-type inlines reproduce 16-bit spills: `unsigned short GetHitPointsDelta() { return
+    GetHitPointsS() - GetMaxHitPoints(1); }` + `int GetSaved...() { return GetHitPointsDelta() +
+    GetCurrentHitPoints(1); }` assigned to a `short` local before the WriteField call gives the
+    original `mov word [slot],cx` / `xor ecx,ecx; mov cx,[slot]` and the label push after the calls.
+- When the original inlines an out-of-line function (GetWillSavingThrow / GetFortSavingThrow in
+  SaveStats), copy its matched definition into the TU as `inline`; inside the copy the getter form
+  (`GetBaseCreature()->GetTotalEffectBonus`) fixed the load order even though the standalone
+  function matches with the plain member.
+- Loops over a compile-time count of 1 leave traces: `jmp +3; lea ecx,[ecx]` alignment before code
+  that never loops = `for (nSpellLevel = 0; nSpellLevel < 1; nSpellLevel++)` (SaveClassInfo, with the
+  loop variable as the Format argument); an element address built from another live register
+  (`[edi+0xa8]` for m_ClassInfo[1]) = `for (i = 1; i < 2; i++)` (stats ctor).
+- Local declaration order sets the frame: declaring the CResStruct / CExoString / CResList locals in
+  ascending original-offset order fixed SaveClassInfo's whole frame; a struct used only in one block
+  whose slot is reused later (cSpells) must be declared in that block. Conversely SavePlaceable needed
+  `CResStruct cElement` at function scope so the bearing temp reuses pItem's slot instead.
+- An extra, separately declared success flag (`int bNameSuccess` for the LocalizedName read) explained
+  LoadWaypoint's larger frame; the two trailing member stores had to be written in the original
+  store order (`m_bHasMapNote` before `m_bMapNoteEnabled`) to get the slots right.
+- `Vector v; v = GetPosition();` (inline empty Vector ctor) copies the returned temporary into
+  registers; `Vector v = GetPosition();` uses the return slot in place. Needs a TU without the
+  out-of-line Vector() (SaveEffect split into aoe_save.cpp).
+- Bounds-checked inline getters must be spelled with the original early-out order: `if (n >= num)
+  return 0xffff; return element[n];`, `if (!m_bIsPC) return 0; if (n >= num) return 0; ...`, and the
+  skill clamp `if (n < 127 && n > -127) return n; if (n >= 127) return 127; return -127;`.
+- `g_pAppManager->GetServerExoApp()->F(args)` loads the app pointer before the argument pushes,
+  `g_pAppManager->m_pServerExoApp->F(args)` after them; per call site (SideClearOfObstructions uses
+  both). `AddObjectToLookupTable(GetTag(), GetId())` with inline getters gave the body-bag tail.
+- `add eax,0x100; add eax,0xc` (two adds) = a base-class adjustment followed by an inline getter that
+  returns a member address (CSWSArea second base at +0x100, member +0xc).
+- A CWalkHitInfo-style struct with five separate Vector members is zeroed with 15 immediate stores;
+  a `Vector m_av[5]` member compiles to a loop.
+- Scratch helpers that paid off (kept outside the repo): a variants sweeper that swaps one source
+  block for N alternatives and prints the diff counts, and a dumper that prints the original column
+  with call targets resolved through symbols.csv and string literals read from the exe.
+
+Next in range:
+- SaveStats 0x005B1B90: the three spots above (try other inline shapes for the force total and the
+  hit point delta; the rest is done).
+- EventHandler 0x00587BA0: share the RunScript tail (`CExoString *pScript = &m_sScripts[n]; ... goto
+  run;`), then registers.
+- The other GFF loaders are now the best candidates (linear, same getter style): 0x0058DA80
+  CSWSTrigger::LoadTrigger (3040, ends with a quaternion vertex loop), 0x00585670
+  CSWSPlaceable::LoadPlaceable (3648), 0x0058A1F0 CSWSDoor::LoadDoor (4576), 0x00592430
+  ReadEncounterFromGff (3488), 0x005AFCE0 ReadStatsFromGff (7856).
+- Stats: LevelUp 0x005AABF0 / LevelDown 0x005AB1E0 (use the getter rules above), UpdateCombatInformation
+  0x005ADDC0, retry GetReflexSavingThrow 0x005AB8F0 and the other stats near-misses with typed getters.
+- Still open from earlier rounds: dialog send paths, CSWSJournal::SetState, walkmesh and combat queues.

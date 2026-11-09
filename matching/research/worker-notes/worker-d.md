@@ -3,6 +3,91 @@
 Older history for this bucket (rounds 1-9 in the Kotor RE checkout):
 `~/Kotor RE/docs/batches/worker-d-notes.md`.
 
+## Round s3 (2026-11-09)
+
+Folder `matching/src/d`: 651/708 -> 655/712 (4 new exact: 3 new annotations,
+1 promoted NONMATCH; 1 new NONMATCH annotation). Only large functions were
+left in the todo list, so the batch is small.
+
+### New exact matches (4)
+
+- two_da.cpp: 0x004143b0 C2DA::Load2DArray (1664 B). CRes2DA gained the
+  descriptive getters Get2DADataPtr (0x00404dd0) / Get2DASize (0x00710e50)
+  and an inline IsBinary().
+- exo_key_table.cpp: 0x0040fb80 CExoKeyTable::AddKeyTableContents (1552 B),
+  0x0040f200 AddDirectoryContents (promoted, was 12).
+- exo_res_man.cpp: 0x00408e90 CExoResMan::WipeDirectory (1488 B; name from
+  mac_names.csv, parameter names descriptive).
+
+### Retained NONMATCH attempts (new this round)
+
+- 0x0040f3c0 CExoKeyTable::AddEncapsulatedContents (13 reported, really 3
+  insns): the last failed open is `call delete; add esp, 4; mov [esi], 0;
+  jmp` in the original; cl sinks the add esp into the shared return-0 tail.
+  Forms tried for that last step: direct `{ delete; m_nTableType = 0;
+  return 0; }`, `delete; pFile = 0;` + `if (pFile == 0) fail`, if/else with
+  nType = 3 (merges the first null-check fail block into it, 36), and
+  `if (pFile && !IsOpen)` (one fail block at the end).
+
+### Screened, not attempted
+
+- 0x004094a0 CExoResMan::AsyncLoad (1632 B, name from mac_names.csv): the
+  CResRef at [esp+0x40] is never default-constructed (operator=(CExoString)
+  is called on it directly and CResRef(const CExoString&) constructs it in
+  place once), the two GetKeyEntry out-pointers swap slots between queries
+  and the EH state numbers skip 8, 0xd, 0x13-0x15, 0x18-0x1a.
+- 0x00403800 ReInitAurora (1264 B): about 25 unnamed imports, globals and
+  vtable calls to identify first.
+
+### Lessons
+
+- `repe cmpsb` with a constant count after `mov edi, literal; lea esi, buf;
+  mov ecx, n` is an inline `strcmp(buf, "LITERAL")`; memcmp puts ecx first
+  and uses cmpsd for multiples of 4.
+- `#pragma auto_inline(off)` must wrap the callee, not the caller, and cl
+  inlines small functions defined later in the file too. Load2DArray calls
+  GetLineLength out of line twice while its two header scans are open-coded
+  with an index, so GetLineLength sits in an auto_inline(off) region.
+- A `const CExoString&` argument given a string literal (implicit temporary)
+  is built before the other operands and its address is reloaded with lea;
+  an explicit `CExoString("rb")` is built in argument order and the ctor's
+  eax is pushed directly. The implicit form also let the temporaries share
+  frame slots (AddKeyTableContents frame was 8 bytes too big with
+  `CExoString(":")`).
+- "`nType = k; jmp join` block sitting in the gap of the next new-expression"
+  plus "delete and new stack cleanups not merged" = `if (!p->IsOpen()) {
+  delete p; p = 0; }` followed by a separate `if (p) { nType = k; } else {
+  p = new ...; }`. Nested if/else, do/while(0)+break and goto-like forms all
+  compile to one other layout (else blocks collected before the join).
+- A register that takes a new value in place without advancing the scratch
+  rotation (lea eax, [edi + eax*2 + 2]) is an assignment to a second named
+  variable while the first is still live: `pLine = pData + n * 2 + 2;
+  m_pCellOffsets = pData; m_pBinaryData = pLine;`.
+- Argument computed before the other pushes (`or eax, ..` ahead of `push
+  edx`) = it was a separate local (`unsigned long nID = ...; AddKey(..,
+  nID, nFlags)`).
+- Separate `if (a) fail; if (b) fail;` keeps the fail block in place after
+  the first test; `if (a || b) fail` moved it to the function end.
+- `fadd dword [2^32]` after fild of an unsigned = `(float)u * double`;
+  `fadd qword` = `u * double`.
+- operator=(const char (&)[16]) is ambiguous with the const char* overload
+  for a char[16] member: call it through the PFN_ASSIGN_ARRAY member pointer
+  as res_ref_copy.cpp does.
+- A one-line stub of a function that an already matched caller in the same
+  file calls gets inlined into that caller (BuildNewTable): finish or remove
+  stubs before judging the file.
+
+### Next in-range queue
+
+- Todo: 0x004094a0 AsyncLoad, 0x00403800 ReInitAurora, 0x004041f0 WinMain,
+  0x004024f0 (+ WndProc 0x00402800), 0x00401a30.
+- Near misses: 0x0040f3c0 (3 real insns), 0x00407e00 ServiceFromResFile
+  (the early `if (pos)` exits must target the post-loop return 0, cl picks
+  the last one; a search loop + `if (pos == 0) return 0` adds a test),
+  0x0040bec0 DrawSafeRegion (3), 0x0040b060 (13). The implicit-temporary
+  and separate-local lessons above are worth trying on 0x004078f0
+  ServiceFromDirectory, 0x00406b20 RemoveFile and 0x004053e0 OpenMovie.
+
 ## Round s2 (2026-10-27)
 
 Folder `matching/src/d`: 634/702 -> 651/708 (17 new exact: 3 new

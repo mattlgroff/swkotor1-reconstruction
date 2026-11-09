@@ -479,6 +479,9 @@ public:
     int OnApplyACIncrease(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
     int OnApplyACDecrease(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);
     virtual ~CSWSEffectListHandler();
+    // vtable slots 0x8 / 0xc (no functions.csv rows); declared non-virtual like InitializeEffects (slot 0x4).
+    int OnApplyEffect(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);     // 0x004D8320
+    int OnRemoveEffect(CSWSObject* pObject, CGameEffect* pEffect);                      // 0x004D8360
 
     int OnApply8D4(CSWSObject* pObject, CGameEffect* pEffect, int bLoadingGame);       // 0x004D83A0
     int OnRemove8D4(CSWSObject* pObject, CGameEffect* pEffect);                        // 0x004D83F0

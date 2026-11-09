@@ -112,20 +112,19 @@ int CSWSWaypoint::LoadFromTemplate(const CResRef &cResRef)
     return 1;
 }
 
-// NONMATCH (15): code is identical but the original frame is 8 bytes larger
-// (locals shifted by 4/8); hoisting the map-note flags did not change it.
 // FUNCTION: SWKOTOR 0x005C7F30
 int CSWSWaypoint::LoadWaypoint(CResGFF *pGFF, CResStruct *pStruct)
 {
     int bSuccess;
-    int bHasMapNote;
+    int bNameSuccess;
     int bMapNoteEnabled;
+    int bHasMapNote;
     Vector vPosition;
     Vector vOrientation;
     CExoLocString sMapNote;
     SetTag(pGFF->ReadFieldCExoString(pStruct, "Tag", bSuccess, ""));
     m_sLocalizedName =
-        pGFF->ReadFieldCExoLocString(pStruct, "LocalizedName", bSuccess, CExoLocString());
+        pGFF->ReadFieldCExoLocString(pStruct, "LocalizedName", bNameSuccess, CExoLocString());
     vPosition.x = pGFF->ReadFieldFLOAT(pStruct, "XPosition", bSuccess, 0.0f);
     vPosition.y = pGFF->ReadFieldFLOAT(pStruct, "YPosition", bSuccess, 0.0f);
     vPosition.z = pGFF->ReadFieldFLOAT(pStruct, "ZPosition", bSuccess, 0.0f);
@@ -142,8 +141,8 @@ int CSWSWaypoint::LoadWaypoint(CResGFF *pGFF, CResStruct *pStruct)
         bMapNoteEnabled = pGFF->ReadFieldBYTE(pStruct, "MapNoteEnabled", bSuccess, 0);
         sMapNote = pGFF->ReadFieldCExoLocString(pStruct, "MapNote", bSuccess, CExoLocString());
         if (bSuccess) {
-            m_bMapNoteEnabled = bMapNoteEnabled;
             m_bHasMapNote = bHasMapNote;
+            m_bMapNoteEnabled = bMapNoteEnabled;
             m_sMapNote = sMapNote;
         }
     }

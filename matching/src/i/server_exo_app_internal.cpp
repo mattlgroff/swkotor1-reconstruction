@@ -794,3 +794,20 @@ void CServerExoAppInternal::GetServerInfoFromIniFile()
     m_pServerInfo->m_n98 = 1;
     m_pServerInfo->m_nc8 = 1;
 }
+
+// Hidden start inside functions.csv's 0x004B1580 entry.
+// FUNCTION: SWKOTOR 0x004B15D0
+int CServerExoAppInternal::HandleMessage(unsigned long nPlayerId, unsigned char* pData,
+                                         unsigned long nSize, int bRawMessage)
+{
+    if (!bRawMessage) {
+        if (pData[0] == 's' && m_pNetLayer->GetPlayerInfo(nPlayerId)->m_bServerAdminPrivileges == 1) {
+            m_pServerMessage->HandleSysAdminToServerMessage(nPlayerId, pData, nSize);
+        }
+        if (pData[0] == 'p' && m_pNetLayer->GetPlayerInfo(nPlayerId)->m_bGameMasterPrivileges == 1) {
+            m_pServerMessage->HandlePlayerToServerMessage(nPlayerId, pData, nSize);
+        }
+        return 1;
+    }
+    return 0;
+}

@@ -248,3 +248,59 @@
 - x87 heavy: Camera::SceneBoundaryCheck 0x0045D490, 0x00452CC0
   AddFacesToBins, 0x00464B50 CompressQuaternionKey, texture controller
   Update/Control 0x004615A0 / 0x00461820 / 0x00462030 / 0x00462520.
+
+## H s4: ATI fragment shaders, Scene ctor, ParseNode, PartAABB draw
+
+- Folder: 459/521 -> 464/528. 7 annotated, 5 NEW exact, 2 NONMATCH.
+- Exact: 0x004794E0 InitializeATIFragmentShaders (3488 B) and 0x0047A2F0
+  EnableFragmentShaders (2256 B, switch; cases in source order
+  0,3,6,13,7,19,20,32,26,22,37,24,29,2) in ati_fragment_shaders.cpp;
+  0x00458790 Scene::Scene (scene_ctor.cpp, TU-local zero-constructing
+  layout); 0x004680E0 ParseNode (parse_node.cpp, returns MdlNode*);
+  0x00471560 PartAABB::Draw (part_aabb_draw.cpp).
+- NONMATCH kept: 0x00473900 PartTriMesh::Mat (128 by count, one cause: cl
+  keeps the constant 1 in ebx for guard bit / fog flag / bDynamic, the
+  original uses immediates; with any one of the two byte stores changed to
+  another value the rest is byte-identical); 0x0045B7A0
+  CAurGUIStringInternal::GetTextHeight (10; hidden entry, descriptive name;
+  the original packs both branches' two list copies into the same two
+  stack slots and has `movsx esi,bx; imul esi,eax`).
+- functions.csv: 0x0045B7A0 is a hidden entry (not listed); 0x00471560's
+  extent is coarse (9056 B, it also covers 0x00471860 PartLightsaber draw);
+  0x00473900 is hidden inside an earlier extent. functions.csv not edited.
+- Names: shader globals g_nATIShader_<addr>, g_bFSEnvMapOn/g_bFSTexture1On,
+  g_nFocusGobCounter, g_bShowWalkMesh, g_bMat* are descriptive.
+
+### Lessons
+
+- A read-loop that the original keeps top-tested with a back `jmp`
+  (`call; test; je exit; ...; jmp top`) came from a flag-driven
+  `while (!bDone) { if (!line) bDone = 1; else { ...; if (end) bDone = 1;
+  else Parse(); } }`; `for(;;)`+break and `while ((p = Next()))` both get
+  rotated by cl.
+- Shared if/else tail (`glEnable; glBind...`) written once after the
+  if/else is tail-duplicated by cl when small; writing it in both arms
+  changes the scratch-register rotation of everything that follows.
+- `m_v = Vector0(a,b,c)` (derived zero-ctor type with a 3-float ctor, no
+  user operator=) gives the interleaved stack-temp copy; a store between
+  the two vector assignments in source (`m_v88 = ...; m_bFog = 0;
+  m_nMode = 0; m_vFog = ...`) reproduces the delayed last component store.
+- Inlined GLRender::Transform: the angle needs
+  `(float)(acos(w) * 2.0) * g_fRadToDeg` in the inline copy (the
+  out-of-line 0x0046F060 matches without the cast). The inline copy is
+  reached through an inline Transform(pPos,pOri,0) wrapper (both leas are
+  formed before the g_bTransformParts test).
+- A byte global declared file-`static` lets cl schedule its store after a
+  following member reload (`mov cl,[m_bFog]; test; mov byte [flag],1; jne`).
+- `new Model(...)` with a class operator new maps to AurNew 0x0043E1B0.
+- cl does not inline (even __forceinline) helpers that own destructible
+  locals, so stack-slot sharing between branches cannot come from that.
+
+### Next in-range queue
+
+- PartTriMesh::Mat 0x00473900: find what removes one use of constant 1.
+- 0x00456F30 Scene::SpawnRoom (697 insns, no x87, 0xF8 frame),
+  0x0046E5C0 ManageSceneBSP (537 insns, inline list growth, repe cmpsb),
+  0x00454C80 spawn tile, 0x00471860 PartLightsaber draw (x87 heavy),
+  0x0045A2F0 / 0x004599B0 / 0x0045A850 / 0x0045B290 GUI string layout and
+  render (hidden entries, x87), 0x0046D3B0 ProcessParts.

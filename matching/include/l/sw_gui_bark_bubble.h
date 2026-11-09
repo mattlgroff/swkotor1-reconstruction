@@ -85,7 +85,8 @@ public:
     char pad_0x0[0x4];
     unsigned long m_oid;                            // 0x04
     unsigned char m_nObjectType;                    // 0x08
-    char pad_0x9[0x1b];
+    char pad_0x9[0x17];
+    class CSWCArea* m_pArea;                        // 0x20
     Vector m_vPosition;                             // 0x24
     unsigned long GetId() { return m_oid; }
 };
@@ -98,8 +99,12 @@ public:
     virtual class CSWCDoor* AsSWCDoor();            // 0x14
     virtual void v18(); virtual void v1C(); virtual void v20(); virtual void v24();
     virtual void v28(); virtual void v2C(); virtual void v30(); virtual void v34();
-    virtual void v38();
+    virtual class CSWSItem* AsSWSItem();            // 0x38
     virtual class CSWCTrigger* AsSWCTrigger();      // 0x3c
+};
+class CGameObjectArray {
+public:
+    unsigned char GetGameObject(unsigned long oid, CGameObject** ppObject);   // 0x004D8230
 };
 
 class CSWCCreature;
@@ -108,6 +113,8 @@ class CSWCPlaceable;
 
 class CSWParty {
 public:
+    int m_nMembers;                                 // 0x00
+    CSWCCreature* GetPartyMember(int n);            // 0x006346C0 (GetMember, creature view)
     CSWCObject* GetMember(int n);                   // 0x006346C0
     CSWCCreature* GetPlayerCharacter();             // 0x00635460
     int IsPartyTogether();                          // 0x00635350

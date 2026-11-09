@@ -116,9 +116,12 @@ public:
     unsigned char m_nCloseLockDC;                           // 0x275 (GetLockLockDC)
     char pad_0x276[0x278 - 0x276];
     int m_bTrapped;                                         // 0x278 (name guessed)
-    char pad_0x27c[0x280 - 0x27c];
-    int m_n280;                                             // 0x280
-    char pad_0x284[0x314 - 0x284];
+    unsigned char m_nTrapDisarmDC;                          // 0x27c (name guessed)
+    char pad_0x27d[0x280 - 0x27d];
+    int m_n280;                                             // 0x280 (trap disarmable in the mine examine data)
+    char pad_0x284[0x290 - 0x284];
+    unsigned char m_nTrapType;                              // 0x290 (name guessed)
+    char pad_0x291[0x314 - 0x291];
     unsigned char m_nHardness;                              // 0x314
     unsigned char m_nFortSave;                              // 0x315
     unsigned char m_nWillSave;                              // 0x316
@@ -219,11 +222,16 @@ public:
     unsigned long m_bReadOnly : 1;                          // 0x8 bit 0
     CExoArrayList<unsigned long> m_aItems;                  // 0xc
 
+#ifndef B_ITEM_REPOSITORY_OPAQUE_GET_ITEM_AT
     CSWSItem* GetItemAt(int n)
     {
         if (n < 0 || n >= m_aItems.num) return NULL;
         return g_pAppManager->GetServerExoApp()->GetItemByGameObjectID(m_aItems.element[n]);
     }
+#else
+    CSWSItem* GetItemAt(int n);                             // 0x005560B0
+#endif
+    unsigned long GetNumItems() { return m_aItems.num; }
 };
 
 class CSWSItem : public CSWItem, public CSWSObject {
@@ -292,6 +300,11 @@ public:
     int LoadItemData(CResGFF* pGFF, CResStruct* pStruct);   // 0x0055FCD0
     int GetStackSize() { return m_nStackCount; }
     unsigned long GetPossessor() { return m_oidPossessor; }
+    CExoLocString& GetDescIdentified() { return m_lsDescIdentified; }
+    CExoLocString& GetDescription() { return m_lsDescription; }
+    int GetCharges() { return m_nCharges; }
+    int GetNumActiveProperties() { return m_nActiveProperties; }
+    int GetNumPassiveProperties() { return m_nPassiveProperties; }
 
     CSWBaseItem* GetBaseItemFromRules()
     {

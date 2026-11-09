@@ -120,6 +120,10 @@ class CSWSMessage {
 public:
     CSWSMessage();                                  // 0x00520980
     virtual ~CSWSMessage();
+    int HandlePlayerToServerMessage(unsigned long nPlayerId, unsigned char* pData,
+                                    unsigned long nSize);                        // 0x00527B20 (placeholder name)
+    int HandleSysAdminToServerMessage(unsigned long nPlayerId, unsigned char* pData,
+                                      unsigned long nSize);                      // 0x00528380 (placeholder name)
     int SendServerToPlayerServerStatus_Status(unsigned long nPlayerId);          // 0x00568310
     void SendServerToPlayerServerAdmin_Status(unsigned long nPlayerId);          // 0x00579920 (placeholder name)
     int SendServerToPlayerModule_DumpPlayer(CSWSPlayer* pPlayer);                // 0x0056CCB0
@@ -733,6 +737,8 @@ public:
     int FUN_004b1e10(unsigned __int64 nTime);                               // 0x004B1E10
     int UpdateAutoSaveTimer();                                              // 0x004B1EE0
     int FUN_004b4030();                                                     // 0x004B4030
+    int HandleMessage(unsigned long nPlayerId, unsigned char* pData, unsigned long nSize,
+                      int bRawMessage);                                     // 0x004B15D0
     int UpdateShutdownTimer(unsigned __int64 nTime);                        // 0x004B4AB0
     void UpdateClientGameObjectsForPlayer(CSWSPlayer* pPlayer, int nFlags,
                                           unsigned __int64 nTime);          // 0x004B3EC0
@@ -759,7 +765,7 @@ public:
     CWorldTimer* m_pTimestopTimer;                  // +0x1004c
     CWorldTimer* m_pPauseTimer;                     // +0x10050
     CFactionManager* m_pFactionManager;             // +0x10054
-    unsigned long m_pad10058;
+    void* m_p10058;                                 // +0x10058 (unnamed)
     CGameObjectArray* m_pGameObjArray;              // +0x1005c
     unsigned long m_oidModule;                      // +0x10060
     CExoLinkedList<CSWSPlayer>* m_pPlayerList;      // +0x10064
@@ -819,10 +825,14 @@ class CServerExoApp {
 public:
     CServerExoApp();
     virtual ~CServerExoApp();
-    virtual void v04();
-    virtual void v08();
-    virtual void v0c();
-    virtual CNetLayer* GetNetLayer();               // +0x10
+    virtual int HandleMessage(unsigned long nPlayerId, unsigned char* pData, unsigned long nSize,
+                              int bRawMessage);     // +0x04 0x004AE840
+    virtual float GetFPS();                         // +0x08 0x004AEC60
+    virtual int FUN_004ae880();                     // +0x0c 0x004AE880
+    virtual CNetLayer* GetNetLayer();               // +0x10 0x004AEDA0
+    // Vtable slot 0 in the original (the destructor is not virtual there).
+    void PlayerListChange(unsigned long nPlayerId, int bEnter, int bUnused);    // 0x004AE870
+    void* FUN_004aee30();                           // 0x004AEE30 (vtable +0x18)
 
     CSWSModule* GetModule();
     CExoString GetModuleName();

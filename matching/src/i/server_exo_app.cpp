@@ -735,3 +735,43 @@ CExoString CServerExoApp::GetLastConversation()
 {
     return m_pcExoAppInternal->m_sLastConversation;
 }
+
+// Hidden starts (functions.csv merges them into the preceding entries);
+// 0x004AE870 / 0x004AE840 / 0x004AEC60 / 0x004AE880 / 0x004AEDA0 /
+// 0x004AEE30 are vtable slots 0-4 and 6 of CServerExoApp (0x00744184).
+// FUNCTION: SWKOTOR 0x004AE840
+int CServerExoApp::HandleMessage(unsigned long nPlayerId, unsigned char* pData, unsigned long nSize,
+                                 int bRawMessage)
+{
+    return m_pcExoAppInternal->HandleMessage(nPlayerId, pData, nSize, bRawMessage);
+}
+
+// FUNCTION: SWKOTOR 0x004AE870
+void CServerExoApp::PlayerListChange(unsigned long nPlayerId, int bEnter, int bUnused)
+{
+    m_pcExoAppInternal->PlayerListChange(nPlayerId, bEnter, bUnused);
+}
+
+// FUNCTION: SWKOTOR 0x004AE880
+int CServerExoApp::FUN_004ae880()
+{
+    return m_pcExoAppInternal->FUN_004b4030();
+}
+
+// FUNCTION: SWKOTOR 0x004AEC60
+float CServerExoApp::GetFPS()
+{
+    return 100.0f;
+}
+
+// FUNCTION: SWKOTOR 0x004AEDA0
+CNetLayer* CServerExoApp::GetNetLayer()
+{
+    return m_pcExoAppInternal->m_pNetLayer;
+}
+
+// FUNCTION: SWKOTOR 0x004AEE30
+void* CServerExoApp::FUN_004aee30()
+{
+    return m_pcExoAppInternal->m_p10058;
+}

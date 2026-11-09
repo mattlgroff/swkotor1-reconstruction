@@ -615,3 +615,117 @@ The bucket's todo list is down to 51 entries, all large and mostly x87.
 - Cheap retries: RunDialogOneLiner (17, argument load order before the
   pushes), DoDamageImmunity (18), SetGroupInterruptable /
   DeleteCurrentAIAction (0/2: an unthreaded null test of the list head).
+
+## Round s9 (branch claude/worker-i-s9)
+
+Folder: 576/655 -> 596/677 (`kotor-match -q -j 2 matching/src/i`). 22 new
+annotations: 20 exact, 2 kept as NONMATCH. Two clusters: the CSWSModule /
+CSWSObject constructors with their real layouts, and hidden function starts
+that functions.csv merges into the preceding entry.
+
+### New exact matches
+
+- `sws_module_life.cpp` (self-contained, real two-base class
+  `CResHelper<CResIFO,2014>` + `CGameObject` at +0x1C): 0x004C84A0
+  CSWSModule ctor, 0x004C68A0 ~CSWSModule, 0x004C6BB0 AsSWSModule
+  (CGameObject vtable +0x20), 0x004C6BC0 the `??_E...@@WBM@` adjustor thunk
+  of the deleting destructor, 0x004C5120 CSWSModule::EventHandler (hidden
+  start, 896 B, 16-case switch).
+- `sws_object_life.cpp` (self-contained): 0x004CFCB0 CSWSObject ctor.
+- CServerExoApp vtable (0x00744184) wrappers, all hidden starts
+  (`server_exo_app.cpp`): 0x004AE870 PlayerListChange (slot 0), 0x004AE840
+  HandleMessage, 0x004AEC60 GetFPS (returns 100.0f), 0x004AE880, 0x004AEDA0
+  GetNetLayer, 0x004AEE30 (+0x10058 getter); 0x004B15D0
+  CServerExoAppInternal::HandleMessage; 0x004B1340
+  `??_GCVirtualMachineCmdImplementer`.
+- CSWSObject virtuals (hidden starts): 0x004CB190 GetGender (+0x88),
+  0x004CC390 the +0x74 action virtual (kept placeholder name RunActionNode).
+- LightManager: 0x004A35B0 SetupLightsForThisPositionAndRadiusIn (vtable
+  +0x44), 0x004A28C0 LightCompare (`light_compare.cpp`).
+- 0x004C1670 CSWSArea::SmoothPointsOnPath (non-restartable twin of
+  0x004C17A0), 0x004B30D0 load-bar progress callback
+  (`load_bar_callback.cpp`, placeholder name).
+
+### Kept NONMATCH (diff insns)
+
+- 0x004A30E0 SetupVertexProgramLights (6 real; the tool prints 55): the
+  original schedules `add edx,7Ch; mov ebx,[edx]` (camera position x) before
+  the matrix `rep movsd`, ours after. 20 source variants (accessors,
+  references, explicit operator=, temp copies) either give the same 6 or
+  re-colour the whole function. functions.csv splits this function at
+  0x004A30F7 (its first jump target), so todo.py still lists 0x004A30F7; it
+  is the same function.
+- 0x004C15F0 CSWSArea::SmoothSelectionPasses (7, placeholder name): the
+  original loads the intermediate buffer pointer straight into edi/ebx
+  before the pushes; ours loads eax, pushes it and copies afterwards.
+
+### Lessons
+
+- **Scan for hidden starts.** functions.csv misses many functions that
+  follow a `ret` + padding inside a larger entry: vtable-only wrappers,
+  scalar/vector deleting destructors, adjustor thunks, callbacks. A scratch
+  scan (16-aligned address after 0x90/0xCC padding, not in functions.csv and
+  not annotated) found all of this round's small wins. Remaining real
+  hidden starts in this bucket: 0x004A4580 ControlLightsFade (1424 B,
+  mostly integer list code with inlined Contains/IndexOf/DelIndex/Add),
+  0x004A87C0 (triangle bin, `sub esp,1A8h`), 0x004C0180 the 6-argument
+  smoothing pass (864 B, x87).
+- **Real multiple inheritance gives the thunks for free.** With the true
+  base list the compiler emits `lea eax,[ecx-1Ch]` for an override of a
+  second-base virtual and the `??_E<class>@@W<off>@AEPAXI@Z` adjustor thunk;
+  annotate both with `SYMBOL:`. (The thunk symbol is `??_E`, not `??_G`.)
+- Constructor EH states identify which members have destructors: count the
+  state numbers against the destructor's order. CSWVarTable has a
+  constructor call but no destructor; CSWSScriptVarTable is an inline
+  list + int constructor with an out-of-line destructor.
+- `GetServerExoApp()->GetObjectArray()->F(&m_x, this, 0)` vs
+  `g_pAppManager->m_pServerExoApp->...` also decides which `this+off`
+  address cl keeps in a callee-saved register across the whole constructor
+  (ebp held `this+1Ch` instead of `&m_sModuleName` until the accessor was
+  used).
+- Temporaries share one stack slot, named locals do not: the CSWSObject
+  ctor needed `SetPosition(Vector(), 1, 0, 0)`, `SetOrientation(Vector(1,
+  0, 0))` and `m_v = Vector(0, 0, 0)` all as temporaries (frame 0x10); a
+  named zero vector added 12 bytes. Block-scoped locals (`{ int n; float*
+  p; ... }`) share slots the same way (SmoothPointsOnPath, the two scoped
+  CResRef locals in the CSWSModule ctor).
+- `m_nUpdateFlags[nBit / 32] |= 1 << ...` through the inline SetUpdateFlag
+  gives `mov ecx,[flags]; or ecx,4; mov [flags],ecx` scheduled after the
+  preceding stores; a direct `|= 4` is hoisted above them.
+- A statement whose loads appear early but whose last store appears late is
+  written at the position of the last store (m_vLastSpellTarget in the
+  CSWSObject ctor); the scheduler hoists the constant stores and loads.
+- Early `return 0` that the original places at the end: wrap the body in
+  `if (!x) { ...; return 1; } return 0;` (HandleMessage).
+- A value needed after an `?:` whose else-arm loads through another pointer:
+  preload that pointer into a local (`LightNode* pNodeB = pB->m_pNode;`) to
+  get `mov ebx,eax; jne; mov ebx,[ecx+90h]` (LightCompare).
+
+### ABI / naming notes
+
+- CSWSModule(const CExoString& sModule, int bAutoRequest, int nUnused)
+  (RET 0xC); +0x188 is a Vector, +0x218 a CSWSAreaMap*, +0x13C a second
+  simple list, +0x14C..+0x19C object ids set by EventHandler. The 15 script
+  slots at +0xB0 are indexed by event: 0 heartbeat, 1 user defined (11),
+  4/5 events 14/15, 3/2 events 16/17, 7 event 19, 8 event 20, 6 event 18,
+  9..14 events 10/32/33/35/37/38; event 36 deletes the caller creature.
+- CGameObject has 28 virtual slots (destructor, two setters, 25 `As`
+  casts); slot +0x20 is AsSWSModule. CServerExoApp's destructor is not
+  virtual in the original: slot 0 is PlayerListChange (the shared header
+  still declares a virtual destructor first; bytes are unaffected).
+- CSWSObject(unsigned char nType, unsigned long oid, int bCharacter);
+  0x004D7E90 is CGameObjectArray::AddExternalObject (placeholder name).
+- 0x00527B20 / 0x00528380 are the CSWSMessage handlers for 'p' / 's'
+  messages (placeholder names HandlePlayerToServerMessage /
+  HandleSysAdminToServerMessage).
+- Light vtable +0x24 returns the Light itself (placeholder AsLight); Light
+  +0x74 overrides the node's sort priority (placeholder m_nSortPriority).
+
+### Next in-range queue
+
+- 0x004A4580 ControlLightsFade (hidden, integer-heavy), 0x004CE220
+  SpawnBodyBag, 0x004B0B70 / 0x004BABB0 / 0x004B3110 / 0x004B8300 /
+  0x004B95B0 (CServerExoAppInternal, large), 0x004C9050 LoadModuleStart
+  (the real CSWSModule layout is now in `sws_module_life.cpp`).
+- Cheap retries: SetupVertexProgramLights (6), SmoothSelectionPasses (7),
+  and the s8 list (RunDialogOneLiner, DoDamageImmunity).

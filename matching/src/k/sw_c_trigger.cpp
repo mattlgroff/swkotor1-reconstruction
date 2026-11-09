@@ -1,5 +1,6 @@
 // CSWCTrigger lifecycle, model, animation and Aurora trigger-part methods.
 #include "k/sw_c_trigger.h"
+#include <string.h>
 
 template <class T>
 class CExoArrayList {
@@ -41,7 +42,6 @@ extern unsigned char g_nObjectTypeTrigger;                           // 0x007466
 // 16-byte zeroed colour record passed to the trigger-part factory.
 struct TriggerColor {
     float r, g, b, a;
-    TriggerColor() { r = 0.0f; g = 0.0f; b = 0.0f; a = 0.0f; }
 };
 
 PartTrigger* __cdecl AurPartTriggerCreate(Scene*, Vector*, int, int, TriggerColor*,
@@ -164,12 +164,14 @@ void CSWCTrigger::UpdateAnimation()
         }
     }
     if (AnimationLooping(m_nAnimation) == 1) {
-        unsigned short animation;
+        // The animation slot is read back as a full word (the callee only
+        // writes its low half), so it is an int-sized local.
+        int animation;
         float speed;
         unsigned long duration;
         void* data;
-        if (GetTopFireForgetAnimation(&animation, &speed, &duration, &data) == 1) {
-            m_nAnimation = animation;
+        if (GetTopFireForgetAnimation((unsigned short*)&animation, &speed, &duration, &data) == 1) {
+            m_nAnimation = (unsigned short)animation;
             m_pModel->PlayAnim(animation, speed, 1, 0);
             m_nFireForgetTime = duration;
             RemoveTopFireForgetAnimation();
@@ -208,6 +210,7 @@ void CSWCTrigger::AddToRenderList(int nColor)
     area->m_lTriggerIds.Add(m_oid);
     Scene* scene = g_pAppManager->m_pClientExoApp->GetModule()->GetArea()->m_pScene;
     TriggerColor color;
+    memset(&color, 0, sizeof(color));
     m_pAurPartTrigger = AurPartTriggerCreate(scene, m_pVertices, m_nVertices, 1, &color, this);
     UpdateTriggerColor(nColor);
 }

@@ -62,6 +62,9 @@ public:
     CSWSItem* SplitItem(int nCount);                // 0x0055F280
     CResRef GetIcon();                              // 0x005556B0
     unsigned long GetCost();                        // 0x00554000
+    CSWSItem(unsigned long oid);                    // 0x005530A0
+    int CompareItem(CSWSItem* pItem);               // 0x00553CF0
+    int CopyItem(CSWSItem* pItem);                  // 0x0055D950
     char pad_0x4[0xc - 0x4];
     int m_nBaseItem;                                // 0x0c
     int GetBaseItemType() { return m_nBaseItem; }
@@ -76,10 +79,13 @@ public:
     unsigned long m_bItemFlag0 : 1;                 // 0x288 bit 0
     unsigned long m_bItemFlag1 : 1;                 //       bit 1
     unsigned long m_bInfinite : 1;                  //       bit 2 (store stock)
+    unsigned long m_nItemFlags3 : 4;                //       bits 3-6
+    unsigned long m_bItemFlag7 : 1;                 //       bit 7 (inventory filter 1)
     int m_nStackSize;                               // 0x28c
     int GetStackSize() { return m_nStackSize; }
     char pad_0x290[0x4];
     unsigned long m_nUpgrades;                      // 0x294
+    char pad_0x298[0x29c - 0x298];
 };
 class CItemRepository {
 public:
@@ -89,6 +95,7 @@ public:
     char pad_0x0[0x10];
     unsigned long m_nItems;                         // 0x10
     unsigned long FindItemWithTag(const CExoString& sTag);  // 0x00555ED0
+    void ClearNewItems(CExoArrayList<unsigned long>* pList);    // 0x00556050
 };
 
 class CSWSCreatureStats;
@@ -102,12 +109,32 @@ public:
     unsigned char CanEquipItem(CSWSItem* pItem, unsigned long* pSlot, int b1, int b2, int b3);  // 0x0051AA60
     char pad_0x0[0x4];
     unsigned long m_idSelf;                         // 0x04
-    char pad_0x8[0xa2c - 0x8];
+    char pad_0x8[0x1cc - 0x8];
+    int m_n1CC;                                     // 0x1cc
+    char pad_0x1d0[0x4e0 - 0x1d0];
+    int m_bCombatState;                             // 0x4e0 (descriptive)
+    char pad_0x4e4[0x9c8 - 0x4e4];
+    class CSWSCombatRound* m_pCombatRound;          // 0x9c8
+    char pad_0x9cc[0xa2c - 0x9cc];
     CSWInventory* m_pInventory;                     // 0xa2c
     char pad_0xa30[0xa74 - 0xa30];
     CSWSCreatureStats* m_pStats;                    // 0xa74
+    char pad_0xa78[0xab0 - 0xa78];
+    int m_nAB0;                                     // 0xab0
+    char pad_0xab4[0xac0 - 0xab4];
+    unsigned char m_nAC0;                           // 0xac0
+    void SetCommandable(int bCommandable);          // 0x004CCD80
+    void InstantUseItem(unsigned long oidItem);     // 0x004EFE30 (descriptive)
+    int AddUnequipActions(CSWSItem* pItem, unsigned long oidTarget, int a, int b, int c);   // 0x004F06D0
+    void AddAttackActions(unsigned long oidTarget, int a, int b, int c, int d, int e, int f, int g,
+                          int h, int i, int j, int k, int l, int m, int n);    // 0x004FDE40
+    class CSWCCreature* GetClientCreature();        // 0x004EFB20
+    int AddEquipItemActions(CSWSItem* pItem, unsigned long nSlot, int a, int b, int c, int d,
+                            int e);                 // 0x004F0420
+    int CanUseItem(CSWSItem* pItem, int bArg);      // 0x0051B440 (descriptive)
     CSWSCreatureStats* GetStats() { return m_pStats; }
     CSWInventory* GetInventory() { return m_pInventory; }
+    class CSWSCombatRound* GetCombatRoundPtr() { return m_pCombatRound; }
 };
 
 class CGuiInGameUpgrade {
