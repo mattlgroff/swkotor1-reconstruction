@@ -72,9 +72,9 @@ public:
     PartVertices* m_pVertices;              // +0x70
 };
 
-// NONMATCH: identical apart from where the caller cleanup `add esp, 0x10`
-// after the MinVector call is scheduled (two instructions earlier in the
-// original).
+// NONMATCH (1): only the caller cleanup `add esp, 0x10` after MinVector is
+// scheduled two instructions earlier in the original. Reusing nPool for the
+// unlock fixed the tail registers.
 // FUNCTION: SWKOTOR 0x00451DC0
 void ComputePartBBox(Part* pPart)
 {
@@ -93,7 +93,8 @@ void ComputePartBBox(Part* pPart)
         vMin = MinVector(vMin, s);
         vMax = MaxVector(vMax, s);
     }
-    PoolUnlock(pNode->m_pTree->AsModel()->m_nVertexPool);
+    nPool = pNode->m_pTree->AsModel()->m_nVertexPool;
+    PoolUnlock(nPool);
     pPart->m_vBMin = vMin;
     pPart->m_vBMax = vMax;
 }

@@ -205,32 +205,33 @@ extern "C" double __cdecl cos(double);
 extern "C" double __cdecl sin(double);
 #pragma intrinsic(cos, sin)
 
-// NONMATCH: the original copies the stacked delta through eax before each
-// tail call; ours picks ecx / edx (scratch register choice only).
+// One shared Gob::Animate exit (cl tail-duplicates it) gives the eax copies.
 // FUNCTION: SWKOTOR 0x0045D220
 int Camera::Animate(float fDeltaT)
 {
-    if (!m_pAnimation)
-        return Gob::Animate(fDeltaT);
-    m_pAnimation->m_fTime = fDeltaT + m_pAnimation->m_fTime;
-    if (m_pAnimation->m_fTime > m_pAnimation->m_fDuration) {
-        delete m_pAnimation;
-        m_pAnimation = 0;
-        return Gob::Animate(fDeltaT);
-    }
     ViewAngleAnimation* pAnim = m_pAnimation;
-    float t = pAnim->m_fTime / pAnim->m_fDuration;
-    if (pAnim->m_n10 == 0) {
-    } else if (pAnim->m_n10 == 1) {
-        t = 1.0f - ((float)cos(t * 3.1415927f) + 1.0f) * 0.5f;
-    } else if (pAnim->m_n10 == 2) {
-        t = 1.0f - (float)cos(t * 1.5707964f);
-    } else if (pAnim->m_n10 == 3) {
-        t = (float)sin(t * 1.5707964f);
-    } else {
-        return Gob::Animate(fDeltaT);
+    if (pAnim) {
+        pAnim->m_fTime = fDeltaT + pAnim->m_fTime;
+        if (m_pAnimation->m_fTime > m_pAnimation->m_fDuration) {
+            delete m_pAnimation;
+            m_pAnimation = 0;
+        } else {
+            pAnim = m_pAnimation;
+            float t = pAnim->m_fTime / pAnim->m_fDuration;
+            if (pAnim->m_n10 == 0) {
+            } else if (pAnim->m_n10 == 1) {
+                t = 1.0f - ((float)cos(t * 3.1415927f) + 1.0f) * 0.5f;
+            } else if (pAnim->m_n10 == 2) {
+                t = 1.0f - (float)cos(t * 1.5707964f);
+            } else if (pAnim->m_n10 == 3) {
+                t = (float)sin(t * 1.5707964f);
+            } else {
+                goto done;
+            }
+            m_fViewAngle = (1.0f - t) * pAnim->m_fStart + t * pAnim->m_fEnd;
+        }
     }
-    m_fViewAngle = (1.0f - t) * pAnim->m_fStart + t * pAnim->m_fEnd;
+done:
     return Gob::Animate(fDeltaT);
 }
 

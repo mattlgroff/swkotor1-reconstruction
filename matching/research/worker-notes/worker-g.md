@@ -312,3 +312,42 @@ Done since the s3 queue: 0x423150, 0x422390, 0x4235f0, 0x438400, 0x439a10,
 - Framebuffer / shaders: 0x427c90, 0x4293f0, 0x4299c0, 0x42e600
   (EnableCombiners, 13 KB of combiner setup: a generator like genext.py
   may work), 0x434890; not attempted: 0x425d80 / 0x425ea0.
+
+## Audit fixes 2026-11-10
+
+The relocation audit (matchcmp masks call targets, data and constants) found
+hidden errors in MATCH functions; fixed against the original:
+
+- new[] / delete[]: MSVC 7 lowers `new T[n]` / `delete[] p` to the scalar
+  operator new / delete (0x006fa7e6 / 0x006fa390) unless operator new[] /
+  delete[] are declared. Declared them in g/aur_array.h, g/request_pool.h
+  and (after DownSampleNormalMap) normal_map.cpp; removed the stray
+  delete[] declarations from console_reg.cpp and font_info.cpp, whose
+  originals use the scalar forms. The pools (request_pool.cpp, glrender.cpp)
+  are `new unsigned char[n]` / `delete[]`, not operator new + free().
+- One program has one Allocate / destructor per element type, and the
+  original's 4-byte lists fold into two bodies: scalar new (Allocate
+  0x005e03c0, dtor 0x0047abc0) and new[] (0x00437d60, 0x0042e240). So
+  element types were corrected where two lists of "the same" type reach
+  different bodies: aur_array.cpp's 0x00437c40/0x00437d60/0x00438b40 are
+  CExoArrayList<MdlNodeTriMesh*> (only CreateSkinNodeList calls the Add;
+  every Part* list reaches 0x005e03c0 / 0x00444fe0); 0x0042e240 is
+  ~CExoArrayList<unsigned int> (not int); RequestPoolManager's m_aFree /
+  m_aFlags / m_aSavedSizes, g_aRenderSquares, MaxTree +0x3c and
+  MdlNodeSkin::m_lBoneMap are unsigned int lists; m_aLocked is unsigned long.
+- Strings: Gob events are "propagateviewvolume", "propagatecolorshift",
+  "propagateillumination", "UpdateScenes", "Dying"; FindNamedPart compares
+  "root".
+- Constants: SetViewTransform rotates by -57.29578f; DrawSphereBound uses
+  0.717f.
+- Globals: the convolution passes feed g_nColorRamp0-2 (0x007a6870..78),
+  not the bloom ramps; AurDeleteConsoleVars writes g_szUntraceBuffer
+  (0x007b9118), not g_szConsoleResult.
+- MdlNodeAnimMesh has its own empty PostProcess (folded `ret` 0x004015a0).
+
+Left as is: out-of-line template instances (Allocate<void*>,
+Allocate<unsigned long>, Allocate<SafePointer<CAurTexture>*>,
+~CExoArrayList<Vector/float/int> in EH funclets) whose linked copy came
+from another unit with the other operator-new family; one unit cannot
+express that (an extern template declaration also stops the inlining the
+constructors need).

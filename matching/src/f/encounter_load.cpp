@@ -649,7 +649,7 @@ void CSWSEncounter::AddCreaturesToSpawnList(CEncounterListEntry *pList, int *pnC
         }
         *pnCount -= nRemoved;
     }
-    float fThreshold = fPoints - 0.0001f;
+    float fThreshold = fPoints - 0.001f;
     for (int k = 0; k < m_nCreatureListCount; k++) {
         if (*pnCount > m_nRecCreatures - m_nNumSpawned)
             return;
@@ -1089,4 +1089,17 @@ void CSWSEncounter::RemoveFromActiveCreatureCount(float fCR, int bAddToNextLevel
     }
     m_bActive = 0;
     m_bExhausted = 0;
+}
+
+// Out-of-line element constructors for the `new[]` arrays in this file (vector
+// constructor iterator targets; neither start is in functions.csv).
+// FUNCTION: SWKOTOR 0x0058FF80 SYMBOL: ??0CEncounterListEntry@@QAE@XZ
+
+// FUNCTION: SWKOTOR 0x0058FFC0
+CEncounterSpawnPoint::CEncounterSpawnPoint()
+{
+    m_vPosition.x = 0.0f;
+    m_vPosition.y = 0.0f;
+    m_vPosition.z = 0.0f;
+    m_fOrientation = 0.0f;
 }

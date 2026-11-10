@@ -644,27 +644,39 @@ int CServerExoAppInternal::IsOnActiveExclusionList(unsigned long oid)
     return 0;
 }
 
+static inline CSWSCreature* CreatureFromArray(CGameObjectArray* pArray, unsigned long oid)
+{
+    CGameObject* pObject = 0;
+    if (pArray->GetGameObject(oid, &pObject) == GAME_OBJECT_VALID && pObject &&
+        pObject->m_nObjectType == OBJECT_TYPE_CREATURE) {
+        return pObject->AsSWSCreature();
+    }
+    return 0;
+}
+
 // FUNCTION: SWKOTOR 0x004B4D70
 int CServerExoAppInternal::TestSafeLocation(unsigned long oidCreature, const Vector& v)
 {
-    CSWSCreature* pCreature = GetCreatureByGameObjectID(oidCreature);
+    CSWSCreature* pCreature = CreatureFromArray(m_pGameObjArray, oidCreature);
     if (pCreature == NULL) {
         return 0;
     }
-    return GetAreaByGameObjectID(pCreature->m_oidArea)
-        ->TestSafeLocationPoint(v, pCreature->m_pPathfindInformation);
+    CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
+    unsigned long oidArea = pCreature->m_oidArea;
+    return GetAreaByGameObjectID(oidArea)->TestSafeLocationPoint(v, pPathfind);
 }
 
 // FUNCTION: SWKOTOR 0x004B4DF0
 int CServerExoAppInternal::ComputeSafeLocation(const Vector& v, float f, unsigned long oidCreature,
                                                void* p, Vector* out)
 {
-    CSWSCreature* pCreature = GetCreatureByGameObjectID(oidCreature);
+    CSWSCreature* pCreature = CreatureFromArray(m_pGameObjArray, oidCreature);
     if (pCreature == NULL) {
         return 0;
     }
-    return GetAreaByGameObjectID(pCreature->m_oidArea)
-        ->ComputeSafeLocation(v, f, pCreature->m_pPathfindInformation, p, out);
+    CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
+    unsigned long oidArea = pCreature->m_oidArea;
+    return GetAreaByGameObjectID(oidArea)->ComputeSafeLocation(v, f, pPathfind, p, out);
 }
 
 // FUNCTION: SWKOTOR 0x004B4FF0

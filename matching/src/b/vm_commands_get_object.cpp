@@ -522,9 +522,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetGender(int nCommandId, int nPara
     return g_pVirtualMachine->StackPushInteger(nGender) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
 }
 
-// Slot 0x50 object (bucket b calls the slot AsSWSTrigger; buckets a and i
-// call it AsSWSAreaOfEffectObject): creator and save DC.
-class CSWSTrigger : public CSWSObject {
+// Slot 0x50 object (AsSWSAreaOfEffectObject): creator and save DC.
+class CSWSAreaOfEffectObject : public CSWSObject {
 public:
     char pad_0xf4[0x248 - 0xf4];
     unsigned long m_oidCreator;                             // 0x248
@@ -546,13 +545,13 @@ int CSWVirtualMachineCommands::ExecuteCommandGetSpellSaveDC(int nCommandId, int 
                 goto done;
             }
             nSpellId = ((CSWSObjectSpellView*)pCreature)->m_nSpellId;
-        } else if (pObject->AsSWSTrigger()) {
-            unsigned long oidCreator = pObject->AsSWSTrigger()->m_oidCreator;
+        } else if (pObject->AsSWSAreaOfEffectObject()) {
+            unsigned long oidCreator = pObject->AsSWSAreaOfEffectObject()->m_oidCreator;
             pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreator);
             if (!pCreature) {
-                nDC = pObject->AsSWSTrigger()->m_nSpellSaveDC;
+                nDC = pObject->AsSWSAreaOfEffectObject()->m_nSpellSaveDC;
             }
-            nSpellId = pObject->AsSWSTrigger()->GetLastSpellId();
+            nSpellId = pObject->AsSWSAreaOfEffectObject()->GetLastSpellId();
         } else {
             goto done;
         }

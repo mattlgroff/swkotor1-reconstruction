@@ -3,7 +3,7 @@
 
 #include "h/texctl.h"
 
-extern "C" int __cdecl _strnicmp(const char*, const char*, unsigned int);
+extern "C" int __cdecl strncmp(const char*, const char*, unsigned int);
 
 extern unsigned char g_bBinaryModel;        // 0x007B927C
 
@@ -165,7 +165,7 @@ public:
 // FUNCTION: SWKOTOR 0x00468870 SYMBOL: ?InternalParseField@MaxTree@@UAEXPAD@Z
 void MaxTree::InternalParseField(char* s)
 {
-    if (!_strnicmp(s, "node", 4))
+    if (!strncmp(s, "node", 4))
         ParseNode(s + 4, this);
 }
 
@@ -218,9 +218,9 @@ public:
 void Animation::InternalParseField(char* s)
 {
     char szName[128];
-    if (!_strnicmp("animlength", s, 10))
+    if (!strncmp("animlength", s, 10))
         sscanf(s + 10, "%s %f", szName, &m_fLength);
-    if (!_strnicmp("event", s, 5)) {
+    if (!strncmp("event", s, 5)) {
         AurKeyString ev;
         ev.szValue[0] = 0;
         ParseKeyString(s + 5, &ev);

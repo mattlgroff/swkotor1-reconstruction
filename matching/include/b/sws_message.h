@@ -176,7 +176,21 @@ public:
         CSWSPlayer* pPlayer, CSWSObject* pObserver, CGameObjectArray* pArray,
         int* pCount);                                                   // 0x00567850 (Mac debug map 2/2)
     void WriteGameObjUpdate_MajorGUIPanels(CSWSPlayer* pPlayer);        // 0x00577670 (Mac debug map 2/2)
+    void TestPlayerUpdateDifferences(CSWSPlayer* pPlayer, CSWSPlayerLastUpdateObject* pPlayerLast,
+                                     CLastUpdateObject* pLast,
+                                     unsigned long& nFlags);    // 0x00572A20 (Mac debug map 2/2)
+    void WriteGameObjUpdate_PlayerUpdate(CSWSPlayer* pPlayer, CSWSPlayerLastUpdateObject* pPlayerLast,
+                                         CLastUpdateObject* pLast,
+                                         unsigned long nFlags); // 0x00572DC0 (Mac debug map 2/2)
+    void StoreValuesInLastPlayerUpdateObject(CSWSPlayer* pPlayer,
+                                             CSWSPlayerLastUpdateObject* pPlayerLast,
+                                             CLastUpdateObject* pLast,
+                                             unsigned long nFlags); // 0x00574400 (Mac debug map 2/2)
     void WriteOBJECTIDServer(unsigned long oid);                        // 0x00578570
+    void WriteRepositoryUpdate(CSWSPlayer* pPlayer, CSWSObject* pObject,
+                               class CItemRepository* pRepository,
+                               class CSWSPlayerLUOInventory* pInventory,
+                               unsigned char nList, char cType); // 0x0056E360 (Mac debug map 2/2)
     void WriteCExoLocStringServer(const CExoLocString& sString,
                                   unsigned char nGender);               // 0x005785C0
 

@@ -15,6 +15,8 @@ public:
     void HideLoadModuleDebugMenu();                 // 0x0062DA70
     void HideItemCreateMenu();                      // 0x0062D2B0
     void ShowSubItemCreateMenu(int nBaseItem);      // 0x0062D320
+    void HideSubItemCreateMenu();                   // 0x0062D360
+    int ShowItemCreateMenu();                       // 0x0062D280
 };
 
 // vtable 0x00757A78; ctor 0x006CF5A0, ??_G 0x006CF6F0, implicit dtor

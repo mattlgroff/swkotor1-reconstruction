@@ -138,9 +138,12 @@ int CSWSCreature::UnequipItem(CSWSItem* pItem)
     return 1;
 }
 
+static inline CSWSPlayer* GetClientObjectByObjectId(unsigned long oid)
+{
+    return GetServerExoApp()->GetClientObjectByObjectId(oid);
+}
+
 // FUNCTION: SWKOTOR 0x004F3580
-// NONMATCH (8): the sound-object vcall loads the object into eax then ecx (original: straight
-// into ecx) and m_idSelf is read after the timer store; same tie as UpdateExcitedStateTimer.
 void CSWSCreature::SetExcitedState(unsigned char nState)
 {
     int nDuration;
@@ -157,11 +160,11 @@ void CSWSCreature::SetExcitedState(unsigned char nState)
         return;
     }
     m_nExcitedTimer = nDuration;
-    CSWSPlayer* pPlayer = GetServerExoApp()->GetClientObjectByObjectId(m_idSelf);
+    CSWSPlayer* pPlayer = GetClientObjectByObjectId(m_idSelf);
     if (GetArea() && pPlayer) {
         if (GetArea()->m_pSoundObject) {
             if (GetNearestEnemy(30.0f, 0x7f000000, 0x7f000000) != 0x7f000000) {
-                GetArea()->m_pSoundObject->Update(1);
+                GetArea()->UpdateSoundObject(1);
             }
         }
     }

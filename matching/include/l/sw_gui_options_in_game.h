@@ -55,6 +55,10 @@ public:
     void SetToggleState(int bState) { m_bSelected = bState; }
     void Draw(float fDelta);                        // 0x00417B10 (virtual)
     void Load(CResGFF* pGFF, CResStruct* pStruct);  // 0x0041CB40 (virtual)
+    // The selected border (0x1cc) and selected hilight (0x240) CSWGuiBorders
+    // are declared as padding + params.
+    CSWGuiBorder& GetSelectedBorder() { return *(CSWGuiBorder*)pad_0x1cc; }
+    CSWGuiBorder& GetSelectedHilight() { return *(CSWGuiBorder*)pad_0x240; }
     char pad_0x1c4[4];
     union {
         unsigned long m_nToggleFlags;               // 0x1c8
@@ -72,7 +76,7 @@ public:
 };
 
 // Inferred CSWGuiOptionsCheckbox, vtable 0x00758258, size 0x2B4.
-#ifdef L_SWGUI_MATCHING_DESTRUCTOR_TU
+#if defined(L_SWGUI_MATCHING_DESTRUCTOR_TU) || defined(L_OPTIONS_FAMILY_NOVTABLE)
 class __declspec(novtable) CSWGuiOptionsCheckbox : public CSWGuiButtonToggle {
 #else
 class CSWGuiOptionsCheckbox : public CSWGuiButtonToggle {
@@ -83,7 +87,15 @@ public:
 #else
     CSWGuiOptionsCheckbox();                        // 0x006E00D0
 #endif
+#ifdef L_OPTIONS_FAMILY_NOVTABLE
+    // The destructor is implicit (inline): the panel destructors' bodies call
+    // ~CSWGuiButtonToggle (0x0041CAD0) directly, only their unwind funclets
+    // call the out-of-line copy 0x006E00F0.
+    virtual ~CSWGuiOptionsCheckbox() {}
+#else
     __declspec(noinline) virtual ~CSWGuiOptionsCheckbox(); // 0x006E00F0
+#endif
+    void SetExtent(const CSWGuiExtent& extent);     // 0x006DE000 (virtual 0x04)
     void Draw(float fDelta);                        // 0x006DE0E0 (virtual 0x38)
     void Load(CResGFF* pGFF, CResStruct* pStruct);  // 0x006DE160 (virtual)
 };

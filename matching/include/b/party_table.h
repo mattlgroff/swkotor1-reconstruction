@@ -3,6 +3,7 @@
 #define B_PARTY_TABLE_H
 
 #include "b/exo_string.h"
+#include "b/exo_loc_string.h"
 #include "b/res_gff.h"
 #include "b/exo_array_list.h"
 #include "b/vector.h"
@@ -37,12 +38,19 @@ public:
     CSWSJournalEntry();
     ~CSWSJournalEntry();
 
-    char pad_0x0[0x10];
+    CExoLocString m_lsName;                                     // 0x00
+    CExoLocString m_lsText;                                     // 0x08
     unsigned long m_nDate;                                      // 0x10
     unsigned long m_nTime;                                      // 0x14
     CExoString m_sPlotID;                                       // 0x18
     int m_nState;                                               // 0x20
-    char pad_0x24[0x3c - 0x24];
+    unsigned long m_n24;                                        // 0x24
+    unsigned short m_nPlanetID;                                 // 0x28 (name guessed)
+    char pad_0x2a[0x2c - 0x2a];
+    unsigned long m_nFlags;                                     // 0x2c (bit 0 complete, bit 2 changed)
+    unsigned long m_n30;                                        // 0x30
+    unsigned long m_n34;                                        // 0x34
+    unsigned long m_n38;                                        // 0x38
 };
 
 class CSWSJournal {

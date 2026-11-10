@@ -974,3 +974,80 @@ int CSWSEffectListHandler::OnApplyDispelAllMagic(CSWSObject* pObject, CGameEffec
     delete pMessage;
     return 1;
 }
+
+// FUNCTION: SWKOTOR 0x004E43C0
+// NONMATCH (95): no functions.csv row (inside the 0x004E40D0 row). Same register story as
+// OnApplyDispelAllMagic: the original keeps pObject in ebx and i/zero in ebp.
+int CSWSEffectListHandler::OnApplyDispelBestMagic(CSWSObject* pObject, CGameEffect* pEffect,
+                                                  int bLoadingGame)
+{
+    CGameObject* pCaster;
+    if (GetServerExoApp()->GetObjectArray()->GetGameObject(pEffect->m_oidCreator, &pCaster) !=
+        g_nGameObjectFound) {
+        return 1;
+    }
+    if (!pCaster) {
+        return 1;
+    }
+    if (!pCaster->AsSWSCreature()) {
+        return 1;
+    }
+    int nCasterLevel = pCaster->AsSWSCreature()->m_pStats->GetLevel(0);
+    CEffectIDList lSkipped;
+    int bDone = 0;
+    int nBest;
+    int bFound;
+    int i;
+    do {
+        bFound = 0;
+        for (i = 0; i < pObject->m_appliedEffects.num && !bFound; i++) {
+            CGameEffect* pOther = pObject->m_appliedEffects.element[i];
+            unsigned short nSubType = pOther->m_nSubType;
+            if ((nSubType & 0x18) != 8) {
+                continue;
+            }
+            unsigned short nDuration = nSubType & 7;
+            if (nDuration != g_nDurationTemporary && nDuration != g_nDurationPermanent) {
+                continue;
+            }
+            unsigned __int64 nID = pOther->m_nID;
+            if (lSkipped.Contains(nID)) {
+                continue;
+            }
+            CSWSCreature* pOwner = GetServerExoApp()->GetCreatureByGameObjectID(pOther->m_oidCreator);
+            if (pOwner) {
+                if (pOwner->m_pStats->GetLevel(0) > 0) {
+                    nBest = i;
+                    bFound = 1;
+                }
+            } else {
+                nBest = i;
+                bFound = 1;
+            }
+        }
+        if (bFound) {
+            CGameEffect* pBest = pObject->m_appliedEffects.element[nBest];
+            if (g_pRules->RollDice(1, 0x14) + nCasterLevel > 11) {
+                if (pBest->m_nSpellId != 0xffffffff) {
+                    CSWCCMessageData* pMessage = new CSWCCMessageData;
+                    pMessage->SetObjectID(0, pObject->m_idSelf);
+                    pMessage->SetInteger(0, 1);
+                    pMessage->SetInteger(1, pBest->m_nSpellId);
+                    CSWSClient* pClient =
+                        GetServerExoApp()->GetClientObjectByObjectID(pObject->m_idSelf);
+                    if (pClient) {
+                        GetServerExoApp()->GetNWSMessage()->SendServerToPlayerCCMessage(
+                            pClient->m_nPlayerId, 0xf, pMessage, NULL);
+                    }
+                    delete pMessage;
+                }
+                GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
+                    0, 0, pEffect->m_oidCreator, pObject->m_idSelf, g_nEventRemoveEffect, pBest);
+                bDone = 1;
+            } else {
+                lSkipped.Add(pBest->m_nID);
+            }
+        }
+    } while (bFound && !bDone);
+    return 1;
+}

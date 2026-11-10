@@ -86,7 +86,13 @@ public:
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
 extern const unsigned long g_oidInvalid;            // 0x00746644
 
-class CSWCObject {
+class CGameObject {
+public:
+    virtual ~CGameObject();
+    void UnloadModel();                             // 0x004015A0 (empty)
+};
+
+class CSWCObject : public CGameObject {
 public:
     virtual ~CSWCObject();                          // 0x0063E800
 
@@ -98,7 +104,6 @@ class CSWCCreature : public CSWCObject {
 public:
     virtual ~CSWCCreature();
 
-    void UnloadModel();                             // 0x004015A0 (empty)
     void ClearVisibilityList();                     // 0x006145D0
 
     char pad_0x6c[0xfc - 0x6c];
@@ -162,7 +167,9 @@ CSWCCreature::~CSWCCreature()
     if (m_pWayPoints) {
         delete[] m_pWayPoints;
     }
-    UnloadModel();
+    // The empty base version, as CSWCCreature::UnloadModel (0x0060C8E0)
+    // itself starts with; the dtor does not call the creature override.
+    CGameObject::UnloadModel();
     if (m_pModel) {
         m_pModel->DetachFromScene();
         delete m_pModel;

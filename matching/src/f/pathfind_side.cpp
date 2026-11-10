@@ -111,7 +111,7 @@ int CAvoidCreature::SideClearOfObstructions(unsigned long oidCreature, const Vec
         Vector vTo = *pvTo;
         vFrom.z = g_pAppManager->GetServerExoApp()->ComputeHeight(
                       g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetResRef(), &vFrom, 0)
-                  + 0.1f;
+                  + 0.2f;
         g_pAppManager->m_pServerExoApp->ComputeHeight(
             g_pAppManager->m_pServerExoApp->GetModule()->GetArea()->GetResRef(), &vTo, 0);
     }

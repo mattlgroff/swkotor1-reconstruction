@@ -37,7 +37,7 @@ void Gob::GetCachedBoundingBox(Vector* pMin, Vector* pMax)
 void Gob::SetFlag11()
 {
     m_b11 = 1;
-    DoEvent("SetFlag11", 0);
+    DoEvent("propagateviewvolume", 0);
 }
 
 // FUNCTION: SWKOTOR 0x0043e920
@@ -69,7 +69,7 @@ void Gob::SetColorShift(AurColor c, int nMode, int bPropagate)
     m_nColorShiftMode = nMode;
     m_bColorShift = 1;
     if (bPropagate)
-        DoEvent("ColorShift", 0);
+        DoEvent("propagatecolorshift", 0);
 }
 
 // FUNCTION: SWKOTOR 0x0043eea0
@@ -78,7 +78,7 @@ void Gob::SetIllumination(AurColor c, int bPropagate)
     m_cIllumination = c;
     m_bIllumination = 1;
     if (bPropagate)
-        DoEvent("Illumination", 0);
+        DoEvent("propagateillumination", 0);
 }
 
 // FUNCTION: SWKOTOR 0x0043ef80
@@ -148,7 +148,7 @@ void Gob::SetScene(Scene* pScene)
     m_pScene = pScene;
     if (pScene)
         pScene->AddGob(this);
-    DoEvent("SetScene", 0);
+    DoEvent("UpdateScenes", 0);
 }
 
 // FUNCTION: SWKOTOR 0x0043f250

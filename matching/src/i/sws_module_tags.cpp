@@ -170,6 +170,11 @@ void CSWSModule::AddWorldJournalEntryStrref(unsigned long nStrref, unsigned long
     }
 }
 
+static inline void SendStallEvent(int nEvent, unsigned long nValue)
+{
+    GetServerExoApp()->GetSWSMessage()->SendServerToPlayerLoadBar_UpdateStallEvent(nEvent, nValue);
+}
+
 // FUNCTION: SWKOTOR 0x004C3B10
 int CSWSModule::LoadTemporaryArea()
 {
@@ -185,7 +190,6 @@ int CSWSModule::LoadTemporaryArea()
     sGitName = sTemp;
     pArea->LoadAreaFromData(m_pTempAreaData, sGitName, m_nTempAreaSize);
     g_pAppManager->m_p14->m_n8 = 1;
-    GetServerExoApp()->GetSWSMessage()->SendServerToPlayerLoadBar_UpdateStallEvent(
-        1, g_pAppManager->m_p14->m_nC);
+    SendStallEvent(1, g_pAppManager->m_p14->m_nC);
     return 1;
 }

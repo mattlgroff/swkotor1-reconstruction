@@ -744,7 +744,7 @@ int CVirtualMachineInternal::SaveScriptSituation(void* pScriptSituation, CResGFF
         pGFF->WriteFieldINT(pStruct, 0, "CodeSize");
     }
     pScript->m_n24 = 0;
-    pGFF->WriteFieldDWORD(pStruct, pScript->m_n24, "LoadedFromSave");
+    pGFF->WriteFieldDWORD(pStruct, pScript->m_n24, "CRC");
     pGFF->WriteFieldINT(pStruct, pScript->m_nInstructPtr, "InstructionPtr");
     pGFF->WriteFieldINT(pStruct, pScript->m_nSecondaryInstructPtr, "SecondaryPtr");
     pGFF->WriteFieldCExoString(pStruct, pScript->m_sScriptName, "Name");
@@ -814,7 +814,7 @@ int CVirtualMachineInternal::LoadScriptSituation(void** ppScript, CResGFF* pGFF,
     else
         (*ppSituation)->m_pCode = 0;
     pGFF->ReadFieldVOID(pStruct, (*ppSituation)->m_pCode, (*ppSituation)->m_nCodeSize, "Code", bSuccess, 0);
-    (*ppSituation)->m_n24 = pGFF->ReadFieldDWORD(pStruct, "LoadedFromSave", bSuccess, 0);
+    (*ppSituation)->m_n24 = pGFF->ReadFieldDWORD(pStruct, "CRC", bSuccess, 0);
     if (!bSuccess)
         (*ppSituation)->m_n24 = 0;
     (*ppSituation)->m_nLoadedFromSave = 1;

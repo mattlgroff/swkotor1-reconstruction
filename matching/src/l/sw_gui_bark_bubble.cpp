@@ -155,7 +155,7 @@ void CSWGuiBarkBubble::Draw(float fDelta)
 // FUNCTION: SWKOTOR 0x006A9F90
 void CSWGuiBarkBubble::OnPanelAdded()
 {
-    m_nStartTime = (int)(g_pAppManager->GetClientExoApp()->GetWorldTimer()->GetSnapshotTime() / 1000);
+    m_nStartTime = (int)((__int64)g_pAppManager->GetClientExoApp()->GetWorldTimer()->GetSnapshotTime() / 1000);
     CSWGuiPanel::OnPanelAdded();
 }
 

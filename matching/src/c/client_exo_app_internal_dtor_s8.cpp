@@ -45,6 +45,14 @@ public:
 
     ~CExoLinkedListInternal();                      // 0x005E9AB0
     void* RemoveHead();                             // 0x005E9C80
+    void* GetHead()
+    {
+        CNode* pNode = pHead;
+        if (!pNode) {
+            return 0;
+        }
+        return pNode->pObject;
+    }
 };
 
 template <class T>
@@ -57,8 +65,8 @@ public:
     T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
     T* GetHead()
     {
-        CExoLinkedListInternal::CNode* p = m_pcExoLinkedListInternal->pHead;
-        return p ? (T*)p->pObject : 0;
+        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
+        return (T*)pInternal->GetHead();
     }
     ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
 };
@@ -817,7 +825,7 @@ CClientExoAppInternal::~CClientExoAppInternal()
     }
 }
 
-// NONMATCH (94 diff insns): inline budget; the original expands Allocate
+// NONMATCH (91 diff insns): inline budget; the original expands Allocate
 // only in the last of the three list assignments (the first two call the
 // out-of-line 0x005E03C0). Plain inline expands none, __forceinline all
 // three; nothing in between was found.

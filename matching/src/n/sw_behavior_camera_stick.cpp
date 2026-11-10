@@ -204,7 +204,7 @@ void CSWCameraOnAStick::SetLookAtTarget(CSWCObject* pObject)
 
 // FUNCTION: SWKOTOR 0x00639FC0 SYMBOL: ??0CSWCameraOnAStick@@QAE@PAVGob@@0@Z
 CSWCameraOnAStick::CSWCameraOnAStick(Gob* pGob, Gob* pTarget)
-    : CAurBehavior(pGob), m_vLastPosition(0.0f, 0.0f, 0.0f), m_vDesiredPosition(0.0f, 0.0f, 0.0f),
+    : CSWCameraBehaviorBase(pGob), m_vLastPosition(0.0f, 0.0f, 0.0f), m_vDesiredPosition(0.0f, 0.0f, 0.0f),
       m_vPosition(0.0f, 0.0f, 0.0f), m_v74(0.0f, 0.0f, 0.0f), m_v128(0.0f, 0.0f, 0.0f)
 {
     m_pCamera = pGob;
@@ -264,7 +264,7 @@ void CSWCameraOnAStick::ClearCombatTarget()
 
 // FUNCTION: SWKOTOR 0x0063AD60 SYMBOL: ??0CSWCameraOnAStick@@QAE@PAVCSWCameraSettings@@@Z
 CSWCameraOnAStick::CSWCameraOnAStick(CSWCameraSettings* pSettings)
-    : CAurBehavior(pSettings->m_pCamera), m_vLastPosition(0.0f, 0.0f, 0.0f), m_vDesiredPosition(0.0f, 0.0f, 0.0f),
+    : CSWCameraBehaviorBase(pSettings->m_pCamera), m_vLastPosition(0.0f, 0.0f, 0.0f), m_vDesiredPosition(0.0f, 0.0f, 0.0f),
       m_vPosition(0.0f, 0.0f, 0.0f), m_v74(0.0f, 0.0f, 0.0f), m_v128(0.0f, 0.0f, 0.0f)
 {
     m_rTarget = pSettings->m_rTarget;

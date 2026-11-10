@@ -1,3 +1,260 @@
+# Worker K round s9 — pazaak game sequence, party portraits, target menu placement
+
+Branch `claude/worker-k-s9` (local only), base `81006966`. Folder K canonical
+`kotor-match -q -j 2 matching/src/k`: **520/572 -> 522/575**. New
+annotations 3: NEW exact 1, new NONMATCH 2; prior NONMATCH promotions 1;
+one NONMATCH improved (00681890 9 -> 6). No other old NONMATCH distance
+changed and no prior MATCH regressed (compared with the round-start folder
+run). Callees, globals and strings of the new functions were checked
+against the original listing (matchcmp masks them).
+
+## NEW exact (1)
+
+- 00680030 CSWGuiPazaakGame::DoGameSequence (`sw_gui_pazaak_sequence.cpp`,
+  1760 bytes, 13-state switch). End-sound literals at 0075355C / 00753550 /
+  00753540 / 00753534 are `mgs_winmatch` / `mgs_winset` / `mgs_losematch` /
+  `mgs_loseset`. DetermineWinner (006E48A0) returns int.
+
+## Promoted (1)
+
+0068E940 CSWCAmbientSound::SetBattleMusicTrack (13 -> 0).
+
+## New NONMATCH (2)
+
+- 00687860 CSWGuiMainInterface::UpdatePortraits (50;
+  `sw_gui_main_interface_portraits.cpp`; was declared as UpdateTarget).
+- 00686090 CSWGuiTargetActionMenu::PositionMenu (136; Mac name, was declared
+  UpdateActions; `sw_gui_target_action_menu_position.cpp`).
+
+## Header changes (k only)
+
+- `sw_gui_main_interface.h`: CSWCCreature is now polymorphic (slot 0x148
+  GetPortrait), with m_pStats (+0x2f8, CSWCCreatureStats name strings at
+  +0x14 / +0x1c), GetMenuPoint (0060FF30) and a bitfield union at +0x440
+  (bit 1 = level-up pending). CSWSCreature: slots 0x98 / 0x9c,
+  GetMaxForcePoints, IsDebilitated, effect-icon list at +0x8f4, m_bPoisoned
+  +0x9e0. CSWSCreatureStats: GetLevel, GetExpNeededForLevelUp, experience
+  +0x68, force points +0x124 / +0x126. CSWCObject: slot 0x2c AsSWCCreature,
+  slot 0x13c GetReticlePoint. CSWGuiLabel::SetFillImage inline wrapper.
+  m_rect15bc renamed m_rectBounds.
+- `sw_gui_pazaak.h`: CSWPazaak::DetermineWinner, CAppManager::
+  GetClientExoApp, g_vAbilityColorAvailable (007A23D8).
+
+## Lessons (MSVC 7.0)
+
+- **Jump threading**: `b = a && c; if (b) F();` puts the `b = 0` arm after
+  the epilogue (original layout of SetBattleMusicTrack); an if/else with
+  explicit `b = 1 / b = 0` arms keeps it inline.
+- Implicit `CResRef` temporaries (`PlayOneShotSound(m_aSounds[0], ...)`)
+  get one stack slot each, as the 0x84-byte DoGameSequence frame needs;
+  named `CResRef c(...)` locals share a slot.
+- `GetPazaak()->m_cPlayer.F()` (accessor, `mov eax; lea ecx,[eax+8]`) vs
+  `m_pPazaak->...` (`mov ecx; add ecx,8`): fixed DoGameSequence and three
+  HandleStartDialog diffs.
+- Accessors again fixed scratch-register rotation in UpdatePortraits:
+  `pMember->GetClientStats()->m_sName`, `pServer->GetPoisoned()` and an
+  inline `GetExperience()` (the latter loads the field before the
+  GetExpNeededForLevelUp call, as the original).
+- A call-result argument evaluated before a constant push
+  (`SetFillImage(GetPortrait(1), 0)`): route it through an inline wrapper
+  whose parameter is the call (`label.SetFillImage(ref)`).
+- `m_aParty[nSlot].m_sName = ...` written directly (not via a pointer or an
+  inline member) gives the original `lea edi,[slot*0xea8+this]` with
+  +0x1fa0 offsets and a later `add edi, 0x1f88`; the rest of the slot update
+  is an inline member of the char.
+- `int bShow = pServer != 0;` declared before the byte counters makes the
+  byte zero stores use the compare's zero register (dl).
+- `for (i = 0; i < 3 && !b; i++)` rotates to the original `test b` loop top
+  with the `cmp i, 3` at the bottom.
+- A null-test early return placed at the function end needs
+  `if (p) { ... } else { flag = 0; }`.
+
+## Screened, not attempted
+
+0069EDC0 / 0069F1E0 (x87 bounding rect / centre), 006943D0 map hider Draw
+(1609, x87 grid), 006920B0 trigger / 00684660 door UpdateAreaTransitionDisplay
+(vector ray tests), 00688100 fog of war (x87, PC53), 006889C0 sticky target,
+0068A310 UpdateIndicator, 00690B00, 006916B0. 00697475 in the reference
+missing-starts list is the tail of the matched 00697460 (not a new start).
+Retried without gain: 00688690 (switch form worse), 00693300 (inline
+point-in-rect worse), 00692E30, 00692630, 00692410, 0069DD30, 0068DD30 /
+0068E610 / 0068EA10 (a __forceinline PlayTruncated body changes nothing).
+
+## Next in-range queue
+
+All remaining unannotated in-range functions are x87-heavy or large (list
+above). Best near misses for new ideas: 00681890 (6, tutorial-flag load
+order for the game ctor), 00687860 (50, effect-icon loop and scratch
+rotation), the PositionMenu bounds-reload pattern (try an inline helper with
+`const CSWGuiExtent&` parameters), 00692E30 / 00693300 / 00692BC0 /
+0068BF50 register ties.
+
+# Worker K round s8 — main interface ctor, action / menu promotions, map OnPanelAdded
+
+Branch `claude/worker-k-s8` (local only), base `849cf510`. Folder K canonical
+`kotor-match -q -j 2 matching/src/k`: **517/570 -> 520/572**. New
+annotations 2: NEW exact 1, new NONMATCH 1; prior NONMATCH promotions 2;
+one NONMATCH improved (006865B0 36 -> 25). No other old NONMATCH distance
+changed and no prior MATCH regressed (compared with the round-start folder
+run). No shared reports or other buckets touched.
+
+## NEW exact (1)
+
+- 0068C100 CSWGuiMainInterface ctor, 4784 bytes
+  (`sw_gui_main_interface_ctor.cpp`, self-contained TU; member names follow
+  include/k/sw_gui_main_interface.h, so e.g. m_btnMinimap is BTN_EQU and
+  m_lblMap is LBL_MAPBORDER — the header names are placeholders).
+
+## Promoted (2)
+
+0068B9D0 CSWGuiMainInterfaceAction::Initialize (162 -> 0), 00686680
+CSWGuiTargetActionMenu::SelectPrevAction (12 -> 0).
+
+## New NONMATCH (1)
+
+00693650 CSWGuiInGameMap::OnPanelAdded (`sw_gui_in_game_map_added.cpp`):
+same size, calls, EH states and flow; register allocation only (original:
+this edi, server ebp, loop index ebx; ours rotated). An early `int i = 0`
+fixes ebx but rotates the rest and adds 16 bytes.
+
+## Lessons (MSVC 7.0)
+
+- Layout switch with `StartLoadFromLayout("x")` (implicit CResRef
+  temporary) per case: distinct temporary slots plus `lea` re-push, as the
+  original. Explicit `CResRef("x")` pushes the ctor's eax and cl cross-jumps
+  the ctor call; named locals / if-chains share one slot.
+- A local CSWGuiLabel whose dtor is inlined: declare the label dtor
+  `__forceinline virtual ~CSWGuiLabel() {}` with CSWGuiBorder (+0x5c) and
+  CSWGuiText (+0xd0) members whose dtors are out of line.
+- CExoArrayList member with inline `{ num = 0; array_size = 0; element = 0; }`
+  ctor gives the num / size / element store order and an unused EH state.
+- `m_x = CSWGuiExtent(...)` vs a named extent: when the original spills the
+  width / height into a 16-byte stack struct, make the extent a POD-like
+  named block local filled field by field (height, width, top, left) and
+  give the zeroing ctor only to a derived CSWGuiRect used for members.
+  `m_rect = label.m_extent` (struct copy) reloads the fields later.
+- Tooltip pairs: an inline `SetToolTip(strref, key)` keeps the store order;
+  plain member stores let cl hoist the CSE'd constant pairs first.
+- `m_pManager->GetSafeMargins(&a, &b)` loads ecx after the pushes; a
+  `CSWGuiManager* p = m_pManager;` local loads it first.
+- Action Initialize: write stores the original addresses this-relative
+  (`m_btnDown.m_nId`, `m_btnUp.m_pParentControl`, rotations) as direct
+  members and keep pointer locals only where it holds ebp / ebx; that
+  fixed the whole-function register rotation.
+- SelectPrevAction: declaring `pPrev = 0` between the GetPlayerCharacter
+  call and the `int& nSelected` reference gave the original ebx choice.
+- Map OnPanelAdded: `g_pAppManager->m_pServerExoApp->F(args)` (direct
+  member) loads the server after the argument call, as the original; the
+  inline accessor hoists it.
+
+## Next in-range queue
+
+Unannotated: 00687860 UpdatePortraits (1504, integer), 00680030 pazaak
+DoGameSequence (1760, no x87, state switch with eight CResRef sound
+temporaries), 0068A310 UpdateParty (2048, x87), 00684660 door interaction,
+00690B00, 006889C0, 00688100, 00686090, 0069EDC0 (x87). Missing-start scan
+of the bucket finds only 006943D0 / 0069F1E0 (x87); the other ret-aligned
+hits are switch arms. Near misses: 006865B0 SelectNextAction (25; list /
+selected registers swapped), 00688820 / 006888E0 personal select (ebx /
+ebp), 0068BF50 (byte-load order), 00692E30 / 00693300 / 00692BC0 /
+00693E70 (register ties, rechecked this round), 0069DD30 (tail order;
+ternary, if-chain and __max/__min tried), 0068F8D0 (load/store order).
+
+# Worker K round s7 — visual effect, placeable light / menu, map and pazaak ctors
+
+Branch `claude/worker-k-s7` (local only), base `3c9c5b8f`. Folder K canonical
+`kotor-match -q -j 2 matching/src/k`: **508/561 -> 517/570**. New
+annotations 9: NEW exact 8, new NONMATCH 1; prior NONMATCH promotions 1.
+No prior MATCH regressed and no other NONMATCH distance changed (compared
+against the round-start folder run). No shared reports or other buckets
+touched.
+
+## NEW exact (8)
+
+- 00690010 CSWCVisualEffect::LoadEffect, 00690510 SetAnimation
+  (`sw_c_visual_effect.cpp`; visualeffects.2da columns are the named
+  g_nVisualEffectCol_* globals; 0x007A2674 is a 0.8 speed float,
+  named g_fVisualEffectAnimSpeed40 here).
+- 006826E0 CSWCPlaceable::LoadLight (descriptive; `sw_c_placeable_light.cpp`).
+- 006837D0 CSWCPlaceable::GetTargetActions (`sw_c_placeable_target_actions.cpp`).
+- 00694D50 CSWGuiInGameMap ctor (`sw_gui_in_game_map_ctor.cpp`), 00695180
+  CSWGuiInGameGalaxyMap ctor (`sw_gui_galaxy_map_ctor.cpp`).
+- 00681A90 CSWGuiPazaakStart ctor, 006808A0 CSWGuiPazaakGame ctor
+  (`sw_gui_pazaak_start_ctor.cpp`, `sw_gui_pazaak_game_ctor.cpp`).
+
+## Promoted (1)
+
+00684410 CSWCDoor::GetTargetActions (oid local, see lessons).
+
+## New NONMATCH (1)
+
+00693F60 CSWGuiMapHider ctor (22, register choice only: cl keeps
+&m_cMarker in ebx for the SetStyle call; the original keeps EH state 3 in
+bl). Pointer local, `(&m_cMarker)->` and direct forms tried.
+
+## Header changes (k only)
+
+- `sw_c_client_object.h`: CExoString(const char*), explicit CExoString(int),
+  operator=(const char*); CResRef() inline + CResRef(const CExoString&);
+  CSWCAnimBase slot 0x38 GetAnimationEventTime(int); PlayAnim first
+  parameter is unsigned short (the original pushes the word register
+  unextended); CSWCModule::ShakeCamera / BumpCamera.
+- `sw_c_placeable_door.h`: Vector operator+, CAurObject slot 0x9C
+  SetNodeTransform(const char*, Vector, Quaternion), C2DAs light-colour
+  table at +0x48, CSWCArea::GetPlaceableObjectLight, CSWCPlaceable::LoadLight.
+- `sw_gui_pazaak.h`: CSWGuiActivatedButton __forceinline ctor
+  (`: m_vColor(0,0,0) { m_fTimer = -1.0f; m_bSelectable = 1; }`), pazaak
+  start / game ctor declarations, CSWPazaak::LoadInitialSideDeck,
+  CSWGuiPazaakStart::GetPazaak, CAppManager::GetServerExoApp,
+  CSWGuiControl::SetFlag1, CSWGuiText slot 0x08 GetHeight,
+  CSWGuiTextParams::SetAlignment.
+
+## Lessons (MSVC 7.0)
+
+- **Object-id local**: `unsigned long oidSelf = m_idSelf; x.m_oidTarget =
+  oidSelf;` reproduces `mov ebp, [ebp+4]` (the id reusing the dead `this`
+  register) and the load-before-address order. It promoted door
+  GetTargetActions, matched the placeable one, and `unsigned long oid =
+  m_oid; pArea->X(oid)` fixed both oid pushes of LoadLight. Needs a `{}`
+  block when inside a switch case.
+- `GetClientExoApp()` accessor instead of `m_pClientExoApp` moved the area
+  pointer to edi in LoadLight (lesson 5 from bucket a, again).
+- Inline accessors for an owned pointer (`GetPazaak()->m_nWager = 1`,
+  `GetPazaak()->m_cAI.ChooseSidedeck(a)`, `GetServerExoApp()->...`,
+  `pCreature->GetStats()->...`) load the object into eax before the
+  arguments; they removed a whole-function scratch-register rotation.
+- A local pointer to a member's sub-object (`CAurScene* pScene =
+  m_view.m_cScene.m_pScene; if (g) pScene->SetRoom(...)`) puts the load
+  before the branch / pushes as in the original.
+- Large ctors do not expand plain inline member ctors: `__forceinline`
+  was needed for CSWGuiActivatedButton. A mem-initializer for the Vector
+  member plus `timer; flag` body order reproduced the store order.
+- Element-wise `for (i < 18) a[i] = 0;` gives the original `lea edi; mov
+  ecx, 0x12; rep stosd` order; memset swaps the two setup instructions. A
+  10-element `a[i] = CPazaakCard(-1, 0)` loop is fully unrolled by cl.
+- Galaxy ctor stack slots matched once the loop-2 ints were declared at the
+  top between the CExoStrings (declaration order = slot order); pazaak game
+  ctor frame needed each sprintf buffer set in its own `{}` block.
+- Bitfield clears on two members: inline `SetFlag1(0)` keeps the original
+  unscheduled load / and / store then `and mem, eax`.
+- `cmp byte ptr [eax], 0; js` is `(x & 0x80) == 0` on an unsigned char;
+  `if (!Get(..)) f = 0.0f;` stores the zero eax (memset used edi).
+- Implicit `CResRef` conversion (`Play3DOneShotSound(sSound, ...)`) builds
+  the temporary before the other pushes; an explicit `CResRef(sSound)`
+  builds it last.
+
+## Next in-range queue
+
+Unannotated and integer-heavy: 00687860 UpdatePortraits (1504), 0068A310
+UpdateParty (2048), 0068C100 main interface ctor (4784; same ctor recipe
+as this round), 00693650 CSWGuiInGameMap::OnPanelAdded (1360), 00680030
+pazaak DoGameSequence (1760). x87-heavy: 00690B00 CSWCVisualEffect
+SetPosition (1008), 00684660 door interaction, 006916B0, 006920B0,
+006889C0, 00688100, 00686090, 0069EDC0, 0069F1E0, 006943D0. Near misses
+worth the oid-local / accessor ideas: 00693E70 OnMapNoteClicked (this/oid
+EDI/EBX), 00692BC0 OnReturnToEbonHawk, 00689610 UseAction, 00685CB0
+SetTarget, 00689410 PopulateMenus.
+
 # Worker K round s6 — anim id map, reticle points, door animation, 2DA promotions
 
 Branch `claude/worker-k-s6` (local only), base `e2504cd8`. Folder K canonical
@@ -460,3 +717,22 @@ Galaxy/in-game map family continues: 00692C70 (448), 00692E80 (528),
 006942D0 Draw; galaxy/in-game map ctors 00694D50 / 00695180. Then pazaak
 panels (006807E0, 00680710, 006816F0, 00681890). Large appearance leftovers
 are only the three NONMATCHes above.
+
+## Audit fixes 2026-11-10
+
+- 0x0069E1F0 CSWCAnimBase::LoadModel / 0x006903D0 CSWCVisualEffect::LoadModel:
+  message strings replaced with the exe's exact text (0x00755100,
+  0x00755058, 0x007543C0).
+- 0x00648320 ClearFeats / 0x00649430 SetFeatRemainingUses: `delete`, not
+  `free` (original calls ??3 0x006FA390).
+- 0x00698550 CreateSimple: the unused list's unwind dtor is 0x0047ABC0 (the
+  null-checking CExoArrayList<int>-family copy), so it is CExoArrayList<int>.
+- k/sw_gui_pazaak.h: dropped the operator new[]/delete[] declarations; this
+  MSVC lowers new[]/delete[] of trivial types to ??2/??3 unless they are
+  declared (fixes ~CSWGuiTutorial's ??_V in the pazaak ctors' unwinds).
+- CSWClass naming: 0x005BE010 is `IsSkillClassSkill` (debug map); the level-up
+  stats now call that name. Bucket f's class_getters.cpp has 0x005BE010 /
+  0x005BE070 named GetClassSkillValue / IsClassSkill and Will/Ref save
+  getters swapped (debug map: 0x005BCCF0 GetRefSaveBonus, 0x005BCD10
+  GetWillSaveBonus); k's names follow the debug map, so the remaining
+  SetWillSavingThrow row is f's mislabel, not a k error.

@@ -80,7 +80,15 @@ public:
     CExoLinkedListNode* pTail;
     unsigned long nCount;
 
-    void* GetHead() { void* p = pHead; if (pHead) p = pHead->pObject; return p; }
+    void* GetHead()
+    {
+        CExoLinkedListNode* pNode = pHead;
+        if (!pNode) {
+            return 0;
+        }
+        return pNode->pObject;
+    }
+    void* GetHeadInline() { void* p = pHead; if (pHead) p = pHead->pObject; return p; }
     void* GetTail() { void* p = pTail; if (pTail) p = pTail->pObject; return p; }
     CExoLinkedListInternal();                       // 0x005E9AA0
     ~CExoLinkedListInternal();                      // 0x005E9AB0
@@ -100,8 +108,15 @@ public:
     ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
     CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
     CExoLinkedListPosition GetTailPos() { return m_pcExoLinkedListInternal->pTail; }
-    T* GetHead() { return (T*)m_pcExoLinkedListInternal->GetHead(); }
+    T* GetHead()
+    {
+        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
+        return (T*)pInternal->GetHead();
+    }
     T* GetTail() { return (T*)m_pcExoLinkedListInternal->GetTail(); }
+    // Head object through the internal list's conditional-assign accessor;
+    // the loops that fetch the object before the position use this shape.
+    T* GetHeadInline() { return (T*)m_pcExoLinkedListInternal->GetHeadInline(); }
     T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
     T* GetPrev(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetPrev(pos); }
     T* Remove(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->Remove(pos); }

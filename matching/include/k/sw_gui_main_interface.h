@@ -172,6 +172,30 @@ public:
 class CSWSCreatureStats {
 public:
     int CanLevelUp();                               // 0x005A6810
+    unsigned char GetLevel(int bArg);               // 0x005A5FD0
+    unsigned long GetExpNeededForLevelUp();         // 0x005A6610
+    unsigned long GetExperience() { return m_nExperience; }
+    char pad_0x0[0x68];
+    unsigned long m_nExperience;                    // 0x68
+    char pad_0x6c[0x124 - 0x6c];
+    short m_nForcePointsBonus;                      // 0x124 (name guessed)
+    short m_nCurrentForcePoints;                    // 0x126 (name guessed)
+};
+
+// Effect icon shown on a party portrait (CSWSCreature +0x8f4 list).
+struct CSWSEffectIcon {
+    char pad_0x0[0x14];
+    int m_bBeneficial;                              // 0x14 (descriptive)
+    char pad_0x18[0x4];
+    int m_bVisible;                                 // 0x1c (descriptive)
+};
+
+// CExoArrayList<CSWSEffectIcon*>.
+struct CSWSEffectIconList {
+    CSWSEffectIcon** element;
+    int num;
+    int array_size;
+    CSWSEffectIcon*& operator[](int i) { return element[i]; }
 };
 
 class CSWSCreature {
@@ -187,13 +211,22 @@ public:
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
     virtual void v90();
     virtual int GetDead();                          // 0x94 (placeholder name)
+    virtual short GetMaxHitPoints(int bBase);       // 0x98
+    virtual short GetCurrentHitPoints(int bBase);   // 0x9c
     void ClearAllActions(int bClearCombat);         // 0x004CCD80
     int GetDeadTemp();                              // 0x004EF890
+    short GetMaxForcePoints();                      // 0x004FD490
+    int IsDebilitated();                            // 0x005B4880
     char pad_0x4[0xf8];
     CExoLinkedList<CSWSObjectActionNode> m_lstActions;  // 0xfc
-    char pad_0x100[0x9c8 - 0x100];
+    char pad_0x100[0x8f4 - 0x100];
+    CSWSEffectIconList m_aEffectIcons;              // 0x8f4 (descriptive)
+    char pad_0x900[0x9c8 - 0x900];
     CSWSCombatRound* m_pCombatRound;                // 0x9c8
-    char pad_0x9cc[0xa74 - 0x9cc];
+    char pad_0x9cc[0x9e0 - 0x9cc];
+    int m_bPoisoned;                                // 0x9e0
+    int GetPoisoned() { return m_bPoisoned; }
+    char pad_0x9e4[0xa74 - 0x9e4];
     CSWSCreatureStats* m_pStats;                    // 0xa74
 };
 
@@ -385,6 +418,7 @@ class CSWGuiLabel : public CSWGuiControl {
 public:
     CSWGuiLabel();                                  // 0x0041ACD0
     ~CSWGuiLabel();                                 // 0x00419D10
+    void SetFillImage(const CResRef& cResRef) { m_cBorder.SetFillImage(cResRef, 0); }
     char pad_0x5c[0x14];
     CSWGuiBorderParams m_cBorder;                   // 0x70
     CSWGuiLabelText m_cTextBox;                     // 0xd0
@@ -493,8 +527,38 @@ struct CSWGuiTargetActionList {
 
 class CSWCObject;
 
+class CSWCCreatureStats {
+public:
+    char pad_0x0[0x14];
+    CExoString m_sFirstName;                        // 0x14 (descriptive)
+    CExoString m_sClassName;                        // 0x1c (descriptive)
+};
+
 class CSWCCreature {
 public:
+    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
+    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
+    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
+    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
+    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
+    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
+    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
+    virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
+    virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
+    virtual void v90(); virtual void v94(); virtual void v98(); virtual void v9C();
+    virtual void vA0(); virtual void vA4(); virtual void vA8(); virtual void vAC();
+    virtual void vB0(); virtual void vB4(); virtual void vB8(); virtual void vBC();
+    virtual void vC0(); virtual void vC4(); virtual void vC8(); virtual void vCC();
+    virtual void vD0(); virtual void vD4(); virtual void vD8(); virtual void vDC();
+    virtual void vE0(); virtual void vE4(); virtual void vE8(); virtual void vEC();
+    virtual void vF0(); virtual void vF4(); virtual void vF8(); virtual void vFC();
+    virtual void v100(); virtual void v104(); virtual void v108(); virtual void v10C();
+    virtual void v110(); virtual void v114(); virtual void v118(); virtual void v11C();
+    virtual void v120(); virtual void v124(); virtual void v128(); virtual void v12C();
+    virtual void v130(); virtual void v134(); virtual void v138(); virtual void v13C();
+    virtual void v140(); virtual void v144();
+    virtual CResRef GetPortrait(int bLarge);        // 0x148 (descriptive)
+    unsigned char GetMenuPoint(Vector& vPoint);     // 0x0060FF30
     void StartPersonalAction();                     // 0x0063D490
     CSWSCreature* GetServerCreature();              // 0x0060FB20
     char GetTargetInterfaceTargetType(CSWCObject* pTarget);    // 0x0060FC00
@@ -504,12 +568,21 @@ public:
     int IsStealthCapable();                         // 0x00610AC0
     void PartyMenuStealth(int a, int b);            // 0x0060F4B0
     void GetPersonalActions(int nSlot, CSWGuiTargetActionList& lstActions);  // 0x00619DB0
-    char pad_0x0[0x4];
     unsigned long m_idSelf;                         // 0x04
     char pad_0x8[0x18c];
     int m_bStealthMode;                             // 0x194
-    char pad_0x198[0x2a8];
-    unsigned char m_nCombatFlags;                   // 0x440
+    char pad_0x198[0x160];
+    CSWCCreatureStats* m_pStats;                    // 0x2f8
+    CSWCCreatureStats* GetClientStats() { return m_pStats; }
+    char pad_0x2fc[0x144];
+    union {
+        unsigned char m_nCombatFlags;               // 0x440
+        struct {
+            unsigned long m_bCombatFlag0 : 1;       //      bit 0
+            unsigned long m_bLevelUpPending : 1;    //      bit 1 (descriptive)
+            unsigned long m_nCombatFlagsRest : 30;
+        };
+    };
 };
 
 class CGameObject {
@@ -523,13 +596,15 @@ public:
     void SetPaused(int bPaused, int nReason);       // 0x0062DEF0
     void ShowSoloModeQuery(int b);                  // 0x0062E550
     int ShowSWInGameGui(int nPanel);                // 0x0062C9B0
+    void UpdateStatus(unsigned char nType, int nValue); // 0x0062EEB0
 };
 
 class CSWCObject {
 public:
     virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
     virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
+    virtual void v20(); virtual void v24(); virtual void v28();
+    virtual CSWCCreature* AsSWCCreature();          // 0x2c
     virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
     virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
     virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
@@ -540,6 +615,17 @@ public:
     virtual void v90(); virtual void v94();
     virtual short GetMaxHitPoints(int bBase);       // 0x98
     virtual short GetCurrentHitPoints(int bBase);   // 0x9c
+    virtual void vA0(); virtual void vA4(); virtual void vA8(); virtual void vAC();
+    virtual void vB0(); virtual void vB4(); virtual void vB8(); virtual void vBC();
+    virtual void vC0(); virtual void vC4(); virtual void vC8(); virtual void vCC();
+    virtual void vD0(); virtual void vD4(); virtual void vD8(); virtual void vDC();
+    virtual void vE0(); virtual void vE4(); virtual void vE8(); virtual void vEC();
+    virtual void vF0(); virtual void vF4(); virtual void vF8(); virtual void vFC();
+    virtual void v100(); virtual void v104(); virtual void v108(); virtual void v10C();
+    virtual void v110(); virtual void v114(); virtual void v118(); virtual void v11C();
+    virtual void v120(); virtual void v124(); virtual void v128(); virtual void v12C();
+    virtual void v130(); virtual void v134(); virtual void v138();
+    virtual unsigned char GetReticlePoint(Vector& vPoint);  // 0x13c (0x0063D560)
 
     CSWCObject* GetClientObject();                  // 0x0063D4B0
     void GetNameInfo(CExoString* pName, int* pbSkip);   // 0x0063D300
@@ -564,7 +650,7 @@ public:
     CSWGuiControl* HitCheckMouse(int nX, int nY);   // 0x00685F90
     void SelectNextAction(int nMenu);               // 0x006865B0
     void SelectPrevAction(int nMenu);               // 0x00686680
-    void UpdateActions(CSWCCreature* pPC, CSWCObject* pTarget);    // 0x00686090
+    void PositionMenu(CSWCCreature* pPC, CSWCObject* pTarget);     // 0x00686090
     void PopulateMenus(CSWCCreature* pPC, int bDisabled, CSWCObject* pTarget);  // 0x00689410
     void Initialize(CSWGuiPanel* pPanel);           // 0x0068BF50
     void UseAction(int nSlot, int a2);              // 0x00689610 (descriptive)
@@ -574,7 +660,7 @@ public:
     CSWGuiMainInterfaceAction m_aActions[3];        // 0x54
     CSWGuiPanel* m_pPanel;                          // 0x15a8
     CSWGuiRect m_extent;                            // 0x15ac
-    CSWGuiRect m_rect15bc;                          // 0x15bc
+    CSWGuiRect m_rectBounds;                        // 0x15bc
     CSWGuiLabel m_lblName;                          // 0x15cc
     CSWGuiLabel m_lblNameBG;                        // 0x170c
     CSWGuiLabel m_lblBarBG;                         // 0x184c
@@ -698,6 +784,7 @@ public:
     void SetHealth(int nCurrent, int nMax, int bFriendly);  // 0x006857D0
     void Show(int bShow, unsigned char nParts, unsigned char nStackA, unsigned char nStackB); // 0x006867F0
     void Initialize(CSWGuiMainInterface* pPanel, int nIndex);   // 0x006898A0
+    __forceinline void UpdateStats(CSWSCreature* pServer);
     void DrawStacks(float fDelta, int bBig)
     {
         if (m_aLabels[5].m_bVisible) {
@@ -818,7 +905,7 @@ public:
     void OnClearTargetClicked(CSWGuiControl* pControl);     // 0x0068B0A0
     ~CSWGuiMainInterface();                         // 0x0068B170
     void Draw(float fDelta);                        // 0x34 (0x0068B4A0)
-    void UpdateTarget();                            // 0x00687860
+    void UpdatePortraits();                         // 0x00687860
     void UpdateActions();                           // 0x00689D80
     void UpdateQueue();                             // 0x0068A010
     void UpdateParty(float fFrameTime);             // 0x0068A310

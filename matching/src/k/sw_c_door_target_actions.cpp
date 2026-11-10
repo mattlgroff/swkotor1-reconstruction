@@ -159,12 +159,15 @@ void CSWCDoor::GetTargetActions(CSWCCreature* pSource, int nMenu, CSWGuiActionLi
         if (m_n138 || m_n104 || bRestricted || !m_n108) {
             break;
         }
-        lstActions.SetSize(nIndex + 1);
-        lstActions.element[nIndex].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(0x170);
-        lstActions.element[nIndex].m_nActionId = 0x3f5;
-        lstActions.element[nIndex].m_pfnAction = (CSWCActionCallback)&CSWCDoor::ActionMenuOpen;
-        lstActions.element[nIndex].m_oidTarget = m_idSelf;
-        lstActions.element[nIndex].m_resIcon = "i_attack";
+        {
+            lstActions.SetSize(nIndex + 1);
+            lstActions.element[nIndex].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(0x170);
+            lstActions.element[nIndex].m_nActionId = 0x3f5;
+            lstActions.element[nIndex].m_pfnAction = (CSWCActionCallback)&CSWCDoor::ActionMenuOpen;
+            unsigned long oidSelf = m_idSelf;
+            lstActions.element[nIndex].m_oidTarget = oidSelf;
+            lstActions.element[nIndex].m_resIcon = "i_attack";
+        }
         break;
     case 1:
         if (m_n108 && pServerDoor && !pServerDoor->m_bKeyRequired &&
@@ -172,7 +175,8 @@ void CSWCDoor::GetTargetActions(CSWCCreature* pSource, int nMenu, CSWGuiActionLi
             lstActions.SetSize(nIndex + 1);
             lstActions.element[nIndex].m_sName = g_pAppManager->GetClientExoApp()->GetGUIString(0x149);
             lstActions.element[nIndex].m_pfnAction = (CSWCActionCallback)&CSWCDoor::ActionMenuLock;
-            lstActions.element[nIndex].m_oidTarget = m_idSelf;
+            unsigned long oidSelf = m_idSelf;
+            lstActions.element[nIndex].m_oidTarget = oidSelf;
             lstActions.element[nIndex].m_nActionId = 0x3f3;
             lstActions.element[nIndex].m_resIcon = g_pRules->m_lstSkills[6].m_sIcon;
         }

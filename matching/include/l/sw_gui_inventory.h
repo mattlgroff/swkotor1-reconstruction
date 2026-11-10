@@ -11,15 +11,16 @@ extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
 extern const unsigned short RACIAL_TYPE_DROID;      // 0x0074BF10
 extern unsigned long g_aInventoryFilterNames[6];    // 0x00756444 (descriptive)
 
-// Per equipment slot (9 entries of 0x14 bytes at 0x00756568).
+// Per equipment slot (9 entries of 0x14 bytes at 0x00756560), e.g.
+// {0x20, "INV_WEAP_L", "weap_l", 0x7A92, 0x7A92}.
 struct CSWEquipSlotInfo {
-    const char* m_sIcon;                            // 0x00
-    unsigned long m_nSlotMask;                      // 0x04
-    int m_n8;
-    int m_nC;
-    int m_n10;
+    unsigned long m_nSlotMask;                      // 0x00
+    const char* m_sControl;                         // 0x04 (GUI control tag)
+    const char* m_sIcon;                            // 0x08
+    unsigned long m_nStrRef;                        // 0x0c
+    unsigned long m_nStrRef2;                       // 0x10
 };
-extern CSWEquipSlotInfo g_aEquipSlots[9];           // 0x00756568 (descriptive)
+extern CSWEquipSlotInfo g_aEquipSlots[9];           // 0x00756560 (descriptive)
 
 class CSWCCreatureStats {
 public:

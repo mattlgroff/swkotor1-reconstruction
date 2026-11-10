@@ -22,7 +22,6 @@ class CSWGuiLoadScreen;
 struct Vector;
 class CSWCAmbientSound;
 class CMoviePlayer;
-class CExoSoundSource;
 class CSWCCreature;
 class CGameObject;
 class CSWCObject;
@@ -120,14 +119,6 @@ class CExoSound {
 public:
     void Update();                                  // 0x005D5DD0
     void SetMusicState(int n);                      // 0x005D5E80
-};
-
-class CExoSoundSource {
-public:
-    ~CExoSoundSource();                             // 0x005D6200
-    void Stop();                                    // 0x005D5B80
-    void SetFadeTime(unsigned long nMs);            // 0x005D5B90
-    int IsPlaying();                                // 0x005D5AF0
 };
 
 class CMoviePlayer {
@@ -397,13 +388,18 @@ class CClientOptions {
 public:
     int IsLoaded();                                 // 0x0061DBE0
     void SetDefaults();                             // 0x0061DA60
-    int SetOption(int nOption, int nValue);         // 0x004AE170
 
     void SetCameraMode(unsigned char nMode);        // 0x0061B6F0 (reference name)
     void SetFullScreenEnabled(int bEnabled);         // 0x0061B710 (reference name; ownership conflict noted)
     void SetAutoLevelUpNPCs(int bEnabled);           // 0x0061B740 (Mac name)
 
-    unsigned long m_nFlags;                         // +0x00
+    union {
+        unsigned long m_nFlags;                     // +0x00
+        struct {
+            unsigned long m_nFlagsLow : 3;
+            unsigned long m_bFullScreen : 1;        // +0x00 bit 3
+        };
+    };
     char pad_0x04[0x04];
     unsigned long m_nGameplayFlags;                 // +0x08
     char pad_0x0c[0x3c];
@@ -486,6 +482,14 @@ struct CClientResRefSlot {
     char m_resRef[16];
 };
 
+// Element of the +0x168 list. Its destructor is not ~CExoString itself but
+// an out-of-line one that tail-jumps there (0x0059EA30, shared by ICF with
+// ~CExoStringHolder and other CExoString-only classes). Name descriptive.
+struct CClientStringEntry {
+    ~CClientStringEntry();                          // 0x0059EA30
+    CExoString m_sString;                           // 0x00
+};
+
 class CClientExoAppInternal {
 public:
     void Unknown5FCD10(int a, int b, const CExoString& s);         // 0x005FCD10
@@ -542,7 +546,7 @@ public:
     char pad_0x14a[0x2];
     CSWCSaveLoad*                      m_pSaveLoad; // 0x14c
     char pad_0x150[0x18];
-    CExoLinkedList<CExoString>         m_lstUnknown168; // 0x168
+    CExoLinkedList<CClientStringEntry> m_lstUnknown168; // 0x168
     char pad_0x16c[0x20];
     int                                m_nLoadBarState; // 0x18c
     CExoLinkedList<unsigned long>      m_lstHitcheckIgnore; // 0x190
@@ -578,8 +582,8 @@ public:
     int                                m_nCanSendDialogTime; // 0x22c
     int                                m_bDialogSent; // 0x230
     int                                m_bDialogModelsSent; // 0x234
-    CExoSoundSource*                   m_pMenuMusic; // 0x238
-    CExoSoundSource*                   m_pLoadMusic; // 0x23c
+    CExoStreamingSoundSource*          m_pMenuMusic; // 0x238
+    CExoStreamingSoundSource*          m_pLoadMusic; // 0x23c
     char pad_0x240[0x8];
     int                                m_nUnknown248; // 0x248
     char pad_0x24c[0x4];
@@ -686,7 +690,7 @@ public:
     void JournalUpdated(int a, int b, int c);
     int SendSaveGameRequest(int a, int b, int c);
     int SendLoadGameRequest(int a, int b, int c);
-    int SetUnknown94(int n);
+    void SetUnknown94(int n);
     CSWCCreature* GetPlayerCreature();
     void SetUnknown194(int n);
     int LoadScreenExists();
@@ -743,7 +747,6 @@ public:
     void SetCombatMode(int bCombat);
     void SetInputActive(int bActive, int bClear);
     void RestartMoviesIfNecessary();
-    static void __stdcall FadeOutMusic(CExoSoundSource* p, int nMs);  // 0x005F1B20
     void ClearClientState();                        // 0x00690910
     void SetCursorState(int a, int b);              // 0x005F14A0
     void UnloadModule();                            // 0x005F8290
@@ -1093,8 +1096,8 @@ public:
     CExoString GetDisplayCharacterForKey(int nKey);
 
     // callees (not matched here)
-    CClientOptions* GetClientOptions();             // 0x005ED4F0
-    CWorldTimer* GetWorldTimer();                   // 0x005ED4F0 (same slot as GetClientOptions)
+    CClientOptions* GetClientOptions();             // 0x005ED700
+    CWorldTimer* GetWorldTimer();                   // 0x005ED4F0
     CClientUnknown700* GetUnknown700();             // 0x005ED700
     CSWParty* GetParty();                           // 0x005ED8B0
     CGuiInGame* GetInGameGui();                     // 0x005ED690

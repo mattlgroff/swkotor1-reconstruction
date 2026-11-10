@@ -66,8 +66,8 @@ void CServerExoAppInternal::MovePlayerToArea(void* pPlayerArg)
     CSWSArea* pArea = GetModule()->GetArea();
     pCreature->m_pPathfindInformation->m_oidCreature = pCreature->m_idSelf;
     if (pArea) {
-        if (!pArea->ComputeSafeLocation(vPosition, 20.0f, pCreature->m_pPathfindInformation,
-                                        (void*)1, &vSafe)) {
+        CPathfindInformation* pPathfind = pCreature->m_pPathfindInformation;
+        if (!pArea->ComputeSafeLocation(vPosition, 20.0f, pPathfind, (void*)1, &vSafe)) {
             vSafe = vPosition;
         }
         pCreature->UpdateSubareasOnJump(vSafe, pArea->m_oid120, m_bLoadFromSaveGame == 0);

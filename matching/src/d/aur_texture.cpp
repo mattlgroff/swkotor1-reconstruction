@@ -274,7 +274,7 @@ void* AurGetImageWrapper(char* szName, int* pWidth, int* pHeight, int* pBpp, int
 // FUNCTION: SWKOTOR 0x0041ebd0
 void AurTextureFreeLayers()
 {
-    free(g_pLayerTable);
+    delete[] g_pLayerTable;
     g_pLayerTable = 0;
     g_pLayerAlpha = 0;
 }
@@ -345,7 +345,7 @@ void CAurTexture::SetTXIData(void* pData, int nSize)
     CAurTextureBasic* pBasic = AUR_BASIC();
     if (pBasic && pData && nSize > 0) {
         if (pBasic->m_pTXIData) {
-            free(pBasic->m_pTXIData);
+            delete[] (char*)pBasic->m_pTXIData;
             pBasic->m_pTXIData = 0;
         }
         pBasic->m_pTXIData = new char[nSize];

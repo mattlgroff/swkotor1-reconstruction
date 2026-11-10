@@ -37,7 +37,7 @@ void CSWCameraFreeLook::UpdateCamraStyle()
 
 // FUNCTION: SWKOTOR 0x0063A5D0 SYMBOL: ??0CSWCameraFreeLook@@QAE@PAVGob@@0H@Z
 CSWCameraFreeLook::CSWCameraFreeLook(Gob* pGob, Gob* pTarget, int nVideoEffect)
-    : CAurBehavior(pGob), m_v4C(0.0f, 0.0f, 0.0f), m_v58(0.0f, 0.0f, 0.0f), m_v64(0.0f, 0.0f, 0.0f)
+    : CSWCameraBehaviorBase(pGob), m_v4C(0.0f, 0.0f, 0.0f), m_v58(0.0f, 0.0f, 0.0f), m_v64(0.0f, 0.0f, 0.0f)
 {
     m_pCamera = pGob;
     AddDependency(pTarget);
@@ -70,7 +70,7 @@ CSWCameraFreeLook::~CSWCameraFreeLook()
 
 // FUNCTION: SWKOTOR 0x0063BAF0 SYMBOL: ??0CSWCameraFreeLook@@QAE@PAVCSWCameraSettings@@@Z
 CSWCameraFreeLook::CSWCameraFreeLook(CSWCameraSettings* pSettings)
-    : CAurBehavior(pSettings->m_pCamera), m_v4C(0.0f, 0.0f, 0.0f), m_v58(0.0f, 0.0f, 0.0f),
+    : CSWCameraBehaviorBase(pSettings->m_pCamera), m_v4C(0.0f, 0.0f, 0.0f), m_v58(0.0f, 0.0f, 0.0f),
       m_v64(0.0f, 0.0f, 0.0f)
 {
     m_rTarget = pSettings->m_rTarget;

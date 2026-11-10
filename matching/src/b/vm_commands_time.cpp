@@ -114,7 +114,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetObjectValue(int nCommandId, int 
             nResult = pObject->AsSWSArea()->m_n1DC;
             break;
         case 0xd:
-            nResult = ((CGameObject5CView*)pObject->AsSWS5C())->m_n314;
+            nResult = ((CGameObject5CView*)pObject->AsSWSEncounter())->m_n314;
             break;
         default:
             nResult = ((CGameObjectValueView*)pObject)->m_n150;

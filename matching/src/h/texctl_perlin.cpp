@@ -305,13 +305,12 @@ void ArturoTextureController::Init()
     BuildArturoImage();
 }
 
-// NONMATCH (2 insns): the grid size product copies the height register
-// (original: the width register) before the imul.
+// Reading the height before the width picks the imul operand registers.
 // FUNCTION: SWKOTOR 0x0045FF40
 void WaterTextureController::Init()
 {
-    int nWidth = m_nWaterWidth;
     int nHeight = m_nWaterHeight;
+    int nWidth = m_nWaterWidth;
     int nSize = nWidth * nHeight;
     m_nCounter = 0;
     if (m_bDistort)

@@ -110,10 +110,10 @@ int CSWCItem::PlayDropSound()
  CResRef sound;
  if (GetBaseItem()->m_nItemClass>=0x1f && GetBaseItem()->m_nItemClass<=0x26) {
   switch(m_nArmorType) {
+  case 3: sound="it_materialcloth"; break;
   case 0: sound="it_armorleather"; break;
   case 1: sound="it_armorchain"; break;
   case 2: sound="it_armorplate"; break;
-  case 3: sound="it_materialcloth"; break;
   }
  } else {
   int base=m_nBaseItem;

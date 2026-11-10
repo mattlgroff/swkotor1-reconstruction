@@ -104,6 +104,13 @@ public:
     char pad_9cc[0xa74-0x9cc];
     CSWSCreatureStats* m_pStats;
 };
+static inline CServerExoApp* GetServer() { return g_pAppManager->m_pServer; }
+static inline void AddEventNow(unsigned long oidCaller, unsigned long oidObject, unsigned long nEvent,
+                               void* pData)
+{
+    GetServer()->GetServerAIMaster()->AddEventDeltaTime(0, 0, oidCaller, oidObject, nEvent, pData);
+}
+
 // FUNCTION: SWKOTOR 0x004FD6F0
 int CSWSCreature::CalculateDamagePower(CSWSObject* pTarget)
 {
@@ -126,12 +133,10 @@ void CSWSCreature::UpdateClassInfo()
         RemoveFirstEffect109();
     }
 }
-// NONMATCH: 5 diff: initial receiver/argument scheduling and caller-clobbered register choice.
 // FUNCTION: SWKOTOR 0x004FDA20 SYMBOL: ?PacifyCreature@CSWSCreature@@QAEXK@Z
 void CSWSCreature::PacifyCreature(unsigned long oid)
 {
-    CAppManager* pApp = g_pAppManager;
-    CSWSCreature* pOther = pApp->m_pServer->GetCreatureByGameObjectID(oid);
+    CSWSCreature* pOther = GetServer()->GetCreatureByGameObjectID(oid);
     if (pOther && (pOther->m_oidAttackTarget == m_idSelf ||
         pOther->m_oidAttemptedTarget == m_idSelf || pOther->m_oid524 == m_idSelf ||
         pOther->m_oid528 == m_idSelf || pOther->m_oidLastHostile == m_idSelf)) {
@@ -141,15 +146,13 @@ void CSWSCreature::PacifyCreature(unsigned long oid)
         pOther->RemoveTargetActions4F61D0(reinterpret_cast<CGameObject*>(this));
     }
 }
-// NONMATCH: 7 diff: initial receiver/argument scheduling and caller-clobbered register choice.
 // FUNCTION: SWKOTOR 0x004FD960 SYMBOL: ?PacifyCreature@CSWSCreature@@QAEXXZ
 void CSWSCreature::PacifyCreature()
 {
     CSWSArea* pArea = GetArea();
     if (!pArea) return;
     for (int i = 0; i < pArea->m_nObjectCount; i++) {
-        CAppManager* pApp = g_pAppManager;
-        CSWSCreature* pOther = pApp->m_pServer->GetCreatureByGameObjectID(pArea->m_pObjectIds[i]);
+        CSWSCreature* pOther = GetServer()->GetCreatureByGameObjectID(pArea->m_pObjectIds[i]);
         if (pOther && (pOther->m_oidAttackTarget == m_idSelf ||
             pOther->m_oidAttemptedTarget == m_idSelf || pOther->m_oid524 == m_idSelf ||
             pOther->m_oid528 == m_idSelf || pOther->m_oidLastHostile == m_idSelf)) {
@@ -200,7 +203,6 @@ void CSWSCreature::AddPureEvilPowers()
     ApplyEffect(pEffect, 0, 0);
 }
 
-// NONMATCH: 8 diff: caller-clobbered registers for event and app-manager loads.
 // FUNCTION: SWKOTOR 0x005149B0
 void CSWSCreature::UnsummonMyself()
 {
@@ -214,8 +216,5 @@ void CSWSCreature::UnsummonMyself()
         pEffect->m_nSubType = (pEffect->m_nSubType & 0xfff8) | DURATION_TYPE_7473B8;
         pArea->ApplyEffect(pEffect, m_vPosition, m_vOrientation);
     }
-    unsigned long nEvent = EVENT_AI_LATER;
-    unsigned long oidSelf = m_idSelf;
-    CServerExoApp* pServer = g_pAppManager->m_pServer;
-    pServer->GetServerAIMaster()->AddEventDeltaTime(0, 0, oidSelf, oidSelf, nEvent, 0);
+    AddEventNow(m_idSelf, m_idSelf, EVENT_AI_LATER, 0);
 }

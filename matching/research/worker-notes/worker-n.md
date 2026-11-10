@@ -422,3 +422,38 @@ slot argument; no short-argument ABI was invented to remove them.
   CSWCModule::LoadModule 0x0063F660 (EH, unknown callees); client input
   0x006224E0, 0x00620620, 0x00621210, 0x006227E0; camera helpers from s1;
   CSWCObject::SetAnimation 0x0063E930.
+
+### GetHead sweep (sweep-s1)
+
+- sw_c_object.h: CExoLinkedListInternal::GetHead is now
+  `pNode = pHead; if (!pNode) return 0; return pNode->pObject;` and the
+  template wrapper loads `m_pcExoLinkedListInternal` into a local first
+  (bucket c shape). Promoted 0x0063F400 DeleteVisualEffect and 0x0063F490
+  UpdateVisualEffectsList; folder 280/331 -> 282/331.
+- The loops that read the head object BEFORE GetHeadPos (Refresh-,
+  ActivateHardCoded..., Detach-, ReAttachVisualEffects) want the old
+  `void* p = pHead; if (pHead) p = pHead->pObject;` shape: with the new
+  shape Detach/ReAttach drop to 10 insns. They now call
+  CExoLinkedList::GetHeadInline() (internal GetHeadInline, the old shape).
+  Inlining that shape directly in the template, or calling the new
+  internal GetHead without the local, both lose them.
+- Tried without gain: 0x0063DAA0 StopAllVisualEffects (head part now
+  identical; remaining miss is our loop-top alignment padding).
+
+## Audit fixes 2026-11-10
+
+- 0x006244E0 StartFade / 0x00624570 Draw: the snapshot-time divide is signed
+  (`__alldiv`); cast `(__int64)GetSnapshotTime() / 1000`. 0x006247A0 keeps the
+  unsigned divide (`__aulldiv`) as the original does.
+- 0x00626400 CSWGuiInGameMessages ctor: the hilight colour it copies is
+  0x007A23C0 (`g_vAbilityColorGranted`, the shared yellow), not d's
+  `g_vHilightColor` 0x0078D3C0.
+- Cameras: CSWCameraDeath / OnAStick / FreeLook derive from an intermediate
+  `CSWCameraBehaviorBase : CAurBehavior` (name inferred) with an implicit
+  dtor. Evidence: ctor/dtor unwind funclets call 0x006DB4E0 (folded
+  `jmp ~CAurBehavior`) while the dtor bodies call 0x0049FA70 directly. This
+  also made 0x0063BAF0 FreeLook(CSWCameraSettings*) MATCH. CSWCameraNavigate
+  has no EH and is left on CAurBehavior.
+- Lesson: a funclet calling a 5-byte `jmp base-dtor` thunk while the body
+  calls the base dtor directly means an inline (implicit) intermediate
+  destructor.

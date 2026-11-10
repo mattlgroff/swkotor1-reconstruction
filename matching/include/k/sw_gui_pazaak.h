@@ -43,8 +43,9 @@ public:
 
 void* operator new(unsigned int nSize);
 void operator delete(void* p);
-void* operator new[](unsigned int nSize);
-void operator delete[](void* p);
+// No operator new[]/delete[] declarations: without them this compiler lowers
+// new T[n] / delete[] p (trivial T) to ??2/??3 as the original does; with
+// them it calls ??_U/??_V (0x006FC0D2/0x006FC0CD) instead.
 
 template <class T>
 class CExoArrayList {
@@ -155,6 +156,7 @@ public:
     void SetColor(const Vector& vColor);            // 0x00414E10
     void SetText(const CExoString& sText);          // 0x00415E00
     void SetStrRef(int nStrRef);                    // 0x00415E50
+    void SetAlignment(int nAlignment);              // 0x00415F20
     CExoString m_sText;                             // 0x00
     char pad_0x08[0x4c];
 };
@@ -186,7 +188,7 @@ class CSWGuiText {
 public:
     virtual ~CSWGuiText();
     virtual void SetExtent(const CSWGuiExtent& extent); // 0x04
-    virtual void v08();
+    virtual int GetHeight();                        // 0x08
     virtual void Draw(float fDelta);                // 0x0c
     virtual void Load(CResGFF* pGFF, CResStruct* pStruct, const CExoString& sName); // 0x10
     char pad_0x04[0x14];
@@ -245,6 +247,7 @@ public:
     unsigned char m_nClickSound;                    // 0x55
     int m_n58;                                      // 0x58
 
+    void SetFlag1(int b) { m_bFlag1 = b; }
     void SetFlag5(int b) { m_bFlag5 = b; }
     void SetNavigable(int b) { m_bNavigable = b; }
     void AddEvent(int nEvent, CSWGuiPanel* pObject,
@@ -326,6 +329,8 @@ public:
     int CanUsePlayerSidedeckCard(int nIndex);       // 0x006E4840
     int UsePlayerSidedeckCard(int nIndex);          // 0x006E4860
     int PlayAITurn(CPazaakPlayer* pAI, CPazaakPlayer* pPlayer, int nState);   // 0x006E4C60
+    int DetermineWinner();                          // 0x006E48A0
+    void LoadInitialSideDeck(int nDeck, CPazaakCard* pCards);  // 0x006E4A40
     CPazaakPlayer* GetPlayer() { return &m_cPlayer; }
     void DrawPlayerCard();                          // 0x0067CAE0
     int DoAITurn();                                 // 0x0067CB10
@@ -344,9 +349,14 @@ extern const char* g_szPazaakCardText[28];          // 0x007A2600
 extern Vector g_vPazaakButtonColor;                 // 0x007A2408
 extern Vector g_vPazaakButtonHilight;               // 0x007A23B4
 
-// vtable 0x00753120; no constructor of its own (the owners inline it).
+// vtable 0x00753120; inline constructor only (the owners expand it).
 class CSWGuiActivatedButton : public CSWGuiButton {
 public:
+    __forceinline CSWGuiActivatedButton() : m_vColor(0.0f, 0.0f, 0.0f)
+    {
+        m_fTimer = -1.0f;
+        m_bSelectable = 1;
+    }
     virtual void Draw(float fDelta);                            // 0x38 (0x0067CB70)
     virtual void SetEnabled(int b);                             // 0x88 (0x0067CC90)
     void SetColor(const Vector& vColor);            // 0x0067CA50
@@ -555,6 +565,8 @@ public:
     void* m_p00;
     CClientExoApp* m_pClientExoApp;                 // 0x04
     CServerExoApp* m_pServerExoApp;                 // 0x08
+    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
+    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
 };
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
@@ -588,7 +600,10 @@ public:
 // vtable 0x007532E8.
 class CSWGuiPazaakStart : public CSWGuiPanel {
 public:
+    CSWGuiPazaakStart(CSWGuiManager* pManager, int nWager, int nDeck, int bTutorial,
+                      unsigned long oidOpponent);   // 0x00681A90
     ~CSWGuiPazaakStart();                           // 0x0067E2B0
+    CSWPazaak* GetPazaak() { return m_pPazaak; }
     void OnPanelAdded();                            // 0x48 (0x0067F750)
     void HandleWagerExit(int nWager);               // 0x0067D3B0
     void HandleQuitDialog(CSWGuiControl* pControl); // 0x0067D3D0
@@ -640,6 +655,7 @@ public:
 };
 
 extern Vector g_vPazaakFlashColor;                  // 0x007A23CC
+extern Vector g_vAbilityColorAvailable;             // 0x007A23D8
 extern int g_bPazaakShowOpponentHand;               // 0x00833BB0
 
 // vtable 0x00753358.

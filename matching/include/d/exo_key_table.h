@@ -78,11 +78,11 @@ public:
     CExoLinkedListInternal();                       // 0x005e9aa0
     void* GetHead()
     {
-        void* pObject = pHead;
-        if (pHead) {
-            pObject = pHead->pObject;
+        CExoLinkedListNode* pNode = pHead;
+        if (!pNode) {
+            return 0;
         }
-        return pObject;
+        return pNode->pObject;
     }
     ~CExoLinkedListInternal();
     void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
@@ -103,7 +103,11 @@ public:
     CExoLinkedList();
     ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
     CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetHead() { return (T*)m_pcExoLinkedListInternal->GetHead(); }
+    T* GetHead()
+    {
+        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
+        return (T*)pInternal->GetHead();
+    }
     CExoLinkedListPosition AddTail(T* pObject) { return m_pcExoLinkedListInternal->AddTail(pObject); }
     CExoLinkedListPosition AddHead(T* pObject) { return m_pcExoLinkedListInternal->AddHead(pObject); }
     T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }

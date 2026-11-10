@@ -45,6 +45,22 @@ public:
         }
         element[num++] = value;
     }
+    void AllocateInline(int nSize)
+    {
+        T* pOld = element;
+        array_size = nSize;
+        element = new T[nSize];
+        for (int i = 0; i < num; i++)
+            element[i] = pOld[i];
+        if (pOld)
+            delete[] pOld;
+    }
+    void AddInline(T t)
+    {
+        if (num == array_size)
+            AllocateInline(array_size ? array_size * 2 : 8);
+        element[num++] = t;
+    }
     ~CExoArrayList() { if (element) delete[] element; }
     CExoArrayList<T>& operator=(const CExoArrayList<T>& o)      // 0x0046BC80
     {
@@ -54,6 +70,15 @@ public:
         return *this;
     }
     void Allocate(int nSize);                                   // <Light*>: 0x005E03C0
+    void AllocateOutOfLine(int nSize);                          // <float>: 0x00437D60
+    void AddOutOfLine(T t)
+    {
+        if (num == array_size) {
+            AllocateOutOfLine(array_size ? array_size * 2 : 8);
+        }
+        element[num] = t;
+        num++;
+    }
     void Remove(T t);                                           // <Light*>: 0x00445080
     void Add(T t)
     {
@@ -70,6 +95,12 @@ public:
             if (element[i] == t)
                 n++;
         return n;
+    }
+    void DelIndex(int nIndex)
+    {
+        num--;
+        for (; nIndex < num; nIndex++)
+            element[nIndex] = element[nIndex + 1];
     }
     int IndexOf(T t)
     {
@@ -150,6 +181,10 @@ class LightNode {
 public:
     char pad_0x0[0x90];
     int m_nShadowPriority;                              // +0x90 (placeholder name)
+    char pad_0x94[0xa8 - 0x94];
+    int m_bNoFade;                                      // +0xa8 (placeholder name)
+
+    LightNode* AsMdlNodeLight();                        // 0x0043E3D0
 };
 
 // PartLight (a model Part).
@@ -178,12 +213,24 @@ public:
     int m_bAffectDynamic;                               // +0x6c
     int m_bAffectStatic;                                // +0x70 (0, 1 or 2 in LightCompare)
     int m_nSortPriority;                                // +0x74 (placeholder name; 0 = use the node's)
-    char pad_0x78[0x80 - 0x78];
+    float m_fFade;                                      // +0x78 (placeholder name)
+    float m_fDynamicFade;                               // +0x7c (placeholder name)
     float m_fPriority;                                  // +0x80 (placeholder name)
     char pad_0x84[0x8c - 0x84];
     float m_fMultiplier;                                // +0x8c
     float m_fShadowFade;                                // +0x90 (placeholder name)
     Vector m_vPosition;                                 // +0x94
+};
+
+// The per-object light state handed to EnableHighestPriorityLightsFade.
+class CAurObjectLightContainer {
+public:
+    virtual ~CAurObjectLightContainer();
+
+    CExoArrayList<Light*> m_lLights;                    // +0x04
+    CExoArrayList<float> m_lFades;                      // +0x10
+    Light* m_pShadowLight;                              // +0x1c
+    float m_fShadowFade;                                // +0x20
 };
 
 class LightManager {
@@ -197,7 +244,7 @@ public:
     virtual void Reset();                                               // +0x18
     virtual void UpdateLights();                                        // +0x1c
     virtual void EnableHighestPriorityLights(int n);                    // +0x20
-    virtual void EnableHighestPriorityLightsFade(int n, void* pFade);   // +0x24
+    virtual void EnableHighestPriorityLightsFade(int n, CAurObjectLightContainer* pContainer);  // +0x24
     virtual void V28(int a, int b, int c, int d);                       // +0x28
     virtual void DisableBumpMapLights();                                // +0x2c 0x004A5680
     virtual void EnableBumpMapLights();                                 // +0x30 0x004A5710
@@ -245,7 +292,7 @@ public:
     CExoArrayList<Light*> m_lC4;                        // +0xc4
     CExoArrayList<Light*> m_lD0;                        // +0xd0
     CExoArrayList<Light*> m_lDC;                        // +0xdc
-    CExoArrayList<Light*> m_lE8;                        // +0xe8
+    CExoArrayList<float> m_lE8;                         // +0xe8 (fades of m_lDC)
     unsigned char m_bBumpMapLightsDisabled;             // +0xf4
 };
 
@@ -253,7 +300,6 @@ extern int g_bVertexProgramRefresh;                     // 0x007A193C
 extern int g_bDynamicLights;                            // 0x007B92DC
 extern int g_nActiveLights;                             // 0x008305E8 (placeholder name)
 extern int g_nMaxShadowLights;                          // 0x007A1938 (placeholder name)
-extern float g_fFrameTime;                              // 0x0078E574 (placeholder name)
 extern float g_fShadowLightFadeTime;                    // 0x007A1948 (placeholder name)
 extern int g_nDynamicActiveLights;                      // 0x008305EC (placeholder name)
 extern short g_nHeadLight;                              // 0x0078E388 (placeholder name)

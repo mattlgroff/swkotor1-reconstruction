@@ -204,7 +204,7 @@ int CSWSCreature::RemoveFirstActionOfType(unsigned long nAction)
     void* pos = m_pActions->m_pHead;
     while (pos) {
         CSWSObjectActionNode* pNode = (CSWSObjectActionNode*)m_pActions->GetAtPos(pos);
-        if (pNode->m_nActionId == nAction && RunAction(pNode, 1) == 1) {
+        if (pNode->m_nActionId == nAction && ClearAction(pNode, 1) == 1) {
             m_pActions->Remove(pos);
             delete pNode;
             bResult = 1;

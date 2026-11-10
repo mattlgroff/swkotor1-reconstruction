@@ -55,6 +55,7 @@ public:
     virtual void Initialize(CSWGuiText* pText, CSWGuiBorder* pBorder, CSWGuiBorder* pHilight,
                             int nWidth, int bPulse);    // 0xa0 (0x006B4DB0)
     void SetCanUse(unsigned char nState);           // 0x006B5060
+    void SetItem(unsigned long oidItem, int a, int b);  // 0x006B6710
     unsigned long m_oidItem; // 0x1c4
     CSWGuiBorder m_icon; // 0x1c8
     CSWGuiBorder m_iconHighlight; // 0x23c

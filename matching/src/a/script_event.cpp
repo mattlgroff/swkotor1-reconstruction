@@ -47,7 +47,7 @@ int CScriptEvent::SaveEvent(CResGFF* pRes, CResStruct* pStruct)
     CResList cList;
     int i;
 
-    pRes->WriteFieldWORD(pStruct, m_nType, "EventId");
+    pRes->WriteFieldWORD(pStruct, m_nType, "EventType");
 
     if (m_lstIntegers.num > 0) {
         pRes->AddList(&cList, pStruct, "IntList");

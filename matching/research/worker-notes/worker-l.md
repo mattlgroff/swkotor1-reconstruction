@@ -762,3 +762,381 @@ NONMATCH:
   CSWGuiCreateItemSubMenu 0x006BDDE0-0x006BE2B0; earlier queues (save/load
   LoadGame 0x006CB0E0, party selection 0x006BE560/0x006BEEB0/0x006BF5B0,
   upgrade remainder, title movies, RK4 / camera helpers).
+
+## Debug sub menu, dialogue/combat cameras, AoE object, quest items (2026-11-10, worker-l-s12)
+
+- Whole folder: **727/805 -> 762/846**. 41 functions annotated, **35 NEW
+  exact**, 6 retained NONMATCH, no prior MATCH regressed (762 = 727 + 35).
+- MATCH, `CSWGuiCreateItemSubMenu` (swguiSubCreateItem.o, vtable 0x00756B30,
+  header `l/sw_gui_create_item_sub_menu.h`, `sw_gui_create_item_sub_menu.cpp`):
+  0x006BD980 HandleInputEvent, 0x006BDBA0 OnBack, 0x006BDBE0 OnItemSelected,
+  0x006BDC60 ctor, 0x006BDDE0 ??_G, 0x006BDE00 implicit dtor, 0x006BDEA0
+  LoadItems (UTI scan via GetResOfType / CResGFF, 1040 bytes), 0x006BE2B0
+  ClearItems. Mac names: class, LoadItems, ClearItems.
+- MATCH, `CSWBehaviorCameraDialog` (vtable 0x00756AE8, `l/sw_behavior_camera_dialog.h`):
+  0x006BB590 SetShot, 0x006BB610 GetLineOfActionSide, 0x006BB740 GetType
+  (0x106D), 0x006BB750 dtor, 0x006BB790 ??_G, 0x006BCEC0 AddLineOfAction.
+  symbols.csv labels SetShot `CAurCamera::SetShot` from its caller, but the
+  callee works on the behaviour returned by GetCamera(0x106D) (CAurBehavior
+  +0x10 gob), so it is defined on CSWBehaviorCameraDialog.
+- MATCH, `CSWBehaviorCameraCombat` (swbehaviorcameracombat.o, vtable
+  0x00757BDC, `l/sw_behavior_camera_combat.h`): 0x006D14D0 GetType (0x1070),
+  0x006D1870 SetTurn, 0x006D18C0 ??_G (its implicit dtor is the folded
+  0x006DB4E0 alias). Camera spring integrators (`sw_camera_clip.cpp`, the
+  playable source's CSWRK4Acceleration / split; names kept from
+  symbols.csv: CSWCameraClipBase / CSWCameraClipHelper): 0x006D0A40 state
+  operator/, 0x006D0FC0 / 0x006D10D0 GetAccelerationVector, 0x006D1030
+  SetVelocity, 0x006D10B0 helper ctor, 0x006D1190 Update. The helper's
+  +0x40/+0x44/+0x48 are mass / gain / release gain (set from the
+  GetFarClip* option getters in the combat ctor).
+- MATCH, `CSWCAreaOfEffectObject` (vtable 0x00757E28, `l/sw_c_area_of_effect.h`
+  on top of `sw_c_projectile.h`): 0x006D90D0 ReleaseModel, 0x006D91D0
+  UnloadModel, 0x006D91F0 SetAnimation, 0x006D9300 ResetInstanceDuration,
+  0x006D9520 SetMoveTimer, 0x006D9820 dtor, 0x006D9890 ??_G. Instances are a
+  `new CSWCAnimBase[n]` in CSWCObject::m_pAnimationBase (+0x68).
+- MATCH, `CSWGuiQuestItem` (`l/sw_gui_quest_item.h`, rewritten
+  `sw_gui_quest_item_lifecycle.cpp`): 0x006D2460 the out-of-line
+  CExoLinkedList<CSWGuiInGameItemEntry> ctor, 0x006D24D0 HandleInputEvent,
+  0x006D2580 OnControlEntered, 0x006D26C0 ctor, 0x006D28F0 dtor (the old
+  empty unannotated dtor is replaced; ??_G/OnPanelAdded still exact).
+- NONMATCH kept: 0x006BDA90 sub menu CreateButton (8; same `this` spill tie
+  as the three debug-menu copies; pointer-local border forms reorder the
+  calls), 0x006BB670 dialog camera ctor (3; &m_rListener formed in ebp
+  before its zero store), 0x006D12B0 combat ctor (3; EH link reload before
+  the last fstp), 0x006D22C0 combat RestoreSettings (19; edi/ebx swap of
+  PC / app pointer and the target-position slot is shared with the checked
+  position in the original), 0x006D0B20 clip base ctor (16; two zero Vector
+  temporaries live at once, interleaved re-zero stores), 0x006D29F0 quest
+  PopulateItemListBox (14; array-before-count load in the inline append,
+  then eax/ecx/edx rotation).
+- functions.csv lacks the starts 0x006BB740, 0x006BDBA0, 0x006BDBE0,
+  0x006D14D0, 0x006D10D0, 0x006D91D0 (folded into the previous row); the
+  annotations restore them. 0x006BCF50 (dialog camera Control, inside the
+  0x006BCEC0 row) is still unannotated.
+- Shared-header changes (whole folder verified): bark-bubble CResRef
+  CopyToString; CClientExoApp GetPlayerCreatureId / CreatureAcquireItem;
+  CGuiInGameDebug HideSubItemCreateMenu / ShowItemCreateMenu; projectile
+  CSWCAnimBase slot 0x38 GetAnimationLength (was v38); bark-bubble
+  CExoLinkedList ctor (out of class) / dtor / IsEmpty / RemoveHead / AddTail
+  and CExoLinkedListInternal members; CSWGuiInGameItemEntry::SetItem
+  (0x006B6710).
+- Lessons: (1) **Empty-state SEH frame without a list member**: a member
+  with an inline ctor containing a dead throwing call (`GobRef(Gob* p = 0)
+  { m_p = p; if (m_p) m_p->m_lWatchers.Add(&m_p); }`) gives the frame with
+  no state stores. (2) `x = f() ? A : B` style returns: a ternary of two
+  struct temporaries (`return f != 0 ? State(a, b) : State(0, 0)`) builds
+  one temp and copies it out; an if/else into a local adds a second copy.
+  (3) `a[i].x = Call(); ... return a[i].x;` reproduced the original store
+  order where a named local did not (AddLineOfAction). (4) A by-pointer
+  local for the GetString result (`CExoString* p = ...; ref = p->CStr();`)
+  fixed the eax/ecx choice in OnItemSelected. (5) `if (a < b)` vs `if (b >
+  a)` decides which operand is loaded first. (6) `pObj->Get(1)` on a long
+  call chain pushes the argument first; split the chain into a local to push
+  it after. (7) The combat ctor's `and esp, -8` frame appeared on its own
+  from the six CExoString/float 2DA reads (copied from n's stick ctor).
+- Next in-range queue: dialog camera big pieces (CalculateLineOfActionSide
+  0x006BC600, Control 0x006BCF50, 0x006BD260, 0x006BB7B0); combat camera
+  0x006D14E0 / 0x006D16F0 / 0x006D1760 / Control 0x006D1FC0 / CheckPosition
+  0x006D18E0 and the RK4 step 0x006D0BD0 (all x87-heavy); AoE remainder
+  (ctor 0x006D8310, LoadEffect 0x006D8490, SetEnvMap 0x006D9590 /
+  0x006D96E0, 0x006D98B0, 0x006DA330, 0x006DA520); title movies
+  0x006DCE80-0x006DDAF0; earlier queues (equip/inventory/container
+  remainder, save/load LoadGame, party selection, upgrade remainder).
+
+## Title movies, AoE object, mini-game gun/bullet behaviours (2026-11-10, worker-l-s13)
+
+- Whole folder: **762/846 -> 779/865**. 19 functions annotated, **17 NEW
+  exact**, 2 retained NONMATCH, no prior MATCH regressed (779 = 762 + 17).
+- MATCH, `CSWGuiTitleMovies` (vtable 0x00758130, new standalone header
+  `l/sw_gui_title_movies.h`, `sw_gui_title_movies.cpp`): 0x006DCE80
+  HandleInputEvent, 0x006DCF10 OnMoviePicked, 0x006DCFE0 dtor (inline label
+  dtor), 0x006DDAF0 ??_G, 0x006DD100 PopulateMovies (2064 bytes), 0x006DD910
+  ctor.
+- MATCH, `CSWCAreaOfEffectObject` (`sw_c_area_of_effect.cpp`): 0x006D8310
+  ctor, 0x006D96E0 SetEnvMapPart, 0x006DA330 UpdateInstances (descriptive),
+  0x006DA9B0 AIUpdate.
+- MATCH, mini-game behaviours (`l/sw_mg_behavior.h`): `CAurGunEmitter`
+  (`aur_gun_emitter.cpp`, vtable 0x00757F70) 0x006DADF0 ctor, 0x006DAE60
+  GetType (0xAAAD), 0x006DAE70 Control, 0x006DAEC0 Fire (slot 0x24; m/ calls
+  it Restart); 0x006DB3D0 CSWMGBehaviorTrackAndFire::Control
+  (`sw_mg_behavior.cpp`); `CSWMiniBulletInfo` (`sw_mg_bullet.cpp`, vtable
+  0x00757F98, name from m/) 0x006DAFE0 ctor, 0x006DB080 GetType (0xAAAB).
+- NONMATCH kept: 0x006D9590 AoE SetEnvMap (28; the inlined CSWCArea::GetEnvMap
+  copy keeps the area pointer in esi and loads three dwords before storing,
+  mine uses eax and alternates; tried named/temp/inline-helper/pArea forms),
+  0x006DB090 bullet Control (2; `fstp` of the scaled fDelta comes before the
+  second push in the original).
+- functions.csv lacks the starts 0x006DCF10, 0x006DAE60, 0x006DAE70,
+  0x006DAEC0, 0x006DB080, 0x006DB090, 0x006DB3D0; the annotations restore them.
+- Naming: CClientOptions 0x0061D3D0 is declared GetMovieShown here (c/ names it
+  GetTexturePackBit; CTwoDimArrays +0x11C is the movies table, c/ calls it
+  m_pTexturePacks). CSWCAnimBase slot 0x04 declared AttachToScene(CAurScene*)
+  in `sw_c_projectile.h` (symbols.csv: SetVisible; it forwards to the model's
+  slot 0x4c and the AoE passes its scene). AoE fields 0x124-0x178 named
+  descriptively (m_nFinishTimer, m_bFinished, m_bEnding, m_cImpactSound,
+  m_nImpactSoundChance, m_nEffectRow, m_bSoundStarted, m_oidTarget);
+  m_pVisualEffect is a CSWCVisualEffect (k/ layout, +0x114 m_bDone).
+- Shared-header changes (whole folder verified): `sw_c_projectile.h` CExoString
+  GetLength; CResRef(CExoString), CopyToString(CExoString&), operator==,
+  GetResRef; CAurObject slot 0x64 GetPosition; CSWCAnimBase 0x98/0x9c
+  SetEnvMapPart/SetEnvMap; CSWCObject 0x94 AttachToScene, 0xac/0xb0 env map
+  slots; CGameObject 0x0c AsSWCObject; CSWCArea/CSWCModule; C2DA/C2DAs
+  visual effects table; CSWRules +0xB8; CWorldTimer SubtractWorldTimes.
+  `sw_c_area_of_effect.h` m_pnAnimationLengths is unsigned long* (the AIUpdate
+  compares are unsigned; SetAnimation still exact). `sw_mg_behavior.h`
+  CAurBehavior, CAurObject/Gob slots, Quaternion::GetYAxis, Vector + and
+  float*Vector, CExoSound, CAurBehaviorAttach +0x10 m_pObject and slot 0x24.
+- Lessons: (1) Two GetWorldTime outputs: the store order of the two results
+  (`m_nCreateDay = nDay;` before `m_nCreateTime = nTime;`) decided which local
+  got the lower slot; declaration order and names did not matter. (2)
+  CExoArrayList::Insert inlined as `n = num; grow-if-full; element[num++] = t;
+  for (; n > i; n--) shift; element[i] = t;` decrementing n itself (a separate
+  loop counter cost 8 frame bytes). (3) Struct-returning call chains read
+  through eax (`fmul [eax]`) only when used inside one expression with inline
+  operators; binding them to const references or locals copies them out. (4)
+  `if (x <= limit) {...} else x -= limit;` reproduces the shared subtract tail
+  placed after the loop body. (5) A 2DA chain `g_pRules->Get2DArrays()->
+  GetMovies()->GetINTEntry(...)` with inline accessors loads the table before
+  the pushes; direct members interleave. (6) `GetClientExoApp()` (TU-local
+  inline) vs `g_pAppManager->m_pClientExoApp` again picked the load order
+  (OnMoviePicked, AIUpdate). (7) The scratch reloc checker (compile, walk the
+  COFF relocations, resolve the original's rel32/abs32 at the same offset)
+  verified every callee, global and string of this batch.
+- Next in-range queue: AoE SetPosition 0x006DA520 (x87 + walkmesh helper,
+  0x004578F0), PlaceInstance 0x006D98B0 and LoadEffect 0x006D8490 (large);
+  CSWMGBehaviorTrack::Control 0x006DB180 (x87); the two NONMATCHes above;
+  earlier queues (dialog camera 0x006BC600/0x006BCF50/0x006BD260/0x006BB7B0,
+  combat camera x87 set, equip/inventory/container remainder, save/load
+  LoadGame 0x006CB0E0, party selection, upgrade remainder).
+
+## Character screen, dialog family, inventory/equip dtors (2026-11-10, worker-l-s14)
+
+- Whole folder: **779/865 -> 800/893**. 28 functions annotated, **21 NEW
+  exact**, 7 retained NONMATCH, no prior MATCH regressed (800 = 779 + 21).
+- MATCH, `CSWGuiInGameCharacter` (`l/sw_gui_in_game_character.h` now has the
+  full 0x59F8 layout from the destructor and includes
+  `l/sw_gui_script_select.h`; new `sw_gui_in_game_character_view.cpp`):
+  0x006AE990 SetModText, 0x006AEBF0 AttachModel, 0x006AED20 RotateCharacter,
+  0x006AED90 / 0x006AEDE0 RotateCharacterLeft/Right, 0x006B0BB0
+  ShowLevelUpGUI, 0x006B0CB0 StartAutoLevelup, 0x006AF970 destructor;
+  0x006AEAC0 CSWGuiBlackenedLabel::Draw (class now in `sw_gui_dialog.h`,
+  vtable 0x00753CC0). `sw_gui_levelup_chargen.h` only forward-declares the
+  character class; its two .cpp users include the character header.
+- MATCH, CSWCAnimBase tail (nwcanimbase.o, `l/sw_c_anim_base.h` copied from
+  k/, `sw_c_anim_base_tail.cpp`): 0x006A03A0 ??_G, 0x006A03C0 PlayAnimSet
+  (vtable slot 0x44, k/ name), 0x006A03E0 Hilite, 0x006A0440 UnHilite.
+- MATCH, 0x006D9070 ??_ECSWCAnimBaseVisualEffect (vector deleting dtor; an
+  unannotated `new CSWCAnimBaseVisualEffect[n]` helper in
+  `sw_c_area_of_effect_vfx_array.cpp` instantiates it, as LoadEffect does).
+- MATCH: 0x006E6930 CSWGuiInGameGameplay::OnDifficultyRight, 0x006C33A0
+  CSWGuiUpgrade::Draw (model spin; CAurObject slots 0x60/0x68/0x108 in
+  `sw_gui_upgrade.h`), 0x006B40C0 ~CSWGuiInGameInventory
+  (`sw_gui_inventory_dtor.cpp`), 0x006B8840 ~CSWGuiInGameEquip
+  (`sw_gui_equip_dtor.cpp`), 0x006A85B0 CSWGuiDialog ctor (replaces the old
+  NewDialog vtable stub), 0x006A8400 CSWGuiDialogComputer::SetType, 0x006A95F0
+  CSWGuiDialogComputerCamera ctor (`sw_gui_dialog_computer.cpp`).
+- NONMATCH kept: 0x006B2250 character HandleInputEvent (58, only the
+  this/pClient esi/edi swap; jump table identical), 0x006DE000 options
+  checkbox SetExtent (9; the constant 25 lands in ecx, not edx, and `this` is
+  saved earlier), 0x006B8130 container SetContainer (25; the original's
+  inline SetSize(n) has no inner `num = 0` store), 0x006B8410 SetupGiveMode
+  (16; loop bound register and an `and [mem]` RMW), 0x006A86A0
+  CSWGuiDialog::SetReplies (62, only an ebx/edi swap of `this` and the zero /
+  loop register; the version with the list declared first is 19 diffs but
+  has the wrong init order), 0x006A8240 DialogComputer::UpdateSkills (26,
+  ebp/edi swap only), 0x006A78C0 CSWGuiDialogTop ctor (22; the text params
+  local is kept in ebp from its ctor return in the original).
+- functions.csv lacks the starts 0x006AEAC0, 0x006AED90, 0x006AEDE0,
+  0x006B2250, 0x006A03C0, 0x006A0440, 0x006D9070, 0x006E6930, 0x006C33A0,
+  0x006DE000; the annotations restore them.
+- Naming (Mac debug map): 0x006A86A0 / 0x006A8DE0 / 0x006A94E0 are
+  SetReplies(int, CExoString*, unsigned long*, int, int) (were AddReply);
+  0x006A8240 is CSWGuiDialogComputer::UpdateSkills (was LayoutEntries).
+- Shared-header changes (whole folder verified): `sw_gui_dialog.h`
+  CSWGuiManager +0/+4 mouse position and HandleMouseMove; CExoString
+  operator==(const char*); CSWGuiTextParams m_vColor (+0x1c) and
+  UpdateFont; CSWGuiLabelText m_extent; CSWGuiLabel::Draw (0x00417750) and
+  an `L_GUI_LABEL_SET_STYLE_SLOT` SetStyle slot 0x9c; CSWGuiListBox list
+  flags bitfield (bit 5 m_bMoreBelow) and m_nLastVisible (+0x2ca); CGuiInGame
+  +0x10c m_bLevelUpAvailable; CClientExoApp GetCharacterChangeInProgress;
+  CServerExoApp GetPlaceableByGameObjectID; CSWGuiPanel SetBackground /
+  AddControl; CClientOptions SetDifficulty. `sw_gui_tutorial_box.h`
+  CSWCCreature m_vOrientation (+0x30), CSWRules m_anExperienceTable (+0x38).
+  `sw_gui_in_game_abilities.h` CSWCCreatureVirtuals slot 0x88 SetOrientation.
+  `sw_gui_options_in_game.h` toggle GetSelectedBorder/GetSelectedHilight,
+  checkbox SetExtent. `sw_gui_title_movies.h` ListBox ClearControls and
+  CExoArrayList SetSize.
+- Real sizes: CSWGuiTextParams is 0x54 bytes (stack temporaries in the dialog
+  top ctor); CSWGuiLabel has a trailing dword at 0x13c. Only the
+  `L_GUI_TEXT_PARAMS_EXACT` TU uses that layout so far.
+- Lessons: (1) Two separate early `return 0;` tests keep the return block
+  inline after the branch; a combined `||` moves it to the end (Hilite).
+  (2) A string or CResRef passed through an implicit conversion
+  (`InitControl(p, "NAME", 1)`, `SetBackground(sValue)`,
+  `GetCExoStringEntry(n, "Col", &s)`, `SetText(nInt)`) is pushed by `lea`;
+  an explicit `CExoString("...")` temp pushes the ctor's eax. (3) A block
+  local `{ CExoString s(n); X(s); }` also pushes by lea. (4) A function-scope
+  body (early `return` instead of a nested if) stopped MSVC sharing the
+  `new` temp's stack slot (SetType frame size). (5) Inventory/equip panel
+  dtors inline ~CSWGuiLabel: the title-movies drawable family (real border /
+  text members) matches them in one try. (6) A pointer member reloaded for
+  `this` after argument calls means the source used the member directly
+  (`((V*)m_pPreview)->SetOrientation(... m_pPreview->m_vOrientation)`), not
+  an inline accessor. (7) `if/else` with two identical calls tail-merges the
+  pushed argument before the branch (upgrade Draw). (8) `int b = member; if
+  (b)` picked eax for the flag load (ShowLevelUpGUI). (9) An inline setter
+  (`GetOptions()->SetDifficulty((unsigned char)m_n)`) reads the value before
+  the call, a plain member store reads it after.
+- Next in-range queue: the NONMATCH register ties above;
+  CSWGuiDialogComputer ctor 0x006A8EB0 (~1.5 KB, mechanical InitControl
+  list plus skill icons) and CSWGuiDialogCinematic ctor 0x006A8B40;
+  CSWGuiInGameCharacter::UpdatePortraits 0x006AEE30 (1.3 KB) and SetStats
+  0x006AFDA0 / ctor 0x006B0E40; abilities UpdatePortraits 0x006ABEC0; visual
+  effect StopVisualEffect 0x006A6590; upgrade OnSlotSelected 0x006C6500;
+  earlier queues (AoE SetPosition / PlaceInstance / LoadEffect, camera x87
+  set, save/load LoadGame, party selection).
+
+## CSWCVisualEffectOnObject remainder (2026-11-10, worker-l-s15)
+
+- Whole folder: **800/893 -> 808/904**. 11 functions annotated (4 NEW exact,
+  7 retained NONMATCH) and 4 earlier NONMATCHes promoted; no prior MATCH
+  regressed (808 = 800 + 4 + 4).
+- NEW MATCH: 0x006A6590 StopVisualEffect(int) and 0x006A5A40
+  ShowVisualEffect(int) (`sw_c_visual_effect_life.cpp`), 0x006A5FC0
+  StartVisualEffect (`sw_c_visual_effect.cpp`, same TU as GetBeamNode /
+  GetImpactDuration: the original keeps edx live across those calls),
+  0x006A0DF0 AttachLight (descriptive; `sw_c_visual_effect_life.cpp`).
+- Promoted: 0x006A6950 Reset (DetachAll-style per-phase dispatch), 0x006A4FA0
+  LoadLight (separate early `return 0`s), 0x006A14E0 ApplySpeedBlur (two
+  identical case bodies, cross-jumped into the dec chain), 0x006A1650
+  AttachVFXModelToTargetModel (Mac name; was AttachModel; explicit
+  `CExoString(m_nEffect)` row temp).
+- NONMATCH kept: 0x006A6A50 Update(unsigned long) (7, beam vtable / reset arg
+  registers), 0x006A4060 ApplyChunk (20, descriptive; offset-Vector slot
+  shared with the "bloodcolr" temp, dead nSize reload), 0x006A4240 ApplyMirv
+  (56, nEffect spilled to its home slot in the original) and 0x006A30E0
+  ApplyLightsaberThrow (89, descriptive) in `sw_c_visual_effect_launch.cpp`
+  (out-of-line `::operator-` 0x00423BC0), 0x006A2AF0 ApplyCheat (46, own TU
+  `sw_c_visual_effect_cheat.cpp` because it inlines the member operator-;
+  rotated eax/ecx/edx from the zero-Vector compare on, same rotation as Mirv),
+  0x006A5000 ReAttachVisualEffect (88, this/placeable esi/edi swap; with an
+  out-of-line GetHardCodedEffect call the registers agree), 0x006A38E0
+  ApplyLightSource (case 33 keeps the target id in ebx across
+  GetPlayerCreature; PlayAnimation argument load order).
+- Naming (Mac debug map): ApplyImpactEffect -> ApplyCheat, ApplyEffect4240 ->
+  ApplyMirv, ApplyDurationEffect -> ApplyLightSource, AttachModel ->
+  AttachVFXModelToTargetModel(CAurObject*, CAurObject*, const CExoString&).
+  Descriptive: ApplyEffect4060 -> ApplyChunk, ApplyBeamEffect ->
+  ApplyLightsaberThrow, AttachLight. 0x006A6A50 is Update(unsigned long)
+  (overload of 0x006A69E0 Update(unsigned short, unsigned long)).
+- Layout fixes in `sw_c_visual_effect.h`: +0x34 is a Vector
+  m_vTargetPosition (its default ctor reproduces the ctor's zeroing, the
+  body stores were dropped); 0xac-0xc0 are int flags (m_bAC..m_bC0); +0xc8 is
+  a byte m_bHasDuration; CSWCModule +0x48 is the area (m_pArea), area +0x184
+  the scene (slot 0x68 SetPlayerLight, descriptive; was "GuiInGame/Panel");
+  CGameObject slot 0 is the virtual dtor; CSWCObject +0x30 m_vOrientation and
+  slots 0x14/0x4c/0x78/0x88/0x8c/0x94; CSWCCreature pad starts at 0x3c;
+  CExoSoundSource has a 4-byte member (operator new 8); a minimal
+  CSWCProjectile (0x1C8) for the launch effects; Quaternion(w,x,y,z) ctor
+  body stores z,y,x,w (AttachLight's identity temp needed that order).
+- Lessons: (1) Identical switch-case bodies are cross-jumped and keep a dec
+  chain; merged `case 1: case 2:` becomes a range test. (2) Callees defined
+  earlier in the same TU let cl keep edx live across them (Update,
+  StartVisualEffect); put callers next to GetBeamNode/ResetBeamTimer. (3)
+  Locals that the original keeps above the temporaries (StopVisualEffect
+  floats) belong at function scope; block-scope floats grabbed the temp slot.
+  (4) The same inline helper (GetHardCodedEffect) was not inlined into the
+  large ReAttach body; the explicit if-chain inlines but swaps registers. (5)
+  `m_nBeamTimer[3] = <inline returning 0/1000>` tail-merged with the
+  GetImpactDuration store only through a TU-local inline helper.
+- Next in-range queue: LoadVisualEffect/Load 0x006A1880 (4.7 KB, 2DA string
+  lookups with LowQuality/LowViolence overrides, see todo.py); the NONMATCH
+  register ties above; x87 UpdateSelfIlluminationPulse / UpdateAlpha;
+  earlier queues (dialog computer ctor 0x006A8EB0, cinematic ctor 0x006A8B40,
+  character UpdatePortraits/SetStats/ctor, abilities UpdatePortraits, AoE
+  SetPosition / PlaceInstance / LoadEffect, camera x87 set, save/load
+  LoadGame, party selection).
+
+## Combat camera, AoE StopEffect, dialog ctors (2026-11-10, worker-l-s16)
+
+- Whole folder: **808/904 -> 813/912**. 8 functions annotated (4 NEW exact,
+  4 retained NONMATCH) and 1 earlier NONMATCH promoted; no prior MATCH
+  regressed (813 = 808 + 4 + 1).
+- NEW MATCH: 0x006D16F0 CSWBehaviorCameraCombat::GetNextYaw, 0x006D1760
+  GetNextPosition (`sw_behavior_camera_combat.cpp`), 0x006D9350
+  CSWCAreaOfEffectObject::StopEffect (`sw_c_area_of_effect.cpp`, inlines the
+  TU's SetAnimation), 0x006A8B40 CSWGuiDialogCinematic ctor (new
+  `sw_gui_dialog_cinematic.cpp`).
+- Promoted: 0x006D12B0 combat camera ctor (`float fReleaseGain = ...GetFarClip3();
+  m_cClip.m_fReleaseGain = fReleaseGain;` moved the saved-EH load).
+- NONMATCH kept: 0x006D14E0 CalculateDesiredLocation (9, pCreature ebx/ebp
+  swap only; needs `vStart.z = 0.0f` before the add, which folds z + 0),
+  0x006D1FC0 Control (22; the original packs vHead and vPosition into one
+  slot; a `{ vHead; vDesired; vSafe = CheckPosition(...); }` block gets the
+  frame and registers but adds a copy), 0x006A8EB0 CSWGuiDialogComputer ctor
+  (new `sw_gui_dialog_computer_ctor.cpp`, ~38-44, eax/ecx/edx rotations
+  only), 0x006AD180 CSWGuiInGameAbilities::OnEnterSkill (6, description tail
+  rotation).
+- functions.csv lacks 0x006D1FC0 (combat camera Control, vtable slot 0x08);
+  the annotation restores it.
+- **Constant fix:** the 3/7 letterbox factor is 0x3EDB6DB9 (`0.4285715f`), not
+  `0.42857143f` (0x3EDB6DB7). matchcmp masks constant addresses, so four
+  MATCH-claimed dialog/letterbox functions (0x006A74B0, 0x006A7540,
+  0x006A7EF0, plus 0x006A7AE0) loaded the wrong value; fixed in
+  `sw_gui_dialog.cpp` / `sw_gui_dialog_computer.cpp`. The cinematic ctor uses
+  -0.4285715f (0xBEDB6DB9). A scratch checker comparing every `__real@` and
+  string-literal relocation against the exe found no other mismatches in
+  the folder (the 0x006C3460 hits are partial copies of "TEXA"/"ModelA").
+- Header changes: `sw_behavior_camera_dialog.h` Vector::MagnitudeSquared
+  (inline; needed for the x*x first order); `sw_behavior_camera_combat.h`
+  CSWCCreature/appearance (+0x21c), CSWCModuleCamera slot 0x24,
+  GetPlayerCharacter returns CSWCCreature*, HideMouse/ShowMouse/GetInputClass,
+  CSWGuiManager mouse save/restore, g_bRenderQA (0x008327EC), Magnitude /
+  Normalize / Quaternion operator*; `sw_gui_dialog.h` CSWGuiTextParams +0x3c
+  `m_szFont[16]` (base font resref chars), CExoSoundSource ctor/SetVolume/
+  SetLooping and real size 8, dialog cinematic/computer ctor decls,
+  CSWGuiDialog::ResetReplyColor is now a plain member (still exact; needed to
+  pass it to AddEvent); AoE header CExoSoundSource::Stop, CSWCVisualEffect::
+  SetAnimation; abilities CSWSkill::GetDescriptionText.
+- Lessons: (1) x87 sums: MSVC evaluates register-resident terms first; an
+  inline `MagnitudeSquared()` member reproduced memory-first `x*x + y*y + z*z`.
+  (2) Struct temporaries in one expression get distinct slots
+  (`Normalize(v) * f + m_pGob->GetPosition()`). (3) Discarded debug calls
+  (`m_pGob->GetPosition()` x3 in Control) were named locals in the original
+  (distinct slots). (4) Integer locals for list-box width (`int nWidth = ...;
+  CSWGuiExtent e = {0, 0, nWidth, 20};`) fixed a register rotation in the
+  cinematic ctor but not in the computer ctor. (5) `CExoString("+") + nBonus`
+  (implicit int conversion) pushes by lea and shares the leading int ctor
+  across if/else branches. (6) Always check constants: masked `__real@`
+  relocations hide wrong float literals.
+- Next in-range queue: CheckPosition/DetermineSafePosition 0x006D18E0 (1.7 KB
+  EH, walkmesh rays); the NONMATCH ties above; abilities UpdatePortraits
+  0x006ABEC0 / character UpdatePortraits 0x006AEE30; upgrade OnSlotSelected
+  0x006C6500 / OnControlEntered 0x006C5370; inventory CreateItemEntry
+  0x006B44D0 / PopulateItemListBox 0x006B4810; container ctor 0x006B6DC0;
+  create-item menu ctor 0x006D0620; missing starts 0x006AE5F0, 0x006BA3F0,
+  0x006BCF50, 0x006BEEB0, 0x006C5510; earlier queues (LoadVisualEffect,
+  AoE SetPosition / PlaceInstance / LoadEffect, projectile motion set).
+
+## Audit fixes 2026-11-10
+
+- 0x006A9F90 CSWGuiBarkBubble::OnPanelAdded: signed `__alldiv` on the
+  snapshot time (`(__int64)` cast).
+- l/sw_gui_title_movies.h: removed operator new[]/delete[] declarations.
+  MSVC 7.0 calls ??_U/??_V only when they are declared; the original calls
+  ??2/??3 (equip/inventory dtors, title movies dtor and PopulateMovies).
+- ~CSWGuiInGameCharacter member types from the ctor's vtable stores:
+  m_lblLight/m_lblDark CSWGuiBlackenedLabel (0x00753CC0), m_sldAlign
+  CSWGuiSliderReadOnly (0x00756060, dtor 0x006AF940, ??_G 0x006AF950),
+  m_btn3DChar CSWGuiSpeedButton (0x007533C8). Their destructors are implicit:
+  the body inlines them (direct base dtor, no vptr restore -> novtable under
+  L_CHARACTER_VIEW_TU), funclets call the folded copies. 0x006AF940 moved to
+  sw_gui_slider_readonly_dtor_novtable.cpp (novtable: bare jmp).
+- Options family dtors: CSWGuiOptionsCheckbox's dtor is implicit in the
+  family-dtor TU (bodies call ~CSWGuiButtonToggle 0x0041CAD0, funclets call
+  0x006E00F0).
+- g_aEquipSlots is at 0x00756560 with layout {mask, control tag, icon,
+  strref, strref}; the old {icon, mask} at 0x00756568 matched only because
+  the base shift cancelled the field shift.
+- Lesson: body-calls-base-dtor + funclet-calls-thunk = inline derived dtor;
+  read member types from the ctor's vtable stores, not from what matches.

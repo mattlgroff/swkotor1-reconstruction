@@ -22,8 +22,8 @@ void CSWSMessage::StoreValuesInLastUpdatePartyObject(CSWSCreature* pPlayerCreatu
         pLast->m_oidArea = pCreature->m_oidArea;
     }
     if (nFlags & 0x200) {
-        pLast->m_fX = pCreature->m_vPosition.x;
-        pLast->m_fY = pCreature->m_vPosition.y;
+        pLast->m_vPosition.x = pCreature->m_vPosition.x;
+        pLast->m_vPosition.y = pCreature->m_vPosition.y;
     }
     if (nFlags & 0x400) {
         pLast->m_n2A = pCreature->m_nE0;

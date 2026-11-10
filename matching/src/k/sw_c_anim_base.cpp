@@ -1033,13 +1033,17 @@ int CSWCAnimBase::LoadModel(const CResRef& cResRef, unsigned char nPart)
     if (m_pModel->GetNodeTransform("handconjure", &vPosition, &qOrientation)) {
         if (qOrientation.x != 0.0f || qOrientation.y != 0.0f || qOrientation.z != 0.0f || qOrientation.w != 1.0f) {
             CExoString sMessage;
-            sMessage.Format("CSWCAnimBase::LoadModel(): handconjure node of %s is rotated", szModel);
+            sMessage.Format("CSWCAnimBase::LoadModel(): The handconjure dummy has an orientation....It shouldn't!!  "
+                            "The %s model needs to be fixed or else the spell visuals will not be correct.",
+                            szModel);
         }
     }
     if (m_pModel->GetNodeTransform("headconjure", &vPosition, &qOrientation)) {
         if (qOrientation.x != 0.0f || qOrientation.y != 0.0f || qOrientation.z != 0.0f || qOrientation.w != 1.0f) {
             CExoString sMessage;
-            sMessage.Format("CSWCAnimBase::LoadModel(): headconjure node of %s is rotated", szModel);
+            sMessage.Format("CSWCAnimBase::LoadModel(): The headconjure dummy has an orientation....It shouldn't!!  "
+                            "The %s model needs to be fixed or else the spell visuals will not be correct.",
+                            szModel);
         }
     }
     m_cReplaceTexture = cResRef;

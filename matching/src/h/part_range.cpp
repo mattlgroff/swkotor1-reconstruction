@@ -8,7 +8,7 @@ public:
     int WithinRange(float x, float y, float z, float range);
 };
 
-// NONMATCH (1): stack argument cleanup is scheduled before the x87 add.
+// A named magnitude local keeps the stack cleanup after the x87 add.
 // FUNCTION: SWKOTOR 0x0046F1A0
 int PartTriMesh::WithinRange(float x, float y, float z, float range)
 {
@@ -16,5 +16,6 @@ int PartTriMesh::WithinRange(float x, float y, float z, float range)
     distance.x = m_vPosition.x - x;
     distance.y = m_vPosition.y - y;
     distance.z = m_vPosition.z - z;
-    return VectorMagnitude(&distance) < 2.0f + range ? 1 : 0;
+    float fMag = VectorMagnitude(&distance);
+    return fMag < 2.0f + range ? 1 : 0;
 }

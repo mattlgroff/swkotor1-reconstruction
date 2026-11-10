@@ -36,7 +36,7 @@ __forceinline void Gob::SetScene(Scene* pScene)
     m_pScene = pScene;
     if (pScene)
         pScene->AddGob(this);
-    DoEvent("SetScene", 0);
+    DoEvent("UpdateScenes", 0);
 }
 
 // FUNCTION: SWKOTOR 0x00443820

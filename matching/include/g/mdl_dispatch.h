@@ -144,6 +144,7 @@ class MdlNodeAnimMesh : public MdlNodeTriMesh {
 public:
     void Control(Part* pPart, float f1, int n, float f2);           // 0x00485660
     void ParseField(char* szLine);                                  // 0x0046a240
+    void PostProcess();                                             // 0x004015a0 (empty; folded `ret`)
     Part* CreateInstance(Gob* pGob);                                // 0x00447dd0
     MdlNode* ConJoinNode();                                         // 0x0044ae60
 };

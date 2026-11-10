@@ -8,8 +8,9 @@ extern "C" int __cdecl _stricmp(const char* a, const char* b);
 extern "C" void* __cdecl memcpy(void* d, const void* s, size_t n);
 #pragma intrinsic(memcpy)
 
-void* __cdecl operator new[](size_t n);
-void __cdecl operator delete[](void* p);
+// No operator new[] / delete[] in scope: this Vector list allocates with
+// the scalar operator new / delete (0x006fa7e6 / 0x006fa390), as its
+// out-of-line Allocate (0x00421310) and ParseList's inlined SetSize do.
 
 class Vector {
 public:

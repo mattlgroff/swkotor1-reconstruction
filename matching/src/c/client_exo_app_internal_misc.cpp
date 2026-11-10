@@ -11,18 +11,14 @@ void CClientExoAppInternal::ClearCachedCreatures(int b)
     }
 }
 
+// NONMATCH (8 insns): the original compares the old target from a register
+// and reads the flag word once; same statements otherwise.
 // FUNCTION: SWKOTOR 0x005F4A20
 void CClientExoAppInternal::SetLastTarget(unsigned long oidTarget, int bFlag)
 {
-    unsigned long nTarget = oidTarget;
-    volatile unsigned long& nTargetSlot = *reinterpret_cast<volatile unsigned long*>(reinterpret_cast<char*>(this) + 0x2b4);
-    unsigned long nOldTarget = nTargetSlot;
-    unsigned long bChanged = nOldTarget == nTarget ? 0 : 0xFFFFFFFF;
-    nTargetSlot = nTarget;
-    unsigned long& nFlags = *reinterpret_cast<unsigned long*>(reinterpret_cast<char*>(this) + 0x37c);
-    unsigned long nOldFlags = nFlags;
-    unsigned long nChange = bChanged & (unsigned long)bFlag;
-    nFlags = nOldFlags ^ ((nChange ^ nOldFlags) & 1);
+    int bChanged = (m_oidLastTarget != oidTarget) ? bFlag : 0;
+    m_oidLastTarget = oidTarget;
+    m_bUnknown37c_0 = bChanged;
 }
 
 // FUNCTION: SWKOTOR 0x005F4EA0

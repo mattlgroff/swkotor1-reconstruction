@@ -174,7 +174,8 @@ int TriMeshPart::GetRenderPath()
     unsigned char bEnv = m_pMaterial->HasEnvMap();
     unsigned char bLm = pLm->m_bLightmapped;
     unsigned char bTransparent = 1;
-    if (!(m_pMaterial->m_fWaterAlpha < g_fOne))
+    float fAlpha = m_pMaterial->m_fWaterAlpha;
+    if (!(fAlpha < g_fOne))
         bTransparent = 0;
     CAurTexture* pLmTex = m_pMaterial->m_pTexture1;
     if (pLmTex && !AurTextureGetTID(pLmTex))

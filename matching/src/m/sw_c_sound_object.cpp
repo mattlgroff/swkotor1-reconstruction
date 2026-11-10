@@ -330,7 +330,7 @@ CResRef CSWCSoundObject::GetNextSound()
         cRes = m_pSounds->element[0];
     }
     else {
-        cRes = "";
+        cRes = "0";  // end-of-sequence sentinel, string 0x00741E18
     }
     return cRes;
 }
@@ -404,7 +404,7 @@ void CSWCSoundObject::AIUpdate()
             return;
         }
     }
-    if ((cRes = GetNextSound()) == "") {
+    if ((cRes = GetNextSound()) == "0") {
         SetActiveInline(0);
         return;
     }

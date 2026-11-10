@@ -536,11 +536,11 @@ public:
     void* RemoveHead();                             // 0x005E9C80
     void* GetHeadObject()
     {
-        void* p = m_pHead;
-        if (p) {
-            p = ((CExoLinkedListNode*)p)->pObject;
+        CExoLinkedListNode* pNode = m_pHead;
+        if (!pNode) {
+            return 0;
         }
-        return p;
+        return pNode->pObject;
     }
     CExoLinkedListNode* m_pHead;
     CExoLinkedListNode* m_pTail;
@@ -552,7 +552,11 @@ class CExoLinkedList {
 public:
     CExoLinkedList();
     CExoLinkedListPosition GetHeadPos() { return m_pList->m_pHead; }
-    T* GetHead() { return (T*)m_pList->GetHeadObject(); }
+    T* GetHead()
+    {
+        CExoLinkedListInternal* pInternal = m_pList;
+        return (T*)pInternal->GetHeadObject();
+    }
     T* GetAtPosInline(CExoLinkedListPosition pos)
     {
         if (pos) {

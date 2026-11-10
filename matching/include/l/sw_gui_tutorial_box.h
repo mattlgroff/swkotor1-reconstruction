@@ -48,7 +48,7 @@ public:
     CSWFeat* GetFeat(unsigned short nFeat);         // 0x00550C00
     char pad_0x0[0x34];
     class CSWBaseItemArrayL* m_pBaseItems;          // 0x34
-    char pad_0x38[0x54];
+    unsigned long m_anExperienceTable[21];          // 0x38 (experience needed per level)
     CSWSpellArray* m_pSpellArray;                   // 0x8c
     char pad_0x90[0x10];
     unsigned short* m_pFeatIds;                     // 0xa0 (sorted feat list)
@@ -80,7 +80,8 @@ public:
     class CSWCAnimBase* GetAnimBase();              // 0x0063C070
     void CGPauseCycle(float fDelta, int bReset);    // 0x0060F7C0
     void SetAppearance(struct CSWCCreatureAppearance* pAppearance, int nPart, int bLoad);  // 0x006134C0
-    char pad_0x30[0x21c - 0x30];
+    Vector m_vOrientation;                          // 0x30 (CSWCObject)
+    char pad_0x3c[0x21c - 0x3c];
     struct CSWCCreatureAppearance* m_pAppearance;   // 0x21c (0x3c-byte appearance block)
     char pad_0x220[0x2d4 - 0x220];
     unsigned long m_bSoloFlag : 1;                  // 0x2d4 bit 0 (descriptive)

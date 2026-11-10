@@ -729,3 +729,172 @@ that functions.csv merges into the preceding entry.
   (the real CSWSModule layout is now in `sws_module_life.cpp`).
 - Cheap retries: SetupVertexProgramLights (6), SmoothSelectionPasses (7),
   and the s8 list (RunDialogOneLiner, DoDamageImmunity).
+
+## Round s10 (branch claude/worker-i-s10)
+
+Folder: 596/677 -> 607/677 (`kotor-match -q -j 2 matching/src/i`). No new
+annotations: every todo function in the bucket is >= 900 B and the hidden-start
+scan found nothing new and small, so the round promoted 11 old NONMATCHes.
+Callees and globals re-checked against the original listing for each.
+
+### Promoted to exact (were NONMATCH)
+
+- 0x004B4D70 TestSafeLocation, 0x004B4DF0 ComputeSafeLocation
+  (`server_exo_app_internal.cpp`): TU-local `CreatureFromArray(m_pGameObjArray,
+  oid)` instead of the in-TU GetCreatureByGameObjectID, plus
+  `pPathfind`/`oidArea` locals before the area call.
+- 0x004B3D10 MovePlayerToArea: `pPathfind` local before ComputeSafeLocation.
+- 0x004CC0C0 SetLastHostileActor: TU-local
+  `ServerCreature(oid) { return GetServerExoApp()->GetCreatureByGameObjectID(oid); }`.
+- 0x004BB8B0 CountVisibleToPlayers: `ServerClientObject(m_idSelf)` wrapper and
+  `int bFound = GetFirst...; while (bFound == 1 && nCount < nMax) {...; bFound
+  = GetNext...}` (one shared exit, ebx saved in the prologue).
+- 0x004A5E30 WindManager::UpdateTimer: `DelIndex(int nIndex)` member on the
+  local CExoArrayList template (loop on the parameter itself).
+- 0x004BB730 GetRoomIndex: `nRoom = i; break;` instead of `return i`.
+- 0x004CAC30 AddActionNodeParameter: explicit `return;` after the type 2 and
+  type 3 bodies (keeps the original tail-merge direction).
+- 0x004CAEE0 GetDamageImmunity and 0x004CAF70 GetDamageImmunityByFlags:
+  `__max(-100, __min(n, 100))` from <stdlib.h>; the double evaluation of the
+  macro is what produces the second `cmp al, 64h`.
+- 0x004CB220 RunDialogOneLiner: TU-local `SendChat(pMessage, oidSpeaker, ...)`
+  wrapper around SendServerToPlayerChatMultiLangMessage.
+
+### Lessons
+
+- Bucket a's lesson holds broadly: a TU-local inline wrapper whose parameters
+  are the call's arguments makes cl evaluate (load) the arguments before the
+  object pointer, which is the original's order in most server calls here.
+  It also works for an in-TU inline member (CreatureFromArray).
+- Clamp code with a recomputed compare is the `__max`/`__min` macro pair.
+- A loop that returns from inside gets its own exit; the original often wrote
+  a result variable plus `break` (GetRoomIndex) or a flag-driven `while`.
+
+### Tried, no gain (kept NONMATCH)
+
+- GetActiveExclusionList / GetActiveTimer / SetWorldTimeOnList /
+  IsOnActiveExclusionList (`and al,1; test al,al` pattern): uchar `n` with
+  `n == 2` / `n > 0` gets `and al,1` but not the threading (4 insns).
+- LoadTemporaryArea 14 -> 10 with a SendStallEvent wrapper (kept); the rest
+  is eax/edx for the m_p14 store.
+- SetPortraitId, BroadcastSpellData, ClearAllActions, ResolvePlayerByFirstName,
+  GetNearestObjectByTag, GenerateInterAreaDFSSuccessors (shl vs lea),
+  CExoStringMovieList ctor, SafePointer Add, SyncInput::Read, GetNearestLights,
+  EnableHighestPriorityLights, StartNewModule (esi=0 register), InitiateModule
+  ForPlayer (`xor ecx,ecx; sete cl; mov eax,ecx`), LoadModuleInProgress
+  (nAreaIndex cached in ebx), IsDialogDelay (many eax/ecx/edx swaps; the
+  return-1 block goes last in the original).
+
+### Next in-range queue
+
+- Wrapper retries on the remaining server-call NONMATCHes: IsDialogDelay
+  (client-app accessors), LoadCharacterFinish (43), StartDialog (62),
+  BroadcastDialog (88), SpellCastAndImpact (82).
+- Large todo: 0x004B6DA0 party update (needs CClientExoApp party types),
+  0x004CE220 SpawnBodyBag, 0x004BEE30 encounter spawn, plus the s8/s9 lists.
+
+## Round s11 (branch claude/worker-i-s11)
+
+Folder: 607/677 -> 607/679 (`kotor-match -q -j 2 matching/src/i`). Two new
+annotations, both kept as NONMATCH; no new exact matches. The round went into
+the large LightManager fade pair in the new `light_fade.cpp`. Callees and
+globals were checked against the original listing.
+
+### New annotations (kept NONMATCH)
+
+- 0x004A4580 LightManager::ControlLightsFade (vtable +0x5c, a hidden start
+  that functions.csv merges into the previous entry): 26 diff insns, same
+  size (1424 B). Every phase matches except one spot: the original reloads
+  `nLimit` (`mov eax,[esp+10h]`) before `nRoom = nLimit - num`, and ours
+  reuses eax. That 4-byte shift then moves two loop-head alignments (phase 3
+  head, phase 4 entry), and those make up the remaining diffs.
+- 0x004A3F70 LightManager::EnableHighestPriorityLightsFade: 142 diff insns
+  (1328/1296 B). The structure is right: function-local static list with an
+  atexit guard, shadow cross-fade, tail-merged clamp. The rest is register
+  allocation. cl keeps `s_lWanted.num` in a register across the first loop
+  (the original reloads it from memory), and the fade list lives in memory
+  where the original keeps it in ebp.
+
+### Lessons
+
+- **`fld global; fsubr [mem]` = volatile global.** `*p -= g_f` always gives
+  `fld [p]; fsub g_f`. Declaring the global `volatile` in the TU (only
+  `light_fade.cpp` does) gives the original's order. After that change a
+  `__min(1.0f, *p + g_f)` macro reads the volatile twice, so put the sum in
+  a local first. g_fFrameTime moved out of light_manager.h into
+  light_shadow.cpp so that the two TUs can differ.
+- **The DelIndex form matters**: `for (; nIndex < num; nIndex++)`, which
+  loops on the parameter, gave the original's edi/eax use. The form with a
+  fresh local `i` did not.
+- **A loop exit that the original threads**: use a flag (`bRemoved = 1;
+  break;` then `if (!bRemoved) break;`). With a plain break, the `k < 0` test
+  after the loop is not threaded. A `goto` out of the inner loop turns off
+  LICM and strength reduction on that loop (no pointer induction, no hoisted
+  `num`).
+- Duplicated element loads in both ternary arms (`bDyn ? &a->element[i]->x :
+  &a->element[i]->y`) come from writing the full expression in each arm, not
+  from a `pLight` local.
+- `for (int n = i; n < 3; n++)` (a new variable) gives the original's `mov
+  esi, edi` copy before the glDisable loop.
+- The shadow search needed `pShadow = element[m]; if (pShadow->flag) goto
+  found;` because a `pShadow = NULL ... break` version keeps a null test.
+- Stack slots: variables that share the original's dead-argument slot (here
+  `i` for phases 3/4/5) must be one C variable. Separate loop variables got
+  different slots.
+- The register-reuse-across-a-join differences (nLimit, s_lWanted.num) did
+  not respond to labels, `do {} while (0)`, loop forms or expression order.
+  -Op was tried as a check and is worse (non-canonical anyway).
+
+### Tried, no gain
+
+- GetActiveExclusionList family (`and al,1; test al,al`): bit-field structs,
+  ternaries, a mask helper, `% 2`, `<< 7`. None gives `and al,1`. The
+  `if ((x & 2) <= 0) {...} return list2;` shape does give the `ja` layout.
+- Survey of other NONMATCHes (GetNearestLights, normalize, SyncInput::Read,
+  CExoStringMovieList ctor, SafePointer Add): register or x87 scheduling
+  ties, or IPA register use (normalize keeps ecx across a call).
+
+### Next in-range queue
+
+- ControlLightsFade (26): find what makes cl drop eax=nLimit at the phase-3
+  entry. Fixing that should also clear the alignment diffs.
+- EnableHighestPriorityLightsFade (142): try other `s_lWanted` access shapes
+  (Add via an inline returning void, num reset placement).
+- 0x004A50D0 (vp_f4_lights, 1456 B) uses the same light-list idioms. Then
+  the s10 list (0x004B6DA0, 0x004CE220, 0x004BEE30).
+
+### GetHead sweep (sweep-s1)
+
+- sws_object.h: CExoLinkedListInternal::GetHeadObject is now
+  `pNode = m_pHead; if (!pNode) return 0; return pNode->pObject;` and
+  CExoLinkedList::GetHead loads `m_pList` into a local first (bucket c
+  shape; the ternary let cl thread the empty-list `je`). Promoted
+  0x004CC790 SetGroupInterruptable; folder 607/679 -> 608/679.
+- Tried without gain: 0x004CCD30 DeleteCurrentAIAction (original tests
+  the head twice, copying it ecx->eax; IsEmpty(), GetHeadInline() and
+  GetAtPosInline(pos) all give the same 9-insn miss) and 0x004CCD80
+  ClearAllActions (GetHead vs GetHeadInline identical; its miss is a
+  register choice at +0x72 and `lea ecx,[eax+0x18]`).
+
+## Audit fixes 2026-11-10
+
+The relocation audit (audit-s1) found MATCH functions in i with wrong targets
+or constants that matchcmp masks:
+- CServerAIMaster::AddObject calls CExoArrayList<unsigned long>::AddUnique
+  (0x006449D0), not Add (0x00671C00 is the generic Add).
+- CSWSArea::CountVisibleToPlayers compares the squared distance with 900.0f
+  (30 m), not 400.0f.
+- 0x004A96D0 is DegToRad: f * 0.017453292f (0x3C8EFA35), not * 57.29578f.
+Left as is (checker false positives, by evidence):
+- CAurTriangleListElem ctor/dtor EH funclets: the original unwind entries
+  (FuncInfo 0x00765450 -> 0x00718180/0x00718188) jump to 0x0042E240, an
+  ICF-folded `if (element) delete[] element;` body that calls the CRT thunk
+  0x006FC0CD. In this unit the same dtor, inlined, calls 0x006FA390 directly
+  (e.g. 0x004A72AE), so the out-of-line COMDAT the linker kept for
+  ~CExoArrayList<float> came from another unit. Declaring operator delete[]
+  here would break the inlined calls.
+- CAurTriangleBin::~CAurTriangleBin: our local list dtor is byte-identical to
+  its original target 0x0047ABC0; the "conflict" is only that bucket m's
+  int-list dtors are byte-identical to the differently-shaped 0x0056B6F0.
+Lesson: string/float constants and overload choice are invisible to
+matchcmp; check them against the exe for every new MATCH.

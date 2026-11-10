@@ -629,13 +629,12 @@ void CSWCCreature::ResolveAttackIndex(unsigned short nAnim, int b, int nExclude)
 }
 
 // FUNCTION: SWKOTOR 0x0060D3E0
-// NONMATCH: the original keeps a zero result in EDI with two exits; ours folds the constant (5 insns).
 int CSWCCreature::InCreatureCombat(CGameObject* pTarget)
 {
     int bResult = 0;
     if (pTarget) {
         if (InCombat() || (pTarget->AsSWCCreature() && pTarget->AsSWCCreature()->InCombat())) {
-            return 1;
+            bResult = 1;
         }
     }
     return bResult;
@@ -822,15 +821,16 @@ void CSWCCreature::SetAnimationState(int a, int b)
 }
 
 // FUNCTION: SWKOTOR 0x0060F590
-// NONMATCH: the original cross-jumps both SendPlayerToServerInput_UseItem calls and keeps the item id in EBX (31 insns).
+// The extent ends at 0x0060F612: 0x0060F620 (ActionMenuTalk) is a separate start.
 void CSWCCreature::PartyMenuUseItem(unsigned long oidItem, CGameObject* pTarget)
 {
     Vector v;
-    unsigned long oid = oidItem & 0xbfffffff;
-    if (pTarget->m_idSelf != m_idSelf) {
+    unsigned long idSelf = m_idSelf;
+    oidItem &= 0xbfffffff;
+    if (pTarget->m_idSelf != idSelf) {
         CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
         if (pMessage) {
-            pMessage->SendPlayerToServerInput_UseItem(oid, 0, 0, 0x7f000000, &m_vPosition);
+            pMessage->SendPlayerToServerInput_UseItem(oidItem, 0, 0, 0x7f000000, &m_vPosition);
         }
     } else {
         v.x = 0.0f;
@@ -838,41 +838,11 @@ void CSWCCreature::PartyMenuUseItem(unsigned long oidItem, CGameObject* pTarget)
         v.z = 0.0f;
         CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
         if (pMessage) {
-            pMessage->SendPlayerToServerInput_UseItem(oid, 0, 0, m_idSelf, &v);
+            pMessage->SendPlayerToServerInput_UseItem(oidItem, 0, 0, idSelf, &v);
         }
     }
 }
 
-// FUNCTION: SWKOTOR 0x006197D0
-// NONMATCH: register allocation of this/a/b (ESI/EBP/EDI vs EDI/ESI/EBP; 37 insns).
-void CSWCCreature::GetUsableItems(int a, int b)
-{
-    CSWSCreature* pServer = GetServerCreature();
-    if (pServer) {
-        if (!pServer->GetArea()->m_bNoItemUse) {
-            CSWCItem* pItem = (CSWCItem*)g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(m_oidEquipped23C);
-            if (pItem) {
-                CSWSItem* pServerItem = pItem->GetServerItem();
-                AddUsableItem(a, pServerItem, 1, b);
-            }
-            pItem = (CSWCItem*)g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_oidEquipped240);
-            if (pItem) {
-                CSWSItem* pServerItem = pItem->GetServerItem();
-                AddUsableItem(a, pServerItem, 1, b);
-            }
-            pItem = (CSWCItem*)g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_oidEquipped248);
-            if (pItem) {
-                CSWSItem* pServerItem = pItem->GetServerItem();
-                AddUsableItem(a, pServerItem, 1, b);
-            }
-        }
-        CItemRepository* pRepository = pServer->GetItemRepository(1);
-        for (unsigned long i = 0; i < pRepository->m_nItems; i++) {
-            CSWSItem* pServerItem = (CSWSItem*)pRepository->ItemListGetItem(i);
-            AddUsableItem(a, pServerItem, 0, b);
-        }
-    }
-}
 
 // FUNCTION: SWKOTOR 0x0060E5B0
 void CSWCCreature::UpdateShadowBlob()
@@ -1037,17 +1007,14 @@ int CSWCCreature::UpdateAttackData(unsigned short* pAnimation, CSWCAttackData* p
 }
 
 // FUNCTION: SWKOTOR 0x0060B330
-// NONMATCH: the original keeps the short in CX and builds the result in EAX (7 insns).
+// NONMATCH: registers now right; the original returns 3 inline before the setge tail (2 insns).
 int CSWCCreatureStats::GetAlignmentCategory()
 {
-    short n = m_nGoodEvil;
-    if (n <= 40) {
-        return 3;
+    int nCategory = 3;
+    if (m_nGoodEvil > 40) {
+        nCategory = (m_nGoodEvil >= 60) + 1;
     }
-    if (n < 60) {
-        return 1;
-    }
-    return 2;
+    return nCategory;
 }
 
 // FUNCTION: SWKOTOR 0x0060B350

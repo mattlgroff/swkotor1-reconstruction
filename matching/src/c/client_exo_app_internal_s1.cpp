@@ -461,7 +461,7 @@ void CClientExoAppInternal::SetMusic(int bTheme, int nVolume, int nPriorityGroup
         StopMenuMusic();
     }
     if (!m_pMenuMusic) {
-        m_pMenuMusic = (CExoSoundSource*)new CExoStreamingSoundSource();
+        m_pMenuMusic = new CExoStreamingSoundSource();
         ((CExoStreamingSoundSource*)m_pMenuMusic)->SetLooping(1);
         ((CExoStreamingSoundSource*)m_pMenuMusic)->SetVolume(nVolume);
         ((CExoStreamingSoundSource*)m_pMenuMusic)->SetPriorityGroup(nPriorityGroup);
@@ -572,7 +572,7 @@ void CClientExoAppInternal::StartLoadMusic()
             CExoString sPath;
             sPath.Format("HD0:STREAMMUSIC\\%s", m_sLoadMusic.CStr());
             g_pExoResMan->CacheResource(sPath, 4);
-            m_pLoadMusic = (CExoSoundSource*)new CExoStreamingSoundSource();
+            m_pLoadMusic = new CExoStreamingSoundSource();
             ((CExoStreamingSoundSource*)m_pLoadMusic)->SetLooping(1);
             ((CExoStreamingSoundSource*)m_pLoadMusic)->SetPriorityGroup(2);
             ((CExoStreamingSoundSource*)m_pLoadMusic)->Play(m_sLoadMusic, 8, 0, 1, 0);

@@ -1,6 +1,13 @@
 // CSWSObject one-liner conversations: RunDialogOneLiner (0x004CB220).
 #include "i/sws_object.h"
 
+static inline void SendChat(CSWSMessage* pMessage, unsigned long oidSpeaker, CExoLocString& sText,
+                            unsigned long oidTarget, unsigned char nGender, const CResRef& cSound)
+{
+    pMessage->SendServerToPlayerChatMultiLangMessage(8, oidSpeaker, sText, oidTarget, nGender, NULL,
+                                                     0, 0, cSound, 0x7f000000, 0);
+}
+
 // FUNCTION: SWKOTOR 0x004CB220
 int CSWSObject::RunDialogOneLiner(const CExoString& sDialog, unsigned long oidTarget)
 {
@@ -39,9 +46,7 @@ int CSWSObject::RunDialogOneLiner(const CExoString& sDialog, unsigned long oidTa
             pObject->AsSWSObject()) {
             nGender = pObject->AsSWSObject()->GetGender();
         }
-        pMessage->SendServerToPlayerChatMultiLangMessage(8, m_idSelf, sText, oidTarget,
-                                                        nGender, NULL, 0, 0, cSound,
-                                                        0x7f000000, 0);
+        SendChat(pMessage, m_idSelf, sText, oidTarget, nGender, cSound);
         cDialogData.RunScript(this, cScript);
         return 1;
     }

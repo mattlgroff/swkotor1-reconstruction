@@ -74,21 +74,20 @@ void TextureController::ParseField(char* szField)
     CHANNEL_FIELD("channeltranslate3", m_lChannelTranslate, 3, SetSizeInline);
 }
 
-// NONMATCH (4 insns): the original loads 31 into ecx before the zero
-// stores and stores the vptr after them; store order permutations did not help.
+// Source order (floats, m_p40, sizes, rest) fixes where the 31 is loaded.
 // FUNCTION: SWKOTOR 0x004630B0
 WaterTextureController::WaterTextureController(AurTexture* pTexture)
     : TextureController(pTexture)
 {
+    m_fForceCycleSpeed = 57.29578f;
+    m_fAngleCycleSpeed = 2.864789f;
     m_p40 = 0;
+    m_nWaterWidth = 31;
+    m_nWaterHeight = 31;
     m_p48 = 0;
     m_p44 = 0;
     m_p5c = 0;
     m_p60 = 0;
-    m_fForceCycleSpeed = 57.29578f;
-    m_nWaterWidth = 31;
-    m_fAngleCycleSpeed = 2.864789f;
-    m_nWaterHeight = 31;
     m_n68 = 2;
 }
 

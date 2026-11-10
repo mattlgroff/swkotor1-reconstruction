@@ -569,7 +569,6 @@ void CSWCCreature::UpdateRelativePerception(unsigned long oid)
 }
 
 // FUNCTION: SWKOTOR 0x00614AA0
-// NONMATCH: the original builds the head object in EAX and copies it to ESI.
 unsigned long CSWCCreature::GetCreatureLight(int bDynamic)
 {
     CExoLinkedListPosition pos = m_lstEffects.GetHeadPos();

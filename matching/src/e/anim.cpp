@@ -121,6 +121,7 @@ OOAnimRun::OOAnimRun(Animation* pAnimation, char** pNames, float* pTimes, int nC
 class MaxTree {
 public:
     ~MaxTree();                 // 0x0043F730
+    static void operator delete(void* p);   // 0x0044AEC0
 };
 
 class AnimTreeRun {

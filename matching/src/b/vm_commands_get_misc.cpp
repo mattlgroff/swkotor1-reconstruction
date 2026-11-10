@@ -8,9 +8,8 @@
 #include <math.h>
 #include <stdlib.h>
 
-// Slot 0x40 object (bucket b calls the slot AsSWSAreaOfEffectObject; it is
-// the trigger): area transition target.
-class CSWSAreaOfEffectObject {
+// Slot 0x40 object (the trigger): area transition target.
+class CSWSTrigger {
 public:
     char pad_0x0[0x230];
     CExoString m_sLinkedTo;                                 // 0x230
@@ -48,9 +47,9 @@ int CSWVirtualMachineCommands::ExecuteCommandGetTransitionTarget(int nCommandId,
     }
     CGameObject* pObject;
     if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidTransition, &pObject) == GAME_OBJECT_VALID) {
-        if (pObject->AsSWSAreaOfEffectObject()) {
-            CSWSAreaOfEffectObject* pTrigger = pObject->AsSWSAreaOfEffectObject();
-            if (pObject->AsSWSAreaOfEffectObject()->m_nLinkedToFlags == 2) {
+        if (pObject->AsSWSTrigger()) {
+            CSWSTrigger* pTrigger = pObject->AsSWSTrigger();
+            if (pObject->AsSWSTrigger()->m_nLinkedToFlags == 2) {
                 oidTarget = g_pAppManager->GetServerExoApp()->GetModule()->GetWaypoint(pTrigger->m_sLinkedTo);
             } else {
                 oidTarget = g_pAppManager->GetServerExoApp()->GetModule()->GetObjectByTag(pTrigger->m_sLinkedTo, 0);

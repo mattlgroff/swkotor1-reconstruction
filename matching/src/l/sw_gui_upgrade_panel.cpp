@@ -42,6 +42,23 @@ void CSWGuiUpgrade::OnPanelRemoved()
     CSWGuiPanel::OnPanelRemoved();
 }
 
+// FUNCTION: SWKOTOR 0x006C33A0
+void CSWGuiUpgrade::Draw(float fDelta)
+{
+    if (g_bDo3DGui) {
+        CAurObject* pModel;
+        if (m_nType == 1) {
+            pModel = m_cModelLS.m_cScene.GetModel(1);
+        } else {
+            pModel = m_cModel.m_cScene.GetModel(1);
+        }
+        if (pModel && !pModel->GetAttachment(-1)) {
+            pModel->SetOrientation(pModel->GetOrientation() * YawPitchRoll(fDelta * -70.0f, 0.0f, 0.0f));
+        }
+    }
+    CSWGuiPanel::Draw(fDelta);
+}
+
 // FUNCTION: SWKOTOR 0x006C32E0
 void CSWGuiUpgrade::SetDescription(const CExoString& sText)
 {

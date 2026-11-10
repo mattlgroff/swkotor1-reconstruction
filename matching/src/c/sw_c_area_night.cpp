@@ -5,7 +5,6 @@
 
 #include "c/exo_base.h"
 
-extern "C" void __cdecl free(void* p);
 
 struct Vector {
     float x, y, z;
@@ -201,7 +200,7 @@ void CSWCArea::RemovePlaceableObjectLight(unsigned long oid, int bDestroy)
             if (bDestroy && m_lstPlaceableLights.element[i]->m_pLight) {
                 delete m_lstPlaceableLights.element[i]->m_pLight;
             }
-            free(m_lstPlaceableLights.element[i]);
+            delete m_lstPlaceableLights.element[i];
             m_lstPlaceableLights.DelIndex(i);
             return;
         }

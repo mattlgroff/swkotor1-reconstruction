@@ -44,17 +44,17 @@ extern int IMMUNITY_TYPE_PARALYSIS;         // 0x00746914 (6)
 extern int IMMUNITY_TYPE_ENTANGLE;          // 0x00746920 (9)
 extern int IMMUNITY_TYPE_SLOW;              // 0x00746924 (0xa)
 extern int IMMUNITY_TYPE_MOVEMENT_SPEED_DECREASE; // 0x00746954 (0x18)
-// ApplyImmunity table (.rdata, named by value).
+// ApplyImmunity table (.rdata, named by decimal value, as f/combat_resolve.cpp).
 extern int IMMUNITY_TYPE_01;                // 0x00746900
 extern int IMMUNITY_TYPE_02;                // 0x00746904
 extern int IMMUNITY_TYPE_03;                // 0x00746908
 extern int IMMUNITY_TYPE_04;                // 0x0074690C
-extern int IMMUNITY_TYPE_13;                // 0x00746940
-extern int IMMUNITY_TYPE_1C;                // 0x00746964
-extern int IMMUNITY_TYPE_1D;                // 0x00746968
-extern int IMMUNITY_TYPE_1E;                // 0x0074696C
-extern int IMMUNITY_TYPE_1F;                // 0x00746970
-extern int IMMUNITY_TYPE_20;                // 0x00746974
+extern int IMMUNITY_TYPE_19;                // 0x00746940
+extern int IMMUNITY_TYPE_28;                // 0x00746964
+extern int IMMUNITY_TYPE_29;                // 0x00746968
+extern int IMMUNITY_TYPE_30;                // 0x0074696C
+extern int IMMUNITY_TYPE_31;                // 0x00746970
+extern int IMMUNITY_TYPE_32;                // 0x00746974
 extern int EFFECT_TYPE_PROPERTY29;          // 0x00746754 (item property 29 effect)
 extern int EFFECT_TYPE_PROPERTY36;          // 0x00746758
 extern int EFFECT_TYPE_PROPERTY55;          // 0x007467E8
@@ -267,9 +267,13 @@ public:
     CExoLinkedList();
     ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
     CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetHead() {
-        CExoLinkedListNode* pNode = (CExoLinkedListNode*)m_pcExoLinkedListInternal->pHead;
-        return pNode ? (T*)pNode->pObject : 0;
+    T* GetHead()
+    {
+        void* p = m_pcExoLinkedListInternal->pHead;
+        if (p) {
+            p = ((CExoLinkedListNode*)p)->pObject;
+        }
+        return (T*)p;
     }
     int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
     unsigned long Count() { return m_pcExoLinkedListInternal->m_nCount; }

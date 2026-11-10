@@ -12,16 +12,11 @@ void CClientOptions::SetCameraMode(unsigned char nMode)
 // FUNCTION: SWKOTOR 0x0061B710
 void CClientOptions::SetFullScreenEnabled(int bEnabled)
 {
-    unsigned long nRequested = bEnabled;
-    unsigned long nFlagsBefore = m_nFlags;
-    if (nRequested == ((nFlagsBefore >> 3) & 1)) {
+    if (bEnabled == m_bFullScreen) {
         return;
     }
-
-    g_bReinitializeVideoMode = (nRequested != 0 ? 1 : 0) + 1;
-    unsigned long nFlags = m_nFlags;
-    nFlags ^= ((nRequested << 3) ^ nFlags) & 8;
-    m_nFlags = nFlags;
+    g_bReinitializeVideoMode = (bEnabled != 0) + 1;
+    m_bFullScreen = bEnabled;
 }
 
 // FUNCTION: SWKOTOR 0x0061B740

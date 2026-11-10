@@ -131,7 +131,7 @@ extern int g_bBeamStencil;          // 0x0078E69C
 // FUNCTION: SWKOTOR 0x00471450
 void SetBeaming()
 {
-    glBlendFunc(g_aBlendFactors[2], g_aBlendFactors[0]);
+    glBlendFunc(g_aBlendFactors[0], g_aBlendFactors[2]);
     glColorMask(1, 1, 1, 1);
     glDisable(g_eGLLighting);
     glColor4fv(AurMakeColor(&g_vBeamColor, &g_fBeamAlpha));

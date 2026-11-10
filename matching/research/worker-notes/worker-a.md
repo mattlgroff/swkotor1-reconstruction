@@ -659,3 +659,218 @@ Next in-range queue: ClearAction 004FAB00 (if-chain over action ids),
 004FE210 / 004FECE0 virtuals, 004F1C40 PostProcess, 004FB1E0
 ApplyDeathExperience, 00501950 GetInvisible, 004FC210 UseItem, 00514270
 AIActionCounterSpell, 004FA100 AddToArea, then the larger lists from s7/s8.
+
+# Worker A, round s10 (2026-11-10)
+
+Branch claude/worker-a-s10 (local) from main 444e2895. Stopped early by the
+coordinator; short round. Family: CSWSCreature equip/attack/clear-action
+functions hidden inside oversized functions.csv rows, plus promotions from a
+new inline-wrapper lesson.
+
+Folder `kotor-match -q -j 2 matching/src/a`: 589/724 -> **593/727**.
+6 attempted, 1 NEW exact, 3 prior NONMATCH promoted, 2 retained NONMATCH,
+0 prior MATCH regressions, no other NONMATCH diff count changed.
+
+NEW exact (1): 004FEB90 CSWSCreature::EquipItem (336 B; the csv row says
+3904 B because 004FECE0, vtable slot 0x78, has no row). Returns 1 in EAX, so
+bucket a declares it int (symbols.csv "calls" entries say void).
+
+Promoted (3, sws_creature_combat_utilities.cpp): 004FDA20 PacifyCreature(K),
+004FD960 PacifyCreature(), 005149B0 UnsummonMyself.
+
+Retained NONMATCH: 004FAB00 ClearAction (34; vtable slot 0x74, csv row says
+004FAB0D; header virtual renamed RunAction -> ClearAction, descriptive name):
+player-id load order in the four inventory-cancel sends, and cl cross-jumps
+the action 0xf tail into action 0xc. 004FDE40 AddAttackActions (52; real size
+975 B, csv row 3408 B because 004FE210, slot 0x70, has no row): single cause,
+`int nOne = 1` makes cl cache 1 in ebx for the whole function; with any other
+stored value the output is byte-identical.
+
+Lessons:
+- By-value inline wrappers fix "app-manager register tie" diffs. When the
+  original loads the argument first and then `mov edx,[g_pAppManager]; mov
+  ecx,[edx+8]; push eax`, write a TU-local
+  `static inline T F(unsigned long oid) { return GetServerExoApp()->X(oid); }`
+  (EquipItem/UnsummonMyself AddEventDeltaTime tail, ClearAction's
+  ServerToClientObjectId / IsPartyMember / GetPlaceableByGameObjectID,
+  AddAttackActions' GetIsSelectedNPCObject). Locals in the right order or
+  the CAppManager::GetServer() member getter do not give the same registers.
+- Replacing the `CAppManager* pApp = g_pAppManager; pApp->m_pServer->F()`
+  workaround with `static inline CServerExoApp* GetServer()` matched both
+  PacifyCreature overloads. Worth retrying on other files with batch-local
+  headers that dereference g_pAppManager directly.
+- Inlined CServerExoApp::GetClientObjectByObjectId (call to 004B2A50 with the
+  whole this-chain loaded before the argument): helper taking the server,
+  with `CServerExoAppInternal* pInternal = pServer->m_pInternal;` as a local.
+- `&m_aMembers[n]` through an inline accessor gives `lea ecx,[idx+base+disp]`
+  (index register first); the direct expression gives base first.
+- kotor-match compares over the compiled length when the csv row is too
+  long/short, so functions inside oversized rows can still report MATCH.
+- Did not help: empty inline destructor or inline delete helper for the
+  ClearVisibleList / OnIdChanged null test; inline getters for
+  TerminateClientSidePath and AIActionOrientCamera.
+- Header: CAppManager::GetServer()/GetClient() inline accessors,
+  CSWSPlayer::GetPlayerID(), CGuiInGame +0xb4, CSWSItem::ApplyItemProperties,
+  CSWSInventory::GetItemInInventory/PutItemInSlot, creature +0x50, +0x1f0,
+  +0x4e8, +0x520, +0x96c..+0x98c, follow info +0x30/+0x38, door +0xf8.
+
+Next in-range queue: the two NONMATCHes above (each one idea away), 004FE210
+(slot 0x70, 2432 B) and 004FECE0 (slot 0x78) starts, 004E43C0, then apply the
+wrapper lesson to old register-tie NONMATCHes (004F1250, 005137C0, 004DDF40,
+RunEquip/RunUnequip), then 004F1C40, 004FB1E0, 00501950, 004FC210, 00514270.
+
+# Worker A, round s11 (2026-11-10)
+
+Branch claude/worker-a-s11 (local) from main 3c9c5b8f. Two parts: inline-wrapper
+promotions of old register-tie NONMATCHes, then new CSWSCreature area/item functions.
+
+Folder `kotor-match -q -j 2 matching/src/a`: 593/727 -> **598/730**.
+3 new functions attempted (1 NEW exact, 2 retained NONMATCH), 4 prior NONMATCH promoted,
+2 prior NONMATCH improved, 0 prior MATCH regressions (checked against status.csv).
+
+NEW exact (1): 004FA100 CSWSCreature::AddToArea(CSWSArea*, float, float, float, int, int)
+(sws_creature_add_to_area_s11.cpp). Callees checked against the listing (SendServerToPlayer-
+Area_ClientArea 0056CD20, CSWSAreaOfEffectObject::AddToArea 00595F30, CSWSArea::AddObjectToArea
+0050DFD0, GetLoadFromSaveGame 004AF050, UpdateSubareasOnJumpPosition 0051B940).
+
+Promoted (4): 004ED110 UpdateExcitedStateTimer and 004F3580 SetExcitedState (inline
+CSWSArea::UpdateSoundObject wrapper + TU-local GetClientObjectByObjectId wrapper),
+00508770 AwardStealthXP (static inline DistributeExperience / ShowStealthXP / GetClientExoApp
+wrappers), 00507340 DeactivateAI (`unsigned long oid = m_aGameObjects.element[i];` local before
+GetGameObject).
+
+Improved NONMATCH: 0050E190 LoadArea 8 -> 4 (AddObjectToLookupTable wrapper, struct copy of
+m_cValue8; remaining: ecx/eax swapped for the two loads before imul), 00507220 ActivateAI
+25 -> 23 (oid local; rest is register/spill choice).
+
+Retained NONMATCH (new): 004F1C40 CSWSCreature::PostLoad (49; Mac name in symbols.csv):
+cl caches the constant 1 in ebx from the first block on; the original keeps immediates until
+m_bPostLoading = 1 and caches 0 in ebx; replacing either `m_b9D4 == 1` check with another
+constant drops it to 48, so it is that constant's live range. 004FC210 CSWSCreature::UseItem
+(24): `int nResult = 0` after GetActiveProperty was the big win (56 -> 24); left: nResult in edx
+instead of eax and the shared return-0 block placed at the end, not after the m_bE8 test.
+
+Lessons:
+- `p->m_pX->Virt(n)` where the member pointer is loaded into eax then `mov ecx, eax` (original:
+  straight into ecx): an inline member wrapper on the owning class
+  (`void UpdateSoundObject(int n) { m_pSoundObject->Update(n); }`) gives the original order.
+- Loop `pArray->GetGameObject(list.element[i], &p)` with the element loaded into eax and the
+  base into edx: hoist the element into a local first.
+- A function whose NULL paths jump to the final epilogue with `xor eax, eax` hoisted before
+  the test (and the success path ends `mov eax, 1`) was written with an `int nResult = 0`.
+- 2-bit field test `(b & 0xc) == 4` as a byte load: use the bitfield (`pEntry->m_n2 == 1`).
+- Tried without success: wrapper/ternary/local orders for AddDisappearActions (7), GetDeadTemp
+  (5), BroadcastDamageDataToParty (9; with pPlayer->m_nPlayerID in both arms the arm matches
+  but this/pData registers swap, 17), OnApplyBlindness (wrapper fixes the creator lookup but the
+  kind != 8 block placement stays), OnRemove4EE150, GetWriteMessage (each block matches alone,
+  never both), OnRemoveSetAIState (0x17 in ebp: a local is constant-folded),
+  OnRemoveArcaneSpellFailure (hoisting `int i = 0` like 004E1B00 swaps esi/edi), GetClientArea.
+- Header: CSWSArea (sws_creature.h) +0x128 m_nPlayersInArea, AddObjectToArea,
+  UpdateSoundObject; creature +0xf0, +0x1ec, +0x310, +0x320, word view m_nAIStateFlags at 0x9f0;
+  stats +0x7c; CFactionManager +0x18; CSWItemProperty +0xc; CGameEffect::SetDurationType;
+  CSWSModule::AddObjectToLookupTable; CServerExoApp::GetLoadFromSaveGame.
+
+Next in-range queue: PostLoad / UseItem (each one register idea away), 00500350 LoadCreature
+(704 B, bit flags + GFF reads), 00501950 GetInvisible, 004FB1E0, 00514270, 004FE210 / 004FECE0
+(slot 0x70/0x78 starts, no functions.csv rows), then the s10 list.
+
+# Worker A, round s12 (2026-11-10)
+
+Branch claude/worker-a-s12 (local) from main 849cf510. Interrupted once by a usage limit and
+resumed in the same worktree.
+
+Folder `kotor-match -q -j 2 matching/src/a`: 598/730 -> **600/733**.
+3 new functions attempted (1 NEW exact, 2 retained NONMATCH), 1 prior NONMATCH promoted,
+1 prior NONMATCH improved, 0 prior MATCH regressions (checked the `--` lists before and after).
+
+NEW exact (1): 00514270 CSWSCreature::AIActionCounterSpell (sws_creature_counter_spell_s12.cpp).
+Callees checked against the listing: GetDead (vtable 0x94), GetIsPossessed 0063E7F0, GetDeadTemp
+004EF890, ActivityManager 004F87D0, GetCreatureByGameObjectID 004AE770, GetArea 004CB120,
+VectorSubtract 00423BC0, BroadcastCombatStateToParty 004FBBE0, UpdateFlag4DC 004ECE60, SetActivity
+004F00A0, GetLockOrientationToObject (vtable 0xc4), SetFacingTarget4F34A0 004F34A0,
+SendFeedbackMessage 004EDE10, AddActionToFront 004CCB00, AddMoveToPointActionToFront 004F8A50,
+AddPathfindingWaitActionToFront 004EB5A0; results 00745DC4/00745DBC/00745DC0.
+
+Promoted (1): 0050EE80 CSWSCreature::SetCombatMode (116 -> 0).
+
+Improved: 004EF2E0 GetBodyBagAppearance 16 -> 11.
+
+Retained NONMATCH (new): 004E43C0 OnApplyDispelBestMagic (95; no functions.csv row, inside the
+004E40D0 row; flow matches, the original keeps pObject in ebx and i/zero in ebp, same story as
+OnApplyDispelAllMagic), 00501950 CSWSCreature::GetInvisible (85; flow matches after duplicating the
+saving-throw block for the null-entry path; register allocation: this ebp, viewer edi, i and nRace
+spilled, the rules byte is loaded into bl before the second GetInteger(1)).
+
+Lessons:
+- Compare chain first, blocks after it in reverse order (`cmp al,1; je B1; cmp al,2; je B2; cmp
+  al,3; je B3; <default>; B3; B2; B1`) is a nested inverted if:
+  `if (n != 1) { if (n != 2) { if (n != 3) D; else C; } else B; } else A;`. A switch gives the
+  same layout but with movzx + dec. For pairs of tests per level (SetCombatMode's nMode/nOld chain)
+  `if (nMode != k && nOld != k) { inner } else if (nMode == k) M; else O;` gives tests m,o then
+  blocks M,O (jump threading picks the right one).
+- SetCombatMode also needed: the mode-4 branch storing m_nCombatMode itself and `goto` into the
+  activity chain (the original threads that jump past the `nMode == 1` test), and two separate
+  `if (!pWeapon) {fb; return;} if (... <= 0) {fb; return;}` blocks so the first one cross-jumps into
+  a later identical feedback block.
+- `(GetDead() == 1 && GetIsPossessed() == 1) || GetDeadTemp() == 1` is the AIActionCounterSpell
+  guard (jne over the possessed test); a local block scope around the delta Vector lets the
+  `Vector(0,0,0)` argument temporary reuse its slot (frame 0x34 -> 0x28).
+- x87 `test ah,5; jnp fail` with z*z first: `!(d.x*d.x + d.y*d.y + d.z*d.z > r*r)` (cl evaluates the
+  sum right to left here).
+- `mov eax, 3` in a function returning unsigned char comes from an int-typed conditional
+  (`return bFailed ? 3 : nAppearance;`).
+- Did not help: return-0 placement for ToggleMode (`||` or nested forms move push ebx into the
+  prologue), ActivityManager exit label (explicit return / restructured else),
+  OnRemoveArcaneSpellFailure (`pEffect &&` in the loop condition, other `int i = 0` positions).
+- Header: CSWSCreatureStats +0x17e m_n17E; CSWRules +0xaa m_nAA; creature +0x8ec m_n8EC;
+  CSWSCreature::AIActionCounterSpell, UpdateFlag4DC, GetInvisible, PacifyCreature, SavingThrowRoll.
+- Missing-start scan (call targets, .rdata/.data pointers, ret+padding) finds nothing new in this
+  bucket besides the known 004FE210/004FECE0 (large), 0050D350/0050D360 adjustor thunks and 004E43C0.
+
+Next in-range queue: GetInvisible register work, 004F8410 ~CSWSCreature (864 B, member dtors + EH,
+no src definition), 00500350 LoadCreature, 004FB1E0 ApplyDeathExperience (x87), the AIAction
+NONMATCHes with frame-size diffs (005136B0, 0050FB60, 00510670: stack-slot packing), then the s11 list.
+
+### GetHead sweep (sweep-s1)
+
+- Bucket c GetHead shape (internal `pNode = head; if (!pNode) return 0;
+  return pNode->pObject;`, wrapper loads the internal pointer into a
+  local first) applied to sws_area.h and the local list copies in
+  sws_creature_s7.cpp and sws_creature_cancel_action.cpp.
+- Promoted 0x004F19E0 CalculateDeathExperience; folder 600/733 -> 601/733.
+- Improved, still NONMATCH: 0x00508050 SetCurrentWeather 13 -> 7 (now
+  uses GetHead(); list part identical, the rest is a dead
+  `add eax,0x11c` from the AsGameObject cast), 0x004F1EF0 CancelAction
+  29 -> 11 (also uninitialised pAction/pos, which reproduces the
+  argument-slot read; left: original reloads the head for pos).
+- item_property_handler.h GetHead: the ternary is now the conditional
+  assign `void* p = pHead; if (p) p = p->pObject;`. 0x004D4C10
+  IncrementTimer's head-object test is that shape in the original
+  (`mov ecx,eax; test ecx,ecx; je; mov ecx,[ecx+8]`); count stays 53
+  (register cascade from the timer caching), no other function changes.
+  The c shape gave identical output to the ternary here.
+
+## Audit fixes 2026-11-10 (fix6-s1)
+
+matchcmp masks strings/call targets, so these MATCH functions were wrong:
+- sws_combat_data.cpp: CSWSCombatRoundAction Save/LoadData labels are
+  "Target"/"TargetRepository" (not TargetId/ItemId); CSWSCombatAttackData::
+  SaveData labels were mostly invented (Field12, AttackGroup5c, ...). Real
+  ones read from the pushes: AttackResult, ReaxnDelay, ReaxnAnimation,
+  ReaxnAnimLength, Concealment, AttackType, AttackMode, RangedAttack,
+  SneakAttack, WeaponAttackType, KillingBlow, CoupDeGrace, CriticalThreat,
+  AttackDeflected (member names still descriptive; worth renaming later).
+- script_event.cpp SaveEvent label "EventType" (LoadEvent already had it).
+- gff_scalar_delete_thunk.cpp: the deleting dtor (Mac map: CResIFO vtable)
+  calls the derived complete dtor 0x00506F10 (a jmp into ~CResGFF), now
+  via a CResIFO : CResGFF class, not ~CResGFF directly.
+- item_property_handler: ApplyImmunity table globals were named by hex
+  value (IMMUNITY_TYPE_13 = 19) and collided with f's decimal names
+  (f IMMUNITY_TYPE_13 = 0x00746930 = 13). Renamed to decimal: _19, _28.._32.
+- Not changed (judged checker false positives): the ~CExoArrayList funclet
+  calls in ~CSWCCMessageData/~CScriptEvent go to 0x0056B6F0 in the original,
+  whose body (`delete element; element = 0`) is exactly our header's. The
+  checker's ground truth for ??1?$CExoArrayList@H comes from g/request_pool
+  (0x0042E240) and h/material (0x0047ABC0), two other bodies that cannot
+  both be <int>; game-side code calls 0x0056B6F0 consistently.
+Lesson: read every pushed string of a GFF Save/Load against the exe.

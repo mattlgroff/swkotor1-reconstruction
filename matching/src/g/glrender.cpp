@@ -8,9 +8,9 @@ void RequestPoolManagerSys::ResizePool(int nIndex, int nSize)
     g_nPoolBytes += nSize - m_pSizes[nIndex];
     g_nPoolPages += ((nSize + 0xfff) & ~0xfff) - ((m_pSizes[nIndex] + 0xfff) & ~0xfff);
     void* pOld = m_ppPools[nIndex];
-    void* pNew = operator new(nSize);
+    void* pNew = new unsigned char[nSize];
     memcpy(pNew, pOld, m_pSizes[nIndex]);
-    free(pOld);
+    delete[] pOld;
     m_pSizes[nIndex] = nSize;
     m_ppPools[nIndex] = pNew;
 }
@@ -340,7 +340,7 @@ void SetViewTransform(const Vector* pPosition, const Quaternion* pOrientation)
         glMultMatrixf(m.m);
     } else {
         Vector v = pOrientation->axis();
-        glRotatef((float)(2.0 * acos(pOrientation->w)) * 57.29578f, v.x, v.y, v.z);
+        glRotatef((float)(2.0 * acos(pOrientation->w)) * -57.29578f, v.x, v.y, v.z);
     }
     glTranslatef(-pPosition->x, -pPosition->y, -pPosition->z);
 }

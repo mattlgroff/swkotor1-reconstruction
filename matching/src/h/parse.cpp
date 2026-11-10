@@ -7,7 +7,7 @@ extern "C" int __cdecl sprintf(char*, const char*, ...);
 
 char* AurResGetNextLine();              // 0x0044BFA0
 void* AurResGetData(int nSize);         // 0x0044BFD0
-extern "C" int __cdecl _strnicmp(const char*, const char*, unsigned int);
+extern "C" int __cdecl strncmp(const char*, const char*, unsigned int);
 void ParseGenericKey(char* s, AurGenericKey* pKey);     // 0x00463B30
 
 // Face record of the ASCII model reader (0x14 bytes).
@@ -206,7 +206,7 @@ void ParseList(char* s, CExoArrayList<T>* pList)
     } else {
         char* szLine;
         for (szLine = AurResGetNextLine(); szLine; szLine = AurResGetNextLine()) {
-            if (!_strnicmp(SkipWhitespace(szLine), "endlist", 7))
+            if (!strncmp(SkipWhitespace(szLine), "endlist", 7))
                 break;
             if (pList->num == 0)
                 pList->SetSize(1);
@@ -255,7 +255,7 @@ void ParseStringList(char* s, CExoArrayList<char*>* pList)
     } else {
         char* szLine;
         for (szLine = AurResGetNextLine(); szLine; szLine = AurResGetNextLine()) {
-            if (!_strnicmp(SkipWhitespace(szLine), "endlist", 7))
+            if (!strncmp(SkipWhitespace(szLine), "endlist", 7))
                 break;
             if (pList->num == 0)
                 pList->SetSize(1);

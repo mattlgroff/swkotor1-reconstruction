@@ -94,6 +94,17 @@ void CSWGuiInGameGameplay::OnDifficultyLeft(CSWGuiControl* pControl)
     }
 }
 
+// FUNCTION: SWKOTOR 0x006E6930
+void CSWGuiInGameGameplay::OnDifficultyRight(CSWGuiControl* pControl)
+{
+    if (pControl->m_n4c && m_nDifficulty != g_pRules->Get2DArrays()->GetDifficultyTable()->m_nNumRows - 2) {
+        ++m_nDifficulty;
+        g_pAppManager->GetClientExoApp()->GetOptions()->SetDifficulty((unsigned char)m_nDifficulty);
+        SetDifficultyText();
+        m_pManager->PlayGuiSound(1);
+    }
+}
+
 // FUNCTION: SWKOTOR 0x006E6710
 void CSWGuiInGameGameplay::OnEnterDiff(CSWGuiControl* pControl)
 {

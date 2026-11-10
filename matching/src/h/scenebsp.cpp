@@ -677,7 +677,7 @@ public:
 extern int g_bShadowsOnly;          // 0x0078E60C
 extern int g_bSkipA4;               // 0x00827FCC
 
-// NONMATCH 6: the last test folds to setne here; the original branches.
+// The merged A4/face test with an explicit else keeps the branchy return.
 // FUNCTION: SWKOTOR 0x0046EE40
 int PartIsRenderable(PartRender* pPart)
 {
@@ -686,11 +686,10 @@ int PartIsRenderable(PartRender* pPart)
         return 0;
     if (g_bShadowsOnly && !pMesh->m_bShadow)
         return 0;
-    if (g_bSkipA4 && pMesh->m_pA4)
+    if ((g_bSkipA4 && pMesh->m_pA4) || pMesh->m_nFaces == 0)
         return 0;
-    if (pMesh->m_nFaces == 0)
-        return 0;
-    return 1;
+    else
+        return 1;
 }
 
 // FUNCTION: SWKOTOR 0x0046EEA0

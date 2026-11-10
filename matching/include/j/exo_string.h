@@ -12,7 +12,7 @@ public:
     CExoString& operator=(const CExoString& s);     // 0x005E5C50
     CExoString& operator=(const char* s);           // 0x005E5140
     CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int operator!=(const char* s) const;            // 0x005E5290
+    int operator==(const char* s) const;            // 0x005E5290
     int operator==(const CExoString& s) const;      // 0x005E5200
     int IsEmpty() const;                            // 0x005E58A0
     int CompareNoCase(const char* s) const;         // 0x005E58C0

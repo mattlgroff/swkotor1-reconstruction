@@ -304,3 +304,208 @@
   0x00454C80 spawn tile, 0x00471860 PartLightsaber draw (x87 heavy),
   0x0045A2F0 / 0x004599B0 / 0x0045A850 / 0x0045B290 GUI string layout and
   render (hidden entries, x87), 0x0046D3B0 ProcessParts.
+
+## H s5: part-tree collapse, part projection, SpawnRoom (stopped early)
+
+- Folder: 464/528 -> 464/531. 3 annotated, 0 NEW exact, 3 NONMATCH. The
+  run was stopped by the user before tuning finished.
+- NONMATCH kept:
+  - 0x00453F10 CollapsePartTree (scene_collapse.cpp, 33, 1376/1376 B). One
+    cause: the two by-value argument copies for Gob::SetPosition /
+    SetOrientation colour differently (original: vtable eax, source ecx,
+    destination edx). Tried without effect: accessor by reference and by
+    value, named result locals, out-parameter signature, inline wrappers,
+    POD Quaternion, local copy. User copy constructors change the shape.
+    scenespawn.cpp calls the same address PlaceTileParts; both names are
+    descriptive.
+  - 0x00474710 Gob::PartProject (gob_partproject.cpp, 65, 1392/1408 B;
+    listed in functions.csv). Recursion inlined two levels (inline_depth 2). Remaining cause:
+    `this`/pPart swap ebx/ebp and the original spills `this` to
+    [esp+0x50] so the inlined level keeps the plane's d in ebp.
+  - 0x00456F30 Scene::SpawnRoom (scene_spawnroom.cpp, 153, 2288/2288 B).
+    First draft only, one compile; the size already agrees, so the
+    statement structure is probably right.
+- Screening: a scan for 16-aligned starts after ret/padding found no
+  further small hidden entries in the bucket; what is left is the large
+  list in the s4 queue plus 0x00474220 (1264 B, hidden entry after
+  ProcessFaces, not in functions.csv, not attempted). 0x0046B7C0 takes
+  its argument in EAX (custom convention): skip.
+
+### Lessons
+
+- `cmp eax, 0x3f800000` on a float member is `*(int*)&m_fScale !=
+  0x3f800000` in source; `f != 1.0f` gives fld/fcomp.
+- `movzx eax, byte ptr [x]; test eax, eax` after a pointer test comes
+  from a ternary: `if (p->AsTriMesh() ? p->m_pNode->m_bBeaming : 0)`.
+  `a && b`, int locals, int getters and 8-bit bitfields all give the
+  byte test.
+- A dead store of one float of a struct copy (`mov ecx, ebp; mov
+  [dst.d], ecx; mov [dead], ebp`) is `local = Plane(plane.n, plane.d)`
+  with an inline `Plane(const Vector&, float)` constructor; plain
+  assignment, Set(), and a named temporary do not produce it.
+- `Vector operator+` commutes per expression: `q * v + p` and `p + q * v`
+  give different fld/fadd orders; check each site.
+- A string buffer can be larger than its use suggests: the frame size
+  gives it away (szSpecial is 0x40, not 0x30).
+- matchcmp -v aligns by offset, so after a size change every line shows
+  `!!`. Diffing the two instruction columns as text (difflib, call
+  targets and globals normalised) shows the real differences.
+
+### Next in-range queue
+
+- Tune SpawnRoom 0x00456F30 (largest expected gain), then SpawnTile
+  0x00454C80 and ManageSceneBSP 0x0046E5C0, which share its declarations.
+- CollapsePartTree / PartProject: register ties above.
+- 0x00474220, 0x0046D3B0 ProcessParts, 0x00478260 Gob::Render.
+
+## H s6: promoting near-miss NONMATCHes
+
+- Folder: 464/531 -> 474/531. No new annotations; 10 prior NONMATCH
+  promoted to MATCH, two more improved. Callees and globals unchanged
+  (each was already checked against the original listing when annotated).
+- Promoted: 0x00462A70 TextureController ctor, 0x004630B0
+  WaterTextureController ctor, 0x0045FF40 WaterTextureController::Init,
+  0x00470D30 TriMeshPart::GetRenderPath, 0x0046F1A0
+  PartTriMesh::WithinRange, 0x0046EE40 PartIsRenderable, 0x0046F490
+  DynamicPartCalculateMaterial, 0x0045D220 Camera::Animate, 0x004741A0
+  ProcessFaces, 0x0045F770 AurVertexProgramsAvailable.
+- Improved, still NONMATCH: 0x0046CE70 AddObjectToRooms 17 -> 6 (frame is
+  0xC larger, +0x51 bit test), 0x00451DC0 ComputePartBBox 16 -> 1 (one
+  `add esp` placement).
+- Tried without gain (2-5 compiles each): SpawnRoom 0x00456F30 (pGob vs
+  pTree get ebp; frame slots differ throughout, needs a long session),
+  SpawnPartsForTile, PerlinInit / CycleTID Update (load before store),
+  Scene::HitCheck (SetHit store order), AddEmitterToRooms, LoadModel /
+  FindModel (eax join), DoStaticMeshShadows (element cached in edi),
+  AddGenericControllerSingle (param slot choice), MouseDir (viewport copy;
+  a member-wise copy ctor gives direct loads but wrong order), glcaps
+  560/5A0/640/910 (eax/ecx naming), RenderPaths (address operand order),
+  Life Update, SceneBSPAddPart, GetTextHeight.
+
+### Lessons
+
+- Source order of constant / argument stores decides where cl loads the
+  constant or argument, even though the stores themselves are rescheduled:
+  `m_pTexture = pTexture;` first in the ctor body, or floats, then m_p40, then
+  the two 31s in the Water ctor.
+- Declaration order of two locals multiplied together picks the imul
+  operand registers (`nHeight` before `nWidth`).
+- Load a float member into a named local before the compare
+  (`float fAlpha = m->x; if (!(fAlpha < g))`) to schedule an unrelated
+  byte load before the fcomp; a named call result local
+  (`float fMag = VectorMagnitude(&d); return fMag < 2 + r`) keeps the
+  `add esp` after the x87 add.
+- `if (a || b) return 0; else return 1;` keeps the branchy tail where the
+  plain `return 1;` folds to setne.
+- Many returns of the same tail call: write one shared exit (`goto done` /
+  nested ifs) and cl tail-duplicates it with the original registers.
+- A local pointer to the member list (`CExoArrayList<T>* p = &n->m_l;`)
+  let cl put the loop counter in the dead parameter slot (ProcessFaces).
+- Flag bit at +0x50 (`mov cl,[]; shr cl,3; test cl,1`): unsigned short
+  bitfields plus an `unsigned char` accessor, as in the s1 lesson. The
+  +0x51 `mov al; and al,1; test al,al` form is still unknown.
+- A cached-query inline used inside the expression
+  (`(g_b & Cached()) && g_b`) gave `test ecx, eax` operand order.
+- Reusing an existing int local for a recomputed value
+  (`nPool = ...; PoolUnlock(nPool);`) can fix a register-name tail.
+
+### Next in-range queue
+
+- SpawnRoom 0x00456F30 (long session: frame/stack layout first).
+- Remaining low-diff NONMATCH: ComputePartBBox (1), PerlinInit (1),
+  CycleTID Update (4), SpawnPartsForTile (5), AddObjectToRooms (6),
+  Scene::HitCheck (7), AddEmitterToRooms (8), glcaps 560/910 (8).
+- Large todo entries unchanged: 0x00454C80, 0x0046E5C0, 0x00474220,
+  0x0046D3B0, 0x00478260.
+
+## H s7: Gob::Render, per-light bump render paths
+
+- Folder: 474/531 -> 475/534. 3 annotated, 1 NEW exact, 2 NONMATCH. All
+  three addresses are listed in functions.csv; none was annotated before.
+- Exact: 0x00478260 Gob::Render (gob_render.cpp, EH, CHitInfo local).
+  Callees, globals, imports and the four DoEvent strings were checked
+  against the original listing. The parameter is tested as a byte, so it is
+  declared `unsigned char` (scene_buckets.cpp declares `int`; both mangled
+  names now point at the same address).
+- NONMATCH kept (render_bump.cpp): 0x00474EA0 RenderLightMappedBumpDiffuse
+  (63, same size; only frame slots of the light list / pMesh spill / `new`
+  temp are permuted, plus the scene texture load going to edi), 0x00475450
+  RenderLightMappedBumpSpecular (about 190, register rotation and frame
+  slots; size 16 bytes short).
+- Screening: a scan of call targets and 4-aligned .rdata pointers into the
+  bucket found no unannotated small function starts; the remaining hidden
+  entries are the large ones already queued.
+
+### Lessons
+
+- Fade clamp `m = __max(g_min, __min(1.0f, m))` reproduces the doubled
+  fcomp/jp chain. The preceding update must be two separate stores
+  `if (h) m = m - a / b; else m = a / b + m;` (no step local): cl merges the
+  fstp at the join and reloads m from memory; a ternary or a named step
+  keeps the value in st(0) and gives `fld m; fsub st(1)`.
+- An inline helper defined in the class body (struct copies of the last
+  transform) was emitted out of line; `__forceinline` was needed.
+- A float argument pushed through `fld [m]; fstp [esp]` comes from an
+  inline `float ReadFloat(const float&)` (same as the PartLight::Mat lesson).
+- Vector results copied into callee-saved registers (`mov esi,[eax]...`)
+  came from `Vector v; v = f();` (assignment, not initialisation).
+- Out-parameter virtual followed by stack (not eax) copies:
+  `__forceinline Vector X() { Vector v; GetX(&v); return v; }`.
+- Pass a vector as `const Vector&` to the inline vertex-program parameter
+  helper to get the original z, y then x load order.
+- Load the light element before a temporary vector is built:
+  `const Vector& c = list.element[i]->m_vColor; v = c * (s * f);`.
+- An inline wrapper whose parameters are the combiner call's arguments
+  loads every argument before the pushes (scene texture in edi). It helped
+  in Specular but moved esi/edi in Diffuse.
+
+### Next in-range queue
+
+- Bump family: frame-slot order in 0x00474EA0 (list vs spills), then
+  0x00475BB0 / 0x004760D0 / 0x00476690 / 0x00477050 with the same TU.
+- 0x00474220 PartTriMesh::Project and 0x00477B90 PartSkin::Project (guard
+  statics, x87 double temporaries), 0x00471860 lightsaber draw.
+- Earlier queue unchanged: SpawnRoom 0x00456F30, 0x00454C80, 0x0046E5C0,
+  0x0046D3B0, GUI string layout hidden entries, texture controller Updates.
+
+## Audit fixes 2026-11-10 (fix2-s1)
+
+The relocation audit (audit-s1) found MATCH functions whose masked
+relocations pointed at the wrong target. Fixed, all still MATCH (475/534):
+
+- `_strnicmp` -> `strncmp` (original calls `_strncmp` 0x006FAFF0) in
+  modelparse.cpp (MaxTree/Model/Animation InternalParseField), parse.cpp
+  (ParseList, ParseStringList), parselist.cpp (Parse<T>) and texctl_base.cpp
+  (ParseFloatList). The "endlist"/"node"/"event" tests are case-sensitive.
+- glcaps.cpp: operands of the extension-mask ORs were in the wrong order, so
+  each named global loaded another global's address (7B0, 7E0, 820, 860,
+  8B0, 950, 9F0, and the inlined copies in AB0). The emitted load order is
+  the source order: write the operands in the original's load order.
+- rendervp.cpp SetBeaming: `glBlendFunc(g_aBlendFactors[0], [2])`, not
+  `[2], [0]`.
+- 0x007BB6B0 / 0x007BB80C names: h had `g_pfnActiveTexture` for 0x007BB6B0
+  and `g_pfnClientActiveTexture` for both 0x007BB6B0 (vertex.h,
+  scene_buckets.cpp) and 0x007BB80C (render.h, renderxform.cpp). Renamed to
+  the loader's names (g/ext_loader.cpp): `glClientActiveTextureARB` =
+  0x007BB6B0, `glActiveTextureARB` = 0x007BB80C.
+- scene_buckets.cpp: the bss float 0x007B92E8 was declared as `g_fAlphaRef`,
+  which is 0x00798A90 (0.35) elsewhere; renamed `g_fSceneAlphaRef`.
+
+Left as is (checker artefacts, not source errors):
+
+- keys.cpp operator=<NewController>, parselist.cpp Parse<unsigned int>,
+  texctl.cpp ~TextureController: our out-of-line Allocate / ~CExoArrayList
+  COMDATs use plain new/delete while the original's callees (0x00437C50,
+  0x00437D60, 0x0042E240) use new[]/delete[]. The same original functions
+  inline plain ??2/??3 (Parse<unsigned int> +0x4A, ~TextureController body,
+  keys.cpp Allocate<AurGenericKey> 0x00463950), so these units did not
+  declare the array operators; the linker kept another unit's COMDAT copy.
+- CExoArrayList<Part*> Allocate/Add in scene_reference.cpp and scenebsp.cpp
+  (calls 0x005E03C0 / 0x00444FE0): correct for the scene-side Part lists
+  (SetSize<Part*> 0x00444FA0, AddUnique<Part*> 0x0046BD10 sit with them). The
+  conflict is g/aur_array.cpp annotating 0x00437D60 / 0x00438B40 (the
+  model-side new[] / grow-by-16 family, used only by MdlNode::GetPartsList)
+  as the Part* instances; that list type is likely not Part*.
+
+Lesson: matchcmp masks every relocation, so swapped commutative operands of
+two globals and a swapped argument pair both "match"; check the targets.

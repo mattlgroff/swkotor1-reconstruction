@@ -70,13 +70,18 @@ int AurGLCaps740()
     return g_n518;
 }
 
+// Cached extension query, used inline inside the availability test.
+static inline int VertexProgramExtCached()
+{
+    if (g_n51C == -1)
+        g_n51C = HAS_EXT(g_nExt4D4);
+    return g_n51C;
+}
+
 // FUNCTION: SWKOTOR 0x0045F770
 int AurVertexProgramsAvailable()
 {
-    int r = g_n51C;
-    if (r == -1)
-        g_n51C = r = HAS_EXT(g_nExt4D4);
-    if ((r & g_bARBVertexProgram) && g_bARBVertexProgram)
+    if ((g_bARBVertexProgram & VertexProgramExtCached()) && g_bARBVertexProgram)
         return 1;
     return 0;
 }
@@ -85,7 +90,7 @@ int AurVertexProgramsAvailable()
 int AurGLCaps7B0()
 {
     if (g_n520 == -1) {
-        if (HAS_EXT(g_nExt4DC | g_nExt4E4))
+        if (HAS_EXT(g_nExt4E4 | g_nExt4DC))
             g_n520 = 1;
         else
             g_n520 = 0;
@@ -99,7 +104,7 @@ int AurGLCaps7E0()
     if (!g_bGLExtension860)
         return 0;
     if (g_n524 == -1) {
-        if (HAS_EXT(g_nExt4C8 | g_nExt4D0))
+        if (HAS_EXT(g_nExt4D0 | g_nExt4C8))
             g_n524 = 1;
         else
             g_n524 = 0;
@@ -111,7 +116,7 @@ int AurGLCaps7E0()
 int AurGLCaps820()
 {
     if (g_n528 == -1) {
-        if (HAS_EXT(g_nExt4D4 | g_nExt4DC | g_nExt4C8))
+        if (HAS_EXT(g_nExt4C8 | g_nExt4DC | g_nExt4D4))
             g_n528 = 1;
         else
             g_n528 = 0;
@@ -123,7 +128,7 @@ int AurGLCaps820()
 int AurATIFrameBufferModificationsAvailable()
 {
     if (g_n52C == -1) {
-        g_n52C = HAS_EXT(g_nExt4D4 | g_nExt4D0 | g_nExt4C8);
+        g_n52C = HAS_EXT(g_nExt4C8 | g_nExt4D0 | g_nExt4D4);
         if (!AurGLCaps5E0())
             g_n52C = 0;
     }
@@ -134,7 +139,7 @@ int AurATIFrameBufferModificationsAvailable()
 int AurGLCaps8B0()
 {
     if (g_n530 == -1)
-        g_n530 = HAS_EXT(g_nExt484 | g_nExt490);
+        g_n530 = HAS_EXT(g_nExt490 | g_nExt484);
     return g_n530;
 }
 
@@ -162,7 +167,7 @@ int AurGLCaps910()
 int AurGLCaps950()
 {
     if (g_n53C == -1)
-        g_n53C = HAS_EXT(g_nExt4BC | g_nExt4B8);
+        g_n53C = HAS_EXT(g_nExt4B8 | g_nExt4BC);
     return g_n53C;
 }
 
@@ -185,7 +190,7 @@ bool CheckExtension(char* szExtension, char* szList)
 int AurGLCaps9F0()
 {
     if (g_n540 == -1)
-        g_n540 = (g_nGLExtensions & g_nExt4E0) != 0;
+        g_n540 = (g_nExt4E0 & g_nGLExtensions) != 0;
     return g_n540;
 }
 

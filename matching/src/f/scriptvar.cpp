@@ -95,17 +95,17 @@ public:
     }
 };
 
-class CSWGlobalVariableTable {
+class CSWSJournal {
 public:
-    void SetValueNumber(const CExoString &sName, int nValue, int bFlag);
-    void SetValueBoolean(const CExoString &sName, int nValue, int bFlag);
-    void SetValueString(const CExoString &sName, int nValue, int bFlag);
-    void SetValueLocation(const CExoString &sName, int nValue, int bFlag);
+    void SetState(const CExoString &sPlotID, int nState, int bFlag);           // 0x005c5a40
+    void SetDate(const CExoString &sPlotID, unsigned long nDate, int bFlag);   // 0x005c63f0
+    void SetTime(const CExoString &sPlotID, unsigned long nTime, int bFlag);   // 0x005c6650
+    void SetPicture(const CExoString &sPlotID, int nPicture, int bFlag);       // 0x005c5630 (empty; name guessed)
 };
 
-class CSWSModule {
+class CSWSCreature {
 public:
-    CSWGlobalVariableTable *GetGlobalVariables();
+    CSWSJournal *GetJournal();                                                 // 0x004edb00
 };
 
 extern const unsigned long OBJECT_INVALID;   // 0x00746644
@@ -133,7 +133,7 @@ public:
     void SetInt(CExoString &sName, int nValue, int bFlag);
 
     CExoArrayList<CSWSScriptVar> m_lVars;  // +0x0
-    CSWSModule *m_pModule;                 // +0xc
+    CSWSCreature *m_pOwner;                // +0xc (owning creature; journal vars)
 };
 
 // FUNCTION: SWKOTOR 0x0059A2A0 SYMBOL: ?Add@?$CExoArrayList@VCSWSScriptVar@@@@QAEXVCSWSScriptVar@@@Z
@@ -234,21 +234,21 @@ CScriptLocation CSWSScriptVarTable::GetLocation(CExoString &sName)
 void CSWSScriptVarTable::SetInt(CExoString &sName, int nValue, int bFlag)
 {
     MatchIndex(sName, 1, 1)->m_pValue = (void *)nValue;
-    if (!m_pModule)
+    if (!m_pOwner)
         return;
     if (sName.GetLength() <= 10)
         return;
-    if (!m_pModule->GetGlobalVariables())
+    if (!m_pOwner->GetJournal())
         return;
-    if (sName.Left(10) == "GLOBALVAR_") {
+    if (sName.Left(10) == "NW_JOURNAL") {
         if (sName[11] == 'E')
-            m_pModule->GetGlobalVariables()->SetValueNumber(sName.SubString(16, 128), nValue, bFlag);
+            m_pOwner->GetJournal()->SetState(sName.SubString(16, 128), nValue, bFlag);
         else if (sName[11] == 'D')
-            m_pModule->GetGlobalVariables()->SetValueBoolean(sName.SubString(15, 128), nValue, bFlag);
+            m_pOwner->GetJournal()->SetDate(sName.SubString(15, 128), nValue, bFlag);
         else if (sName[11] == 'T')
-            m_pModule->GetGlobalVariables()->SetValueString(sName.SubString(15, 128), nValue, bFlag);
+            m_pOwner->GetJournal()->SetTime(sName.SubString(15, 128), nValue, bFlag);
         else if (sName[11] == 'P')
-            m_pModule->GetGlobalVariables()->SetValueLocation(sName.SubString(18, 128), nValue, bFlag);
+            m_pOwner->GetJournal()->SetPicture(sName.SubString(18, 128), nValue, bFlag);
     }
 }
 

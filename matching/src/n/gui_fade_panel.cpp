@@ -77,13 +77,13 @@ void CSWGuiFade::StartFade(int bFadeIn,float fWait,float fLength,const Vector& v
     m_fFadeLength = fLength;
     m_bFadeIn = bFadeIn;
     m_fFadeTime = 0.1f;
-    m_nLastTime = (unsigned long)(g_pAppManager->m_pClient->m_pInternal->m_pWorldTimer->GetSnapshotTime() / 1000);
+    m_nLastTime = (unsigned long)((__int64)g_pAppManager->m_pClient->m_pInternal->m_pWorldTimer->GetSnapshotTime() / 1000);
 }
 
 // FUNCTION: SWKOTOR 0x00624570
 void CSWGuiFade::Draw(float fDelta)
 {
-    unsigned long nNow = (unsigned long)(g_pAppManager->m_pClient->m_pInternal->m_pWorldTimer->GetSnapshotTime() / 1000);
+    unsigned long nNow = (unsigned long)((__int64)g_pAppManager->m_pClient->m_pInternal->m_pWorldTimer->GetSnapshotTime() / 1000);
     unsigned long nDiff = nNow - m_nLastTime;
     m_nLastTime = nNow;
     float fElapsed = nDiff * 0.001f;

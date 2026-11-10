@@ -20,7 +20,7 @@ public:
     CExoString& operator=(const CExoString& s);     // 0x005E5C50
     CExoString& operator=(const char* s);           // 0x005E5140
     CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int operator<(const CExoString& s) const;       // 0x005E5500
+    int operator<=(const CExoString& s) const;      // 0x005E5500
     int operator==(const CExoString& s) const;      // 0x005E5200
     char* CStr() const;                             // 0x005E5670
     void __cdecl Format(char* sFormat, ...);        // 0x005E5680
@@ -39,8 +39,10 @@ public:
 
 void* operator new(unsigned int nSize);
 void operator delete(void* p);
-void* operator new[](unsigned int nSize);
-void operator delete[](void* p);
+// No operator new[]/delete[] declaration: without one MSVC 7 lowers array
+// new/delete to the scalar operators (0x006FA7E6 / 0x006FA390), as the
+// original does here; declaring them routes through the CRT thunks
+// 0x006FC0D2 / 0x006FC0CD instead.
 
 template <class T>
 class CExoArrayList;

@@ -3,6 +3,8 @@
 #include <stddef.h>
 #include "i/light_manager.h"
 
+extern float g_fFrameTime;                              // 0x0078E574 (placeholder name)
+
 // NONMATCH (27 insns, ~4 real): the original shares one `lea eax, [esi+98h]`
 // return block between the mode-2 exit and the end, and keeps separate
 // `lea/push` pairs in both final assignment branches; cl hoists &m_l98

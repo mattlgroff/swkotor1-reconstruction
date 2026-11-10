@@ -1,10 +1,15 @@
 // model-side CExoArrayList members (doubling from 16).
 #include "g/aur_array.h"
 
-// FUNCTION: SWKOTOR 0x00437c40 SYMBOL: ??A?$CExoArrayList@PAVPart@@@@QAEAAPAVPart@@H@Z
-// FUNCTION: SWKOTOR 0x00437d60 SYMBOL: ?Allocate@?$CExoArrayList@PAVPart@@@@QAEXH@Z
-// FUNCTION: SWKOTOR 0x00438b40 SYMBOL: ?Add@?$CExoArrayList@PAVPart@@@@QAEXPAVPart@@@Z
-template class CExoArrayList<Part*>;
+// Not the Part* list: every CExoArrayList<Part*> caller (Gob::EnumParts,
+// Gob::CollectLights, CreateInstanceTreeR, the Part* SetSize at 0x00444fa0)
+// reaches the scalar-new Allocate 0x005e03c0 and the Add at 0x00444fe0.
+// 0x00438b40 is called only by MdlNode::CreateSkinNodeList (0x00438c40),
+// which collects AsMdlNodeTriMesh() results.
+// FUNCTION: SWKOTOR 0x00437c40 SYMBOL: ??A?$CExoArrayList@PAVMdlNodeTriMesh@@@@QAEAAPAVMdlNodeTriMesh@@H@Z
+// FUNCTION: SWKOTOR 0x00437d60 SYMBOL: ?Allocate@?$CExoArrayList@PAVMdlNodeTriMesh@@@@QAEXH@Z
+// FUNCTION: SWKOTOR 0x00438b40 SYMBOL: ?Add@?$CExoArrayList@PAVMdlNodeTriMesh@@@@QAEXPAVMdlNodeTriMesh@@@Z
+template class CExoArrayList<MdlNodeTriMesh*>;
 
 // FUNCTION: SWKOTOR 0x00437c50 SYMBOL: ?Allocate@?$CExoArrayList@UVector4@@@@QAEXH@Z
 template class CExoArrayList<Vector4>;

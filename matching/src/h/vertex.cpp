@@ -180,17 +180,17 @@ char* VertexPrimitiveFlat::ReconnectArraysVAR(char* p)
         glTexCoordPointer(2, 0x1406, pNode->m_nVertexStride, p + pNode->m_nUV3Offset);
     case 3:
         if (AurGLCaps710())
-            g_pfnClientActiveTexture(0x84c2);
+            glClientActiveTextureARB(0x84c2);
         g_nActiveTextureUnit = 2;
         glTexCoordPointer(2, 0x1406, pNode->m_nVertexStride, p + pNode->m_nUV2Offset);
     case 2:
         if (AurGLCaps710())
-            g_pfnClientActiveTexture(0x84c1);
+            glClientActiveTextureARB(0x84c1);
         g_nActiveTextureUnit = 1;
         glTexCoordPointer(2, 0x1406, pNode->m_nVertexStride, p + pNode->m_nUV1Offset);
     case 1:
         if (AurGLCaps710())
-            g_pfnClientActiveTexture(0x84c0);
+            glClientActiveTextureARB(0x84c0);
         g_nActiveTextureUnit = 0;
         glTexCoordPointer(2, 0x1406, pNode->m_nVertexStride, p + pNode->m_nUVOffset);
     }

@@ -229,6 +229,7 @@ CSWSDialogNode::~CSWSDialogNode()
 class CSWSDialogReply : public CSWSDialogNode {
 public:
     CSWSDialogReply();
+    ~CSWSDialogReply();
     unsigned long m_nEntries;        // +0xa8
     CSWSDialogLinkEntry *m_pEntries; // +0xac
     int m_nB0;                       // +0xb0
@@ -240,4 +241,11 @@ CSWSDialogReply::CSWSDialogReply()
     m_nEntries = 0;
     m_pEntries = 0;
     m_nB0 = -1;
+}
+
+// Start missing from functions.csv: the `new[]` element destructor of the
+// dialog loaders, a tail jump to the node destructor.
+// FUNCTION: SWKOTOR 0x0059F5E0
+CSWSDialogReply::~CSWSDialogReply()
+{
 }

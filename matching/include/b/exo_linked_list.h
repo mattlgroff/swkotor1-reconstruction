@@ -17,6 +17,7 @@ public:
     void* GetAtPos(void* pPos);                                 // 0x005E9B60
     void* GetNext(void*& pPos);                                 // 0x005E9B90
     void* RemoveHead();                                         // 0x005E9C80
+    void* AddHead(void* pObject);                               // 0x005E9D70
     void* AddTail(void* pObject);                               // 0x005E9DC0
     void Remove(CExoLinkedListNode* pNode);                     // 0x005E9C10 (Mac debug map 2/2)
     void* GetHead() { return m_pHead == NULL ? NULL : m_pHead->pObject; }
@@ -36,6 +37,7 @@ public:
     T* GetAtPos(void* pPos) { return (T*)m_pList->GetAtPos(pPos); }
     T* GetNext(void*& pPos) { return (T*)m_pList->GetNext(pPos); }
     T* RemoveHead() { return (T*)m_pList->RemoveHead(); }
+    void AddHead(T* pObject) { m_pList->AddHead(pObject); }
     void Remove(void* pPos) { m_pList->Remove((CExoLinkedListNode*)pPos); }
 
     CExoLinkedListInternal* m_pList;

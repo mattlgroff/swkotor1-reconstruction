@@ -84,7 +84,7 @@ void RenderFlatDecal(PartTriMesh* pPart)
     pPart->m_pObject->m_pMaterial->BindTexture0();
     g_pfnCombiner(1, pPart->m_pObject->m_pMaterial->m_pTexture0, 0, 0, 0);
     if (AurGLCaps710())
-        g_pfnActiveTexture(0x84C0);
+        glClientActiveTextureARB(0x84C0);
     g_nActiveTextureUnit = 0;
     glEnableClientState(g_eTexCoordArray);
     glEnableClientState(g_eVertexArray);

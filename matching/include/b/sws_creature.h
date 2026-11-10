@@ -367,16 +367,18 @@ public:
     virtual void v13();
     virtual class CSWSItem* AsSWSItem();                    // 0x38
     virtual void v15();
-    virtual class CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject(); // 0x40
+    virtual class CSWSTrigger* AsSWSTrigger();              // 0x40
     virtual void v17();
     virtual class CSWSPlaceable* AsSWSPlaceable();          // 0x48
     virtual void v19();
-    virtual class CSWSTrigger* AsSWSTrigger();              // 0x50
+    virtual class CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject(); // 0x50
     virtual void v21(); virtual void v22();
-    virtual void* AsSWS5C();                                // 0x5c (unknown object kind)
+    virtual class CSWSEncounter* AsSWSEncounter();          // 0x5c
     virtual void v24();
     virtual class CSWSStore* AsSWSStore();                  // 0x64
-    virtual void v26(); virtual void v27(); virtual void v28();
+    virtual class CSWSSoundObject* AsSWSSoundObject();      // 0x68
+    virtual void v27();
+    virtual void AIUpdate();                                // 0x70 (CSWSCreature 0x004FDE40)
     virtual void v29();
     virtual void EventHandler(unsigned long nEventId, unsigned long nCallerObjectId, void* pScript,
                               unsigned long nCalendarDay, unsigned long nTimeOfDay); // 0x78
@@ -590,10 +592,14 @@ public:
     int GetGold();                                          // 0x004EDD60
     int GetIsWeaponEffective(unsigned long oidVersus, unsigned long bOffHand); // 0x004EDB20
     CSWSCreatureVisibility* GetFromList920(unsigned long oid); // 0x00517A20 (bucket a placeholder name)
+    float GetSpotCheckDistance();                           // 0x004EFC70
+    float GetListenCheckDistance();                         // 0x004EFD20
+    int GetInvisible(CSWSObject* pObject);                  // 0x00501950
     int CalculateSpellSaveDC(int nSpell);                   // 0x004EF6E0
     short GetMaxForcePoints();                              // 0x004FD490 (GetMaxHitPoints in bucket a)
     int GetCreatureValue518B30();                           // 0x00518B30 (name guessed)
     CSWSFaction* GetFaction();                              // 0x00513FC0
+    void Fn4F1460();                                        // 0x004F1460 (name unknown)
     unsigned long GetFirstAttacker();                       // 0x005BA400 (name guessed)
     void Surrender(int bRetainBuffs);                       // 0x00518990 (name guessed)
     int AddUnequipActions(class CSWSItem* pItem, unsigned long oidRepository, int bToFront,
@@ -760,6 +766,7 @@ public:
     CExoArrayList<CSWSCreatureVisibility*> m_aVisibility;  // 0x920
     char pad_0x92c[0x930 - 0x92c];
     int m_n930;                                             // 0x930 (party update; name unknown)
+    int GetN930() { return m_n930; }
     char pad_0x934[0x964 - 0x934];
     int m_n964;                                             // 0x964 (name guessed)
     int m_n968;                                             // 0x968 (name guessed)

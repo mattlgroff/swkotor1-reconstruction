@@ -173,30 +173,32 @@ public:
 };
 
 // FUNCTION: SWKOTOR 0x0060FCC0
+// NONMATCH: the shared `return 1` block lands after the placeable test, not after the door test (12 insns).
 int CSWCCreatureTarget::GetTargetActionType(CSWCObjectT* pTarget)
 {
     int nType = 0;
-    if (!pTarget) {
-        return 0;
-    }
-    if (pTarget->AsSWCCreature()) {
-        if (pTarget->AsSWCCreature()->IsHostile() || g_pAppManagerT->m_pClientExoApp->IsUnknown378Positive()) {
-            return 4;
-        }
-        return 3;
-    } else if (pTarget->AsSWCDoor()) {
-        return 1;
-    } else if (pTarget->AsSWCPlaceable()) {
-        CSWCPlaceableT* pPlaceable = pTarget->AsSWCPlaceable();
-        if (pPlaceable) {
-            CSWSPlaceableT* pServer = pPlaceable->GetServerPlaceable();
-            if (pServer && pServer->m_bUsable) {
-                return 1;
+    if (pTarget) {
+        if (pTarget->AsSWCCreature()) {
+            if (pTarget->AsSWCCreature()->IsHostile() || g_pAppManagerT->m_pClientExoApp->IsUnknown378Positive()) {
+                return 4;
             }
+        } else if (pTarget->AsSWCDoor()) {
+            return 1;
+        } else if (pTarget->AsSWCPlaceable()) {
+            CSWCPlaceableT* pPlaceable = pTarget->AsSWCPlaceable();
+            if (pPlaceable) {
+                CSWSPlaceableT* pServer = pPlaceable->GetServerPlaceable();
+                if (pServer && pServer->m_bUsable) {
+                    return 1;
+                }
+            }
+        } else {
+            if (pTarget->AsSWCTrigger()) {
+                nType = 2;
+            }
+            return nType;
         }
         return 3;
-    } else if (pTarget->AsSWCTrigger()) {
-        return 2;
     }
     return nType;
 }

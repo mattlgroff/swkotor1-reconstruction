@@ -137,16 +137,16 @@ public:
 CSWSpell::CSWSpell()
 {
     m_n40 = 3000;
-    m_r76 = "v_conjure";
-    m_r86 = "v_cast";
+    m_r76 = "amb_e08b";
+    m_r86 = "amb_e09a";
     m_r96 = "";
     m_rDC = "";
     m_n30 = 0;
-    m_s34 = "";
+    m_s34 = "default";
     m_nF4 = 0;
-    m_rF8 = "fx_hit";
+    m_rF8 = "sp_sumfire";
     m_n108 = 1;
-    m_r10D = "fx_imp";
+    m_r10D = "amb_e14";
     m_rAC = "";
     m_rBC = "";
     m_rCC = "";

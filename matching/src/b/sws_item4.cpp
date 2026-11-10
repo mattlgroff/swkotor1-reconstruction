@@ -85,6 +85,9 @@ CSWSItem::~CSWSItem()
 
 // FUNCTION: SWKOTOR 0x0055FCB0 SYMBOL: ??_GCSWSItem@@UAEPAXI@Z
 
+// Adjustor thunk in the CSWSObject vftable (0x00748CC0 slot 0): this -= 0x10.
+// FUNCTION: SWKOTOR 0x00555710 SYMBOL: ??_ECSWSItem@@WBA@AEPAXI@Z
+
 // FUNCTION: SWKOTOR 0x00553020 SYMBOL: ??_GCSWRules@@UAEPAXI@Z
 // (emitted with the CSWRules vtable, which the inline ctor below references)
 CSWRules* NewRulesForVtable()

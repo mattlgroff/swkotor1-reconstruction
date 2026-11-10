@@ -97,10 +97,10 @@ void DrawSphereBound(float fRadius, Vector* pCenter, float* pColor, float fScale
     fRadius *= fScale;
     glBegin(2);
     glVertex3f(0, fRadius, 0);
-    float fDiag = fRadius * 0.707f;
+    float fDiag = fRadius * 0.717f;
     glVertex3f(fDiag, fDiag, 0);
     glVertex3f(fRadius, 0, 0);
-    float fNegDiag = fRadius * -0.707f;
+    float fNegDiag = fRadius * -0.717f;
     glVertex3f(fDiag, fNegDiag, 0);
     float fNeg = -fRadius;
     glVertex3f(0, fNeg, 0);

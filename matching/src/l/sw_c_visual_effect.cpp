@@ -9,7 +9,7 @@ extern short g_nSpeedBlurCount;                     // 0x00833BCC
 // FUNCTION: SWKOTOR 0x006A0480
 int CSWCVisualEffectOnObject::IsReady()
 {
-    if (m_pAC && m_pB0 && m_pB4 && m_pC0 && !m_bC6) {
+    if (m_bAC && m_bB0 && m_bB4 && m_bC0 && !m_bC6) {
         return 1;
     }
     return 0;
@@ -256,12 +256,23 @@ void CSWCVisualEffectOnObject::ApplySpeedBlur(unsigned short nEffect)
     if (pGameObject) {
         CSWCObject* pObject = pGameObject->AsSWCObject();
         if (pObject) {
-            // NONMATCH: the original tests the cases with a dec chain.
+            // Two identical cases: the compiler cross-jumps them (dec chain).
+            CSWCCreature* pPlayer;
             switch ((unsigned short)(nEffect - 0x640)) {
             case 1:
+                g_nSpeedBlurCount++;
+                pPlayer = g_pAppManager->GetClientExoApp()->GetPlayerCreature();
+                if (pPlayer && pPlayer->m_idSelf != pObject->m_idSelf) {
+                    break;
+                }
+                if (g_nSpeedBlurCount == 1 && !g_pAppManager->GetClientExoApp()->GetMiniGame()) {
+                    AurSetSpeedBlurRatio(0.75f);
+                    AurEnableSpeedBlur();
+                }
+                break;
             case 2:
                 g_nSpeedBlurCount++;
-                CSWCCreature* pPlayer = g_pAppManager->GetClientExoApp()->GetPlayerCreature();
+                pPlayer = g_pAppManager->GetClientExoApp()->GetPlayerCreature();
                 if (pPlayer && pPlayer->m_idSelf != pObject->m_idSelf) {
                     break;
                 }
@@ -335,9 +346,6 @@ CSWCVisualEffectOnObject::~CSWCVisualEffectOnObject()
 // FUNCTION: SWKOTOR 0x006A09E0
 CSWCVisualEffectOnObject::CSWCVisualEffectOnObject()
 {
-    m_n34 = 0;
-    m_n38 = 0;
-    m_n3C = 0;
     m_sSourceNode = "";
     m_oidTargets[0] = OBJECT_INVALID;
     m_oidTargets[1] = OBJECT_INVALID;
@@ -357,10 +365,10 @@ CSWCVisualEffectOnObject::CSWCVisualEffectOnObject()
     m_nA4 = 0;
     m_nA8 = 0;
     m_nEffect = 0;
-    m_pAC = 0;
-    m_pB0 = 0;
-    m_pB4 = 0;
-    m_pB8 = 0;
+    m_bAC = 0;
+    m_bB0 = 0;
+    m_bB4 = 0;
+    m_bB8 = 0;
     m_nBeamTimer[0] = 0;
     m_nBeamTimer[1] = 0;
     m_nBeamTimer[2] = 0;
@@ -368,8 +376,8 @@ CSWCVisualEffectOnObject::CSWCVisualEffectOnObject()
     m_bC6 = 0;
     m_bC7 = 0;
     m_pModel = 0;
-    m_pBC = 0;
-    m_pC0 = 0;
+    m_bBC = 0;
+    m_bC0 = 0;
     m_vOffset = Vector(0.0f, 0.0f, 0.0f);
     m_fD0 = 0.0f;
     m_nD4 = 0;
@@ -443,21 +451,250 @@ void CSWCVisualEffectOnObject::ApplyTexture(unsigned short nEffect)
 }
 
 // FUNCTION: SWKOTOR 0x006A1650
-// NONMATCH: the two CExoString temporaries get swapped stack slots.
-void CSWCVisualEffectOnObject::AttachModel(CAurObject* pModel, CAurObject* pTo, CExoString* pNode)
+void CSWCVisualEffectOnObject::AttachVFXModelToTargetModel(CAurObject* pModel, CAurObject* pTo,
+                                                           const CExoString& sNode)
 {
     int bOrientationOff;
     if (!g_pRules->Get2DArrays()->GetVisualEffectTable()->GetINTEntry(
-            m_nEffect, "OrientationOff", &bOrientationOff)) {
+            CExoString(m_nEffect), "OrientationOff", &bOrientationOff)) {
         bOrientationOff = 0;
     }
     if (bOrientationOff) {
         Quaternion qOrientation;
         Vector vPosition;
-        pModel->AttachToObject(pTo, pNode->CStr(), 3);
+        pModel->AttachToObject(pTo, sNode.CStr(), 3);
         pModel->GetPosition("root", &vPosition, &qOrientation);
         pModel->SetPosition("root", vPosition, Quaternion(1.0f, 0.0f, 0.0f, 0.0f));
         return;
     }
-    pModel->AttachToObject(pTo, pNode->CStr(), 0);
+    pModel->AttachToObject(pTo, sNode.CStr(), 0);
+}
+
+// FUNCTION: SWKOTOR 0x006A6A50
+// NONMATCH: the beam vtable / ResetBeamTimer argument registers differ (7).
+void CSWCVisualEffectOnObject::Update(unsigned long nDelta)
+{
+    CExoString sUnused;
+    CGameObject* pGameObject = g_pAppManager->GetClientExoApp()->GetGameObject(m_oidTargets[0]);
+    if (!pGameObject) {
+        return;
+    }
+    CSWCObject* pObject = pGameObject->AsSWCObject();
+    if (!pObject) {
+        return;
+    }
+    if (m_bC6 == 1 || m_bC6 == 3) {
+        if (m_nBeamTimer[3] <= nDelta) {
+            m_nBeamTimer[3] = 0;
+            if (m_bC6 == 1) {
+                RemoveHardCodedVisualEffect(m_nA0);
+                DestroyModel();
+                if (!m_bHasDuration) {
+                    m_bC6 = 0;
+                    m_bC0 = 1;
+                } else if (!m_bC0) {
+                    m_bC6 = 2;
+                    m_nType = GetBeamNode(m_nA2);
+                    LoadHardCodedVisualEffect(m_nA2);
+                    ApplyHardCodedVisualEffect(m_nA2);
+                    if (!m_nE0) {
+                        Detach();
+                    }
+                }
+            } else if (m_bC6 == 3) {
+                if (m_nE0) {
+                    RemoveHardCodedVisualEffect(m_nA4);
+                }
+                DestroyModel();
+                m_bC6 = 0;
+            }
+        } else {
+            m_nBeamTimer[3] -= nDelta;
+            if (m_nA8 && m_nE0) {
+                if (!m_bC0 && m_bC6 == 1) {
+                    Update(m_nA0, nDelta);
+                } else if (m_bC6 == 3) {
+                    Update(m_nA4, nDelta);
+                }
+            }
+        }
+    } else if (m_bC6 == 2 && m_nA8 && m_nE0 && !m_bC0) {
+        Update(m_nA2, nDelta);
+    }
+    for (int i = 0; i < 3; i++) {
+        if (m_n4C[i] > 0) {
+            if (m_n4C[i] > nDelta) {
+                m_n4C[i] -= nDelta;
+            } else {
+                m_n4C[i] = 0;
+                if (m_n58[i] == 1 && m_bHasDuration) {
+                    m_n58[i] = 2;
+                    m_pBeams[i]->PlayAnimation("duration", 1.0f, 0, 0);
+                } else if (m_n58[i] == 1 || m_n58[i] == 3) {
+                    ResetBeamTimer(m_pBeams[i]);
+                    m_bB8 = 1;
+                    m_bC0 = 1;
+                }
+            }
+        }
+    }
+    if (m_pSound) {
+        m_pSound->SetPosition(pObject->m_vPosition, 0.0f);
+    }
+    if (m_bB8) {
+        if (!m_bAC) {
+            if (m_nBeamTimer[0] <= nDelta) {
+                m_bAC = 1;
+            } else {
+                m_nBeamTimer[0] -= nDelta;
+            }
+        }
+        if (!m_bB0) {
+            if (m_nBeamTimer[1] <= nDelta) {
+                m_bB0 = 1;
+            } else {
+                m_nBeamTimer[1] -= nDelta;
+            }
+        }
+        if (!m_bB4) {
+            if (m_nBeamTimer[2] <= nDelta) {
+                m_bB4 = 1;
+            } else {
+                m_nBeamTimer[2] -= nDelta;
+            }
+        }
+    }
+}
+
+// Inlined into StartVisualEffect (descriptive).
+static inline unsigned long GetCessationDuration(unsigned short nEffect)
+{
+    if (nEffect == 0xffff) {
+        return 0;
+    }
+    return 1000;
+}
+
+// FUNCTION: SWKOTOR 0x006A5FC0
+void CSWCVisualEffectOnObject::StartVisualEffect()
+{
+    int bNothingStarted = 1;
+    float fLength;
+    float fStart;
+    if (!m_bBC || m_bC0) {
+        return;
+    }
+    for (int i = 0; i < 3; i++) {
+        m_n4C[i] = 0;
+        if (m_pBeams[i]) {
+            bNothingStarted = 0;
+            if (m_pBeams[i]->PlayAnimation("impact", 1.0f, 1, 0)) {
+                m_n58[i] = 1;
+                m_pBeams[i]->GetEventTime("impact", &fStart, &fLength);
+                m_n4C[i] = (unsigned long)(fLength * 1000.0f);
+            } else if (m_bHasDuration == 1) {
+                m_n58[i] = 2;
+                m_pBeams[i]->PlayAnimation("duration", 1.0f, 0, 0);
+            } else {
+                m_n58[i] = 1;
+                m_n4C[i] = 1000;
+            }
+        }
+    }
+    m_bC6 = 0;
+    if (m_nA0 != 0xffff) {
+        if (m_pModel) {
+            m_pModel->AttachToObject(0, 0, 0);
+            m_pModel->SetVisible(0);
+            if (m_pModel) {
+                delete m_pModel;
+            }
+            m_pModel = 0;
+        }
+        LoadHardCodedVisualEffect(m_nA0);
+        ApplyHardCodedVisualEffect(m_nA0);
+        m_bC6 = 1;
+        m_nType = GetBeamNode(m_nA0);
+        m_nBeamTimer[3] = GetImpactDuration(m_nA0);
+        bNothingStarted = 0;
+    } else if (m_nA2 != 0xffff) {
+        DestroyModel();
+        LoadHardCodedVisualEffect(m_nA2);
+        ApplyHardCodedVisualEffect(m_nA2);
+        m_bC6 = 2;
+        m_nType = GetBeamNode(m_nA2);
+        bNothingStarted = 0;
+    } else if (m_nA4 != 0xffff) {
+        DestroyModel();
+        LoadHardCodedVisualEffect(m_nA4);
+        ApplyHardCodedVisualEffect(m_nA4);
+        m_bC6 = 3;
+        m_nType = GetBeamNode(m_nA4);
+        m_nBeamTimer[3] = GetCessationDuration(m_nA4);
+        bNothingStarted = 0;
+    }
+    if (!m_nD8) {
+        CExoString sRow(m_nEffect);
+        int nShakeType;
+        float fShakeDuration;
+        float fShakeDelay;
+        if (!g_pRules->Get2DArrays()->GetVisualEffectTable()->GetINTEntry(
+                sRow, g_nVisualEffectCol_ShakeType, &nShakeType)) {
+            nShakeType = 0;
+        }
+        if (!g_pRules->Get2DArrays()->GetVisualEffectTable()->GetFLOATEntry(
+                sRow, g_nVisualEffectCol_ShakeDuration, &fShakeDuration)) {
+            fShakeDuration = 0.0f;
+        }
+        if (!g_pRules->Get2DArrays()->GetVisualEffectTable()->GetFLOATEntry(
+                sRow, g_nVisualEffectCol_ShakeDelay, &fShakeDelay)) {
+            fShakeDelay = 0.0f;
+        }
+        if (nShakeType == 1) {
+            g_pAppManager->GetClientExoApp()->GetModule()->BumpCamera((int)(fShakeDelay * 1000.0f));
+        } else if (nShakeType == 2) {
+            g_pAppManager->GetClientExoApp()->GetModule()->ShakeCamera(
+                (int)(fShakeDelay * 1000.0f), (int)(fShakeDuration * 1000.0f));
+        }
+    }
+    CExoString sImpactSound;
+    CExoString sDurationSound;
+    CGameObject* pGameObject = g_pAppManager->GetClientExoApp()->GetGameObject(m_oidTargets[0]);
+    CSWCObject* pObject = !pGameObject ? 0 : pGameObject->AsSWCObject();
+    CExoString sRow(m_nEffect);
+    if (!g_pRules->Get2DArrays()->GetVisualEffectTable()->GetCExoStringEntry(
+            sRow, g_nVisualEffectCol_SoundImpact, &sImpactSound)) {
+        sImpactSound = "";
+    }
+    if (!g_pRules->Get2DArrays()->GetVisualEffectTable()->GetCExoStringEntry(
+            sRow, g_nVisualEffectCol_SoundDuration, &sDurationSound)) {
+        sDurationSound = "";
+    }
+    if (pObject && sImpactSound.GetLength() > 0) {
+        g_pExoSound->Play3DOneShotSound(sImpactSound, pObject->m_vPosition, 1.5f, 13, 0, 0, 0.0f, 0.0f);
+    }
+    if (sDurationSound.GetLength() > 0) {
+        m_pSound = new CExoSoundSource(sDurationSound);
+        if (m_pSound) {
+            m_pSound->Set3D(1);
+            m_pSound->SetPriorityGroup(13);
+            m_pSound->SetLooping(1);
+            m_pSound->Play();
+        }
+    }
+    m_bBC = 0;
+    if (bNothingStarted) {
+        m_bC0 = 1;
+    }
+    if (!m_nF0) {
+        pGameObject = g_pAppManager->GetClientExoApp()->GetGameObject(m_oidTargets[0]);
+        if (pGameObject) {
+            pObject = pGameObject->AsSWCObject();
+            if (pObject) {
+                g_pAppManager->GetClientExoApp()->LookUpAndPerformRumbleWithCutOff(
+                    m_nEffect, 1, &pObject->m_vPosition);
+            }
+        }
+        m_nF0 = 1;
+    }
 }

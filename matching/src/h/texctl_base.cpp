@@ -3,16 +3,15 @@
 
 #include "h/texctl.h"
 
-// NONMATCH (4 insns): with the sized CExoArrayList ctor (dead `new`) the
-// SEH frame matches; the original only loads pTexture between the two list
-// constructions.
+// The sized CExoArrayList ctor (dead `new`) gives the SEH frame; assigning
+// m_pTexture first places the argument load between the list constructions.
 // FUNCTION: SWKOTOR 0x00462A70
 TextureController::TextureController(AurTexture* pTexture)
 {
+    m_pTexture = pTexture;
     m_pDistortData = 0;
     m_nFrame = 0;
     m_bDistort = 0;
-    m_pTexture = pTexture;
     m_nDistortAngle = 1;
     m_fDistortionAmplitude = 5.0f;
     m_fSpeed = 1.0f;
@@ -20,7 +19,7 @@ TextureController::TextureController(AurTexture* pTexture)
 
 char* AurResGetNextLine();              // 0x0044BFA0
 void* AurResGetData(int nSize);         // 0x0044BFD0
-extern "C" int __cdecl _strnicmp(const char*, const char*, unsigned int);
+extern "C" int __cdecl strncmp(const char*, const char*, unsigned int);
 
 // FUNCTION: SWKOTOR 0x004628C0
 void ParseFloatList(char* s, CExoArrayList<float>* pList)
@@ -44,7 +43,7 @@ void ParseFloatList(char* s, CExoArrayList<float>* pList)
     } else {
         char* szLine;
         for (szLine = AurResGetNextLine(); szLine; szLine = AurResGetNextLine()) {
-            if (!_strnicmp(SkipWhitespace(szLine), "endlist", 7))
+            if (!strncmp(SkipWhitespace(szLine), "endlist", 7))
                 break;
             if (pList->num == 0)
                 pList->SetSizeOutOfLine(1);

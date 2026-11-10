@@ -57,7 +57,7 @@ extern int g_bShowFrameInfo;                        // 0x007a3a40
 extern int g_bFrameInfoTextInput;                   // 0x007a3cb4
 extern int g_bSwapMouseButtons;                     // 0x008338f0
 
-void __cdecl HandleFrameInfoKey(unsigned short nKey); // 0x00401870
+void __cdecl HandleFrameInfoChar(char cChar);         // 0x00401f00
 
 inline CClientExoApp* GetClientExoApp() { return g_pAppManager->m_pClientExoApp; }
 
@@ -108,7 +108,7 @@ int __cdecl HandleKeyDown(unsigned short nKey)
     }
     if (g_pExoInput->GetKeyboardMode()) {
         if (g_bShowFrameInfo) {
-            HandleFrameInfoKey(nKey);
+            HandleFrameInfoChar((char)nKey);
             return 1;
         }
         if (g_pGuiManager && g_pGuiManager->SetFocusControl(nKey)) {

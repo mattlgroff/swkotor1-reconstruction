@@ -294,6 +294,7 @@ public:
     virtual ~CSWSItem();                                    // 0x0055EC70
     virtual void EventHandler(unsigned long nEventId, unsigned long nCallerObjectId, void* pScript,
                               unsigned long nCalendarDay, unsigned long nTimeOfDay); // 0x0055EE10
+    virtual void AIUpdate();                                // 0x0055CB60 (slot 0x70)
     int CopyItem(CSWSItem* pSource);                        // 0x0055D950
     int LoadFromTemplate(const CResRef& cResRef);           // 0x005608B0
     int LoadItem(CResGFF* pGFF, CResStruct* pStruct);       // 0x00560970

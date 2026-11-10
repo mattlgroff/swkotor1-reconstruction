@@ -175,7 +175,6 @@ void CExoResMan::FreeResourceData(CRes* pRes)
     }
 }
 
-// NONMATCH: 0 insns (1 branch target); original does not thread the empty-list `je` past the loop test
 // FUNCTION: SWKOTOR 0x00407020
 int CExoResMan::Free(CRes* pRes)
 {
@@ -199,7 +198,7 @@ int CExoResMan::Free(CRes* pRes)
     return 0;
 }
 
-// NONMATCH: 19 insns; head ternary materialised with `xor eax,eax; jmp` in the original, prologue order differs
+// NONMATCH: 12 insns; head part identical since the c-style GetHead; left: the m_nDemands > 0 store is merged into the shared tail in ours and the size adjust is `sub eax,6` vs `add eax,-6`
 // FUNCTION: SWKOTOR 0x004070a0
 int CExoResMan::FreeChunk()
 {
@@ -441,7 +440,6 @@ int CExoResMan::CancelRequest(CRes* pRes)
     return pRes->m_nRequests;
 }
 
-// NONMATCH: 10 insns; same unthreaded empty-list `je` as Free
 // FUNCTION: SWKOTOR 0x004089f0
 void* CExoResMan::Demand(CRes* pRes)
 {
@@ -1157,7 +1155,7 @@ int CExoResMan::AddKeyTable(const CExoString& sName, unsigned long nTableKind, u
                 if (pTable->m_sName == sName) {
                     CExoString sMessage;
                     if (nTableKind == 4) {
-                        sMessage.Format("Rebuilding %s", sName.m_sString, sName.m_nBufferLength);
+                        sMessage.Format("Table being rebuilt, this RIM is being leaked: %s", sName.m_sString, sName.m_nBufferLength);
                     }
                     pTable->RebuildTable();
                     return 1;

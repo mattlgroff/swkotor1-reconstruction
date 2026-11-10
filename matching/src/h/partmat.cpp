@@ -14,9 +14,12 @@ struct PartLightmap {
 
 struct PartModelFlags {
     char m_pad00[0x50];
-    unsigned char m_nFlags;         // +0x50 (bit 3: fade alpha)
+    unsigned short m_b0 : 1;        // +0x50
+    unsigned short m_b1 : 1;
+    unsigned short m_b2 : 1;
+    unsigned short m_bFadeAlpha : 1; // +0x50 bit 3
 
-    unsigned char IsFadeAlpha() { return (unsigned char)(m_nFlags >> 3) & 1; }
+    unsigned char IsFadeAlpha() { return m_bFadeAlpha; }
 };
 
 struct PartDyn {

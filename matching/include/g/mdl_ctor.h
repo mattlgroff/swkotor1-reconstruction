@@ -337,7 +337,8 @@ public:
     int m_n1ac;                             // +0x1ac
     void* m_p1b0;                           // +0x1b0
     int m_n1b4;                             // +0x1b4
-    CExoArrayList<int> m_lBoneMap;          // +0x1b8
+    // Destroyed through 0x0042e240 (the other three through 0x0047abc0).
+    CExoArrayList<unsigned int> m_lBoneMap; // +0x1b8
     CExoArrayList<int> m_lQBones;           // +0x1c4
     CExoArrayList<int> m_lTBones;           // +0x1d0
     char pad1dc[0x200 - 0x1dc];
@@ -437,7 +438,9 @@ public:
     MdlNode* m_pRoot;                       // +0x28
     int m_n2c;                              // +0x2c
     CExoArrayList<MdlNode*> m_lFreeList;    // +0x30
-    CExoArrayList<int> m_lTextures;         // +0x3c
+    // Not CExoArrayList<int>: the constructor's unwind destroys it with the
+    // new[]-family destructor 0x0042e240, not the int list's 0x0047abc0.
+    CExoArrayList<unsigned int> m_lTextures; // +0x3c
     int m_n48;                              // +0x48
     unsigned char m_nType;                  // +0x4c
     char pad4d[0x50 - 0x4d];

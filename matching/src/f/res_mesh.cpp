@@ -44,6 +44,8 @@ CSWSClient::~CSWSClient()
 {
 }
 
+// FUNCTION: SWKOTOR 0x005CDA40 SYMBOL: ??_GCSWSClient@@UAEPAXI@Z
+
 // ---------------------------------------------------------------------------
 // CSWCollisionMesh and the door / placeable surface meshes
 
@@ -132,8 +134,10 @@ public:
     void SetUsePoint(unsigned char n, Vector v);
     int LoadMeshBinary(CResBWM *pRes);   // door_mesh_load.cpp
     void GetResRef(CResRef *pResRef);
+    void SetDoorState(int nState);
 
     int m_nDoorState;                // +0x88
+    char m_sStateName[8];            // +0x8c
 };
 
 // FUNCTION: SWKOTOR 0x005CE070
@@ -150,6 +154,27 @@ CSWDoorSurfaceMesh::CSWDoorSurfaceMesh() : CSWCollisionMesh(2002, 2052)
 // FUNCTION: SWKOTOR 0x005CE0D0
 CSWDoorSurfaceMesh::~CSWDoorSurfaceMesh()
 {
+}
+
+// Descriptive name; its functions.csv row also covers the next function.
+// FUNCTION: SWKOTOR 0x005CE0E0
+void CSWDoorSurfaceMesh::SetDoorState(int nState)
+{
+    m_nDoorState = nState;
+    switch (nState) {
+    case 0:
+        strcpy(m_sStateName, "closed");
+        break;
+    case 1:
+        strcpy(m_sStateName, "open1");
+        break;
+    case 2:
+        strcpy(m_sStateName, "open2");
+        break;
+    default:
+        strcpy(m_sStateName, " ");
+        break;
+    }
 }
 
 // ---------------------------------------------------------------------------

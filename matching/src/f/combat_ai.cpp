@@ -84,7 +84,7 @@ public:
 
 extern int EFFECT_TYPE_VISUALEFFECT;   // 0x007466F4 (0x1e)
 extern int EFFECT_TYPE_SETSTATE;       // 0x0074669C (8)
-extern int EFFECT_TYPE_MOVEMENT_SPEED_DECREASE;  // 0x00746688 (3, placeholder)
+extern int EFFECT_TYPE_SLOW;                     // 0x00746688 (3; NWN true type 3 = slow)
 extern int EFFECT_TYPE_POISON;         // 0x00746708 (0x23, placeholder)
 extern int EFFECT_TYPE_ABILITY_DECREASE;  // 0x00746710 (0x25, placeholder)
 extern int EFFECT_TYPE_746788;         // 0x00746788 (0x43)
@@ -793,7 +793,7 @@ void CSWSCreature::ApplyOnHitSlow(CSWSObject *pTarget, int nRounds)
     pVisual->SetCreator(m_idSelf);
     pVisual->SetDurationType(DURATION_TYPE_INSTANT);
     m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack)->m_alstOnHitEffects.Add(pVisual);
-    CGameEffect *pLink = CreateLinkedEffect(EFFECT_TYPE_MOVEMENT_SPEED_DECREASE, 0, EFFECT_TYPE_VISUALEFFECT, 0xcf);
+    CGameEffect *pLink = CreateLinkedEffect(EFFECT_TYPE_SLOW, 0, EFFECT_TYPE_VISUALEFFECT, 0xcf);
     if (!pLink)
         return;
     CGameEffect *pEffect = pLink;

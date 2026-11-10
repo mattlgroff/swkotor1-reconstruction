@@ -93,7 +93,7 @@ void RenderEnvironmentMapped(PartTriMesh* pPart, int, unsigned char bDecal)
     glEnable(g_eGLTexture2D);
     g_nActiveTextureUnit = 1;
     if (AurGLCaps710())
-        g_pfnClientActiveTexture(g_nActiveTextureUnit + 0x84C0);
+        glActiveTextureARB(g_nActiveTextureUnit + 0x84C0);
     glDisable(g_eGLTexGenS);
     glDisable(g_eGLTexGenT);
     glDisable(g_eGLTexGenR);
@@ -101,7 +101,7 @@ void RenderEnvironmentMapped(PartTriMesh* pPart, int, unsigned char bDecal)
         glDisable(g_eGLTexCubeMap);
     g_nActiveTextureUnit = 0;
     if (AurGLCaps710())
-        g_pfnClientActiveTexture(g_nActiveTextureUnit + 0x84C0);
+        glActiveTextureARB(g_nActiveTextureUnit + 0x84C0);
 }
 
 // FUNCTION: SWKOTOR 0x004703F0

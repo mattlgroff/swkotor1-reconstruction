@@ -72,6 +72,14 @@ public:
     void* RemoveHead();                             // 0x005E9C80
     void* RemoveTail();                             // 0x005E9CE0
     CExoLinkedListPosition AddTail(void* p);        // 0x005E9DC0
+    void* GetHead()
+    {
+        CExoLinkedListNode* pNode = pHead;
+        if (!pNode) {
+            return 0;
+        }
+        return pNode->pObject;
+    }
 };
 
 template <class T>
@@ -83,11 +91,8 @@ public:
     T* GetAtPos(CExoLinkedListPosition pos) { return pos ? (T*)((CExoLinkedListNode*)pos)->pObject : 0; }
     T* GetHead()
     {
-        void* p = m_pcExoLinkedListInternal->pHead;
-        if (p) {
-            p = ((CExoLinkedListNode*)p)->pObject;
-        }
-        return (T*)p;
+        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
+        return (T*)pInternal->GetHead();
     }
     T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
     T* Remove(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->Remove(pos); }

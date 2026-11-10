@@ -246,6 +246,11 @@ extern unsigned int g_nSoftShadowTexture2;  // 0x007a6908
 extern int g_nBloomRamp0;                   // 0x007a6864
 extern int g_nBloomRamp1;                   // 0x007a6868
 extern int g_nBloomRamp2;                   // 0x007a686c
+// The per-channel colour textures (lane: glRed/Green/BlueTexture) that the
+// convolution passes feed the shader instead of the bloom ramps.
+extern unsigned int g_nColorRamp0;          // 0x007a6870
+extern unsigned int g_nColorRamp1;          // 0x007a6874
+extern unsigned int g_nColorRamp2;          // 0x007a6878
 
 void FrameBufferModificationPixelShaders(int nMode, int a, int b, int c, int d);    // 0x004299c0
 void FrameBufferModificationPixelShadersATI(int nMode, int a, int b, int c, int d); // 0x004293f0

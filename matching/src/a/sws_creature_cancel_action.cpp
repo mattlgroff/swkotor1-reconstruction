@@ -17,11 +17,23 @@ public:
     void* GetAtPos(void* pos);                      // 0x005E9B60
     void* GetNext(void*& pos);                      // 0x005E9B90
     void* Remove(void* pos);                        // 0x005E9C10
+    void* GetHead()
+    {
+        CExoLinkedListNode* pNode = head;
+        if (!pNode) {
+            return 0;
+        }
+        return pNode->data;
+    }
     CExoLinkedListNode* head;
 };
 template <class T> class CExoLinkedList {
 public:
-    T* GetHead() { return m_pInternal->head ? (T*)m_pInternal->head->data : 0; }
+    T* GetHead()
+    {
+        CExoLinkedListInternal* pInternal = m_pInternal;
+        return (T*)pInternal->GetHead();
+    }
     void* GetHeadPosition() { return m_pInternal->head; }
     T* GetAtPos(void* pos) { return (T*)m_pInternal->GetAtPos(pos); }
     T* GetNext(void*& pos) { return (T*)m_pInternal->GetNext(pos); }
@@ -43,13 +55,13 @@ public:
     CExoLinkedList<CSWSObjectActionNode> m_actions;
 };
 
-// NONMATCH: 29 diff: list-wrapper head/position coalescing and register tie; original unreachable null-wrapper branch reads its argument slot.
+// NONMATCH: 11 diff: original reloads the head for the position on the non-empty path (ours reuses it) and swaps eax/ecx there; c-style GetHead and uninitialised locals took it from 29.
 // FUNCTION: SWKOTOR 0x004F1EF0
 int CSWSCreature::CancelAction(unsigned long, unsigned short nGroupId)
 {
     CExoLinkedList<CSWSObjectActionNode>* pList = &m_actions;
-    CSWSObjectActionNode* pAction = 0;
-    void* pos = 0;
+    CSWSObjectActionNode* pAction;
+    void* pos;
     if (pList) {
         pAction = pList->GetHead();
         pos = pList->GetHeadPosition();

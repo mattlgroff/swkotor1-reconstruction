@@ -181,7 +181,14 @@ public:
     void* RemoveHead();                             // 0x005E9C80
     CExoLinkedListPosition AddHead(void* p);        // 0x005E9D70
     CExoLinkedListPosition AddTail(void* p);        // 0x005E9DC0
-    void* GetHeadObject() { return m_pHead ? m_pHead->pObject : NULL; }
+    void* GetHeadObject()
+    {
+        CExoLinkedListNode* pNode = m_pHead;
+        if (!pNode) {
+            return 0;
+        }
+        return pNode->pObject;
+    }
     CExoLinkedListNode* m_pHead;
     CExoLinkedListNode* m_pTail;
     unsigned long m_nCount;
@@ -192,7 +199,11 @@ class CExoLinkedList {
 public:
     CExoLinkedList();
     CExoLinkedListPosition GetHeadPos() { return m_pList->m_pHead; }
-    T* GetHead() { return (T*)m_pList->GetHeadObject(); }
+    T* GetHead()
+    {
+        CExoLinkedListInternal* pInternal = m_pList;
+        return (T*)pInternal->GetHeadObject();
+    }
     T* GetHeadInline()
     {
         void* p = m_pList->m_pHead;

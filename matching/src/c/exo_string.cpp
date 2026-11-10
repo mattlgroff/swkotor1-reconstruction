@@ -117,7 +117,7 @@ CExoString::CExoString(int n)
 int CExoString::AsINT() const
 {
     if (m_sString) {
-        return atol(m_sString);
+        return atoi(m_sString);
     }
     return 0;
 }

@@ -62,7 +62,7 @@ void CSWGuiMainMenu::PopulateModules()
         }
         sRim = sRim.SubString(0, sRim.GetLength() - 4);
         sMod = sMod.SubString(0, sMod.GetLength() - 4);
-        if (sRim.LowerCase() < sMod.LowerCase()) {
+        if (sRim.LowerCase() <= sMod.LowerCase()) {
             sName = sRim;
             nRim++;
             if (sRim == sMod) {

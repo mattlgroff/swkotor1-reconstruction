@@ -455,7 +455,10 @@ int CSWCCreatureAppearance::CreateSimple(unsigned char nAnimType, CCAppearanceIn
         return 1;
     }
     // Unused in the original: constructed and destroyed around the model swap.
-    CExoArrayList<CAurObject*> lUnused;
+    // Its unwind destructor is 0x0047ABC0 (the folded CExoArrayList<int>
+    // copy), not the CExoArrayList<CAurObject*> one at 0x0056B6F0; the
+    // element type is otherwise unobservable.
+    CExoArrayList<int> lUnused;
     CAurObject* pModel = m_pCreature->GetModel(0xfb, 1);
     if (pModel != 0) {
         pModel->SetVisible(0);

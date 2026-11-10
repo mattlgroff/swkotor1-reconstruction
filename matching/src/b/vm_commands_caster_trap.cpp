@@ -14,9 +14,8 @@ struct CSWSObjectCasterView {
     unsigned char m_nLastSpellCastClass;                    // 0x1d4
 };
 
-// Slot 0x50 object (bucket b calls the slot AsSWSTrigger; buckets a and i
-// call it AsSWSAreaOfEffectObject).
-class CSWSTrigger : public CSWSObject {
+// Slot 0x50 object (AsSWSAreaOfEffectObject).
+class CSWSAreaOfEffectObject : public CSWSObject {
 public:
     char pad_0xf4[0x248 - 0xf4];
     unsigned long m_oidCreator;                             // 0x248
@@ -40,11 +39,11 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCasterLevel(int nCommandId, int 
         if (pCreature) {
             nSpellId = ((CSWSObjectCasterView*)pCreature)->m_nLastSpellId;
         } else if (!pPlaceable) {
-            if (!pObject->AsSWSTrigger()) {
+            if (!pObject->AsSWSAreaOfEffectObject()) {
                 goto done;
             }
-            nSpellId = pObject->AsSWSTrigger()->GetLastSpellId();
-            unsigned long oidCreator = pObject->AsSWSTrigger()->m_oidCreator;
+            nSpellId = pObject->AsSWSAreaOfEffectObject()->GetLastSpellId();
+            unsigned long oidCreator = pObject->AsSWSAreaOfEffectObject()->m_oidCreator;
             pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidCreator);
             pPlaceable = g_pAppManager->GetServerExoApp()->GetPlaceableByGameObjectID(oidCreator);
         }
@@ -81,7 +80,7 @@ done:
     return g_pVirtualMachine->StackPushInteger(nLevel) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
 }
 
-// Slot 0x40 object (bucket b calls the slot AsSWSAreaOfEffectObject; it is
+// Slot 0x40 object (AsSWSTrigger; it is
 // the trigger): ids of the creatures that detected its trap.
 struct CSWSTriggerDetectView {
     char pad_0x0[0x2a8];
@@ -120,8 +119,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetNearestTrapToObject(int nCommand
             }
             if (bDetectedOnly == 1) {
                 CExoArrayList<unsigned long>* pDetectedBy;
-                if (pTrap->AsSWSAreaOfEffectObject()) {
-                    pDetectedBy = &((CSWSTriggerDetectView*)pTrap->AsSWSAreaOfEffectObject())->m_aTrapDetectedBy;
+                if (pTrap->AsSWSTrigger()) {
+                    pDetectedBy = &((CSWSTriggerDetectView*)pTrap->AsSWSTrigger())->m_aTrapDetectedBy;
                 } else if (pTrap->AsSWSDoor()) {
                     pDetectedBy = &pTrap->AsSWSDoor()->m_aTrapDetectedBy;
                 } else if (pTrap->AsSWSPlaceable()) {

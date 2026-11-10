@@ -605,3 +605,29 @@ CSWCMessage handlers 0x00650B90/0x00652F20/0x006501B0/0x00653850/0x00655E40/
 0x00663840/0x00668640/0x00667CC0, and camera collision 0x006422E0/0x006433B0/
 0x006441D0. Revisit the frame-layout NONMATCHes once the 8-alignment/slot
 rules are better understood.
+
+## Audit fixes 2026-11-10
+
+The relocation audit (audit-s1) found MATCH functions with wrong targets that
+matchcmp masks:
+- Array new/delete: the journal, main menu and pazaak headers declared
+  `operator new[]`/`operator delete[]`, so MSVC 7 called the CRT thunks
+  0x006FC0D2/0x006FC0CD. The original calls the scalar operators
+  0x006FA7E6/0x006FA390 directly (also after `??_M` for CExoString/module
+  entry lists). Lesson: with no `operator new[]/delete[]` declaration in the
+  TU, MSVC 7 lowers `new T[n]`/`delete[] p` to `??2`/`??3`; only declare the
+  array forms where the original really calls 0x006FC0CD/0x006FC0D2.
+- CSWCItem dtor/SetNumActiveProperties freed the property array with `free`;
+  the original uses `delete[]` (-> 0x006FA390). The member is now typed
+  `CSWCItemProperty*`.
+- CSWCItem::PlayDropSound: the case bodies were under the wrong labels; the
+  jump table at 0x006467C8 lays out case 3 (it_materialcloth) first. Read
+  strings from the exe: symbols.csv names for 0x00751BA4..0x00751BD4 are
+  shifted by one.
+- CSWGuiMainMenu::PopulateModules compares with CExoString::operator<=
+  (0x005E5500), not operator<.
+- CSWCSoundObject GetNextSound/AIUpdate use "0" (0x00741E18) as the
+  end-of-sequence sentinel, not "".
+- The `CExoArrayList<int>` dtor rows for CanChooseFeat/CSWGuiWagerPopup ctor
+  are ICF artefacts: the local dtor body is byte-identical to 0x0056B6F0
+  (unconditional scalar delete + null), which the linker folded.

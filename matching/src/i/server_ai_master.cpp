@@ -137,7 +137,7 @@ int CServerAIMaster::AddObject(CSWSObject* pObject, int nLevel)
     if (pObject->m_nAILevel != -1) {
         RemoveObject(pObject);
     }
-    m_aGameAIList[nLevel].m_aoGameObjects.Add(pObject->m_idSelf);
+    m_aGameAIList[nLevel].m_aoGameObjects.AddUnique(pObject->m_idSelf);
     pObject->m_nAILevel = nLevel;
     return 1;
 }

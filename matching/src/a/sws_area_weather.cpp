@@ -40,7 +40,7 @@ void CSWSArea::SetCurrentWeather(unsigned char nWeather, int bStarted)
     pList = GetServerExoApp()->GetPlayerList();
     if (pList != NULL) {
         CExoLinkedListPosition pos = pList->GetHeadPos();
-        CSWSPlayer* pPlayer = pList->GetAtPosInline(pList->GetHeadPos());
+        CSWSPlayer* pPlayer = pList->GetHead();
         while (pos) {
             if (pPlayer) {
                 CSWSObject* pObject = pPlayer->GetGameObject();

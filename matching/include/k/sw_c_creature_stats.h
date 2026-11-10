@@ -107,7 +107,7 @@ public:
 
 class CSWClass {
 public:
-    int IsClassSkill(unsigned short nSkill);        // 0x005BE010
+    int IsSkillClassSkill(unsigned short nSkill);   // 0x005BE010 (debug map name)
     int IsSkillUseable(unsigned short nSkill);      // 0x005BE070
     unsigned char GetAttackBonus(unsigned char nLevel);     // 0x005BCCB0
     unsigned char GetFortSaveBonus(unsigned char nLevel);   // 0x005BCCD0

@@ -80,7 +80,7 @@ float PartTriMesh::GetF94()
 // FUNCTION: SWKOTOR 0x004402f0
 Part* PartTriMesh::FindNamedPart(char* szName)
 {
-    if (_stricmp("", szName) == 0)
+    if (_stricmp("root", szName) == 0)
         return m_pRoot;
     return FindPart(m_pRoot, szName);
 }

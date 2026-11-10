@@ -44,7 +44,13 @@ int CSWSArea::LoadGIT(int bLoadObjectState)
     return 1;
 }
 
+static inline int AddObjectToLookupTable(const CExoString& sTag, unsigned long oid)
+{
+    return GetServerExoApp()->GetModule()->AddObjectToLookupTable(sTag, oid);
+}
+
 // FUNCTION: SWKOTOR 0x0050E190
+// NONMATCH (4): ecx/eax swapped for the two map-size loads before the imul.
 int CSWSArea::LoadArea(int bLoadObjectState)
 {
     if (!m_pGIT->Demand()) {
@@ -57,8 +63,9 @@ int CSWSArea::LoadArea(int bLoadObjectState)
     LoadGIT(bLoadObjectState);
     LoadPathPoints(&cTop);
     m_pGIT->Release();
-    GetServerExoApp()->GetModule()->AddObjectToLookupTable(m_sTag, m_idSelf);
-    m_nMapGrid223 = (unsigned char)ceil(m_cValue8.m_n4 * m_cValue8.m_n0 / 8.0f);
+    AddObjectToLookupTable(m_sTag, m_idSelf);
+    CSWSAreaValue8 cSize = m_cValue8;
+    m_nMapGrid223 = (unsigned char)ceil(cSize.m_n0 * cSize.m_n4 / 8.0f);
     return 1;
 }
 

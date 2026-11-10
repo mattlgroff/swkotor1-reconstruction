@@ -406,22 +406,15 @@ void CSWCAmbientSound::PlayBattleMusic(int bPlay)
     }
 }
 
-// NONMATCH (13): the original keeps bRestart in ebx (saved in the
-// prologue) and moves the `bRestart = 0` arm after the epilogue; if/else,
-// initialised and ?: forms all give edi with the arm inline.
 // FUNCTION: SWKOTOR 0x0068E940
 void CSWCAmbientSound::SetBattleMusicTrack(int nTrack)
 {
     int bRestart;
     CExoString sPlaying;
     m_pMusicSource->GetFilePlaying().CopyToString(sPlaying);
-    if (m_pMusicSource->IsPlaying() && sPlaying.CompareNoCase(m_lstMusicBattle.m_sResource)) {
-        bRestart = 1;
+    bRestart = m_pMusicSource->IsPlaying() && sPlaying.CompareNoCase(m_lstMusicBattle.m_sResource);
+    if (bRestart)
         PlayBattleMusic(0);
-    }
-    else {
-        bRestart = 0;
-    }
     LoadSoundList(1, nTrack, &m_lstMusicBattle);
     m_nMusicBattle = nTrack;
     if (bRestart)

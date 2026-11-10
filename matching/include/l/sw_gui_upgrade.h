@@ -195,7 +195,36 @@ public:
     float x, y, z, w;
 };
 
-class CAurObject;
+Quaternion operator*(const Quaternion& a, const Quaternion& b);     // 0x004A9AC0
+Quaternion YawPitchRoll(float fYaw, float fPitch, float fRoll);     // 0x004ACAC0
+
+// Aurora model object, only the slots the upgrade preview uses (g/gob.h).
+class CAurObject {
+public:
+    virtual ~CAurObject();
+    virtual void v04(); virtual void v08(); virtual void v0c();
+    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
+    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
+    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3c();
+    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4c();
+    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5c();
+    virtual Quaternion SetOrientation(Quaternion qOrientation);    // 0x60
+    virtual void v64();
+    virtual Quaternion GetOrientation();            // 0x68
+    virtual void v6c();
+    virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7c();
+    virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8c();
+    virtual void v90(); virtual void v94(); virtual void v98(); virtual void v9c();
+    virtual void va0(); virtual void va4(); virtual void va8(); virtual void vac();
+    virtual void vb0(); virtual void vb4(); virtual void vb8(); virtual void vbc();
+    virtual void vc0(); virtual void vc4(); virtual void vc8(); virtual void vcc();
+    virtual void vd0(); virtual void vd4(); virtual void vd8(); virtual void vdc();
+    virtual void ve0(); virtual void ve4(); virtual void ve8(); virtual void vec();
+    virtual void vf0(); virtual void vf4(); virtual void vf8(); virtual void vfc();
+    virtual void v100(); virtual void v104();
+    virtual void* GetAttachment(int nId);           // 0x108
+};
+
 class CAurScene {
 public:
     virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
@@ -215,6 +244,7 @@ public:
     CSWGuiScene();                                  // 0x004174B0
     ~CSWGuiScene();
     CAurObject* AddModel(const CExoString& sModel, int nIndex);    // 0x00417620
+    CAurObject* GetModel(int nIndex);               // 0x00416750
     void* m_pVtable;
     char pad_0x4[0x10];
     CAurScene* m_pScene;                            // 0x14
@@ -238,6 +268,7 @@ public:
     __declspec(noinline) virtual ~CSWGuiUpgrade();  // 0x006C4AD0
     virtual void HandleInputEvent(int nEvent, int bDown);   // 0x3c (0x006C6A80)
     virtual void OnPanelRemoved();                  // 0x4c (0x006C25F0)
+    void Draw(float fDelta);                        // 0x34 (0x006C33A0, virtual)
     void ShowItems(int bShow);                      // 0x006C2F80
     void SetDescription(const CExoString& sText);   // 0x006C32E0
     void UpdateItems();                             // 0x006C3AA0

@@ -2,7 +2,7 @@
 // table helpers (0x00410520 / 0x00410560, used by CTlkTable).
 #include "d/res_gff.h"
 
-extern unsigned long g_aCRCTable[256];          // 0x007a4178
+extern unsigned long g_aGffCRCTable[256];          // 0x007a4178
 
 #pragma auto_inline(off)
 
@@ -18,7 +18,7 @@ void InitializeCRCTable()
                 c >>= 1;
             }
         }
-        g_aCRCTable[i] = c;
+        g_aGffCRCTable[i] = c;
     }
 }
 
@@ -41,7 +41,7 @@ __declspec(naked) unsigned long ComputeCRC(const char*, unsigned long)
         je crc_cleanup
         xor ecx, eax
         and ecx, 0xff
-        mov ecx, dword ptr [ecx*4 + g_aCRCTable]
+        mov ecx, dword ptr [ecx*4 + g_aGffCRCTable]
         shr eax, 8
         inc edx
         xor eax, ecx

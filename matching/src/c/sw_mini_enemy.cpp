@@ -17,7 +17,7 @@ public:
     int Load(CResGFF* pGFF, CResStruct* pStruct);
 
     char pad_0x0[0x1a0];
-    unsigned char m_nEnemyField;                    // 0x1a0
+    unsigned char m_nEnemyField;                    // 0x1a0 (GFF "Trigger")
 };
 
 // FUNCTION: SWKOTOR 0x006705F0
@@ -27,6 +27,6 @@ int CSWMiniEnemy::Load(CResGFF* pGFF, CResStruct* pStruct)
         return 0;
     }
     int bSuccess;
-    m_nEnemyField = pGFF->ReadFieldBYTE(pStruct, "Field", bSuccess, 0);
+    m_nEnemyField = pGFF->ReadFieldBYTE(pStruct, "Trigger", bSuccess, 0);
     return 1;
 }

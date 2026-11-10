@@ -18,14 +18,19 @@ public:
     char pad_0x0[4];
     unsigned long m_idSelf;                         // 0x04
     char pad_0x8[0x438];
-    unsigned long m_nUnknown440;                    // 0x440
+    unsigned long m_bCombatMode : 1;                // 0x440 bit 0 (descriptive)
+    unsigned long m_nFlags440 : 31;
     void SetAttackTarget(int b);
 };
 
+// Name kept from the callers' records; it stores the creature's combat-mode
+// bit and forwards it to the client app for the player creature.
 // FUNCTION: SWKOTOR 0x00610A10
 void CSWCCreature::SetAttackTarget(int b)
 {
-    m_nUnknown440 = m_nUnknown440 ^ ((m_nUnknown440 ^ (unsigned long)b) & 1);
-    if (m_idSelf != g_pAppManager->GetClientExoApp()->GetPlayerCreatureId()) return;
-    g_pAppManager->GetClientExoApp()->SetCombatMode(m_nUnknown440 & 1);
+    m_bCombatMode = b;
+    unsigned long oidSelf = m_idSelf;
+    if (oidSelf == g_pAppManager->GetClientExoApp()->GetPlayerCreatureId()) {
+        g_pAppManager->GetClientExoApp()->SetCombatMode(m_bCombatMode);
+    }
 }

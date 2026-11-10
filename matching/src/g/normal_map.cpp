@@ -106,6 +106,12 @@ unsigned char* DownSampleNormalMap(unsigned char* pData, int nWidth, int nHeight
     return pOut;
 }
 
+// DownSampleNormalMap above (0x00420030, the height-field unit) allocates
+// with the scalar operator new / delete; the GLRender code below uses the
+// array forms (0x006fc0d2 / 0x006fc0cd), so they are declared only here.
+void* __cdecl operator new[](unsigned int n);
+void __cdecl operator delete[](void* p);
+
 // Uploads a normal map (converted from a height field unless it already is
 // one) with its whole mipmap chain.
 // FUNCTION: SWKOTOR 0x004260a0

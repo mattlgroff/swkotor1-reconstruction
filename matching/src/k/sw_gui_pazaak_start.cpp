@@ -80,9 +80,9 @@ void CSWGuiPazaakStart::HandleInputEvent(int nEvent, int bDown)
     CSWGuiPanel::HandleInputEvent(nEvent, bDown);
 }
 
-// NONMATCH (9): register/schedule ties only; the original loads the pazaak
-// pointer into EAX for ChooseSidedeck and the tutorial flag into EDI for the
-// game constructor. Member, accessor and local-pointer shapes do not move it.
+// NONMATCH (6): register/schedule tie only; the original loads the tutorial
+// flag into EDI after the pazaak / opponent loads for the game constructor.
+// GetPazaak() for ChooseSidedeck fixed the EAX load (was 9).
 // FUNCTION: SWKOTOR 0x00681890
 void CSWGuiPazaakStart::HandleStartDialog(CSWGuiControl* pControl)
 {
@@ -93,7 +93,7 @@ void CSWGuiPazaakStart::HandleStartDialog(CSWGuiControl* pControl)
     for (int i = 0; i < 10; i++) {
         pTable->m_aPazaakSideList[i] = m_aChosenCards[i].m_nValue;
     }
-    m_pPazaak->GetPlayer()->ChooseSidedeck(m_aChosenCards);
+    GetPazaak()->m_cPlayer.ChooseSidedeck(m_aChosenCards);
     m_pManager->PopModalPanel();
     MarkForDelete();
     CSWGuiPazaakGame* pGame =

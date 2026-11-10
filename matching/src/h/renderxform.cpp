@@ -91,7 +91,7 @@ struct EnvMapSource {
 };
 
 typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int);
-extern PFNCLIENTACTIVETEXTURE g_pfnClientActiveTexture;    // 0x007BB80C
+extern PFNCLIENTACTIVETEXTURE glActiveTextureARB;    // 0x007BB80C
 extern unsigned int g_nActiveTextureUnit;   // 0x007A6898
 extern unsigned int g_eTextureMatrix;       // 0x0073F29C
 extern unsigned int g_eModelviewMatrix;     // 0x0073F298
@@ -107,7 +107,7 @@ void DoEnvMapTransform(CAurTexture* pTexture, unsigned int nUnit)
         return;
     g_nActiveTextureUnit = nUnit;
     if (AurGLCaps710())
-        g_pfnClientActiveTexture(g_nActiveTextureUnit + 0x84C0);
+        glActiveTextureARB(g_nActiveTextureUnit + 0x84C0);
     glMatrixMode(g_eTextureMatrix);
     glPushMatrix();
     float aMatrix[16];
@@ -121,7 +121,7 @@ void DoEnvMapTransform(CAurTexture* pTexture, unsigned int nUnit)
     glMatrixMode(g_eModelviewMatrix);
     g_nActiveTextureUnit = 0;
     if (AurGLCaps710())
-        g_pfnClientActiveTexture(g_nActiveTextureUnit + 0x84C0);
+        glActiveTextureARB(g_nActiveTextureUnit + 0x84C0);
 }
 
 // FUNCTION: SWKOTOR 0x0046F870
@@ -133,11 +133,11 @@ void UndoEnvMapTransform(CAurTexture* pTexture, unsigned int nUnit)
         return;
     g_nActiveTextureUnit = nUnit;
     if (AurGLCaps710())
-        g_pfnClientActiveTexture(g_nActiveTextureUnit + 0x84C0);
+        glActiveTextureARB(g_nActiveTextureUnit + 0x84C0);
     glMatrixMode(g_eTextureMatrix);
     glPopMatrix();
     glMatrixMode(g_eModelviewMatrix);
     g_nActiveTextureUnit = 0;
     if (AurGLCaps710())
-        g_pfnClientActiveTexture(g_nActiveTextureUnit + 0x84C0);
+        glActiveTextureARB(g_nActiveTextureUnit + 0x84C0);
 }

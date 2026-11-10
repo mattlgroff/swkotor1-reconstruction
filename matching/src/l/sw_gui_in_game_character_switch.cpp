@@ -31,17 +31,17 @@ void CSWGuiInGameCharacter::OnChangeCharacter(CSWGuiControl* pControl)
                     g_pAppManager->m_pServerExoApp->GetPartyTable()->GetNPCObject(nNPC, 0, 1)));
             }
             if (pCreature) {
-                if (m_btn5078.m_bVisible) {
-                    if (pControl == &m_btn4B2C) {
-                        m_btn4B2C.m_n58 = m_btn4CF0.m_n58;
+                if (m_btnCharRight.m_bVisible) {
+                    if (pControl == &m_btnChange1) {
+                        m_btnChange1.m_n58 = m_btnChange2.m_n58;
                     }
                 } else {
-                    m_btn4B2C.m_n58 = 0xfffffffe;
+                    m_btnChange1.m_n58 = 0xfffffffe;
                 }
                 m_nPartyMember = nNPC;
             }
         } else {
-            if (pControl == &m_btn4CF0) {
+            if (pControl == &m_btnChange2) {
                 nMember = 2;
             }
             if (!g_pAppManager->m_pClientExoApp->ChangeCharacterToNextLivingPartyMember(0, 0, nMember)) {
@@ -58,12 +58,12 @@ void CSWGuiInGameCharacter::OnChangeCharacter(CSWGuiControl* pControl)
 void CSWGuiInGameCharacter::OnSwitchLeft(CSWGuiControl* pControl)
 {
     if (pControl->m_n4c) {
-        char nCurrent = (char)m_btn4B2C.m_n58;
+        char nCurrent = (char)m_btnChange1.m_n58;
         int bFound = 0;
         if (nCurrent != -2) {
-            m_btn4CF0.m_cBorderParams.SetFillImage(m_btn4B2C.m_cBorderParams.GetFillImage(), 0);
-            m_btn4CF0.m_cHilightParams.SetFillImage(m_btn4B2C.m_cHilightParams.GetFillImage(), 0);
-            m_btn4CF0.m_n58 = m_btn4B2C.m_n58;
+            m_btnChange2.m_cBorderParams.SetFillImage(m_btnChange1.m_cBorderParams.GetFillImage(), 0);
+            m_btnChange2.m_cHilightParams.SetFillImage(m_btnChange1.m_cHilightParams.GetFillImage(), 0);
+            m_btnChange2.m_n58 = m_btnChange1.m_n58;
             int nStart = nCurrent;
             int i;
             for (i = nStart - 1; i >= 0 && !bFound; i--) {
@@ -73,23 +73,23 @@ void CSWGuiInGameCharacter::OnSwitchLeft(CSWGuiControl* pControl)
                     CSWCCreature* pCreature = pClient->GetCreatureByGameObjectID(pClient->ServerToClientObjectId(
                         g_pAppManager->m_pServerExoApp->GetPartyTable()->GetNPCObject(i, 0, 1)));
                     if (pCreature) {
-                        m_btn4B2C.SetFillImage(((CSWCCreatureVirtuals*)pCreature)->GetPortrait(1));
-                        m_btn4B2C.SetHilightFillImage(
+                        m_btnChange1.SetFillImage(((CSWCCreatureVirtuals*)pCreature)->GetPortrait(1));
+                        m_btnChange1.SetHilightFillImage(
                             ((CSWCCreatureVirtuals*)pCreature)->GetPortrait(1));
-                        m_btn4B2C.m_n58 = i;
+                        m_btnChange1.m_n58 = i;
                         bFound = 1;
                     }
                 }
             }
             if (!bFound) {
-                if ((char)m_nPartyMember != -1 && (char)m_btn4CF0.m_n58 != -1) {
-                    m_btn4B2C.SetFillImage(((CSWCCreatureVirtuals*)g_pAppManager->m_pClientExoApp
+                if ((char)m_nPartyMember != -1 && (char)m_btnChange2.m_n58 != -1) {
+                    m_btnChange1.SetFillImage(((CSWCCreatureVirtuals*)g_pAppManager->m_pClientExoApp
                                                    ->GetPlayerCreature())
                                                   ->GetPortrait(1));
-                    m_btn4B2C.SetHilightFillImage(
+                    m_btnChange1.SetHilightFillImage(
                         ((CSWCCreatureVirtuals*)g_pAppManager->GetClientExoApp()->GetPlayerCreature())
                             ->GetPortrait(1));
-                    m_btn4B2C.m_n58 = -1;
+                    m_btnChange1.m_n58 = -1;
                 } else {
                     for (i = 8; i > nStart && !bFound; i--) {
                     if (i != (char)m_nPartyMember &&
@@ -98,10 +98,10 @@ void CSWGuiInGameCharacter::OnSwitchLeft(CSWGuiControl* pControl)
                         CSWCCreature* pCreature = pClient->GetCreatureByGameObjectID(pClient->ServerToClientObjectId(
                             g_pAppManager->m_pServerExoApp->GetPartyTable()->GetNPCObject(i, 0, 1)));
                         if (pCreature) {
-                            m_btn4B2C.SetFillImage(((CSWCCreatureVirtuals*)pCreature)->GetPortrait(1));
-                            m_btn4B2C.SetHilightFillImage(
+                            m_btnChange1.SetFillImage(((CSWCCreatureVirtuals*)pCreature)->GetPortrait(1));
+                            m_btnChange1.SetHilightFillImage(
                                 ((CSWCCreatureVirtuals*)pCreature)->GetPortrait(1));
-                            m_btn4B2C.m_n58 = i;
+                            m_btnChange1.m_n58 = i;
                             bFound = 1;
                         }
                     }
@@ -116,12 +116,12 @@ void CSWGuiInGameCharacter::OnSwitchLeft(CSWGuiControl* pControl)
 void CSWGuiInGameCharacter::OnSwitchRight(CSWGuiControl* pControl)
 {
     if (pControl->m_n4c) {
-        char nCurrent = (char)m_btn4CF0.m_n58;
+        char nCurrent = (char)m_btnChange2.m_n58;
         int bFound = 0;
         if (nCurrent != -2) {
-            m_btn4B2C.m_cBorderParams.SetFillImage(m_btn4CF0.m_cBorderParams.GetFillImage(), 0);
-            m_btn4B2C.m_cHilightParams.SetFillImage(m_btn4CF0.m_cHilightParams.GetFillImage(), 0);
-            m_btn4B2C.m_n58 = m_btn4CF0.m_n58;
+            m_btnChange1.m_cBorderParams.SetFillImage(m_btnChange2.m_cBorderParams.GetFillImage(), 0);
+            m_btnChange1.m_cHilightParams.SetFillImage(m_btnChange2.m_cHilightParams.GetFillImage(), 0);
+            m_btnChange1.m_n58 = m_btnChange2.m_n58;
             int nStart = nCurrent;
             int i;
             for (i = nStart + 1; i < 9 && !bFound; i++) {
@@ -131,23 +131,23 @@ void CSWGuiInGameCharacter::OnSwitchRight(CSWGuiControl* pControl)
                     CSWCCreature* pCreature = pClient->GetCreatureByGameObjectID(pClient->ServerToClientObjectId(
                         g_pAppManager->m_pServerExoApp->GetPartyTable()->GetNPCObject(i, 0, 1)));
                     if (pCreature) {
-                        m_btn4CF0.SetFillImage(((CSWCCreatureVirtuals*)pCreature)->GetPortrait(1));
-                        m_btn4CF0.SetHilightFillImage(
+                        m_btnChange2.SetFillImage(((CSWCCreatureVirtuals*)pCreature)->GetPortrait(1));
+                        m_btnChange2.SetHilightFillImage(
                             ((CSWCCreatureVirtuals*)pCreature)->GetPortrait(1));
-                        m_btn4CF0.m_n58 = i;
+                        m_btnChange2.m_n58 = i;
                         bFound = 1;
                     }
                 }
             }
             if (!bFound) {
                 if ((char)m_nPartyMember != -1) {
-                    m_btn4CF0.SetFillImage(((CSWCCreatureVirtuals*)g_pAppManager->m_pClientExoApp
+                    m_btnChange2.SetFillImage(((CSWCCreatureVirtuals*)g_pAppManager->m_pClientExoApp
                                                    ->GetPlayerCreature())
                                                   ->GetPortrait(1));
-                    m_btn4CF0.SetHilightFillImage(
+                    m_btnChange2.SetHilightFillImage(
                         ((CSWCCreatureVirtuals*)g_pAppManager->GetClientExoApp()->GetPlayerCreature())
                             ->GetPortrait(1));
-                    m_btn4CF0.m_n58 = -1;
+                    m_btnChange2.m_n58 = -1;
                 } else {
                     for (i = 0; i < nStart && !bFound; i++) {
                     if (i != (char)m_nPartyMember &&
@@ -156,10 +156,10 @@ void CSWGuiInGameCharacter::OnSwitchRight(CSWGuiControl* pControl)
                         CSWCCreature* pCreature = pClient->GetCreatureByGameObjectID(pClient->ServerToClientObjectId(
                             g_pAppManager->m_pServerExoApp->GetPartyTable()->GetNPCObject(i, 0, 1)));
                         if (pCreature) {
-                            m_btn4CF0.SetFillImage(((CSWCCreatureVirtuals*)pCreature)->GetPortrait(1));
-                            m_btn4CF0.SetHilightFillImage(
+                            m_btnChange2.SetFillImage(((CSWCCreatureVirtuals*)pCreature)->GetPortrait(1));
+                            m_btnChange2.SetHilightFillImage(
                                 ((CSWCCreatureVirtuals*)pCreature)->GetPortrait(1));
-                            m_btn4CF0.m_n58 = i;
+                            m_btnChange2.m_n58 = i;
                             bFound = 1;
                         }
                     }

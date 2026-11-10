@@ -18,13 +18,19 @@ void CExoArrayList<T>::Allocate(int n)
         delete[] pOld;
 }
 
-template class CExoArrayList<int>;
+template class CExoArrayList<unsigned int>;
+
+// m_aSaved's and m_aLocked's out-of-line Allocate calls land in the
+// scalar-new copy (0x005e03c0): the linker kept another unit's instance
+// of those two lists' Allocate, while this unit's own (inlined into the
+// constructors) uses new[] / delete[]. A single unit cannot express that;
+// an extern template declaration stops the constructors' inlining.
 
 // Only the constructors inline Add's Allocate call; the other Add callers
 // keep it out of line (0x00437d60 / 0x005e03c0), hence inline_depth(1)
 // around them.
 
-// FUNCTION: SWKOTOR 0x0042e240 SYMBOL: ??1?$CExoArrayList@H@@QAE@XZ
+// FUNCTION: SWKOTOR 0x0042e240 SYMBOL: ??1?$CExoArrayList@I@@QAE@XZ
 
 // FUNCTION: SWKOTOR 0x0042e250
 RequestPoolManager::~RequestPoolManager()
@@ -100,7 +106,7 @@ void RequestPoolManagerVBO::ResizePool(int nId, int nNewSize)
     glBindBufferARB(m_aTargets.element[nId], m_aNames.element[nId]);
     int nSize;
     glGetBufferParameterivARB(m_aTargets.element[nId], GL_BUFFER_SIZE_ARB, &nSize);
-    void* pCopy = operator new(nSize);
+    unsigned char* pCopy = new unsigned char[nSize];
     void* pData = glMapBufferARB(m_aTargets.element[nId], GL_READ_ONLY_ARB);
     memcpy(pCopy, pData, nSize);
     glUnmapBufferARB(m_aTargets.element[nId]);
@@ -111,16 +117,16 @@ void RequestPoolManagerVBO::ResizePool(int nId, int nNewSize)
     glBindBufferARB(m_aTargets.element[nId], m_aNames.element[nId]);
     glBufferDataARB(m_aTargets.element[nId], nNewSize, 0, GL_DYNAMIC_DRAW_ARB);
     glBufferSubDataARB(m_aTargets.element[nId], 0, nSize, pCopy);
-    free(pCopy);
+    delete[] pCopy;
 }
 
 // FUNCTION: SWKOTOR 0x0042e540
 RequestPoolManagerSys::~RequestPoolManagerSys()
 {
     for (unsigned int i = 0; i < m_nCount; i++)
-        free(m_ppPools[i]);
-    free(m_ppPools);
-    free(m_pSizes);
+        delete[] m_ppPools[i];
+    delete[] m_ppPools;
+    delete[] m_pSizes;
 }
 
 // FUNCTION: SWKOTOR 0x0042e5b0
@@ -138,7 +144,7 @@ void* RequestPoolManagerSys::Lock(int nId, int nFlags)
 void RequestPoolManagerSys::Unlock(int nId)
 {
     if (nId != -1) {
-        int* pLocked = &m_aLocked.element[nId];
+        unsigned long* pLocked = &m_aLocked.element[nId];
         if (*pLocked)
             *pLocked = 0;
     }
@@ -158,7 +164,7 @@ void RequestPoolManagerVBO::LoseBuffers()
             int nSize;
             glGetBufferParameterivARB(m_aTargets.element[i], GL_BUFFER_SIZE_ARB, &nSize);
             m_aSavedSizes.Add(nSize);
-            m_aSaved.Add(operator new(nSize));
+            m_aSaved.Add(new unsigned char[nSize]);
             void* pData = glMapBufferARB(m_aTargets.element[i], GL_READ_ONLY_ARB);
             memcpy(m_aSaved.element[i], pData, m_aSavedSizes.element[i]);
             glUnmapBufferARB(m_aTargets.element[i]);
@@ -180,7 +186,7 @@ void RequestPoolManagerVBO::RestoreBuffers()
             glBindBufferARB(m_aTargets.element[i], nName);
             glBufferDataARB(m_aTargets.element[i], m_aSavedSizes.element[i],
                             m_aSaved.element[i], GL_DYNAMIC_DRAW_ARB);
-            free(m_aSaved.element[i]);
+            delete[] m_aSaved.element[i];
         }
     }
     m_aSaved.num = 0;
@@ -199,7 +205,7 @@ RequestPoolManagerVBO::~RequestPoolManagerVBO()
         }
     }
     for (int j = 0; j < m_aSaved.num; j++)
-        free(m_aSaved.element[j]);
+        delete[] m_aSaved.element[j];
     m_aSaved.SetSize(0);
     m_aSavedSizes.SetSize(0);
     m_aTargets.SetSize(0);
@@ -284,7 +290,7 @@ int RequestPoolManagerSys::Request(int nType, int nSize, int nFlags)
         return -1;
     s_nPoolBytesRequested += nSize;
     if (m_aFree.num) {
-        void* p = operator new(nSize);
+        void* p = new unsigned char[nSize];
         int nId = m_aFree.element[m_aFree.num - 1];
         m_aFree.DelIndex(m_aFree.num - 1);
         m_ppPools[nId] = p;
@@ -296,17 +302,17 @@ int RequestPoolManagerSys::Request(int nType, int nSize, int nFlags)
         m_aFree.Add(i);
         m_aLocked.Add(0);
     }
-    void** ppPools = (void**)operator new(m_nCount * 8);
-    int* pSizes = (int*)operator new(m_nCount * 8);
+    void** ppPools = new void*[m_nCount * 2];
+    int* pSizes = new int[m_nCount * 2];
     memset(ppPools, 0, m_nCount * 8);
     memcpy(ppPools, m_ppPools, m_nCount * 4);
-    free(m_ppPools);
+    delete[] m_ppPools;
     memset(pSizes, 0, m_nCount * 8);
     memcpy(pSizes, m_pSizes, m_nCount * 4);
-    free(m_pSizes);
+    delete[] m_pSizes;
     m_ppPools = ppPools;
     m_pSizes = pSizes;
-    m_ppPools[m_nCount] = operator new(nSize);
+    m_ppPools[m_nCount] = new unsigned char[nSize];
     m_pSizes[m_nCount] = nSize;
     int nId = m_nCount;
     m_nCount = nId * 2;
@@ -324,14 +330,14 @@ void RequestPoolManagerSys::Release(int nId)
         g_nPoolPages -= (m_pSizes[nId] + 0xfff) & ~0xfff;
         m_aLocked.element[nId] = 0;
         if (m_ppPools[nId])
-            free(m_ppPools[nId]);
+            delete[] m_ppPools[nId];
         m_ppPools[nId] = 0;
         m_pSizes[nId] = 0;
     }
 }
 #pragma inline_depth()
 
-extern CExoArrayList<int> g_aRenderSquares;   // 0x007a693c
+extern CExoArrayList<unsigned int> g_aRenderSquares; // 0x007a693c
 
 #pragma inline_depth(1)
 // FUNCTION: SWKOTOR 0x00435b40
@@ -393,8 +399,8 @@ RequestPoolManagerVBO::RequestPoolManagerVBO()
 RequestPoolManagerSys::RequestPoolManagerSys()
 {
     m_nCount = 100;
-    m_ppPools = (void**)operator new(400);
-    m_pSizes = (int*)operator new(m_nCount * 4);
+    m_ppPools = new void*[100];
+    m_pSizes = new int[m_nCount];
     memset(m_pSizes, 0, m_nCount * 4);
     memset(m_ppPools, 0, m_nCount * 4);
     for (int i = 0; i < 100; i++) {

@@ -2,6 +2,11 @@
 // local creature layout; the shared creature base is not changed.
 
 #include <string.h>
+#include <stdlib.h>
+
+struct Vector {
+    float x, y, z;
+};
 
 class CExoString {
 public:
@@ -11,6 +16,9 @@ public:
     ~CExoString();                                  // 0x005E5C20
     CExoString& operator=(const char* s);           // 0x005E5140
     int IsEmpty() const;                            // 0x005E58A0
+    CExoString& operator=(const CExoString& s);     // 0x005E5C50
+    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
+    char* CStr() const;                             // 0x005E5670
     char* m_sString;
     unsigned long m_nBufferLength;
 };
@@ -20,20 +28,45 @@ public:
     int GetFLOATEntry(int nRow, const CExoString& sColumn, float* pValue);   // 0x00413430
     int GetINTEntry(int nRow, const CExoString& sColumn, int* pValue);   // 0x00413660
     int GetCExoStringEntry(const CExoString& sRow, const CExoString& sColumn, CExoString* pValue);   // 0x00413DE0
+    int GetCExoStringEntry(int nRow, int nColumn, CExoString* pValue);   // 0x00413190
+    int GetCExoStringEntry(int nRow, const CExoString& sColumn, CExoString* pValue);   // 0x00413270
+    int GetFLOATEntry(int nRow, int nColumn, float* pValue);   // 0x00413350
+    int GetINTEntry(int nRow, int nColumn, int* pValue);   // 0x00413510
 };
 
 class C2DAs {
 public:
     char pad_0x0[0xc];
     C2DA* m_pAppearanceTable;                       // 0x0c
-    char pad_0x10[0x88 - 0x10];
+    char pad_0x10[0x24 - 0x10];
+    C2DA* m_pDoorTypes;                             // 0x24
+    C2DA* m_pGenericDoors;                          // 0x28
+    C2DA* m_pPlaceables;                            // 0x2c
+    char pad_0x30[0x5c - 0x30];
+    C2DA* m_pAppearanceSoundSet;                    // 0x5c
+    C2DA* m_pWeaponSounds;                          // 0x60
+    char pad_0x64[0x70 - 0x64];
+    C2DA* m_pPlaceableSounds;                       // 0x70
+    char pad_0x74[0x88 - 0x74];
     C2DA* m_pVisualEffects;                         // 0x88
 
     C2DA* GetVisualEffects() { return m_pVisualEffects; }
     C2DA* GetAppearanceTable() { return m_pAppearanceTable; }
+    C2DA* GetDoorTypes() { return m_pDoorTypes; }
+    C2DA* GetGenericDoors() { return m_pGenericDoors; }
+    C2DA* GetPlaceables() { return m_pPlaceables; }
+    C2DA* GetAppearanceSoundSet() { return m_pAppearanceSoundSet; }
+    C2DA* GetWeaponSounds() { return m_pWeaponSounds; }
+    C2DA* GetPlaceableSounds() { return m_pPlaceableSounds; }
 };
 
-class CSWBaseItem;
+class CSWBaseItem {
+public:
+    char pad_0x0[0x8c];
+    unsigned char m_nWeaponSoundRow;                // 0x8c (descriptive)
+    char pad_0x8d[0xbc - 0x8d];
+    CExoString m_sArmorSound;                       // 0xbc (descriptive)
+};
 
 class CSWBaseItemArray {
 public:
@@ -48,6 +81,7 @@ public:
     C2DAs* m_p2DArrays;                             // 0xb8
 
     C2DAs* Get2DArrays() { return m_p2DArrays; }
+    CSWBaseItemArray* GetBaseItems() { return m_pBaseItems; }
 };
 
 extern CSWRules* g_pRules;                          // 0x007A3A28
@@ -96,6 +130,9 @@ public:
     virtual void v70(); virtual void v74(); virtual void v78();
     virtual void AttachItem(unsigned long oidItem, const CExoString& sNode, int bRightHand,
                             float fScale);          // 0x7c (descriptive)
+
+    char pad_0x4[0xc5 - 0x4];
+    unsigned char m_nC5;                            // 0xc5 (3: two-handed stance, descriptive)
 };
 
 // The client object part of an item (CSWCItem + 0x10).
@@ -127,6 +164,7 @@ public:
     void SetEquippedBy(CSWCCreature* pCreature);    // 0x00646600
     void SetPowered(int a, int b, int c, int d);    // 0x00647130
     void SetSpecialAttackModel(const CExoString& sModel, const CExoString& sNode);   // 0x00646880
+    CSWBaseItem* GetBaseItem();                     // 0x005B4790 (CSWItem)
 
     char pad_0x0[0xc];
     int m_nBaseItem;                                // 0x0c
@@ -141,6 +179,7 @@ class CClientExoApp {
 public:
     CSWCItem* GetItemByGameObjectID(unsigned long oid);   // 0x005ED5A0
     CSWCCreature* GetPlayerCreature();              // 0x005ED540
+    class CGameObject* GetGameObject(unsigned long oid);  // 0x005ED580
 };
 
 class CAppManager {
@@ -186,6 +225,8 @@ public:
     unsigned short GetLoopingAnimation();           // 0x0063C100 (CSWCObject)
 
     int GetFreeLookVideoEffect();
+    int GetForceShield();                           // 0x00616890
+    int PlayHitSound(class CSWCCombatAttackData* pData, int bSuppress);
     unsigned long GetEquippedItemID(unsigned long nSlot);
     void SetEquippedItemID(unsigned long nSlot, unsigned long oidItem);
     void SetLastInstant(unsigned long nSlot, int bValue);
@@ -193,7 +234,13 @@ public:
     unsigned short GetAppearanceType() { return m_pAppearance->m_nAppearanceType; }
 
     unsigned long m_idSelf;                         // 0x04
-    char pad_0x8[0x138 - 0x8];
+    char pad_0x8[0xc - 0x8];
+    int m_n0C;                                      // 0x0c (CSWCObject; "stone" hit sound)
+    int m_n10;                                      // 0x10 (CSWCObject; "wood" hit sound)
+    int m_n14;                                      // 0x14 (CSWCObject; "stone" hit sound)
+    char pad_0x18[0x24 - 0x18];
+    Vector m_vPosition;                             // 0x24
+    char pad_0x30[0x138 - 0x30];
     int m_n138;                                     // 0x138
     char pad_0x13c[0x21c - 0x13c];
     CCreatureAppearanceS3* m_pAppearance;           // 0x21c
@@ -701,4 +748,185 @@ void SwitchWeaponEvent(CAurObject* pObject, char* sEvent, void* pData)
         }
         pCreature->m_oidShownLeftWeapon = aoidWeapon[1];
     }
+}
+
+class CResRef {
+public:
+    CResRef(const char* s);                         // 0x00406D80
+    char m_resRef[16];
+};
+
+class CExoSound {
+public:
+    int PlayOneShotSoundAt(const CResRef& cResRef, Vector vPosition, float fVolume, unsigned long nPriority,
+                           unsigned long a, unsigned long b, unsigned long c, float fPitch);   // 0x005D5E10
+};
+
+extern CExoSound* g_pExoSound;                      // 0x007A39EC
+
+extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
+extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
+extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
+
+extern int g_nAppearanceCol_SoundAppType;           // 0x007A2128
+extern int g_nAppearanceSoundsCol_Weapon;           // 0x007A2140
+extern int g_nAppearanceSoundsCol_ArmorType;        // 0x007A2144
+extern int g_nWeaponSoundPitchOffsetColumn;         // 0x007A21A4
+extern int g_nDoorTypesCol_SoundAppType;            // 0x007A224C
+extern int g_nGenericDoorsCol_SoundAppType;         // 0x007A2250
+extern int g_nPlaceablesCol_SoundAppType;           // 0x007A2254
+extern int g_nPlaceableSoundsCol_ArmorType;         // 0x007A2260
+
+class CSWCCombatAttackData {
+public:
+    char pad_0x0[0xc];
+    unsigned char m_nAttackResult;                  // 0x0c
+    char pad_0xd[0x14 - 0xd];
+    unsigned long m_oidTarget;                      // 0x14
+    char pad_0x18[0x20 - 0x18];
+    int m_bHandled;                                 // 0x20 (descriptive)
+    char pad_0x24[0x28 - 0x24];
+    unsigned char m_nWeaponAttackType;              // 0x28 (descriptive)
+};
+
+class CSWCDoor {
+public:
+    char pad_0x0[0x124];
+    unsigned char m_nAppearanceType;                // 0x124 (doortypes.2da row, 0 = generic)
+    unsigned char m_nGenericType;                   // 0x125 (genericdoors.2da row)
+
+    unsigned char GetGenericType() { return m_nGenericType; }
+};
+
+class CSWCPlaceable {
+public:
+    char pad_0x0[0x10c];
+    unsigned char m_nAppearance;                    // 0x10c (placeables.2da row)
+};
+
+class CSWCObject;
+
+class CGameObject {
+public:
+    virtual void v00(); virtual void v04(); virtual void v08();
+    virtual CSWCObject* AsSWCObject();              // 0x0c
+    virtual void v10();
+    virtual CSWCDoor* AsSWCDoor();                  // 0x14
+    virtual void v18(); virtual void v1C();
+    virtual void v20(); virtual void v24(); virtual void v28();
+    virtual CSWCCreature* AsSWCCreature();          // 0x2c
+    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
+    virtual void v40(); virtual void v44(); virtual void v48();
+    virtual CSWCPlaceable* AsSWCPlaceable();        // 0x4c
+
+    unsigned long m_idSelf;                         // 0x04
+    unsigned char m_nObjectType;                    // 0x08
+};
+
+class CSWCObject : public CGameObject {
+public:
+    unsigned short GetCurrentAnimation();           // 0x0063C060
+    int AnimationParry(unsigned short nAnim);       // 0x0063C4F0
+};
+
+// Plays the weapon-on-material impact sound for an attack on the data's
+// target; the material comes from the target type and its 2DA rows. Each
+// branch keeps its own 2DA lookups: the original cross-jumps their tails.
+// NONMATCH (85 insns): statements and EH states line up; the fall-through
+// copies of the weaponsounds/placeable-sound lookups pick ecx where the
+// original picks eax (so the cross-jump starts later), and the item lookup
+// loads the app after GetEquippedItemID (the inline getter swaps ebx/edi).
+// FUNCTION: SWKOTOR 0x00617470
+int CSWCCreature::PlayHitSound(CSWCCombatAttackData* pData, int bSuppress)
+{
+    if (!pData) {
+        return 0;
+    }
+    CGameObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(pData->m_oidTarget);
+    if (!pObject || !pObject->AsSWCObject()) {
+        return 0;
+    }
+    CSWCObject* pTarget = pObject->AsSWCObject();
+    int nRow = 0;
+    int nSoundType = 0;
+    CExoString sSound;
+    float fPitch = 0.0f;
+    if (!bSuppress && !pData->m_bHandled) {
+        g_pRules->Get2DArrays()->GetAppearanceTable()->GetINTEntry(GetAppearanceType(),
+            g_nAppearanceCol_SoundAppType, &nRow);
+        g_pRules->Get2DArrays()->GetAppearanceSoundSet()->GetINTEntry(nRow,
+            g_nAppearanceSoundsCol_Weapon, &nSoundType);
+        if (nSoundType == 0) {
+            unsigned long nSlot = 0;
+            if (pData->m_nWeaponAttackType == 1 || pData->m_nWeaponAttackType == 6) {
+                nSlot = 0x10;
+            } else if (GetAnimBase()->m_nC5 == 3) {
+                nSlot = 0x10;
+            } else if (pData->m_nWeaponAttackType == 2) {
+                nSlot = 0x20;
+            }
+            CSWCItem* pItem = g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(GetEquippedItemID(nSlot));
+            if (pItem) {
+                nSoundType = g_pRules->GetBaseItems()->GetBaseItem(pItem->m_nBaseItem)->m_nWeaponSoundRow;
+            }
+        }
+        if ((pData->m_nAttackResult == 8 || pData->m_nAttackResult == 4) &&
+            pTarget->AnimationParry(pTarget->GetCurrentAnimation())) {
+            CExoString sMaterial = CExoString("Parry") + CExoString(rand() % 2);
+            g_pRules->Get2DArrays()->GetWeaponSounds()->GetCExoStringEntry(nSoundType, sMaterial, &sSound);
+            g_pRules->Get2DArrays()->GetWeaponSounds()->GetFLOATEntry(nSoundType,
+                g_nWeaponSoundPitchOffsetColumn, &fPitch);
+        } else {
+            CExoString sMaterial;
+            if (pTarget->m_nObjectType == OBJECT_TYPE_CREATURE) {
+                CSWCCreature* pCreature = pTarget->AsSWCCreature();
+                if (pCreature->GetForceShield()) {
+                    sMaterial = "forcefield";
+                } else if (pCreature->m_n0C || pCreature->m_n14) {
+                    sMaterial = "stone";
+                } else if (pCreature->m_n10) {
+                    sMaterial = "wood";
+                } else {
+                    g_pRules->Get2DArrays()->GetAppearanceTable()->GetINTEntry(pCreature->GetAppearanceType(),
+                        g_nAppearanceCol_SoundAppType, &nRow);
+                    g_pRules->Get2DArrays()->GetAppearanceSoundSet()->GetCExoStringEntry(nRow,
+                        g_nAppearanceSoundsCol_ArmorType, &sMaterial);
+                    if (sMaterial.IsEmpty()) {
+                        CSWCItem* pArmor = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(
+                            pCreature->GetEquippedItemID(2));
+                        if (pArmor) {
+                            sMaterial = pArmor->GetBaseItem()->m_sArmorSound;
+                        }
+                    }
+                    if (sMaterial.IsEmpty()) {
+                        sMaterial = "leather";
+                    }
+                }
+            } else if (pTarget->m_nObjectType == OBJECT_TYPE_DOOR) {
+                CSWCDoor* pDoor = pTarget->AsSWCDoor();
+                int nType = pDoor->m_nAppearanceType;
+                if (nType == 0) {
+                    g_pRules->Get2DArrays()->GetGenericDoors()->GetINTEntry(pDoor->GetGenericType(),
+                        g_nGenericDoorsCol_SoundAppType, &nRow);
+                } else {
+                    g_pRules->Get2DArrays()->GetDoorTypes()->GetINTEntry(nType, g_nDoorTypesCol_SoundAppType, &nRow);
+                }
+                g_pRules->Get2DArrays()->GetPlaceableSounds()->GetCExoStringEntry(nRow,
+                    g_nPlaceableSoundsCol_ArmorType, &sMaterial);
+            } else if (pTarget->m_nObjectType == OBJECT_TYPE_PLACEABLE) {
+                CSWCPlaceable* pPlaceable = pTarget->AsSWCPlaceable();
+                g_pRules->Get2DArrays()->GetPlaceables()->GetINTEntry(pPlaceable->m_nAppearance,
+                    g_nPlaceablesCol_SoundAppType, &nRow);
+                g_pRules->Get2DArrays()->GetPlaceableSounds()->GetCExoStringEntry(nRow,
+                    g_nPlaceableSoundsCol_ArmorType, &sMaterial);
+            }
+            sMaterial = sMaterial + CExoString(rand() % 2);
+            g_pRules->Get2DArrays()->GetWeaponSounds()->GetCExoStringEntry(nSoundType, sMaterial, &sSound);
+            g_pRules->Get2DArrays()->GetWeaponSounds()->GetFLOATEntry(nSoundType,
+                g_nWeaponSoundPitchOffsetColumn, &fPitch);
+        }
+        sSound.CStr();
+        g_pExoSound->PlayOneShotSoundAt(sSound.CStr(), m_vPosition, 1.5f, 15, 0, 0, 0, fPitch);
+    }
+    return 1;
 }

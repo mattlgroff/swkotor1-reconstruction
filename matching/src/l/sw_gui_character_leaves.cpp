@@ -1,21 +1,13 @@
-// Small method-table leaves for the in-game character panel.
+// Small method-table leaves for the in-game character panel: the
+// alignment bar's CSWGuiSliderReadOnly (vtable 0x00756060). Its destructor
+// 0x006AF940 lives in sw_gui_slider_readonly_dtor_novtable.cpp.
 
-extern "C" void __fastcall gui_m48_slider_destruct_0041bb40(void* self, void* edx);
+#include "l/sw_gui_in_game_character.h"
 
-// FUNCTION: SWKOTOR 0x006AF940
-void __fastcall kotor_fastcall_006af940(void* self, void* edx)
+// Defined only to emit the vtable and its scalar deleting destructor.
+CSWGuiSliderReadOnly::CSWGuiSliderReadOnly()
 {
-    gui_m48_slider_destruct_0041bb40(self, edx);
 }
 
-void __cdecl operator delete(void* p);
-
-// FUNCTION: SWKOTOR 0x006AF950
-void* __fastcall kotor_fastcall_006af950(void* self, void* edx, unsigned int flags)
-{
-    kotor_fastcall_006af940(self, edx);
-    if (flags & 1) {
-        operator delete(self);
-    }
-    return self;
-}
+// FUNCTION: SWKOTOR 0x006AF950 SYMBOL: ??_GCSWGuiSliderReadOnly@@UAEPAXI@Z
+// CSWGuiSliderReadOnly::`scalar deleting destructor' (compiler generated).

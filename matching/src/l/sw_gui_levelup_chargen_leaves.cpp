@@ -1,5 +1,5 @@
 // Level-up preview state restoration and cancellation leaves.
-#include "l/sw_gui_levelup_chargen.h"
+#include "l/sw_gui_in_game_character.h"
 
 namespace {
 inline void HideFlags(void* pControl)

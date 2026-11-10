@@ -4,6 +4,10 @@
 #ifndef G_REQUEST_POOL_H
 #define G_REQUEST_POOL_H
 
+// Array new / delete (0x006fc0d2 / 0x006fc0cd): the pools and the inlined
+// list Allocates use them; without the declarations MSVC 7 lowers new T[n]
+// to the scalar operator new.
+void* __cdecl operator new[](unsigned int n);
 void __cdecl operator delete[](void* p) throw();
 
 #include "g/exo_list.h"
@@ -60,8 +64,15 @@ public:
     virtual void LoseBuffers() = 0;                            // 0x28
     virtual void RestoreBuffers() = 0;                         // 0x2c
 
-    CExoArrayList<int> m_aFree;      // +0x04
-    CExoArrayList<int> m_aLocked;    // +0x10
+    // One program holds one Allocate / destructor per element type, so the
+    // lists are typed by the instances the original reaches: m_aFree (and
+    // the VBO's m_aFlags / m_aSavedSizes, g_aRenderSquares) share the
+    // unsigned int list's new[] Allocate 0x00437d60 and destructor
+    // 0x0042e240 with m_aNames / m_aTargets, while the int list's are the
+    // scalar-new copies (0x005e03c0 / 0x0047abc0). m_aLocked's out-of-line
+    // Allocate is the scalar-new copy too, so it is not that type either.
+    CExoArrayList<unsigned int> m_aFree;    // +0x04
+    CExoArrayList<unsigned long> m_aLocked; // +0x10
     unsigned int m_nCount;           // +0x1c
 };
 
@@ -103,10 +114,10 @@ public:
     virtual void LoseBuffers();
     virtual void RestoreBuffers();
 
-    CExoArrayList<int> m_aFlags;         // +0x20
+    CExoArrayList<unsigned int> m_aFlags; // +0x20
     CExoArrayList<unsigned int> m_aNames; // +0x2c
     CExoArrayList<void*> m_aSaved;       // +0x38
-    CExoArrayList<int> m_aSavedSizes;    // +0x44
+    CExoArrayList<unsigned int> m_aSavedSizes; // +0x44
     CExoArrayList<unsigned int> m_aTargets; // +0x50
 };
 

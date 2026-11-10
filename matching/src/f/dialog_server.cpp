@@ -311,6 +311,13 @@ class CExoLinkedListInternal {
 public:
     void *RemoveHead();
     void *GetNext(CExoLinkedListNode *&pPos);
+    void *GetHead()
+    {
+        CExoLinkedListNode *pNode = m_pHead;
+        if (!pNode)
+            return 0;
+        return pNode->pObject;
+    }
     CExoLinkedListNode *m_pHead;
     CExoLinkedListNode *m_pTail;
     int m_nCount;
@@ -432,8 +439,8 @@ public:
     T *GetNext(CExoLinkedListNode *&pPos) { return (T *)m_pcExoLinkedListInternal->GetNext(pPos); }
     T *GetFirst()
     {
-        CExoLinkedListNode *pNode = m_pcExoLinkedListInternal->m_pHead;
-        return pNode ? (T *)pNode->pObject : 0;
+        CExoLinkedListInternal *pInternal = m_pcExoLinkedListInternal;
+        return (T *)pInternal->GetHead();
     }
     CExoLinkedListInternal *m_pcExoLinkedListInternal;
 };
@@ -545,7 +552,7 @@ float CSWSDialog::SetDialogDelay(CSWSObject *pObject, CExoLocString *pText, unsi
     if (m_lPlayers.IsEmpty() && bHasReplies) {
         CSWSMessage::GetLocStringServerTime(0xffffffff, pText, &sText, &fDelay, m_nPlayerType);
         if (fDelay < 0.15f)
-            fDelay = sText.GetLength() * 0.1125f;
+            fDelay = sText.GetLength() * 0.1125000045f;
     }
     if (!g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bC0 && !bNoMinimum) {
         if (fDelay < 0.01f)
@@ -1069,9 +1076,9 @@ int CSWSDialog::LoadDialog(CResGFF *pGFF, int bLoadAll)
 }
 
 // Descriptive name (not in the debug map): applies the reply a player chose.
-// NONMATCH (81): stack slots of pPos / pClient / pFound are rotated, the
-// found object is not cached in esi, and the second player-list head test is
-// folded; declaration-order and getter-shape variants tried.
+// NONMATCH (73): stack slots of pPos / pClient / pFound are rotated; the
+// c-style GetFirst (empty-list `je` kept) and the pGame copy fixed the list
+// head tests and the esi caching. Declaration-order variants tried.
 // FUNCTION: SWKOTOR 0x005A03C0
 int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject *pObject, unsigned long nReply,
                             int bForce, unsigned long nEntry, int bSkipDelay)
@@ -1082,7 +1089,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject *pObject, unsign
     if (!bForce && (m_n74 != -1 || nEntry != (unsigned long)m_n70))
         return 1;
     pPos = m_lPlayers.GetHeadPos();
-    CSWSDialogPlayer *pPlayer = m_lPlayers.GetHeadObject();
+    CSWSDialogPlayer *pPlayer = m_lPlayers.GetFirst();
     while (pPlayer) {
         if (pPlayer->m_nPlayerId == nPlayerId)
             break;
@@ -1093,11 +1100,12 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject *pObject, unsign
             if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
                     pPlayer->m_oidPlayer, &pFound) != g_cObjectArraySuccess)
                 return 1;
-            if (pFound->AsSWSCreature()) {
-                pFound->AsSWSCreature()->SetActivity(4, 0, 0);
+            CGameObject *pGame = pFound;
+            if (pGame->AsSWSCreature()) {
+                pGame->AsSWSCreature()->SetActivity(4, 0, 0);
                 return 1;
             }
-            ((CSWSObject *)pFound)->StopDialog();
+            ((CSWSObject *)pGame)->StopDialog();
             return 1;
         }
         m_oidPlayer = pPlayer->m_oidPlayer;

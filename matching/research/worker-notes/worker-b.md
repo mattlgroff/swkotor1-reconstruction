@@ -823,3 +823,165 @@ TestPlayerUpdateDifferences, 0x00577B60 SendServerToPlayerJournalFullUpdate,
 0x00552C50 CSWRules::CSWRules. Then the s10 queue (AI lock/unlock/use
 actions, remaining VM handlers). Retry old NONMATCH that show the byte
 temporary or `push eax` after a constructor with the two lessons above.
+
+## Round s12 (2026-11-10): last-update writers, CSWRules constructor
+
+Folder `kotor-match -q -j 2 matching/src/b`: 870/974 -> 875/980 MATCH.
+6 functions annotated: 5 new exact, 1 kept as NONMATCH. No prior MATCH
+regressed and no prior NONMATCH changed its diff count.
+
+### New exact matches
+
+| Address | Function | File |
+| --- | --- | --- |
+| 0x0056E360 | CSWSMessage::WriteRepositoryUpdate | sws_message_repository_update.cpp (new) |
+| 0x00577B60 | CSWSMessage::SendServerToPlayerJournalFullUpdate | sws_message_journal_full.cpp (new) |
+| 0x00552C50 | CSWRules::CSWRules | sw_rules_ctor.cpp (new, self-contained layout) |
+| 0x00566D80 | CSWSPlayerLUOSortedObjectList ctor (12-byte entry of Sort's `new[]`) | sws_message_sorted_list.cpp (new) |
+| 0x00555710 | `??_ECSWSItem@@WBA@AEPAXI@Z` adjustor thunk (CSWSObject vftable slot 0) | sws_item4.cpp |
+
+0x00566D80 and 0x00555710 are not in `functions.csv` (found with a
+ret+padding scan of the bucket; nothing else unannotated turned up).
+
+### Kept NONMATCH
+
+- WriteGameObjUpdate_MajorGUIPanels 0x00577670 (65): scratch registers from
+  the open-container branch on; the original stores the -1 flag after the
+  dead `AsSWSCreature()` call with an imm32 store (ours only gets the imm32
+  store when the assignment comes first).
+
+### Lessons
+
+- **Bitfield vs. plain flags word decides branchy vs. branchless code.**
+  `m_bChanged ? 0x8000 : 0x8100` on a bitfield became a shr/not/and
+  sequence; the original's `test byte; mov eax,0x8000; jne; mov eax,0x8100`
+  came from a plain `unsigned long m_nFlags` and
+  `n = 0x8000; if (!(m_nFlags & 4)) n |= 0x100;`. The plain field also
+  fixed two swapped stack slots in the same function.
+- `pPlayer->GetPlayerId()` (inline) instead of `m_nPlayerID` loads the id
+  before the argument pushes (final `SendServerToPlayerMessage`).
+- A zero-initialised flag declared first (`int bFull = 0;`) becomes the
+  function's zero register for every NULL compare (ebp in the journal
+  writer).
+- Function-scope `float fValue; int nXP;` (instead of loop-scope locals)
+  reproduced the original's frame slots in the CSWRules constructor.
+  Pass literals ("PrimaryRange") for `const CExoString&` so the temporary
+  is built in place (`lea`), as noted in s11.
+- Locals of tests in a found-loop: `bFound` flag + `break` gives the
+  original's found block after the loop with `imul j, 0x3c`.
+- Adding a CExoString member to an element class with only a declared
+  dtor makes its implicit ctor non-trivial and renumbers EH states of
+  unrelated constructors (CSWSPlayer). CSWSPlayerClientEntry fields are
+  therefore behind `B_PLAYER_CLIENT_ENTRY_FIELDS`.
+
+### Header changes
+
+- `sws_message.h`: WriteRepositoryUpdate, TestPlayerUpdateDifferences,
+  WriteGameObjUpdate_PlayerUpdate, StoreValuesInLastPlayerUpdateObject
+  (Mac debug-map names; return types guessed void).
+- `exo_array_list.h`: `B_EXO_ARRAY_LIST_OPAQUE_ADD` for the out-of-line
+  `Add` (0x00671C00).
+- `party_table.h`: CSWSJournalEntry fields (+0x0/+0x8 CExoLocString,
+  +0x24, +0x28 planet id, +0x2c flags word, +0x30..+0x38); includes
+  exo_loc_string.h.
+- `sws_player.h`: CSWSPlayerClientEntry +0x0 flags, +0x4 tag (macro-gated).
+- CSWSPlayerStore (sws_player.h) is the class the Mac map and bucket f call
+  CSWSPlayerLUOInventory; MajorGUIPanels casts between them.
+
+### Next in-range queue
+
+Remaining todo rows are all large: 0x0056DC60 TestObjectVisible and
+0x00567850 SortObjectsForGameObjectUpdate (x87 distance tests),
+0x00572A20 TestPlayerUpdateDifferences (928, many stat getters; signature
+now declared), 0x0056CD20 SendServerToPlayerArea_ClientArea (atan2, ftol),
+0x005584C0 AddAttackBonusStrings (string temporaries), 0x00571960
+ChatMessage, 0x00572DC0 WriteGameObjUpdate_PlayerUpdate, 0x00574400
+StoreValuesInLastPlayerUpdateObject. Retry MajorGUIPanels and
+AddActiveItemPropertiesToMessage (3) with new accessor ideas.
+
+## Round s13 (2026-11-10): visibility, sorting and party-update helpers
+
+Folder `kotor-match -q -j 2 matching/src/b`: 875/980 -> 877/984 MATCH.
+4 functions annotated: 2 new exact, 2 kept as NONMATCH. No prior MATCH
+regressed and no prior NONMATCH changed.
+
+### New exact matches
+
+| Address | Function | File |
+| --- | --- | --- |
+| 0x0056DC60 | CSWSMessage::TestObjectVisible | sws_message_test_visible.cpp (new) |
+| 0x00567850 | CSWSMessage::SortObjectsForGameObjectUpdate | sws_message_sort_objects.cpp (new) |
+
+### Kept NONMATCH
+
+- CSWSItem::AIUpdate 0x0055CB60 (25): **not in functions.csv** (the
+  0x0055A510 row spans it); slot 0x70 of the CSWSItem vftable for
+  CSWSObject (0x00748CC0, `this` = +0x10 base). The original keeps the loop
+  counter in a stack slot (frame 0x18) and uses ebp only as an argument
+  scratch; ours keeps it in ebp. Loop forms, scopes, types all tried.
+- TestPartyUpdateDifferences 0x0056E850 (6): the original stores
+  `*pFlags = 0` after loading the list head and builds `&pos` before
+  loading the +0x0c list for GetNext. Everything else matches.
+
+### Lessons
+
+- **`GetId()` again decided whole-function register allocation**: Sort went
+  54 -> 7 by using `pObserver->GetId()` in one call; TestObjectVisible's
+  last diff was `GetReputation(pObserver->GetId(), 0)`; TestParty 55 -> 53.
+- **Local oid before a call** (`unsigned long oidObject = pObject->m_idSelf;`
+  then `GetFromList920(oidObject)`) reproduced the reused-register push
+  (TestObjectVisible 34 -> 18).
+- `fRange = (spot >= listen) ? spot : listen` gives the original
+  `test ah,0x41; jp` max; `__max` and `<` / `<=` forms do not.
+- A single `bResult` return variable (assignments, one `return bResult`)
+  gives the `mov ebx,1; ...; mov eax,ebx` epilogue copies; setting it inside
+  the trigger branch after the call (not before the type test) fixed the
+  ebx/ebp choice.
+- `goto done;` early exits to one `*pCount = nCount; return pList;` tail give
+  the delayed `push ebx` (shrink-wrap) with a single merged epilogue; early
+  returns duplicate epilogues, nested ifs push ebx at entry.
+- Calling the internal list directly (`p->m_pList->GetNext(pos)`) instead of
+  the template wrapper changed allocation (TestParty 53 -> 15). A trivial
+  inline getter (`GetN930()`) stopped cl from keeping `*ppLast` live across a
+  virtual call (15 -> 6).
+- Vector member access through an inline `DistanceSquared(const Vector&, ...)`
+  gives the `add eax,0x40` base-pointer form.
+- A GetId/GetStats substitution sweep of all NONMATCH <= 30 found nothing
+  (round s10 already applied it). Note `kotor-match -q` omits OK lines, so a
+  sweep must not treat a missing address as "no regression".
+
+### Header changes
+
+- **Fixed swapped slot names in `sws_creature.h`**: slot 0x40 is
+  `AsSWSTrigger` and 0x50 `AsSWSAreaOfEffectObject` (proved by the
+  AddTriggerGeometryToMessage caller at 0x005775A2 and matching buckets
+  a/i); every b TU renamed accordingly (bytes unchanged). Slot 0x5c is now
+  `AsSWSEncounter`, 0x68 `AsSWSSoundObject`, 0x70 `AIUpdate`.
+- CSWSCreature: GetSpotCheckDistance, GetListenCheckDistance, GetInvisible,
+  Fn4F1460, `GetN930()`. CWorldTimer::SubtractWorldTimes. CSWSItem::AIUpdate.
+  CResRef::operator!= (0x00406DC0). CExoLinkedListInternal::AddHead
+  (0x005E9D70) and wrapper.
+- CLastUpdatePartyObject: +0x18 `m_oidCreature`, +0x40 `Vector m_vPosition`
+  (was m_fX/m_fY), inline zeroing ctor, unsigned short HP/force fields.
+
+### Next in-range queue
+
+0x00572A20 TestPlayerUpdateDifferences (928, same style as TestParty; use
+the internal-list and GetId lessons), 0x0056CD20 SendServerToPlayerArea_
+ClientArea, 0x00574400 StoreValuesInLastPlayerUpdateObject, 0x00572DC0
+WriteGameObjUpdate_PlayerUpdate. Retry AIUpdate (counter spill) and
+TestParty (6) with fresh ideas; scan other spanning todo rows for vtable
+targets as done for 0x0055CB60.
+
+## Audit fixes 2026-11-10 (fix6-s1)
+
+- global_variable_table.cpp: every error string was a paraphrase. Real:
+  "Script var BOOLEAN '%s' not in catalogue!", "Script var '%s' is not
+  BOOLEAN!" (Get) / "... not a BOOLEAN!" (Set), "... not a NUMBER!" etc.;
+  ReadCatalogue "Script var '%s' '%s' won't fit in table!", "... has bad
+  type in catalogue!", "... duplicated in catalogue!", "... longer than %d
+  letters!"; ReadTableWithCatalogue (NONMATCH) "ReadTableWithCat(): BOOLEAN
+  '%s' won't fit!" etc.
+- Hash uses toupper (0x006FD268), not tolower.
+- vm_commands_small GetDamageDealtByType compares against 0x00746878
+  (0x400, a's DAMAGE_FLAG_10), not DAMAGE_TYPE_MAX (0x00746884).

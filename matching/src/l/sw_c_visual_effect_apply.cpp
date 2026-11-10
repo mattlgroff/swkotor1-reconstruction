@@ -302,8 +302,8 @@ void CSWCVisualEffectOnObject::RemoveDurationModel(unsigned short nEffect)
         if (nEffect == 33 && g_pAppManager->GetClientExoApp()->GetPlayerCreature()
             && m_oidTargets[0] == g_pAppManager->GetClientExoApp()->GetPlayerCreature()->m_idSelf) {
             CSWCModule* pModule = g_pAppManager->GetClientExoApp()->GetModule();
-            if (pModule && pModule->m_pGuiInGame) {
-                pModule->m_pGuiInGame->m_pPanel->SetActive(0);
+            if (pModule && pModule->m_pArea) {
+                pModule->m_pArea->m_pScene->SetPlayerLight(0);
             }
         }
         m_pModel->AttachToObject(0, 0, 0);
@@ -333,19 +333,21 @@ void CSWCVisualEffectOnObject::RemoveColorEffect(unsigned short nEffect)
 }
 
 // FUNCTION: SWKOTOR 0x006A4FA0
-// NONMATCH: the shared `return 0` block is laid out after the model test.
 int CSWCVisualEffectOnObject::LoadLight(unsigned short nEffect)
 {
     CGameObject* pGameObject = g_pAppManager->GetClientExoApp()->GetGameObject(m_oidTargets[0]);
-    if (pGameObject && pGameObject->AsSWCObject()) {
-        m_pModel = NewCAurObject("fx_light_clr", "fx_light", 0, 0);
-        if (!m_pModel) {
-            return 0;
-        }
-        m_pModel->SetDrawMode(3);
-        return 1;
+    if (!pGameObject) {
+        return 0;
     }
-    return 0;
+    if (!pGameObject->AsSWCObject()) {
+        return 0;
+    }
+    m_pModel = NewCAurObject("fx_light_clr", "fx_light", 0, 0);
+    if (!m_pModel) {
+        return 0;
+    }
+    m_pModel->SetDrawMode(3);
+    return 1;
 }
 
 // FUNCTION: SWKOTOR 0x006A5F00
@@ -448,7 +450,7 @@ void CSWCVisualEffectOnObject::ApplyHardCodedVisualEffect(unsigned short nEffect
         } else if (nEffect < 300) {
             ApplyColorOverlay(nEffect);
         } else if (nEffect < 400) {
-            ApplyDurationEffect(nEffect);
+            ApplyLightSource(nEffect);
         } else if (nEffect < 500) {
             ApplyColorEffect(nEffect);
         } else if (nEffect < 600) {
@@ -458,17 +460,17 @@ void CSWCVisualEffectOnObject::ApplyHardCodedVisualEffect(unsigned short nEffect
         } else if (nEffect < 800) {
             RefreshTextures(nEffect);
         } else if (nEffect < 900) {
-            ApplyEffect4060(nEffect);
+            ApplyChunk(nEffect);
         } else if (nEffect < 1000) {
-            ApplyEffect4240(nEffect);
+            ApplyMirv(nEffect);
         } else if (nEffect < 1100) {
             ApplySkinTexture(nEffect);
         } else if (nEffect < 1200) {
-            ApplyImpactEffect(nEffect);
+            ApplyCheat(nEffect);
         } else if (nEffect < 1300) {
             ApplySpellVisual(nEffect);
         } else if (nEffect < 1400) {
-            ApplyBeamEffect(nEffect);
+            ApplyLightsaberThrow(nEffect);
         } else if (nEffect < 1500) {
             ApplyTexture(nEffect);
         } else if (nEffect < 1600) {
@@ -617,9 +619,18 @@ void CSWCVisualEffectOnObject::UpdateMotionBlur(unsigned short nUnused)
 // FUNCTION: SWKOTOR 0x006A6950
 void CSWCVisualEffectOnObject::Reset()
 {
-    unsigned short nEffect = GetHardCodedEffect();
-    if (nEffect != 0xffff) {
-        RemoveHardCodedVisualEffect(nEffect);
+    if (m_bC6 == 1) {
+        if (m_nA0 != 0xffff) {
+            RemoveHardCodedVisualEffect(m_nA0);
+        }
+    } else if (m_bC6 == 2) {
+        if (m_nA2 != 0xffff) {
+            RemoveHardCodedVisualEffect(m_nA2);
+        }
+    } else if (m_bC6 == 3) {
+        if (m_nA4 != 0xffff) {
+            RemoveHardCodedVisualEffect(m_nA4);
+        }
     }
     DestroyModels();
     m_bC6 = 0;
@@ -644,5 +655,245 @@ void CSWCVisualEffectOnObject::Update(unsigned short nEffect, unsigned long nDel
         UpdateFOV(nEffect, nDelta);
     } else if (nEffect >= 1600 && nEffect < 1700) {
         UpdateMotionBlur(nDelta);
+    }
+}
+
+// FUNCTION: SWKOTOR 0x006A4060
+// NONMATCH: 20 insns; the original shares the offset Vector's slot with the
+// "bloodcolr" temporary and reloads nSize (dead) before the string dtor.
+void CSWCVisualEffectOnObject::ApplyChunk(unsigned short nEffect)
+{
+    Vector vPosition;
+    if (g_pAppManager->GetClientExoApp()->GetClientOptions()->m_nGraphicsDetail < 2) {
+        return;
+    }
+    CGameObject* pGameObject = g_pAppManager->GetClientExoApp()->GetGameObject(m_oidTargets[0]);
+    CSWCObject* pObject = !pGameObject ? 0 : pGameObject->AsSWCObject();
+    if (!pObject->m_pArea) {
+        return;
+    }
+    CSWCCreature* pCreature = pObject->AsSWCCreature();
+    if (!pCreature) {
+        return;
+    }
+    vPosition = pObject->m_vPosition;
+    if (pCreature->GetModelPart(0xff, 1)) {
+        Quaternion qOrientation;
+        Vector vOffset;
+        pCreature->GetModelPart(0xff, 1)->GetNodeTransform("impact", &vOffset, &qOrientation);
+        vPosition += vOffset;
+    }
+    CExoString sBloodColor;
+    g_pRules->Get2DArrays()->m_pAppearanceTable->GetCExoStringEntry(
+        pCreature->GetAppearanceType(), "bloodcolr", &sBloodColor);
+    int nSize;
+    g_pRules->Get2DArrays()->m_pAppearanceTable->GetINTEntry(
+        pCreature->GetAppearanceType(), g_nAppearanceCol_SIZECATEGORY, &nSize);
+}
+
+// FUNCTION: SWKOTOR 0x006A38E0
+// NONMATCH: case 33 keeps the target id in ebx across GetPlayerCreature (the
+// original reloads it after the call); PlayAnimation argument load order.
+void CSWCVisualEffectOnObject::ApplyLightSource(unsigned short nEffect)
+{
+    CExoString sLight;
+    CGameObject* pGameObject = g_pAppManager->GetClientExoApp()->GetGameObject(m_oidTargets[0]);
+    if (!pGameObject) {
+        return;
+    }
+    CSWCObject* pObject = pGameObject->AsSWCObject();
+    if (!pObject) {
+        return;
+    }
+    if (!m_pModel) {
+        return;
+    }
+    nEffect -= 300;
+    int bShadows = 1;
+    m_nD8 = 0x14;
+    switch (nEffect) {
+    case 0:
+    case 50:
+        sLight = "White_5m";
+        bShadows = 0;
+        break;
+    case 1:
+    case 51:
+        sLight = "White_10m";
+        break;
+    case 2:
+    case 52:
+        sLight = "White_15m";
+        break;
+    case 3:
+    case 53:
+        sLight = "White_20m";
+        break;
+    case 4:
+    case 54:
+        sLight = "Blue_5m";
+        bShadows = 0;
+        break;
+    case 5:
+    case 55:
+        sLight = "Blue_10m";
+        break;
+    case 6:
+    case 56:
+        sLight = "Blue_15m";
+        break;
+    case 7:
+    case 57:
+        sLight = "Blue_20m";
+        break;
+    case 8:
+    case 58:
+        sLight = "Yello_5m";
+        bShadows = 0;
+        break;
+    case 9:
+    case 59:
+        sLight = "Yello_10m";
+        break;
+    case 10:
+    case 60:
+        sLight = "Yello_15m";
+        break;
+    case 11:
+    case 61:
+        sLight = "Yello_20m";
+        break;
+    case 12:
+    case 62:
+        sLight = "Red_5m";
+        bShadows = 0;
+        break;
+    case 13:
+    case 63:
+        sLight = "Red_10m";
+        break;
+    case 14:
+    case 64:
+        sLight = "Red_15m";
+        break;
+    case 15:
+    case 65:
+        sLight = "Red_20m";
+        break;
+    case 16:
+    case 66:
+        sLight = "Orng_5m";
+        bShadows = 0;
+        break;
+    case 17:
+    case 67:
+        sLight = "Orng_10m";
+        break;
+    case 18:
+    case 68:
+        sLight = "Orng_15m";
+        break;
+    case 19:
+    case 69:
+        sLight = "Orng_20m";
+        break;
+    case 20:
+    case 70:
+        sLight = "Purp_5m";
+        bShadows = 0;
+        break;
+    case 21:
+    case 71:
+        sLight = "Purp_10m";
+        break;
+    case 22:
+    case 72:
+        sLight = "Purp_15m";
+        break;
+    case 23:
+    case 73:
+        sLight = "Purp_20m";
+        break;
+    case 24:
+    case 74:
+        sLight = "Gren_5m";
+        bShadows = 0;
+        break;
+    case 25:
+    case 75:
+        sLight = "Gren_10m";
+        break;
+    case 26:
+    case 76:
+        sLight = "Gren_15m";
+        break;
+    case 27:
+    case 77:
+        sLight = "Gren_20m";
+        break;
+    case 28:
+    case 78:
+        sLight = "Dark_Vision";
+        bShadows = 0;
+        m_nD8 = 0x33;
+        m_nDC = 1;
+        break;
+    case 29:
+    case 79:
+        sLight = "Blind_Vision";
+        bShadows = 0;
+        m_nD8 = 0x35;
+        m_nDC = 1;
+        break;
+    case 30:
+    case 80:
+        sLight = "Low_Light_Vision";
+        bShadows = 0;
+        m_nD8 = 0x34;
+        m_nDC = 1;
+        break;
+    case 31:
+    case 81:
+        sLight = "Ultra_Vision";
+        bShadows = 0;
+        m_nD8 = 0x31;
+        m_nDC = 0;
+        break;
+    case 32:
+    case 82:
+        sLight = "darkness";
+        bShadows = 0;
+        m_nD8 = 0x32;
+        m_nDC = 1;
+        break;
+    case 33:
+        if (g_pAppManager->GetClientExoApp() && g_pAppManager->GetClientExoApp()->GetPlayerCreature()
+            && m_oidTargets[0] == g_pAppManager->GetClientExoApp()->GetPlayerCreature()->m_idSelf) {
+            if (g_pAppManager->GetClientExoApp()->GetCreatureByGameObjectID(m_oidTargets[0])) {
+                sLight = "Blind_Vision";
+                bShadows = 0;
+                m_nD8 = 0xd;
+                m_nDC = 0;
+            }
+            CSWCModule* pModule = g_pAppManager->GetClientExoApp()->GetModule();
+            if (pModule && pModule->m_pArea) {
+                pModule->m_pArea->m_pScene->SetPlayerLight(m_pModel);
+            }
+        }
+        break;
+    default:
+        return;
+    }
+    AttachLight();
+    m_pModel->PlayAnimation(sLight.CStr(), nEffect < 50 ? 1.0f : -0.31f, 3, 0);
+    if (m_pModel) {
+        m_nD4 = bShadows != 0;
+    }
+    CSWCCreature* pCreature = pObject->AsSWCCreature();
+    CSWCCreature* pPlayer = g_pAppManager->GetClientExoApp()->GetPlayerCreature();
+    if (pCreature && pCreature == pPlayer) {
+        m_pModel->SetDrawMode(2);
+    } else {
+        m_pModel->SetDrawMode(4);
     }
 }

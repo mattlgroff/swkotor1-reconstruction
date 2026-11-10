@@ -29,9 +29,10 @@ VertexCache::~VertexCache()
 }
 
 // FUNCTION: SWKOTOR 0x004A96D0
+// Degrees to radians (DegToRad); constant 0x3C8EFA35 = pi/180.
 float FUN_004a96d0(float f)
 {
-    return f * 57.29578f;
+    return f * 0.017453292f;
 }
 
 // FUNCTION: SWKOTOR 0x004A96E0

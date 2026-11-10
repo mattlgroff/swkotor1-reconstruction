@@ -25,6 +25,7 @@ public:
     unsigned long nCount;                           // 0x08
 
     ~CExoLinkedListInternal();                      // 0x005E9AB0
+    void* GetHead();
     void* RemoveHead();                             // 0x005E9C80
     void* GetNext(void*& pos);                      // 0x005E9B90
     void* Remove(void* pos);                        // 0x005E9C10
@@ -35,6 +36,17 @@ struct CExoLinkedListNode {
     CExoLinkedListNode* pNext;                      // 0x04
     void* pObject;                                  // 0x08
 };
+
+// The early `return 0` (through a local internal pointer) keeps the
+// original's unthreaded empty-list `je` into the caller's own null test.
+inline void* CExoLinkedListInternal::GetHead()
+{
+    CExoLinkedListNode* pNode = (CExoLinkedListNode*)pHead;
+    if (!pNode) {
+        return 0;
+    }
+    return pNode->pObject;
+}
 
 template <class T>
 class CExoLinkedList {
@@ -53,11 +65,8 @@ public:
     void* GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
     T* GetHead()
     {
-        void* p = m_pcExoLinkedListInternal->pHead;
-        if (p) {
-            p = ((CExoLinkedListNode*)p)->pObject;
-        }
-        return (T*)p;
+        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
+        return (T*)pInternal->GetHead();
     }
     T* GetNext(void*& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
     T* Remove(void* pos) { return (T*)m_pcExoLinkedListInternal->Remove(pos); }
@@ -105,9 +114,6 @@ CExoLocStringInternal::~CExoLocStringInternal()
 // FUNCTION: SWKOTOR 0x005EC9C0
 int CExoLocStringInternal::GetString(int nLanguage, CExoString& sOut)
 {
-    // NONMATCH (0 diff insns, one jump target): the original's empty-list
-    // `je` lands on the loop's own null test instead of being threaded to
-    // the exit; for-loop and GetHead(pos) variants did not change it.
     void* pos = m_lstLocStrings.GetHeadPos();
     ExoLocString_st* p = m_lstLocStrings.GetHead();
     while (p) {
@@ -142,8 +148,6 @@ int CExoLocStringInternal::GetStringLength(unsigned long nIndex)
 // FUNCTION: SWKOTOR 0x005ECA80
 void CExoLocStringInternal::RemoveString(int nLanguage)
 {
-    // NONMATCH (6 diff insns): same unthreaded empty-list `je` as GetString,
-    // plus the original keeps the head in eax and copies to esi.
     void* pos = m_lstLocStrings.GetHeadPos();
     ExoLocString_st* p = m_lstLocStrings.GetHead();
     while (p) {

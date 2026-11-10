@@ -62,11 +62,14 @@ void AddEmitterToRooms(Scene* pScene, Emitter* pEmitter)
 
 struct ObjectFlags {
     char pad_0x0[0x50];
-    unsigned char m_nFlags50;           // +0x50 (bit 2: use the position)
-    unsigned char m_nFlags51;           // +0x51 (bit 0: all rooms)
+    unsigned short m_b0 : 1;            // +0x50
+    unsigned short m_b1 : 1;
+    unsigned short m_bUsePosition : 1;  // +0x50 bit 2
+    unsigned short m_b3 : 5;
+    unsigned short m_bAllRooms : 1;     // +0x51 bit 0
 
-    unsigned char UsePosition() { return (unsigned char)((m_nFlags50 >> 2) & 1); }
-    unsigned char InAllRooms() { return (unsigned char)(m_nFlags51 & 1); }
+    unsigned char UsePosition() { return m_bUsePosition; }
+    bool InAllRooms() { return m_bAllRooms; }
 };
 
 class SceneObject {
@@ -84,9 +87,8 @@ public:
 Vector operator/(const Vector& v, float f);     // 0x00437A90
 extern int g_nLastObjectRoom;                   // 0x007FBF68
 
-// NONMATCH 17: the original tests the +0x50 / +0x51 flag bits with
-// mov al / shr / test al,1 (ours: test byte ptr) and passes the division
-// result pointer straight to the rotation.
+// NONMATCH 6: frame is 0xC larger (the original builds the division result
+// in vPos's slot) and the +0x51 bit test is `test byte ptr` here.
 // FUNCTION: SWKOTOR 0x0046CE70
 void AddObjectToRooms(Scene* pScene, SceneObject* pObject)
 {
@@ -95,8 +97,8 @@ void AddObjectToRooms(Scene* pScene, SceneObject* pObject)
     if (pObject->m_pFlags && pObject->m_pFlags->UsePosition())
         vPos = pObject->m_vPosition;
     else {
-        Vector vCenter = (pObject->m_vBoxMax + pObject->m_vBoxMin) / 2.0f;
-        vPos = pObject->m_qOrientation * vCenter + pObject->m_vPosition;
+        vPos = pObject->m_qOrientation * ((pObject->m_vBoxMax + pObject->m_vBoxMin) / 2.0f)
+             + pObject->m_vPosition;
     }
     int i;
     if (!pObject->m_pFlags || !pObject->m_pFlags->InAllRooms()) {

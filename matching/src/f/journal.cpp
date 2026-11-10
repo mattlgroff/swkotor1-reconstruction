@@ -7,7 +7,7 @@ public:
     CExoString(const CExoString &s);
     ~CExoString();
     CExoString &operator=(const CExoString &s);
-    int operator==(const CExoString &s) const;
+    int CompareNoCase(const CExoString &s) const;   // 0x005e6450
     char *m_sString;
     unsigned long m_nBufferLength;
 };
@@ -204,7 +204,7 @@ unsigned long CSWSJournal::GetQuestEntryXP(const CExoString &sPlotID)
 {
     int nEntries = m_lstEntries.num;
     for (int i = 0; i < nEntries; i++) {
-        if (m_lstEntries.element[i].m_sPlotID == sPlotID)
+        if (m_lstEntries.element[i].m_sPlotID.CompareNoCase(sPlotID))
             return m_lstEntries.element[i].m_nQuestXP;
     }
     return 0;
@@ -215,7 +215,7 @@ int CSWSJournal::GetState(const CExoString &sPlotID)
 {
     int nEntries = m_lstEntries.num;
     for (int i = 0; i < nEntries; i++) {
-        if (m_lstEntries.element[i].m_sPlotID == sPlotID)
+        if (m_lstEntries.element[i].m_sPlotID.CompareNoCase(sPlotID))
             return m_lstEntries.element[i].m_nState;
     }
     return 0;

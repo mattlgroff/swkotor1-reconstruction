@@ -167,7 +167,7 @@ public:
     int m_nSpawnsCurrent;                                   // 0x2c8
 };
 
-extern const int DAMAGE_TYPE_MAX;                           // 0x00746878 (name guessed)
+extern int DAMAGE_FLAG_10;                                  // 0x00746878 (0x400); DAMAGE_TYPE_MAX is 0x00746884
 
 float Magnitude(const Vector& v);                           // 0x004AB100
 
@@ -184,7 +184,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDamageDealtByType(int nCommandId
     if (!g_pVirtualMachine->StackPopInteger(&nDamageType)) {
         return VIRTUAL_MACHINE_ERROR_STACK_UNDERFLOW;
     }
-    if (pObject && nDamageType > 0 && nDamageType < DAMAGE_TYPE_MAX) {
+    if (pObject && nDamageType > 0 && nDamageType < DAMAGE_FLAG_10) {
         unsigned char nType = pObject->m_nObjectType;
         if (nType == 5 || nType == 9 || nType == 10) {
             nResult = pObject->GetEffectCount(nDamageType);

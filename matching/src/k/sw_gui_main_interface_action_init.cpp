@@ -6,10 +6,6 @@
 typedef void (CSWGuiPanel::*GuiEventHandler)(CSWGuiControl*);
 
 // FUNCTION: SWKOTOR 0x0068B9D0
-// NONMATCH: register rotation only (the original keeps this in esi, the
-// panel in edi, nIndex in ebx and spills the icon pointer; ours puts this
-// in ebp). Frame layout, EH states, events and the jump table agree with
-// the up / down / icon pointer locals; member forms shrink the frame.
 void CSWGuiMainInterfaceAction::Initialize(CSWGuiPanel* pPanel, int nIndex, int bTarget)
 {
     CExoString sName;
@@ -29,16 +25,16 @@ void CSWGuiMainInterfaceAction::Initialize(CSWGuiPanel* pPanel, int nIndex, int 
     pPanel->InitControl(pDown, sName, bTarget == 0);
     if (m_n718) {
         m_btnFrame.AddChildControl(pIcon);
-        pIcon->m_pParentControl = &m_btnFrame;
+        m_btnIcon.m_pParentControl = &m_btnFrame;
         m_btnFrame.AddChildControl(pUp);
-        pUp->m_pParentControl = &m_btnFrame;
+        m_btnUp.m_pParentControl = &m_btnFrame;
         m_btnFrame.AddChildControl(pDown);
-        pDown->m_pParentControl = &m_btnFrame;
+        m_btnDown.m_pParentControl = &m_btnFrame;
         nIndex += 4;
     }
-    GuiEventHandler pfnPrev;
-    GuiEventHandler pfnNext;
     GuiEventHandler pfnFocus;
+    GuiEventHandler pfnNext;
+    GuiEventHandler pfnPrev;
     if (bTarget) {
         pfnPrev = (GuiEventHandler)&CSWGuiMainInterface::OnTargetPrevClicked;
         pfnNext = (GuiEventHandler)&CSWGuiMainInterface::OnTargetNextClicked;
@@ -65,15 +61,15 @@ void CSWGuiMainInterfaceAction::Initialize(CSWGuiPanel* pPanel, int nIndex, int 
     pUp->AddEvent(0, pPanel, pfnFocus);
     pUp->AddEvent(0x1f4, pPanel, pfnPrev);
     pUp->AddEvent(0x1f5, pPanel, pfnNext);
-    pUp->m_nId = nIndex;
+    m_btnUp.m_nId = nIndex;
     pDown->SetNavigable(0);
     pDown->AddEvent(0x27, pPanel, pfnNext);
     pDown->AddEvent(0, pPanel, pfnFocus);
     pDown->AddEvent(0x1f4, pPanel, pfnPrev);
     pDown->AddEvent(0x1f5, pPanel, pfnNext);
-    pDown->m_cBorder.m_fRotation = 180.0f;
-    pDown->m_cHilite.m_fRotation = 180.0f;
-    pDown->m_nId = nIndex;
+    m_btnDown.m_cBorder.m_fRotation = 180.0f;
+    m_btnDown.m_cHilite.m_fRotation = 180.0f;
+    m_btnDown.m_nId = nIndex;
     pUp->m_nToolTipStrRef = 0xbd51;
     pUp->m_nKeyBinding = 0xf8;
     pDown->m_nToolTipStrRef = 0xbd52;

@@ -46,7 +46,7 @@ class CExoArrayList {
 public:
     CExoArrayList() { num = 0; array_size = 0; element = NULL; }
     ~CExoArrayList() { delete[] element; element = NULL; }
-    void Add(T t);                                  // <unsigned long>: 0x006449D0
+    void AddUnique(T t);                            // <unsigned long>: 0x006449D0
     void DelIndex(int nIndex);                      // <unsigned long>: 0x006857A0
     int count(T t)
     {

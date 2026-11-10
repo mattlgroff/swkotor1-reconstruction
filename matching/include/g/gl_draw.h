@@ -61,7 +61,7 @@ extern int g_bFontInitialised;                        // 0x007b90f0
 extern unsigned int g_nFontListBase;                  // 0x007a47c0
 void AurInitFont();                                   // 0x0044cc40
 void RenderSquares(int nId);                          // 0x00426000
-extern CExoArrayList<int> g_aRenderSquares;           // 0x007a693c
+extern CExoArrayList<unsigned int> g_aRenderSquares;  // 0x007a693c
 void AurDrawString(char* sz);                         // 0x00432040
 
 void _glOrtho(double l, double r, double b, double t, double n, double f); // 0x00404b60

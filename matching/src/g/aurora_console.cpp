@@ -70,7 +70,7 @@ public:
 extern CExoArrayList<Scene*> g_aScenes;               // 0x007b9398
 extern CExoArrayList<CAurPostString*> g_aPostStrings; // 0x007b90fc
 extern CExoArrayList<AurConsoleVar*> g_aConsoleVars;  // 0x007b9108
-extern char g_szConsoleResult[];                      // 0x007b9118
+extern char g_szUntraceBuffer[];                       // 0x007b9118
 extern char g_bConsoleEcho;                           // 0x007b8fc0
 extern char g_bFontFlag;                              // 0x0078e35c
 extern int g_bFontInitialised;                        // 0x007b90f0
@@ -151,8 +151,8 @@ char* AurDeleteConsoleVars(const char* szPrefix)
         }
         nCount++;
     }
-    sprintf(g_szConsoleResult, "deleted %d trace commands", nCount);
-    return g_szConsoleResult;
+    sprintf(g_szUntraceBuffer, "deleted %d trace commands", nCount);
+    return g_szUntraceBuffer;
 }
 
 #pragma auto_inline(off)

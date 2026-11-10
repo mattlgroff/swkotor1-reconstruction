@@ -35,15 +35,15 @@ public:
     CExoArrayList<MdlFace> m_lFaces;        // +0x58
 };
 
-// NONMATCH (5 insns): the original keeps the face counter in the dead
-// third-argument slot; ours allocates a frame slot (`push ecx`).
+// A face-list pointer local lets cl keep the counter in pNode's dead slot.
 // FUNCTION: SWKOTOR 0x004741A0
 void ProcessFaces(Vector* pLight, ShadowFace* pOut, MdlNodeTriMesh* pNode)
 {
-    for (int i = 0; i < pNode->m_lFaces.num; i++) {
-        MdlFace* pFace = &pNode->m_lFaces.element[i];
+    CExoArrayList<MdlFace>* pFaces = &pNode->m_lFaces;
+    for (int i = 0; i < pFaces->num; i++) {
+        MdlFace* pFace = &pFaces->element[i];
         pOut[i].fFacing = pFace->vNormal.y * pLight->y + pFace->vNormal.z * pLight->z +
                           pFace->vNormal.x * pLight->x + pFace->fDistance;
-        pOut[i].adjacent = pNode->m_lFaces.element[i].adjacent;
+        pOut[i].adjacent = pFaces->element[i].adjacent;
     }
 }

@@ -1,5 +1,6 @@
 // CSWSObject: animation, hit point, damage immunity, dialog delay and
 // hostile actor helpers (0x004CAC30-0x004CC0C0).
+#include <stdlib.h>
 #include "i/sws_object.h"
 
 class CWorldTimer {
@@ -11,17 +12,6 @@ public:
 };
 
 extern const unsigned long g_nMillisecondsPerSecond;               // 0x00744174 (placeholder name)
-
-static inline int ClampImmunity(int nImmunity)
-{
-    if (nImmunity < -100) {
-        return -100;
-    }
-    if (nImmunity > 100) {
-        return 100;
-    }
-    return nImmunity;
-}
 
 // FUNCTION: SWKOTOR 0x004CAC30
 void CSWSObject::AddActionNodeParameter(CSWSObjectActionNode* pNode, unsigned long nIndex,
@@ -37,6 +27,7 @@ void CSWSObject::AddActionNodeParameter(CSWSObjectActionNode* pNode, unsigned lo
     }
     else if (nType == 2) {
         pNode->m_pParam[nIndex] = (void*)*(unsigned long*)pValue;
+        return;
     }
     else if (nType == 4) {
         CExoString* pString = new CExoString;
@@ -45,6 +36,7 @@ void CSWSObject::AddActionNodeParameter(CSWSObjectActionNode* pNode, unsigned lo
     }
     else if (nType == 3) {
         pNode->m_pParam[nIndex] = (void*)*(unsigned long*)pValue;
+        return;
     }
     else if (nType == 5) {
         pNode->m_pParam[nIndex] = pValue;
@@ -99,16 +91,7 @@ short CSWSObject::GetCurrentHitPoints(int bExcludeTemporary)
 // FUNCTION: SWKOTOR 0x004CAEE0
 int CSWSObject::GetDamageImmunity(unsigned char nType)
 {
-    char nImmunity = m_pDamageImmunity[nType];
-    if (nImmunity < 100) {
-        if ((int)nImmunity < -100) {
-            return -100;
-        }
-        if (nImmunity < 100) {
-            return nImmunity;
-        }
-    }
-    return 100;
+    return __max(-100, __min(m_pDamageImmunity[nType], 100));
 }
 
 // FUNCTION: SWKOTOR 0x004CAF20
@@ -134,12 +117,15 @@ int CSWSObject::GetDamageImmunityByFlags(unsigned short nFlags)
     short nImmunity = 0;
     for (int i = 0; i < 15; i++) {
         if ((unsigned short)(nFlags >> i) & 1) {
-            if (nImmunity == 0 || (char)GetDamageImmunity((unsigned char)i) < nImmunity) {
+            if (nImmunity == 0) {
+                nImmunity = (char)GetDamageImmunity((unsigned char)i);
+            }
+            else if ((char)GetDamageImmunity((unsigned char)i) < nImmunity) {
                 nImmunity = (char)GetDamageImmunity((unsigned char)i);
             }
         }
     }
-    return ClampImmunity(nImmunity);
+    return __max(-100, __min(nImmunity, 100));
 }
 
 // FUNCTION: SWKOTOR 0x004CB020
@@ -183,6 +169,11 @@ void CSWSObject::SetDialogDelay(float fSeconds)
         (unsigned long*)&m_n38, (unsigned long*)&m_n3c);
 }
 
+static inline CSWSCreature* ServerCreature(unsigned long oid)
+{
+    return GetServerExoApp()->GetCreatureByGameObjectID(oid);
+}
+
 // FUNCTION: SWKOTOR 0x004CC0C0
 void CSWSObject::SetLastHostileActor(unsigned long oidActor, int bForce)
 {
@@ -200,8 +191,7 @@ void CSWSObject::SetLastHostileActor(unsigned long oidActor, int bForce)
     }
     CSWSCreature* pCreature;
     if (pObject->m_nObjectType == OBJECT_TYPE_AREA_OF_EFFECT) {
-        pCreature = g_pAppManager->m_pServerExoApp->GetCreatureByGameObjectID(
-            pObject->AsSWSAreaOfEffectObject()->m_oidCreator);
+        pCreature = ServerCreature(pObject->AsSWSAreaOfEffectObject()->m_oidCreator);
     }
     else if (pObject->m_nObjectType == OBJECT_TYPE_CREATURE && pObject->m_idSelf != m_idSelf) {
         pCreature = pObject->AsSWSCreature();

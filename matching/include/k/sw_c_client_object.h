@@ -10,12 +10,17 @@ public:
     unsigned long m_nBufferLength;
     CExoString();
     CExoString(const CExoString&);
+    CExoString(const char*);                                         // 0x005E5A90
+    explicit CExoString(int);                                        // 0x005E5BC0
     ~CExoString();
+    CExoString& operator=(const char*);                              // 0x005E5140
 };
 
 class CResRef {
 public:
     char m_resRef[16];
+    CResRef() {}
+    CResRef(const CExoString&);                                      // 0x00406D60
     char* GetResRefStr() const;                                      // 0x00405FE0
 };
 
@@ -73,10 +78,12 @@ public:
     virtual int LoadModel(const CResRef&, unsigned char);            // +0x0C
     virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
     virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
+    virtual void v30(); virtual void v34();
+    virtual float GetAnimationEventTime(int);                        // +0x38
+    virtual void v3C();
     virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
     virtual void v50();
-    virtual int PlayAnim(int, float, int, int);                      // +0x54
+    virtual int PlayAnim(unsigned short, float, int, int);           // +0x54
     virtual void v58(); virtual void v5C();
     virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
     virtual void v70(); virtual void v74();
@@ -180,6 +187,8 @@ public:
     char pad_0x0[0x48];
     CSWCArea* m_pArea;                                               // +0x48
     CSWCArea* GetArea() { return m_pArea; }
+    void ShakeCamera(int, int);                                      // 0x006416F0
+    void BumpCamera(int);                                            // 0x00641730
 };
 
 class CClientExoApp {

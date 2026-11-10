@@ -314,7 +314,7 @@ int CSWSPlaceable::LoadFromTemplate(const CResRef &cResRef, int bLoadInventory)
         CExoString sError;
         CExoString sResRef;
         cResRef.CopyToString(sResRef);
-        sError.Format("Placeable template %s doesn't exist.\n", sResRef.CStr());
+        sError.Format("Item template %s doesn't exist.\n", sResRef.CStr());
         return 0;
     }
     CResStruct cTop;

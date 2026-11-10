@@ -262,6 +262,8 @@ public:
     void ChangePosition(Vector v);
     int LoadSound(CResGFF *pGFF, CResStruct *pStruct);
     int LoadFromTemplate(const CResRef &cResRef);
+    virtual void EventHandler(unsigned long nEventId, unsigned long oidCaller, void *pScript,
+                              unsigned long nCalendarDay, unsigned long nTimeOfDay);
     float GetPitchVariation() { return m_fPitchVariation; }
     float GetFixedVariance() { return m_fFixedVariance; }
     float GetMinDistance() { return m_fMinDistance; }
@@ -290,6 +292,13 @@ public:
     int m_bContinuous;               // +0x278
     int m_bRandom;                   // +0x27c
 };
+
+// Sound objects ignore events (vtable +0x78); start missing from functions.csv.
+// FUNCTION: SWKOTOR 0x005C8650
+void CSWSSoundObject::EventHandler(unsigned long nEventId, unsigned long oidCaller, void *pScript,
+                                   unsigned long nCalendarDay, unsigned long nTimeOfDay)
+{
+}
 
 // FUNCTION: SWKOTOR 0x005C8660
 CSWSSoundObject::~CSWSSoundObject()

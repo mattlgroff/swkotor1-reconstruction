@@ -340,6 +340,8 @@ CSWRoom::~CSWRoom()
 {
 }
 
+// FUNCTION: SWKOTOR 0x005C7D50 SYMBOL: ??_GCSWRoom@@UAEPAXI@Z
+
 // FUNCTION: SWKOTOR 0x005C7D70
 void CSWRoom::SetRoomInfo(const CResRef &cResRef, const Vector &vPosition)
 {

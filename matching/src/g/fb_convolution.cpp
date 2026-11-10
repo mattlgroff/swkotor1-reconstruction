@@ -19,7 +19,7 @@ void RenderOverlayConvolution(unsigned int nTexture)
     glClear(GL_COLOR_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
     glDisable(g_nCapLighting);
-    FrameBufferModificationPixelShaders(1, nTexture, g_nBloomRamp0, g_nBloomRamp1, g_nBloomRamp2);
+    FrameBufferModificationPixelShaders(1, nTexture, g_nColorRamp0, g_nColorRamp1, g_nColorRamp2);
     glBegin(GL_QUADS);
     for (int i = 0; i < 4; i++) {
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -98,7 +98,7 @@ void RenderOverlayConvolutionATI(unsigned int nTexture)
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDisable(g_nCapLighting);
-    FrameBufferModificationPixelShadersATI(1, nTexture, g_nBloomRamp0, g_nBloomRamp1, g_nBloomRamp2);
+    FrameBufferModificationPixelShadersATI(1, nTexture, g_nColorRamp0, g_nColorRamp1, g_nColorRamp2);
     float fU = (float)g_nScreenWidth / g_nPowerWidth;
     float fV = (float)g_nScreenHeight / g_nPowerHeight;
     glBegin(GL_QUADS);

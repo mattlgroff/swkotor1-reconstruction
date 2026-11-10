@@ -186,29 +186,31 @@ int CNetLayer::HandleBNCSMessage(unsigned long nPlayer, unsigned char* pData, un
     pReply[3] = 'R';
     m_cPlayerInfo.m_sPlayerName = sPlayerName;
     m_cPlayerInfo.m_bPlayerInUse = 1;
+    // The original tests each password with CExoString::operator==("")
+    // (0x005E5290): a role is granted when its password is empty.
     if (nType == 0x40) {
-        if (m_sServerAdminPassword != "") {
+        if (m_sServerAdminPassword == "") {
             m_cPlayerInfo.m_bPlayerPrivileges = 0;
             m_cPlayerInfo.m_bGameMasterPrivileges = 0;
             m_cPlayerInfo.m_bServerAdminPrivileges = 1;
         }
     }
     else if (nType == 0x20) {
-        if (m_sGameMasterPassword != "") {
+        if (m_sGameMasterPassword == "") {
             m_cPlayerInfo.m_bServerAdminPrivileges = 0;
             m_cPlayerInfo.m_bPlayerPrivileges = 1;
             m_cPlayerInfo.m_bGameMasterPrivileges = 0;
         }
     }
-    else if (m_sPlayerPassword != "") {
+    else if (m_sPlayerPassword == "") {
         m_cPlayerInfo.m_bPlayerPrivileges = 0;
         m_cPlayerInfo.m_bGameMasterPrivileges = 1;
         m_cPlayerInfo.m_bServerAdminPrivileges = 1;
     }
     pReply[4] = 'A';
-    if ((nType == 0x10 && m_sPlayerPassword != "") ||
-        (nType == 0x20 && m_sGameMasterPassword != "") ||
-        (nType == 0x40 && m_sServerAdminPassword != "")) {
+    if ((nType == 0x10 && m_sPlayerPassword == "") ||
+        (nType == 0x20 && m_sGameMasterPassword == "") ||
+        (nType == 0x40 && m_sServerAdminPassword == "")) {
         pReply[5] = 'C';
         m_pWindow->PlayerConnected(0, 1, 0);
     }

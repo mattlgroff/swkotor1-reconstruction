@@ -6,7 +6,7 @@
 #define H_ADD_OUT_OF_LINE
 #include "h/texctl.h"
 
-extern "C" int __cdecl _strnicmp(const char*, const char*, unsigned int);
+extern "C" int __cdecl strncmp(const char*, const char*, unsigned int);
 
 char* AurResGetNextLine();              // 0x0044BFA0
 void* AurResGetData(int nSize);         // 0x0044BFD0
@@ -85,7 +85,7 @@ void Parse(char* s, CExoArrayList<T>* pList)
     } else {
         char* szLine;
         for (szLine = AurResGetNextLine(); szLine; szLine = AurResGetNextLine()) {
-            if (!_strnicmp(SkipWhitespaceInline(szLine), "endlist", 7))
+            if (!strncmp(SkipWhitespaceInline(szLine), "endlist", 7))
                 break;
             if (pList->num == 0)
                 pList->SetSize(1);

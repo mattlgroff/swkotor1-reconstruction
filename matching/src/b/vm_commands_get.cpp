@@ -13,7 +13,7 @@ extern int ABILITY_WISDOM;                                  // 0x00746848
 extern int ABILITY_CHARISMA;                                // 0x0074684C
 
 // Vtable slot 0x50 (object type 0xb).
-class CSWSTrigger : public CSWSObject {
+class CSWSAreaOfEffectObject : public CSWSObject {
 public:
     char pad_0xf4[0x248 - 0xf4];
     unsigned long m_oidCreator;                             // 0x248
@@ -162,8 +162,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetAreaOfEffectCreator(int nCommand
     unsigned long oidResult = INVALID_OBJECT_ID;
     CGameObject* pObject;
     if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidAreaOfEffect, &pObject) == GAME_OBJECT_VALID &&
-        pObject->AsSWSTrigger()) {
-        oidResult = pObject->AsSWSTrigger()->m_oidCreator;
+        pObject->AsSWSAreaOfEffectObject()) {
+        oidResult = pObject->AsSWSAreaOfEffectObject()->m_oidCreator;
     }
     return g_pVirtualMachine->StackPushObject(oidResult) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
 }

@@ -343,7 +343,7 @@ void __cdecl PumpMessages()
 
 extern "C" int __cdecl sscanf(const char* s, const char* fmt, ...);
 extern "C" int __cdecl strncmp(const char* a, const char* b, unsigned int n);
-extern "C" long __cdecl atol(const char* s);
+extern "C" int __cdecl atoi(const char* s);
 extern "C" __declspec(dllimport) void __stdcall glClearColor(float r, float g, float b, float a);
 extern "C" __declspec(dllimport) void __stdcall glEnable(unsigned int cap);
 extern "C" __declspec(dllimport) long __stdcall SendMessageA(void* hWnd, unsigned int msg, unsigned int wParam,
@@ -384,7 +384,7 @@ void __cdecl ParseEventCaptureArgs(int argc, char** argv)
             i++;
             int nRate = 30;
             if (i < argc) {
-                nRate = atol(argv[i]);
+                nRate = atoi(argv[i]);
             }
             GetClientExoApp()->setCaptureEventRate(nRate);
         } else if (strncmp(argv[i], "-epm", 4) == 0) {
@@ -508,7 +508,7 @@ void __cdecl AurDisableHeadLight(); // 0x0044da80
 void __cdecl AurPostString(const char* s, int x, int y, float fLife); // 0x0044d490
 void __cdecl AurRenderStrings();    // 0x0044d6a0
 
-extern int g_bHeadLight;            // 0x007a3c50
+extern int g_bClientHeadLight;      // 0x007a3c50 (app-side flag; not the Aurora 0x0078e388 one)
 extern int g_bShowFrameInfo;        // 0x007a3a40
 extern char g_szFrameInfo[];        // 0x007a3a4c
 extern int g_nNetStatusTime;        // 0x0074c538
@@ -519,7 +519,7 @@ void __cdecl RunFrame(float fDelta, int bRunServer, int bNoRender)
     AurStartupWait();
     if (!bNoRender && !g_pAppManager->m_pClientExoApp->IsMoviePlaying()) {
         glClear(0x4500);
-        if (g_bHeadLight) {
+        if (g_bClientHeadLight) {
             AurEnableHeadLight();
         } else {
             AurDisableHeadLight();

@@ -73,6 +73,7 @@ parallel workers never edit the same files:
 | i | 0x004A0000–0x004CFFFF | m | 0x00640000–0x0067FFFF |
 | a | 0x004D0000–0x0051FFFF | k | 0x00680000–0x0069FFFF |
 | b | 0x00520000–0x0057FFFF | l | 0x006A0000–0x006EFFFF |
+| o | 0x006F0000–0x0073CFFF | | |
 
 - **Working alone:** add the function to the existing file for its class if
   there is one, in any bucket (for example `matching/src/c/gui_in_game*.cpp`
@@ -82,7 +83,8 @@ parallel workers never edit the same files:
   missing (`mkdir -p matching/src/n matching/include/n`).
 - The C runtime at 0x006F0000 and up is mostly the stock `LIBCMT.LIB`
   (`matching/crt_libcmt.csv`). Those need no source, and `todo.py` hides
-  them.
+  them. The game code mixed in with it (character-generation GUI, texture
+  classes, `CAuroraInterface` and others) is bucket o.
 
 Work in class clusters (constructor, destructor and their methods
 together), since they share headers.

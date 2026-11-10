@@ -23,7 +23,7 @@ int CSWCLevelUpStats::GetSkillPointCostForSkillRank(unsigned short nSkill, int b
         CSWClass* pClass = GetClassObject(i);
         if (pClass && pClass->IsSkillUseable(nSkill)) {
             bUseable = 1;
-            if (pClass->IsClassSkill(nSkill)) {
+            if (pClass->IsSkillClassSkill(nSkill)) {
                 bClassSkill = 1;
                 break;
             }
@@ -166,7 +166,7 @@ int CSWCLevelUpStats::IncreaseSkillRank(unsigned short nSkill)
         CSWClass* pClass = GetClassObject(i);
         if (pClass && pClass->IsSkillUseable(nSkill)) {
             bUseable = 1;
-            if (pClass->IsClassSkill(nSkill)) {
+            if (pClass->IsSkillClassSkill(nSkill)) {
                 bClassSkill = 1;
                 break;
             }
@@ -211,7 +211,7 @@ void CSWCLevelUpStats::DecreaseSkillRank(unsigned short nSkill, unsigned char nM
         CSWClass* pClass = GetClassObject(i);
         if (pClass && pClass->IsSkillUseable(nSkill)) {
             bUseable = 1;
-            if (pClass->IsClassSkill(nSkill)) {
+            if (pClass->IsSkillClassSkill(nSkill)) {
                 bClassSkill = 1;
                 break;
             }

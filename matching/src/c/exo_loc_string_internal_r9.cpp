@@ -30,6 +30,14 @@ public:
 
     void* GetNext(void*& pos);                      // 0x005E9B90
     void* AddTail(void* p);                         // 0x005E9DC0
+    void* GetHead()
+    {
+        CExoLinkedListNode* pNode = (CExoLinkedListNode*)pHead;
+        if (!pNode) {
+            return 0;
+        }
+        return pNode->pObject;
+    }
 };
 
 template <class T>
@@ -40,11 +48,8 @@ public:
     void* GetHeadPos() const { return m_pcExoLinkedListInternal->pHead; }
     T* GetHead() const
     {
-        void* p = m_pcExoLinkedListInternal->pHead;
-        if (p) {
-            p = ((CExoLinkedListNode*)p)->pObject;
-        }
-        return (T*)p;
+        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
+        return (T*)pInternal->GetHead();
     }
     T* GetNext(void*& pos) const { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
     void* AddTail(T* p) { return m_pcExoLinkedListInternal->AddTail(p); }

@@ -157,7 +157,7 @@ CSWCItem::~CSWCItem()
     }
     DestroyAnimationBase();
     if (m_pActiveProperties) {
-        free(m_pActiveProperties);
+        delete[] m_pActiveProperties;
         m_pActiveProperties = 0;
     }
     if (m_pSpecialAttack) {

@@ -267,7 +267,7 @@ struct CFeedbackMessage { CExoString m_sText; int m_n08; unsigned char m_nType; 
 struct CDialogMessage { CExoString m_sText; CExoString m_sSpeaker; };
 extern Vector g_vFeedbackColor;     // 0x007A23B4, descriptive
 extern Vector g_vFeedbackAltColor;  // 0x007A23D8, descriptive
-extern Vector g_vHilightColor;      // 0x007A23C0, descriptive
+extern Vector g_vAbilityColorGranted; // 0x007A23C0 (not d's g_vHilightColor 0x0078D3C0)
 class CSWGuiInGameMessages : public CSWGuiPanel {
 public:
     CSWGuiInGameMessages(CSWGuiManager* pManager);
@@ -313,12 +313,12 @@ CSWGuiInGameMessages::CSWGuiInGameMessages(CSWGuiManager* pManager) : CSWGuiPane
     }
     UnloadResource();
     CSWGuiLabelHilight* pFeedbackPrototype = m_feedbackList.m_pPrototype;
-    pFeedbackPrototype->m_hilightBorder.m_vColor = g_vHilightColor;
+    pFeedbackPrototype->m_hilightBorder.m_vColor = g_vAbilityColorGranted;
     pFeedbackPrototype->m_hilightBorder.SetFlags(1,1,0);
     m_pFeedbackItems = new CSWGuiLabelHilight[0x40];
     for (unsigned int i = 0; i < 0x40; ++i) m_pFeedbackItems[i].CopyFrom(extent,pFeedbackPrototype);
     CSWGuiLabelHilight* pDialogPrototype = m_dialogList.m_pPrototype;
-    pDialogPrototype->m_hilightBorder.m_vColor = g_vHilightColor;
+    pDialogPrototype->m_hilightBorder.m_vColor = g_vAbilityColorGranted;
     pDialogPrototype->m_hilightBorder.SetFlags(1,1,0);
     m_pDialogItems = new CSWGuiLabelHilight[0x40];
     for (unsigned int j = 0; j < 0x40; ++j) m_pDialogItems[j].CopyFrom(extent,pDialogPrototype);

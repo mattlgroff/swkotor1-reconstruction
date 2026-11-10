@@ -10,7 +10,7 @@ unsigned long CSWGlobalVariableTable::Hash(const CExoString& sName)
 {
     unsigned long nCRC = 0;
     for (int i = 0; i < sName.GetLength(); i++) {
-        nCRC = (nCRC >> 8) ^ m_aCRCTable[(tolower(sName[i]) ^ nCRC) & 0xff];
+        nCRC = (nCRC >> 8) ^ m_aCRCTable[(toupper(sName[i]) ^ nCRC) & 0xff];
     }
     return nCRC % GVT_NUM_IDENTIFIERS;
 }
@@ -111,12 +111,12 @@ void CSWGlobalVariableTable::GetValueBoolean(const CExoString& sName, int* pValu
     *pValue = 0;
     if (nSlot < 0) {
         CExoString sError;
-        sError.Format("Script var %s not in catalogue!", sName.CStr());
+        sError.Format("Script var BOOLEAN '%s' not in catalogue!", sName.CStr());
         return;
     }
     if ((m_aIdentifiers[nSlot].m_nType & 0xc000) != 0) {
         CExoString sError;
-        sError.Format("Script var %s is not a BOOLEAN!", sName.CStr());
+        sError.Format("Script var '%s' is not BOOLEAN!", sName.CStr());
         return;
     }
     int nIndex = m_aIdentifiers[nSlot].m_nType & 0x3fff;
@@ -145,12 +145,12 @@ void CSWGlobalVariableTable::GetValueNumber(const CExoString& sName, unsigned ch
     *pValue = 0;
     if (nSlot < 0) {
         CExoString sError;
-        sError.Format("Script var %s not in catalogue!", sName.CStr());
+        sError.Format("Script var NUMBER '%s' not in catalogue!", sName.CStr());
         return;
     }
     if ((m_aIdentifiers[nSlot].m_nType & 0xc000) != 0x4000) {
         CExoString sError;
-        sError.Format("Script var %s is not a NUMBER!", sName.CStr());
+        sError.Format("Script var '%s' not a NUMBER!", sName.CStr());
         return;
     }
     *pValue = m_aNumbers[m_aIdentifiers[nSlot].m_nType & 0x3fff];
@@ -162,12 +162,12 @@ void CSWGlobalVariableTable::GetValueLocation(const CExoString& sName, CScriptLo
     int nSlot = FindIdentifierIndex(sName);
     if (nSlot < 0) {
         CExoString sError;
-        sError.Format("Script var %s not in catalogue!", sName.CStr());
+        sError.Format("Script var LOCATION '%s' not in catalogue!", sName.CStr());
         return;
     }
     if ((m_aIdentifiers[nSlot].m_nType & 0xc000) != 0x8000) {
         CExoString sError;
-        sError.Format("Script var %s is not a LOCATION!", sName.CStr());
+        sError.Format("Script var '%s' not a LOCATION!", sName.CStr());
         return;
     }
     *pValue = m_aLocations[m_aIdentifiers[nSlot].m_nType & 0x3fff];
@@ -179,12 +179,12 @@ void CSWGlobalVariableTable::GetValueString(const CExoString& sName, CExoString*
     int nSlot = FindIdentifierIndex(sName);
     if (nSlot < 0) {
         CExoString sError;
-        sError.Format("Script var %s not in catalogue!", sName.CStr());
+        sError.Format("Script var STRING '%s' not in catalogue!", sName.CStr());
         return;
     }
     if ((m_aIdentifiers[nSlot].m_nType & 0xc000) != 0xc000) {
         CExoString sError;
-        sError.Format("Script var %s is not a STRING!", sName.CStr());
+        sError.Format("Script var '%s' not a STRING!", sName.CStr());
         return;
     }
     *pValue = m_aStrings[m_aIdentifiers[nSlot].m_nType & 0x3fff];
@@ -196,12 +196,12 @@ void CSWGlobalVariableTable::SetValueBoolean(const CExoString& sName, int bValue
     int nSlot = FindIdentifierIndex(sName);
     if (nSlot < 0) {
         CExoString sError;
-        sError.Format("Script var %s not in catalogue!", sName.CStr());
+        sError.Format("Script var BOOLEAN '%s' not in catalogue!", sName.CStr());
         return;
     }
     if ((m_aIdentifiers[nSlot].m_nType & 0xc000) != 0) {
         CExoString sError;
-        sError.Format("Script var %s not a BOOLEAN!", sName.CStr());
+        sError.Format("Script var '%s' not a BOOLEAN!", sName.CStr());
         return;
     }
     SetBit(m_aBooleans, m_aIdentifiers[nSlot].m_nType & 0x3fff, bValue);
@@ -213,12 +213,12 @@ void CSWGlobalVariableTable::SetValueNumber(const CExoString& sName, int nValue)
     int nSlot = FindIdentifierIndex(sName);
     if (nSlot < 0) {
         CExoString sError;
-        sError.Format("Script var %s not in catalogue!", sName.CStr());
+        sError.Format("Script var NUMBER '%s' not in catalogue!", sName.CStr());
         return;
     }
     if ((m_aIdentifiers[nSlot].m_nType & 0xc000) != 0x4000) {
         CExoString sError;
-        sError.Format("Script var %s is not a NUMBER!", sName.CStr());
+        sError.Format("Script var '%s' not a NUMBER!", sName.CStr());
         return;
     }
     m_aNumbers[m_aIdentifiers[nSlot].m_nType & 0x3fff] = (unsigned char)nValue;
@@ -230,12 +230,12 @@ void CSWGlobalVariableTable::SetValueLocation(const CExoString& sName, const CSc
     int nSlot = FindIdentifierIndex(sName);
     if (nSlot < 0) {
         CExoString sError;
-        sError.Format("Script var %s not in catalogue!", sName.CStr());
+        sError.Format("Script var LOCATION '%s' not in catalogue!", sName.CStr());
         return;
     }
     if ((m_aIdentifiers[nSlot].m_nType & 0xc000) != 0x8000) {
         CExoString sError;
-        sError.Format("Script var %s is not a LOCATION!", sName.CStr());
+        sError.Format("Script var '%s' not a LOCATION!", sName.CStr());
         return;
     }
     m_aLocations[m_aIdentifiers[nSlot].m_nType & 0x3fff] = *pValue;
@@ -247,12 +247,12 @@ void CSWGlobalVariableTable::SetValueString(const CExoString& sName, const CExoS
     int nSlot = FindIdentifierIndex(sName);
     if (nSlot < 0) {
         CExoString sError;
-        sError.Format("Script var %s not in catalogue!", sName.CStr());
+        sError.Format("Script var STRING '%s' not in catalogue!", sName.CStr());
         return;
     }
     if ((m_aIdentifiers[nSlot].m_nType & 0xc000) != 0xc000) {
         CExoString sError;
-        sError.Format("Script var %s is not a STRING!", sName.CStr());
+        sError.Format("Script var '%s' not a STRING!", sName.CStr());
         return;
     }
     m_aStrings[m_aIdentifiers[nSlot].m_nType & 0x3fff] = *pValue;
@@ -352,23 +352,23 @@ void CSWGlobalVariableTable::ReadCatalogue(const CResRef& cResRef)
                             }
                             else {
                                 CExoString sError;
-                                sError.Format("Global variable %s has an invalid type!", sName.CStr());
+                                sError.Format("Script var '%s' has bad type in catalogue!", sName.CStr());
                                 nResult = 0;
                             }
                             if (nResult < 0) {
                                 CExoString sError;
-                                sError.Format("Too many %s globals, %s won't fit!", sType.CStr(), sName.CStr());
+                                sError.Format("Script var '%s' '%s' won't fit in table!", sType.CStr(), sName.CStr());
                             }
                         }
                         else {
                             CExoString sError;
-                            sError.Format("Global variable %s is duplicated!", sName.CStr());
+                            sError.Format("Script var '%s' duplicated in catalogue!", sName.CStr());
                         }
                     }
                 }
                 else {
                     CExoString sError;
-                    sError.Format("Global variable name %s is longer than %d characters!", sName.CStr(), 0x15);
+                    sError.Format("Script var '%s' longer than %d letters!", sName.CStr(), 0x15);
                 }
             }
         }
@@ -570,7 +570,7 @@ void CSWGlobalVariableTable::ReadTableWithCatalogue(CResGFF* pRes, CResStruct* p
                     nSlot = AddBoolean(sName);
                     if (nSlot < 0) {
                         CExoString sError;
-                        sError.Format("Too many BOOLEAN globals, %s won't fit!", sName.CStr());
+                        sError.Format("ReadTableWithCat(): BOOLEAN '%s' won't fit!", sName.CStr());
                     }
                 }
                 int nByte = i / 8;
@@ -592,7 +592,7 @@ void CSWGlobalVariableTable::ReadTableWithCatalogue(CResGFF* pRes, CResStruct* p
                     nSlot = AddNumber(sName);
                     if (nSlot < 0) {
                         CExoString sError;
-                        sError.Format("Too many NUMBER globals, %s won't fit!", sName.CStr());
+                        sError.Format("ReadTableWithCat(): NUMBER '%s' won't fit!", sName.CStr());
                     }
                 }
                 m_aNumbers[m_aIdentifiers[nSlot].m_nType & 0x3fff] = aNumbers[i];
@@ -613,7 +613,7 @@ void CSWGlobalVariableTable::ReadTableWithCatalogue(CResGFF* pRes, CResStruct* p
                     nSlot = AddLocation(sName);
                     if (nSlot < 0) {
                         CExoString sError;
-                        sError.Format("Too many LOCATION globals, %s won't fit!", sName.CStr());
+                        sError.Format("ReadTableWithCat(): LOCATION '%s' won't fit!", sName.CStr());
                     }
                 }
                 m_aLocations[m_aIdentifiers[nSlot].m_nType & 0x3fff] = *pLocation;
@@ -640,7 +640,7 @@ void CSWGlobalVariableTable::ReadTableWithCatalogue(CResGFF* pRes, CResStruct* p
                     nSlot = AddString(sName);
                     if (nSlot < 0) {
                         CExoString sError;
-                        sError.Format("Too many STRING globals, %s won't fit!", sName.CStr());
+                        sError.Format("ReadTableWithCat(): STRING '%s' won't fit!", sName.CStr());
                     }
                 }
                 m_aStrings[m_aIdentifiers[nSlot].m_nType & 0x3fff] = *pString;

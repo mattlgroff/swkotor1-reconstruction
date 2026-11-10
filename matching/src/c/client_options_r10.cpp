@@ -652,8 +652,10 @@ void CClientOptions::SetDefaults()
 }
 
 // FUNCTION: SWKOTOR 0x0061DB60
+// NONMATCH: m_n72 first reserves AL before the bitfield store, but its store then moves up (2 insns).
 CClientOptions::CClientOptions()
 {
+    m_n72 = 2;
     m_b0Bit0 = 0;
     m_b0Bit2 = 1;
     m_b0Bit3 = 0;
@@ -663,7 +665,6 @@ CClientOptions::CClientOptions()
     m_n6E = 1;
     m_n73 = 16;
     m_n6B = 0;
-    m_n72 = 2;
     m_n6C = 2;
     m_f78 = 3.0f;
     m_f7C = 1.0f;

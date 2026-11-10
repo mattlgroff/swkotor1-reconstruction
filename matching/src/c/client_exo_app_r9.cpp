@@ -66,5 +66,5 @@ const char* SetFramesPerSecond(const char* sArgs)
     g_pAppManager->m_pClientExoApp->GetAnimationTimer()->SetFixedSnapshotRate(0, 0);
     g_pAppManager->m_pServerExoApp->GetWorldTimer()->SetFixedSnapshotRate(0, 0);
     g_pAppManager->m_pServerExoApp->GetPauseTimer()->SetFixedSnapshotRate(0, 0);
-    return "Fixed frame rate";
+    return "Fixed frame rate off.";
 }

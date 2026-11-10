@@ -84,7 +84,6 @@ int CSWSCreature::AddDisappearActions(int bDestroy)
     return 1;
 }
 // FUNCTION: SWKOTOR 0x004ED110
-// NONMATCH (4): vcall on the area sound object loads it into eax then mov ecx (original: straight into ecx).
 void CSWSCreature::UpdateExcitedStateTimer()
 {
     if (m_nExcitedTimer) {
@@ -92,7 +91,7 @@ void CSWSCreature::UpdateExcitedStateTimer()
             m_nExcitedTimer = 0;
             CSWSPlayer* pPlayer = g_pAppManager->m_pServerExoApp->GetClientObjectByObjectId(m_idSelf);
             if (GetArea() && pPlayer && GetArea()->m_pSoundObject) {
-                GetArea()->m_pSoundObject->Update(0);
+                GetArea()->UpdateSoundObject(0);
             }
         }
         else {
@@ -592,7 +591,9 @@ void CSWPartyMemberData::Reset()
 }
 
 // FUNCTION: SWKOTOR 0x004EF2E0
-// NONMATCH (16): only the return tail differs (original: two epilogues, mov eax,3).
+// NONMATCH (11): only the return tail differs (original: two epilogues; the int ternary
+// gives its mov eax,3). Ending with `return bFailed ? 3 : nAppearance;` matches the flow but
+// swaps the nAppearance/nBodyBag slots (12).
 unsigned char CSWSCreature::GetBodyBagAppearance()
 {
     int nAppearance;
@@ -614,10 +615,7 @@ unsigned char CSWSCreature::GetBodyBagAppearance()
             CExoString sColumn("Appearance");
             bFailed = !g_pRules->Get2DArrays()->GetBodyBag()->GetINTEntry(nBodyBag, sColumn, &nAppearance);
         }
-        if (!bFailed) {
-            return (unsigned char)nAppearance;
-        }
-        return 3;
+        return bFailed ? 3 : nAppearance;
     }
     return (unsigned char)nAppearance;
 }

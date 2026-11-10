@@ -506,13 +506,13 @@ typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int texture);
 extern int g_bRenderBins;                       // 0x0078E3AC, descriptive
 extern unsigned int g_nGLCullFace;              // 0x0078D454
 extern unsigned int g_aBlendFactors[];          // 0x0073F270
-extern PFNCLIENTACTIVETEXTURE g_pfnClientActiveTexture; // 0x007BB6B0
+extern PFNCLIENTACTIVETEXTURE glClientActiveTextureARB; // 0x007BB6B0
 extern unsigned int g_nActiveTextureUnit;       // 0x007A6898
 extern int g_bBlackFog;                         // 0x008305E0
 extern unsigned int g_eColorArray;              // 0x0073F3A0
 extern unsigned int g_eAlphaFunc;               // 0x0073F2B0
 extern float g_fBinAlphaRef;                    // 0x0078E3B0, descriptive
-extern float g_fAlphaRef;                       // 0x007B92E8, descriptive
+extern float g_fSceneAlphaRef;                  // 0x007B92E8 (bss), descriptive; not g_fAlphaRef 0x00798A90
 extern int g_nGrassMaterials;                   // 0x00831E48, descriptive
 extern CExoArrayList<TriangleBin*> g_l80AA68;   // 0x0080AA68 triangle bins
 extern RenderCamera* g_pRenderCamera;
@@ -609,7 +609,7 @@ void Scene::DoBinBucket()
     glBlendFunc(g_aBlendFactors[0], g_aBlendFactors[1]);
     glDisable(g_nGLCullFace);
     if (AurGLCaps710())
-        g_pfnClientActiveTexture(0x84c0);
+        glClientActiveTextureARB(0x84c0);
     g_nActiveTextureUnit = 0;
     if (g_bBlackFog)
         glEnableClientState(g_eColorArray);
@@ -622,7 +622,7 @@ void Scene::DoBinBucket()
         for (int i = 0; i < g_l80AA68.num; i++)
             g_l80AA68.element[i]->RenderGrassPolys(material, &g_pRenderCamera->m_vPosition, m_pWind);
     }
-    glAlphaFunc(g_eAlphaFunc, g_fAlphaRef);
+    glAlphaFunc(g_eAlphaFunc, g_fSceneAlphaRef);
     g_bTextureStateDirty = 1;
     glEnable(g_nGLCullFace);
 }
@@ -766,7 +766,7 @@ void Scene::Render()
         glEnableClientState(g_eTexCoordArray);
         glEnableClientState(g_eVertexArray);
         glEnable(g_nGLAlphaTest);
-        glAlphaFunc(g_eAlphaFunc, g_fAlphaRef);
+        glAlphaFunc(g_eAlphaFunc, g_fSceneAlphaRef);
         glEnable(g_nGLDepthTest);
         if (!m_nA0 && !m_lRooms.num) {
             RenderOnlyGobs();

@@ -50,6 +50,12 @@ public:
             delete[] element;
     }
     void Allocate(int n);
+    void DelIndex(int nIndex)
+    {
+        num--;
+        for (; nIndex < num; nIndex++)
+            element[nIndex] = element[nIndex + 1];
+    }
     __forceinline void RemoveInline(T value)
     {
         int i;

@@ -17,7 +17,8 @@ void CSWCCreature::SetLockOrientation(unsigned long oid, int bForce)
 {
     CServerExoApp* pServer = g_pAppManager->GetServerExoApp();
     if (pServer == 0) return;
-    unsigned long nServerId = pServer->ClientToServerObjectID(m_idSelf);
+    unsigned long idSelf = m_idSelf;
+    unsigned long nServerId = pServer->ClientToServerObjectID(idSelf);
     CSWSCreature* pServerCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(nServerId);
     if (pServerCreature == 0) return;
     if (!bForce) {

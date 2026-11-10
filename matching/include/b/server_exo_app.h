@@ -115,6 +115,9 @@ public:
 class CWorldTimer {
 public:
     void GetWorldTime(unsigned long* pDay, unsigned long* pTime);       // 0x004ADE40
+    int SubtractWorldTimes(unsigned long nDay1, unsigned long nTime1, unsigned long nDay2,
+                           unsigned long nTime2, unsigned long* pDay,
+                           unsigned long* pTime);                       // 0x004AE460
     void AdvanceToTime(int nHour, int nMinute, int nSecond, int nMillisecond); // 0x004AE260
     unsigned long GetWorldTimeHour();                                   // 0x004AE090
     unsigned long GetWorldTimeMinute();                                 // 0x004AE0D0

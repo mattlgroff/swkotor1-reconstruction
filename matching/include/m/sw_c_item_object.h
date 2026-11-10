@@ -8,7 +8,6 @@
 #ifndef M_SW_C_ITEM_OBJECT_H
 #define M_SW_C_ITEM_OBJECT_H
 
-extern "C" void __cdecl free(void* p);
 extern "C" void* __cdecl memset(void* p, int c, unsigned int n);
 #pragma intrinsic(memset)
 
@@ -73,6 +72,13 @@ extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 
 class CSWCObject;
 class CSWItem;
+
+class CSWCItemProperty {
+public:
+    unsigned short m_nPropertyType;
+    unsigned short m_nSubtype;
+    char pad_0x4[0x18];
+};
 
 class CAurObject {
 public:
@@ -357,7 +363,7 @@ public:
     unsigned char m_n11d;                           // 0x11d
     char pad_0x11e[2];
     unsigned long m_nNumActiveProperties;           // 0x120
-    void* m_pActiveProperties;                      // 0x124
+    CSWCItemProperty* m_pActiveProperties;          // 0x124
     CResRef m_cModel;                               // 0x128
     CResRef m_cIcon;                                // 0x138
     int m_n148;                                     // 0x148

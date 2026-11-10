@@ -132,7 +132,7 @@ int CSWSWaypoint::LoadWaypoint(CResGFF *pGFF, CResStruct *pStruct)
     vOrientation.y = pGFF->ReadFieldFLOAT(pStruct, "YOrientation", bSuccess, 0.0f);
     vOrientation.z = pGFF->ReadFieldFLOAT(pStruct, "ZOrientation", bSuccess, 0.0f);
     if (vOrientation.x * vOrientation.x + vOrientation.y * vOrientation.y +
-            vOrientation.z * vOrientation.z != 0.0f)
+            vOrientation.z * vOrientation.z != 1.0f)
         vOrientation.Normalize();
     SetPosition(vPosition, 1, 1, 0);
     SetOrientation(vOrientation);

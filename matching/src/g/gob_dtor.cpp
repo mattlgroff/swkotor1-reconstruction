@@ -132,7 +132,7 @@ public:
         m_pScene = pScene;
         if (pScene)
             pScene->AddGob(this);
-        DoEvent("SetScene", 0);
+        DoEvent("UpdateScenes", 0);
     }
     void SetAttachment(Deletable* p)
     {
@@ -155,7 +155,7 @@ static inline void ReleaseModel(Model* pModel)
 Gob::~Gob()
 {
     g_nGobCount--;
-    DoEvent("Destroy", 0);
+    DoEvent("Dying", 0);
     PlayAnimation(0, 1.0f, 0, 0);
     SetScene(0);
     SetAttachment(0);

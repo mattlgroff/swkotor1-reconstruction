@@ -17,6 +17,7 @@ public:
     CExoString& operator=(const char* s);           // 0x005E5140
     CExoString operator+(const CExoString& s) const;    // 0x005E5D10
     int IsEmpty() const;                          // 0x005E58A0
+    int operator==(const char* s) const;            // 0x005E5290
     int AsINT() const;                            // 0x005E5630
     int GetLength() const;                          // 0x005E5790
     char* CStr() const;                             // 0x005E5670
@@ -57,22 +58,28 @@ struct CSWGuiZeroExtent : public CSWGuiExtent {
     CSWGuiZeroExtent() { left = top = width = height = 0; }
 };
 
+class CResRef;
+
 class CExoSoundSource {
 public:
+    CExoSoundSource(const CResRef& cResRef);        // 0x005D60E0
     virtual ~CExoSoundSource();
     void Play();                                    // 0x005D5930
+    void SetVolume(unsigned char nVolume);          // 0x005D5950
+    void SetLooping(int bLooping);                  // 0x005D59D0
     void Stop();                                    // 0x005D5A20
+    char pad_0x4[4];
 };
 
 class CSWGuiPanel;
 template <class T> class CExoArrayListL;
 template <class T> class CExoArrayList;
 class CSWGuiControl;
-class CResRef;
 
 class CSWGuiManager {
 public:
-    char pad_0x0[0x8];
+    int m_nMouseX;                                  // 0x00
+    int m_nMouseY;                                  // 0x04
     CSWGuiControl* m_pMouseOverControl;             // 0x08
     char pad_0xc[0x54];
     float m_fFrameTime;                             // 0x60
@@ -92,6 +99,7 @@ public:
     void SaveMousePosition();                       // 0x0040A3D0
     void MoveMouseToPosition(int x, int y);         // 0x0040C790
     void RestoreOldMousePosition();                 // 0x0040C7D0
+    void HandleMouseMove(int x, int y);             // 0x0040C1E0
 };
 extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
 
@@ -106,7 +114,9 @@ public:
                      float fScale);                 // 0x00417120
     CSWGuiTextParams& operator=(const CSWGuiTextParams& p); // 0x004171E0
     CExoString m_sText;                             // 0x00
-    char pad_0x8[0x30];
+    char pad_0x8[0x14];
+    Vector m_vColor;                                // 0x1c
+    char pad_0x28[0x10];
     union {
         unsigned long m_nFlags; // 0x38
         struct {
@@ -116,7 +126,15 @@ public:
         };
     };
     void SetHighlighted(int b) { m_bHighlighted = b; }
-    char pad_0x3c[0x1c];
+    void UpdateFont();                              // 0x00415DF0
+    char m_szFont[0x10];                            // 0x3c (the base font CResRef)
+#ifdef L_GUI_TEXT_PARAMS_EXACT
+    // The real object is 0x54 bytes (stack temporaries); embedding labels
+    // keep their 0x140 size with the trailing dword declared in CSWGuiLabel.
+    char pad_0x4c[0x8];
+#else
+    char pad_0x4c[0xc];
+#endif
 };
 
 class CSWGuiControl;
@@ -201,7 +219,8 @@ public:
     virtual int GetHeight();                        // 0x08
     virtual void Draw(float fDelta);                // 0x0c
     int GetLineHeight();                            // 0x00414EE0
-    char pad_0x4[0x14];
+    CSWGuiExtent m_extent;                          // 0x04
+    char pad_0x14[0x4];
 };
 
 // Border/fill parameters embedded in controls (+0x70 in a label).
@@ -245,12 +264,37 @@ public:
     CSWGuiLabel();                                  // 0x0041ACD0
     ~CSWGuiLabel();                                 // 0x00419D10
     virtual void CopyStyle(const CSWGuiExtent& extent, CSWGuiControl* pFrom, float fScale); // 0x98
+#ifdef L_GUI_LABEL_SET_STYLE_SLOT
+    virtual void SetStyle(const CSWGuiExtent& extent, CSWGuiTextParams* pText,
+                          CSWGuiBorderParams* pBorder, float fScale);   // 0x9c (0x004176E0)
+#endif
     void SetFillImage(const CResRef& cImage) { m_cBorder.SetFillImage(cImage, 0); }
     char pad_0x5c[0x14];
     CSWGuiBorderParams m_cBorder;                   // 0x70
     char pad_0xc4[0xc];
     CSWGuiLabelText m_cTextBox;                     // 0xd0
     CSWGuiTextParams m_cText;                       // 0xe8
+#ifdef L_GUI_TEXT_PARAMS_EXACT
+    int m_n13c;                                     // 0x13c
+#endif
+
+    void Draw(float fDelta);                        // 0x00417750
+};
+
+// vtable 0x00753CC0 (deleting dtor 0x0068ACF0): a label whose text is
+// drawn with a one-pixel black outline.
+#ifdef L_CHARACTER_VIEW_TU
+// ~CSWGuiInGameCharacter's body inlines this implicit destructor without a
+// vptr restore (direct ~CSWGuiLabel); funclets call the folded 0x0068AD10.
+class __declspec(novtable) CSWGuiBlackenedLabel : public CSWGuiLabel {
+public:
+    ~CSWGuiBlackenedLabel() {}
+#else
+class CSWGuiBlackenedLabel : public CSWGuiLabel {
+public:
+#endif
+    CSWGuiBlackenedLabel() {}
+    void Draw(float fDelta);                        // 0x006AEAC0 (virtual 0x38)
 };
 
 class CSWGuiListBox : public CSWGuiControl {
@@ -291,14 +335,22 @@ public:
     char pad_0x2a4[0x10];
     int m_nItemSize;                                // 0x2b4
     float m_fScale;                                 // 0x2b8
-    unsigned long m_nListFlags;                     // 0x2bc
+    union {
+        unsigned long m_nListFlags;                 // 0x2bc
+        struct {
+            unsigned long m_nListFlagsLow : 5;
+            unsigned long m_bMoreBelow : 1;         //       bit 5 (descriptive)
+            unsigned long m_nListFlagsHigh : 26;
+        };
+    };
+    void SetMoreBelow(int b) { m_bMoreBelow = b; }
     unsigned char m_nPadding;                       // 0x2c0
     unsigned char m_n2c1;                           // 0x2c1
     short m_nPages;                                 // 0x2c2
     short m_nVisible;                               // 0x2c4
     short m_nSelected;                              // 0x2c6
     short m_nTop;                                   // 0x2c8
-    char pad_0x2ca[0x2];
+    short m_nLastVisible;                           // 0x2ca (descriptive)
     CSWGuiControl* m_pProtoItem;                    // 0x2cc
     char pad_0x2d0[0x10];
 };
@@ -347,6 +399,8 @@ public:
     void SetToDestroy(int bDestroy);                // 0x00624A00
     void CenterPanel(); // 0x0040A600
     void SetVisible(int bVisible);                   // 0x0040B9D0
+    void SetBackground(const CResRef& cResRef);     // 0x0040A870
+    void AddControl(CSWGuiControl* pControl);       // 0x0040B9A0
     CSWGuiManager* GetManager() { return m_pManager; }
     void SetCloseCallback(CSWGuiPanel* pObject, void (CSWGuiPanel::*pfnCallback)(CSWGuiControl*),
                           int nArg);                // 0x00624A40
@@ -376,7 +430,9 @@ public:
     class CSWGuiSkillInfo* m_pSkillInfo;            // 0x9c
     char pad_0xa0[0x14];
     int m_bB4;                                      // 0xb4 (placeholder name)
-    char pad_0xb8[0xbb0 - 0xb8];
+    char pad_0xb8[0x10c - 0xb8];
+    int m_bLevelUpAvailable;                        // 0x10c (descriptive)
+    char pad_0x110[0xbb0 - 0x110];
     int m_bMessagePending;                          // 0xbb0
     char pad_0xbb4[0xc];
     unsigned char m_nAbilityMode;                   // 0xbc0
@@ -424,6 +480,7 @@ public:
     unsigned char GetMouseSensitivity() { return m_nMouseSensitivity; }
     void SetSoundQuality(unsigned char nQuality) { m_nSoundQuality = nQuality; }
     void SetForceSoftware(int bForce) { m_bForceSoftware = bForce; }
+    void SetDifficulty(unsigned char nDifficulty) { m_nDifficulty = nDifficulty; }
 
     char pad_0x0[4];
     unsigned char m_nDifficulty;
@@ -535,6 +592,9 @@ public:
     int IsValidResolution(int nWidth, int nHeight); // 0x005EE2B0
     int GetAllowHighMonitorFrequency();             // 0x005EE2C0
     CSWCCreature* GetPlayerCreature();              // 0x005ED540
+    int GetCharacterChangeInProgress();             // 0x005EE190
+    unsigned long GetPlayerCreatureId();            // 0x005ED550
+    int CreatureAcquireItem(unsigned long oidCreature, const CResRef& cTemplate);  // 0x005ED7E0
     CExoString GetDisplayCharacterForKey(int nKey); // 0x005EE280
     int ChangeCharacterToNextLivingPartyMember(int a, int b, int c);  // 0x005EDF80
     void DisplayMainMenu(int bShow);                // 0x005ED420
@@ -571,6 +631,7 @@ class CSWSStore;
 class CServerExoApp {
 public:
     CSWSStore* GetStoreByGameObjectID(unsigned long oid);  // 0x004AE7B0
+    class CSWSPlaceable* GetPlaceableByGameObjectID(unsigned long oid);    // 0x004AE7A0
     CSWSItem* GetItemByGameObjectID(unsigned long oid);    // 0x004AE760
     unsigned long ClientToServerObjectID(unsigned long oid);    // 0x004AEA30
     void SkipPastDialog(unsigned long oid);         // 0x004AE970
@@ -603,9 +664,12 @@ extern Vector g_vDefaultReplyColor;                 // 0x007A23C0
 // Conversation panel; implicit destructor 0x006A6F30.
 class CSWGuiDialog : public CSWGuiPanel {
 public:
+    CSWGuiDialog();
+    CSWGuiDialog(CSWGuiManager* pManager);          // 0x006A85B0
     virtual int SelectReply(int nReply);            // 0x6c (0x006A7110)
     virtual void ClearReplies();                    // 0x70 (0x006A7160)
-    virtual void AddReply(unsigned long a1, int a2, int a3, int a4, int bLast);  // 0x74 (0x006A86A0)
+    virtual void SetReplies(int nReplies, CExoString* pReplies, unsigned long* pIndices, int nUnused,
+                            int bShow);             // 0x74 (0x006A86A0)
     virtual void SetSpeaker(unsigned long oid);     // 0x78 (0x006A7C90)
     virtual void SetDialogMessage(const CExoString& sMessage);  // 0x7c (0x006A7010)
     virtual void ShowMessage();                     // 0x80 (0x006A70A0)
@@ -615,7 +679,7 @@ public:
     void SetForced();                               // 0x006A6D70
     int GetReplyIndex(int nReply);                  // 0x006A6D80
     void SetReplyColor(CSWGuiControl* pControl);    // 0x006A6FE0
-    static void __stdcall ResetReplyColor(CSWGuiControl* pControl);   // 0x006A6FC0
+    void ResetReplyColor(CSWGuiControl* pControl);  // 0x006A6FC0
 
     int m_n64;                                      // 0x64
     int m_nSelected;                                // 0x68
@@ -653,12 +717,14 @@ class CSWGuiDialogTop;
 
 class CSWGuiDialogCinematic : public CSWGuiDialog {
 public:
+    CSWGuiDialogCinematic(CSWGuiManager* pManager); // 0x006A8B40
     ~CSWGuiDialogCinematic();                       // 0x006A7C20
     void SetExtent(const CSWGuiExtent& extent);     // 0x006A7CA0
     void ShowMessage();                             // 0x006A7D30
     int SelectReply(int nReply);                    // 0x006A7E20
     void ClearReplies();                            // 0x006A7EF0
-    void AddReply(unsigned long a1, int a2, int a3, int a4, int bLast);   // 0x006A8DE0
+    void SetReplies(int nReplies, CExoString* pReplies, unsigned long* pIndices, int nUnused,
+                    int bShow);                     // 0x006A8DE0
 
     CSWGuiDialogTop* m_pTop;                        // 0x1dfc
 };
@@ -666,15 +732,18 @@ public:
 // vtable 0x00755888.
 class CSWGuiDialogComputer : public CSWGuiDialog {
 public:
+    CSWGuiDialogComputer(CSWGuiManager* pManager);  // 0x006A8EB0
     void HandleInputEvent(int nEvent, int bDown);   // 0x006A81E0
     void OnPanelAdded();                            // 0x006A6DE0
     void OnPanelRemoved();                          // 0x006A6E00
     CExoString GetFullScreenBG();                   // 0x006A6E20
 
     ~CSWGuiDialogComputer();                        // 0x006A8110
-    void AddReply(unsigned long a1, int a2, int a3, int a4, int bLast);   // 0x006A94E0
+    void SetReplies(int nReplies, CExoString* pReplies, unsigned long* pIndices, int nUnused,
+                    int bShow);                     // 0x006A94E0
     void SetDialogMessage(const CExoString& sMessage);  // 0x006A9520
-    void LayoutEntries();                           // 0x006A8240
+    void UpdateSkills();                            // 0x006A8240
+    void SetType(unsigned char nType);              // 0x006A8400
 
     CSWGuiReplyEntry m_aEntries[4];                 // 0x1dfc
     CSWGuiListBox m_lbEntries;                      // 0x2cfc
@@ -686,10 +755,11 @@ public:
 // vtable 0x00755958.
 class CSWGuiDialogComputerCamera : public CSWGuiDialog {
 public:
+    CSWGuiDialogComputerCamera(CSWGuiManager* pManager);    // 0x006A95F0
     ~CSWGuiDialogComputerCamera();                  // 0x006A8520
 
     CSWGuiLabel m_lblA;                             // 0x1dfc
-    CSWGuiLabel m_lblB;                             // 0x1f3c
+    CSWGuiBlackenedLabel m_lblReturn;               // 0x1f3c LBL_RETURN
     CDialogCamera* m_pCamera;                       // 0x207c
 };
 
@@ -723,6 +793,8 @@ public:
 
 class CSWGuiDialogTop : public CSWGuiPanel {
 public:
+    CSWGuiDialogTop() {}
+    CSWGuiDialogTop(CSWGuiManager* pManager, const CResRef& cFont, const Vector& vColor);  // 0x006A78C0
     void SetReply(const CExoString& sReply);        // 0x006A7AE0
 
     CSWGuiLabel m_lblReply;                         // 0x64

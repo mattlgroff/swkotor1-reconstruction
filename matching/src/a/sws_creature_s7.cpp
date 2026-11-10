@@ -11,12 +11,23 @@ struct CExoLinkedListNode {
 
 template <class T> class CExoLinkedList {
 public:
-    T* GetHead() { return (T*)m_pList->GetHead(); }
     struct Internal {
-        void* GetHead() { void* p = m_pHead; if (p) { p = ((CExoLinkedListNode*)p)->pObject; } return p; }
+        void* GetHead()
+        {
+            CExoLinkedListNode* pNode = m_pHead;
+            if (!pNode) {
+                return 0;
+            }
+            return pNode->pObject;
+        }
         CExoLinkedListNode* m_pHead;
     };
     Internal* m_pList;
+    T* GetHead()
+    {
+        Internal* pInternal = m_pList;
+        return (T*)pInternal->GetHead();
+    }
 };
 
 // FUNCTION: SWKOTOR 0x004F1310

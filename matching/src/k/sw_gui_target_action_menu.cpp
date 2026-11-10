@@ -215,8 +215,8 @@ void CSWGuiTargetActionMenu::SelectNextAction(int nMenu)
         CSWGuiTargetActionList* pList = &m_aLists[nMenu];
         if (pList->m_nCount) {
             g_pAppManager->m_pClientExoApp->GetParty()->GetPlayerCharacter();
-            int& nSelected = m_anSelected[m_nSelectedRow][nMenu];
             CSWGuiTargetAction* pNext = 0;
+            int& nSelected = m_anSelected[m_nSelectedRow][nMenu];
             if (nSelected != -1) {
                 for (int i = 0; i < pList->m_nCount; i++) {
                     if (pList->m_pData[i].m_nId == nSelected) {
@@ -241,16 +241,14 @@ void CSWGuiTargetActionMenu::SelectNextAction(int nMenu)
 }
 
 // FUNCTION: SWKOTOR 0x00686680
-// NONMATCH: register allocation (list / entry / selected-slot registers
-// rotated; pointer, reference and direct-index forms tried).
 void CSWGuiTargetActionMenu::SelectPrevAction(int nMenu)
 {
     if (nMenu >= 0 && nMenu < 3) {
         CSWGuiTargetActionList* pList = &m_aLists[nMenu];
         if (pList->m_nCount) {
             g_pAppManager->m_pClientExoApp->GetParty()->GetPlayerCharacter();
-            int& nSelected = m_anSelected[m_nSelectedRow][nMenu];
             CSWGuiTargetAction* pPrev = 0;
+            int& nSelected = m_anSelected[m_nSelectedRow][nMenu];
             if (nSelected != -1) {
                 for (int i = 0; i < pList->m_nCount; i++) {
                     if (pList->m_pData[i].m_nId == nSelected) {
@@ -347,7 +345,7 @@ void CSWGuiTargetActionMenu::PopulateMenus(CSWCCreature* pPC, int bDisabled, CSW
         }
     }
     SetTarget(pTarget);
-    UpdateActions(pPC, pTarget);
+    PositionMenu(pPC, pTarget);
 }
 
 // FUNCTION: SWKOTOR 0x00685CB0

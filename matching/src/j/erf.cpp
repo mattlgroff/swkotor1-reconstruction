@@ -279,8 +279,8 @@ int CERFFile::AddFile(CExoString& sFileName, int nUnused)
         CERFKey cKey;
         CERFRes cRes;
         CExoFile* pFile = new CExoFile(sFileName, 0xFFFF, "rb");
-        int nSlash = sFileName.Find("\\", 0);
-        CExoString sName = sFileName.Right(sFileName.GetLength() - nSlash - 1);
+        int nColon = sFileName.Find(":", 0);  // alias separator, "DIR:file"
+        CExoString sName = sFileName.Right(sFileName.GetLength() - nColon - 1);
         int nDot = sName.Find(".", 0);
         CExoString sExtension = sName.Right(sName.GetLength() - nDot - 1);
         sName = sName.Left(nDot);
@@ -357,7 +357,7 @@ void CERFFile::AddDirectory(CExoString& sDirectory, int nUnused, ERFProgressCall
     g_pExoBase->GetDirectoryList(&aFiles, sDirectory, 0xFFFF, 0, 0);
     ReserveEntries(aFiles.num);
     for (int i = 0; i < aFiles.num; i++) {
-        sPath.Format("%s\\%s", sDirectory.CStr(), aFiles[i]);
+        sPath.Format("%s%s", sDirectory.CStr(), aFiles[i]);
         AddFile(sPath, nUnused);
         if (pCallback) {
             pCallback(i, aFiles.num, pParam1, pParam2);

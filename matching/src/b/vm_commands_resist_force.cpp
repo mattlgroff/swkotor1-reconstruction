@@ -15,8 +15,8 @@ struct CSWSObjectSpellView {
     unsigned char m_nLastSpellCastClass;                    // 0x1d4
 };
 
-// Slot 0x50 object (bucket b's AsSWSTrigger) carries its caster level.
-class CSWSTrigger : public CSWSObject {
+// Slot 0x50 object (AsSWSAreaOfEffectObject) carries its caster level.
+class CSWSAreaOfEffectObject : public CSWSObject {
 public:
     char pad_0xf4[0x25c - 0xf4];
     int m_nCasterLevel;                                     // 0x25c (name guessed)
@@ -56,8 +56,8 @@ int CSWVirtualMachineCommands::ExecuteCommandResistForce(int nCommandId, int nPa
         if (pSpell) {
             int nCasterLevel;
             CGameObject* pSelf = g_pAppManager->GetServerExoApp()->GetGameObject(m_oidObjectRunScript);
-            if (pSelf && pSelf->AsSWSTrigger()) {
-                nCasterLevel = pSelf->AsSWSTrigger()->m_nCasterLevel;
+            if (pSelf && pSelf->AsSWSAreaOfEffectObject()) {
+                nCasterLevel = pSelf->AsSWSAreaOfEffectObject()->m_nCasterLevel;
             } else {
                 if (pCaster->m_nObjectType == OBJECT_TYPE_CREATURE) {
                     CSWSCreature* pCreature = pCaster->AsSWSCreature();

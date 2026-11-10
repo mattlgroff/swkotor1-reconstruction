@@ -1661,20 +1661,20 @@ int CSWSItemPropertyHandler::ApplyImmunity(CSWSItem* pItem, CSWItemProperty* pPr
     int nSecondImmunity;
     int bSecond = 0;
     switch (pProperty->m_nSubType) {
-    case 0: nImmunity = IMMUNITY_TYPE_1E; break;
+    case 0: nImmunity = IMMUNITY_TYPE_30; break;
     case 1:
-        nSecondImmunity = IMMUNITY_TYPE_13;
-        nImmunity = IMMUNITY_TYPE_1D;
+        nSecondImmunity = IMMUNITY_TYPE_19;
+        nImmunity = IMMUNITY_TYPE_29;
         bSecond = 1;
         break;
     case 2: nImmunity = IMMUNITY_TYPE_01; break;
     case 3: nImmunity = IMMUNITY_TYPE_02; break;
     case 4: nImmunity = IMMUNITY_TYPE_03; break;
     case 5: nImmunity = IMMUNITY_TYPE_04; break;
-    case 6: nImmunity = IMMUNITY_TYPE_1C; break;
+    case 6: nImmunity = IMMUNITY_TYPE_28; break;
     case 7: nImmunity = IMMUNITY_TYPE_PARALYSIS; break;
-    case 8: nImmunity = IMMUNITY_TYPE_1F; break;
-    case 9: nImmunity = IMMUNITY_TYPE_20; break;
+    case 8: nImmunity = IMMUNITY_TYPE_31; break;
+    case 9: nImmunity = IMMUNITY_TYPE_32; break;
     default: return 0;
     }
     CGameEffect* pEffect = new CGameEffect(1);
@@ -2148,20 +2148,20 @@ int CSWSItemPropertyHandler::RemoveImmunity(CSWSItem* pItem, CSWItemProperty* pP
         return 0;
     }
     switch (pProperty->m_nSubType) {
-    case 0: nImmunity = IMMUNITY_TYPE_1E; break;
+    case 0: nImmunity = IMMUNITY_TYPE_30; break;
     case 1:
-        nSecondImmunity = IMMUNITY_TYPE_13;
-        nImmunity = IMMUNITY_TYPE_1D;
+        nSecondImmunity = IMMUNITY_TYPE_19;
+        nImmunity = IMMUNITY_TYPE_29;
         bSecond = 1;
         break;
     case 2: nImmunity = IMMUNITY_TYPE_01; break;
     case 3: nImmunity = IMMUNITY_TYPE_02; break;
     case 4: nImmunity = IMMUNITY_TYPE_03; break;
     case 5: nImmunity = IMMUNITY_TYPE_04; break;
-    case 6: nImmunity = IMMUNITY_TYPE_1C; break;
+    case 6: nImmunity = IMMUNITY_TYPE_28; break;
     case 7: nImmunity = IMMUNITY_TYPE_PARALYSIS; break;
-    case 8: nImmunity = IMMUNITY_TYPE_1F; break;
-    case 9: nImmunity = IMMUNITY_TYPE_20; break;
+    case 8: nImmunity = IMMUNITY_TYPE_31; break;
+    case 9: nImmunity = IMMUNITY_TYPE_32; break;
     default: return 0;
     }
     for (int i = 0; i < pEffects->num; i++) {

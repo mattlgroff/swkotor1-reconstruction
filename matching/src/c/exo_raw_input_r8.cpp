@@ -315,6 +315,34 @@ int CExoRawInputInternal::InitializeDirectInputMouse()
     return 1;
 }
 
+// FUNCTION: SWKOTOR 0x005E4050
+int CExoRawInputInternal::GetMouseState(CExoMouseState* pState)
+{
+    if (m_pMouse == 0) {
+        InitializeDirectInputMouse();
+    }
+    if (m_pMouse == 0 || m_bActive == 0) {
+        return 0;
+    }
+    HRESULT hr = m_pMouse->GetDeviceState(sizeof(CExoMouseState), pState);
+    if (hr != 0) {
+        switch (hr) {
+        case (HRESULT)0x80070015:
+        case (HRESULT)0x8000000a:
+            return 0;
+        case (HRESULT)0x8007000c:
+        case (HRESULT)0x8007001e:
+            if (m_pMouse->Acquire() != 0) {
+                return 0;
+            }
+            break;
+        default:
+            return 0;
+        }
+    }
+    return 1;
+}
+
 // FUNCTION: SWKOTOR 0x005E3D10
 CExoString CExoRawInputInternal::GetKeyName(unsigned long nKey)
 {
@@ -329,7 +357,7 @@ CExoString CExoRawInputInternal::GetKeyName(unsigned long nKey)
         g_pExoBase->WcsToMbs(sName, dips.wsz, 0x4f);
         return CExoString(sName);
     }
-    return CExoString("");
+    return CExoString("N/A");
 }
 
 // FUNCTION: SWKOTOR 0x005E3DC0

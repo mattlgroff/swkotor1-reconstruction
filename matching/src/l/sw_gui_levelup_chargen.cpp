@@ -1,5 +1,5 @@
 // CSWGuiLevelUpCharGen: the level-up summary screen (layout "MAINCG").
-#include "l/sw_gui_levelup_chargen.h"
+#include "l/sw_gui_in_game_character.h"
 
 namespace {
 inline short ClampAlignment(short nGoodEvil)

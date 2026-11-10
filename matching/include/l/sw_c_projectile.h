@@ -45,6 +45,7 @@ public:
     int operator==(const char* s) const;            // 0x005E5290
     int IsEmpty() const;                            // 0x005E58A0
     char* CStr() const;                             // 0x005E5670
+    int GetLength() const;                          // 0x005E5790
 };
 
 class CResRef {
@@ -53,7 +54,11 @@ public:
     CResRef();                                      // 0x00405ED0
     CResRef operator=(const CResRef& r);            // 0x00406120
     CResRef operator=(const char* s);               // 0x00406290
+    CResRef(const CExoString& s);                   // 0x00406D60
     void CopyToString(char* pStr) const;            // 0x00405FB0
+    void CopyToString(CExoString& s) const;         // 0x00405F70
+    int operator==(const char* s) const;            // 0x004060D0
+    char* GetResRef() const;                        // 0x00641DB0 (returns this)
 };
 
 extern const unsigned long OBJECT_INVALID;          // 0x00746644
@@ -115,7 +120,8 @@ public:
     virtual void AttachToObject(CAurObject* pTo, const char* szNode, int n);  // 0x50
     virtual void v54(); virtual void v58(); virtual void v5C();
     virtual Quaternion SetOrientation(Quaternion q);    // 0x60
-    virtual void v64(); virtual void v68(); virtual void v6C();
+    virtual Vector GetPosition();                   // 0x64
+    virtual void v68(); virtual void v6C();
     virtual void v70();
     virtual void SetClientObject(CSWCObject* pObject);  // 0x74 (descriptive)
     virtual void v78();
@@ -130,12 +136,15 @@ class CSWCAnimBase {
 public:
     CSWCAnimBase();                                 // 0x0069DFB0
     virtual ~CSWCAnimBase();                        // 0x0069E140
-    virtual void SetVisible(int bVisible);          // 0x04
+    // 0x0069CD80 forwards to its model's slot 0x4c (symbols.csv: SetVisible).
+    virtual void AttachToScene(class CAurScene* pScene);    // 0x04
     virtual CAurObject* GetModel(unsigned char nPart);  // 0x08
     virtual int LoadModel(const CResRef& cResRef, unsigned char nPart);  // 0x0c
     virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
     virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
+    virtual void v30(); virtual void v34();
+    virtual float GetAnimationLength(unsigned short nAnim);    // 0x38 (descriptive)
+    virtual void v3C();
     virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
     virtual void v50();
     virtual int PlayAnimation(unsigned short nAnim, float fSpeed, int a, int nTransition);  // 0x54
@@ -148,7 +157,9 @@ public:
     virtual void UnloadModel();                     // 0x78 (0x0069D740)
     virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
-    virtual void v90(); virtual void v94(); virtual void v98(); virtual void v9C();
+    virtual void v90(); virtual void v94();
+    virtual int SetEnvMapPart(unsigned char nPart, int bEnable, int bStore, const CResRef& cEnvMap);  // 0x98
+    virtual int SetEnvMap(int bEnable, int bStore, const CResRef& cEnvMap);  // 0x9c
     virtual void vA0(); virtual void vA4(); virtual void vA8(); virtual void vAC();
     virtual void vB0(); virtual void vB4(); virtual void vB8();
     virtual void AttachShadow();                    // 0xbc (descriptive)
@@ -185,16 +196,33 @@ public:
     CSWSpell* GetSpell(int nSpell);                 // 0x0059B6D0
 };
 
+class C2DA {
+public:
+    int GetCExoStringEntry(int nRow, const CExoString& sColumn, CExoString* pValue);  // 0x00413270
+};
+
+class C2DAs {
+public:
+    C2DA* GetVisualEffects() { return m_pVisualEffects; }
+    char pad_0x0[0x1c];
+    C2DA* m_pVisualEffects;                         // 0x1c
+};
+
 class CSWRules {
 public:
+    C2DAs* Get2DArrays() { return m_p2DArrays; }
     char pad_0x0[0x8c];
     CSWSpellArray* m_pSpellArray;                   // 0x8c
+    char pad_0x90[0xb8 - 0x90];
+    C2DAs* m_p2DArrays;                             // 0xb8
 };
 extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CWorldTimer {
 public:
     void GetWorldTime(unsigned long* pDay, unsigned long* pTime);  // 0x004ADE40
+    int SubtractWorldTimes(unsigned long nDay1, unsigned long nTime1, unsigned long nDay2,
+                           unsigned long nTime2, unsigned long* pDay, unsigned long* pTime);  // 0x004AE460
 };
 
 class CGameObject;
@@ -211,8 +239,22 @@ public:
     int AddObject(CSWCObject* pObject);             // 0x00604A20
 };
 
+class CSWCArea {
+public:
+    CResRef GetEnvMap();                            // 0x0063BFA0
+    char pad_0x0[0xbc];
+    CResRef m_cEnvMap;                              // 0xbc
+};
+
+class CSWCModule {
+public:
+    char pad_0x0[0x48];
+    CSWCArea* m_pArea;                              // 0x48
+};
+
 class CClientExoApp {
 public:
+    CSWCModule* GetModule();                        // 0x005ED530
     CWorldTimer* GetWorldTimer();                   // 0x005ED4F0
     CGameObjectArray* GetGameObjectArray();         // 0x005ED570
     CGameObject* GetGameObject(unsigned long oid);  // 0x005ED580
@@ -233,7 +275,9 @@ class CGameObject {
 public:
     virtual ~CGameObject() {}
     virtual void SetId(unsigned long oid);          // 0x04
-    virtual void v08(); virtual void v0C(); virtual void v10();
+    virtual void v08();
+    virtual CSWCObject* AsSWCObject();              // 0x0c
+    virtual void v10();
     virtual CSWCDoor* AsSWCDoor();                  // 0x14
     virtual void v18(); virtual void v1C(); virtual void v20(); virtual void v24();
     virtual void v28(); virtual void v2C(); virtual void v30(); virtual void v34();
@@ -260,6 +304,12 @@ public:
     virtual void SetArea(void* pArea);              // 0x84
     virtual void SetOrientation(const Vector& v);   // 0x88
     virtual void SetPosition(const Vector& v);      // 0x8c
+    virtual void v90();
+    virtual void AttachToScene(class CAurScene* pScene);    // 0x94
+    virtual void v98(); virtual void v9C();
+    virtual void vA0(); virtual void vA4(); virtual void vA8();
+    virtual int SetEnvMapPart(unsigned char nPart, int bEnable, int bStore, const CResRef& cEnvMap);  // 0xac
+    virtual int SetEnvMap(int bEnable, int bStore, const CResRef& cEnvMap);  // 0xb0
 
     char pad_0xc[0x24 - 0xc];
     Vector m_vPosition;                             // 0x24

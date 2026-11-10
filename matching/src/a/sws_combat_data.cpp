@@ -29,10 +29,10 @@ int CSWSCombatRoundAction::SaveData(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldINT(pStruct, m_nAnimationTime, "AnimationTime");
     pRes->WriteFieldINT(pStruct, m_nNumAttacks, "NumAttacks");
     pRes->WriteFieldBYTE(pStruct, m_nActionType, "ActionType");
-    pRes->WriteFieldDWORD(pStruct, m_oidTarget, "TargetId");
+    pRes->WriteFieldDWORD(pStruct, m_oidTarget, "Target");
     pRes->WriteFieldBYTE(pStruct, (unsigned char)m_bRetargettable, "Retargettable");
     pRes->WriteFieldDWORD(pStruct, m_nInventorySlot, "InventorySlot");
-    pRes->WriteFieldDWORD(pStruct, m_oidItem, "ItemId");
+    pRes->WriteFieldDWORD(pStruct, m_oidItem, "TargetRepository");
     return 1;
 }
 
@@ -45,10 +45,10 @@ int CSWSCombatRoundAction::LoadData(CResGFF* pRes, CResStruct* pStruct)
     m_nAnimationTime = pRes->ReadFieldINT(pStruct, "AnimationTime", bSuccess, 0);
     m_nNumAttacks = pRes->ReadFieldINT(pStruct, "NumAttacks", bSuccess, 0);
     m_nActionType = pRes->ReadFieldBYTE(pStruct, "ActionType", bSuccess, 0);
-    m_oidTarget = pRes->ReadFieldDWORD(pStruct, "TargetId", bSuccess, 0);
+    m_oidTarget = pRes->ReadFieldDWORD(pStruct, "Target", bSuccess, 0);
     m_bRetargettable = pRes->ReadFieldBYTE(pStruct, "Retargettable", bSuccess, 0);
     m_nInventorySlot = pRes->ReadFieldDWORD(pStruct, "InventorySlot", bSuccess, 0);
-    m_oidItem = pRes->ReadFieldDWORD(pStruct, "ItemId", bSuccess, 0);
+    m_oidItem = pRes->ReadFieldDWORD(pStruct, "TargetRepository", bSuccess, 0);
     return 1;
 }
 
@@ -137,17 +137,17 @@ int CSWSCombatAttackData::SaveData(CResGFF* pRes, CResStruct* pStruct)
     pRes->WriteFieldBYTE(pStruct, m_nAttackGroup, "AttackGroup");
     pRes->WriteFieldWORD(pStruct, m_nTime, "AnimationLength");
     pRes->WriteFieldDWORD(pStruct, m_nField18, "MissedBy");
-    pRes->WriteFieldBYTE(pStruct, m_nAttackGroup5c, "AttackGroup5c");
+    pRes->WriteFieldBYTE(pStruct, m_nAttackGroup5c, "AttackResult");
     pRes->WriteFieldDWORD(pStruct, m_oidReactObject, "ReactObject");
-    pRes->WriteFieldWORD(pStruct, m_nWeaponAttackType, "WeaponAttackType");
-    pRes->WriteFieldWORD(pStruct, m_nField12, "Field12");
-    pRes->WriteFieldWORD(pStruct, m_nField14, "Field14");
-    pRes->WriteFieldBYTE(pStruct, m_nField3c, "Field3c");
-    pRes->WriteFieldWORD(pStruct, m_nSpecialAttack, "SpecialAttack");
-    pRes->WriteFieldBYTE(pStruct, m_nField3b, "Field3b");
-    pRes->WriteFieldINT(pStruct, m_nField40, "Field40");
-    pRes->WriteFieldINT(pStruct, m_nField44, "Field44");
-    pRes->WriteFieldBYTE(pStruct, m_nAttackResult, "AttackResult");
+    pRes->WriteFieldWORD(pStruct, m_nWeaponAttackType, "ReaxnDelay");
+    pRes->WriteFieldWORD(pStruct, m_nField12, "ReaxnAnimation");
+    pRes->WriteFieldWORD(pStruct, m_nField14, "ReaxnAnimLength");
+    pRes->WriteFieldBYTE(pStruct, m_nField3c, "Concealment");
+    pRes->WriteFieldWORD(pStruct, m_nSpecialAttack, "AttackType");
+    pRes->WriteFieldBYTE(pStruct, m_nField3b, "AttackMode");
+    pRes->WriteFieldINT(pStruct, m_nField40, "RangedAttack");
+    pRes->WriteFieldINT(pStruct, m_nField44, "SneakAttack");
+    pRes->WriteFieldBYTE(pStruct, m_nAttackResult, "WeaponAttackType");
     pRes->WriteFieldFLOAT(pStruct, m_vRangedTarget.x, "RangedTargetX");
     pRes->WriteFieldFLOAT(pStruct, m_vRangedTarget.y, "RangedTargetY");
     pRes->WriteFieldFLOAT(pStruct, m_vRangedTarget.z, "RangedTargetZ");
@@ -158,10 +158,10 @@ int CSWSCombatAttackData::SaveData(CResGFF* pRes, CResStruct* pStruct)
         pRes->AddListElement(&cElement, &cList, 0xdaee);
         pRes->WriteFieldSHORT(&cElement, m_nDamage[i], "DamageValue");
     }
-    pRes->WriteFieldBYTE(pStruct, (unsigned char)m_nField48, "Field48");
-    pRes->WriteFieldBYTE(pStruct, (unsigned char)m_nField4c, "Field4c");
-    pRes->WriteFieldBYTE(pStruct, (unsigned char)m_nField50, "Field50");
-    pRes->WriteFieldBYTE(pStruct, (unsigned char)m_nField58, "Field58");
+    pRes->WriteFieldBYTE(pStruct, (unsigned char)m_nField48, "KillingBlow");
+    pRes->WriteFieldBYTE(pStruct, (unsigned char)m_nField4c, "CoupDeGrace");
+    pRes->WriteFieldBYTE(pStruct, (unsigned char)m_nField50, "CriticalThreat");
+    pRes->WriteFieldBYTE(pStruct, (unsigned char)m_nField58, "AttackDeflected");
     pRes->WriteFieldDWORD(pStruct, m_oidAmmunition, "AmmoItem");
     pRes->WriteFieldCExoString(pStruct, m_sAttackDebugText, "AttackDebugText");
     pRes->WriteFieldCExoString(pStruct, m_sDamageDebugText, "DamageDebugText");

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/timeb.h>
 
 union LARGE_INTEGER { struct { unsigned long LowPart; long HighPart; } u; __int64 QuadPart; };
 extern "C" __declspec(dllimport) int __stdcall QueryPerformanceFrequency(LARGE_INTEGER* p);   // IAT 0x0073D1AC
@@ -191,10 +192,10 @@ CExoDebugInternal::CExoDebugInternal()
 // FUNCTION: SWKOTOR 0x005EC560
 void CExoDebugInternal::GetCurrentTimestamp(CExoString& s)
 {
-    time_t t;
+    struct _timeb tb;
     char buf[20];
-    time(&t);
-    sprintf(buf, "%.19s", ctime(&t));
+    _ftime(&tb);
+    sprintf(buf, "%.19s", ctime(&tb.time));
     s.Format(buf);
 }
 

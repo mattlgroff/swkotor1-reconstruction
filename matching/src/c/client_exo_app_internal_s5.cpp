@@ -191,7 +191,7 @@ void CClientExoAppInternal::LoadItemDropSoundList()
     CExoString sSound;
     m_pItemDropSounds = new CResRef[pTable->m_nNumRows];
     for (unsigned char i = 0; i < pTable->m_nNumRows; i++) {
-        if (pTable->GetCExoStringEntry(i, "inventorysound", &sSound)) {
+        if (pTable->GetCExoStringEntry(i, "InventorySound", &sSound)) {
             m_pItemDropSounds[i] = sSound.CStr();
         }
     }

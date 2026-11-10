@@ -237,7 +237,14 @@ class CSpellLikeAbilityList {
 public:
     CSWSStats_SpellLikeAbility* element;
     int num, array_size;
-    CSpellLikeAbilityList() { num = 0; array_size = 0; element = 0; }
+    CSpellLikeAbilityList(int nSize = 0)
+    {
+        num = 0;
+        array_size = nSize;
+        element = 0;
+        if (array_size)
+            element = new CSWSStats_SpellLikeAbility[array_size];
+    }
     ~CSpellLikeAbilityList() { delete[] element; element = 0; }
     void SetSize(int n) {
         if (!n && element) { delete[] element; element = 0; array_size = 0; }
@@ -246,7 +253,7 @@ public:
 };
 class CSWPartyClient {
 public:
-    void SetPlayerCreature(unsigned long oid);
+    int SetPlayerCreature(unsigned long oid);       // 0x006364C0 (returns int: mov eax, ebp)
     int RemovePartyMember(unsigned long oid); // 0x006349f0, descriptive callee name.
     void SetPC(int nIndex);
 };
@@ -330,6 +337,23 @@ public:
     CItemVisualState m_visualState; // +10, nested visual interface.
 };
 extern void __cdecl QueuedAnimationEvent(void*, char*, void*); // 0x0063e510, descriptive callback name.
+class CAurObject;
+class CAurPath;
+struct CHitEventPart;
+class CSWCCombatAttackData;
+typedef void (__cdecl *AnimationEventCallback)(void*, char*, void*);
+void FootstepEvent(CAurObject*, char*, CSWCCreature*);          // 0x0061A970
+void AttackHitEvent(CAurObject*, char*, CSWCCombatAttackData*); // 0x00617EB0 (descriptive)
+void HitGroundEvent(CAurObject*, char*, void*);                 // 0x0060B400
+void SwingShortEvent(void*, char*, CHitEventPart*);             // 0x00610C90
+void SwingLongEvent(void*, char*, CHitEventPart*);              // 0x00610D10
+void SwingTwirlEvent(void*, char*, CHitEventPart*);             // 0x00610D90
+void HitClashEvent(void*, char*, CHitEventPart*);               // 0x00610E10
+void HitContactEvent(void*, char*, CHitEventPart*);             // 0x00610E90
+void HitParryEvent(void*, char*, CHitEventPart*);               // 0x00610EC0
+void WeaponBlurOnEvent(CAurObject*, char*, CSWCCreature*);      // 0x00616A00
+void WeaponBlurOffEvent(CAurObject*, char*, CSWCCreature*);     // 0x00616A10
+void ClearPathEvent(CAurObject*, char*, CAurPath*);             // 0x0060E1C0
 class CCreatureAppearance {
 public:
     void* GetCameraFollowPart(); // 0x00697460
@@ -448,6 +472,9 @@ public:
     virtual void v144();
     virtual CResRef GetPortrait(int nVariant);
     void UnregisterAnimationCallbacks(); // descriptive name; +3ec array of 17 handles.
+    void RegisterAnimationCallbacks(); // descriptive name, 0x0061AB40
+    static void __cdecl GetHeadTurnRateCallback(CGameObject* pObject, void* pUnused, float* pResult); // 0x0060E120
+    static void __cdecl GetHeadBoneCallback(CGameObject* pObject, void* pUnused, float* pResult); // 0x0060E170
     float GetDriveAcceleration();
     float GetServerRate(); // descriptive name; reads server creature +ab4.
     void PlayDrawAnimation(unsigned short nAnimation);
@@ -480,7 +507,7 @@ public:
     void LoadModelB();
     void CreateSpellLikeAbilityList();
     void DeleteSpellLikeAbilityList();
-    void SetPartyMember(int b);
+    int SetPartyMember(int b);
     int GetAppearanceProperty(); // descriptive wrapper name.
     void SetAppearance(void* pAppearance, unsigned char nFlags, int b);
     CGameObject* GetServerObject(); // 0x0063d4b0
@@ -507,7 +534,9 @@ public:
     unsigned long m_oidRightWeapon, m_oidLeftWeapon;
     char pad_0x238[0x14];
     unsigned long m_oidHand3, m_oidHand4, m_oidHand5;
-    char pad_0x258[0x7c];
+    char pad_0x258[0x60];
+    CSWCCombatAttackData* m_pAttackData; // 0x2b8
+    char pad_0x2bc[0x18];
     unsigned char m_nMovementFlags;
     char pad_0x2d5[0x23];
     CSWCCreatureStats* m_pStats;
@@ -538,6 +567,30 @@ public:
     char pad_0x440[4];
     unsigned short m_nDrawAnimation;
 };
+
+// FUNCTION: SWKOTOR 0x0061AB40
+void CSWCCreature::RegisterAnimationCallbacks()
+{
+    CGob* pModel = m_pAnimationBase->GetModel(0xff);
+    if (pModel) {
+        m_nAnimationCallbacks[0] = pModel->RegisterCallback((AnimationEventCallback)FootstepEvent, "snd_Footstep", this, 50.0f, 0);
+        m_nAnimationCallbacks[1] = pModel->RegisterCallback((AnimationEventCallback)AttackHitEvent, "hit", m_pAttackData, 9999.0f, 0);
+        m_nAnimationCallbacks[3] = pModel->RegisterCallback((AnimationEventCallback)HitGroundEvent, "snd_hitground", this, 9999.0f, 0);
+        m_nAnimationCallbacks[4] = pModel->RegisterCallback((AnimationEventCallback)SwingShortEvent, "SwingShort", this, 9999.0f, 0);
+        m_nAnimationCallbacks[5] = pModel->RegisterCallback((AnimationEventCallback)SwingLongEvent, "SwingLong", this, 9999.0f, 0);
+        m_nAnimationCallbacks[6] = pModel->RegisterCallback((AnimationEventCallback)SwingTwirlEvent, "SwingTwirl", this, 9999.0f, 0);
+        m_nAnimationCallbacks[7] = pModel->RegisterCallback((AnimationEventCallback)HitClashEvent, "Clash", this, 9999.0f, 0);
+        m_nAnimationCallbacks[8] = pModel->RegisterCallback((AnimationEventCallback)HitContactEvent, "Contact", this, 9999.0f, 0);
+        m_nAnimationCallbacks[9] = pModel->RegisterCallback((AnimationEventCallback)HitParryEvent, "HitParry", this, 9999.0f, 0);
+        m_nAnimationCallbacks[10] = pModel->RegisterCallback((AnimationEventCallback)WeaponBlurOnEvent, "blur_start", this, 9999.0f, 0);
+        m_nAnimationCallbacks[11] = pModel->RegisterCallback((AnimationEventCallback)WeaponBlurOffEvent, "blur_end", this, 9999.0f, 0);
+        m_nAnimationCallbacks[12] = pModel->RegisterCallback((AnimationEventCallback)WeaponBlurOffEvent, "doneattack01", this, 9999.0f, 0);
+        m_nAnimationCallbacks[13] = pModel->RegisterCallback((AnimationEventCallback)WeaponBlurOffEvent, "doneattack02", this, 9999.0f, 0);
+        m_nAnimationCallbacks[14] = pModel->RegisterCallback((AnimationEventCallback)GetHeadTurnRateCallback, "GetPersonalRadius", this, 9999.0f, 0);
+        m_nAnimationCallbacks[15] = pModel->RegisterCallback((AnimationEventCallback)GetHeadBoneCallback, "GetCreatureRadius", this, 9999.0f, 0);
+        m_nAnimationCallbacks[16] = pModel->RegisterCallback((AnimationEventCallback)ClearPathEvent, "GetPath", this, 9999.0f, 0);
+    }
+}
 
 // FUNCTION: SWKOTOR 0x00610550
 void CSWCCreature::UnregisterAnimationCallbacks()
@@ -599,15 +652,13 @@ void CSWCCreature::HideEquippedItems(const CResRef& a, const CResRef& b)
 
 // FUNCTION: SWKOTOR 0x0060D320
 // Existing verified symbol is InCombat; this implementation checks MODELTYPE.
-// NONMATCH: appearance/rules load ordering and ESI reuse differ (12 instructions).
+// NONMATCH: the original reads the appearance into ESI and the table before the pushes (10 insns).
 int CSWCCreature::InCombat()
 {
     int bResult = 0;
     CExoString sType;
     CExoString sColumn("MODELTYPE");
-    unsigned short nAppearance = GetAppearanceType();
-    C2DA* pTable = g_pRules->m_p2DArrays->m_pAppearanceTable;
-    pTable->GetCExoStringEntry(nAppearance, sColumn, &sType);
+    g_pRules->m_p2DArrays->m_pAppearanceTable->GetCExoStringEntry(GetAppearanceType(), sColumn, &sType);
     char c = sType[0];
     if (c == 'S' || c == 'L' || c == 's' || c == 'l') bResult = 1;
     return bResult;
@@ -639,7 +690,6 @@ void CSWCCreature::LoadModelB()
 }
 
 // FUNCTION: SWKOTOR 0x00617A20
-// NONMATCH: original retains a new-expression EH frame; this inline list ctor removes it.
 void CSWCCreature::CreateSpellLikeAbilityList()
 {
     m_pSpellLikeAbilities = new CSpellLikeAbilityList();
@@ -656,8 +706,8 @@ void CSWCCreature::DeleteSpellLikeAbilityList()
 }
 
 // FUNCTION: SWKOTOR 0x0060EF50
-// NONMATCH: established void ABI retained; the original leaves EAX=1 on the unchanged path.
-void CSWCCreature::SetPartyMember(int b)
+// Returns int: the unchanged path loads EAX=1, the others return the party call's result.
+int CSWCCreature::SetPartyMember(int b)
 {
     if (m_bPartyMember != b) {
         m_bPartyMember = b;
@@ -669,10 +719,9 @@ void CSWCCreature::SetPartyMember(int b)
             g_pAppManager->m_pClientExoApp->GetSWParty()->SetPC(-3);
         }
         unsigned long oid = m_idSelf;
-        g_pAppManager->m_pClientExoApp->GetSWParty()->RemovePartyMember(oid);
-        return;
+        return g_pAppManager->m_pClientExoApp->GetSWParty()->RemovePartyMember(oid);
     }
-    return;
+    return 1;
 }
 
 // FUNCTION: SWKOTOR 0x0060D540
@@ -834,11 +883,11 @@ void CSWCCreature::SetSoundSet(unsigned short nId)
 }
 
 // FUNCTION: SWKOTOR 0x0060B750
-// NONMATCH: zero/EH-state register choice before the scalar initializers.
 CSWCCreaturePartyStatus::CSWCCreaturePartyStatus()
 {
+    m_bActive = 1;
+    m_bEnabled = 1;
     m_nState = 0;
-    m_bEnabled = m_bActive = 1;
     m_oidCreature = 0x7f000000;
     m_sName = "";
 }

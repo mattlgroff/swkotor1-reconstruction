@@ -65,8 +65,8 @@ void __cdecl AppActivate();                         // 0x00401e00
 void __cdecl ChangeResolutionForMovie()
 {
     g_nMovieResolutionNesting++;
-    g_nSavedScreenHeight = g_nScreenHeight;
     g_nSavedScreenWidth = g_nScreenWidth;
+    g_nSavedScreenHeight = g_nScreenHeight;
     g_nSavedScreenDepth = g_nScreenDepth;
     if (g_pRenderWindow->IsFullScreen()) {
         g_bMovieResolutionChanged = 1;

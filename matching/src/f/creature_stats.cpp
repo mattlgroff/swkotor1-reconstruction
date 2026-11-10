@@ -37,9 +37,9 @@ public:
     }
 };
 
-class CGameEffect {
+class CSWLevelStats {
 public:
-    ~CGameEffect();
+    ~CSWLevelStats();                               // 0x005cb270
 };
 
 class CSWSStatsBuffer {
@@ -217,7 +217,7 @@ public:
     CExoArrayList<unsigned short> m_lBonusFeats;   // +0xc
     CExoArrayList<unsigned short> m_lFeatUses;     // +0x18
     CSWSCreature *m_pBaseCreature;                 // +0x24
-    CExoArrayList<CGameEffect *> m_lEffects;       // +0x28
+    CExoArrayList<CSWLevelStats *> m_lLevelStats;  // +0x28
     CExoLocString m_sFirstName;                    // +0x34
     CExoLocString m_sLastName;                     // +0x3c
     char pad_0x44[0x14];
@@ -325,12 +325,12 @@ CSWSCreatureStats::~CSWSCreatureStats()
         m_p168 = 0;
     }
     ClearFeats();
-    int nEffects = m_lEffects.num;
-    for (int i = nEffects - 1; i >= 0; i--) {
-        CGameEffect *pEffect = m_lEffects.element[i];
-        m_lEffects.DelIndex(i);
-        if (pEffect)
-            delete pEffect;
+    int nLevels = m_lLevelStats.num;
+    for (int i = nLevels - 1; i >= 0; i--) {
+        CSWLevelStats *pLevelStats = m_lLevelStats.element[i];
+        m_lLevelStats.DelIndex(i);
+        if (pLevelStats)
+            delete pLevelStats;
     }
     if (m_pBuffer) {
         delete m_pBuffer;

@@ -1,6 +1,5 @@
 // CSWCItem property accessors and compact field operations.
 
-extern "C" void __cdecl free(void* p);
 void* __cdecl operator new(unsigned int nSize);
 
 class CSWCCreature;
@@ -75,7 +74,7 @@ void CSWCItem::SetNumActiveProperties(unsigned long nCount)
 {
     m_nNumActiveProperties = nCount;
     if (m_pActiveProperties) {
-        free(m_pActiveProperties);
+        delete[] m_pActiveProperties;
     }
     m_pActiveProperties = (CSWCItemProperty*)::operator new(m_nNumActiveProperties * 0x1c);
 }

@@ -90,7 +90,7 @@ int CSWGuiManager::LoadGuiSounds()
         m_pGuiSounds = new CExoSoundSource*[(char)nRows];
         if (m_pGuiSounds) {
             for (int i = 0; i < m_nGuiSounds; i++) {
-                if (p2DA->GetCExoStringEntry(i, "soundresref", &sResRef)) {
+                if (p2DA->GetCExoStringEntry(i, "SoundResRef", &sResRef)) {
                     m_pGuiSounds[i] = new CExoSoundSource(sResRef);
                     if (m_pGuiSounds[i]) {
                         m_pGuiSounds[i]->SetPriorityGroup(11);

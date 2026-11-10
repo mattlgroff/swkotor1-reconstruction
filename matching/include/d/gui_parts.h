@@ -291,6 +291,7 @@ public:
 class CSWGuiTextParams {
 public:
     CSWGuiTextParams();
+    ~CSWGuiTextParams() {}
     CSWGuiTextParams(const CExoString& sText, const CResRef& cFont, const Vector& vColor,
                      int nAlign, float fAlpha);
     CSWGuiTextParams& operator=(const CSWGuiTextParams& p);
@@ -372,6 +373,7 @@ public:
 
 struct STR_RES {
     STR_RES() {}
+    ~STR_RES() {}
     CExoString sString;                             // 0x00
     CResRef cSoundResRef;                           // 0x08
     float fSoundLength;                             // 0x18

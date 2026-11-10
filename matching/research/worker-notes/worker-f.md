@@ -537,3 +537,142 @@ Next in range:
 - Stats: LevelUp 0x005AABF0 / LevelDown 0x005AB1E0 (use the getter rules above), UpdateCombatInformation
   0x005ADDC0, retry GetReflexSavingThrow 0x005AB8F0 and the other stats near-misses with typed getters.
 - Still open from earlier rounds: dialog send paths, CSWSJournal::SetState, walkmesh and combat queues.
+
+## 2026-11-10 round s11: function starts missing from functions.csv (virtual overrides, ctors, dtors)
+
+Folder `matching/src/f`: 729/836 -> 751/859 (kotor-match -q -j 2).
+23 new annotations: 22 exact, 1 NONMATCH. No prior MATCH regressed. All the todo items left in the
+bucket are large or x87-heavy, so this round annotated function starts that functions.csv misses
+(found by scanning for 16-aligned code after ret + padding, vtable slots and `push imm32` refs that
+point into the bucket without an annotation). None of these addresses has a functions.csv row.
+
+Exact (new file `object_aiupdate.cpp`, own CSWSObject layout with GetDead at vtable +0x94):
+0x005889C0 CSWSDoor::AIUpdate (vtable +0x70), 0x00588AB0 CSWSDoor::GetDead (+0x94, shared with the
+placeable vtable: `if (m_bPlot) return 0; return CSWSObject::GetDead();` = tail jmp), 0x00589190
+CSWSDoor::DamageHitPoints (+0xa0, also shared), 0x0058D760 CSWSTrigger::AIUpdate (trap animation
+10143 / 10144), 0x005945D0 / 0x005945E0 CSWSAreaOfEffectObject::Get/SetLastSpellId (+0xb8/+0xbc,
+descriptive names for the +0x234 spell id), 0x005964E0 CSWSAreaOfEffectObject::EventHandler.
+Exact elsewhere: `area.cpp` 0x0058FCE0 CSWArea::SetFog, 0x0058FD10 SetIsNight, 0x0058FD30 SetWind
+(CSWArea vtable +0x08..+0x10; CSWCArea overrides SetWind; descriptive names); `store_waypoint.cpp`
+0x005C6EE0 CSWSStore::EventHandler, 0x005C7F00 CSWSWaypoint::GetLocName (+0x8c), 0x005C7F10
+CSWSWaypoint::EventHandler; `sound_object.cpp` 0x005C8650 CSWSSoundObject::EventHandler (empty
+`ret 0x14`); `encounter_load.cpp` 0x0058FF80 ??0CEncounterListEntry (SYMBOL-only, emitted for the
+`new[]`) and 0x0058FFC0 CEncounterSpawnPoint ctor; `res_mesh.cpp` 0x005CE0E0
+CSWDoorSurfaceMesh::SetDoorState (descriptive; inlined strcpy of "closed"/"open1"/"open2"/" ");
+new `door_mesh_save.cpp` 0x005CE960 CSWDoorSurfaceMesh::SaveBinaryMesh; `dialog_base.cpp`
+0x0059F5E0 CSWSDialogReply::~CSWSDialogReply (tail jmp to the node dtor); SYMBOL-only scalar
+deleting dtors 0x005B4770 ??_GCSWItem (base_item.cpp), 0x005C7D50 ??_GCSWRoom (race_room.cpp),
+0x005CDA40 ??_GCSWSClient (res_mesh.cpp).
+
+NONMATCH: 0x00595D10 CSWSAreaOfEffectObject::AIUpdate (12: only the three member stores after the
+second SubtractWorldTimes are scheduled differently; statement permutations, inline setters and
+declaration order all leave the same 12).
+
+Screened and skipped:
+- 0x005A76D0 looks like ??0CExoArrayList but does NOT return `this` (`xor eax,eax; 3 stores; ret`);
+  a C++ ctor always ends `mov eax,ecx`, so it is some other zeroing function used as the vector
+  constructor iterator target by CSWSCreatureStats_ClassInfo. Not annotated.
+- Big hidden starts left: 0x0058B850 CSWSDoor::EventHandler (~3500 B), 0x0058F140
+  CSWSTrigger::EventHandler (~1360 B, transition / mine paths share SetFadeOutTime tails),
+  0x005CDAD0 CSWPlaceableSurfaceMesh::LoadMeshText and 0x005CE160 CSWDoorSurfaceMesh::LoadMeshText
+  (~1300 B text parsers, vtable 0x74C354 / 0x74C3C8; src/units/1807/4e73de9399-claude_closeb_mesh.cpp).
+- Retries without progress: GetEffect 0x005A6170 (block layout), HasTargetBeenDetected 0x005B48F0
+  (the original keeps bDetected = 1 in ebp and returns it with `mov eax, ebp`; every shape folds it).
+
+Lessons:
+- A call argument read twice from the same object: one inline getter (`pPC->GetID()`) and one plain
+  member (`pPC->m_idSelf`) reproduced the original eax / edx pair (trigger AIUpdate 18 -> 0); a local
+  copy (`unsigned long oid = m_idSelf;`) fixed the AddEventDeltaTime argument registers in the AoE.
+- A by-value Vector return stored into a struct member: `{ Vector v = F(); s.m = v; }` in its own
+  block per call reuses the one temp slot and copies from the frame like the original; a direct
+  `s.m = F()` copies through the returned pointer, and two function-scope locals enlarge the frame.
+- `char == char` against a global (`GetGameObject(...) == g_cObjectArraySuccess`) gives the original
+  `cmp al, byte ptr [g]`; an `unsigned char` global promotes both sides to int.
+- SYMBOL-only annotations work for compiler-emitted functions (scalar deleting dtors, inline ctors
+  used by `new[]`) as long as the TU emits them; check that the original body returns what a ctor /
+  dtor would (see 0x005A76D0 above).
+- Scratch helpers this round (outside the repo): a dumper for any address with symbols and strings,
+  a vtable / `push imm32` / call-target reference scanner and a variants sweeper.
+
+Next in range: the four big hidden starts above (trigger EventHandler first), then the GFF loaders
+from s10 (LoadTrigger 0x0058DA80, LoadPlaceable 0x00585670, LoadDoor 0x0058A1F0,
+ReadEncounterFromGff 0x00592430, ReadStatsFromGff 0x005AFCE0), and the s9/s10 stats queue.
+
+## 2026-11-10 round s12: CreateNewAttackActions, LineSegmentsIntersect
+
+Folder `matching/src/f`: 751/859 -> 753/861 (kotor-match -q -j 2).
+2 new annotations, both exact. No prior MATCH regressed. Most of the round went into retries
+that did not move (listed below).
+
+New exact:
+- `creature_attack_actions.cpp` 0x005B6980 CSWSCreature::CreateNewAttackActions (name from the
+  behavioural source; +0x524 named m_oidCleaveTarget descriptively). Own TU so that
+  CancelAllCombatModes stays a call; InitializeNewAttackTarget is an in-class inline (the original
+  inlines it); the "no nearest enemy" path spells CancelAllCombatModes' body out by hand.
+- `area_segments.cpp` 0x0058F840 CSWSArea::LineSegmentsIntersect (pure x87, 1184 bytes).
+
+Lessons:
+- Block placement of an early `return` inside a branch: write `if (ok) { ... } else { cancel; return; }`
+  to get the cancel block moved after the success path (CreateNewAttackActions 63 -> 36).
+- Two variables that cl coalesces into one register while the original keeps a copy (`mov ebp, edi`):
+  move the `a = b;` assignment earlier (right after the first use of b) and the copy appears (36 -> 0).
+- Pass an object id through a named local (`unsigned long oid = pTarget->m_idSelf;`) to keep the
+  pointer register reused for the id, as the original does.
+- `Vector v = a - b;` uses the operator's return slot in place only when Vector has a (inline, empty)
+  user ctor; a POD Vector copies the result into a second local.
+- x87 deltas: the original wrote the coordinate differences as expressions, not named locals
+  (`((fX2 - fX1) * (fX4 - fX3) + ...) / Length2D(fY2 - fY1, fX2 - fX1)`); cl CSEs them, keeps the
+  first pair on the FPU stack (fst) and copies the second pair with integer moves into the inline
+  helper's parameter slots. Named delta locals give fstp + reloads and a 4-byte smaller frame.
+  `fCos = fCos / Length2D(...)` as a second statement fixed `fdivrp` vs `fxch; fdivp`, and the helper
+  had to be `return (float)sqrt(a * a + b * b);` (assigning the parameter first changes the code).
+- Range tests: `if (hi >= lo && !(v >= lo && v <= hi)) b = 0;` gives the original `test ah,1 / jne`
+  then `test ah,0x41 / jnp` sequence; `(v < lo || v > hi)` gives `test ah,5` forms. Slopes declared
+  inside each branch are hoisted above the branch like the original.
+
+Retried without progress (keep as NONMATCH): CSWSAmbientSound conditional setters (aPlayers.element
+promoted to ebp in the original; another 9 shapes tried, incl. local element pointers, early return,
+moving the count), CSWSAmbientSound ctor (2, store order / xor placement; 4 orders tried),
+GetUseMonkAttackTables (4, dead bRanged load; 7 shapes), CheckPowerSuitability (3, return-0 block
+placement; 4 shapes), CSWSDoor::SetOrientation (2, q.z*q.w operand order; 6 spellings).
+
+Screened and skipped: 0x005803C0 hidden adjacency builder (strength-reduced 7-int edge records,
+`(6-k > 2) ? k % 4 - 1 : 6 - k` edge index), 0x005950C0 AoE segment test (x87 with many GetPosition
+temps), 0x005B4AA0 miss location (x87), 0x005B92B0 SavingThrowRoll, 0x005B6F30 SignalRangedDamage,
+0x005B6210 AIActionCombat (switch, many members), 0x0058F140 trigger EventHandler, 0x0058DA80
+LoadTrigger (3040, EH + quaternion loop).
+
+Next in range: other pure-x87 leaves with the expression/CSE trick (0x00583E30
+ComputeClippedLineSegment, 0x0058C8A0 trigger nearest outline point, 0x005CF1F0 pathfind), then
+SavingThrowRoll 0x005B92B0 (fits creature_attack_actions.cpp-style own TU), the GFF loaders, the
+s9/s10 stats queue.
+
+### GetHead sweep (sweep-s1)
+
+- Bucket c GetHead shape (internal `pNode = m_pHead; if (!pNode) return 0;
+  return pNode->pObject;`, wrapper copies the internal pointer to a local)
+  applied to the local list copies in dialog.cpp (GetHeadObject) and
+  dialog_server.cpp (GetFirst, now also used for the first player loop).
+- No promotion; folder stays 753/861. Improved: 0x005A03C0 HandleReply
+  81 -> 73 (list head tests now identical; a `CGameObject *pGame = pFound`
+  copy gives the esi caching; left: stack slot rotation) and 0x0059FB60
+  RemovePlayer 17 -> 12 (head loop identical; left: final IsEmpty register
+  swap and the new-head tail return).
+
+### Audit fixes 2026-11-10 (fix5-s1)
+
+matchcmp masks relocations, so these MATCH functions were wrong underneath:
+- CSWClass::LoadSpellsTable reads Light_Recom first (+0x4), Dark_Recom second (+0x8); field names swapped.
+- CSWSDialog::GetDialogModel / SendDialogModels: first compare is "PLAYER", second "OWNER" || "".
+- ResolveRangedHit/Miss travel factor 23.809524f (0x41be79e8, about 1000/42); SetDialogDelay 0.1125000045f (0x3de66667);
+  AddCreaturesToSpawnList epsilon 0.001f; SideClearOfObstructions debug z offset 0.2f; LoadWaypoint normalises when |o|^2 != 1.0f.
+- ~CSWSCreatureStats: the +0x28 list holds CSWLevelStats* (dtor 0x005cb270), not CGameEffect*.
+- CSWSJournal::GetQuestEntryXP / GetState compare plot ids with CompareNoCase (0x005e6450).
+- CSWSPlaceable::LoadFromTemplate error text is really "Item template %s doesn't exist.\n" (copy-paste in the original).
+- CSWSScriptVarTable::SetInt: prefix "NW_JOURNAL"; +0xc is the owning CSWSCreature, calls
+  GetJournal 0x004edb00 then CSWSJournal SetState/SetDate/SetTime and 0x005c5630 (empty, named SetPicture).
+- CSWSpell ctor default resrefs: amb_e08b, amb_e09a, sp_sumfire, amb_e14 and m_s34 = "default".
+- ClearAllPlayerHostileActions walks GetModule()->GetArea()->m_aGameObjects (0x004ae6b0, 0x004c30f0), not the party.
+- ApplyOnHitSlow 0x00746688 renamed EFFECT_TYPE_SLOW (value 3); EFFECT_TYPE_MOVEMENT_SPEED_DECREASE is 0x007466f0 (29).
+- Left as checker false positives: CSWRoomSurfaceMesh / LUO ~CExoArrayList conflicts; our template dtor body equals
+  0x0056b6f0. IMMUNITY_TYPE_13 at 0x00746930 (value 13) is correct; bucket a's IMMUNITY_TYPE_13 @0x00746940 holds 19.

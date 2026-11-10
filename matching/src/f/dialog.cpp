@@ -138,16 +138,14 @@ public:
 
 extern char g_cObjectArraySuccess;
 
-class CSWParty {
+class CSWSModule {
 public:
-    char pad_0x0[0x190];
-    CExoArrayList<unsigned long> m_aidMembers;  // +0x190
+    CSWSArea *GetArea();             // 0x004c30f0
 };
 
 class CSWPartyTable {
 public:
     void GivePlotXP(int nPlotIndex, int nXP);
-    CSWParty *GetParty();
 };
 
 class CSWSModuleLang {
@@ -171,6 +169,7 @@ public:
     CSWSModuleLang *GetModuleByIndex(int n);
     CGameObjectArray *GetObjectArray();
     CSWPartyTable *GetPartyTable();
+    CSWSModule *GetModule();         // 0x004ae6b0
     CGameObject *GetGameObject(unsigned long oid);
 };
 
@@ -216,6 +215,13 @@ public:
     void *RemoveHead();
     void *GetNext(CExoLinkedListNode *&pPos);
     void *Remove(CExoLinkedListNode *pPos);
+    void *GetHeadObject()
+    {
+        CExoLinkedListNode *pNode = (CExoLinkedListNode *)m_pHead;
+        if (!pNode)
+            return 0;
+        return pNode->pObject;
+    }
     void *m_pHead;
     void *m_pTail;
     int m_nCount;
@@ -234,10 +240,8 @@ public:
     }
     T *GetHeadObject()
     {
-        void *pObject = m_pcExoLinkedListInternal->m_pHead;
-        if (pObject)
-            pObject = ((CExoLinkedListNode *)pObject)->pObject;
-        return (T *)pObject;
+        CExoLinkedListInternal *pInternal = m_pcExoLinkedListInternal;
+        return (T *)pInternal->GetHeadObject();
     }
     T *GetNext(CExoLinkedListNode *&pPos) { return (T *)m_pcExoLinkedListInternal->GetNext(pPos); }
     void Remove(CExoLinkedListNode *pPos) { m_pcExoLinkedListInternal->Remove(pPos); }
@@ -476,11 +480,11 @@ void CSWSDialog::ClearAllPlayerHostileActions()
     int nLang = g_pAppManager->GetServerExoApp()->GetLanguage();
     unsigned long nTime = g_pAppManager->GetServerExoApp()->GetModuleByIndex(nLang)->m_nWorldTime;
     CGameObjectArray *pArray = g_pAppManager->GetServerExoApp()->GetObjectArray();
-    CExoArrayList<unsigned long> &aMembers =
-        g_pAppManager->GetServerExoApp()->GetPartyTable()->GetParty()->m_aidMembers;
-    for (int i = 0; i < aMembers.num; i++) {
+    CExoArrayList<unsigned long> &aObjects =
+        g_pAppManager->GetServerExoApp()->GetModule()->GetArea()->m_aGameObjects;
+    for (int i = 0; i < aObjects.num; i++) {
         CGameObject *pObject;
-        unsigned long id = aMembers.element[i];
+        unsigned long id = aObjects.element[i];
         if (pArray->GetGameObject(id, &pObject) == g_cObjectArraySuccess &&
             pObject && pObject->AsSWSCreature() &&
             !pObject->AsSWSCreature()->m_bPlayerControlled) {
@@ -542,9 +546,9 @@ unsigned long CSWSDialog::GetDialogModel(int nIndex, int *pnModel)
             CGameObject *pOwner = pObject->AsSWSObject();
             CServerMessage *pMessage = g_pAppManager->m_pServerMessage;
             unsigned long oid;
-            if (m_pSpeakers[nIndex].m_sTag == "OWNER") {
+            if (m_pSpeakers[nIndex].m_sTag == "PLAYER") {
                 oid = pMessage->ServerToClientObjectId(GetPlayerCharacterId());
-            } else if (m_pSpeakers[nIndex].m_sTag == "PLAYER" || m_pSpeakers[nIndex].m_sTag == "") {
+            } else if (m_pSpeakers[nIndex].m_sTag == "OWNER" || m_pSpeakers[nIndex].m_sTag == "") {
                 oid = pMessage->ServerToClientObjectId(m_oidOwner);
             } else {
                 oid = pMessage->ServerToClientObjectId(
@@ -565,9 +569,9 @@ int CSWSDialog::SendDialogModels(CGameObject *pObject, unsigned long nPlayer)
     unsigned long *pIds = new unsigned long[m_nSpeakers];
     for (unsigned long i = 0; i < m_nSpeakers; i++) {
         pIds[i] = 0x7f000000;
-        if (m_pSpeakers[i].m_sTag == "OWNER")
+        if (m_pSpeakers[i].m_sTag == "PLAYER")
             pIds[i] = pMessage->ServerToClientObjectId(m_lPlayers.GetHeadPos() ? m_oidPlayer : 0x7f000000);
-        else if (m_pSpeakers[i].m_sTag == "PLAYER" || m_pSpeakers[i].m_sTag == "")
+        else if (m_pSpeakers[i].m_sTag == "OWNER" || m_pSpeakers[i].m_sTag == "")
             pIds[i] = pMessage->ServerToClientObjectId(m_oidOwner);
         else
             pIds[i] = pMessage->ServerToClientObjectId(
@@ -613,9 +617,9 @@ unsigned long CSWSDialog::GetStartEntry(CGameObject *pObject)
     return 0xffffffff;
 }
 
-// NONMATCH (17): the head-object getter result goes through eax into edi in
-// the original, the final IsEmpty test uses ecx, and the new-head tail keeps
-// its own return; three loop / getter shapes tried.
+// NONMATCH (12): head loop now identical (c-style GetHeadObject); the final
+// IsEmpty test uses ecx/eax swapped vs ours and the new-head tail keeps its
+// own return; GetHeadPos() != 0 and an if/assign IsEmpty tried.
 // FUNCTION: SWKOTOR 0x0059FB60
 int CSWSDialog::RemovePlayer(unsigned long oidPlayer)
 {

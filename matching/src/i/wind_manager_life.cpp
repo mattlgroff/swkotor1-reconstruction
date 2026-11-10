@@ -42,7 +42,6 @@ void WindManager::FillNoiseField(float* pField)
 template CExoArrayList<PointSourceWind>::~CExoArrayList();
 template void CExoArrayList<PointSourceWind>::Allocate(int);
 
-// NONMATCH (5 insns): num - 1 lands in edi instead of esi.
 // FUNCTION: SWKOTOR 0x004A5E30
 void WindManager::UpdateTimer(float fDelta)
 {
@@ -59,10 +58,7 @@ void WindManager::UpdateTimer(float fDelta)
     for (int i = 0; i < m_lPointSourceWinds.num; i++) {
         m_lPointSourceWinds.element[i].m_fTimeLeft -= fDelta;
         if (m_lPointSourceWinds.element[i].m_fTimeLeft < 0.0f) {
-            m_lPointSourceWinds.num--;
-            for (int j = i; j < m_lPointSourceWinds.num; j++) {
-                m_lPointSourceWinds.element[j] = m_lPointSourceWinds.element[j + 1];
-            }
+            m_lPointSourceWinds.DelIndex(i);
             i--;
         }
     }

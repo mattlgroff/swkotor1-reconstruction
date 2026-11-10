@@ -46,7 +46,7 @@ extern const float AI_SOUND_RANGE;
 // Reputation override (-1 = off).
 extern int g_nReputationOverride;                   // 0x007A2068
 
-class CSWSTrigger : public CSWSObject {
+class CSWSAreaOfEffectObject : public CSWSObject {
 public:
     char pad_0xf4[0x248 - 0xf4];
     unsigned long m_oidCreator;                     // 0x248
@@ -416,11 +416,11 @@ int CSWSObject::GetReputation(unsigned long oidTarget, int bArg)
         GAME_OBJECT_VALID) {
         CFactionManager* pFactionManager = g_pAppManager->GetServerExoApp()->GetFactionManager();
         if (pFactionManager) {
-            if (pObject->m_nObjectType == OBJECT_TYPE_AREA_OF_EFFECT && pObject->AsSWSTrigger()) {
-                oidTarget = pObject->AsSWSTrigger()->m_oidCreator;
+            if (pObject->m_nObjectType == OBJECT_TYPE_AREA_OF_EFFECT && pObject->AsSWSAreaOfEffectObject()) {
+                oidTarget = pObject->AsSWSAreaOfEffectObject()->m_oidCreator;
             }
-            if (AsSWSTrigger()) {
-                unsigned long oidCreator = AsSWSTrigger()->m_oidCreator;
+            if (AsSWSAreaOfEffectObject()) {
+                unsigned long oidCreator = AsSWSAreaOfEffectObject()->m_oidCreator;
                 CGameObject* pCreator;
                 if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(
                         oidCreator, &pCreator) != GAME_OBJECT_VALID) {
@@ -448,7 +448,7 @@ int CSWSObject::GetReputation(unsigned long oidTarget, int bArg)
             if (AsSWSCreature()) {
                 nReputation = AsSWSCreature()->GetCreatureReputation(oidTarget, nFaction1);
             }
-            else if (AsSWSPlaceable() || AsSWS5C() || AsSWSDoor() || AsSWSAreaOfEffectObject()) {
+            else if (AsSWSPlaceable() || AsSWSEncounter() || AsSWSDoor() || AsSWSTrigger()) {
                 nReputation = pFactionManager->GetNPCReputation(nFaction1, nFaction2);
             }
             if (nReputation < 0) {

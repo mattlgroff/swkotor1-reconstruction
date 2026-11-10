@@ -173,7 +173,7 @@ extern unsigned int g_aBlendFactors[];  // 0x0073F270
 typedef void (__cdecl* PFNCOMBINER)(unsigned int, CAurTexture*, CAurTexture*, CAurTexture*, CAurTexture*);
 extern PFNCOMBINER g_pfnCombiner;   // 0x007A47E0
 typedef void (__stdcall* PFNACTIVETEXTURE)(unsigned int);
-extern PFNACTIVETEXTURE g_pfnActiveTexture; // 0x007BB6B0
+extern PFNACTIVETEXTURE glClientActiveTextureARB; // 0x007BB6B0
 extern unsigned int g_eNormalArray;     // 0x0073F39C
 extern unsigned int g_eColorArray;      // 0x0073F3A0
 extern unsigned int g_eVertexArray;     // 0x0073F3A4
@@ -202,7 +202,7 @@ extern int g_bEnvMapTexturesOnly;   // 0x0078E63C
 extern int g_bEnvMapBlendAdd;       // 0x00827FD4
 extern unsigned int g_nActiveTextureUnit;   // 0x007A6898
 typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int);
-extern PFNCLIENTACTIVETEXTURE g_pfnClientActiveTexture;    // 0x007BB80C
+extern PFNCLIENTACTIVETEXTURE glActiveTextureARB;    // 0x007BB80C
 typedef void (__cdecl* PFNCOMBINERCONST)(Vector*, float);
 extern PFNCOMBINERCONST g_pfnCombinerConst; // 0x007A6820
 

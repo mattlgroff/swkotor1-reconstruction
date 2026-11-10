@@ -491,21 +491,6 @@ CAurBehaviorAttach::~CAurBehaviorAttach()
     }
 }
 
-// FUNCTION: SWKOTOR 0x004A0030
-void __fastcall thunk_FUN_0049fce0(void* pThis, void*)
-{
-	((CAurBehaviorAttach*)pThis)->CAurBehaviorAttach::~CAurBehaviorAttach();
-}
-
-// FUNCTION: SWKOTOR 0x004A0010
-void* __fastcall behavior_attach_scalar_delete_004a0010(void* pThis, void*, unsigned int flags)
-{
-    thunk_FUN_0049fce0(pThis, 0);
-    if ((flags & 1) != 0)
-        ::operator delete(pThis);
-    return pThis;
-}
-
 // FUNCTION: SWKOTOR 0x0049FDC0
 CAurBehaviorAttachTranslate::CAurBehaviorAttachTranslate(Gob* pGob, Gob* pTarget, AttachHook* pHook)
     : CAurBehaviorAttach(pGob, pTarget, pHook), m_vTranslation(0.0f, 0.0f, 0.0f)
@@ -579,16 +564,16 @@ CAurBehaviorCameraFollow::~CAurBehaviorCameraFollow()
 {
 }
 
-// FUNCTION: SWKOTOR 0x004A0040
-void* __fastcall behavior_camera_follow_scalar_delete_004a0040(void* pThis, void*, unsigned int flags)
-{
-    CAurBehaviorCameraFollow* pBehavior = (CAurBehaviorCameraFollow*)pThis;
-    pBehavior->CAurBehaviorCameraFollow::~CAurBehaviorCameraFollow();
-    if ((flags & 1) != 0)
-        ::operator delete(pThis);
-    return pThis;
-}
+// FUNCTION: SWKOTOR 0x004A0040 SYMBOL: ??_GCAurBehaviorCameraFollow@@UAEPAXI@Z
 
 // FUNCTION: SWKOTOR 0x0049FFD0 SYMBOL: ??_GCAurBehavior@@UAEPAXI@Z
 
 // FUNCTION: SWKOTOR 0x0049FFF0 SYMBOL: ??_GCAurBehaviorAttach@@UAEPAXI@Z
+
+// The three attach subclasses' compiler-generated destructor (it only jumps
+// to ~CAurBehaviorAttach) and scalar deleting destructor are identical, so
+// the linker folded them; the Translate vtable 0x007438B8 (set by the ctor at
+// 0x0049FDC0) names the shared copies. The Rotate / NoOrientation vtables
+// 0x007438DC / 0x00743900 hold the same 0x004A0010.
+// FUNCTION: SWKOTOR 0x004A0010 SYMBOL: ??_GCAurBehaviorAttachTranslate@@UAEPAXI@Z
+// FUNCTION: SWKOTOR 0x004A0030 SYMBOL: ??1CAurBehaviorAttachTranslate@@UAE@XZ

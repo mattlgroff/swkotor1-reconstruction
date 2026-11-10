@@ -50,6 +50,7 @@ public:
 class CSWSkill {
 public:
     CExoString GetNameText();                       // 0x005CD8D0
+    CExoString GetDescriptionText();                // 0x005CD970
     int m_nNameStrRef;                              // 0x00
     char pad_0x4[0xc];
     CExoString m_sIcon;                             // 0x10
@@ -279,7 +280,7 @@ public:
     virtual void v07C();
     virtual void v080();
     virtual void v084();
-    virtual void v088();
+    virtual void SetOrientation(const Vector& vOrientation);  // 0x88 (CSWCObject)
     virtual void SetGuiPosition(const Vector& vPosition);  // 0x8c (descriptive)
     virtual void v090();
     virtual void SetGuiScene(class CAurScene* pScene);   // 0x94 (descriptive)
@@ -471,6 +472,7 @@ public:
 extern Vector g_vAbilityColorGranted;               // 0x007A23C0
 extern Vector g_vAbilityColorAvailable;             // 0x007A23D8
 extern Vector g_vAbilityColorLocked;                // 0x007A23E4
+extern Vector g_vDifficultyExitColor;               // 0x007A23B4
 
 // A row of up to three chained abilities with arrows between them;
 // vtable 0x007578A8, 0x47c bytes, ctor 0x006CCCC0, ??_G 0x006CD420,
@@ -589,6 +591,7 @@ public:
     }
     int CanShowPowers();                            // 0x006ABE70
     void ShowSkill(int nSkill);                     // 0x006ACCE0
+    void OnEnterSkill(CSWGuiControl* pControl);     // 0x006AD180
     void ShowFeat(unsigned short nFeat);            // 0x006AD410
     void OnAbilitySelectionChanged(CSWGuiControl* pControl);    // 0x006AD4B0
     void UpdateList();                              // 0x006AD560

@@ -144,6 +144,15 @@ public:
     void RemoveDependency(Gob* pGob);           // 0x0049F1F0
 };
 
+// Intermediate base of the swbehaviorcamera.o cameras (name inferred). Its
+// destructor is implicit: inlined into the camera destructors' bodies, while
+// their constructor/destructor unwind funclets call the out-of-line copy,
+// which the linker folded into 0x006DB4E0 (jmp ~CAurBehavior).
+class CSWCameraBehaviorBase : public CAurBehavior {
+public:
+    CSWCameraBehaviorBase(Gob* pGob) : CAurBehavior(pGob) {}
+};
+
 class CClientOptions;
 class CSWCModule;
 class CSWCameraTiltTarget;
@@ -193,7 +202,7 @@ public:
 };
 
 // vtable 0x0075169C
-class CSWCameraDeath : public CAurBehavior {
+class CSWCameraDeath : public CSWCameraBehaviorBase {
 public:
     GobRef m_rTarget;                           // +0x14
     float m_yaw;                                // +0x18
@@ -262,7 +271,7 @@ extern float g_fCameraTiltDownLimit;                // 0x007A2424
 extern float g_fCameraRotation;                     // 0x007A2428
 
 // vtable 0x0075165C
-class CSWCameraOnAStick : public CAurBehavior {
+class CSWCameraOnAStick : public CSWCameraBehaviorBase {
 public:
     GobRef m_rTarget;                           // +0x14
     GobRef m_rCombatTarget;                     // +0x18
@@ -391,7 +400,7 @@ public:
 };
 
 // vtable 0x0075167C
-class CSWCameraFreeLook : public CAurBehavior {
+class CSWCameraFreeLook : public CSWCameraBehaviorBase {
 public:
     GobRef m_rTarget;                           // +0x14
     Gob* m_pCamera;                             // +0x18

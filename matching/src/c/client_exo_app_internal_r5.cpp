@@ -485,7 +485,7 @@ void CClientExoAppInternal::SetGameSpeed(float fSpeed)
 void CClientExoAppInternal::SetCanSendDialog(int b)
 {
     m_bCanSendDialog = b;
-    m_nCanSendDialogTime = (int)(g_pAppManager->m_pClientExoApp->m_pcInternal->m_pPauseTimer->GetSnapshotTime() / 1000);
+    m_nCanSendDialogTime = (int)((__int64)g_pAppManager->m_pClientExoApp->m_pcInternal->m_pPauseTimer->GetSnapshotTime() / 1000);
 }
 
 // FUNCTION: SWKOTOR 0x005F4120

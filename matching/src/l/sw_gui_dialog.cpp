@@ -6,6 +6,36 @@
 
 #include "l/sw_gui_dialog.h"
 
+#define __min(a, b) (((a) < (b)) ? (a) : (b))
+
+template <class T>
+class CExoArrayList {
+public:
+    T* element;
+    int num;
+    int array_size;
+    CExoArrayList()
+    {
+        num = 0;
+        array_size = 0;
+        element = 0;
+    }
+    ~CExoArrayList()
+    {
+        delete[] element;
+        element = 0;
+    }
+    void Allocate(int nSize);                       // 0x005E03C0
+    void Add(T t)
+    {
+        if (num == array_size) {
+            Allocate(array_size ? array_size * 2 : 0x10);
+        }
+        element[num] = t;
+        num++;
+    }
+};
+
 // FUNCTION: SWKOTOR 0x006A6D70
 void CSWGuiDialog::SetForced()
 {
@@ -65,7 +95,7 @@ void (CSWGuiDialog::*GetSelectCurrentReply())(int)
 }
 
 // FUNCTION: SWKOTOR 0x006A6FC0
-void __stdcall CSWGuiDialog::ResetReplyColor(CSWGuiControl* pControl)
+void CSWGuiDialog::ResetReplyColor(CSWGuiControl* pControl)
 {
     CSWGuiLabel* pLabel = pControl->GetLabel();
     pLabel->m_cText.SetColor(g_vDefaultReplyColor);
@@ -258,7 +288,7 @@ void CSWGuiLetterbox::ShowTop()
         m_pManager = g_pAppManager->GetClientExoApp()->GetGuiManager();
     }
     CSWGuiManager* pManager = m_pManager;
-    int nBar = (int)(pManager->m_nWidth * 0.42857143f);
+    int nBar = (int)(pManager->m_nWidth * 0.4285715f);
     int nHeight = (int)((pManager->m_nHeight - nBar) * 0.5f);
     m_targetExtent.height = 0;
     m_barExtent.top = 0;
@@ -280,7 +310,7 @@ void CSWGuiLetterbox::ShowBottom()
     }
     CSWGuiManager* pManager = m_pManager;
     int nScreenHeight = pManager->m_nHeight;
-    int nBar = (int)(pManager->m_nWidth * 0.42857143f);
+    int nBar = (int)(pManager->m_nWidth * 0.4285715f);
     int nHeight = (int)((nScreenHeight - nBar) * 0.5f);
     m_targetExtent.top = nScreenHeight;
     m_barExtent.top = pManager->m_nHeight - nHeight;
@@ -337,7 +367,7 @@ void CSWGuiDialogTop::SetReply(const CExoString& sReply)
         CSWGuiExtent cExtent = m_lblReply.m_extent;
         if (nHeight <= m_extent.height) {
             CSWGuiManager* pManager = m_pManager;
-            nHeight = (pManager->m_nHeight - (int)(pManager->m_nWidth * 0.42857143f)) / 2 - nMarginY - 5;
+            nHeight = (pManager->m_nHeight - (int)(pManager->m_nWidth * 0.4285715f)) / 2 - nMarginY - 5;
         }
         m_extent.height = nHeight;
         cExtent.height = nHeight;
@@ -412,11 +442,57 @@ CSWGuiDialogComputerCamera::~CSWGuiDialogComputerCamera()
     }
 }
 
-// FUNCTION: SWKOTOR 0x006A8680 SYMBOL: ??_GCSWGuiDialog@@UAEPAXI@Z
-CSWGuiDialog* NewDialog()
+// FUNCTION: SWKOTOR 0x006A85B0
+CSWGuiDialog::CSWGuiDialog(CSWGuiManager* pManager)
+    : CSWGuiPanel(pManager), m_vReplyColor(0.0f, 0.0f, 0.0f)
 {
-    return new CSWGuiDialog;
+    m_oidSpeaker = 0x7f000000;
+    m_bMessageShown = 1;
+    m_bMessageHidden = 0;
+    m_bForced = 1;
+    ClearReplies();
 }
+
+// FUNCTION: SWKOTOR 0x006A86A0
+void CSWGuiDialog::SetReplies(int nReplies, CExoString* pReplies, unsigned long* pIndices, int nUnused,
+                              int bShow)
+{
+    ClearReplies();
+    CSWGuiZeroExtent extent;
+    CExoArrayList<CSWGuiControl*> lstReplies;
+    CExoString sPrefix;
+    m_nReplies = __min(nReplies, 20);
+    for (int i = 0; i < m_nReplies; i++) {
+        if (!pReplies[i].IsEmpty()) {
+            if (i < 9) {
+                sPrefix.Format("%d. ", i + 1);
+            } else {
+                sPrefix = "-. ";
+            }
+            m_aReplies[i].m_cText.SetText(sPrefix + pReplies[i]);
+            m_aReplies[i].m_cText.UpdateFont();
+            static_cast<CSWGuiExtent&>(extent) = m_aReplies[i].m_extent;
+            extent.height = m_aReplies[i].m_cTextBox.GetHeight();
+            m_aReplies[i].SetExtent(extent);
+            m_aReplies[i].AddEvent(0x27, this, (void (CSWGuiPanel::*)(CSWGuiControl*))&CSWGuiDialog::SelectCurrentReply);
+            lstReplies.Add(&m_aReplies[i]);
+        }
+        m_aReplyIndex[i] = pIndices[i];
+    }
+    if (bShow) {
+        CSWGuiListBox* pList = &m_lbReplies;
+        pList->AddControls(lstReplies, 0, 0, 1);
+        pList->m_bVisible = 1;
+        SetActiveControl(pList, 0);
+        m_nSelected = 0;
+        pList->SetSelectedControl(0, 0);
+        pList->SetMoreBelow(pList->m_nLastVisible < pList->m_nControls - 1);
+    }
+    m_bMessageShown = 0;
+    m_pManager->HandleMouseMove(m_pManager->m_nMouseX, m_pManager->m_nMouseY);
+}
+
+// FUNCTION: SWKOTOR 0x006A8680 SYMBOL: ??_GCSWGuiDialog@@UAEPAXI@Z
 
 // FUNCTION: SWKOTOR 0x006A8930
 CSWGuiLetterbox::CSWGuiLetterbox(CSWGuiManager* pManager)
@@ -516,31 +592,33 @@ int CSWGuiDialogCinematic::SelectReply(int nReply)
 }
 
 // FUNCTION: SWKOTOR 0x006A8DE0
-void CSWGuiDialogCinematic::AddReply(unsigned long a1, int a2, int a3, int a4, int bLast)
+void CSWGuiDialogCinematic::SetReplies(int nReplies, CExoString* pReplies, unsigned long* pIndices,
+                                       int nUnused, int bShow)
 {
-    if (bLast) {
+    if (bShow) {
         m_pTop->SetReply(m_sMessage);
     }
-    CSWGuiDialog::AddReply(a1, a2, a3, a4, bLast);
+    CSWGuiDialog::SetReplies(nReplies, pReplies, pIndices, nUnused, bShow);
     if (m_lbReplies.m_bVisible) {
         CSWGuiExtent cExtent = m_lbReplies.m_extent;
         int nLine = m_aReplies[0].m_cTextBox.GetLineHeight();
         cExtent.height -= cExtent.height % nLine;
         m_lbReplies.SetExtent(cExtent);
     }
-    if (bLast && !m_pManager->PanelExists(m_pTop)) {
+    if (bShow && !m_pManager->PanelExists(m_pTop)) {
         m_pManager->AddPanel(m_pTop, 0, 1);
     }
 }
 
 // FUNCTION: SWKOTOR 0x006A94E0
-void CSWGuiDialogComputer::AddReply(unsigned long a1, int a2, int a3, int a4, int bLast)
+void CSWGuiDialogComputer::SetReplies(int nReplies, CExoString* pReplies, unsigned long* pIndices,
+                                      int nUnused, int bShow)
 {
-    CSWGuiDialog::AddReply(a1, a2, a3, a4, bLast);
-    if (bLast) {
+    CSWGuiDialog::SetReplies(nReplies, pReplies, pIndices, nUnused, bShow);
+    if (bShow) {
         m_lblMessage.m_bVisible = 1;
     }
-    LayoutEntries();
+    UpdateSkills();
 }
 
 // FUNCTION: SWKOTOR 0x006A7EF0
@@ -553,7 +631,7 @@ void CSWGuiDialogCinematic::ClearReplies()
     CSWGuiManager* pManager = m_pManager;
     cExtent.left = nMarginX;
     int nScreenHeight = pManager->m_nHeight;
-    cExtent.top = nScreenHeight - (nScreenHeight - (int)(pManager->m_nWidth * 0.42857143f)) / 2;
+    cExtent.top = nScreenHeight - (nScreenHeight - (int)(pManager->m_nWidth * 0.4285715f)) / 2;
     cExtent.width = pManager->m_nWidth - 2 * nMarginX;
     cExtent.height = 100;
     int nShrink = m_extent.height - cExtent.height;
@@ -573,7 +651,7 @@ void CSWGuiDialogCinematic::ClearReplies()
 // FUNCTION: SWKOTOR 0x006A9520
 void CSWGuiDialogComputer::SetDialogMessage(const CExoString& sMessage)
 {
-    LayoutEntries();
+    UpdateSkills();
     CSWGuiDialog::SetDialogMessage(sMessage);
     CSWGuiListBox* pList = &m_lbEntries;
     pList->m_bVisible = m_lblMessage.m_bVisible;

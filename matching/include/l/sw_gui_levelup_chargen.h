@@ -5,10 +5,8 @@
 
 #include "l/sw_gui_skill_info.h"
 
-class CSWGuiInGameCharacter : public CSWGuiPanel {
-public:
-    void AttachModel();                             // inferred, 0x006AEBF0
-};
+// Declared in l/sw_gui_in_game_character.h.
+class CSWGuiInGameCharacter;
 
 // The level-up preview writes through the level-up statistics interface of
 // the live creature's client stats.

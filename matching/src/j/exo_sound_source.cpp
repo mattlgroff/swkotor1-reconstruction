@@ -3,7 +3,7 @@
 // source facades in exo_sound.cpp.
 #include "j/exo_sound_source.h"
 
-extern "C" void __cdecl free(void* p);
+extern "C" int __cdecl fclose(struct _iobuf* pFile);
 extern "C" int __cdecl rand();
 extern "C" double __cdecl pow(double x, double y);
 #pragma intrinsic(pow)
@@ -367,7 +367,7 @@ CExoStreamingSoundSourceInternal::CExoStreamingSoundSourceInternal(CExoSoundInte
     m_nFadeTime = 0;
     m_nFadeStart = 0;
     m_bInStreamingList = 0;
-    m_pBuffer = 0;
+    m_pFile = 0;
     m_nVolume = g_nDefaultSourceVolume;
     m_nId = pSound->GetNextSourceId();
     m_bReverbEnabled = 1;
@@ -394,8 +394,8 @@ CExoStreamingSoundSourceInternal::~CExoStreamingSoundSourceInternal()
     }
     if (m_pSound->m_hDriver && m_hStream) {
         AIL_close_stream(m_hStream);
-        if (m_pBuffer) {
-            free(m_pBuffer);
+        if (m_pFile) {
+            fclose(m_pFile);
         }
         m_hStream = 0;
     }

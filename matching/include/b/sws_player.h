@@ -68,30 +68,35 @@ public:
 // Descriptive name; no Mac symbol names the class.
 class CLastUpdatePartyObject {
 public:
+    CLastUpdatePartyObject()
+    {
+        m_vPosition.x = 0.0f;
+        m_vPosition.y = 0.0f;
+        m_vPosition.z = 0.0f;
+    }
+
     CResRef m_cPortrait;                                        // 0x00
     unsigned short m_nPortraitId;                               // 0x10
     char pad_0x12[0x14 - 0x12];
     int m_bUpdated;                                             // 0x14
-    char pad_0x18[0x1c - 0x18];
+    unsigned long m_oidCreature;                                // 0x18
     unsigned short m_nPartyState;                               // 0x1c
     unsigned char m_n1E;                                        // 0x1e
     char pad_0x1f[0x20 - 0x1f];
     unsigned short m_n20;                                       // 0x20
     char pad_0x22[0x24 - 0x22];
     int m_n24;                                                  // 0x24
-    short m_nCurrentHitPoints;                                  // 0x28
-    short m_n2A;                                                // 0x2a
-    short m_n2C;                                                // 0x2c
-    short m_nMaxHitPoints;                                      // 0x2e
+    unsigned short m_nCurrentHitPoints;                         // 0x28
+    unsigned short m_n2A;                                       // 0x2a
+    unsigned short m_n2C;                                       // 0x2c
+    unsigned short m_nMaxHitPoints;                             // 0x2e
     unsigned char m_nReputation;                                // 0x30
     char pad_0x31[0x34 - 0x31];
     int m_n34;                                                  // 0x34
     unsigned char m_bPlayerCharacter;                           // 0x38
     char pad_0x39[0x3c - 0x39];
     unsigned long m_oidArea;                                    // 0x3c
-    float m_fX;                                                 // 0x40
-    float m_fY;                                                 // 0x44
-    char pad_0x48[0x4c - 0x48];
+    Vector m_vPosition;                                         // 0x40
     int m_bIsPC;                                                // 0x4c
     int m_b50;                                                  // 0x50
     int m_bLeader;                                              // 0x54
@@ -99,10 +104,10 @@ public:
     int m_n5C;                                                  // 0x5c
     int m_bPoisoned;                                            // 0x60
     int m_n64;                                                  // 0x64
-    short m_nForcePointsBonus;                                  // 0x68
-    short m_nMaxForcePointsBase;                                // 0x6a
-    short m_nCurrentForcePoints;                                // 0x6c
-    short m_nMaxForcePoints;                                    // 0x6e
+    unsigned short m_nForcePointsBonus;                         // 0x68
+    unsigned short m_nMaxForcePointsBase;                       // 0x6a
+    unsigned short m_nCurrentForcePoints;                       // 0x6c
+    unsigned short m_nMaxForcePoints;                           // 0x6e
 };
 
 // 0xc-byte entry of the client info list (dtor 0x0059EA20).
@@ -110,7 +115,15 @@ class CSWSPlayerClientEntry {
 public:
     ~CSWSPlayerClientEntry();                                   // 0x0059EA20
 
+#ifdef B_PLAYER_CLIENT_ENTRY_FIELDS
+    // Only the journal TU sees the CExoString member: elsewhere it would make
+    // the implicit constructor non-trivial and renumber CSWSPlayer's EH states.
+    unsigned short m_nFlags;                                    // 0x0 (journal update flags)
+    char pad_0x2[0x4 - 0x2];
+    CExoString m_sTag;                                          // 0x4
+#else
     char pad_0x0[0xc];
+#endif
 };
 
 class CSWSPlayerClientInfo {

@@ -28,10 +28,10 @@ void CSWCCreature::GetPersonalActions(int nType, CExoArrayList<CSWGuiInterfaceAc
     case 1:
         GetUsableItems(lstActions, 1);
         break;
-    case 2:
+    case 3:
         GetUsableItems(lstActions, 2);
         break;
-    case 3:
+    case 2:
         GetUsableItems(lstActions, 4);
         break;
     }

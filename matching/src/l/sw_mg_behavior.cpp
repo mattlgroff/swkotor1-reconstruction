@@ -34,3 +34,25 @@ int CSWMGBehaviorTrackAndFire::GetType()
 // FUNCTION: SWKOTOR 0x006DB610 SYMBOL: ??_GCSWMGBehaviorTrack@@UAEPAXI@Z
 // Emitted with the vtable (the destructor itself is in
 // sw_mg_behavior_dtors_novtable.cpp).
+
+// FUNCTION: SWKOTOR 0x006DB3D0
+int CSWMGBehaviorTrackAndFire::Control(float fDelta)
+{
+    if (!CSWMGBehaviorTrack::Control(fDelta)) {
+        return 0;
+    }
+    if (m_fTimer > 0.0) {
+        float fTimer = m_fTimer - fDelta;
+        m_fTimer = 0.0f > fTimer ? 0.0f : fTimer;
+    }
+    if (m_bOnTarget && m_fTimer == 0.0) {
+        m_fTimer = m_fRate;
+        m_pObject->PlayAnimation("fire", 1.0f, 1, 0.0f);
+        m_pObject->PlayAnimation("ready", 1.0f, 0x20, 0.0f);
+        if (m_cFireSound.IsValid()) {
+            CResRef cSound(m_cFireSound.GetResRef());
+            g_pExoSound->Play3DOneShotSound(cSound, m_pObject->GetPosition(), 0.0f, 0x18, 0, 0, 0.0f, 0.0f);
+        }
+    }
+    return 1;
+}

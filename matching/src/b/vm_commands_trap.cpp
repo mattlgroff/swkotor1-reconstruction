@@ -81,7 +81,7 @@ struct CSWSDoorTrapView {
     int m_bOneShot;                                         // 0x304
 };
 
-#define TRIGGER_TRAP(p) ((CSWSTriggerTrapView*)(p)->AsSWSAreaOfEffectObject())
+#define TRIGGER_TRAP(p) ((CSWSTriggerTrapView*)(p)->AsSWSTrigger())
 #define PLACEABLE_TRAP(p) ((CSWSPlaceableTrapView*)(p)->AsSWSPlaceable())
 #define DOOR_TRAP(p) ((CSWSDoorTrapView*)(p)->AsSWSDoor())
 

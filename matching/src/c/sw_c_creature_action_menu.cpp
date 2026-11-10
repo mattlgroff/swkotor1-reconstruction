@@ -69,6 +69,7 @@ public:
     CGameObject* GetGameObject(unsigned long oid);  // 0x005ED580
     CExoString GetGUIString(unsigned long nId);     // 0x005EDEB0
     unsigned long GetClientLanguage();              // 0x005ED4C0
+    class CSWCItem* GetItemByGameObjectID(unsigned long oid);   // 0x005ED5A0
 };
 
 class CAppManager {
@@ -156,6 +157,7 @@ public:
     virtual short GetCurrentForcePoints(int bIncludeBonus);   // 0x9c (descriptive)
 
     CSWSArea* GetArea();                            // 0x004CB120
+    class CItemRepository* GetItemRepository(int bCreate);   // 0x004EF770
     unsigned long GetForceItemMask();               // 0x004EFA80
     int CanUseItem(CSWSItem* pItem, int bArg);      // 0x0051B440 (descriptive)
 
@@ -177,6 +179,7 @@ extern const unsigned short g_nForceTargetOther;    // 0x0074BF3C (descriptive)
 
 class CSWCItem {
 public:
+    CSWSItem* GetServerItem();                      // 0x00646C90
     int GetBaseItem() { return m_nBaseItem; }
     char pad_0x0[0xc];
     int m_nBaseItem;                                // 0x0c
@@ -274,6 +277,8 @@ public:
     void GetEquipmentForcePowers(CSWGuiActionList& lstActions, unsigned long nType, int nTargetType,
                                  unsigned long nItemMask);  // 0x00618C20
     void ForceMenuHostileAction(unsigned long oidTarget, CSWCCreature* pCreature);  // 0x00616200
+    void ForceMenuAction(unsigned long oidTarget, CSWCCreature* pCreature);  // 0x0060F330
+    void GetSelfForcePowers(CSWGuiActionList& lstActions);
     unsigned long GetEquippedItemID(unsigned long nSlot);   // 0x0060CA80
     int CheckFeat(int nFeat1, int nFeat2, int nFeat3);      // 0x00616140
     void AddFeatAction(int nFeat, CSWGuiActionList& lstActions, ActionFn pfnAction, CSWCCreature* pTarget);  // 0x00618A30 (descriptive)
@@ -281,6 +286,7 @@ public:
     void AddHostileItem(CSWGuiActionList& lstActions, CSWSItem* pItem, CSWCCreature* pTarget);
     void ActionMenuUseItem(unsigned long oidTarget, CSWCCreature* pCreature);  // 0x00617E40 (descriptive)
     void CreateUsableItemEntry(CSWGuiActionList& lstActions, CSWSItem* pItem, int bEquipped, unsigned char nFlags);
+    void GetUsableItems(CSWGuiActionList& lstActions, unsigned char nFlags);
     int CanUseItemInMenu(CSWSItem* pItem, int bEquipped, unsigned char nFlags);   // 0x00616520 (descriptive)
     void PartyMenuUseItem(unsigned long oidTarget, CSWCCreature* pCreature);    // 0x0060F590
     CSWSCreature* AsServerCreature();               // 0x0060FB20
@@ -298,8 +304,21 @@ public:
     char pad_0x8[0x18];
     CSWCArea* m_pArea;                              // 0x20
     Vector m_vPosition;                             // 0x24
-    char pad_0x30[0x2f8 - 0x30];
+    char pad_0x30[0x23c - 0x30];
+    unsigned long m_oidEquipped23C;                 // 0x23c (slot 0x80)
+    unsigned long m_oidEquipped240;                 // 0x240 (slot 0x100)
+    char pad_0x244[0x248 - 0x244];
+    unsigned long m_oidEquipped248;                 // 0x248 (slot 0x400)
+    char pad_0x24c[0x2f8 - 0x24c];
     CSWCCreatureStats* m_pStats;                    // 0x2f8
+};
+
+class CItemRepository {
+public:
+    CSWSItem* ItemListGetItem(unsigned long n);     // 0x005560B0
+
+    char pad_0x0[0x10];
+    unsigned long m_nItems;                         // 0x10
 };
 
 #define OBJECT_INVALID 0x7f000000
@@ -402,6 +421,31 @@ void CSWCCreature::AddFeatAction(int nFeat, CSWGuiActionList& lstActions, Action
     lstActions[nIndex].m_resIcon = pFeat->m_resIcon;
 }
 
+// Force powers usable on oneself (radial menu type 3).
+// FUNCTION: SWKOTOR 0x00616230
+void CSWCCreature::GetSelfForcePowers(CSWGuiActionList& lstActions)
+{
+    unsigned long nItemMask = 0;
+    int nForcePoints = 0;
+    if (GetServerObject()) {
+        CSWSCreature* pServer = GetServerObject()->AsSWSCreature();
+        if (pServer) {
+            nItemMask = pServer->GetForceItemMask();
+            if (pServer->m_bUseCurrentForcePoints) {
+                nForcePoints = pServer->GetCurrentForcePoints(0);
+            } else {
+                nForcePoints = (short)(pServer->m_pStats->m_nForceBonus + pServer->m_pStats->m_nCurrentForce);
+            }
+        }
+    }
+    int nIndex = lstActions.num;
+    m_pStats->AppendForceActions(&lstActions, 3, nForcePoints, 0, nItemMask, 0.0001f);
+    for (int i = nIndex; i < lstActions.num; i++) {
+        lstActions.element[i].m_pfnAction = &CSWCCreature::ForceMenuAction;
+        lstActions.element[i].m_oidTarget = m_idSelf;
+    }
+}
+
 // NONMATCH (40 diff insns): register assignment only; the original keeps
 // `this` in ebx and the target in edi, ours swaps them. Looping on nIndex
 // itself gives 37 but loses the original's separate loop counter (ecx).
@@ -500,6 +544,39 @@ void CSWCCreature::CreateUsableItemEntry(CSWGuiActionList& lstActions, CSWSItem*
         CSWItemProperty* pProperty;
         pItem->FindProperty(&pProperty, 10, 0);
         lstActions[nIndex].m_bEnabled = pProperty->m_bUsable;
+    }
+}
+
+// Usable equipped items (three quick slots) followed by the inventory.
+// NONMATCH (33 insns): this/nFlags take edi/esi where the original uses
+// esi/edi; the unsigned char nFlags now reloads from its slot as there.
+// FUNCTION: SWKOTOR 0x006197D0
+void CSWCCreature::GetUsableItems(CSWGuiActionList& lstActions, unsigned char nFlags)
+{
+    CSWSCreature* pServer = GetServerCreature();
+    if (pServer) {
+        if (!pServer->GetArea()->m_nRestrictMode) {
+            CSWCItem* pItem = g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(m_oidEquipped23C);
+            if (pItem) {
+                CSWSItem* pServerItem = pItem->GetServerItem();
+                CreateUsableItemEntry(lstActions, pServerItem, 1, nFlags);
+            }
+            pItem = g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(m_oidEquipped240);
+            if (pItem) {
+                CSWSItem* pServerItem = pItem->GetServerItem();
+                CreateUsableItemEntry(lstActions, pServerItem, 1, nFlags);
+            }
+            pItem = g_pAppManager->m_pClientExoApp->GetItemByGameObjectID(m_oidEquipped248);
+            if (pItem) {
+                CSWSItem* pServerItem = pItem->GetServerItem();
+                CreateUsableItemEntry(lstActions, pServerItem, 1, nFlags);
+            }
+        }
+        CItemRepository* pRepository = pServer->GetItemRepository(1);
+        for (unsigned long i = 0; i < pRepository->m_nItems; i++) {
+            CSWSItem* pServerItem = pRepository->ItemListGetItem(i);
+            CreateUsableItemEntry(lstActions, pServerItem, 0, nFlags);
+        }
     }
 }
 

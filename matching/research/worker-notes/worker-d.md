@@ -260,3 +260,35 @@ non-threaded `je` of the inlined GetHead ternary).
   0x0041fec0 (x87).
 - Near misses worth another pass: DrawPCBG/DrawSafeRegion (frame), the
   listbox Organize pair, DisplayToolTip.
+
+### GetHead sweep (sweep-s1)
+
+- exo_key_table.h: CExoLinkedListInternal::GetHead is now
+  `pNode = pHead; if (!pNode) return 0; return pNode->pObject;` and the
+  template wrapper loads `m_pcExoLinkedListInternal` into a local first
+  (bucket c shape). The old `if (pHead) p = pHead->pObject` let cl thread
+  the empty-list `je`. Promoted 0x00407020 CExoResMan::Free and
+  0x004089f0 Demand; folder 655/712 -> 657/712. CancelRequest 0x004088f0
+  is unaffected (its miss is the early-return block layout). FreeChunk
+  0x004070a0 improved 19 -> 12 (head part now identical).
+
+### Audit fixes 2026-11-10 (fix5-s1)
+
+matchcmp masks relocations, so these MATCH functions were wrong underneath:
+- HandleKeyDown 0x00402240 calls HandleFrameInfoChar 0x00401f00, not HandleFrameInfoKey.
+- ParseEventCaptureArgs uses atoi, not atol.
+- AurTextureFreeLayers / CAurTexture::SetTXIData free with operator delete (`delete[]`), not free().
+- CExoResMan::AddKeyTable message is "Table being rebuilt, this RIM is being leaked: %s".
+- CSWGuiManager::LoadGuiSounds column is "SoundResRef" (case matters for the string pool).
+- ChangeResolutionForMovie: write Width before Height in source; cl then loads/stores
+  in the original order (the swapped source order matched bytes with swapped globals).
+- RunFrame reads 0x007a3c50 (renamed g_bClientHeadLight; the Aurora g_bHeadLight is 0x0078e388).
+- res_gff_misc CRC table at 0x007a4178 renamed g_aGffCRCTable (0x007a3d78 is the key-table one).
+- gui_parts.h: STR_RES and CSWGuiTextParams get explicit inline `~X() {}`; the original
+  inlines them to a direct ~CExoString call (implicit dtors stay out of line in cl 13.0).
+- Left as checker false positives: CExoMoviePlayerInternal ctor/dtor ~CExoArrayList<int> -> 0x0056b6f0.
+  The type is <int> (Mac debug map), and the original's array-list dtor body is
+  `delete[] element; element = 0;` = 0x0056b6f0. Buckets g/h annotate ??1CExoArrayList<int> at
+  0x0042e240 / 0x0047abc0, which have different bodies (null check / other deallocator).
+Lesson: masked MATCH hides swapped strings, wrong overloads and swapped globals; always
+check the relocation targets against the original listing.

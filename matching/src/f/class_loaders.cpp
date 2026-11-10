@@ -54,8 +54,8 @@ struct CSWClassSkill {
 
 struct CSWClassSpell {
     unsigned short m_nSpell;         // +0x0
-    int m_nDarkRecommended;          // +0x4
-    int m_nLightRecommended;         // +0x8
+    int m_nLightRecommended;         // +0x4
+    int m_nDarkRecommended;          // +0x8
     unsigned char m_nUserType;       // +0xc
 };
 
@@ -360,10 +360,10 @@ void CSWClass::LoadSpellsTable()
     for (int i = 0; i < m_nNumSpells; i++) {
         m_pSpells[i].m_nSpell = (unsigned short)i;
         int nValue;
-        pTable->GetINTEntry(i, "Dark_Recom", &nValue);
-        m_pSpells[i].m_nDarkRecommended = nValue;
         pTable->GetINTEntry(i, "Light_Recom", &nValue);
         m_pSpells[i].m_nLightRecommended = nValue;
+        pTable->GetINTEntry(i, "Dark_Recom", &nValue);
+        m_pSpells[i].m_nDarkRecommended = nValue;
         pTable->GetINTEntry(i, "UserType", &nValue);
         m_pSpells[i].m_nUserType = (unsigned char)nValue;
     }

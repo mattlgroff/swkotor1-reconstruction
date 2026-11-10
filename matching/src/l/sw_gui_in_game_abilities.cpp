@@ -157,6 +157,37 @@ CSWGuiInGameSkillEntry::CSWGuiInGameSkillEntry()
 
 // FUNCTION: SWKOTOR 0x006ACCC0 SYMBOL: ??_GCSWGuiInGameSkillEntry@@UAEPAXI@Z
 
+// FUNCTION: SWKOTOR 0x006AD180
+// NONMATCH: only the description tail (ecx/eax/edx rotation around the inline
+// SetDescriptionText; 6 insns).
+void CSWGuiInGameAbilities::OnEnterSkill(CSWGuiControl* pControl)
+{
+    unsigned char nIndex = (unsigned char)pControl->GetUserData();
+    m_n3F70 = nIndex;
+    CSWSkillListEntry& cEntry = m_lstSkills.element[nIndex];
+    int nBase = cEntry.nBase;
+    CSWSkill* pSkill = cEntry.pSkill;
+    int nBonus = cEntry.nBonus;
+    CExoString sBonus;
+    Vector vColor(0.0f, 0.0f, 0.0f);
+    if (nBonus > 0) {
+        sBonus = CExoString("+") + nBonus;
+        vColor = g_vAbilityColorLocked;
+    } else if (nBonus < 0) {
+        sBonus = nBonus;
+        vColor = g_vAbilityColorAvailable;
+    } else {
+        sBonus = nBonus;
+        vColor = g_vDifficultyExitColor;
+    }
+    m_lbl22D0.m_cText.SetText(nBase);
+    m_lbl2550.m_cText.SetText(sBonus);
+    m_lbl2550.m_cText.SetColor(vColor);
+    m_lbl27D0.m_cText.SetText(nBonus + nBase);
+    m_lbl2910.m_cText.SetStrRef(pSkill->m_nNameStrRef);
+    SetDescriptionText(pSkill->GetDescriptionText());
+}
+
 // FUNCTION: SWKOTOR 0x006AD410
 void CSWGuiInGameAbilities::ShowFeat(unsigned short nFeat)
 {

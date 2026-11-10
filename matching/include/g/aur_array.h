@@ -7,6 +7,11 @@
 
 typedef unsigned int size_t;
 
+// Without these declarations MSVC 7 lowers new T[n] / delete[] p to the
+// scalar operator new / delete (0x006fa7e6 / 0x006fa390).
+void* __cdecl operator new[](size_t n);         // 0x006fc0d2
+void __cdecl operator delete[](void* p);        // 0x006fc0cd
+
 template <class T>
 class CExoArrayList {
 public:
@@ -76,7 +81,7 @@ struct Vector4 {
     float x, y, z, w;
 };
 
-class Part;
+class MdlNodeTriMesh;
 
 // Back-referenced texture pointer; its destructor is out of line
 // (0x00422380).

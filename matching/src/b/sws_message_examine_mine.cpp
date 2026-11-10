@@ -9,8 +9,8 @@ extern const unsigned char OBJECT_TYPE_TRIGGER;             // 0x00746636 (7)
 extern const unsigned char OBJECT_TYPE_PLACEABLE;           // 0x00746638 (9)
 extern const unsigned char OBJECT_TYPE_DOOR;                // 0x00746639 (10)
 
-// Trap trigger (vtable slot 0x40 in this bucket's CGameObject).
-class CSWSAreaOfEffectObject : public CSWSObject {
+// Trap trigger (vtable slot 0x40, AsSWSTrigger).
+class CSWSTrigger : public CSWSObject {
 public:
     char pad_0xf4[0x2c4 - 0xf4];
     int m_bTrapDisarmable;                                  // 0x2c4 (name guessed)
@@ -38,10 +38,10 @@ int CSWSMessage::SendServerToPlayerExamineGui_MineData(CSWSPlayer* pPlayer, unsi
     WriteBOOL(bArg);
     int nDC;
     if (pObject->m_nObjectType == OBJECT_TYPE_TRIGGER) {
-        nDC = pObject->AsSWSAreaOfEffectObject()->m_nTrapDisarmDC;
-        CSWSAreaOfEffectObject* pTrigger = pObject->AsSWSAreaOfEffectObject();
+        nDC = pObject->AsSWSTrigger()->m_nTrapDisarmDC;
+        CSWSTrigger* pTrigger = pObject->AsSWSTrigger();
         WriteBYTE(pTrigger->m_nTrapType, 8);
-        if (!pObject->AsSWSAreaOfEffectObject()->m_bTrapDisarmable || nDC > 35) {
+        if (!pObject->AsSWSTrigger()->m_bTrapDisarmable || nDC > 35) {
             WriteBYTE(4, 8);
         } else if (nDC <= nSkill - 15) {
             WriteBYTE(0, 8);

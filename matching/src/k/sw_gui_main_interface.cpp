@@ -450,7 +450,7 @@ void CSWGuiMainInterface::Draw(float fDelta)
             m_fTargetTime = -1.0f;
         }
     }
-    UpdateTarget();
+    UpdatePortraits();
     UpdateParty(m_pManager->GetFrameTime());
     m_cTargetMenu.UpdateTimers(fDelta);
     UpdateActions();

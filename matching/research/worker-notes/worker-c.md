@@ -609,3 +609,293 @@ a per-iteration empty CExoArrayList temporary gets built once before the loop
 and freed as a known-null pointer; for SwitchWeaponEvent, what keeps the right
 weapon id out of edi; for the creature constructor, what keeps the 1.0f store
 behind the imul.
+
+## Worker C s11 (branch claude/worker-c-s11), 2026-11-10
+
+Folder canonical check (`kotor-match -q -j 2 matching/src/c`): **958/1091 ->
+961/1096**. No prior MATCH regressed, no prior NONMATCH changed its diff
+count, no address annotated twice.
+
+- 5 NEW attempts, **3 NEW exact**, 2 retained NONMATCH, 0 promotions.
+- New exact: 0061B380 CSWCCreature::LoadModel (log string names it; appended
+  to sw_c_creature_model_s7.cpp next to RequestModel, same anim-base classes),
+  0061AB40 RegisterAnimationCallbacks (descriptive; the 17-handle
+  registration twin of 0x00610550, in sw_c_creature_state_family.cpp),
+  006182A0 CSWCCreature::SetCombatState (name from symbols.csv / the server
+  caller; new sw_c_creature_combat_state_s11.cpp).
+- **Missing from functions.csv** (annotated, not edited): 0x0061B380 (inside
+  the 0x0061AB40 extent). Other real starts found by a call/vtable-pointer
+  scan, not attempted: 0x0061AD60 (the real AIUpdate, x87; the Mac map's
+  AIUpdate name on 0x0061AB40 is a neighbour slip), 0x006183D0 (fire-and-
+  forget animation, x87; likewise the Mac AddFireForgetAnimation name on
+  0x006182A0 belongs here), 0x00617EB0 (cdecl "hit" animation-event callback
+  with EH, rand and x87; descriptive AttackHitEvent in state_family), 0x00611F50
+  (movement animation update, 2DA + x87), 0x0060FD80 (head/rootdummy camera
+  facing, x87). 0x005E40C0..0x005E50C0 is dinput8.lib data (c_dfDI* object
+  tables), not code, so 0x005E4050 keeps a 4208-byte extent.
+- NONMATCH (diff insns): 006123E0 CSWCCreature::SaveCharGenCreature (136;
+  sw_c_creature_chargen_s11.cpp. Every statement and call sequence is right;
+  what remains is (a) the small-local stack order: original root, 8-byte temp
+  pack, 16-byte temp pack, sScript, level, class, skill, feat, loc string;
+  ours puts the 16-byte pack and sScript before the 8-byte pack and the loc
+  string before class/skill/feat; (b) the CurrentHitPoints/CurrentForce
+  block, where the original reloads the stats pointer into ecx before
+  finishing the HP subtraction, ours into eax after it; eight expression
+  shapes tried), 005E4050 CExoRawInputInternal::GetMouseState (7; switch
+  compare chain is exact, the original puts the shared `return 0` block
+  before `return 1` and reloads m_pMouse into eax for Acquire).
+
+Lessons (verified this batch):
+- **Inline getters are the register rotation fix for long GFF writers.**
+  SaveCharGenCreature went 801 -> 136 only through accessors: an inline
+  `GetCreatureStats()` on the creature and one-line getters for every stats
+  field (bytes, words, shorts, the skill rank) make each load land in eax and
+  stop consuming rotation slots; direct `m_pStats->m_nX` reads shift every
+  following `lea`/`push` register. A byte member passed to an `unsigned char`
+  parameter goes through the stack byte (`mov [esp+x], al / mov ecx, [esp+x]`)
+  only when read through such a getter.
+- Function-scope struct locals that are reused by both copies of a loop
+  (cSkill, cFeat, cItem) fixed the frame size (0xb4 -> 0xbc) and every list
+  slot; block-scoped ones were packed into the temp area. Moving a
+  function-scope declaration around does not change its slot.
+- A word count tested against a dword field: `(unsigned short)GetNum()` with
+  an int-returning getter gives `mov eax, [num] / test ax, ax`; a getter that
+  itself returns unsigned short gives `mov ax, word`.
+- An inline Quaternion constructor whose body assigns z, y, x, w reproduces
+  the original's reversed `{w,x,y,z}` stores; `return 1` falling into the
+  shared final return (no `return` after the fallback store) gave the
+  original's merged `mov eax, 1` tail.
+- Event-callback registration: cast each typed callback to the generic
+  `void (__cdecl*)(void*, char*, void*)` parameter type; the callback's own
+  declaration keeps its real signature.
+
+Next in-range queue: the missing starts above (0x0061AD60 AIUpdate is the
+largest, 0x00611F50 the most table-like), then 006123E0's remaining stack
+order (try the temporaries' order: which of V2.0/BIC or the Conversation
+CResRef copy is created first), 005F8550 StartServices, 005EAB00
+WriteIniEntry, 005EEB10 SetEventDescriptions, 005E8CF0 GetDirectoryList.
+
+## Worker C s12 (branch claude/worker-c-s12), 2026-11-10
+
+Folder canonical check (`kotor-match -q -j 2 matching/src/c`): **961/1096 ->
+970/1098**. No prior MATCH regressed, no address annotated twice.
+
+- 2 NEW annotations, both exact: 0x005E9360 ExoFree (`free` tail-jump thunk,
+  next to ExoMalloc; missing from functions.csv), 0x0060F620
+  CSWCCreature::ActionMenuTalk (descriptive; the "i_dialog" default-action
+  handler, missing from functions.csv - it sat inside PartyMenuUseItem's
+  extent; new sw_c_creature_action_talk_s12.cpp, matched first try).
+- 7 prior NONMATCH promotions: 0060F590 PartyMenuUseItem (extent fix plus
+  `unsigned long idSelf = m_idSelf;` and masking the parameter in place),
+  0060D3E0 InCreatureCombat, 0060EF50 SetPartyMember (returns int: the
+  unchanged path loads EAX=1; SetPlayerCreature 0x006364C0 returns int too),
+  00617A20 CreateSpellLikeAbilityList (sized list ctor with the dead `new`),
+  0060B750 CSWCCreaturePartyStatus ctor (statement order), 00610950
+  SetLockOrientation (local id before ClientToServerObjectID), 005EC560
+  CExoDebugInternal::GetCurrentTimestamp (calls `_ftime`, not `time`).
+- Improved NONMATCH: 0060FCC0 GetTargetActionType 18->12, 0060D320 InCombat
+  12->10, 0060B330 GetAlignmentCategory 7->2, 00614AA0 GetCreatureLight 5->1,
+  0061DB60 CClientOptions ctor 5->2.
+- Tried without gain (reverted): GetActiveTimer, IsOnExclusionList (owner-first
+  wrappers), GetHeadTurnHorizontal (wrappers), RemoveString, GetAxisRange,
+  AttachPlayerGameObjectToArea, CExoLocString::Compare.
+
+Lessons (verified this batch):
+- **A zero result kept in EDI with early constant returns** = a result variable
+  assigned in a branch: `int b = 0; if (...) b = 1; return b;` (InCreatureCombat).
+  With several outcomes, keep `return K` for the others and assign only in the
+  block that falls straight into the final `return nType` (GetTargetActionType).
+- **Masked calls hide wrong callees, including CRT ones.** GetCurrentTimestamp
+  "matched" all instructions with `time()`; the frame was 8 bytes short because
+  the original calls `_ftime(&tb)` (struct _timeb is 12 bytes). Check every CRT
+  call target against crt_libcmt.csv; a frame-size-only diff is a hint.
+- **Function starts inside a NONMATCH's extent**: scanning 16-aligned
+  addresses after ret+padding found 0x0060F620; annotating it fixed the
+  neighbour too. Run that scan whenever a NONMATCH has a byte count much
+  larger than ours.
+- A head pointer copied EAX->ESI before the loop: `pHead = GetHead(); if (pos)
+  { p = pHead; do {...} while (pos); }` (1 insn left: copy scheduled after jcc).
+- A byte constant needed later reserves its register from the first statement
+  that uses it: moving `m_n72 = 2` before the bitfield stores fixed EAX/ECX in
+  CClientOptions but moved that store up.
+- Bitfield-free clamp: `int n = 3; if (x > 40) n = (x >= 60) + 1; return n;`
+  gets the original registers (CX for the short, EAX result).
+
+Next in-range queue: the s11 missing starts (0x0061AD60 AIUpdate, 0x006183D0
+fire-and-forget animation, 0x00617EB0 hit event, 0x00611F50, 0x0060FD80; all
+x87, 0x0060FD80 also shrinks GetTargetActionType's extent), GetCreatureLight's
+last copy, GetAlignmentCategory's inline `return 3` layout, then the large
+todo list (005F8550 StartServices, 005EAB00 WriteIniEntry, 005E8CF0
+GetDirectoryList, 005EEB10 SetEventDescriptions).
+
+## Worker C s13 (branch claude/worker-c-s13), 2026-11-10
+
+Folder canonical check (`kotor-match -q -j 2 matching/src/c`): **970/1098 ->
+979/1102**. No prior MATCH regressed, no prior NONMATCH got worse, no address
+annotated twice.
+
+- 4 NEW annotations, **1 NEW exact**, 3 retained NONMATCH.
+- New exact: 0x0060FD80 CSWCCreature::GetReticlePoint (vtable slot 0x13c,
+  missing from functions.csv; "head_g" on the body or head model, else
+  "rootdummy"; new sw_c_creature_reticle_s13.cpp, written like the matched
+  CSWCObject::GetReticlePoint 0x0063D560 in bucket n, with an if/else result).
+  Annotating it also cut GetTargetActionType's extent (624 -> 192 bytes).
+- NONMATCH (diff insns): 0x00611F50 CSWCCreature::ClientServerSyncHandler_
+  Position (28; missing start, sw_c_creature_sync_position_s13.cpp; only the
+  last SetAnimationSpeed time argument is left), 0x00617EB0 HitEvent (13;
+  missing start, cdecl "hit" callback, sw_c_creature_hit_event_s13.cpp;
+  three scheduling spots plus one `mov eax/ecx, [g_pAppManager]` byte),
+  0x005EAB00 CExoIniInternal::WriteIniEntry (169; appended to
+  exo_ini_internal_s8.cpp; statements and EH states line up, the frame is one
+  slot short and the this/section/key registers rotate).
+- **8 prior NONMATCH promotions**, mostly from one header change (below): 0x005EC9C0
+  CExoLocStringInternal::GetString, 0x005ECA80 RemoveString, 0x005EC700
+  AddString, 0x005ECBB0 operator=, 0x005F5C70 GetPlayerByPlayerID,
+  0x005F5CB0 GetPlayerByGameObjectID, 0x005F63A0
+  RemoveObjectFromHitcheckIgnoreList, 0x00614AA0 GetCreatureLight (also a
+  plain `while (pos)` loop).
+- Improved NONMATCH: 0x005EA6C0 ReadIniEntry 41 -> 11, 0x005FB6E0
+  CrownFutureLeader 94 -> 91.
+- Tried without gain: GetTargetActionType block order (3 shapes),
+  GetAxisRange block order (3 shapes), IsOnExclusionList wrapper GetNext,
+  CExoLocStringInternal::Compare and SetHitcheckIgnoreList with the new GetHead
+  (Compare got worse, kept the old form there), GetMenuPoint (not retried).
+
+Lessons (verified this batch):
+- **The "unthreaded empty-list je" is the list GetHead shape.** Original:
+  `mov eax,[eax]; test eax,eax; je +3; mov eax,[eax+8]; test eax,eax` (the
+  first `je` lands on the caller's own null test). It comes from
+  `T* GetHead() { CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
+  return (T*)pInternal->GetHead(); }` with an inline internal
+  `void* GetHead() { CExoLinkedListNode* pNode = pHead; if (!pNode) return 0;
+  return pNode->pObject; }`. The `if (p) p = p->pObject;` and ternary forms
+  thread the jump. include/c/exo_base.h now uses it (no regressions in c).
+  Other buckets list the same known tie: d CExoResMan::Free 0x00407020 /
+  Demand / CancelRequest, i SetGroupInterruptable 0x004CC790, n
+  StopAllVisualEffects 0x0063DAA0 / DeleteVisualEffect, a SetCurrentWeather,
+  f HandleReply. Worth a try there.
+- When the original reads GetHead before GetHeadPos (`mov ecx,[list]; ...
+  test; mov edx,[ecx]; mov [pos],edx`), write the two statements in that order.
+- A cached object pointer across an argument call (`mov edi,[esi+0x68];
+  mov ebp,[edi]; call GetCurrentAnimation; mov ecx,edi`) comes from a local
+  `CAurAnimationBase* pAnim = m_pAnimationBase;` used for that call alone;
+  the direct member form reloads `this` after the argument call.
+- MSVC packs float locals into dead parameter slots; scoping a temporary
+  length in its own block moved it into the original's arg slot.
+- `rand() % 2 ? 13 : 14` gives `neg; sbb; add 0xe`; to get the `push 1`
+  after the rand code, compute the value into a local first.
+- The original sometimes keeps the raw `new CExoString` pointer in esi
+  instead of the constructor's eax (ReadIniEntry, WriteIniEntry). Making the
+  constructor inline only inlines it; not solved.
+- HitEvent's original dereferences the attacker without a null check when
+  pData is 0 (the null test sits inside `if (pData)`); keep that shape.
+
+Next in-range queue: the remaining missing starts 0x0061AD60 AIUpdate and
+0x006183D0 AddFireForgetAnimation (both x87, large), 0x00611F50's last
+argument (try a different temporary for the m_nBA length), HitEvent's
+g_pAppManager eax load, WriteIniEntry's frame slot, then 005F8550
+StartServices, 005E8CF0 GetDirectoryList, 005E30E0 joystick buffer read
+(2128 bytes, functions.csv extent is right, the Ghidra 34-byte length is not),
+005EEB10 SetEventDescriptions.
+
+## Worker C s14 (branch claude/worker-c-s14), 2026-11-10
+
+Folder canonical check (`kotor-match -q -j 2 matching/src/c`): **979/1102 ->
+982/1105**. No prior MATCH regressed, no prior NONMATCH got worse, no address
+annotated twice.
+
+- 4 NEW annotations, all NONMATCH (diff insns): 0x00617470
+  CSWCCreature::PlayHitSound (85; appended to sw_c_creature_s3.cpp after
+  GetEquippedItemID; statements, EH states and the duplicated per-branch 2DA
+  tails line up, the fall-through copies pick ecx where the original picks
+  eax so the cross-jump starts later), 0x00618C20 GetEquipmentForcePowers
+  (187; new sw_c_creature_equipment_powers_s14.cpp; the original lowers the
+  `/10 %10 /100 %100` decode with imul -10/-100 + add and Allocate's copy
+  loop as a src-minus-dst pointer loop - neither reproduced, see below),
+  0x005E8CF0 CExoBaseInternal::GetDirectoryList (52; new
+  exo_base_internal_dirlist_s14.cpp; only the binary-search bounds spill and
+  the zero register edi/esi differ), plus 0x0060F330 ForceMenuAction
+  rewritten from the old raw-offset attempt (98 -> 66).
+- **3 prior NONMATCH promotions**: 0x00616230 GetSelfForcePowers (moved into
+  sw_c_creature_action_menu.cpp, whose CSWGuiInterfaceAction has the real
+  16-byte member pointer; nested `if (GetServerObject()) { ... }`; old
+  sw_c_creature_self_force_powers.cpp deleted), 0x00610A10 SetAttackTarget
+  (Ghidra: SetCombatMode; 0x440 bit 0 as a bitfield + `unsigned long oidSelf
+  = m_idSelf;`), 0x0061B710 CClientOptions::SetFullScreenEnabled (bit 3 of
+  +0x00 as a bitfield through an anonymous union in include/c/client_exo_app.h,
+  `m_nFlags` keeps its name for client_cursor_state.cpp).
+- Improved: 0x005F4A20 SetLastTarget 11 -> 8 (volatile hack replaced by
+  `int b = old != new ? bFlag : 0;` and the 0x37c bitfield).
+- Moved: 0x006197D0 GetUsableItems from sw_c_creature_r6.cpp to the action
+  menu TU with the Mac signature `(CExoArrayList<CSWGuiInterfaceAction>&,
+  unsigned char)`; still 33 (this/nFlags esi/edi swap), but nFlags now
+  reloads from its slot like the original.
+- Tried without gain (reverted): ResolveAttackIndex, GetHeadTurnHorizontal
+  (inline getter variants), GetAlignmentCategory (12 shapes), GetActiveTimer
+  (GetActivePauseState-style inline), CheckFeat (mixed return forms; the
+  original returns a/b through edi and c through the shared esi block),
+  GetAxisRange (inverted last test), CanUseItemInMenu (single ret-0 block
+  shape: right layout but 4 callee-saved regs in the original), AddHostileItem
+  / CreateUsableItemEntry (element[] vs operator[]: identical code),
+  GetHostileForcePowers (nested ifs: same 40).
+
+Lessons (verified this batch):
+- **Byte-for-bit read-modify-write = bitfield.** `mov eax,[x]; mov ecx,[arg];
+  mov edx,[x]; xor eax,ecx; and eax,K; xor eax,edx; mov [x],eax` is a
+  bitfield assignment; `shr r,n; and r,1` a bitfield read. Manual
+  `x ^ ((x ^ v) & 1)` source never matched; declaring the bitfield did
+  (SetAttackTarget, SetFullScreenEnabled). Scan NONMATCH listings for
+  xor/and/xor triples (tools script `bitscan.py` in the scratch dir).
+- `cond ? v : 0` compiles to `setcc; dec; and` (SetLastTarget).
+- An `unsigned char` parameter or byte local is pushed as `mov r,[slot]; push
+  r` each time; an int-typed copy of it lets the compiler cache it in a
+  register and changes allocation (GetUsableItems, ForceMenuAction).
+- Template members defined in the same TU get auto-inlined (/Ob2): the
+  FILETIME Insert was inlined into GetDirectoryList until the caller moved to
+  a TU that only declares CExoArrayList members. MSVC 7 rejects declaring an
+  explicit member specialization without a body (C2761).
+- Identical statements duplicated in if/else branches are cross-jumped from
+  the end even across different EH states (PlayHitSound's two 2DA tails).
+- MSVC 7 here turns `x % 10` with a matching `x / 10` into one idiv, and
+  `x - q * 10` into lea/shl; neither gives the original's magic + imul -10.
+  Inline helper functions do not hide the pairing either.
+- **Global search-and-replace inside a TU can silently change earlier matched
+  functions** (a getter swap regressed BlurWeapon/SetOverrideLightsaberState/
+  SetAttackAnimationData until restored). Re-run the whole file after any
+  bulk edit.
+
+Next in-range queue: 0x0061AD60 AIUpdate and 0x006183D0 AddFireForgetAnimation
+(missing starts, large), 0x0060E7D0 EvaluateNewWayPoints (6 x87, no src),
+0x00619E10 DoFootstepVisual, GetDirectoryList's spill (try a `do`-shaped
+binary search or a separate helper for the bounds), PlayHitSound's fall-through
+registers, then more bitfield/unsigned-char candidates among the NONMATCHes
+(none left from the two scanners) and 005F8550 StartServices.
+
+## Audit fixes 2026-11-10 (fix6-s1)
+
+- client_exo_app.h: the fake `CExoSoundSource` class carried
+  CExoStreamingSoundSource addresses (Stop 0x005D5B80, SetFadeTime was
+  really FadeAndStop 0x005D5B90). Removed; m_pMenuMusic/m_pLoadMusic and
+  CGuiInGame::m_pBarkSound are CExoStreamingSoundSource*; StopMenuMusic
+  calls the real member FadeAndStopStreamingSoundSource (0x005F1B20) instead
+  of a fake static __stdcall FadeOutMusic (same bytes: ecx is still this).
+- +0x168 list elements are deleted through 0x0059EA30 (out-of-line dtor
+  that jumps to ~CExoString), so the header list holds CClientStringEntry,
+  not CExoString. Still open: the original constructs 0x1c, 0x98 and 0x168
+  with one ctor (0x005F4F40), so all three share one T; real T unknown,
+  dtor_s8 row left as is.
+- SetUnknown94 is GetWorldTimer()->SetFixedSnapshotRate(1, n) (void), the
+  header had GetClientOptions at 0x005ED4F0 (that is GetWorldTimer;
+  GetClientOptions is 0x005ED700) and a fake CClientOptions::SetOption.
+- SetCanSendDialog: signed (__int64) / 1000 (__alldiv). AsINT: atoi.
+  RemovePlaceableObjectLight: delete, not free. ExoFileThreadProc: fread
+  (read-ahead thread, m_nBytesRead). Strings: "InventorySound",
+  "Fixed frame rate off.", GetKeyName fallback "N/A", CSWMiniEnemy "Trigger".
+- Swapped switch labels: HiliteAreaObjects (source order 10 before 9),
+  GetPersonalActions (case 3 -> flag 2, case 2 -> flag 4).
+- ~CSWCCreature calls the empty base CGameObject::UnloadModel (0x004015A0),
+  not CSWCCreature::UnloadModel (0x0060C8E0). An empty non-polymorphic base
+  shifted `this` by 4 (lea ecx,[esi+4]); giving CGameObject the virtual dtor
+  keeps the vfptr at 0.
+- ~CExoArrayList funclet rows in dtor_s8: same false positive as bucket a
+  (original 0x0056B6F0 == our header body).

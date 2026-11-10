@@ -236,7 +236,7 @@ void CSWSCreature::ResolveRangedHit(CSWSObject *pTarget)
     else if (GetIsRangeState2(pAttack->m_nAttackResult))
         pAttack->m_nReactAnimation = 0x271c;
     pAttack->m_vTarget = pTarget->m_vPosition;
-    pAttack->m_nTravelTime = (unsigned short)(Magnitude(pTarget->m_vPosition - m_vPosition) * 23.8095f);
+    pAttack->m_nTravelTime = (unsigned short)(Magnitude(pTarget->m_vPosition - m_vPosition) * 23.809524f);
 }
 
 // FUNCTION: SWKOTOR 0x005B6E90
@@ -246,7 +246,7 @@ void CSWSCreature::ResolveRangedMiss(CSWSObject *pTarget)
         return;
     CSWSCombatAttackData *pAttack = m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack);
     pAttack->m_vTarget = GetRangedMissLocation(pTarget);
-    pAttack->m_nTravelTime = (unsigned short)(Magnitude(pAttack->m_vTarget - m_vPosition) * 23.8095f);
+    pAttack->m_nTravelTime = (unsigned short)(Magnitude(pAttack->m_vTarget - m_vPosition) * 23.809524f);
 }
 
 // NONMATCH (9, 4 real): after the inlined IsDebilitated test cl reuses the

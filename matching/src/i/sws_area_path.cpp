@@ -51,7 +51,8 @@ int CSWSArea::GetRoomIndex(const Vector& vPosition, int bAll)
             bHit = m_pRooms[i].CheckAABBWalkable(vTop, vBottom, &cResult);
         }
         if (bHit) {
-            return i;
+            nRoom = i;
+            break;
         }
     }
     return nRoom;
@@ -69,36 +70,40 @@ float CSWSArea::ComputePathLength(int nCount, float* pPoints)
     return fLength;
 }
 
+static inline CSWSPlayer* ServerClientObject(unsigned long oid)
+{
+    return GetServerExoApp()->GetClientObjectByObjectId(oid);
+}
+
 // FUNCTION: SWKOTOR 0x004BB8B0
 int CSWSArea::CountVisibleToPlayers(const Vector& vPosition, int nMax)
 {
     int nCount = 0;
     unsigned long oid;
     Vector vEye;
-    if (GetFirstObjectIdInArea(&oid) == 1) {
+    int bFound = GetFirstObjectIdInArea(&oid);
+    if (bFound == 1) {
         vEye = vPosition;
-        do {
-            if (nCount >= nMax) {
-                break;
-            }
-            CGameObject* pObject;
-            if (GetServerExoApp()->GetObjectArray()->GetGameObject(oid, &pObject) == g_nGameObjectFound &&
-                pObject->AsSWSCreature() &&
-                GetServerExoApp()->GetClientObjectByObjectId(m_idSelf)) {
-                Vector vCreature = pObject->AsSWSCreature()->m_vPosition;
-                Vector vDiff = vEye - vCreature;
-                if (vDiff.x * vDiff.x + vDiff.y * vDiff.y + vDiff.z * vDiff.z <= 400.0f) {
-                    vEye.z += 1.5f;
-                    vCreature.z += 1.5f;
-                    Vector vHit(0.0f, 0.0f, 0.0f);
-                    int nOut;
-                    if (ClearLineOfSight(&vEye, &vCreature, &vHit, &nOut, OBJECT_INVALID,
-                                         OBJECT_INVALID, 0, 0) == 1) {
-                        nCount++;
-                    }
+    }
+    while (bFound == 1 && nCount < nMax) {
+        CGameObject* pObject;
+        if (GetServerExoApp()->GetObjectArray()->GetGameObject(oid, &pObject) == g_nGameObjectFound &&
+            pObject->AsSWSCreature() &&
+            ServerClientObject(m_idSelf)) {
+            Vector vCreature = pObject->AsSWSCreature()->m_vPosition;
+            Vector vDiff = vEye - vCreature;
+            if (vDiff.x * vDiff.x + vDiff.y * vDiff.y + vDiff.z * vDiff.z <= 900.0f) {
+                vEye.z += 1.5f;
+                vCreature.z += 1.5f;
+                Vector vHit(0.0f, 0.0f, 0.0f);
+                int nOut;
+                if (ClearLineOfSight(&vEye, &vCreature, &vHit, &nOut, OBJECT_INVALID,
+                                     OBJECT_INVALID, 0, 0) == 1) {
+                    nCount++;
                 }
             }
-        } while (GetNextObjectIdInArea(&oid) == 1);
+        }
+        bFound = GetNextObjectIdInArea(&oid);
     }
     return nCount;
 }

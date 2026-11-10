@@ -15,7 +15,7 @@ class CSWCObject;
 class CResRef;
 class CSWCDoor;
 void __cdecl DoorAnimationEvent(void*,const char*,CSWCDoor*);
-struct Vector { float x,y,z; Vector() { x=0; y=0; z=0; } Vector(float fX,float fY,float fZ) { x=fX; y=fY; z=fZ; } Vector operator-() const { return Vector(-x,-y,-z); } };
+struct Vector { float x,y,z; Vector() { x=0; y=0; z=0; } Vector(float fX,float fY,float fZ) { x=fX; y=fY; z=fZ; } Vector operator-() const { return Vector(-x,-y,-z); } Vector operator+(const Vector& v) const { return Vector(x+v.x,y+v.y,z+v.z); } };
 struct Quaternion { float w,x,y,z; Quaternion() { z=0; y=0; x=0; w=1; } };
 class CAurObject {
 public:
@@ -58,7 +58,7 @@ public:
  virtual void SetIgnoreHitCheck(unsigned char);
  virtual void v94();
  virtual void v98();
- virtual void v9C();
+ virtual void SetNodeTransform(const char*,Vector,Quaternion); // +0x9C
  virtual int GetNodeTransform(const char*,Vector*,Quaternion*);
  virtual void vA4();
  virtual void vA8();
@@ -254,7 +254,7 @@ public:
  void ActionMenuUse(int,CSWCCreature*); void ActionMenuOpen(int,CSWCCreature*);
  int LoadModel(const CResRef&,unsigned char,int);
  CExoString GetName(); void ActionMenuLock(int,CSWCCreature*);
- void UnloadLight(); int GetIsHostile(); int PlayAnimation(unsigned short,float,int);
+ void UnloadLight(); int LoadLight(); /* 006826E0, descriptive */ int GetIsHostile(); int PlayAnimation(unsigned short,float,int);
  CSWSPlaceable* GetServerPlaceable();
  CSWSPlaceable* ServerInline() { if(GetServerObject()) return GetServerObject()->AsSWCPlaceable(); return 0; }
  void UpdateAI(); void UpdateAnimation();
@@ -283,7 +283,7 @@ class CSWCMessage { public:
  int SendPlayerToServer_06_0C(unsigned long,unsigned long);
 };
 class CGuiInGame { public: int CanPerformAction(); /* 0062F9A0, elapsed-action timer gate */ };
-class CSWCArea { public: void RemovePlaceableObjectLight(unsigned long,int); int ParentCorpseExists(unsigned long); /* 006057B0 */ };
+class CSWCArea { public: void* GetPlaceableObjectLight(unsigned long); /* 00605BF0 */ void RemovePlaceableObjectLight(unsigned long,int); int ParentCorpseExists(unsigned long); /* 006057B0 */ };
 class CSWCModule { public: char pad0[0x48]; CSWCArea* m_pArea; CSWCArea* GetArea() { return m_pArea; } };
 class CClientExoApp { public:
  CSWCModule* GetModule(); CSWCMessage* GetMessage(); CGuiInGame* GetInGameGui();
@@ -309,7 +309,7 @@ extern const unsigned char g_nObjectArraySuccess; // 0074666C
 class C2DA { public: int GetINTEntry(int,const CExoString&,int*); int GetFLOATEntry(int,const CExoString&,float*);
  int GetINTEntry(int,int,int*); /* 00413510 */ int GetCExoStringEntry(int,int,CExoString*); /* 00413190 */
  int GetCExoStringEntry(int,const CExoString&,CExoString*); /* 00413270 */ };
-class C2DAs { public: char pad0[0x24]; C2DA* m_pDoorTypes; C2DA* m_pGenericDoors; C2DA* m_pPlaceables; char pad30[0x70-0x30]; C2DA* m_pPlaceableSounds; C2DA* GetPlaceables() { return m_pPlaceables; } C2DA* GetPlaceableSounds() { return m_pPlaceableSounds; } };
+class C2DAs { public: char pad0[0x24]; C2DA* m_pDoorTypes; C2DA* m_pGenericDoors; C2DA* m_pPlaceables; char pad30[0x48-0x30]; C2DA* m_pLightColors; char pad4c[0x70-0x4c]; C2DA* m_pPlaceableSounds; C2DA* GetPlaceables() { return m_pPlaceables; } C2DA* GetLightColors() { return m_pLightColors; } C2DA* GetPlaceableSounds() { return m_pPlaceableSounds; } };
 class CSWRules { public: char pad0[0xb8]; C2DAs* m_p2DArrays; C2DAs* Get2DArrays() { return m_p2DArrays; } };
 extern CSWRules* g_pRules;
 class CResRef { public: char m_resRef[16]; void CopyToString(CExoString&) const; };

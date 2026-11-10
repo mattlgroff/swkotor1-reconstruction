@@ -111,7 +111,7 @@ void CSWCObject::KillAllVisualEffects()
 // FUNCTION: SWKOTOR 0x0063DB20
 int CSWCObject::RefreshVisualEffects(int a)
 {
-    CSWCVisualEffectOnObject* pEffect = m_lVisualEffects.GetHead();
+    CSWCVisualEffectOnObject* pEffect = m_lVisualEffects.GetHeadInline();
     CExoLinkedListPosition pos = m_lVisualEffects.GetHeadPos();
     while (pos) {
         if (!pEffect->m_bC0 && pEffect->m_nA8) {
@@ -129,7 +129,7 @@ void CSWCObject::ActivateHardCodedVisualWithHighestPriority(unsigned char nType,
 {
     unsigned char nBest = 0xff;
     CSWCVisualEffectOnObject* pBest = 0;
-    CSWCVisualEffectOnObject* pEffect = m_lVisualEffects.GetHead();
+    CSWCVisualEffectOnObject* pEffect = m_lVisualEffects.GetHeadInline();
     CExoLinkedListPosition pos = m_lVisualEffects.GetHeadPos();
     while (pos) {
         if (!pEffect->m_bC0 && pEffect->GetType() == nType) {
@@ -152,7 +152,7 @@ void CSWCObject::ActivateHardCodedVisualWithHighestPriority(unsigned char nType,
         pEffect = m_lVisualEffects.GetNext(pos);
     }
 
-    pEffect = m_lVisualEffects.GetHead();
+    pEffect = m_lVisualEffects.GetHeadInline();
     pos = m_lVisualEffects.GetHeadPos();
     while (pos) {
         if (!pEffect->m_bC0 && pEffect->GetType() == nType && pEffect->m_nPriority) {
@@ -237,7 +237,7 @@ float CSWCObject::GetVisualEffectAlpha()
 // FUNCTION: SWKOTOR 0x0063E450
 void CSWCObject::DetachVisualEffects()
 {
-    CSWCVisualEffectOnObject* pEffect = m_lVisualEffects.GetHead();
+    CSWCVisualEffectOnObject* pEffect = m_lVisualEffects.GetHeadInline();
     CExoLinkedListPosition pos = m_lVisualEffects.GetHeadPos();
     while (pos) {
         if (!pEffect->m_bC0 && pEffect->m_nA8) {
@@ -250,7 +250,7 @@ void CSWCObject::DetachVisualEffects()
 // FUNCTION: SWKOTOR 0x0063E4B0
 void CSWCObject::ReAttachVisualEffects()
 {
-    CSWCVisualEffectOnObject* pEffect = m_lVisualEffects.GetHead();
+    CSWCVisualEffectOnObject* pEffect = m_lVisualEffects.GetHeadInline();
     CExoLinkedListPosition pos = m_lVisualEffects.GetHeadPos();
     while (pos) {
         if (!pEffect->m_bC0 && pEffect->m_nA8) {

@@ -29,6 +29,14 @@ extern "C" __declspec(dllimport) void __stdcall Sleep(unsigned long nMs);
 extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
 extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
 
+class CExoStreamingSoundSource {
+public:
+    ~CExoStreamingSoundSource();                    // 0x005D6200
+    void Stop();                                    // 0x005D5B80
+    void FadeAndStop(unsigned long nMs);            // 0x005D5B90
+    int IsPlaying();                                // 0x005D5AF0
+};
+
 class CGuiInGame {
 public:
     char pad_0x0[0xb4];
@@ -38,7 +46,7 @@ public:
     char pad_0x170[0x10];
     unsigned long m_oidBarkSpeaker;                 // 0x180
     char pad_0x184[0x9bc];
-    CExoSoundSource* m_pBarkSound;                  // 0xb40
+    CExoStreamingSoundSource* m_pBarkSound;         // 0xb40
 
     void ShowBarkBubble(unsigned long oid, const CExoString& text, const CResRef& sound, int b);   // 0x0062AB30
     void UpdateCombatMode();                        // 0x0062B050
@@ -135,10 +143,10 @@ int CClientExoAppInternal::SendLoadGameRequest(int a, int b, int c)
 }
 
 // FUNCTION: SWKOTOR 0x005EEAE0
-int CClientExoAppInternal::SetUnknown94(int n)
+void CClientExoAppInternal::SetUnknown94(int n)
 {
     m_nUnknown94 = n;
-    return g_pAppManager->GetClientExoApp()->GetClientOptions()->SetOption(1, n);
+    g_pAppManager->GetClientExoApp()->GetWorldTimer()->SetFixedSnapshotRate(1, n);
 }
 
 // FUNCTION: SWKOTOR 0x005F1420
@@ -257,7 +265,7 @@ void CClientExoAppInternal::WaitSoundFade750()
 {
     unsigned long nStart = (unsigned long)(g_pExoBase->m_pcExoTimers->GetHighResolutionTimer() / 1000);
     if (m_pMenuMusic) {
-        m_pMenuMusic->SetFadeTime(2500);
+        m_pMenuMusic->FadeAndStop(2500);
     }
     do {
         g_pExoSound->Update();
@@ -351,7 +359,7 @@ void CClientExoAppInternal::EmptyHitcheckIgnoreList()
 void CClientExoAppInternal::StopMenuMusic()
 {
     if (m_pMenuMusic) {
-        FadeOutMusic(m_pMenuMusic, 500);
+        FadeAndStopStreamingSoundSource(m_pMenuMusic, 500);
         delete m_pMenuMusic;
         m_pMenuMusic = 0;
     }
@@ -433,9 +441,9 @@ void CClientExoAppInternal::Uninitialize()
     ClearClientState();
     m_nUnknown248 = 0;
     while (!m_lstUnknown168.IsEmpty()) {
-        CExoString* pString = m_lstUnknown168.RemoveHead();
-        if (pString) {
-            delete pString;
+        CClientStringEntry* pEntry = m_lstUnknown168.RemoveHead();
+        if (pEntry) {
+            delete pEntry;
         }
     }
     EmptyHitcheckIgnoreList();

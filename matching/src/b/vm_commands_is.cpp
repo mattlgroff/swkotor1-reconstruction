@@ -189,7 +189,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsTrapped(int nCommandId, int nP
     CGameObject* pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidObject);
     if (pObject) {
         if (pObject->m_nObjectType == OBJECT_TYPE_TRIGGER) {
-            bTrapped = ((CSWSTriggerTrapView*)pObject->AsSWSAreaOfEffectObject())->m_bTrapped;
+            bTrapped = ((CSWSTriggerTrapView*)pObject->AsSWSTrigger())->m_bTrapped;
         } else if (pObject->m_nObjectType == OBJECT_TYPE_PLACEABLE) {
             bTrapped = pObject->AsSWSPlaceable()->m_bTrapped;
         } else if (pObject->m_nObjectType == OBJECT_TYPE_DOOR) {

@@ -363,10 +363,10 @@ unsigned long CSWSMessage::SelectCategoryForGameObject(CGameObject* pObject,
     else if (pObject->AsSWSItem()) {
         nCategory = 7;
     }
-    else if (pObject->AsSWSTrigger()) {
+    else if (pObject->AsSWSAreaOfEffectObject()) {
         nCategory = 9;
     }
-    else if (pObject->AsSWSAreaOfEffectObject()) {
+    else if (pObject->AsSWSTrigger()) {
         nCategory = 5;
     }
     return nCategory;

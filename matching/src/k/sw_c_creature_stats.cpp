@@ -208,7 +208,7 @@ void CSWCCreatureStats::ClearFeats()
         m_lstBonusFeats.DelIndex(0);
     }
     while (m_lstFeatUses.num != 0) {
-        free(m_lstFeatUses.element[0]);
+        delete m_lstFeatUses.element[0];
         m_lstFeatUses.DelIndex(0);
     }
 }
@@ -295,7 +295,7 @@ void CSWCCreatureStats::SetFeatRemainingUses(unsigned short nFeat, unsigned char
             m_lstFeatUses.element[j] = pOld[j];
         }
         if (pOld) {
-            free(pOld);
+            delete pOld;
         }
     }
     m_lstFeatUses.element[m_lstFeatUses.num++] = pUses;

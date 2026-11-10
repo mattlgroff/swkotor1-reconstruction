@@ -49,7 +49,7 @@ void CSWCameraDeath::SetTarget(Gob* pTarget)
 
 // FUNCTION: SWKOTOR 0x0063BBD0
 CSWCameraDeath::CSWCameraDeath(Gob* pGob, Gob* pTarget)
-    : CAurBehavior(pGob)
+    : CSWCameraBehaviorBase(pGob)
 {
     m_yaw = 0.0f;
     m_logYaw = 0.5f;

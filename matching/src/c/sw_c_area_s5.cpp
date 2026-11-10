@@ -235,14 +235,15 @@ void CSWCArea::HiliteAreaObjects(int bOn)
                 pObject->UnHilite(2);
             }
             break;
-        case 9:
+        // Original source order: 10 before 9 (jump table: 9 -> last block).
+        case 10:
             if (bOn) {
                 pObject->Hilite(Vector(0.3f, 1.0f, 1.0f), 2, 0, 1);
             } else {
                 pObject->UnHilite(2);
             }
             break;
-        case 10:
+        case 9:
             if (bOn) {
                 pObject->Hilite(Vector(0.3f, 1.0f, 1.0f), 2, 0, 1);
             } else {

@@ -96,6 +96,23 @@ extern CAppManager *g_pAppManager;
 extern const unsigned char g_nObjectTypeStore;     // 0x0074663D
 extern const unsigned char g_nObjectTypeWaypoint;  // 0x0074663B
 extern const unsigned long g_oidInvalid;
+extern const unsigned long EVENT_SIGNAL_EVENT;     // 0x007441DC
+extern const unsigned long EVENT_TIMED_EVENT;      // 0x007441B8
+extern const int EVENT_AI_LATER;                   // 0x007441E0
+
+class CVirtualMachine {
+public:
+    int RunScript(CExoString *psFileName, unsigned long oid, int bFlag);
+    int RunScriptSituation(void *pScript, unsigned long oid, int bFlag);
+};
+
+extern CVirtualMachine *g_pVirtualMachine;
+
+class CScriptEvent {
+public:
+    ~CScriptEvent();
+    unsigned short m_nType;
+};
 
 class CSWSArea {
 public:
@@ -120,7 +137,9 @@ public:
     Vector m_vOrientation;           // +0x9c
     char pad_0xa8[0x2c];
     unsigned long m_nD4;             // +0xd4
-    char pad_0xd8[0x150];
+    char pad_0xd8[0x14];
+    int m_bEC;                       // +0xec
+    char pad_0xf0[0x138];
 };
 
 class CSWSStore : public CSWSObject {
@@ -131,11 +150,13 @@ public:
     int GetItemInInventory(unsigned long oid);
     void AddToArea(CSWSArea *pArea, float x, float y, float z, int bRunScripts);
     int AddItemToInventory(CSWSItem **ppItem);
+    virtual void EventHandler(unsigned long nEventId, unsigned long oidCaller, void *pScript,
+                              unsigned long nCalendarDay, unsigned long nTimeOfDay);
 
     CExoString m_sScripts[1];        // +0x228
     CItemRepository *m_pItemRepository; // +0x230
     CExoLocString m_sLocName;        // +0x234
-    char pad_0x23c[0x4];
+    unsigned long m_oidOpenedBy;     // +0x23c
     unsigned long m_oidLastOpener;   // +0x240
     char pad_0x244[0x8];
     int m_n24C;                      // +0x24c
@@ -221,6 +242,26 @@ int CSWSStore::AddItemToInventory(CSWSItem **ppItem)
     }
 }
 
+// Function start missing from functions.csv (vtable +0x78).
+// FUNCTION: SWKOTOR 0x005C6EE0
+void CSWSStore::EventHandler(unsigned long nEventId, unsigned long oidCaller, void *pScript,
+                             unsigned long nCalendarDay, unsigned long nTimeOfDay)
+{
+    if (nEventId == EVENT_SIGNAL_EVENT) {
+        CScriptEvent *pEvent = (CScriptEvent *)pScript;
+        if (pEvent->m_nType == 0x16) {
+            m_oidOpenedBy = oidCaller;
+            g_pVirtualMachine->RunScript(&m_sScripts[0], m_idSelf, 1);
+        }
+        delete pEvent;
+    } else if (nEventId == EVENT_TIMED_EVENT) {
+        if (pScript)
+            g_pVirtualMachine->RunScriptSituation(pScript, m_idSelf, 1);
+    } else if (nEventId == EVENT_AI_LATER) {
+        delete this;
+    }
+}
+
 // FUNCTION: SWKOTOR 0x005C7160 SYMBOL: ??_GCSWSStore@@UAEPAXI@Z
 
 class CSWSWaypoint : public CSWSObject {
@@ -230,6 +271,9 @@ public:
     int SaveWaypoint(CResGFF *pRes, CResStruct *pStruct);
     void RemoveFromArea();
     void AddToArea(CSWSArea *pArea, float x, float y, float z, int bRunScripts);
+    virtual void EventHandler(unsigned long nEventId, unsigned long oidCaller, void *pScript,
+                              unsigned long nCalendarDay, unsigned long nTimeOfDay);
+    virtual CExoLocString *GetLocName();
 
     int m_bHasMapNote;               // +0x228
     int m_bMapNoteEnabled;           // +0x22c
@@ -244,6 +288,21 @@ CSWSWaypoint::CSWSWaypoint(unsigned long oid)
     m_nD4 = 0x2711;
     m_bHasMapNote = 0;
     m_bMapNoteEnabled = 0;
+}
+
+// The next two starts are missing from functions.csv (vtable +0x8c, +0x78).
+// FUNCTION: SWKOTOR 0x005C7F00
+CExoLocString *CSWSWaypoint::GetLocName()
+{
+    return &m_sLocalizedName;
+}
+
+// FUNCTION: SWKOTOR 0x005C7F10
+void CSWSWaypoint::EventHandler(unsigned long nEventId, unsigned long oidCaller, void *pScript,
+                                unsigned long nCalendarDay, unsigned long nTimeOfDay)
+{
+    if (nEventId == EVENT_AI_LATER && m_bEC)
+        delete this;
 }
 
 // FUNCTION: SWKOTOR 0x005C8230

@@ -3,6 +3,11 @@
 // src/unknown/sub_0050_area_leaf_cluster.cpp).
 #include "a/sws_area.h"
 
+static inline CClientExoApp* GetClientExoApp()
+{
+    return g_pAppManager->m_pClientExoApp;
+}
+
 // FUNCTION: SWKOTOR 0x00506A10
 CSWCArea* CSWSArea::GetClientArea()
 {
@@ -115,7 +120,8 @@ void CSWSArea::ActivateAI()
     CServerAIMaster* pAIMaster = GetServerExoApp()->GetServerAIMaster();
     CGameObject* pObject;
     for (int i = 0; i < m_aGameObjects.num; i++) {
-        if (pArray->GetGameObject(m_aGameObjects.element[i], &pObject) == g_nGameObjectFound &&
+        unsigned long oid = m_aGameObjects.element[i];
+        if (pArray->GetGameObject(oid, &pObject) == g_nGameObjectFound &&
             pObject->m_nObjectType > g_nObjectTypeArea) {
             CSWSObject* pSWSObject = (CSWSObject*)pObject;
             CSWSDoor* pDoor;
@@ -140,7 +146,8 @@ void CSWSArea::DeactivateAI()
     CServerAIMaster* pAIMaster = GetServerExoApp()->GetServerAIMaster();
     for (int i = 0; i < m_aGameObjects.num; i++) {
         CGameObject* pObject;
-        if (pArray->GetGameObject(m_aGameObjects.element[i], &pObject) == g_nGameObjectFound &&
+        unsigned long oid = m_aGameObjects.element[i];
+        if (pArray->GetGameObject(oid, &pObject) == g_nGameObjectFound &&
             pObject->m_nObjectType > g_nObjectTypeArea &&
             pObject->AsSWSCreature() &&
             ((CSWSObject*)pObject)->m_nAILevel == 1) {
@@ -392,16 +399,26 @@ void CSWSArea::DeleteAllObjects()
     m_aGameObjects.num = 0;
 }
 
+static inline void DistributeExperience(unsigned long nXP, int bShow)
+{
+    GetServerExoApp()->GetPartyTable()->DistributeExperience(nXP, bShow);
+}
+
+static inline void ShowStealthXP(int nType, unsigned long nXP)
+{
+    GetClientExoApp()->GetInGameGui()->ShowStealthXP(nType, nXP);
+}
+
 // FUNCTION: SWKOTOR 0x00508770
 void CSWSArea::AwardStealthXP(unsigned long oidCreature)
 {
     if (GetServerExoApp()->GetCreatureByGameObjectID(oidCreature) &&
         m_bStealthXPEnabled && m_nStealthXPCurrent > 0) {
         if (GetServerExoApp()->GetPartyTable()) {
-            GetServerExoApp()->GetPartyTable()->DistributeExperience(m_nStealthXPCurrent, 1);
+            DistributeExperience(m_nStealthXPCurrent, 1);
         }
         if (g_pAppManager->m_pClientExoApp->GetInGameGui()) {
-            g_pAppManager->m_pClientExoApp->GetInGameGui()->ShowStealthXP(3, m_nStealthXPCurrent);
+            ShowStealthXP(3, m_nStealthXPCurrent);
         }
         m_nStealthXPCurrent = 0;
         m_bStealthXPEnabled = 0;

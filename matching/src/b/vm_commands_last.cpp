@@ -46,7 +46,7 @@ public:
 };
 
 // Vtable slot 0x40 (object type 7).
-class CSWSAreaOfEffectObject : public CSWSObject {
+class CSWSTrigger : public CSWSObject {
 public:
     char pad_0xf4[0x29c - 0xf4];
     unsigned long m_oidEnteringObject;                      // 0x29c (name guessed)
@@ -55,7 +55,7 @@ public:
 };
 
 // Vtable slot 0x50 (object type 0xb).
-class CSWSTrigger : public CSWSObject {
+class CSWSAreaOfEffectObject : public CSWSObject {
 public:
     char pad_0xf4[0x248 - 0xf4];
     unsigned long m_oidCreator;                             // 0x248
@@ -273,7 +273,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastDisarmed(int nCommandId, int
         if (pObject->m_nObjectType == 9) {
             oidResult = pObject->AsSWSPlaceable()->m_oidLastDisarmed;
         } else if (pObject->m_nObjectType == 7) {
-            oidResult = pObject->AsSWSAreaOfEffectObject()->m_oidLastDisarmed;
+            oidResult = pObject->AsSWSTrigger()->m_oidLastDisarmed;
         } else if (pObject->m_nObjectType == 0xa) {
             oidResult = pObject->AsSWSDoor()->m_oidLastDisarmed;
         }
@@ -340,7 +340,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetLastHostileActor(int nCommandId,
             pCreature = NULL;
             if (pActor) {
                 if (pActor->m_nObjectType == OBJECT_TYPE_AREA_OF_EFFECT) {
-                    oidResult = pActor->AsSWSTrigger()->m_oidCreator;
+                    oidResult = pActor->AsSWSAreaOfEffectObject()->m_oidCreator;
                     pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidResult);
                 } else if (pActor->m_nObjectType == OBJECT_TYPE_CREATURE) {
                     pCreature = g_pAppManager->GetServerExoApp()->GetCreatureByGameObjectID(oidResult);
@@ -540,7 +540,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetExitingObject(int nCommandId, in
         switch (pObject->m_nObjectType) {
         case 7:
             {
-                CSWSAreaOfEffectObject* p = pObject->AsSWSAreaOfEffectObject();
+                CSWSTrigger* p = pObject->AsSWSTrigger();
                 if (p) {
                     oidResult = p->m_oidExitingObject;
                 }
@@ -548,7 +548,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetExitingObject(int nCommandId, in
             break;
         case 0xb:
             {
-                CSWSTrigger* p = pObject->AsSWSTrigger();
+                CSWSAreaOfEffectObject* p = pObject->AsSWSAreaOfEffectObject();
                 if (p) {
                     oidResult = p->m_oidExitingObject;
                 }
@@ -572,7 +572,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetExitingObject(int nCommandId, in
             break;
         case 0xd:
             {
-                void* p = pObject->AsSWS5C();
+                void* p = pObject->AsSWSEncounter();
                 if (p) {
                     oidResult = ((CGameObject5CExitView*)p)->m_oidExitingObject;
                 }
@@ -617,7 +617,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetEnteringObject(int nCommandId, i
                 break;
             case 7:
                 {
-                    CSWSAreaOfEffectObject* p = pObject->AsSWSAreaOfEffectObject();
+                    CSWSTrigger* p = pObject->AsSWSTrigger();
                     if (p) {
                         oidResult = p->m_oidEnteringObject;
                     }
@@ -625,7 +625,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetEnteringObject(int nCommandId, i
                 break;
             case 0xb:
                 {
-                    CSWSTrigger* p = pObject->AsSWSTrigger();
+                    CSWSAreaOfEffectObject* p = pObject->AsSWSAreaOfEffectObject();
                     if (p) {
                         oidResult = p->m_oidEnteringObject;
                     }
@@ -649,7 +649,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetEnteringObject(int nCommandId, i
                 break;
             case 0xd:
                 {
-                    void* p = pObject->AsSWS5C();
+                    void* p = pObject->AsSWSEncounter();
                     if (p) {
                         oidResult = ((CGameObject5CExitView*)p)->m_oidEnteringObject;
                     }

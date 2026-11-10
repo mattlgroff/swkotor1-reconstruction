@@ -8,6 +8,8 @@
 
 #include "j/res.h"
 
+struct _iobuf;
+
 struct Vector {
     Vector() { x = 0; y = 0; z = 0; }
     Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
@@ -367,7 +369,7 @@ public:
     unsigned long m_nFadeTime;                      // 0x2c
     unsigned long m_nId;                            // 0x30
     unsigned long m_nFadeStart;                     // 0x34
-    void* m_pBuffer;                                // 0x38
+    struct _iobuf* m_pFile;                         // 0x38 FILE*, fclose'd in the dtor
     char pad_0x3c[0x4];
     long m_nPausePosition;                          // 0x40
     unsigned short m_nResType;                      // 0x44
