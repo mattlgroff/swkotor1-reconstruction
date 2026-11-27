@@ -647,20 +647,9 @@ public:
 void RunFrame(float fDelta, int bArg1, int bArg2);  // 0x00401C10
 extern "C" __declspec(dllimport) void __stdcall Sleep(unsigned long dwMilliseconds);
 
-struct CAppManager14 {
-    char m_pad0[8];
-    unsigned long m_n8;                             // +0x08
-    unsigned long m_nC;                             // +0x0c
-};
+#include "shared/reentrant_server_stats.h"
 
-class CAppManager {
-public:
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                 // +0x04
-    CServerExoApp* m_pServerExoApp;                 // +0x08
-    char m_pad0c[0x14 - 0x0c];
-    CAppManager14* m_p14;                           // +0x14
-};
+#include "shared/app_manager.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 inline CClientExoApp* GetClientExoApp() { return g_pAppManager->m_pClientExoApp; }
 

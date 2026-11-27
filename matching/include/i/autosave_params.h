@@ -108,15 +108,7 @@ public:
 };
 
 // Unnamed 0x3c-byte record; FUN_004b13e0 seeds dwords 0, 1, 4 and 14.
-struct CUnknown004b13e0 {
-    void FUN_004b13e0(unsigned long nValue);        // 0x004B13E0
-    unsigned long m_n00;
-    unsigned long m_n04;
-    unsigned long m_pad08[2];
-    unsigned long m_n10;
-    unsigned long m_pad14[9];
-    unsigned long m_n38;
-};
+#include "shared/reentrant_server_stats.h"
 
 // Unnamed 0x48-byte record built before CSWSArea::TestDirectLine in the
 // area path helpers (0x004BCxxx); the ctor zeroes it and sets +0x40 to

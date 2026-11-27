@@ -90,11 +90,7 @@ Vector Normalize(const Vector& v);              // 0x004AB180
 float Magnitude(const Vector& v);               // 0x004AB100
 Quaternion operator*(const Quaternion& a, const Quaternion& b);   // 0x004A9AC0
 Quaternion EulerToQuaternion(float fYaw, float fPitch, float fRoll);    // 0x004ACAC0
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;
-};
+#include "shared/app_manager.h"
 
 
 class CSWGuiManager {

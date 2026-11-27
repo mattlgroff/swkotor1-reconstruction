@@ -40,11 +40,7 @@ public:
                            unsigned long nSpell);   // 0x005EDF40
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
 
 

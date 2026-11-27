@@ -333,7 +333,7 @@ int CSWSModule::SaveModuleIFOStart(CResGFF* pRes, CResStruct* pStruct)
     pRes->AddListElement(&cElement, &cList, 6);
     pRes->WriteFieldCResRef(&cElement, cAreaRef, "Area_Name");
     pRes->WriteFieldDWORD(&cElement, m_oidArea, "ObjectId");
-    g_pAppManager->m_p14->m_nC = 1;
+    g_pAppManager->m_pReentrantServerStats->m_nProgress = 1;
     pRes->AddList(&cList, pStruct, "Mod_Tokens");
     for (unsigned long i = 0; i < g_pTlkTable->m_nTokens; i++) {
         if (g_pTlkTable->m_pTokens[i].m_nNumber > (unsigned long)MIN_CUSTOM_TOKEN) {

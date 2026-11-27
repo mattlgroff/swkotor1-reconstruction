@@ -295,12 +295,7 @@ public:
     CExoLinkedList<CSWSPlayer>* GetPlayerList();    // 0x004AED90
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    void* m_pClientExoApp;                          // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-};
+#include "shared/app_manager.h"
 
 
 class CSWPlayerControl {

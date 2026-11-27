@@ -183,12 +183,7 @@ public:
     CClientAIMaster* GetClientAIMaster();                            // 0x005ED6B0
 };
 
-class CAppManager {
-public:
-    void* vptr;
-    CClientExoApp* m_pClientExoApp;                                  // +0x04
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

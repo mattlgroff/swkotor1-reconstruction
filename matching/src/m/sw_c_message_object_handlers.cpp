@@ -72,7 +72,7 @@ public:
     CGameObjectArray* GetGameObjectArray();
     CClientAIMaster* GetClientAIMaster();
 };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
+#include "shared/app_manager.h"
 class CSWCMessage {
 public:
     int ReadBOOL();

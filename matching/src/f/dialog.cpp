@@ -167,20 +167,14 @@ public:
     int GetPlayerModelIndex(const CExoString &sTag);
 };
 
-class CServerMessage {
+class CClientExoApp {
 public:
     unsigned long ServerToClientObjectId(unsigned long oid);
     CNetLayer *GetNetLayer();
     void SetDialogModelsDirty(int b);
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CServerMessage *m_pServerMessage; // +0x4
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
 
 class CDialogLink {
@@ -530,16 +524,16 @@ unsigned long CSWSDialog::GetDialogModel(int nIndex, int *pnModel)
         CGameObject *pObject = g_pAppManager->GetServerExoApp()->GetGameObject(m_oidOwner);
         if (pObject && pObject->AsSWSObject()) {
             CGameObject *pOwner = pObject->AsSWSObject();
-            CServerMessage *pMessage = g_pAppManager->m_pServerMessage;
+            CClientExoApp *pClient = g_pAppManager->m_pClientExoApp;
             unsigned long oid;
             if (m_pSpeakers[nIndex].m_sTag == "PLAYER") {
-                oid = pMessage->ServerToClientObjectId(GetPlayerCharacterId());
+                oid = pClient->ServerToClientObjectId(GetPlayerCharacterId());
             } else if (m_pSpeakers[nIndex].m_sTag == "OWNER" || m_pSpeakers[nIndex].m_sTag == "") {
-                oid = pMessage->ServerToClientObjectId(m_oidOwner);
+                oid = pClient->ServerToClientObjectId(m_oidOwner);
             } else {
-                oid = pMessage->ServerToClientObjectId(
+                oid = pClient->ServerToClientObjectId(
                     pOwner->GetNearestObjectByTag(m_pSpeakers[nIndex].m_sTag, 0));
-                *pnModel = pMessage->GetNetLayer()->GetPlayerModelIndex(m_pSpeakers[nIndex].m_sTag);
+                *pnModel = pClient->GetNetLayer()->GetPlayerModelIndex(m_pSpeakers[nIndex].m_sTag);
             }
             return oid;
         }
@@ -550,22 +544,22 @@ unsigned long CSWSDialog::GetDialogModel(int nIndex, int *pnModel)
 // FUNCTION: SWKOTOR 0x005A0080
 int CSWSDialog::SendDialogModels(CGameObject *pObject, unsigned long nPlayer)
 {
-    CServerMessage *pMessage = g_pAppManager->m_pServerMessage;
+    CClientExoApp *pClient = g_pAppManager->m_pClientExoApp;
     CResRef *pModels = new CResRef[m_nSpeakers];
     unsigned long *pIds = new unsigned long[m_nSpeakers];
     for (unsigned long i = 0; i < m_nSpeakers; i++) {
         pIds[i] = 0x7f000000;
         if (m_pSpeakers[i].m_sTag == "PLAYER")
-            pIds[i] = pMessage->ServerToClientObjectId(m_lPlayers.GetHeadPos() ? m_oidPlayer : 0x7f000000);
+            pIds[i] = pClient->ServerToClientObjectId(m_lPlayers.GetHeadPos() ? m_oidPlayer : 0x7f000000);
         else if (m_pSpeakers[i].m_sTag == "OWNER" || m_pSpeakers[i].m_sTag == "")
-            pIds[i] = pMessage->ServerToClientObjectId(m_oidOwner);
+            pIds[i] = pClient->ServerToClientObjectId(m_oidOwner);
         else
-            pIds[i] = pMessage->ServerToClientObjectId(
+            pIds[i] = pClient->ServerToClientObjectId(
                 pObject->GetNearestObjectByTag(m_pSpeakers[i].m_sTag, 0));
         pModels[i] = m_pSpeakers[i].m_cModel;
     }
-    if (pMessage->GetNetLayer()->SendDialogModels(nPlayer, m_nSpeakers, pIds, pModels, m_a50, m_aFC))
-        g_pAppManager->m_pServerMessage->SetDialogModelsDirty(1);
+    if (pClient->GetNetLayer()->SendDialogModels(nPlayer, m_nSpeakers, pIds, pModels, m_a50, m_aFC))
+        g_pAppManager->m_pClientExoApp->SetDialogModelsDirty(1);
     delete[] pIds;
     delete[] pModels;
     return 1;

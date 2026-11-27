@@ -6,11 +6,7 @@ public:
     void ClearAllQueuedCombatActions(unsigned long nServerObject);     // 0x004AEFA0
 };
 
-class CAppManager {
-public:
-    char pad_0x0[8];
-    CServerExoApp* m_pServerExoApp;                  // +0x08
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

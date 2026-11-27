@@ -52,13 +52,7 @@ public:
 };
 extern const unsigned long OBJECT_INVALID;          // 0x00746644
 #include "shared/globals.h"
-class CAppManager {
-public:
-    void* vptr;
-    void* m_pClient;
-    CServerExoApp* m_pServer;
-    CServerExoApp* GetServer() { return m_pServer; }
-};
+#include "shared/app_manager.h"
 class CSWSArea {
 public:
     int IntersectingLineSegment(const Vector& from, const Vector& to,
@@ -85,7 +79,7 @@ int CSWSCreature::UpdateSubareasOnMoveTo(const Vector& from, const Vector& to, i
 {
     CExoArrayList<unsigned long> now;
     int changed = 0;
-    g_pAppManager->m_pServer->GetObjectArray();
+    g_pAppManager->m_pServerExoApp->GetObjectArray();
     CSWSArea* pArea = GetArea();
     if (!pArea)
         return 0;
@@ -113,7 +107,7 @@ int CSWSCreature::UpdateSubareasOnMoveTo(const Vector& from, const Vector& to, i
 int CSWSCreature::UpdateSubareasOnJumpPosition(const Vector& vPosition, unsigned long oidArea, int bTrigger)
 {
     CExoArrayList<unsigned long> now;
-    CGameObjectArray* pArray = g_pAppManager->m_pServer->GetObjectArray();
+    CGameObjectArray* pArray = g_pAppManager->m_pServerExoApp->GetObjectArray();
     if (g_bSubAreaTriggerOverride)
         bTrigger = 1;
     CSWSArea* pArea;
@@ -133,7 +127,7 @@ int CSWSCreature::UpdateSubareasOnJumpPosition(const Vector& vPosition, unsigned
         bInAny = 0;
     for (int i = 0; i < m_lAreaOfEffects.num; i++) {
         CSWSAreaOfEffectObject* pAoe =
-            g_pAppManager->GetServer()->GetAreaOfEffectByGameObjectID(m_lAreaOfEffects[i]);
+            g_pAppManager->GetServerExoApp()->GetAreaOfEffectByGameObjectID(m_lAreaOfEffects[i]);
         if (pAoe) {
             pAoe->JumpToPoint(pArea, vPosition);
             now.AddUnique(m_lAreaOfEffects[i]);

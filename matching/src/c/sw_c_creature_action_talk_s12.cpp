@@ -43,11 +43,7 @@ public:
     CSWParty* GetParty();                           // 0x005ED8B0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

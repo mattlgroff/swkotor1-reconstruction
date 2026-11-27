@@ -238,11 +238,7 @@ public:
     CClientAIMaster* GetClientAIMaster();           // 0x005ED6B0
 };
 
-class CAppManager {
-public:
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
 class CSWCDoor;
 class CSWCPlaceable;

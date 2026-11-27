@@ -8,7 +8,7 @@ class CGameObject { public: virtual ~CGameObject(); unsigned long m_idSelf; };
 class CSWSCreature : public CGameObject {};
 class CServerExoApp { public: CSWSCreature* GetPlayerCreature(); /* 0x004B2820 */ };
 class CClientExoApp { public: unsigned long ServerToClientObjectId(unsigned long oid); /* 0x005EDA50 */ };
-class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CServerExoApp* m_pServerExoApp; };
+#include "shared/app_manager.h"
 class CSWCCreature { public: char pad_0x0[0x30]; Vector m_vPosition; void SetCombatMode(int nMode); /* 0x0060F090 */ };
 class CSWMiniCamera {
 public:

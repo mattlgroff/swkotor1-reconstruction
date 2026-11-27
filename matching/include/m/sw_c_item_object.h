@@ -218,12 +218,7 @@ public:
     float ComputeHeight(void* pSurface, Vector* pPosition, int nFlags);  // 0x004AEA50
 };
 
-class CAppManager {
-public:
-    void* m_pVtable;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-};
+#include "shared/app_manager.h"
 
 // Item classes -----------------------------------------------------------
 

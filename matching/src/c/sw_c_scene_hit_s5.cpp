@@ -37,12 +37,7 @@ public:
     CSWSModule* GetModule();                        // 0x004AE6B0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    void* m_pClientExoApp;                          // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

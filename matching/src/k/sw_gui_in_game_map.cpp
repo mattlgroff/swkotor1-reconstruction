@@ -142,14 +142,7 @@ public:
     CGameObject* GetGameObject(unsigned long oid);  // 0x004AE750
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
 
 class CSWGuiInGameMap : public CSWGuiPanel {

@@ -75,12 +75,7 @@ public:
     CExoString GetGUIString(unsigned long nId);     // 0x005EDEB0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
 
 class CSWCCreatureStats {

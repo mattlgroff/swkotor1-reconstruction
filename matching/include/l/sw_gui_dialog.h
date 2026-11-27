@@ -612,14 +612,7 @@ public:
     class CGameObjectArray* GetObjectArray();       // 0x004AED70
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
 
 // Conversation panel; implicit destructor 0x006A6F30.

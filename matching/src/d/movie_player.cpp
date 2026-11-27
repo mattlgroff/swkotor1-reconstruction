@@ -175,11 +175,7 @@ public:
     CClientOptions* GetClientOptions(); // 0x005ed700
 };
 
-class CAppManager {
-public:
-    void* m_pLargeTempBuffer;       // 0x00
-    CClientExoApp* m_pClientExoApp; // 0x04
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

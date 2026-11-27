@@ -17,11 +17,7 @@ public:
     CSWCJournal* GetQuestJournal();                  // 0x005ED320
     CGuiInGame* GetInGameGui();                      // 0x005ED690
 };
-class CAppManager {
-public:
-    char pad_0x00[4];
-    CClientExoApp* m_pClientExoApp;
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 class CSWGuiInGameJournal {
 public:

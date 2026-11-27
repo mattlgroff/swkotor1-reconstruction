@@ -7,12 +7,7 @@ public:
     void SetTutorialFlag(int nFlag, int nValue);                    // 0x005EDFD0
 };
 
-class CAppManager {
-public:
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                                 // +0x04
-    CServerExoApp* m_pServerExoApp;                                 // +0x08
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004BA640

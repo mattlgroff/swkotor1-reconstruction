@@ -76,13 +76,7 @@ public:
     CSWCItem* GetItemByGameObjectID(unsigned long nId);   // 0x005ED5A0
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

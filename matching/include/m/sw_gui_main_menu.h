@@ -225,13 +225,7 @@ public:
     CWorldTimer* GetWorldTimer();                   // 0x004AEDE0
 };
 
-class CAppManager {
-public:
-    void CreateServer(int bLoad);                   // 0x00401380
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-};
+#include "shared/app_manager.h"
 
 
 class CGuiInGame {

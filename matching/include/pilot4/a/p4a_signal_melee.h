@@ -70,15 +70,7 @@ public:
     void AddFloatyText(unsigned long oid, int nType, int nArg); // 0x005EDEA0 (placeholder name)
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;                                 // 0x00
-    CClientExoApp* m_pClientExoApp;                     // 0x04
-    CServerExoApp* m_pServerExoApp;                     // 0x08
-
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
 
 class CSWSCreature {

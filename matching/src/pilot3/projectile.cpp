@@ -71,11 +71,7 @@ public:
     CSWSMessage *GetSWSMessage();
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp; // +0x8
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

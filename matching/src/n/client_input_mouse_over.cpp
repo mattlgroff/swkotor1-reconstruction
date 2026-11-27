@@ -15,7 +15,7 @@ public:
     void SetSoftwareMouseCursor(int nCursor,int nOption,int bAlternate); // 0x0040A270
 };
 class CClientExoApp { public: unsigned long GetPlayerCreatureId(); /* 0x005ED550 */ };
-class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
+#include "shared/app_manager.h"
 class CClientOptions { public: char pad_0x0[0x6d]; unsigned char m_nCameraMode; };
 class CSWGuiMainInterface { public: char pad_0x0[0x64]; unsigned long m_oidTarget; };
 class CGuiInGame {

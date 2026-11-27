@@ -489,7 +489,7 @@ void CClientExoAppInternal::ShutDownToMainMenu()
     if (m_bUnknown254) {
         m_bUnknown250 = 1;
     }
-    g_pAppManager->Unknown401280();
+    g_pAppManager->DestroyServer();
     if (m_pModule) {
         CSWCModulePlayer* pPlayer = m_pModule->m_pPlayer;
         if (pPlayer) {
@@ -504,10 +504,10 @@ void CClientExoAppInternal::ShutDownToMainMenu()
         m_bStartMenuMusicOnMovieEnd = 1;
         SetMusic(1, 0x7f, 2);
         if (m_nLoadBarState) {
-            g_pAppManager->m_pPad->m_n14 = 0;
-            CAppPad* pPad = g_pAppManager->m_pPad;
-            pPad->m_n00 = 0;
-            pPad->m_n04 = 0;
+            g_pAppManager->m_pReentrantServerStats->m_n14 = 0;
+            CSWReentrantServerStats* pPad = g_pAppManager->m_pReentrantServerStats;
+            pPad->m_bActive = 0;
+            pPad->m_nKind = 0;
             m_nLoadBarState = 0;
         }
     }

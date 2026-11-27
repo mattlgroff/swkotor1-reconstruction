@@ -7,22 +7,7 @@ extern "C" __declspec(dllimport) int __stdcall SystemParametersInfoA(unsigned in
                                                                     void* pvParam, unsigned int fWinIni);
 extern "C" __declspec(dllimport) void __stdcall glBlendFunc(unsigned int sfactor, unsigned int dfactor);
 
-class CSWReentrantServerStats {
-public:
-    CSWReentrantServerStats();
-    ~CSWReentrantServerStats();
-
-    int m_n00;                      // 0x00
-    int m_n04;                      // 0x04
-    int m_n08;                      // 0x08
-    int m_n0c;                      // 0x0c
-    int m_n10;                      // 0x10
-    int m_n14;                      // 0x14
-    CExoString m_s18;               // 0x18
-    CExoString m_s20;               // 0x20
-    CExoString m_s28;               // 0x28
-    char pad_0x30[0x0c];
-};
+#include "shared/reentrant_server_stats.h"
 
 // FUNCTION: SWKOTOR 0x00401000
 CSWReentrantServerStats::~CSWReentrantServerStats()
@@ -32,10 +17,10 @@ CSWReentrantServerStats::~CSWReentrantServerStats()
 // FUNCTION: SWKOTOR 0x004010c0
 CSWReentrantServerStats::CSWReentrantServerStats()
 {
-    m_n00 = 0;
-    m_n04 = 0;
-    m_n0c = 0;
-    m_n08 = 0;
+    m_bActive = 0;
+    m_nKind = 0;
+    m_nProgress = 0;
+    m_nStep = 0;
     m_n10 = 0;
     m_n14 = 0;
 }
@@ -102,25 +87,7 @@ public:
     char pad_0x0[0x184];
 };
 
-class CAppManager {
-public:
-    void* m_pLargeTempBuffer;       // 0x00
-    CClientExoApp* m_pClientExoApp; // 0x04
-    CServerExoApp* m_pServerExoApp; // 0x08
-    CObjectTableManager* m_pObjectTableManagerServer; // 0x0c
-    CObjectTableManager* m_pObjectTableManagerClient; // 0x10
-    CSWReentrantServerStats* m_pReentrantServerStats; // 0x14
-    unsigned long m_nStartTime;     // 0x18
-    int m_bPaused;                  // 0x1c
-
-    CAppManager();
-    ~CAppManager();
-    CObjectTableManager* GetObjectTableManager(int nWhich);
-    void DoSaveGameScreenShot(CExoString& sName);
-    void AllocLargeTempBuffer();
-    void DestroyServer();
-    void CreateServer(int nMode);
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

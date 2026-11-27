@@ -36,14 +36,7 @@ public:
     unsigned long ClientToServerObjectID(unsigned long oid);    // 0x004AEA30
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;                                 // 0x00
-    void* m_pClientExoApp;                              // 0x04
-    CServerExoApp* m_pServerExoApp;                     // 0x08
-
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
 
 class CSWFollowArray {

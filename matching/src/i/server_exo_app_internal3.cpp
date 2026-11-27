@@ -2,12 +2,7 @@
 
 #define OBJECT_INVALID 0x7f000000
 
-class CAppManager {
-public:
-    void* m_p0;
-    void* m_pClientExoApp;                                          // +0x04
-    CServerExoApp* m_pServerExoApp;                                 // +0x08
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 

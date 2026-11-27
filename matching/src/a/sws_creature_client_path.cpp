@@ -28,11 +28,7 @@ public:
     char pad_0[4];
     CServerExoAppInternal* m_pInternal;
 };
-class CAppManager {
-public:
-    char pad_0[8];
-    CServerExoApp* m_pServerExoApp;
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 class CSWSCreature {
 public:

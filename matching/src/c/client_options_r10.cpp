@@ -103,14 +103,7 @@ public:
     CSWPartyTable* GetPartyTable();                 // 0x004AEE70 (descriptive)
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
 class CExoIni {
 public:

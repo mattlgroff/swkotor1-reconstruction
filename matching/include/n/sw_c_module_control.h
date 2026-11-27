@@ -319,13 +319,7 @@ public:
     char pad_0x30[0xc4 - 0x30];
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;
-
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 
 int lockcamera(char* szArgs);                       // 0x0060B2A0 (debug command)

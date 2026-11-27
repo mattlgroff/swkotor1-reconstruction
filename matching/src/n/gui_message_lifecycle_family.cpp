@@ -76,7 +76,7 @@ public:
     int GetInputClass(); int SetInputClass(int,int); CGuiInGame* GetInGameGui();
     void SetUnknown1a8(int,int,int); // 0x005EDE10: verified three integer stores
 };
-class CAppManager { public: char pad_0x0[4]; CClientExoApp* m_pClient; };
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 class CSWGuiManager {
 public:
@@ -104,12 +104,12 @@ void CSWGuiMessageBox::SetMessage(CExoString s) { g_pTlkTable->ParseTokens(&s); 
 // FUNCTION: SWKOTOR 0x006249D0
 void CSWGuiMessageBox::SetMessageStrRef(unsigned long n) { SetMessage(g_pTlkTable->GetSimpleString(n)); }
 // FUNCTION: SWKOTOR 0x00625A00
-void CSWGuiMessageBox::OnPanelRemoved() { CSWGuiPanel::OnPanelRemoved(); if(m_nSavedInputClass>=0) g_pAppManager->m_pClient->SetInputClass(m_nSavedInputClass,1); g_pGuiManager->RestoreOldMousePosition(); m_bForceOk=0; }
+void CSWGuiMessageBox::OnPanelRemoved() { CSWGuiPanel::OnPanelRemoved(); if(m_nSavedInputClass>=0) g_pAppManager->m_pClientExoApp->SetInputClass(m_nSavedInputClass,1); g_pGuiManager->RestoreOldMousePosition(); m_bForceOk=0; }
 // NONMATCH: bounded source-shape attempts retained; see worker-n.md.
 // FUNCTION: SWKOTOR 0x006258F0
 void CSWGuiMessageBox::OnPanelAdded() {
-    int old=g_pAppManager->m_pClient->GetInputClass(); CSWGuiPanel::OnPanelAdded(); m_nSavedInputClass=-1;
-    if(old!=2) { m_nSavedInputClass=old; g_pAppManager->m_pClient->SetInputClass(2,0); }
+    int old=g_pAppManager->m_pClientExoApp->GetInputClass(); CSWGuiPanel::OnPanelAdded(); m_nSavedInputClass=-1;
+    if(old!=2) { m_nSavedInputClass=old; g_pAppManager->m_pClientExoApp->SetInputClass(2,0); }
     SetActiveControl(0,0); SetActiveControl((CSWGuiControl*)&m_ok,0);
     CSWGuiExtent panel=m_extent; CSWGuiExtent target;
     if(m_nFlags&2) { if(m_bForceOk) target=m_ok.m_extent; else target=m_cancel.m_extent; } else target=m_ok.m_extent;
@@ -124,7 +124,7 @@ class CSWGuiControllerLossBox : public CSWGuiMessageBox {
 public: void OnPanelAdded(); void OnAccept(CSWGuiControl*);
 };
 // FUNCTION: SWKOTOR 0x00625A40
-void CSWGuiControllerLossBox::OnAccept(CSWGuiControl*) { g_pAppManager->m_pClient->GetInGameGui()->EndControllerPauseState(); }
+void CSWGuiControllerLossBox::OnAccept(CSWGuiControl*) { g_pAppManager->m_pClientExoApp->GetInGameGui()->EndControllerPauseState(); }
 // FUNCTION: SWKOTOR 0x00627220
 void CSWGuiControllerLossBox::OnPanelAdded() { m_nFlags&=~2ul; m_nOpenSound=2; UpdateControls(); SetMessageStrRef(0xbd0e); m_pCallbackObject=this; m_callback=(void(CSWGuiMessageBox::*)(CSWGuiControl*))&CSWGuiControllerLossBox::OnAccept; m_nCallbackArgument=0; CSWGuiMessageBox::OnPanelAdded(); }
 // Descriptive name: original class at 0x00627260 has no proven symbol.
@@ -132,7 +132,7 @@ class CSWGuiModalWarningBox : public CSWGuiMessageBox {
 public: void OnPanelAdded(); void OnAccept(CSWGuiControl*);
 };
 // FUNCTION: SWKOTOR 0x00625A60
-void CSWGuiModalWarningBox::OnAccept(CSWGuiControl*) { g_pAppManager->m_pClient->SetUnknown1a8(1,0,1); }
+void CSWGuiModalWarningBox::OnAccept(CSWGuiControl*) { g_pAppManager->m_pClientExoApp->SetUnknown1a8(1,0,1); }
 // FUNCTION: SWKOTOR 0x00627260
 void CSWGuiModalWarningBox::OnPanelAdded() { m_nFlags&=~2ul; m_nOpenSound=2; UpdateControls(); SetMessageStrRef(0xa56f); m_pCallbackObject=this; m_callback=(void(CSWGuiMessageBox::*)(CSWGuiControl*))&CSWGuiModalWarningBox::OnAccept; m_nCallbackArgument=0; m_pManager->AddPanel(this,1,1); }
 

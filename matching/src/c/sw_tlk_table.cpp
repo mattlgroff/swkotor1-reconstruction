@@ -7,11 +7,7 @@ public:
     CExoString GetGUIString(unsigned long nStrRef); // 0x005EDEB0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;                             // 0x00
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

@@ -1,13 +1,13 @@
 address,name,bytes,status,rules,file
 0x00401000,CSWReentrantServerStats::~CSWReentrantServerStats,MATCH,MATCH,,matching/src/d/app_misc.cpp
 0x00401060,CAppManager::GetObjectTableManager,MATCH,MATCH-PENDING,R1,matching/src/d/app_misc.cpp
-0x00401080,CAppManager::DoSaveGameScreenShot,MATCH,MATCH-PENDING,R1,matching/src/d/app_misc.cpp
-0x004010A0,CAppManager::AllocLargeTempBuffer,MATCH,MATCH-PENDING,R1,matching/src/d/app_misc.cpp
+0x00401080,CAppManager::DoSaveGameScreenShot,MATCH,MATCH,,matching/src/d/app_misc.cpp
+0x004010A0,CAppManager::AllocLargeTempBuffer,MATCH,MATCH,,matching/src/d/app_misc.cpp
 0x004010C0,CSWReentrantServerStats::CSWReentrantServerStats,MATCH,MATCH,,matching/src/d/app_misc.cpp
 0x00401130,CAppManager::CAppManager,MATCH,MATCH-PENDING,R1,matching/src/d/app_misc.cpp
 0x00401160,CAppManager::CAppManager,MATCH,MATCH-PENDING,R1,matching/src/d/app_misc.cpp
-0x00401280,CAppManager::DestroyServer,MATCH,MATCH-PENDING,R1,matching/src/d/app_misc.cpp
-0x004012C0,CAppManager::~CAppManager,MATCH,MATCH-PENDING,R1,matching/src/d/app_misc.cpp
+0x00401280,CAppManager::DestroyServer,MATCH,MATCH,,matching/src/d/app_misc.cpp
+0x004012C0,CAppManager::~CAppManager,MATCH,MATCH,,matching/src/d/app_misc.cpp
 0x00401380,CAppManager::CreateServer,MATCH,MATCH-PENDING,R1,matching/src/d/app_misc.cpp
 0x00401430,GetNotEnabledText,MATCH,MATCH,,matching/src/d/app_misc.cpp
 0x00401440,UpdateWindowTitle,MATCH,MATCH,,matching/src/d/app_misc.cpp
@@ -2448,7 +2448,7 @@ address,name,bytes,status,rules,file
 0x004B1330,CVirtualMachineCmdImplementer::~CVirtualMachineCmdImplementer,MATCH,MATCH-PENDING,R1,matching/src/i/autosave_params.cpp
 0x004B1340,CServerInfo::~CServerInfo,MATCH,MATCH-PENDING,R1,matching/src/i/autosave_params.cpp
 0x004B1360,CServerInfo::~CServerInfo,MATCH,MATCH-PENDING,R1,matching/src/i/autosave_params.cpp
-0x004B13E0,CUnknown004b13e0::FUN_004b13e0,MATCH,MATCH-PENDING,R1,matching/src/i/autosave_params.cpp
+0x004B13E0,CSWReentrantServerStats::FUN_004b13e0,MATCH,MATCH,,matching/src/i/autosave_params.cpp
 0x004B1400,KOTOR_AUTOSAVE_PARAMS::Reset,MATCH,MATCH-PENDING,R1,matching/src/i/autosave_params.cpp
 0x004B14B0,CUnknown004b14b0::CUnknown004b14b0,MATCH,MATCH,,matching/src/i/autosave_params.cpp
 0x004B14F0,CServerExoAppInternal::GetModule,MATCH,MATCH-PENDING,R1,matching/src/i/server_exo_app_internal.cpp
@@ -6236,7 +6236,7 @@ address,name,bytes,status,rules,file
 0x005F1C20,CClientExoAppInternal::InitializeClientOptions,MATCH,MATCH-PENDING,R1,matching/src/c/client_exo_app_internal_options_s8.cpp
 0x005F1F70,CClientExoAppInternal::InitializeSoundOptions,MATCH,MATCH-PENDING,R1 R2,matching/src/c/client_exo_app_internal_sound_s10.cpp
 0x005F2980,CClientExoAppInternal::TurnOffKeyboardModal,MATCH,MATCH-PENDING,R1,matching/src/c/client_exo_app_internal_s1.cpp
-0x005F29F0,ShutDownLoadGameLoadBar,MATCH,MATCH-PENDING,R1,matching/src/c/client_loadbar.cpp
+0x005F29F0,ShutDownLoadGameLoadBar,MATCH,MATCH,,matching/src/c/client_loadbar.cpp
 0x005F2A20,TogglePartyFollow,MATCH,MATCH-PENDING,R1,matching/src/c/client_party_follow.cpp
 0x005F2AC0,ServerToClientObjectId,MATCH,MATCH,,matching/src/c/client_loadbar.cpp
 0x005F2AE0,CClientExoAppInternal::LoadScreenExists,MATCH,MATCH-PENDING,R1,matching/src/c/client_exo_app_internal.cpp

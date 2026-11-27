@@ -56,14 +56,7 @@ public:
     void SetLastTarget(unsigned long oid, int bForce);
 };
 
-class CAppManager {
-public:
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-
-    char pad_0x0[4];
-    CClientExoApp *m_pClientExoApp;           // +0x4
-    CServerExoApp *m_pServerExoApp;           // +0x8
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 
 class CSWSCreature {

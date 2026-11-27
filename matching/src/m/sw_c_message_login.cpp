@@ -8,11 +8,7 @@ public:
     void EmptyForwarder();                          // 0x005ED310
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

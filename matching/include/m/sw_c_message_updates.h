@@ -179,7 +179,7 @@ class CClientExoApp { public:
  CSWCTrigger* GetTriggerByGameObjectID(unsigned long);
  CGameObjectArray* GetGameObjectArray();
 };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
+#include "shared/app_manager.h"
 class CExoSound { public: int PlayOneShotSoundAt(const CResRef&,Vector,float,unsigned long,unsigned long,unsigned long,unsigned long,unsigned long); };
 extern CExoSound* g_pExoSound;
 void SwitchWeaponEvent(unsigned long,const char*,CSWCCreature*); // descriptive 0x00610F40

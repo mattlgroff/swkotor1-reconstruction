@@ -19,7 +19,7 @@ public:
     virtual CSWCObject* AsSWCObject(); // +0x0C
 };
 class CClientExoApp { public: CGameObject* GetGameObject(unsigned long oid); /* 0x005ED580 */ };
-class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 class CGuiInGame {
 public:

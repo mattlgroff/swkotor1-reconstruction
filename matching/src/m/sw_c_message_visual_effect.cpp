@@ -70,7 +70,7 @@ class CSWCCreature : public CSWCObject { public:
 class CGameObjectArray { public: unsigned char AddInternalObject(unsigned long*,CGameObject*,int); };
 class CClientAIMaster { public: int AddObject(CSWCObject*); };
 class CClientExoApp { public: CSWCModule* GetModule(); CGameObjectArray* GetGameObjectArray(); CClientAIMaster* GetClientAIMaster(); CGameObject* GetGameObject(unsigned long); };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 extern const unsigned char OBJECT_TYPE_CREATURE, OBJECT_TYPE_PLACEABLE, OBJECT_TYPE_DOOR;
 #define OBJECT_INVALID 0x7f000000

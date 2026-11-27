@@ -230,11 +230,7 @@ public:
     CGameObjectArray* GetObjectArray();                             // 0x004AED70
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp* m_pServerExoApp;                 // 0x8
-};
+#include "shared/app_manager.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
 // DFS transposition-table entry (0x10 bytes, 0x200 entries).

@@ -109,12 +109,7 @@ public:
     unsigned long GetClientLanguage();              // 0x005ED4C0
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

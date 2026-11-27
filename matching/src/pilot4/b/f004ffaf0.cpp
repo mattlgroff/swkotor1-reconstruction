@@ -35,11 +35,7 @@ public:
     CServerAIMaster *GetServerAIMaster();       // 0x004AED80
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;             // 0x8
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 inline CServerExoApp *GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 

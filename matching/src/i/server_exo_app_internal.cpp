@@ -12,9 +12,7 @@ public:
     unsigned __int64 FUN_004adc70();                // 0x004ADC70
 };
 
-struct CAppManager14 {
-    int m_n0;
-};
+#include "shared/reentrant_server_stats.h"
 
 struct CClientPartyMember {
     char m_pad0[0x24];
@@ -41,16 +39,7 @@ public:
 
 class CSWSPlayerCharacterQuery;
 
-class CAppManager {
-public:
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                 // +0x04
-    CServerExoApp* m_pServerExoApp;                 // +0x08
-    char m_pad0c[0x14 - 0x0c];
-    CAppManager14* m_p14;                           // +0x14
-
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
 // FUNCTION: SWKOTOR 0x004B14F0
 CSWSModule* CServerExoAppInternal::GetModule()
@@ -455,7 +444,7 @@ CSWSClient* CServerExoAppInternal::GetClientObjectByPlayerID(unsigned long nPlay
 // FUNCTION: SWKOTOR 0x004B4030
 int CServerExoAppInternal::FUN_004b4030()
 {
-    return g_pAppManager->m_p14->m_n0 == 1;
+    return g_pAppManager->m_pReentrantServerStats->m_bActive == 1;
 }
 
 // FUNCTION: SWKOTOR 0x004B4050

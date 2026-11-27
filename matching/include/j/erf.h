@@ -110,19 +110,7 @@ public:
     int WriteGFFData(CExoFile* pFile, unsigned long& nSize);   // 0x004113D0
 };
 
-class CAppManager {
-public:
-    void AllocLargeTempBuffer();                    // 0x004010A0
-    char* GetLargeTempBuffer()
-    {
-        if (!m_pLargeTempBuffer) {
-            AllocLargeTempBuffer();
-        }
-        return m_pLargeTempBuffer;
-    }
-
-    char* m_pLargeTempBuffer;                       // 0x00
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

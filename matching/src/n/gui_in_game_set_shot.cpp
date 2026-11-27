@@ -32,7 +32,7 @@ public:
     CSWCModule* GetModule(); // 0x005ED530
     void EnableVideoEffect(int nEffect); // 0x005EDF10
 };
-class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 class CSWGuiPanel;
 class CGuiInGame {

@@ -219,12 +219,7 @@ public:
     unsigned char GetActivePauseState();            // 0x004AE990
 };
 
-class CAppManager {
-public:
-    void* m_p0;
-    void* m_p4;
-    CServerExoApp* m_pServerExoApp;                 // +0x08
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 
 class CVirtualMachine {

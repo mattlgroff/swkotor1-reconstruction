@@ -312,11 +312,7 @@ public:
     char pad_0x14[0xc4 - 0x14];
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 
 

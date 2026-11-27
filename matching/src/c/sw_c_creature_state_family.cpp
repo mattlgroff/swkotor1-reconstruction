@@ -372,13 +372,7 @@ public:
     CSWPartyClient* GetSWParty();
     int IsPlayerCreature(CGameObject* p);
 };
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;
-
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
 class CSWCCreature {
 public:

@@ -92,7 +92,7 @@ class CClientExoApp { public:
  CClientAIMaster* GetClientAIMaster(); CSWCDoor* GetDoorByGameObjectID(unsigned long);
  void AddObjectToHitcheckIgnoreList(unsigned long);
 };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
+#include "shared/app_manager.h"
 class CSWCMessage { public:
  unsigned long ReadOBJECTIDClient(); unsigned char ReadBYTE(int); unsigned short ReadWORD(int);
  int ReadBOOL(); float ReadFLOAT(float,int); int MessageReadOverflow(int);

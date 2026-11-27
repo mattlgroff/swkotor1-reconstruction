@@ -150,11 +150,7 @@ public:
     CSWCModule* GetModule();                    // 0x005ED530
     CClientOptions* GetClientOptions();         // 0x005ED700
 };
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 
 // Camera state captured by SaveCameraSettings for a later restore.

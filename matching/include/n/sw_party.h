@@ -95,14 +95,7 @@ public:
                             int bArg, Vector* pResult);              // 0x004AEB60
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;                               // +0x00
-    CClientExoApp* m_pClientExoApp;                   // +0x04
-    CServerExoApp* m_pServerExoApp;                   // +0x08
-
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
 
 // One 0x88-byte party slot, at party +0x24 (CSWPartyMemberData).

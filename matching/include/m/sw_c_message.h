@@ -48,12 +48,7 @@ public:
     void TogglePauseState(unsigned char nState);    // 0x004AE960
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

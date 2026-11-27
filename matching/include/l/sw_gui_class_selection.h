@@ -167,12 +167,7 @@ public:
     void DisplayMainMenu(int bShow);                // 0x005ED420
 };
 
-class CAppManager {
-public:
-    void CreateServer(int bLoad);                   // 0x00401380
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
 
 class CAurObject {

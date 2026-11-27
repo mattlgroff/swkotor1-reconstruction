@@ -166,13 +166,7 @@ public:
     class CGameObject* GetGameObject(unsigned long oid);  // 0x005ED580
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
 
 class CSWCCreature {

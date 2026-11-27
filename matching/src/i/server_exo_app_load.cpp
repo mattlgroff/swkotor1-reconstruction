@@ -2,14 +2,7 @@
 // entry points (0x004BA5B0-0x004BA918).
 #include "i/server_exo_app.h"
 
-struct CAppManager14 {
-    int m_n0;                                       // +0x00
-    int m_n4;                                       // +0x04
-    char m_pad08[0x14 - 0x08];
-    int m_bLoadError;                               // +0x14 (placeholder name)
-    char m_pad18[0x38 - 0x18];
-    unsigned long m_nLoadError;                     // +0x38 (placeholder name)
-};
+#include "shared/reentrant_server_stats.h"
 
 class CWorldTimer {
 public:
@@ -36,16 +29,7 @@ public:
     void DisableInput();                            // 0x005EDBE0
 };
 
-class CAppManager {
-public:
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                 // +0x04
-    CServerExoApp* m_pServerExoApp;                 // +0x08
-    char m_pad0c[0x14 - 0x0c];
-    CAppManager14* m_p14;                           // +0x14
-
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
 
 void PrintModuleName(const char* sName);            // 0x00401430 (placeholder name)
@@ -53,14 +37,14 @@ void PrintModuleName(const char* sName);            // 0x00401430 (placeholder n
 // FUNCTION: SWKOTOR 0x004BA5B0
 void CServerExoAppInternal::DealWithLoadGameError(unsigned long nError)
 {
-    CAppManager14* pState = g_pAppManager->m_p14;
+    CSWReentrantServerStats* pState = g_pAppManager->m_pReentrantServerStats;
     UnloadModule();
     pState->m_nLoadError = nError;
-    pState->m_bLoadError = 1;
+    pState->m_n14 = 1;
     if (g_nAppMode == 2) {
-        pState->m_bLoadError = 0;
-        pState->m_n0 = 0;
-        pState->m_n4 = 0;
+        pState->m_n14 = 0;
+        pState->m_bActive = 0;
+        pState->m_nKind = 0;
     }
     m_nServerMode = 0;
     m_bLoadingModule = 0;

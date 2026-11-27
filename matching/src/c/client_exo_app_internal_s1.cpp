@@ -232,16 +232,16 @@ public:
 // FUNCTION: SWKOTOR 0x00602C90
 void CClientExoAppInternal::UpdateConnectionStall()
 {
-    CAppPad* pPad = g_pAppManager->m_pPad;
+    CSWReentrantServerStats* pPad = g_pAppManager->m_pReentrantServerStats;
     if (pPad->m_n10 == 1) {
         pPad->m_n10 = 0;
         return;
     }
     if (pPad->m_n14 == 1) {
         pPad->m_n14 = 0;
-        pPad = g_pAppManager->m_pPad;
-        pPad->m_n00 = 0;
-        pPad->m_n04 = 0;
+        pPad = g_pAppManager->m_pReentrantServerStats;
+        pPad->m_bActive = 0;
+        pPad->m_nKind = 0;
         if (m_bConnectionStalled) {
             ShutDownToMainMenu();
         }

@@ -136,12 +136,7 @@ public:
 void AurGrassClearInfo();                           // 0x004A67A0
 #include "shared/globals.h"
 
-class CAppManager {
-public:
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                 // +0x04
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
 
 class CSWCArea;

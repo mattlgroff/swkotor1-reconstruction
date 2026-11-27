@@ -121,7 +121,7 @@ class CClientExoApp {
 public:
     CGuiInGame* GetInGameGui(); CSWCJournal* GetQuestJournal(); int SetInputClass(int nClass,int bArg);
 };
-class CAppManager { public: char pad_0x0[4]; CClientExoApp* m_pClient; CServerExoApp* m_pServer; };
+#include "shared/app_manager.h"
 
 class CSWGuiInGameMenu : public CSWGuiPanel {
 public:
@@ -217,43 +217,43 @@ void CSWGuiInGameMenu::SetActiveControlID(int nIndex,int bArg)
 // FUNCTION: SWKOTOR 0x00624C00
 void CSWGuiInGameMenu::OnShoulderLeft(CSWGuiControl* pControl)
 {
-    if (pControl->m_bDown) g_pAppManager->m_pClient->GetInGameGui()->PrevSWInGameGui();
+    if (pControl->m_bDown) g_pAppManager->m_pClientExoApp->GetInGameGui()->PrevSWInGameGui();
 }
 // FUNCTION: SWKOTOR 0x00624C30
 void CSWGuiInGameMenu::OnShoulderRight(CSWGuiControl* pControl)
 {
-    if (pControl->m_bDown) g_pAppManager->m_pClient->GetInGameGui()->NextSWInGameGui();
+    if (pControl->m_bDown) g_pAppManager->m_pClientExoApp->GetInGameGui()->NextSWInGameGui();
 }
 // FUNCTION: SWKOTOR 0x00624C60
 void CSWGuiInGameMenu::Update(float)
 {
-    if (g_pAppManager->m_pServer->GetPartyTable()->GetPartyItems()->m_nItems > 0) {
+    if (g_pAppManager->m_pServerExoApp->GetPartyTable()->GetPartyItems()->m_nItems > 0) {
         if (!m_inventory.m_border.m_bPulse) m_inventory.m_border.SetFlags(1,0,1);
     } else {
         m_inventory.m_border.SetFlags(0,0,0);
     }
-    if (g_pAppManager->m_pClient->GetQuestJournal()->HasNewEntries()) {
+    if (g_pAppManager->m_pClientExoApp->GetQuestJournal()->HasNewEntries()) {
         if (!m_journal.m_border.m_bPulse) m_journal.m_border.SetFlags(1,0,1);
     } else {
         m_journal.m_border.SetFlags(0,0,0);
     }
 }
 // FUNCTION: SWKOTOR 0x00624CF0
-void CSWGuiInGameMenu::OnEquipButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClient->GetInGameGui()->SwitchToSWInGameGui(0); }
+void CSWGuiInGameMenu::OnEquipButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClientExoApp->GetInGameGui()->SwitchToSWInGameGui(0); }
 // FUNCTION: SWKOTOR 0x00624D10
-void CSWGuiInGameMenu::OnInvButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClient->GetInGameGui()->SwitchToSWInGameGui(1); }
+void CSWGuiInGameMenu::OnInvButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClientExoApp->GetInGameGui()->SwitchToSWInGameGui(1); }
 // FUNCTION: SWKOTOR 0x00624D30
-void CSWGuiInGameMenu::OnCharButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClient->GetInGameGui()->SwitchToSWInGameGui(2); }
+void CSWGuiInGameMenu::OnCharButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClientExoApp->GetInGameGui()->SwitchToSWInGameGui(2); }
 // FUNCTION: SWKOTOR 0x00624D50
-void CSWGuiInGameMenu::OnMapButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClient->GetInGameGui()->SwitchToSWInGameGui(6); }
+void CSWGuiInGameMenu::OnMapButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClientExoApp->GetInGameGui()->SwitchToSWInGameGui(6); }
 // FUNCTION: SWKOTOR 0x00624D70
-void CSWGuiInGameMenu::OnAbiButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClient->GetInGameGui()->SwitchToSWInGameGui(3); }
+void CSWGuiInGameMenu::OnAbiButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClientExoApp->GetInGameGui()->SwitchToSWInGameGui(3); }
 // FUNCTION: SWKOTOR 0x00624D90
-void CSWGuiInGameMenu::OnJouButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClient->GetInGameGui()->SwitchToSWInGameGui(5); }
+void CSWGuiInGameMenu::OnJouButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClientExoApp->GetInGameGui()->SwitchToSWInGameGui(5); }
 // FUNCTION: SWKOTOR 0x00624DB0
-void CSWGuiInGameMenu::OnOptButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClient->GetInGameGui()->SwitchToSWInGameGui(7); }
+void CSWGuiInGameMenu::OnOptButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClientExoApp->GetInGameGui()->SwitchToSWInGameGui(7); }
 // FUNCTION: SWKOTOR 0x00624DD0
-void CSWGuiInGameMenu::OnMsgButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClient->GetInGameGui()->SwitchToSWInGameGui(4); }
+void CSWGuiInGameMenu::OnMsgButtonPressed(CSWGuiControl*) { g_pAppManager->m_pClientExoApp->GetInGameGui()->SwitchToSWInGameGui(4); }
 
 struct CFeedbackMessage { CExoString m_sText; int m_n08; unsigned char m_nType; };
 struct CDialogMessage { CExoString m_sText; CExoString m_sSpeaker; };
@@ -351,7 +351,7 @@ void CSWGuiInGameMessages::ShowFeedback()
     m_dialogList.SetEnabled(1);
     m_switchButton.m_text.SetStrRef(0xa49e);
     SetActiveControl(&m_dialogList,0);
-    g_pAppManager->m_pClient->GetInGameGui()->m_bDialogMessages = 0;
+    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bDialogMessages = 0;
     CExoString sTitle;
     {
         CExoString sSeparator(" - ");
@@ -366,7 +366,7 @@ void CSWGuiInGameMessages::ShowDialog()
     m_dialogList.SetEnabled(0);
     m_switchButton.m_text.SetStrRef(0xa49f);
     SetActiveControl(&m_feedbackList,0);
-    g_pAppManager->m_pClient->GetInGameGui()->m_bDialogMessages = 1;
+    g_pAppManager->m_pClientExoApp->GetInGameGui()->m_bDialogMessages = 1;
     CExoString sTitle;
     {
         CExoString sSeparator(" - ");
@@ -448,8 +448,8 @@ void CSWGuiInGameMessages::HandleInputEvent(int nEvent,int bDown)
             if (m_feedbackList.m_bEnabled) ShowFeedback(); else ShowDialog();
             break;
         case 0x28: case 0x2d: case 0x2e: case 0xdf:
-            if (g_pAppManager->m_pClient->GetInGameGui()->HideSWInGameGui(0))
-                g_pAppManager->m_pClient->SetInputClass(0,1);
+            if (g_pAppManager->m_pClientExoApp->GetInGameGui()->HideSWInGameGui(0))
+                g_pAppManager->m_pClientExoApp->SetInputClass(0,1);
             break;
         }
         static int s_nStep;
@@ -461,11 +461,11 @@ void CSWGuiInGameMessages::HandleInputEvent(int nEvent,int bDown)
             for (unsigned int i = 0; i < 0x11; ++i) szText[i] -= (char)(i & 3);
             {
                 CExoString sText(szText);
-                CClientExoApp* pClient = g_pAppManager->m_pClient;
+                CClientExoApp* pClient = g_pAppManager->m_pClientExoApp;
                 pClient->GetInGameGui()->AppendToMsgBuffer(sText,0x80,0);
             }
             g_bMessageCheatShown = 1;
-            g_pAppManager->m_pClient->GetInGameGui()->UpdateMessageGUI();
+            g_pAppManager->m_pClientExoApp->GetInGameGui()->UpdateMessageGUI();
         }
     }
     CSWGuiPanel::HandleInputEvent(nEvent,bDown);

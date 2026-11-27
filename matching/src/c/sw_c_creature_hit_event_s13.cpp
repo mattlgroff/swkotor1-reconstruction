@@ -155,13 +155,7 @@ public:
     CSWParty* GetParty();                           // 0x005ED8B0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
 
 // FUNCTION: SWKOTOR 0x00617EB0

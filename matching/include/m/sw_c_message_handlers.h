@@ -145,11 +145,7 @@ public:
     CSWCModule* GetModule(); // 0x005ED530
     CSWCSoundObject* GetSoundObjectByGameObjectID(unsigned long); // 0x005ED620
 };
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 class CSWCMessage {
 public:

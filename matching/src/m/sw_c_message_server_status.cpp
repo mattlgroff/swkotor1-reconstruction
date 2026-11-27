@@ -7,7 +7,7 @@ class CClientExoApp { public:
  CGuiInGame* GetGuiInGame(); void ServerModeChange(unsigned char);
  int GetGameOver(); void SetGameOver(int); int GetPlayerCharacterSet(); CExoString* GetPlayerCharacterName();
 };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 class CSWCMessage { public:
  int MessageReadOverflow(int); int MessageReadUnderflow(int);

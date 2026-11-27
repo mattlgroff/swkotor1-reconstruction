@@ -37,14 +37,7 @@ public:
     CSWSItem* GetItemByGameObjectID(unsigned long oid);     // 0x004AE760
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
 
 class CGameObject;

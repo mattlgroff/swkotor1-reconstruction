@@ -1,14 +1,6 @@
-struct CAppPad {
-    int m_n00;
-    int m_n04;
-    char pad_0x8[0xc];
-    int m_n14;
-};
+#include "shared/reentrant_server_stats.h"
 
-struct CAppManager {
-    char pad_0x0[0x14];
-    CAppPad* m_pPad;                  // +0x14
-};
+#include "shared/app_manager.h"
 
 struct CClientExoAppInternalLoadBar {
     char pad_0x0[0x18c];
@@ -23,10 +15,10 @@ void __fastcall ShutDownLoadGameLoadBar(CClientExoAppInternalLoadBar* pInternal,
     if (pInternal->m_nLoadBarState == 0)
         return;
 
-    g_pAppManager->m_pPad->m_n14 = 0;
-    CAppPad* pPad = g_pAppManager->m_pPad;
-    pPad->m_n00 = 0;
-    pPad->m_n04 = 0;
+    g_pAppManager->m_pReentrantServerStats->m_n14 = 0;
+    CSWReentrantServerStats* pPad = g_pAppManager->m_pReentrantServerStats;
+    pPad->m_bActive = 0;
+    pPad->m_nKind = 0;
     pInternal->m_nLoadBarState = 0;
 }
 

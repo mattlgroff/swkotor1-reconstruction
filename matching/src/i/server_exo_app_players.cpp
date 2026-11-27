@@ -7,10 +7,7 @@ public:
     int RemovePlayer(unsigned long nPlayerId);                      // 0x004AE650
 };
 
-class CAppManager {
-public:
-    CObjectTableManager* GetObjectTableManager(int nTable);         // 0x00401060
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 
 

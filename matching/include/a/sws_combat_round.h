@@ -111,14 +111,7 @@ public:
     CSWCParty* GetParty();                      // 0x005ED8B0
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;             // 0x4
-    CServerExoApp* m_pServerExoApp;             // 0x8
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 
 // Base time of a scheduled attack animation (0x008327DC).

@@ -443,33 +443,14 @@ public:
     void AutoLevelUpNPCs();                          // 0x00563B90
 };
 
-struct CAppPad {
-    int m_n00;                                      // 0x00
-    int m_n04;                                      // 0x04
-    char pad_0x8[0x8];
-    int m_n10;                                      // 0x10
-    int m_n14;                                      // 0x14
-};
+#include "shared/reentrant_server_stats.h"
 
 class CObjectTableManager {
 public:
     int RemovePlayer(unsigned long nPlayerId);      // 0x004AE650
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-    char pad_0xc[0x8];
-    CAppPad* m_pPad;                                // 0x14
-    unsigned long m_nApplicationId;                 // 0x18
-
-    void Unknown401280();                           // 0x00401280
-    class CObjectTableManager* GetObjectTableManager(int n);    // 0x00401060
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 extern CExoBase* g_pExoBase;                        // 0x007A39E0

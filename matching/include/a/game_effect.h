@@ -80,11 +80,7 @@ public:
     CGameObject* GetGameObject(unsigned long oid);  // 0x004AE750
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp* m_pServerExoApp;                 // 0x8
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 

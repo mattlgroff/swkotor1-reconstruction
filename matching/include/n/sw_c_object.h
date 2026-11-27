@@ -307,11 +307,7 @@ public:
     void RemoveObjectFromHitcheckIgnoreList(unsigned long oid);  // 0x005ED760
 };
 
-class CAppManager {
-public:
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
 // Object -----------------------------------------------------------------
 

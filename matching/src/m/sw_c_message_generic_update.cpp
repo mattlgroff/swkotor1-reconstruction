@@ -69,7 +69,7 @@ class CSWCObject { public:
 };
 class CGameObject { public: virtual void v00(); virtual void v04(); virtual void v08(); virtual CSWCObject* AsSWCObject(); };
 class CClientExoApp { public: CGameObject* GetGameObject(unsigned long); };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 extern const unsigned char OBJECT_TYPE_DOOR;
 class CSWCMessage { public:

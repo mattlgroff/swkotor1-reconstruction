@@ -38,7 +38,7 @@ public:
     char pad_0x4[0x1dfc];
 };
 class CClientExoApp { public: CSWGuiManager* GetSWGuiManager(); /* 0x005EDA40 */ };
-class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 class CGuiInGame {
 public:

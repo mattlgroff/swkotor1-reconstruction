@@ -165,11 +165,7 @@ public:
     int GetInputClass();                            // 0x005eda70
 };
 
-class CAppManager {
-public:
-    void* m_pServer;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
 
 class CTlkTable {

@@ -75,12 +75,7 @@ public:
     CExoString GetGUIString(unsigned long nId);     // 0x005EDEB0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
 
 class CSWCCreatureStats {
@@ -132,11 +127,6 @@ class CClientExoAppMenu : public CClientExoApp {
 public:
     unsigned long ServerToClientObjectId(unsigned long oid);  // 0x005EDA50
     CGameObject* GetGameObject(unsigned long oid);  // 0x005ED580
-};
-
-class CAppManagerMenu : public CAppManager {
-public:
-    CServerExoApp* m_pServerExoApp;                 // 0x08
 };
 
 class CSWCObject : public CGameObject {
@@ -193,8 +183,8 @@ void CSWCPlaceable::GetTargetActions(CSWCCreature* pSource, int nMenu, CSWGuiAct
             lstActions.element[nIndex].m_oidTarget = oidSelf;
             lstActions.element[nIndex].m_resIcon = "i_attack";
             unsigned long oidPlayer = ((CClientExoAppMenu*)g_pAppManager->m_pClientExoApp)->ServerToClientObjectId(
-                ((CAppManagerMenu*)g_pAppManager)->m_pServerExoApp->GetClientObjectByObjectID(
-                    ((CAppManagerMenu*)g_pAppManager)->m_pServerExoApp->GetPlayerCreatureID())->m_oidPlayer);
+                g_pAppManager->m_pServerExoApp->GetClientObjectByObjectID(
+                    g_pAppManager->m_pServerExoApp->GetPlayerCreatureID())->m_oidPlayer);
             CGameObject* pObject = ((CClientExoAppMenu*)g_pAppManager->m_pClientExoApp)->GetGameObject(oidPlayer);
             if (!pObject || !pObject->AsSWCCreature())
                 break;

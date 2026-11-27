@@ -63,11 +63,7 @@ public:
     CSWGuiManager* GetGuiManager();                 // 0x005EDA40
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

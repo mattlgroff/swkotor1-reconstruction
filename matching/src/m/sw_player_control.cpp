@@ -76,12 +76,7 @@ public:
     CSWParty* GetParty();                           // 0x005ED8B0
 };
 
-class CAppManager {
-public:
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
 
 #define OBJECT_INVALID 0x7f000000

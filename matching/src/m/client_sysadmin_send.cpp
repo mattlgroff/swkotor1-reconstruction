@@ -14,7 +14,7 @@ public:
     virtual void Slot0C();
     virtual CNetLayer* GetNetLayer(); // vtable +0x10
 };
-class CAppManager { public: char pad_0x00[4]; CClientExoApp* m_pClientExoApp; };
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 class CClientMsgSysAdmin {
 public:

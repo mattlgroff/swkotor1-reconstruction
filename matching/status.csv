@@ -2448,7 +2448,7 @@ address,name,status,diff_insns,file
 0x004B1330,CVirtualMachineCmdImplementer::~CVirtualMachineCmdImplementer,MATCH,0,matching/src/i/autosave_params.cpp
 0x004B1340,??_GCVirtualMachineCmdImplementer@@UAEPAXI@Z,MATCH,0,matching/src/i/autosave_params.cpp
 0x004B1360,CServerInfo::~CServerInfo,MATCH,0,matching/src/i/autosave_params.cpp
-0x004B13E0,CUnknown004b13e0::FUN_004b13e0,MATCH,0,matching/src/i/autosave_params.cpp
+0x004B13E0,CSWReentrantServerStats::FUN_004b13e0,MATCH,0,matching/src/i/autosave_params.cpp
 0x004B1400,KOTOR_AUTOSAVE_PARAMS::Reset,MATCH,0,matching/src/i/autosave_params.cpp
 0x004B14B0,CUnknown004b14b0::CUnknown004b14b0,MATCH,0,matching/src/i/autosave_params.cpp
 0x004B14F0,CServerExoAppInternal::GetModule,MATCH,0,matching/src/i/server_exo_app_internal.cpp

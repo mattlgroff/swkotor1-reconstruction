@@ -531,14 +531,7 @@ public:
 };
 
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
 
 class CSWGuiPazaakStart;

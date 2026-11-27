@@ -12,11 +12,7 @@ public:
     CSWPartyTable* GetPartyTable();  // 0x004AEE70
 };
 
-class CAppManager {
-public:
-    char pad_0x0[8];
-    CServerExoApp* m_pServerExoApp;  // +0x8
-};
+#include "shared/app_manager.h"
 
 class CVirtualMachine {
 public:

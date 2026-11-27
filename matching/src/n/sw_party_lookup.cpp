@@ -8,11 +8,7 @@ public:
     CSWCCreature* GetCreatureByGameObjectID(unsigned long nObject); // 0x005ED5B0
 };
 
-class CAppManager {
-public:
-    char pad_0x0[4];
-    CClientExoApp* m_pClientExoApp;                   // +0x04
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

@@ -28,7 +28,7 @@ public:
     CGuiInGame* GetInGameGui(); // 0x005ED690
     CSWParty* GetSWParty(); // 0x005ED8B0
 };
-class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 class CClientOptions { public: char pad_0x0[0x6d]; unsigned char m_nCameraMode; };
 class CSWGuiInGameInput { public: char pad_0x0[0x30]; int m_bInputActive; };

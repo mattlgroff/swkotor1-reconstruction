@@ -46,7 +46,7 @@ class CSWCAreaOfEffectObject : public CSWCObject { public:
 class CGameObjectArray { public: unsigned char AddExternalObject(unsigned long*,CGameObject*,int); };
 class CClientAIMaster { public: int AddObject(CSWCObject*); };
 class CClientExoApp { public: CSWCModule* GetModule(); CGameObjectArray* GetGameObjectArray(); CClientAIMaster* GetClientAIMaster(); };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 class CSWCMessage { public:
  unsigned long ReadOBJECTIDClient(); unsigned long ReadDWORD(int); int MessageReadOverflow(int);

@@ -6,8 +6,7 @@ symbol,demangled,address,role,uses
 ??0CSWReentrantServerStats@@QAE@XZ,public: __thiscall CSWReentrantServerStats::CSWReentrantServerStats(void),0x004010C0,defines,2
 ??_H@YGXPAXIHP6EPAX0@Z@Z,"void __stdcall `vector constructor iterator'(void *,unsigned int,int,void * (__thiscall*)(void *))",0x00401130,defines,13
 ??0CAppManager@@QAE@XZ,public: __thiscall CAppManager::CAppManager(void),0x00401160,defines,1
-?DestroyServer@CAppManager@@QAEXXZ,public: void __thiscall CAppManager::DestroyServer(void),0x00401280,defines,1
-?Unknown401280@CAppManager@@QAEXXZ,public: void __thiscall CAppManager::Unknown401280(void),0x00401280,calls,1
+?DestroyServer@CAppManager@@QAEXXZ,public: void __thiscall CAppManager::DestroyServer(void),0x00401280,defines,2
 ??1CAppManager@@QAE@XZ,public: __thiscall CAppManager::~CAppManager(void),0x004012C0,defines,1
 ?CreateServer@CAppManager@@QAEXH@Z,public: void __thiscall CAppManager::CreateServer(int),0x00401380,defines,1
 ?GetNotEnabledText@@YAPBDXZ,char const * __cdecl GetNotEnabledText(void),0x00401430,defines,1
@@ -3075,7 +3074,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ??1CVirtualMachineCmdImplementer@@UAE@XZ,public: virtual __thiscall CVirtualMachineCmdImplementer::~CVirtualMachineCmdImplementer(void),0x004B1330,defines,1
 ??_GCVirtualMachineCmdImplementer@@UAEPAXI@Z,public: virtual void * __thiscall CVirtualMachineCmdImplementer::`scalar deleting destructor'(unsigned int),0x004B1340,defines,1
 ??1CServerInfo@@QAE@XZ,public: __thiscall CServerInfo::~CServerInfo(void),0x004B1360,defines,3
-?FUN_004b13e0@CUnknown004b13e0@@QAEXK@Z,public: void __thiscall CUnknown004b13e0::FUN_004b13e0(unsigned long),0x004B13E0,defines,1
+?FUN_004b13e0@CSWReentrantServerStats@@QAEXK@Z,public: void __thiscall CSWReentrantServerStats::FUN_004b13e0(unsigned long),0x004B13E0,defines,1
 ?Reset@KOTOR_AUTOSAVE_PARAMS@@QAEHXZ,public: int __thiscall KOTOR_AUTOSAVE_PARAMS::Reset(void),0x004B1400,defines,2
 ??0CUnknown004b14b0@@QAE@XZ,public: __thiscall CUnknown004b14b0::CUnknown004b14b0(void),0x004B14B0,defines,1
 ?GetModule@CServerExoAppInternal@@QAEPAVCSWSModule@@XZ,public: class CSWSModule * __thiscall CServerExoAppInternal::GetModule(void),0x004B14F0,defines,19
@@ -7184,7 +7183,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?GetInGameGui@CClientExoApp@@QAEPAVCGuiInGame@@XZ,public: class CGuiInGame * __thiscall CClientExoApp::GetInGameGui(void),0x005ED690,defines,178
 ?GetInGameGui@CClientExoApp@@QAEPAVCSWGuiInGame@@XZ,public: class CSWGuiInGame * __thiscall CClientExoApp::GetInGameGui(void),0x005ED690,calls,33
 ?GetInGameGui@CClientExoApp@@QAEPAXH@Z,public: void * __thiscall CClientExoApp::GetInGameGui(int),0x005ED690,calls,1
-?GetNetLayer@CServerMessage@@QAEPAVCNetLayer@@XZ,public: class CNetLayer * __thiscall CServerMessage::GetNetLayer(void),0x005ED690,calls,2
+?GetNetLayer@CClientExoApp@@QAEPAVCNetLayer@@XZ,public: class CNetLayer * __thiscall CClientExoApp::GetNetLayer(void),0x005ED690,calls,2
 ?GetPlayModulePanel@CClientExoApp@@QAEPAVCSWGuiPanel@@XZ,public: class CSWGuiPanel * __thiscall CClientExoApp::GetPlayModulePanel(void),0x005ED6A0,defines,1
 ?GetClientAIMaster@CClientExoApp@@QAEPAVCClientAIMaster@@XZ,public: class CClientAIMaster * __thiscall CClientExoApp::GetClientAIMaster(void),0x005ED6B0,calls,12
 ?GetUnknown0c@CClientExoApp@@QAEPAXXZ,public: void * __thiscall CClientExoApp::GetUnknown0c(void),0x005ED6B0,defines,1
@@ -7261,9 +7260,8 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?GetGuiManager@CClientExoApp@@QAEPAVCSWGuiManager@@XZ,public: class CSWGuiManager * __thiscall CClientExoApp::GetGuiManager(void),0x005EDA40,defines,34
 ?GetGuiManager@CClientExoAppX@@QAEPAVCSWGuiManagerPanels@@XZ,public: class CSWGuiManagerPanels * __thiscall CClientExoAppX::GetGuiManager(void),0x005EDA40,calls,1
 ?GetSWGuiManager@CClientExoApp@@QAEPAVCSWGuiManager@@XZ,public: class CSWGuiManager * __thiscall CClientExoApp::GetSWGuiManager(void),0x005EDA40,calls,5
-?ServerToClientObjectId@CClientExoApp@@QAEKK@Z,public: unsigned long __thiscall CClientExoApp::ServerToClientObjectId(unsigned long),0x005EDA50,defines,48
+?ServerToClientObjectId@CClientExoApp@@QAEKK@Z,public: unsigned long __thiscall CClientExoApp::ServerToClientObjectId(unsigned long),0x005EDA50,defines,52
 ?ServerToClientObjectId@CClientExoAppMenu@@QAEKK@Z,public: unsigned long __thiscall CClientExoAppMenu::ServerToClientObjectId(unsigned long),0x005EDA50,calls,1
-?ServerToClientObjectId@CServerMessage@@QAEKK@Z,public: unsigned long __thiscall CServerMessage::ServerToClientObjectId(unsigned long),0x005EDA50,calls,4
 ?SetInputClass@CClientExoApp@@QAEHHH@Z,"public: int __thiscall CClientExoApp::SetInputClass(int,int)",0x005EDA60,defines,30
 ?SetInputClass@CClientExoApp@@QAEXHH@Z,"public: void __thiscall CClientExoApp::SetInputClass(int,int)",0x005EDA60,calls,9
 ?GetInputClass@CClientExoApp@@QAEHXZ,public: int __thiscall CClientExoApp::GetInputClass(void),0x005EDA70,calls,1
@@ -7312,7 +7310,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?SetCanSendDialog@CClientExoApp@@QAEXH@Z,public: void __thiscall CClientExoApp::SetCanSendDialog(int),0x005EDC80,defines,1
 ?GetCanSendDialog@CClientExoApp@@QAEHKKPAVCSWSDialog@@@Z,"public: int __thiscall CClientExoApp::GetCanSendDialog(unsigned long,unsigned long,class CSWSDialog *)",0x005EDC90,defines,1
 ?SetDialogSent@CClientExoApp@@QAEXH@Z,public: void __thiscall CClientExoApp::SetDialogSent(int),0x005EDCA0,defines,1
-?SetDialogModelsDirty@CServerMessage@@QAEXH@Z,public: void __thiscall CServerMessage::SetDialogModelsDirty(int),0x005EDCB0,calls,1
+?SetDialogModelsDirty@CClientExoApp@@QAEXH@Z,public: void __thiscall CClientExoApp::SetDialogModelsDirty(int),0x005EDCB0,calls,1
 ?SetDialogModelsSent@CClientExoApp@@QAEXH@Z,public: void __thiscall CClientExoApp::SetDialogModelsSent(int),0x005EDCB0,defines,1
 ?GetClientRangedAnimation@CClientExoApp@@QAEHKKHH@Z,"public: int __thiscall CClientExoApp::GetClientRangedAnimation(unsigned long,unsigned long,int,int)",0x005EDCC0,defines,1
 ?GetClientMeleeAnimation@CClientExoApp@@QAEHKKHHHH@Z,"public: int __thiscall CClientExoApp::GetClientMeleeAnimation(unsigned long,unsigned long,int,int,int,int)",0x005EDCE0,defines,1
@@ -15464,8 +15462,7 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_pToolTipGlobals@@3PAUCToolTipGlobals@@A,struct CToolTipGlobals * g_pToolTipGlobals,0x007A39F4,data,2
 ?g_pRender@@3PAVCRender@@A,class CRender * g_pRender,0x007A39F8,data,4
 ?g_pRenderWindow@@3PAVCRenderWindow@@A,class CRenderWindow * g_pRenderWindow,0x007A39F8,data,9
-?g_pAppManager@@3PAUCAppManager@@A,struct CAppManager * g_pAppManager,0x007A39FC,data,2
-?g_pAppManager@@3PAVCAppManager@@A,class CAppManager * g_pAppManager,0x007A39FC,data,2616
+?g_pAppManager@@3PAVCAppManager@@A,class CAppManager * g_pAppManager,0x007A39FC,data,2618
 ?g_pVirtualMachine@@3PAVCVirtualMachine@@A,class CVirtualMachine * g_pVirtualMachine,0x007A3A00,data,1120
 ?g_pScriptCompiler@@3PAVCScriptCompiler@@A,class CScriptCompiler * g_pScriptCompiler,0x007A3A04,data,2
 ?g_pTlkTable@@3PAVCTlkTable@@A,class CTlkTable * g_pTlkTable,0x007A3A08,data,103

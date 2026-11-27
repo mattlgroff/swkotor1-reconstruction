@@ -285,7 +285,7 @@ class CClientExoApp { public:
  class CGameObjectArray* GetGameObjectArray(); class CClientAIMaster* GetClientAIMaster();
  class CSWCModuleCamera* GetModuleCamera(); class CSWGuiManager* GetGuiManager(); // 005ED560, 005EDA40
 };
-class CAppManager { public: void* vptr; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 class CWorldTimer { public: void GetWorldTime(unsigned long*,unsigned long*);
  int SubtractWorldTimes(unsigned long,unsigned long,unsigned long,unsigned long,unsigned long*,unsigned long*); };

@@ -210,13 +210,7 @@ public:
     int GetPausedByCombat();                        // 0x005EDC10
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    void* m_pServerExoApp;                          // 0x08
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
 
 void SwitchWeaponEvent(unsigned long nEvent, const char* szEvent, CSWCCreature* pCreature);  // 0x00610F40

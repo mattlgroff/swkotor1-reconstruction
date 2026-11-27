@@ -21,11 +21,7 @@ public:
     CSWCModule* GetModule();                        // 0x005ED530
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

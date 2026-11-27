@@ -163,11 +163,7 @@ public:
     void StartCreditSequence(const Vector& vColor, const CExoString& sMovie);  // 0x005EE1C0
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
 
 class CSWGuiControl;

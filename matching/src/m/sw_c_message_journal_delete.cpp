@@ -12,11 +12,7 @@ public:
     CSWCWorldJournal* GetWorldJournal();                // 0x005ED330
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                     // +0x04
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 

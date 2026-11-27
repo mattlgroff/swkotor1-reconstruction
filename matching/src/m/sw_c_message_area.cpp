@@ -102,11 +102,7 @@ public:
     CClientExoAppInternal* m_pInternal;             // 0x04
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
 
 class CExoTimers {

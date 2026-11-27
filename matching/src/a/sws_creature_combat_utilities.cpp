@@ -40,7 +40,7 @@ public:
     CServerAIMaster* GetServerAIMaster(); // 0x004AED80
     CSWSCreature* GetCreatureByGameObjectID(unsigned long oid); // 0x004AE770
 };
-class CAppManager { public: char pad_0[8]; CServerExoApp* m_pServer; };
+#include "shared/app_manager.h"
 const unsigned long OBJECT_INVALID = 0x7f000000;
 #pragma pack(push, 4)
 class CGameEffect {
@@ -93,7 +93,7 @@ public:
     char pad_9cc[0xa74-0x9cc];
     CSWSCreatureStats* m_pStats;
 };
-static inline CServerExoApp* GetServer() { return g_pAppManager->m_pServer; }
+static inline CServerExoApp* GetServer() { return g_pAppManager->m_pServerExoApp; }
 static inline void AddEventNow(unsigned long oidCaller, unsigned long oidObject, unsigned long nEvent,
                                void* pData)
 {
@@ -196,7 +196,7 @@ void CSWSCreature::AddPureEvilPowers()
 void CSWSCreature::UnsummonMyself()
 {
     CExoString sUnused;
-    g_pAppManager->m_pServer->GetSWSMessage();
+    g_pAppManager->m_pServerExoApp->GetSWSMessage();
     ClearAllActions(1);
     CSWSArea* pArea = GetArea();
     if (pArea) {

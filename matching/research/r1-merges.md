@@ -117,6 +117,26 @@ carries a `// NOTE:` saying so (`CSWSEncounter::ReadEncounterScriptsFromGff`,
 
 Result: no match lost.
 
+## CAppManager and CSWReentrantServerStats (`shared/app_manager.h`, `shared/reentrant_server_stats.h`)
+
+213 copies of `CAppManager`. The layout and the seven out-of-line methods
+follow `d/app_misc.cpp`, the unit that defines them; the Mac tables name the
+same seven. Copies used other names for the same slots (`m_pServer`,
+`m_pClient`, `m_p0`, `GetServer()`), which `layout.py` and `fixmembers.py`
+mapped by offset. Two copies were layout views: `CAppManagerMenu`, a subclass
+that redeclared `m_pServerExoApp` "at 0x08" and was reached through a cast,
+and `dialog.cpp`'s `CServerMessage`, which was really `CClientExoApp` (the
+Mac tables name `CClientExoApp::ServerToClientObjectId`).
+
+The record at `+0x14` had six names: `CSWReentrantServerStats` (the Mac
+tables name its destructor), `CAppPad`, `CAppManager14`, `CSaveLoadStatus`
+and `CUnknown004b13e0`. They agree at every offset and are now one class of
+0x3C bytes. The save-game code reaches it through an inline accessor, which
+`CAppManager` now declares (`GetReentrantServerStats`, a descriptive name);
+without it `CServerExoAppInternal::SaveGame` allocates registers differently.
+
+Result: no match lost.
+
 ## CResRef: not merged yet (two copy behaviours)
 
 163 copies; the layout (`char m_resRef[16]`) and the method list agree with

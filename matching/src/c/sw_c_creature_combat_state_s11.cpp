@@ -39,13 +39,7 @@ public:
     CGameObject* GetGameObject(unsigned long oid);  // 0x005ED580
 };
 
-class CAppManager {
-public:
-    void* m_pServerExoApp;                          // 0x00
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 
 class CAnimationBase;

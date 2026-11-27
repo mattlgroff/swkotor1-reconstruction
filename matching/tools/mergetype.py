@@ -33,6 +33,21 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import rulecheck as rc
 
 
+def first_branch_only(text):
+    """Text with #else/#elif branches blanked, so braces are counted once."""
+    out, stack = [], []
+    for line in text.split("\n"):
+        st = line.strip()
+        if re.match(r"#\s*if", st):
+            stack.append(False)
+        elif re.match(r"#\s*(else|elif)", st) and stack:
+            stack[-1] = True
+        elif re.match(r"#\s*endif", st) and stack:
+            stack.pop()
+        out.append(" " * len(line) if any(stack) else line)
+    return "\n".join(out)
+
+
 def replace(name, header, keyword, keep, dry):
     inc = f'#include "{header}"'
     canon = (MATCHING / "include" / header).resolve()
@@ -46,11 +61,12 @@ def replace(name, header, keyword, keep, dry):
             continue
         raw = open(p, newline="").read()
         t = rc.blank(raw)
+        tb = first_branch_only(t)
         spans = []
         for m in rc.TYPE_DEF.finditer(t):
             if m.group(2) != name:
                 continue
-            depth = t[:m.start()].count("{") - t[:m.start()].count("}")
+            depth = tb[:m.start()].count("{") - tb[:m.start()].count("}")
             close = rc.match_close(t, m.end() - 1, "{", "}")
             semi = re.match(r"\s*;", t[close + 1:])
             lead = re.search(r"(typedef\s+|template\s*<[^>]*>\s*)$", t[:m.start()])

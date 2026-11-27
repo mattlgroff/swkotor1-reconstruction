@@ -47,11 +47,7 @@ public:
     int GetCreditSequenceInProgress();              // 0x005EE1E0
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
 
 // Miles Sound System (IAT 0x0073D4xx-0x0073D5xx).

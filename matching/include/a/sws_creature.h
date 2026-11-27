@@ -377,14 +377,7 @@ public:
     class CSWCCreature* GetCreatureByGameObjectID(unsigned long oid);  // 0x005ED5B0
 };
 
-class CAppManager {
-public:
-    CServerExoApp* GetServer() { return m_pServerExoApp; }  // inline accessor (changes load order)
-    CClientExoApp* GetClient() { return m_pClientExoApp; }
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x4
-    CServerExoApp* m_pServerExoApp;                 // 0x8
-};
+#include "shared/app_manager.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 inline CClientExoApp* GetClientExoApp() { return g_pAppManager->m_pClientExoApp; }
 

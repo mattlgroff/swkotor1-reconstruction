@@ -229,13 +229,7 @@ public:
     int GetPauseState(unsigned char nState);        // 0x004AE980
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
 void ResumeTimers();                                // 0x00403DE0
 

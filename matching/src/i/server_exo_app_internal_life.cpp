@@ -6,10 +6,7 @@ public:
     void ClearAll();                                                // 0x004AE5F0
 };
 
-class CAppManager {
-public:
-    CObjectTableManager* GetObjectTableManager(int nTable);         // 0x00401060
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 
 // The live server internals (placeholder name).

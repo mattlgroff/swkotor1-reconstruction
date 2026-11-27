@@ -105,11 +105,7 @@ public:
     CClientOptions* GetClientOptions();             // 0x005ED700
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;
-};
+#include "shared/app_manager.h"
 #include "shared/globals.h"
 
 class CSWCameraSettings {

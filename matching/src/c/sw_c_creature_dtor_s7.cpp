@@ -72,11 +72,7 @@ public:
     void ClearCachedCreatures(CSWCCreature* pCreature);   // 0x005EDF50
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
 #include "shared/globals.h"
 
