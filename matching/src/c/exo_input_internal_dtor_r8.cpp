@@ -85,10 +85,7 @@ public:
     char pad_0x4[0x34];
 };
 
-struct CExoInputRepeatEvent {
-    unsigned long m_nEvent;                         // 0x00
-    char pad_0x4[0x18];
-};
+#include "shared/exo_input_repeat_event.h"
 
 #include "shared/exo_input_buffered_payload.h"
 

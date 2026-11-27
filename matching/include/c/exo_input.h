@@ -176,15 +176,7 @@ struct CExoInputClass {
     CExoArrayList<unsigned long> m_aBits;           // 0x24
 };
 
-struct CExoInputRepeatEvent {
-    unsigned long m_nEvent;                         // 0x00
-    unsigned long m_nInitialDelay;                  // 0x04
-    unsigned long m_nRepeatDelay;                   // 0x08
-    unsigned long m_nUnknown0c;                     // 0x0c
-    unsigned long m_nUnknown10;                     // 0x10
-    unsigned long m_nUnknown14;                     // 0x14
-    unsigned long m_nUnknown18;                     // 0x18
-};
+#include "shared/exo_input_repeat_event.h"
 
 typedef void* HWND;
 typedef long HRESULT;
