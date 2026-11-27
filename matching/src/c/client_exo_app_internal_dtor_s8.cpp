@@ -183,10 +183,7 @@ public:
     ~CExoImeUI();                                   // 0x005F1020
 };
 
-class CSWCSaveLoad {
-public:
-    virtual ~CSWCSaveLoad();
-};
+#include "shared/swc_save_load.h"
 
 #include "shared/client_message_handler1c0.h"
 

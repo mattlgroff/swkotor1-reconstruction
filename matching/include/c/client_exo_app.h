@@ -188,13 +188,7 @@ public:
     char pad_0x4c[0xec];
 };
 
-class CSWCSaveLoad {
-public:
-    int SendPlayerToServer_06_21();                 // 0x00677E50 (CSWCMessage)
-    int SendSaveGameRequest(int a, int b, int c);   // 0x006774E0
-    int SendLoadGameRequest(int a, int b, int c);   // 0x00677560
-    void HandleMessage(unsigned char* pData, unsigned long nSize);   // 0x0066A640
-};
+#include "shared/swc_save_load.h"
 
 #include "shared/client_message_handler1c0.h"
 
