@@ -163,8 +163,6 @@ public:
 
 #include "shared/globals.h"
 
-typedef void (__cdecl* PFNCOMBINER)(unsigned int, CAurTexture*, CAurTexture*, CAurTexture*, CAurTexture*);
-extern PFNCOMBINER g_pfnCombiner;   // 0x007A47E0
 #include "shared/gl_ext.h"
 
 extern "C" __declspec(dllimport) void __stdcall glBlendFunc(unsigned int, unsigned int);
@@ -175,8 +173,6 @@ extern "C" __declspec(dllimport) void __stdcall glTexGeni(unsigned int, unsigned
 // GL enums kept in .data.
 
 
-typedef void (__cdecl* PFNCOMBINERCONST)(Vector*, float);
-extern PFNCOMBINERCONST g_pfnCombinerConst; // 0x007A6820
 
 unsigned char AurTextureEnvMapDisabled();   // 0x004204D0
 namespace GLRender {

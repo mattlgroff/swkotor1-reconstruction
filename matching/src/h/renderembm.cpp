@@ -15,6 +15,7 @@ struct CombinerCaps {
 #include "shared/gl_ext.h"
 
 #include "shared/globals.h"
+#include "shared/combiners.h"
 
 // FUNCTION: SWKOTOR 0x00470860
 void RenderEMBM(PartTriMesh* pPart)
@@ -51,12 +52,12 @@ void RenderEMBM(PartTriMesh* pPart)
                 GLRender::ActivateTextureStage(1);
                 glEnableClientState(g_eTexCoordArray);
                 GLRender::ActivateTextureStage(0);
-                g_pfnCombiner(0x1a, pMesh->m_pMaterial->m_pTexture0, pMesh->m_pMaterial->m_pTexture1, 0, 0);
+                g_pfnEnableCombiners(0x1a, pMesh->m_pMaterial->m_pTexture0, pMesh->m_pMaterial->m_pTexture1, 0, 0);
                 glEnable(g_eGLTexture3D);
                 g_pVPLightmapped->Bind(pMesh, 1);
                 SetCombinerConstant(0xf, 1.0f, 1.0f, 1.0f, 0.0f);
                 RenderFlat(pPart);
-                g_pfnCombiner(0x20, 0, 0, 0, 0);
+                g_pfnEnableCombiners(0x20, 0, 0, 0, 0);
                 GLRender::ActivateTextureStage(1);
                 glDisableClientState(g_eTexCoordArray);
                 GLRender::ActivateTextureStage(0);
@@ -64,7 +65,7 @@ void RenderEMBM(PartTriMesh* pPart)
         } else if (g_bEMBMBasePass) {
             g_pVPBase->Bind(pMesh, 1);
             glEnable(g_eGLTexture3D);
-            g_pfnCombiner(0, 0, 0, 0, 0);
+            g_pfnEnableCombiners(0, 0, 0, 0, 0);
             pMesh->m_pMaterial->BindTexture0();
             RenderFlat(pPart);
         }
@@ -85,22 +86,22 @@ void RenderEMBM(PartTriMesh* pPart)
         glDisableClientState(g_eNormalArray);
         (bLightmap ? g_pVPBumpLightmapped : g_pVPBump)->Bind(pMesh, 0);
         SetCombinerConstant(0xf, 1.0f, 0.0f, 1.0f, 0.0f);
-        g_pfnCombiner(0x1d, pMesh->m_pMaterial->m_pBumpMap, 0, 0, pMesh->m_pMaterial->m_pEnvMap);
-        g_pfnCombiner(0x18, 0, 0, 0, 0);
+        g_pfnEnableCombiners(0x1d, pMesh->m_pMaterial->m_pBumpMap, 0, 0, pMesh->m_pMaterial->m_pEnvMap);
+        g_pfnEnableCombiners(0x18, 0, 0, 0, 0);
         if (pMesh->m_pMaterial->m_fWaterAlpha < g_fOne) {
             glBlendFunc(g_aBlendFactors[0], g_aBlendFactors[1]);
             float fAlpha = pMesh->m_pMaterial->m_fWaterAlpha;
             Vector vColor(1.0f, 1.0f, 1.0f);
-            g_pfnCombinerConst(&vColor, fAlpha);
+            g_pfnSetCombinerConstant0(vColor, fAlpha);
         } else {
             glBlendFunc(g_aBlendFactors[6], g_aBlendFactors[2]);
         }
         if (g_bEMBMAdditive)
             glBlendFunc(g_aBlendFactors[2], g_aBlendFactors[3]);
         RenderFlat(pPart);
-        g_pfnCombiner(0, 0, 0, 0, 0);
-        g_pfnCombiner(0xd, 0, 0, 0, 0);
-        g_pfnCombiner(0x1c, 0, 0, 0, 0);
+        g_pfnEnableCombiners(0, 0, 0, 0, 0);
+        g_pfnEnableCombiners(0xd, 0, 0, 0, 0);
+        g_pfnEnableCombiners(0x1c, 0, 0, 0, 0);
         if (g_bARBVertexProgram) {
             glDisableVertexAttribArrayARB(0xc);
             glDisableVertexAttribArrayARB(0xd);
@@ -116,7 +117,7 @@ void RenderEMBM(PartTriMesh* pPart)
     if (bFog) {
         glEnable(g_eGLFog);
         glBlendFunc(g_aBlendFactors[0], g_aBlendFactors[1]);
-        g_pfnCombiner(2, pMesh->m_pMaterial->m_pTexture0, 0, 0, 0);
+        g_pfnEnableCombiners(2, pMesh->m_pMaterial->m_pTexture0, 0, 0, 0);
         glEnable(g_eGLTexture3D);
         g_pVPFog->Bind(pMesh, 0);
         RenderFlat(pPart);
@@ -124,7 +125,7 @@ void RenderEMBM(PartTriMesh* pPart)
     glPopAttrib();
     SetCombinerConstant(0xf, 1.0f, 1.0f, 1.0f, 0.0f);
     glDisable(g_eGLTexture3D);
-    g_pfnCombiner(0, 0, 0, 0, 0);
+    g_pfnEnableCombiners(0, 0, 0, 0, 0);
     glEnable(g_eGLTexture2D);
     glBlendFunc(g_aBlendFactors[0], g_aBlendFactors[1]);
 }

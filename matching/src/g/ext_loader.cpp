@@ -28,22 +28,20 @@ typedef const char*(__stdcall* PFNWGLGETEXTENSIONSSTRINGARB)(void* hDC);
 
 // GL / WGL extension entry points (function-pointer globals).
 #include "shared/globals.h"
+#include "shared/combiners.h"
 
 // Capability bits, one global mask per extension.
 
 
-typedef void (*CombinerFn)();
-typedef void (*CombinerConstantFn)(float* pColor);
-extern CombinerFn g_pfnEnableCombiners;         // 0x007a47e0
-extern CombinerConstantFn g_pfnSetCombinerConstant0;    // 0x007a6820
-extern CombinerConstantFn g_pfnSetCombinerConstant1;    // 0x007a47dc
 
-void EnableCombinersATI();                      // 0x0047a2f0
-void SetCombinerConstant0ATI(float* pColor);    // 0x0047a280
-void SetCombinerConstant1ATI(float* pColor);    // 0x0047a2a0
-void EnableCombiners();                         // 0x0042e600
-void SetCombinerConstant0(float* pColor);       // 0x00424940
-void SetCombinerConstant1(float* pColor);       // 0x00424960
+void EnableFragmentShaders(int nMode, CAurTexture* pTex0, CAurTexture* pTex1, CAurTexture* pTex2,
+                           CAurTexture* pTex3);                         // 0x0047a2f0
+void SetFragmentShaderConstant0(const Vector& vColor, float fAlpha);    // 0x0047a280
+void SetFragmentShaderConstant1(const Vector& vColor, float fAlpha);    // 0x0047a2a0
+void EnableCombiners(int nMode, CAurTexture* pTex0, CAurTexture* pTex1, CAurTexture* pTex2,
+                     CAurTexture* pTex3);                               // 0x0042e600
+void SetCombinerConstant0(const Vector& vColor, float fAlpha);       // 0x00424940
+void SetCombinerConstant1(const Vector& vColor, float fAlpha);       // 0x00424960
 
 bool __cdecl AurCheckExtension(char* szName, const char* szList);  // 0x0045f980
 int AurHasAnisotropy();                         // 0x0045f8e0
@@ -343,9 +341,9 @@ void LoadExtensions()
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &g_fMaxAnisotropy);
     InitAttenuationTexture();
     if ((g_nGLCaps & g_nCap_GL_ATI_fragment_shader) == g_nCap_GL_ATI_fragment_shader) {
-        g_pfnEnableCombiners = EnableCombinersATI;
-        g_pfnSetCombinerConstant0 = SetCombinerConstant0ATI;
-        g_pfnSetCombinerConstant1 = SetCombinerConstant1ATI;
+        g_pfnEnableCombiners = EnableFragmentShaders;
+        g_pfnSetCombinerConstant0 = SetFragmentShaderConstant0;
+        g_pfnSetCombinerConstant1 = SetFragmentShaderConstant1;
         g_szProgramText0 =
             new char[strlen(g_szVertexProgram0) + strlen(g_szProgramSuffixATI) + 1];
         g_szProgramText1 =
