@@ -17,13 +17,7 @@ __declspec(dllimport) void __stdcall glVertex4f(float x, float y, float z, float
 
 void AurTextureRelease(CAurObject* pTexture);   // 0x00420D70
 
-class GUIVector {
-public:
-    float x, y, z;
-
-    GUIVector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    GUIVector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/gui_vector.h"
 
 struct CAurFontInfo {
     int m_n0;
