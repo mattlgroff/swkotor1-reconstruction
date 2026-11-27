@@ -27,11 +27,7 @@ CClientStringRecord::~CClientStringRecord()
 {
 }
 
-struct CNearestStruct {
-    unsigned long m_oidObject;                      // 0x00
-    float m_fDistance;                              // 0x04
-    unsigned long m_nType;                          // 0x08
-};
+#include "shared/nearest_struct.h"
 
 typedef int (*NearestCompareFn)(unsigned long nKey, CNearestStruct cEntry);
 

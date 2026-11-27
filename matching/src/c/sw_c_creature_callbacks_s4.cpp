@@ -23,10 +23,7 @@ struct CAurPath {
     unsigned long m_n8;                             // 0x08
 };
 
-struct CNearestStruct {
-    unsigned long m_oidObject;                      // 0x00
-    float m_fDistance;                              // 0x04
-};
+#include "shared/nearest_struct.h"
 
 // FUNCTION: SWKOTOR 0x00604B50
 void RoomSoundEvent(CAurObject*, char*, CSWBehaviorAttachSound* pSound)
