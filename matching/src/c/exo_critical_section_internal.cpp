@@ -1,8 +1,6 @@
 // CExoCriticalSectionInternal: a CRITICAL_SECTION wrapper (b005e0_exo_foundation_leaves).
 
-struct _RTL_CRITICAL_SECTION {
-    char data[0x18];
-};
+#include "shared/_rtl_critical_section.h"
 
 extern "C" {
 __declspec(dllimport) void __stdcall InitializeCriticalSection(_RTL_CRITICAL_SECTION* p);  // IAT 0x0073D178
