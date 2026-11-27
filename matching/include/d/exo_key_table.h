@@ -154,7 +154,6 @@ public:
     CExoString& GetResourceExtension(unsigned short nType);  // 0x005e6660
 };
 
-extern CExoBase* g_pExoBase;                // 0x007a39e0
 
 class CExoStringList {
 public:

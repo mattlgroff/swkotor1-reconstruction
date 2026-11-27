@@ -240,7 +240,6 @@ public:
 };
 
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class CSWMiniBulletInfo;
 

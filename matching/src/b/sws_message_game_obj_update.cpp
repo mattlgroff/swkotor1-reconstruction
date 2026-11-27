@@ -15,7 +15,7 @@ public:
     CExoTimers* m_pcExoTimers;                              // 0x4
 };
 
-extern CExoBase* g_pExoBase;                                // 0x007A39E0
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00578200
 int CSWSMessage::SendServerToPlayerGameObjUpdate(CSWSPlayer* pPlayer, unsigned long oidArg)

@@ -31,7 +31,6 @@ public:
     MaxTree* ReadSync(char* szName, int nFlags);    // 0x004A15D0
 };
 
-extern Model* g_pLoadingModel;              // 0x007FBAE4
 
 static inline Model* GetLoadedModel(MaxTree* pTree)
 {

@@ -188,8 +188,6 @@ typedef void (__stdcall* PFNPROGRAMPARAMETER)(unsigned int, unsigned int, float,
 extern PFNPROGRAMPARAMETER g_pfnProgramEnvParameter4fARB;  // 0x007BB850
 extern PFNPROGRAMPARAMETER g_pfnProgramParameter4fNV;      // 0x007BB7AC
 
-extern Scene* g_pScene;                         // 0x007B92A0
-extern Camera* g_pRenderCamera;           // 0x007BB4E8
 #include "shared/globals.h"
 
 static inline void SetVertexProgramParameter(unsigned int nIndex, float x, float y, float z, float w)

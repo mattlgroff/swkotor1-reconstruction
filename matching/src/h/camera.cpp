@@ -335,7 +335,7 @@ GobAttachment* Camera::GetAttachment(int index) { return Gob::GetAttachment(inde
 void Camera::SetAttachment(GobAttachment* p) { Gob::SetAttachment(p); }
 
 // The camera currently being rendered (0x007BB4E8).
-extern Camera* g_pRenderCamera;
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0045BEA0
 void Camera::Render(int bPropagate)

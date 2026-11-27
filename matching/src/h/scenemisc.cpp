@@ -51,7 +51,6 @@ void BSPTraverse(BSPNode* pNode, void (*pfn)(BSPNode*, LightScene*),
 void UpdateRoomLights(BSPNode* pNode, LightScene* pScene);  // 0x0046B790
 
 #include "shared/globals.h"
-extern CExoArrayList<Bin*> g_lActiveBins;      // 0x007FBF9C
 extern int g_n7FBF2C;
 
 // FUNCTION: SWKOTOR 0x0046A620

@@ -42,7 +42,6 @@ public:
     int GetProperty0x144();                         // 0x005D64E0
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 #include "shared/globals.h"
 
 class CWorldTimer {

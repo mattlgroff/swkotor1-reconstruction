@@ -389,7 +389,6 @@ public:
     virtual void SetGamma(float f, int bApply); // 0x24
 };
 
-extern CExoSound* g_pExoSound;      // 0x007a39ec
 
 // FUNCTION: SWKOTOR 0x00401d90
 void __cdecl AppDeactivate()

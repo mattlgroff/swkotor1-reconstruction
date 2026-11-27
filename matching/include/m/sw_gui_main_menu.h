@@ -41,7 +41,6 @@ public:
     CExoAliasList* m_pAliasList;                    // 0x0c
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 #include "shared/globals.h"
 
 template <class T>
@@ -161,7 +160,6 @@ public:
     void SetSoundMode(int nMode);                   // 0x005D5E80
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class CExoIni {
 public:

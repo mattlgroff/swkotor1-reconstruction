@@ -149,7 +149,6 @@ public:
     CExoAliasList* m_pcExoAliasList; // 0x0c
 };
 
-extern CExoBase* g_pExoBase;        // 0x007a39e0
 
 class CSWGuiFadePanel;
 

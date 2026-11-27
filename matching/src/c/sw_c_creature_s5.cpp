@@ -19,7 +19,6 @@ public:
                            unsigned long a, unsigned long b, unsigned long c, float fPitch);   // 0x005D5E10
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 struct CSWBaseItemData {
     char pad_0x0[0x8c];

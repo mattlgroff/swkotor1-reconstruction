@@ -511,7 +511,6 @@ public:
     char pad_0x0[0x4];
     CExoTimers* m_pcExoTimers;                      // 0x4
 };
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 struct CSWFeat {
     char pad_0x0[0x4];

@@ -111,7 +111,7 @@ public:
     char pad_0x0[0xc];
     CExoAliasList* m_pcExoAliasList;                // 0x0c
 };
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
+#include "shared/globals.h"
 
 class CExoFile {
 public:

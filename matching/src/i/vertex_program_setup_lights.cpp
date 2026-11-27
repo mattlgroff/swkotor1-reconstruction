@@ -27,7 +27,6 @@ public:
     Quaternion m_qOrientation;                      // +0x88
 };
 
-extern Camera* g_pRenderCamera;                     // 0x007BB4E8
 #include "shared/globals.h"
 extern void(__stdcall* g_pfnProgramEnvParameter4fARB)(unsigned int, unsigned int, float, float, float,
                                                       float);  // 0x007BB850

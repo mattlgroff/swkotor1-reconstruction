@@ -73,7 +73,6 @@ class CExoSound {
 public:
     void SetMusicState(int nState);                                 // 0x005D5E80
 };
-extern CExoSound* g_pExoSound;                                      // 0x007A39EC
 
 #include "shared/app_manager.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }

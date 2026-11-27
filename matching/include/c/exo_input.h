@@ -298,7 +298,6 @@ struct DIPROPSTRING {
 
 #define DIPROP_KEYNAME (*(const _GUID*)20)
 
-extern CExoBase* g_pExoBase;                  // 0x007A39E0
 
 class CExoRawInputInternal {
 public:

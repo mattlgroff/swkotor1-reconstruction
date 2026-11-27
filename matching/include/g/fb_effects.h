@@ -170,12 +170,6 @@ void _glBlendFunc(int nSrc, int nDst);      // 0x00401670
 #include "shared/globals.h"
 int AurGLCaps7E0();                         // 0x0045f7e0
 
-extern unsigned int g_nPowerWidth;          // 0x007a6890
-extern unsigned int g_nPowerHeight;         // 0x007a6894
-extern CAurTexture* g_pDistortionTexture;   // 0x007a68d8
-extern unsigned int g_nBloomRamp0;                   // 0x007a6864
-extern unsigned int g_nBloomRamp1;                   // 0x007a6868
-extern unsigned int g_nBloomRamp2;                   // 0x007a686c
 // The per-channel colour textures (lane: glRed/Green/BlueTexture) that the
 // convolution passes feed the shader instead of the bloom ramps.
 

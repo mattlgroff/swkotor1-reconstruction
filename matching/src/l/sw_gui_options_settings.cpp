@@ -11,7 +11,6 @@ public:
     void SetSoundEffectVolume(float fVolume);       // 0x005D5CD0
     void SetDialogVolume(float fVolume);            // 0x005D5D50
 };
-extern CExoSound* g_pExoSound; // 0x007A39EC
 
 class CRenderWindow {
 public:

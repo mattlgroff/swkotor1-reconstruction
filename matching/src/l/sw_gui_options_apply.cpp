@@ -29,7 +29,6 @@ public:
     void ReInitialize(unsigned long nQuality, unsigned long bHardware); // 0x005D63F0
     unsigned long GetProperty0x100(); // 0x005D6450 (current sound quality)
 };
-extern CExoSound* g_pExoSound; // 0x007A39EC
 
 class CRenderWindow {
 public:

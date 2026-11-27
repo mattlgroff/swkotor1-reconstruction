@@ -89,8 +89,6 @@ extern PFNGLCOLORFRAGMENTOP3ATI glColorFragmentOp3ATI;          // 0x007bb7fc
 extern PFNGLALPHAFRAGMENTOP3ATI glAlphaFragmentOp3ATI;          // 0x007bb680
 
 #include "shared/globals.h"
-extern unsigned int g_nPowerWidth;                       // 0x007a6890
-extern unsigned int g_nPowerHeight;                      // 0x007a6894
 
 int AurSoftShadowsAvailable();                  // 0x0045f7b0
 int AurATISoftShadowsAvailable();               // 0x0045f7e0

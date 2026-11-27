@@ -92,7 +92,6 @@ public:
     unsigned short GetResTypeFromExtension(const CExoString& sExtension);   // 0x005E6670
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 typedef void (*ERFProgressCallback)(int nCurrent, int nTotal, void* pParam1, void* pParam2);
 

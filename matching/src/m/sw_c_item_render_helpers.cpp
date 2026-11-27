@@ -45,7 +45,6 @@ class CClientExoApp { public: CResRef GetItemDropSound(unsigned char);
 };
 #include "shared/app_manager.h"
 class CExoSound { public: int PlayOneShotSound(const CResRef&,unsigned char,unsigned long,unsigned char,float,float); };
-extern CExoSound* g_pExoSound;
 class CSWCObject { public: virtual ~CSWCObject(); char pad_004[8]; int m_nBaseItem; };
 class CSWItem { public:
  virtual void v00();

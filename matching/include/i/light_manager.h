@@ -283,7 +283,6 @@ public:
     char pad_0x0[0x7c];
     Vector m_vPosition;                                 // +0x7c
 };
-extern Camera* g_pRenderCamera;                   // 0x007BB4E8
 void AurDisableHeadLight();                             // 0x0044DA80
 
 int __cdecl LightCompare(const void* a, const void* b); // 0x004A28C0 (placeholder name)

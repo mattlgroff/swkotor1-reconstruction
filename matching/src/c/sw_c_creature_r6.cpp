@@ -521,7 +521,6 @@ public:
                            float, float);   // 0x005D5E10
 };
 
-extern CExoSound* g_pExoSound;              // 0x007A39EC
 
 
 // FUNCTION: SWKOTOR 0x0060B8A0

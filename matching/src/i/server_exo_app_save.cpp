@@ -48,7 +48,6 @@ class CExoSound {
 public:
     void StopAllOneShots();                                         // 0x005D5E70
 };
-extern CExoSound* g_pExoSound;                                      // 0x007A39EC
 
 #include "shared/app_manager.h"
 #include "shared/globals.h"

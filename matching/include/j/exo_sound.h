@@ -27,7 +27,6 @@ public:
     CExoTimers* m_pcExoTimers;                      // 0x04
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 // Miles Sound System 3D listener API (IAT 0x0073D4A4-0x0073D4B0).
 typedef void* HPROVIDER;
@@ -309,6 +308,5 @@ public:
     CExoSoundInternal* m_pInternal;                 // 0x00
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 #endif

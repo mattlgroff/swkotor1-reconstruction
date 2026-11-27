@@ -102,7 +102,6 @@ public:
     char pad_0x88[0xc];
     float m_fAlpha;                                 // +0x94
 };
-extern Camera* g_pRenderCamera;                     // 0x007BB4E8
 int BoxIntersect(Vector* pStart, Vector* pEnd, Vector* pMin, Vector* pMax);    // 0x004AA610
 int PolyHit(Vector* pVerts, int nVerts, Vector* pStart, Vector* pEnd,
             Vector* pHit, Vector* pNormal);         // 0x004AB9D0

@@ -146,7 +146,7 @@ public:
     CExoArrayList<LmRoom*> m_lRooms;    // +0xc8
 };
 
-extern Scene* g_pScene;               // 0x007B92A0
+#include "shared/globals.h"
 
 class LightManager {
 public:

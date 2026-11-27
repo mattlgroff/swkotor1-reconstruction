@@ -33,9 +33,6 @@ public:
 extern void* g_hWnd;                        // 0x007a39d8
 
 
-extern unsigned int g_nBloomRamp0;          // 0x007a6864
-extern unsigned int g_nBloomRamp1;          // 0x007a6868
-extern unsigned int g_nBloomRamp2;          // 0x007a686c
 
 
 

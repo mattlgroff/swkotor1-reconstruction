@@ -131,7 +131,6 @@ public:
     Material* m_pMaterial;          // +0x44
 };
 
-extern CExoArrayList<Bin*> g_lActiveBins;       // 0x007FBF9C
 #include "shared/globals.h"
 
 class TileLink {

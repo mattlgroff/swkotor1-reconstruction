@@ -33,11 +33,13 @@ class CAurTextureBasic;
 class CAuroraInterface;
 class CDeletable;
 class CEncounterPointsTable;
+class CExoBase;
 class CExoFileThread;
 class CExoInput;
 class CExoLinkedListInternal;
 class CExoMoviePlayerInternal;
 class CExoResMan;
+class CExoSound;
 class CExoString;
 struct CFrameInfoLine;
 class CHitInfo;
@@ -56,6 +58,7 @@ class CServerExoAppInternal;
 class CTlkTable;
 struct CToolTipGlobals;
 class CVirtualMachine;
+class Camera;
 class CapPart;
 struct CombinerCaps;
 class ConsoleFunc;
@@ -1225,8 +1228,10 @@ extern void* g_hWindow;  // 0x007a39d4
 extern void* g_hMainWindow;  // 0x007a39d8
 extern void* g_hRenderWindow;  // 0x007a39d8
 extern unsigned char g_nAppMode;  // 0x007A39DC (1: client)
+extern CExoBase* g_pExoBase;                        // 0x007A39E0
 extern CExoInput* g_pExoInput;  // 0x007a39e4
 extern CExoResMan* g_pExoResMan;  // 0x007A39E8
+extern CExoSound* g_pExoSound;                      // 0x007A39EC
 extern CAuroraInterface* g_pAuroraInterface;  // 0x007A39F0 (descriptive)
 extern CSWGuiManager* g_pGuiManager;  // 0x007A39F4
 extern CToolTipGlobals* g_pToolTipGlobals;  // 0x007A39F4
@@ -1324,6 +1329,9 @@ extern void* g_hGLContext;  // 0x007a6854
 extern float g_fMaxAnisotropy;  // 0x007a6858
 extern int g_nAnisotropyRequested;  // 0x007a685c
 extern char g_bFrameBufferActive;  // 0x007a6860
+extern unsigned int g_nBloomRamp0;                   // 0x007a6864
+extern unsigned int g_nBloomRamp1;                   // 0x007a6868
+extern unsigned int g_nBloomRamp2;                   // 0x007a686c
 extern unsigned int g_nColorRamp0;  // 0x007a6870
 extern unsigned int g_nColorRamp1;  // 0x007a6874
 extern unsigned int g_nColorRamp2;  // 0x007a6878
@@ -1336,6 +1344,8 @@ extern float g_fFogDistance;  // 0x007a6884
 extern float g_fSaturation;  // 0x007a6884
 extern int g_nAntiAliasingMode;  // 0x007a6888
 extern const char* g_szWGLExtensions;  // 0x007a688c
+extern unsigned int g_nPowerWidth;          // 0x007a6890
+extern unsigned int g_nPowerHeight;         // 0x007a6894
 extern int g_nActiveTextureStage;  // 0x007a6898
 extern unsigned int g_nActiveTextureUnit;  // 0x007A6898
 extern int g_nCurrentStage;  // 0x007a6898
@@ -1351,6 +1361,7 @@ extern void* g_hBloomContext;  // 0x007a68cc
 extern int g_nFilmNoiseTexture;  // 0x007a68d0
 extern CAurTexture* g_pFilmNoiseTexture;  // 0x007a68d0
 extern unsigned int g_nDistortionProgram;  // 0x007a68d4
+extern CAurTexture* g_pDistortionTexture;   // 0x007a68d8
 extern int g_bShadowTwoSidedStencil;  // 0x007a68dc
 extern int g_bShadowNoClip;  // 0x007a68e0
 extern unsigned int g_nSaturationProgram;  // 0x007a68e4
@@ -1440,6 +1451,7 @@ extern Scene* g_pActiveScene;  // 0x007B92A0 (placeholder name)
 extern Scene* g_pAnimatingScene;  // 0x007B92A0
 extern CApp* g_pApp;  // 0x007B92A0
 extern CombinerCaps* g_pCombinerCaps;  // 0x007B92A0
+extern Scene* g_pScene;                         // 0x007B92A0
 extern int g_bPauseFlag;  // 0x007B92AC
 extern float g_fMeshBucketSeconds;  // 0x007B92B0, descriptive
 extern float g_fBinBucketSeconds;  // 0x007B92B4, descriptive
@@ -1494,6 +1506,7 @@ extern int g_nGUIBatchTexture;  // 0x007BB4D8
 extern CAurGUIImageData* g_pGUIBatchData;  // 0x007BB4DC
 extern unsigned char g_bGUIBatchTriangles;  // 0x007BB4E0
 extern EnvMapSource* g_pEnvMapSource;  // 0x007BB4E8
+extern Camera* g_pRenderCamera;                   // 0x007BB4E8
 extern int g_bImageDecodeDisabled;  // 0x007BB510
 extern void* glGetVariantPointervEXT;  // 0x007bb524
 extern void* glGenProgramsARB;  // 0x007bb528
@@ -1667,6 +1680,7 @@ extern int g_bGLExtension860;  // 0x007BB860
 extern unsigned int g_nLookUpTexture;  // 0x007bb868
 extern unsigned char g_aDistortImage[];  // 0x007BB870
 extern MaxTree* g_pCurrentTree;  // 0x007FBAE4
+extern Model* g_pLoadingModel;   // 0x007FBAE4
 extern int g_nControllers;  // 0x007FBAE8
 extern int g_bNoGobCulling;  // 0x007FBF20
 extern int g_nHitMask;  // 0x007FBF48
@@ -1679,6 +1693,7 @@ extern int g_bShowWalkMesh;  // 0x007FBF5C, descriptive
 extern int g_nLastObjectRoom;  // 0x007FBF68
 extern CExoArrayList<void*> g_lSceneLights;  // 0x007FBF78
 extern CExoArrayList<CapPart*> g_lStaticMeshes;  // 0x007FBF84
+extern CExoArrayList<Bin*> g_lActiveBins;       // 0x007FBF9C
 extern CExoArrayList<Part*> g_lAllMeshParts;  // 0x007FBFB4
 extern CExoArrayList<void*> g_lSceneObjects;  // 0x007FBFCC
 extern CExoArrayList<BSPNode*> g_lLightTiles;  // 0x007FBFE4

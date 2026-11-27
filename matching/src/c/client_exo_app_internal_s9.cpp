@@ -108,7 +108,6 @@ public:
     void SetListenerPosition(const Vector& vPosition);  // 0x005D5DF0
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class CSWCameraOnAStick {
 public:

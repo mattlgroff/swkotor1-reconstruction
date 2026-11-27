@@ -148,8 +148,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern Scene* g_pScene;                         // 0x007B92A0
-extern Camera* g_pRenderCamera;           // 0x007BB4E8
 extern CExoArrayList<Gob*> g_l7FBF90;           // 0x007FBF90 blur bucket
 
 static inline float ReadFloat(const float& f)

@@ -11,7 +11,7 @@ class CExoSound {
 public:
     void SetMusicVolume(float fVolume, int bArg);           // 0x005D5C50
 };
-extern CExoSound* g_pExoSound;                              // 0x007A39EC
+#include "shared/globals.h"
 
 class CSWGuiInGame {
 public:

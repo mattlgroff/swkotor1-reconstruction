@@ -27,7 +27,7 @@ public:
                            float fVariance);        // 0x005D5E10
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
+#include "shared/globals.h"
 
 class CExoSoundSource {
 public:

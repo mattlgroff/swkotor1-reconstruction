@@ -181,7 +181,6 @@ class CClientExoApp { public:
 };
 #include "shared/app_manager.h"
 class CExoSound { public: int PlayOneShotSoundAt(const CResRef&,Vector,float,unsigned long,unsigned long,unsigned long,unsigned long,unsigned long); };
-extern CExoSound* g_pExoSound;
 void SwitchWeaponEvent(unsigned long,const char*,CSWCCreature*); // descriptive 0x00610F40
 class CSWCMessage {
 public: unsigned long ReadOBJECTIDClient(); int ReadBOOL(); unsigned long ReadDWORD(int);

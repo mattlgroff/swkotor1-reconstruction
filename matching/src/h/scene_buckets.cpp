@@ -496,7 +496,6 @@ typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int texture);
 
 extern PFNCLIENTACTIVETEXTURE glClientActiveTextureARB; // 0x007BB6B0
 extern CExoArrayList<TriangleBin*> g_l80AA68;   // 0x0080AA68 triangle bins
-extern Camera* g_pRenderCamera;
 // File-scope in the original scene unit: MSVC knows no pointer aliases
 // them, so it delays the high-dword stores past member loads.
 static __int64 g_nAnimStartTime;               // 0x007B9298
@@ -508,7 +507,6 @@ typedef void (__stdcall* PFNPROGRAMPARAMETER)(unsigned int target, unsigned int 
                                               float x, float y, float z, float w);
 extern PFNPROGRAMPARAMETER g_pfnProgramEnvParameter4fARB;  // 0x007BB850
 extern PFNPROGRAMPARAMETER g_pfnProgramParameter4fNV;      // 0x007BB7AC
-extern CAurTexture* g_pDistortionTexture;              // 0x007A68D8
 extern CExoArrayList<Gob*> g_l7FBFCC;           // 0x007FBFCC gob bucket
 
 CExoArrayList<int>* AurTextureGetOrdering();     // 0x00421970

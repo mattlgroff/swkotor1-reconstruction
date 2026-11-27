@@ -663,7 +663,6 @@ public:
     char m_pad0[0xc];
     CExoAliasList* m_pcExoAliasList;                // +0x0c
 };
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 extern "C" __declspec(dllimport) int __stdcall DeleteFileA(const char* lpFileName);
 

@@ -508,7 +508,6 @@ public:
                          float fFixedVariance, float fPitchVariance);  // 0x005D5E00
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class CSWPartyTable {
 public:

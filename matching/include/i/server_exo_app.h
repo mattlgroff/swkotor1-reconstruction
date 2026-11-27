@@ -401,7 +401,6 @@ public:
     CExoDebug* m_pcExoDebug;                        // +0x08
     CExoAliasList* m_pcExoAliasList;                // +0x0c
 };
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 class CSWSCreatureStats {
 public:

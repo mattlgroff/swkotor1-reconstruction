@@ -90,7 +90,6 @@ public:
     int NoCompress() { return (m_nFlags >> 9) & 1; }
 };
 
-extern Model* g_pLoadingModel;   // 0x007FBAE4
 
 // NONMATCH (99 insns): first draft. The original keeps the zero in ebp,
 // copies the time value through an integer register, tests the model flag

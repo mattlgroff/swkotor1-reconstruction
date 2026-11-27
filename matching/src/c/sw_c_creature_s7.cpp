@@ -64,7 +64,6 @@ public:
     void GetPriorityGroupInfo(unsigned long nGroup, float* pMinDistance, float* pMaxDistance);   // 0x005D64B0
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class C2DA {
 public:

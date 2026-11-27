@@ -739,7 +739,6 @@ public:
                            unsigned long a, unsigned long b, unsigned long c, float fPitch);   // 0x005D5E10
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
 extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638

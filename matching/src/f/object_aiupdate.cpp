@@ -27,7 +27,6 @@ public:
     CExoTimers *m_pcExoTimers;       // +0x4
 };
 
-extern CExoBase *g_pExoBase;
 
 class CWorldTimer {
 public:

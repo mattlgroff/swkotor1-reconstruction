@@ -23,7 +23,6 @@ public:
                            unsigned char, float, float);             // 0x005D5E10
 };
 
-extern CExoSound* g_pExoSound;                                       // 0x007A39EC
 
 class C2DA {
 public:

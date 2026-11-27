@@ -24,7 +24,6 @@ public:
     CExoDebug* m_pcExoDebug;                                // 0x08
 };
 
-extern CExoBase* g_pExoBase;                                // 0x007A39E0
 #include "shared/globals.h"
 
 // Stripped debug output: the arguments are still evaluated.

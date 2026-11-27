@@ -100,7 +100,6 @@ public:
     void DoHighlightTriggers(unsigned char bFlag);  // Scene vtable +0x118
 };
 
-extern Camera* g_pRenderCamera;           // 0x007BB4E8
 #include "shared/globals.h"
 extern CExoArrayList<TriggerPart*> g_l80AA74;   // 0x0080AA74 trigger parts
 
