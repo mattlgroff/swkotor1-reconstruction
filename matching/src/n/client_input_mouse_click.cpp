@@ -11,13 +11,7 @@ public:
     virtual CDefaultActionTarget* AsDefaultActionTarget(); // +0x0C
 };
 #pragma pack(push,4)
-struct CDefaultAction {
-    char pad_0x0[8];
-    unsigned long m_nArgument;
-    void (CDefaultActionTarget::*m_pfnAction)(unsigned long nArgument,CSWCCreature* pPlayer);
-    char pad_0x14[8];
-    unsigned long m_oidTarget;
-};
+#include "shared/default_action.h"
 #pragma pack(pop)
 class CPlayerControl { public: void ShowAction(); /* 0x00689D80 */ };
 class CGuiInGame { public: char pad_0x0[0x90]; CPlayerControl* m_pPlayerControl; char pad_0x94[0x20]; int m_bB4; void SetCombatMessage(unsigned long message); /* 0x0062B110 */ };

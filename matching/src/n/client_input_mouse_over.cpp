@@ -23,7 +23,7 @@ public:
     char pad_0x0[0x30]; int m_bInputActive; char pad_0x34[0x5c]; CSWGuiMainInterface* m_pMainInterface;
     char pad_0x94[0x20]; int m_nGlobalDialogState;
 };
-struct CDefaultAction { char pad_0x0[8]; int m_nAction; };
+#include "shared/default_action.h"
 int CompareObjectIds(const void* a,const void* b); // 0x0061FA90
 class CObjectIdList {
 public:
@@ -81,7 +81,7 @@ void CClientExoAppInternal::HandleMouseOver(unsigned long oid,const Vector& vPos
             SetMouseCursor(0x2d,0,0);
             return;
         }
-        if (pFirst) nCursor = GetDefaultActionCursor(pFirst->m_nAction,bMultiple);
+        if (pFirst) nCursor = GetDefaultActionCursor(pFirst->m_nArgument,bMultiple);
         SetMouseCursor(nCursor,0,nDown);
     }
 }
