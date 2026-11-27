@@ -119,15 +119,6 @@ int CSWMiniEnemy::LoadGunBank(CResGFF* pGFF, CResStruct* pStruct)
     return 1;
 }
 
-// FUNCTION: SWKOTOR 0x00673A30
-CSWMGTargettingInfo::CSWMGTargettingInfo()
-{
-    m_fHorizSpread = 0.0f;
-    m_fVertSpread = 0.0f;
-    m_fSensingRadius = 0.0f;
-    m_fInaccuracy = 0.0f;
-}
-
 #pragma auto_inline(on)
 
 // FUNCTION: SWKOTOR 0x00670B10

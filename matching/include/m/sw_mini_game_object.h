@@ -616,21 +616,8 @@ public:
 // The 0x28-byte block at CSWMiniGameObject + 0x1c.
 class CSWMiniHitInfo {
 public:
-    // 0x00673A10 out of line; the units that define
-    // M_INLINE_MINI_HIT_INFO (CSWMGGunBank's constructor) see the same body
-    // as an inline constructor.
-#ifdef M_INLINE_MINI_HIT_INFO
-    CSWMiniHitInfo()
-    {
-        m_nDamage = 0;
-        m_nTargetMask = 0;
-        m_fSpeed = 0.0f;
-        m_fRateOfFire = 0.0f;
-        m_fLifespan = 0.0f;
-    }
-#else
+    // Defined in m/sw_mg_gun_bank.cpp, whose constructors inline it.
     CSWMiniHitInfo();
-#endif
 
     int m_nDamage;                                  // 0x00
     float m_fSpeed;                                 // 0x04
@@ -711,18 +698,8 @@ public:
 // The four targetting limits read by CSWMiniEnemy::LoadGunBank.
 class CSWMGTargettingInfo {
 public:
-    // 0x00673A30 out of line; inlined where M_INLINE_TARGETTING_INFO is set.
-#ifdef M_INLINE_TARGETTING_INFO
-    CSWMGTargettingInfo()
-    {
-        m_fHorizSpread = 0.0f;
-        m_fVertSpread = 0.0f;
-        m_fSensingRadius = 0.0f;
-        m_fInaccuracy = 0.0f;
-    }
-#else
+    // Defined in m/sw_mg_gun_bank.cpp, whose constructors inline it.
     CSWMGTargettingInfo();
-#endif
 
     float m_fHorizSpread;                           // 0x00
     float m_fSensingRadius;                         // 0x04
