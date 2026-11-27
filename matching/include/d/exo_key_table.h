@@ -48,7 +48,7 @@ public:
     int IsValid() const;                            // 0x00406030
     CResRef operator=(const char* szResRef);        // 0x00406290
     CResRef operator=(const CResRef& cResRef);      // 0x00406120
-    CResRef operator=(const char (&pResRef)[16]);   // 0x00406170
+    CResRef operator=(unsigned char* pResRef);      // 0x00406170
     CResRef operator=(const CExoString& sResRef);   // 0x004061f0
     CResRef operator+=(const CExoString& sString);  // 0x00406300
     CResRef(const CExoString& sResRef);             // 0x00406d60

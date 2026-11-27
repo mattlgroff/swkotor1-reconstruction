@@ -20,8 +20,8 @@ void CResRef::CopyToString(CExoString& sStr) const
     sStr = szResRef;
 }
 
-// FUNCTION: SWKOTOR 0x00406170 SYMBOL: ??4CResRef@@QAE?AV0@AAY0BA@$$CBD@Z
-CResRef CResRef::operator=(const char (&pResRef)[16])
+// FUNCTION: SWKOTOR 0x00406170 SYMBOL: ??4CResRef@@QAE?AV0@PAE@Z
+CResRef CResRef::operator=(unsigned char* pResRef)
 {
     memcpy(m_resRef, pResRef, 16);
     for (unsigned int i = 0; i < 16; i++) {

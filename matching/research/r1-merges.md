@@ -98,8 +98,44 @@ free operators changed their register allocation.
   (`inline Vector operator-(const Vector&, const Vector&)` and friends). They
   are R16 work, not R1: fold them into `vector_ops.h` unit by unit.
 
+## CResRef: not merged yet (two copy behaviours)
+
+163 copies; the layout (`char m_resRef[16]`) and the method list agree with
+the Mac tables, and every method except the copy constructor is an
+out-of-line function. The merge was built and gated, then reverted, because
+the bytes show two incompatible copy behaviours:
+
+| canonical copy constructor | lost matches | what breaks |
+| --- | --- | --- |
+| declared, out of line | 37 | getters that return a member by value copy it inline in the original |
+| none (implicit, trivial) | 106 | the 2DA loaders: `new C2DA(CResRef("GENDER"), 0)` builds the argument in place, which MSVC 7.0 does only for a class with a non-trivial copy constructor; `res_ref.cpp`'s own by-value returns too |
+| user-declared, inline (`memcpy`) | 24 | getters and senders (`GetResRef44`, `GetPortrait`, `GetFilePlaying`, `GetItemDropSound`, ...): the inline copy computes the source address in a different order from the original's trivial copy. No inline body tried (`memcpy` of the array or of `this`, a struct copy, a word loop) reproduces it |
+| implicit copy plus `~CResRef() {}` | 163 | the destructor adds unwind states everywhere |
+
+So the units that copy a `CResRef` see a trivially copyable class in some
+places and a non-trivial one in others. Either the original had two
+declarations (one a plain 16-byte struct used by the getters' classes), or
+these getters have a source shape not yet found. Resolving it needs a look
+at the getters' callers and member types, not another copy-constructor body.
+
+One part stands on its own and is applied: 0x00406170 is
+`operator=(unsigned char*)` in the Mac tables, not
+`operator=(const char (&)[16])`. With the real signature the KEY, ERF and TLK
+record fields are `unsigned char[16]`, and the three member-pointer casts
+that selected the array overload are gone (`d/exo_key_table.cpp`,
+`d/tlk_table.cpp`, `d/res_ref_copy.cpp`).
+
+Two more findings for the eventual merge:
+
+- 0x00406DA0 is `CResRef::CResRef(unsigned char*)` in the Mac tables; this
+  repository annotates it as the copy constructor (same bytes).
+- Several sites assign a `char*` where the original builds a temporary
+  `CResRef` first (`CSWCPlayer::SetPortraitId`, `CSWSPlaceable::LoadBodyBag`
+  and others: the original frame is 16 bytes larger).
+
 ## Next
 
-`rulecheck.py --list R1` ranks what is left. The next candidates have one
-layout and mostly out-of-line methods, with the Mac tables naming every
-original method: `CResRef` (163 copies), `CExoString` (216).
+`rulecheck.py --list R1` ranks what is left. `CExoString` (216 copies) has
+one layout apart from member-name variants and the Mac tables name its
+methods; check its copy semantics first, as CResRef showed they decide the
+merge.

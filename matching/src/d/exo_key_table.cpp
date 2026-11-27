@@ -421,12 +421,8 @@ unsigned long CExoKeyTable::GetEntryCount(int bAll)
     return nCount;
 }
 
-// Selects operator=(const char (&)[16]) (0x00406170), which MSVC 7.0 finds
-// ambiguous with the const char* overload (same idiom as res_ref_copy.cpp).
-typedef CResRef (CResRef::*PFN_ASSIGN_ARRAY)(const char (&)[16]);
-
 struct ERF_KEY_ENTRY {
-    char resRef[16];        // 0x00
+    unsigned char resRef[16]; // 0x00
     unsigned long nID;      // 0x10
     unsigned long nType;    // 0x14
 };
@@ -557,7 +553,7 @@ int CExoKeyTable::AddEncapsulatedContents(int nFlags)
     for (unsigned long i = 0; i < header.nEntryCount; i++) {
         ERF_KEY_ENTRY key;
         pFile->Read(&key, sizeof(key), 1);
-        (cResRef.*(PFN_ASSIGN_ARRAY)&CResRef::operator=)(key.resRef);
+        cResRef = key.resRef;
         key.nID = (key.nID & 0xfffff) | ((m_nTableID | 0xfffff800) << 20);
         AddKey(&cResRef, (unsigned short)key.nType, key.nID, nFlags);
     }
@@ -595,7 +591,7 @@ struct KEY_FILE_ENTRY {
 };
 
 struct KEY_KEY_ENTRY {
-    char resRef[16];                    // 0x00
+    unsigned char resRef[16];           // 0x00
     unsigned short nType;               // 0x10
     unsigned long nID;                  // 0x14
 };
@@ -712,7 +708,7 @@ int CExoKeyTable::AddKeyTableContents(int nFlags)
         pFile->Read(key.resRef, 16, 1);
         pFile->Read(&key.nType, 2, 1);
         pFile->Read(&key.nID, 4, 1);
-        (cResRef.*(PFN_ASSIGN_ARRAY)&CResRef::operator=)(key.resRef);
+        cResRef = key.resRef;
         key.nID &= 0x3fffffff;
         AddKey(&cResRef, key.nType, key.nID, nFlags);
     }

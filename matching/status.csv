@@ -74,7 +74,7 @@ address,name,status,diff_insns,file
 0x004060B0,??8CResRef@@QBEHABV0@@Z,MATCH,0,matching/src/d/res_ref.cpp
 0x004060D0,??8CResRef@@QBEHPBD@Z,MATCH,0,matching/src/d/res_ref.cpp
 0x00406120,??4CResRef@@QAE?AV0@ABV0@@Z,MATCH,0,matching/src/d/res_ref.cpp
-0x00406170,??4CResRef@@QAE?AV0@AAY0BA@$$CBD@Z,MATCH,0,matching/src/d/res_ref.cpp
+0x00406170,??4CResRef@@QAE?AV0@PAE@Z,MATCH,0,matching/src/d/res_ref.cpp
 0x004061F0,??4CResRef@@QAE?AV0@ABVCExoString@@@Z,MATCH,0,matching/src/d/res_ref.cpp
 0x00406290,??4CResRef@@QAE?AV0@PBD@Z,MATCH,0,matching/src/d/res_ref.cpp
 0x00406300,??YCResRef@@QAE?AV0@ABVCExoString@@@Z,MATCH,0,matching/src/d/res_ref.cpp

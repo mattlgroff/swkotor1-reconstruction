@@ -140,7 +140,7 @@ symbol,demangled,address,role,uses
 ??4CResRef@@QAE?AU0@ABU0@@Z,public: struct CResRef __thiscall CResRef::operator=(struct CResRef const &),0x00406120,calls,2
 ??4CResRef@@QAE?AV0@ABV0@@Z,public: class CResRef __thiscall CResRef::operator=(class CResRef const &),0x00406120,defines,159
 ??4CResRefX@@QAE?AV0@ABV0@@Z,public: class CResRefX __thiscall CResRefX::operator=(class CResRefX const &),0x00406120,calls,2
-??4CResRef@@QAE?AV0@AAY0BA@$$CBD@Z,public: class CResRef __thiscall CResRef::operator=(char const (&)[16]),0x00406170,defines,3
+??4CResRef@@QAE?AV0@PAE@Z,public: class CResRef __thiscall CResRef::operator=(unsigned char *),0x00406170,defines,3
 ??4CResRef@@QAE?AU0@ABVCExoString@@@Z,public: struct CResRef __thiscall CResRef::operator=(class CExoString const &),0x004061F0,calls,2
 ??4CResRef@@QAE?AV0@ABVCExoString@@@Z,public: class CResRef __thiscall CResRef::operator=(class CExoString const &),0x004061F0,defines,17
 ??4CResRefX@@QAE?AV0@PBD@Z,public: class CResRefX __thiscall CResRefX::operator=(char const *),0x00406290,calls,1
