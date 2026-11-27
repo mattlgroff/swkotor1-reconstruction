@@ -2,14 +2,7 @@
 
 #include "shared/exo_string.h"
 
-class CExoAlias {
-public:
-    CExoString m_sAlias;                            // 0x00
-    CExoString m_sPath;                             // 0x08
-    CExoAlias* m_pNext;                             // 0x10
-
-    CExoAlias();
-};
+#include "shared/exo_alias.h"
 
 class CExoAliasListInternal {
 public:

@@ -18,15 +18,7 @@ public:
 
 extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
-class CExoAlias {
-public:
-    CExoString m_sAlias;                            // 0x00
-    CExoString m_sPath;                             // 0x08
-    CExoAlias* m_pNext;                             // 0x10
-    CExoAlias* m_pPrev;                             // 0x14
-
-    CExoAlias();                                    // 0x005EB600
-};
+#include "shared/exo_alias.h"
 
 class CExoAliasListInternal {
 public:
