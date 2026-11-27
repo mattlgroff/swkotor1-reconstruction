@@ -78,21 +78,7 @@ public:
     CVirtualMachineInternal* m_pVMachine;                           // 0x14
 };
 
-class CVirtualMachineScript {
-public:
-    CVirtualMachineScript();                                        // 0x005D1740
-    ~CVirtualMachineScript();                                       // 0x005D4550
-
-    CVirtualMachineStack* m_pStack;                                 // 0x00
-    int m_nStackSize;                                               // 0x04
-    int m_nInstructPtr;                                             // 0x08
-    int m_nSecondaryInstructPtr;                                    // 0x0c
-    char* m_pCode;                                                  // 0x10
-    int m_nCodeSize;                                                // 0x14
-    CExoString m_sScriptName;                                       // 0x18
-    int m_nLoadedFromSave;                                          // 0x20
-    int m_n24;                                                      // 0x24
-};
+#include "shared/virtual_machine_script.h"
 
 class CVirtualMachineInternal : public CResHelper<CResNCS, 2010> {
 public:
