@@ -18,12 +18,7 @@ public:
 
 #include "shared/globals.h"
 
-struct CSWClassSkill {
-    unsigned short m_nSkill;         // +0x0
-    char pad_0x2[0x2];
-    int m_nValue;                    // +0x4
-    int m_nLevel;                    // +0x8
-};
+#include "shared/sw_class_skill.h"
 
 struct CSWClassFeat {
     unsigned short m_nFeat;          // +0x0

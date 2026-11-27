@@ -34,11 +34,7 @@ struct CSWClassFeat {
     unsigned long m_nRecommended;    // +0x4
 };
 
-struct CSWClassSkill {
-    unsigned short m_nSkill;         // +0x0
-    int m_bClassSkill;               // +0x4
-    int m_nRecommended;              // +0x8
-};
+#include "shared/sw_class_skill.h"
 
 struct CSWClassSpell {
     unsigned short m_nSpell;         // +0x0
@@ -226,12 +222,12 @@ void CSWClass::LoadSkillsTable(const CExoString &sPrefix)
         m_pSkills[i].m_nSkill = (unsigned short)i;
         int nValue;
         pTable->GetINTEntry(i, sPrefix + "_Class", &nValue);
-        m_pSkills[i].m_bClassSkill = nValue;
+        m_pSkills[i].m_nValue = nValue;
         int bOk = pTable->GetINTEntry(i, sPrefix + "_Reco", &nValue);
         if (bOk)
-            m_pSkills[i].m_nRecommended = nValue;
+            m_pSkills[i].m_nLevel = nValue;
         else
-            m_pSkills[i].m_nRecommended = -1;
+            m_pSkills[i].m_nLevel = -1;
     }
     delete pTable;
 }
