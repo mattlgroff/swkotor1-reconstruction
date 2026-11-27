@@ -613,15 +613,7 @@ public:
     int Save(CResGFF* pRes, CResStruct* pStruct);   // 0x005C96E0
 };
 
-class CSWSAreaMap {
-public:
-    unsigned long* GetExploredData(unsigned long* pWords, int* pGridWidth,
-                                   int* pGridHeight); // 0x00579090
-    void SetExploredData(unsigned long* pData, unsigned long nWords, int nGridWidth,
-                         int nGridHeight);          // 0x00578FC0
-    unsigned long* m_pBits;
-    unsigned long m_nWords;
-};
+#include "shared/sws_area_map.h"
 
 class CSWSModule {
 public:

@@ -79,10 +79,7 @@ public:
     unsigned char GetGameObject(unsigned long oid, CGameObject** ppObject);  // 0x004D8230
 };
 
-class CSWSAreaMap {
-public:
-    int IsWorldPointExplored(Vector vWorld);        // 0x00579210
-};
+#include "shared/sws_area_map.h"
 
 class CSWSArea {
 public:

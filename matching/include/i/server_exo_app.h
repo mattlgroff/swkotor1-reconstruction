@@ -530,12 +530,7 @@ public:
     unsigned short m_nLoadScreenID;                 // +0x228 (placeholder name)
 };
 
-class CSWSAreaMap {
-public:
-    void SetWorldPointExplored(Vector v, int bExplored);                // 0x005792D0
-    void SetPartyMemberWorldLocation(int nIndex, Vector v);             // 0x005790C0
-    void SetPartyMemberWorldOrientation(int nIndex, Vector v);          // 0x00579130
-};
+#include "shared/sws_area_map.h"
 
 struct CSWSModuleEntryInfo {
     char m_pad0[0x10];

@@ -2,15 +2,7 @@
 #include "k/sw_gui_main_interface.h"
 
 // Server-side explored-area bitmap (matching/include/b/sws_area_map.h).
-class CSWSAreaMap {
-public:
-    int GetPartyMemberMapPixel(int nIndex, int* pMapX, int* pMapY);     // 0x005791B0
-    float GetMapRotateCCWFromWorldOrientation(Vector vOrientation);     // 0x00578ED0
-    unsigned long* m_pBits;                         // 0x00
-    unsigned long m_nWords;                         // 0x04
-    char pad_0x8[0xc];
-    float m_fInvDivisor;                            // 0x14
-};
+#include "shared/sws_area_map.h"
 
 class CSWSModule {
 public:

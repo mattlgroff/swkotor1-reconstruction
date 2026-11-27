@@ -192,12 +192,7 @@ public:
     unsigned long m_bStrref : 1;                    // +0x20
 };
 
-class CSWSAreaMap {
-public:
-    CSWSAreaMap();                                  // 0x00578BE0
-    ~CSWSAreaMap();                                 // 0x00578C30
-    char m_pad0[0x4c];
-};
+#include "shared/sws_area_map.h"
 
 class CSWSArea {
 public:
