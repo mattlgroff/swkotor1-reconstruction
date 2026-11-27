@@ -227,10 +227,7 @@ public:
     ~CTlkTable();                                   // 0x0041E100
 };
 
-class CAuroraInterface {
-public:
-    ~CAuroraInterface();                            // 0x0070D340 (descriptive)
-};
+#include "shared/aurora_interface.h"
 
 class CAurInternal {
 public:

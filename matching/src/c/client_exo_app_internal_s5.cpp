@@ -153,10 +153,7 @@ void AurTextureResetAll();                          // 0x00421D50
 void AurTextureSetDynamicMemoryRatio(float fRatio); // 0x0041E9B0
 int AurTextureSetMem(int nMem);                     // 0x00421D90
 
-class CAuroraInterface {
-public:
-    static int SetTexturePack(unsigned char nType, const CExoString& sPack);   // 0x0070D800
-};
+#include "shared/aurora_interface.h"
 
 // FUNCTION: SWKOTOR 0x005F0AD0
 void CClientExoAppInternal::LoadItemDropSoundList()

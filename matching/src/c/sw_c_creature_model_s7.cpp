@@ -17,10 +17,7 @@ public:
     static int IsResident(char* sModel);            // 0x0070D980
 };
 
-class CAuroraInterface {
-public:
-    static void RequestModel(char* sModel);         // 0x0070D8D0
-};
+#include "shared/aurora_interface.h"
 
 #include "shared/vector.h"
 
