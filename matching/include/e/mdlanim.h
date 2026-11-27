@@ -100,13 +100,7 @@ class MdlNodeInstance;
 #include "shared/node_vertex.h"
 
 // Per-face vertex index record of the trimesh build data (0x14 bytes).
-struct MdlFaceIndices {
-    int* pPos;          // +0x00
-    int* pTex;          // +0x04 [layer * 3 + corner]
-    int* p08;
-    int* p0c;
-    int* pNormal;       // +0x10
-};
+#include "shared/mdl_face_indices.h"
 
 class MdlNodeTriMeshData {
 public:
