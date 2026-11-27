@@ -6,8 +6,8 @@
 typedef void* HINSTANCE;
 typedef void* HWND;
 
-extern HINSTANCE g_hInstance;                       // 0x007A39C0
-extern HWND g_hWnd;                                 // 0x007A39D8
+#include "shared/globals.h"
+#include "shared/globals.h"
 
 #include "j/exo_string.h"
 

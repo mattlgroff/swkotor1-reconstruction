@@ -79,7 +79,7 @@ typedef int(__stdcall* PFNWGLCHOOSEPIXELFORMATARB)(HDC hdc, const int* piAttribs
                                                    const float* pfAttribs, unsigned int nMax,
                                                    int* piFormats, unsigned int* pnFormats);
 
-extern HINSTANCE g_hInstance;                                   // 0x007a39c0
+#include "shared/globals.h"
 #include "shared/globals.h"
 #include "shared/gl_ext.h"
 

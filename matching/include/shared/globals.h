@@ -1227,9 +1227,11 @@ extern CSWGuiClassChoice g_aClassChoices[6];  // 0x007A2684 (descriptive)
 extern int g_nPazaakCardValues[28];  // 0x007A26B8
 extern int g_nMaxTextureMemory;  // 0x007A399C
 extern int g_bQuitRequested;  // 0x007a39b8
+extern void* g_hInstance;                       // 0x007A39C0
 extern void* g_hWindow;  // 0x007a39d4
 extern void* g_hMainWindow;  // 0x007a39d8
 extern void* g_hRenderWindow;  // 0x007a39d8
+extern void* g_hWnd;                                // 0x007A39D8
 extern unsigned char g_nAppMode;  // 0x007A39DC (1: client)
 extern CExoBase* g_pExoBase;                        // 0x007A39E0
 extern CExoInput* g_pExoInput;  // 0x007a39e4

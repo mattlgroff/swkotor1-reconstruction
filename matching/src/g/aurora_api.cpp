@@ -59,7 +59,6 @@ public:
     ~CAurProgram();                      // 0x004a2830
 };
 
-extern void* g_hWnd;                     // 0x007a39d8
 
 void ResetVertexPrograms_004a2470();     // 0x004a2470
 void AurReleaseNoOp();                   // 0x004015a0 (empty)
@@ -600,7 +599,6 @@ typedef int (__stdcall *PFNGETPIXELFORMATATTRIBIVARB)(void* hdc, int iPixelForma
                                                       int* piValues);
 extern PFNCHOOSEPIXELFORMATARB g_pfnChoosePixelFormatARB;           // 0x007bb730
 extern PFNGETPIXELFORMATATTRIBIVARB g_pfnGetPixelFormatAttribivARB; // 0x007bb63c
-extern void* g_hWnd;                                                // 0x007a39d8
 int AurHasMultisample();                                            // 0x0046ed70
 
 // FUNCTION: SWKOTOR 0x0044f140

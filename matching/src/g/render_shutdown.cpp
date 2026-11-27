@@ -21,7 +21,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern void* g_hWnd;                        // 0x007a39d8
 
 
 

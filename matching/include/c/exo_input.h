@@ -21,7 +21,7 @@ struct tagCURSORINFO {
 };
 extern "C" __declspec(dllimport) int __stdcall GetCursorInfo(tagCURSORINFO* pci);
 
-extern HINSTANCE g_hInstance;                       // 0x007A39C0
+#include "shared/globals.h"
 
 typedef void* CExoLinkedListPosition;
 
@@ -136,7 +136,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern void* g_hWnd;                                // 0x007A39D8
 
 extern "C" {
 __declspec(dllimport) int __stdcall ClientToScreen(void* hWnd, struct tagPOINT* p);  // IAT 0x0073D3C4
