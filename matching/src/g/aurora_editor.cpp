@@ -29,9 +29,7 @@ void* __cdecl memset(void* d, int c, unsigned int n);
 #define WM_SIZE 5
 #define SWP_NOZORDER_SHOWWINDOW 0x120
 
-struct tagRECT {
-    long left, top, right, bottom;
-};
+#include "shared/tag_rect.h"
 
 // PIXELFORMATDESCRIPTOR, 0x28 bytes.
 struct tagPIXELFORMATDESCRIPTOR {

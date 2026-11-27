@@ -62,12 +62,7 @@ struct tagMSG {
     long pt_y;
 };
 
-struct tagRECT {
-    long left;
-    long top;
-    long right;
-    long bottom;
-};
+#include "shared/tag_rect.h"
 
 struct tagWINDOWINFO {
     unsigned long cbSize;           // 0x00
