@@ -16,10 +16,7 @@ public:
     int array_size;
 };
 
-class CSWCWorldJournalEntry {
-public:
-    ~CSWCWorldJournalEntry();
-};
+#include "shared/swc_world_journal_entry.h"
 
 class CSWCWorldJournal {
 public:
