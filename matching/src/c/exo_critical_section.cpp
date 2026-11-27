@@ -1,12 +1,6 @@
 // CExoCriticalSection facade destructor (b005e0_exo_foundation_leaves).
 
-class CExoCriticalSectionInternal {
-public:
-    char pad_0x0[0x18];
-
-    CExoCriticalSectionInternal();                  // 0x005EC250
-    ~CExoCriticalSectionInternal();                 // 0x005EC260
-};
+#include "shared/exo_critical_section_internal.h"
 
 class CExoCriticalSection {
 public:

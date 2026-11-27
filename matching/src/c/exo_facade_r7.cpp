@@ -214,11 +214,7 @@ unsigned long CExoTimers::GetHighResolutionTimer()
     return m_pcExoTimersInternal->GetHighResolutionTimer();
 }
 
-class CExoCriticalSectionInternal {
-public:
-    void EnterCriticalSection();                    // 0x005EC270
-    void LeaveCriticalSection();                    // 0x005EC280
-};
+#include "shared/exo_critical_section_internal.h"
 
 class CExoCriticalSection {
 public:

@@ -9,15 +9,7 @@ __declspec(dllimport) void __stdcall EnterCriticalSection(_RTL_CRITICAL_SECTION*
 __declspec(dllimport) void __stdcall LeaveCriticalSection(_RTL_CRITICAL_SECTION* p);       // IAT 0x0073D16C
 }
 
-class CExoCriticalSectionInternal {
-public:
-    _RTL_CRITICAL_SECTION m_cCriticalSection;       // 0x00
-
-    CExoCriticalSectionInternal();
-    ~CExoCriticalSectionInternal();
-    void EnterCriticalSection();
-    void LeaveCriticalSection();
-};
+#include "shared/exo_critical_section_internal.h"
 
 // FUNCTION: SWKOTOR 0x005EC250
 CExoCriticalSectionInternal::CExoCriticalSectionInternal()
