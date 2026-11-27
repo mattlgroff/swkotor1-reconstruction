@@ -5,7 +5,7 @@
 #include "b/sws_creature.h"
 #include "b/party_table.h"
 
-extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634
+#include "shared/globals.h"
 
 class CExoSound {
 public:

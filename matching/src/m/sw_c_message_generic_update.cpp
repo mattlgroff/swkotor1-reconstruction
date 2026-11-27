@@ -71,7 +71,6 @@ class CGameObject { public: virtual void v00(); virtual void v04(); virtual void
 class CClientExoApp { public: CGameObject* GetGameObject(unsigned long); };
 #include "shared/app_manager.h"
 #include "shared/globals.h"
-extern const unsigned char OBJECT_TYPE_DOOR;
 class CSWCMessage { public:
  float ReadFLOAT(float,int); unsigned short ReadWORD(int); CResRef ReadCResRef(int);
  int MessageReadOverflow(int); int HandleServerToPlayerUpdateVisualEffects(CSWCObject*);

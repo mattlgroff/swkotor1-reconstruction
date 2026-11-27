@@ -241,12 +241,15 @@ extern const unsigned char OBJECT_TYPE_LAST_NON_GAME;  // 0x00746633 (4)
 extern const unsigned char g_nObjectTypeArea;  // 0x00746633 (placeholder name)
 extern const unsigned char g_nObjectTypeA;  // 0x00746634
 extern const unsigned char g_nObjectTypeCreature;  // 0x00746634 (placeholder name)
+extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634
 extern const unsigned char OBJECT_TYPE_ITEM;  // 0x00746635
 extern const unsigned char OBJECT_TYPE_TRIGGER;  // 0x00746636
 extern const unsigned char g_nObjectTypeTrigger;  // 0x00746636 (placeholder name)
 extern const unsigned char OBJECT_TYPE_PROJECTILE;  // 0x00746637
 extern const unsigned char g_nObjectTypeB;  // 0x00746638
+extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
 extern const unsigned char g_nObjectTypeC;  // 0x00746639  // 0x007473B8
+extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
 extern const unsigned char OBJECT_TYPE_AREAOFEFFECT;  // 0x0074663A
 extern const unsigned char OBJECT_TYPE_AREA_OF_EFFECT;  // 0x0074663A
 extern unsigned char g_nObjectTypeAreaOfEffect;  // 0x0074663A

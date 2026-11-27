@@ -241,7 +241,6 @@ int CSWSMessage::HandlePlayerToServerDialogMessage(CSWSPlayer* pPlayer, unsigned
     return 0;
 }
 
-extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
 
 // FUNCTION: SWKOTOR 0x005232A0
 int CSWSMessage::HandlePlayerToServerGuiContainerMessage(CSWSPlayer* pPlayer, unsigned char nMinor)

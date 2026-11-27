@@ -49,7 +49,7 @@ public:
     void ShowFeedbackMessage(int nType, unsigned long nValue); // 0x0062EEB0 (name guessed)
 };
 
-extern const unsigned long OBJECT_INVALID;                  // 0x00746644
+#include "shared/object_id.h"
 
 // FUNCTION: SWKOTOR 0x0052F570
 int CSWVirtualMachineCommands::ExecuteCommandCreateItemOnObject(int nCommandId, int nParameters)

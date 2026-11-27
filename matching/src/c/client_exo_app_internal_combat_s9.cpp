@@ -111,7 +111,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
 
 struct CSWPartyMemberEntry {
     char pad_0x0[0x80];

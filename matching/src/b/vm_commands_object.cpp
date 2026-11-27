@@ -554,7 +554,6 @@ public:
     char pad_0x0[0x34];
 };
 
-extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634 (5)
 
 // FUNCTION: SWKOTOR 0x00535DB0
 int CSWVirtualMachineCommands::ExecuteCommandFloatingText(int nCommandId, int nParameters)

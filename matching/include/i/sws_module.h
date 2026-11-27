@@ -377,7 +377,6 @@ class CSWSArea;
 class CSWSPlayer;
 class CSWSWaypoint;
 
-extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
 
 class CGameObjectArray {
 public:

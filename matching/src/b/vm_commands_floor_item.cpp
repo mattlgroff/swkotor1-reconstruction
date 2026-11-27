@@ -9,7 +9,7 @@ public:
     Vector m_vPosition;
     Vector m_vOrientation;
 };
-extern const unsigned long OBJECT_INVALID; // 0x00746644
+#include "shared/object_id.h"
 
 // FUNCTION: SWKOTOR 0x00547F60
 int CSWVirtualMachineCommands::ExecuteCommandCreateItemOnFloor(int nCommandId, int nParameters)

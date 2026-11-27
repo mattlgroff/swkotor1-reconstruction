@@ -89,7 +89,7 @@ public:
     CSWSJournal *GetJournal();                                                 // 0x004edb00
 };
 
-extern const unsigned long OBJECT_INVALID;   // 0x00746644
+#include "shared/object_id.h"
 
 class CSWSScriptVarTable {
 public:

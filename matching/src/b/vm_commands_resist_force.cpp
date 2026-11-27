@@ -5,7 +5,7 @@
 #include "b/sws_player.h"
 #include "b/sw_rules.h"
 
-extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634 (5)
+#include "shared/globals.h"
 
 // Spell fields shared by CSWSObject-derived objects.
 struct CSWSObjectSpellView {

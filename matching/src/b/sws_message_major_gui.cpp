@@ -8,7 +8,6 @@
 #include "b/server_info.h"
 
 #include "shared/globals.h"
-extern const unsigned char OBJECT_TYPE_PLACEABLE;           // 0x00746638
 
 class CSWSPlayerLUOInventory;
 

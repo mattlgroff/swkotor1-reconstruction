@@ -6,7 +6,7 @@
 #include "b/vm_commands.h"
 #include "b/sws_item.h"
 
-extern const unsigned long OBJECT_INVALID;                  // 0x00746644
+#include "shared/object_id.h"
 
 // Iterator fields (names guessed).
 struct CSWSCreatureInventoryIterView {

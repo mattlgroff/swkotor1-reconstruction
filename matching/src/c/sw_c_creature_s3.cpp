@@ -740,9 +740,6 @@ public:
 };
 
 
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
-extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
-extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
 
 
 class CSWCCombatAttackData {

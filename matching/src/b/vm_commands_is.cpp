@@ -8,8 +8,6 @@
 #include <math.h>
 
 #include "shared/globals.h"
-extern const unsigned char OBJECT_TYPE_PLACEABLE;           // 0x00746638
-extern const unsigned char OBJECT_TYPE_DOOR;                // 0x00746639
 
 // Trapped flag of triggers (TU-local view).
 struct CSWSTriggerTrapView {

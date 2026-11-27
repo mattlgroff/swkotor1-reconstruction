@@ -43,7 +43,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
 
 class CSWCObject : public CGameObject {
 public:

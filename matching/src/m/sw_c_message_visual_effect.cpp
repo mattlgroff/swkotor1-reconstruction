@@ -72,7 +72,6 @@ class CClientAIMaster { public: int AddObject(CSWCObject*); };
 class CClientExoApp { public: CSWCModule* GetModule(); CGameObjectArray* GetGameObjectArray(); CClientAIMaster* GetClientAIMaster(); CGameObject* GetGameObject(unsigned long); };
 #include "shared/app_manager.h"
 #include "shared/globals.h"
-extern const unsigned char OBJECT_TYPE_CREATURE, OBJECT_TYPE_PLACEABLE, OBJECT_TYPE_DOOR;
 #define OBJECT_INVALID 0x7f000000
 int GetIsBeam(unsigned short);
 class CSWCMessage { public:

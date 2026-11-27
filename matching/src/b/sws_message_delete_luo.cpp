@@ -5,8 +5,6 @@
 #include "b/sws_creature.h"
 
 #include "shared/globals.h"
-extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634 (5)
-extern const unsigned char OBJECT_TYPE_PLACEABLE;           // 0x00746638 (9)
 
 // FUNCTION: SWKOTOR 0x0056E190
 void CSWSMessage::DeleteLastUpdateObjectsForObject(CSWSPlayer* pPlayer, unsigned long oidObject)

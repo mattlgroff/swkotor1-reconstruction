@@ -276,9 +276,7 @@ public:
     unsigned char GetGameObject(unsigned long oid, CGameObject** ppObject);  // 0x004D8230
 };
 
-extern const unsigned long OBJECT_INVALID;          // 0x00746644
-extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
-extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
+#include "shared/object_id.h"
 class CSWPartyTable {
 public:
     CItemRepository* GetItemRepository();           // 0x00563340

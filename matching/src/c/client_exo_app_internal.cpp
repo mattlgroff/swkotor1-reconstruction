@@ -27,7 +27,6 @@ inline CWorldTimer* CClientExoAppInternal::GetActiveTimer(unsigned long oid)
 extern "C" __declspec(dllimport) void __stdcall Sleep(unsigned long nMs);
 
 #include "shared/globals.h"
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
 
 class CExoStreamingSoundSource {
 public:

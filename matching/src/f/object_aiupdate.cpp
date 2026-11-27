@@ -70,7 +70,7 @@ public:
 
 #include "shared/app_manager.h"
 
-extern const unsigned long OBJECT_INVALID;         // 0x00746644
+#include "shared/object_id.h"
 
 class CScriptEvent {
 public:

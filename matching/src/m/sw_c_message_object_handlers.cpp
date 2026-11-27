@@ -1,9 +1,6 @@
 // Object-update message handlers. Partial interfaces preserve original base offsets.
 #define OBJECT_INVALID 0x7f000000
 #include "shared/globals.h"
-extern const unsigned char OBJECT_TYPE_CREATURE;
-extern const unsigned char OBJECT_TYPE_DOOR;
-extern const unsigned char OBJECT_TYPE_PLACEABLE;
 class CGameObject;
 class CSWCDoor { public: virtual ~CSWCDoor(); };
 class CGameObject {

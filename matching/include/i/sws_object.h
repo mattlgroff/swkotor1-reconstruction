@@ -582,7 +582,6 @@ public:
     char pad_0x0[0x14];
 };
 
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
 
 // vtable 0x00745F18
 class CSWSObject : public CGameObject {
