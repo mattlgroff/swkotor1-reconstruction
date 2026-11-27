@@ -485,7 +485,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern void (*g_pfnBlurSetup)();                // 0x0078E39C, descriptive
 
 #include "shared/gl_ext.h"
 // File-scope in the original scene unit: MSVC knows no pointer aliases

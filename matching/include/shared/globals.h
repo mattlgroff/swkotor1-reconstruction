@@ -851,6 +851,7 @@ extern short g_nHeadLight;  // 0x0078E388 (placeholder name)
 extern float g_fMaterialAlpha;  // 0x0078E390
 extern unsigned long g_nClearColor;  // 0x0078e394
 extern unsigned char g_bVBOWriteOnly;  // 0x0078e398
+extern void (*g_pfnBlurSetup)();  // 0x0078E39C
 extern int g_nGeomFadeMode;  // 0x0078e3a0
 extern int g_bShadows;  // 0x0078e3a8
 extern int g_bStencilDynamic;  // 0x0078E3A8, descriptive
