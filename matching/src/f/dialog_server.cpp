@@ -181,13 +181,7 @@ public:
 };
 
 
-class CSWSDialogSpeaker {
-public:
-    CSWSDialogSpeaker();
-    ~CSWSDialogSpeaker();
-    unsigned long m_oidSpeaker;      // +0x0
-    CExoString m_sTag;               // +0x4
-};
+#include "shared/sws_dialog_speaker.h"
 
 class CSWSMessage {
 public:

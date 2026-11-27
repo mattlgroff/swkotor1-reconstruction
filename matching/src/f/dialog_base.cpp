@@ -129,12 +129,7 @@ CSWSDialogBase::~CSWSDialogBase()
 {
 }
 
-class CSWSDialogSpeaker {
-public:
-    CSWSDialogSpeaker();
-    unsigned long m_oidSpeaker;      // +0x0
-    CExoString m_sTag;               // +0x4
-};
+#include "shared/sws_dialog_speaker.h"
 
 // FUNCTION: SWKOTOR 0x0059E990
 CSWSDialogSpeaker::CSWSDialogSpeaker() : m_oidSpeaker(0x7f000000)
