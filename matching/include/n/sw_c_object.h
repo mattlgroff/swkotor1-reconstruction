@@ -16,14 +16,7 @@ public:
 Quaternion RotationArc(Vector vFrom, Vector vTo);   // 0x004AB630
 float Magnitude(const Vector& v);                   // 0x004AB100
 int operator==(const Vector& a, const Vector& b);   // 0x004AA980
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

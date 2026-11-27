@@ -1,15 +1,7 @@
 // CSWSDoor instance loader (round s8, 0x0058C5F0): either the full field
 // loader or a template plus the per-instance transition fields.
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

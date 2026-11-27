@@ -2,13 +2,7 @@
 // an unnamed record destructor, the 12-byte nearest-object list search and
 // the camera-on-a-stick target head position.
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    ~CExoString();                                  // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 // Member at +0x14 whose destructor is the shared empty out-of-line body.
 class CClientRecordPayload {

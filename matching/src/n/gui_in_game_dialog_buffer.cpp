@@ -1,14 +1,7 @@
 // CGuiInGame::AppendToDialogBuffer(const CExoString&, unsigned long)
 // (guiingame.o): resolves the speaker's name and forwards to the
 // (text, name) overload. Standalone layout.
-class CExoString {
-public:
-    char* m_sString; unsigned long m_nLength;
-    CExoString(); // 0x005B3190
-    ~CExoString(); // 0x005E5C20
-    CExoString& operator=(const CExoString& s); // 0x005E5C50
-    int operator!=(const char* s) const; // 0x005E5390
-};
+#include "shared/exo_string.h"
 class CSWCObject {
 public:
     virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();

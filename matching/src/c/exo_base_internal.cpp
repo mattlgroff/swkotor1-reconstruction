@@ -1,14 +1,7 @@
 // CExoBaseInternal, the wide-to-multibyte copy helper and
 // CExoArrayList<FILETIME>::Insert (b005e0 / b005e7).
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    ~CExoString();                                  // 0x005E5C20
-    int CompareNoCase(const CExoString& s) const;   // 0x005E6450
-};
+#include "shared/exo_string.h"
 
 class CExoBaseInternal {
 public:

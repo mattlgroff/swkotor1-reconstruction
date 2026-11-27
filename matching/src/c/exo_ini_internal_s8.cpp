@@ -4,25 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    int operator==(const char* s) const;            // 0x005E5290
-    char* CStr() const;                             // 0x005E5670
-    int GetLength() const;                          // 0x005E5790
-    int CompareNoCase(const char* s) const;         // 0x005E58C0
-    CExoString Left(int nCount) const;              // 0x005E5F70
-    CExoString Right(int nCount) const;             // 0x005E6170
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    void __cdecl Format(const char* sFormat, ...);  // 0x005E5680
-};
+#include "shared/exo_string.h"
 
 typedef void* CExoLinkedListPosition;
 

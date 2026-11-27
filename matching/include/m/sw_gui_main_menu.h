@@ -9,26 +9,7 @@
 #ifndef M_SW_GUI_MAIN_MENU_H
 #define M_SW_GUI_MAIN_MENU_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* sString);                // 0x005E5A90
-    CExoString(const CExoString& sString);          // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int operator<=(const CExoString& s) const;      // 0x005E5500
-    int operator==(const CExoString& s) const;      // 0x005E5200
-    char* CStr() const;                             // 0x005E5670
-    void __cdecl Format(char* sFormat, ...);        // 0x005E5680
-    int GetLength() const;                          // 0x005E5790
-    CExoString LowerCase() const;                   // 0x005E6080
-    CExoString SubString(int nStart, int nCount) const; // 0x005E6270
-    int Find(const CExoString& s, int nStart) const;    // 0x005E5EB0
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

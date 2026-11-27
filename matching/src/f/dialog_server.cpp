@@ -2,24 +2,7 @@
 // 0x0059EAA0..0x005A27B0. Own copy of the CSWSDialog layout (dialog.cpp keeps
 // its own), extended with the camera and stunt members the loaders touch.
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    CExoString(const CExoString &s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    int operator==(const char *s) const;
-    int operator!=(const char *s) const;
-    int operator==(const CExoString &s) const;
-    int GetLength() const;
-    int IsEmpty() const;
-    int CompareNoCase(const char *s) const;
-    int CompareNoCase(const CExoString &s) const;
-    CExoString operator+(const CExoString &s) const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

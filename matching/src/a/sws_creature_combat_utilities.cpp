@@ -1,12 +1,7 @@
 // Compact combat/hostility utilities adjacent to the creature action family.
 #include "shared/vector.h"
 class CGameEffect;
-class CExoString {
-public:
-    CExoString(); // 0x005B3190
-    ~CExoString(); // 0x005E5C20
-    char* m_pString; unsigned long m_nLength;
-};
+#include "shared/exo_string.h"
 class CServerAIMaster { public: void AddEventDeltaTime(unsigned long, unsigned long, unsigned long,
     unsigned long, unsigned long, void*); }; // 0x004B08D0
 #include "shared/globals.h"

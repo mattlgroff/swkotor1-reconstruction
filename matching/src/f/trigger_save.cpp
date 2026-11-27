@@ -1,12 +1,6 @@
 // CSWSTrigger::SaveTrigger (round s8, 0x0058E660).
 
-class CExoString {
-public:
-    ~CExoString();
-    char *CStr() const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

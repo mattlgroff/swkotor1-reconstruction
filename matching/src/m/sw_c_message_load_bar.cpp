@@ -1,4 +1,4 @@
-class CExoString { public: char* m_sString; unsigned long m_nBufferLength; CExoString(const char*); ~CExoString(); };
+#include "shared/exo_string.h"
 class CUnknown004b13e0 { public:
  int m_bActive; unsigned long m_nKind,m_nStep,m_nProgress;
  int m_n10,m_bDone;

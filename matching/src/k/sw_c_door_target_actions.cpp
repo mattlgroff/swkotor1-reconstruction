@@ -3,14 +3,7 @@
 // the callback is a pointer to member of a class still incomplete at the
 // record's declaration (general 16-byte representation).
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

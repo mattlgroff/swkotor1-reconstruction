@@ -4,14 +4,7 @@
 
 #include <string.h>
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

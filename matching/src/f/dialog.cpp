@@ -4,19 +4,7 @@
 extern "C" double pow(double x, double y);
 extern "C" double ceil(double x);
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const CExoString &s);
-    ~CExoString();
-    int operator==(const char *s) const;
-    int operator!=(const char *s) const;
-    int CompareNoCase(const CExoString &s) const;
-    int GetLength() const;
-    char operator[](int n) const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

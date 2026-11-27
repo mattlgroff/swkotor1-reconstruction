@@ -1,12 +1,6 @@
 // CSWSDoor::SaveDoor (round s8, 0x00588AD0).
 
-class CExoString {
-public:
-    ~CExoString();
-    char *CStr() const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

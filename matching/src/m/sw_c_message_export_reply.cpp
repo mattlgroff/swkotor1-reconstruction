@@ -1,17 +1,7 @@
 // CSWCMessage::HandleServerToPlayerExportReply (nwchandlemessage.o): writes
 // an exported character to the local vault and reports the result.
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

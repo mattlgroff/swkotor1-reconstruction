@@ -1,10 +1,7 @@
 #ifndef M_SW_C_MESSAGE_OBJECT_ADDS_H
 #define M_SW_C_MESSAGE_OBJECT_ADDS_H
 #include "shared/vector.h"
-class CExoString { public: char* m_sString; unsigned long m_nBufferLength;
- CExoString(); CExoString(const char*); ~CExoString();
- CExoString& operator=(const CExoString&); CExoString& operator=(const char*);
-};
+#include "shared/exo_string.h"
 class CResRef { public: char m_ref[16]; CResRef(); CResRef(const char*); CResRef(const CExoString&); };
 class C2DA { public: int GetCExoStringEntry(int,const CExoString&,CExoString*); int GetINTEntry(int,const CExoString&,int*); };
 class CTwoDimArrays { public:

@@ -3,17 +3,7 @@
 // Own copy of the SJournalEntry layout (journal.cpp keeps the out-of-line
 // members; here the empty destructor is inline, as in the original callers).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const CExoString &s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    int CompareNoCase(const CExoString &s) const;
-    CExoString LowerCase() const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

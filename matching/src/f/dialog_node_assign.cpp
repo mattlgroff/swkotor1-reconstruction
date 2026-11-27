@@ -1,11 +1,6 @@
 // CSWSDialogNode assignment isolated from the constructor/destructor TU.
 
-class CExoString {
-public:
-    CExoString& operator=(const CExoString& s) throw();
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CSWSDialogBase {
 public:

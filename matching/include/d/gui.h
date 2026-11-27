@@ -12,18 +12,7 @@ extern "C" int __cdecl memcmp(const void* a, const void* b, unsigned int n);
 extern "C" int __cdecl strcmp(const char* a, const char* b);
 #pragma intrinsic(strlen, memcmp, strcmp)
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005b3190
-    CExoString(const char* sString);                // 0x005e5a90
-    CExoString(const CExoString& sString);          // 0x005e5b00
-    ~CExoString();                                  // 0x005e5c20
-    CExoString& operator=(const CExoString& s);     // 0x005e5c50
-    CExoString& operator=(const char* s);           // 0x005e5140
-    CExoString operator+(const CExoString& s) const; // 0x005e5d10
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

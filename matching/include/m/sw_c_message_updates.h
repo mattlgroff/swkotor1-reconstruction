@@ -2,8 +2,7 @@
 #ifndef M_SW_C_MESSAGE_UPDATES_H
 #define M_SW_C_MESSAGE_UPDATES_H
 #include "shared/vector.h"
-class CExoString { public: char* m_sString; unsigned long m_nBufferLength;
- CExoString(); CExoString(const char*); ~CExoString(); };
+#include "shared/exo_string.h"
 class CResRef { public: char m_ref[16]; CResRef(const CExoString&); CResRef(const char*); };
 class C2DA { public:
  int GetINTEntry(int, const CExoString&, int*);

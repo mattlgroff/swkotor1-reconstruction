@@ -4,14 +4,7 @@ struct CSWGuiExtent { int left,top,width,height; CSWGuiExtent() {} CSWGuiExtent(
 class CSWGuiControl;
 class CSWGuiPanel;
 class CSWGuiManager { public: void PlayGuiSound(char nSound); }; // 0x0040A140
-class CExoString {
-public:
-    char* m_sString; unsigned long m_nLength;
-    CExoString(); CExoString(const char* s); ~CExoString();
-    CExoString& operator=(const CExoString& s);
-    CExoString operator+(const CExoString& s) const;
-    int GetLength() const; // 0x005E5790
-};
+#include "shared/exo_string.h"
 class CTlkTable { public: CExoString GetSimpleString(unsigned long nStrRef); };
 #include "shared/globals.h"
 #include "shared/vector.h"

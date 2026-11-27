@@ -1,5 +1,5 @@
 // Item sound/model helpers used by inventory lifecycle messages.
-class CExoString { public: char* CStr() const; };
+#include "shared/exo_string.h"
 class CResRef { public: char m_ref[16]; CResRef(); CResRef operator=(const char*); CResRef operator=(const CResRef&); };
 class CAurObject { public: virtual ~CAurObject();
  virtual void v04();

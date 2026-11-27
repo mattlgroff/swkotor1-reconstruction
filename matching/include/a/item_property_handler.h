@@ -9,18 +9,7 @@
 // ApplyImmunity table (.rdata, named by decimal value, as f/combat_resolve.cpp).
 // Damage-type flags 0x00746850..0x00746884 (RemoveDamageImmunity switch).
 
-class CExoString {
-public:
-    CExoString();                           // 0x005B3190
-    CExoString(const char* source);
-    ~CExoString();
-    CExoString& operator=(const char* s);   // 0x005E5140
-    CExoString& operator=(const CExoString& s); // 0x005E5C50
-    char* CStr();                          // 0x005E5670
-    void Format(const char* format, ...);   // 0x005E5680 (cdecl)
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:

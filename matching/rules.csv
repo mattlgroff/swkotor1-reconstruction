@@ -10,7 +10,7 @@ address,name,bytes,status,rules,file
 0x004012C0,CAppManager::~CAppManager,MATCH,MATCH-PENDING,R1,matching/src/d/app_misc.cpp
 0x00401380,CAppManager::CreateServer,MATCH,MATCH-PENDING,R1,matching/src/d/app_misc.cpp
 0x00401430,GetNotEnabledText,MATCH,MATCH,,matching/src/d/app_misc.cpp
-0x00401440,UpdateWindowTitle,MATCH,MATCH-PENDING,R1,matching/src/d/app_misc.cpp
+0x00401440,UpdateWindowTitle,MATCH,MATCH,,matching/src/d/app_misc.cpp
 0x00401510,PumpMessages,MATCH,MATCH-PENDING,R1,matching/src/d/app_misc.cpp
 0x00401590,ReturnZero4,MATCH,MATCH,,matching/src/d/app_misc.cpp
 0x004015A0,CExoResourceImageFile::AddAsyncRefs,MATCH,MATCH-PENDING,R1,matching/src/d/exo_resource_image_file.cpp
@@ -20,7 +20,7 @@ address,name,bytes,status,rules,file
 0x00401650,handleScreenSaver,MATCH,MATCH,,matching/src/d/app_misc.cpp
 0x00401670,_glBlendFunc,MATCH,MATCH,,matching/src/d/app_misc.cpp
 0x00401690,SetClearColorFromString,MATCH,MATCH,,matching/src/d/app_misc.cpp
-0x00401700,ParseEventCaptureArgs,MATCH,MATCH-PENDING,R1,matching/src/d/app_misc.cpp
+0x00401700,ParseEventCaptureArgs,MATCH,MATCH,,matching/src/d/app_misc.cpp
 0x00401870,HandleFrameInfoKey,MATCH,MATCH,,matching/src/d/app_console.cpp
 0x00401BB0,InitGLState,MATCH,MATCH,,matching/src/d/app_misc.cpp
 0x00401C10,RunFrame,MATCH,MATCH-PENDING,R2,matching/src/d/app_misc.cpp
@@ -93,7 +93,7 @@ address,name,bytes,status,rules,file
 0x00406990,CExoResMan::FileCopy,MATCH,MATCH-PENDING,R1,matching/src/d/exo_res_man.cpp
 0x00406B20,CExoResMan::RemoveFile,NONMATCH,NONMATCH,R1 R2,matching/src/d/exo_res_man.cpp
 0x00406C60,CExoResMan::CreateSignatureFile,MATCH,MATCH-PENDING,R1,matching/src/d/exo_res_man.cpp
-0x00406C70,CopyString,MATCH,MATCH-PENDING,R1 R18,matching/src/d/exo_string_copy.cpp
+0x00406C70,CopyString,MATCH,MATCH-PENDING,R18,matching/src/d/exo_string_copy.cpp
 0x00406CF0,?,MATCH,UNCHECKED,,matching/src/d/exo_linked_list.cpp
 0x00406D60,CResRef::CResRef,MATCH,MATCH-PENDING,R1,matching/src/d/res_ref.cpp
 0x00406D80,CResRef::CResRef,MATCH,MATCH-PENDING,R1,matching/src/d/res_ref.cpp
@@ -4931,7 +4931,7 @@ address,name,bytes,status,rules,file
 0x005B30E0,CSWBaseItem::GetModelResRef,MATCH,MATCH-PENDING,R1,matching/src/f/base_item.cpp
 0x005B3150,CSWBaseItem::GetIsRangedSlot,MATCH,MATCH-PENDING,R1,matching/src/f/base_item.cpp
 0x005B3170,CSWBaseItem::GetIsMeleeSlot,MATCH,MATCH-PENDING,R1,matching/src/f/base_item.cpp
-0x005B3190,CExoString::CExoString,MATCH,MATCH-PENDING,R1,matching/src/f/exo_string_ctor.cpp
+0x005B3190,CExoString::CExoString,MATCH,MATCH,,matching/src/f/exo_string_ctor.cpp
 0x005B31A0,CSWBaseItemArray::GetBaseItem,MATCH,MATCH-PENDING,R1,matching/src/f/base_item.cpp
 0x005B4660,CSWItem::CSWItem,MATCH,MATCH-PENDING,R1,matching/src/f/base_item.cpp
 0x005B4680,CSWItem::~CSWItem,MATCH,MATCH-PENDING,R1,matching/src/f/base_item.cpp
@@ -5404,11 +5404,11 @@ address,name,bytes,status,rules,file
 0x005D1A60,NewResHelperNCS,MATCH,MATCH-PENDING,R1,matching/src/j/res_helper.cpp
 0x005D1AC0,NewResHelperNCS,MATCH,MATCH-PENDING,R1,matching/src/j/res_helper.cpp
 0x005D1C20,NewResHelperNCS,MATCH,MATCH-PENDING,R1,matching/src/j/res_helper.cpp
-0x005D1C40,CVirtualMachineStack::AssignLocationToLocation,MATCH,MATCH-PENDING,R1,matching/src/j/vm_internal.cpp
+0x005D1C40,CVirtualMachineStack::AssignLocationToLocation,MATCH,MATCH,,matching/src/j/vm_internal.cpp
 0x005D1D80,CVirtualMachineStack::SaveStack,MATCH,MATCH-PENDING,R1,matching/src/j/vm_internal.cpp
 0x005D1EF0,CVirtualMachineStack::LoadStack,MATCH,MATCH-PENDING,R1,matching/src/j/vm_internal.cpp
-0x005D2140,CVirtualMachineStack::ClearStack,MATCH,MATCH-PENDING,R1,matching/src/j/vm_internal.cpp
-0x005D21F0,CVirtualMachineStack::SetStackPointer,MATCH,MATCH-PENDING,R1,matching/src/j/vm_internal.cpp
+0x005D2140,CVirtualMachineStack::ClearStack,MATCH,MATCH,,matching/src/j/vm_internal.cpp
+0x005D21F0,CVirtualMachineStack::SetStackPointer,MATCH,MATCH,,matching/src/j/vm_internal.cpp
 0x005D2260,CVirtualMachineInternal::ReadScriptFile,MATCH,MATCH-PENDING,R1,matching/src/j/vm_internal.cpp
 0x005D23E0,CVirtualMachineInternal::SetUpScriptSituation,MATCH,MATCH-PENDING,R1,matching/src/j/vm_internal.cpp
 0x005D24C0,CVirtualMachineInternal::StackPopInteger,MATCH,MATCH-PENDING,R1,matching/src/j/vm_internal.cpp
@@ -5419,7 +5419,7 @@ address,name,bytes,status,rules,file
 0x005D26A0,CVirtualMachineInternal::StackPopObject,MATCH,MATCH-PENDING,R1,matching/src/j/vm_internal.cpp
 0x005D26F0,CVirtualMachineInternal::LoadScriptSituation,MATCH,MATCH-PENDING,R1,matching/src/j/vm_internal.cpp
 0x005D28E0,CVirtualMachineStack::~CVirtualMachineStack,MATCH,MATCH,,matching/src/j/vm_internal.cpp
-0x005D28F0,CVirtualMachineStack::CopyFromStack,MATCH,MATCH-PENDING,R1,matching/src/j/vm_internal.cpp
+0x005D28F0,CVirtualMachineStack::CopyFromStack,MATCH,MATCH,,matching/src/j/vm_internal.cpp
 0x005D4270,CVirtualMachineInternal::RunScriptFile,MATCH,MATCH-PENDING,R1,matching/src/j/vm_internal.cpp
 0x005D4380,CVirtualMachineInternal::StackPopCommand,MATCH,MATCH-PENDING,R1,matching/src/j/vm_internal.cpp
 0x005D44F0,CVirtualMachineInternal::DeleteScript,MATCH,MATCH-PENDING,R1,matching/src/j/vm_internal.cpp
@@ -5632,7 +5632,7 @@ address,name,bytes,status,rules,file
 0x005DD120,CERFKey::Write,MATCH,MATCH-PENDING,R1,matching/src/j/erf.cpp
 0x005DD170,CERFRes::CopyToFile,MATCH,MATCH-PENDING,R1,matching/src/j/erf.cpp
 0x005DD1E0,CERFRes::Write,MATCH,MATCH-PENDING,R1,matching/src/j/erf.cpp
-0x005DD240,CERFString::SetText,MATCH,MATCH-PENDING,R1,matching/src/j/erf.cpp
+0x005DD240,CERFString::SetText,MATCH,MATCH,,matching/src/j/erf.cpp
 0x005DD2B0,CERFString::Read,MATCH,MATCH-PENDING,R1,matching/src/j/erf.cpp
 0x005DD350,CERFFile::ReadHeader,MATCH,MATCH-PENDING,R1,matching/src/j/erf.cpp
 0x005DD3C0,CERFFile::Read,MATCH,MATCH-PENDING,R1,matching/src/j/erf.cpp
@@ -5775,41 +5775,41 @@ address,name,bytes,status,rules,file
 0x005E3F90,CExoRawInputInternal::~CExoRawInputInternal,MATCH,MATCH-PENDING,R1,matching/src/c/exo_input.cpp
 0x005E3FA0,CExoRawInputInternal::InitializeDirectInputMouse,MATCH,MATCH-PENDING,R1 R2,matching/src/c/exo_raw_input_r8.cpp
 0x005E4050,CExoRawInputInternal::GetMouseState,NONMATCH,NONMATCH,R1,matching/src/c/exo_raw_input_r8.cpp
-0x005E5140,CExoString::operator=,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5200,CExoString::operator==,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5290,CExoString::operator==,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5310,CExoString::operator!=,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5390,CExoString::operator!=,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5410,CExoString::operator<,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5490,CExoString::operator>,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5500,CExoString::operator<=,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5580,CExoString::operator>=,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5600,CExoString::operator[],MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5630,CExoString::AsINT,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string.cpp
-0x005E5650,CExoString::AsFLOAT,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5670,CExoString::CStr,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5680,CExoString::Format,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5790,CExoString::GetLength,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E57B0,CExoString::Insert,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string.cpp
-0x005E58A0,CExoString::IsEmpty,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E58C0,CExoString::CompareNoCase,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string.cpp
-0x005E5900,CExoString::ComparePrefixNoCase,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string.cpp
-0x005E5950,CExoString::StripNonAlphaNumeric,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string.cpp
-0x005E5A90,CExoString::CExoString,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5B00,CExoString::CExoString,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5B70,CExoString::CExoString,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5BC0,CExoString::CExoString,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string.cpp
-0x005E5C20,CExoString::~CExoString,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5C50,CExoString::operator=,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5D10,CExoString::operator+,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5EB0,CExoString::Find,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5F20,CExoString::Find,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E5F70,CExoString::Left,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E6080,CExoString::LowerCase,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E6170,CExoString::Right,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E6270,CExoString::SubString,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E6360,CExoString::UpperCase,MATCH,MATCH-PENDING,R1,matching/src/c/exo_string_r8.cpp
-0x005E6450,CExoString::CompareNoCase,NONMATCH,NONMATCH,R1,matching/src/c/exo_string_r8.cpp
+0x005E5140,CExoString::operator=,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5200,CExoString::operator==,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5290,CExoString::operator==,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5310,CExoString::operator!=,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5390,CExoString::operator!=,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5410,CExoString::operator<,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5490,CExoString::operator>,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5500,CExoString::operator<=,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5580,CExoString::operator>=,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5600,CExoString::operator[],MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5630,CExoString::AsINT,MATCH,MATCH,,matching/src/c/exo_string.cpp
+0x005E5650,CExoString::AsFLOAT,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5670,CExoString::CStr,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5680,CExoString::Format,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5790,CExoString::GetLength,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E57B0,CExoString::Insert,MATCH,MATCH,,matching/src/c/exo_string.cpp
+0x005E58A0,CExoString::IsEmpty,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E58C0,CExoString::CompareNoCase,MATCH,MATCH,,matching/src/c/exo_string.cpp
+0x005E5900,CExoString::ComparePrefixNoCase,MATCH,MATCH,,matching/src/c/exo_string.cpp
+0x005E5950,CExoString::StripNonAlphaNumeric,MATCH,MATCH,,matching/src/c/exo_string.cpp
+0x005E5A90,CExoString::CExoString,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5B00,CExoString::CExoString,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5B70,CExoString::CExoString,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5BC0,CExoString::CExoString,MATCH,MATCH,,matching/src/c/exo_string.cpp
+0x005E5C20,CExoString::~CExoString,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5C50,CExoString::operator=,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5D10,CExoString::operator+,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5EB0,CExoString::Find,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5F20,CExoString::Find,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E5F70,CExoString::Left,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E6080,CExoString::LowerCase,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E6170,CExoString::Right,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E6270,CExoString::SubString,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E6360,CExoString::UpperCase,MATCH,MATCH,,matching/src/c/exo_string_r8.cpp
+0x005E6450,CExoString::CompareNoCase,NONMATCH,NONMATCH,,matching/src/c/exo_string_r8.cpp
 0x005E6500,CExoBase::CExoBase,MATCH,MATCH-PENDING,R1,matching/src/c/exo_base.cpp
 0x005E6640,CExoBase::GetDirectoryList,MATCH,MATCH-PENDING,R1,matching/src/c/exo_facade_r7.cpp
 0x005E6650,CExoBase::GetDirectorySize,MATCH,MATCH-PENDING,R1,matching/src/c/exo_facade_r7.cpp
@@ -5843,7 +5843,7 @@ address,name,bytes,status,rules,file
 0x005E6AA0,CExoFile::Seek,MATCH,MATCH-PENDING,R1,matching/src/c/exo_file.cpp
 0x005E6AD0,CExoFile::SeekBeginning,MATCH,MATCH-PENDING,R1,matching/src/c/exo_file.cpp
 0x005E6AF0,CExoFile::SeekEnd,MATCH,MATCH-PENDING,R1,matching/src/c/exo_file.cpp
-0x005E6B10,LoadVersionInfo,NONMATCH,NONMATCH,R1 R2,matching/src/c/exo_version_info_r9.cpp
+0x005E6B10,LoadVersionInfo,NONMATCH,NONMATCH,R2,matching/src/c/exo_version_info_r9.cpp
 0x005E6D20,CExoBaseInternal::InitResTypes,MATCH,MATCH-PENDING,R1,matching/src/c/exo_base_internal_res_types_s10.cpp
 0x005E7760,CExoBaseInternal::AddAlias,MATCH,MATCH-PENDING,R1 R2,matching/src/c/exo_base_internal_r9.cpp
 0x005E7820,CExoBaseInternal::GetDirectorySize,MATCH,MATCH-PENDING,R1 R2,matching/src/c/exo_base_internal_r9.cpp
@@ -6966,7 +6966,7 @@ address,name,bytes,status,rules,file
 0x00634A40,CSWParty::ClearParty,MATCH,MATCH-PENDING,R1,matching/src/n/sw_party_members.cpp
 0x00634A70,CSWParty::GetFollowRange,NONMATCH,NONMATCH,R1,matching/src/n/sw_party_formation.cpp
 0x00634B60,CSWPartyFollowDataArray::Reset,NONMATCH,NONMATCH,,matching/src/n/sw_party_follow_data.cpp
-0x00634CC0,CSWPartyFollowDataArray::GetPathData,MATCH,MATCH-PENDING,R1,matching/src/n/sw_party_follow_data.cpp
+0x00634CC0,CSWPartyFollowDataArray::GetPathData,MATCH,MATCH,,matching/src/n/sw_party_follow_data.cpp
 0x00634D40,CSWPartyFollowDataArray::FindClosestPartyMemeber_Current,MATCH,MATCH-PENDING,R1,matching/src/n/sw_party_follow_data.cpp
 0x00634DA0,CSWPartyFollowDataArray::FindFurthestPartyMemeber_Current,MATCH,MATCH-PENDING,R1,matching/src/n/sw_party_follow_data.cpp
 0x00634E00,CSWPartyFollowDataArray::PointOnLineDistanceFromLeader,MATCH,MATCH-PENDING,R1,matching/src/n/sw_party_follow_data.cpp
@@ -7474,7 +7474,7 @@ address,name,bytes,status,rules,file
 0x0066D550,CSWTrackFollower::PlayAnimation,MATCH,MATCH-PENDING,R1,matching/src/m/sw_track_follower.cpp
 0x0066D5D0,CSWTrackFollower::GetHookPosition,MATCH,MATCH-PENDING,R1,matching/src/m/sw_track_follower.cpp
 0x0066DC50,CSWTrackFollower::LoadGunBanks,MATCH,MATCH-PENDING,R1,matching/src/m/sw_track_follower.cpp
-0x0066DC80,CSWMiniObstacle::GetModelName,MATCH,MATCH-PENDING,R1,matching/src/m/sw_track_follower.cpp
+0x0066DC80,CSWMiniObstacle::GetModelName,MATCH,MATCH,,matching/src/m/sw_track_follower.cpp
 0x0066DCC0,CExoArrayList<T>::Remove,MATCH,MATCH-PENDING,R1,matching/src/m/sw_track_follower.cpp
 0x0066DD10,?,MATCH,UNCHECKED,,matching/src/m/sw_track_follower.cpp
 0x0066DD60,HookEventCallback,MATCH,MATCH-PENDING,R1,matching/src/m/sw_track_follower.cpp
@@ -7580,8 +7580,8 @@ address,name,bytes,status,rules,file
 0x00674990,CSWMGGunBank::Die,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mg_gun_bank.cpp
 0x00674A10,CSWMGTargettingGunBank::Die,NONMATCH,NONMATCH,R1,matching/src/m/sw_mg_gun_bank.cpp
 0x00674B40,CSWTlkTable::GetObjectGender,MATCH,MATCH-PENDING,R1,matching/src/m/sw_tlk_object_gender.cpp
-0x006754D0,CScriptParser::SplitName,MATCH,MATCH-PENDING,R1,matching/src/pilot4/b/f006754d0.cpp
-0x00675690,CClientMsgSysAdmin::SendSysAdminToServerMessage,NONMATCH,NONMATCH,R1,matching/src/m/client_sysadmin_send.cpp
+0x006754D0,CScriptParser::SplitName,MATCH,MATCH,,matching/src/pilot4/b/f006754d0.cpp
+0x00675690,CClientMsgSysAdmin::SendSysAdminToServerMessage,NONMATCH,NONMATCH,,matching/src/m/client_sysadmin_send.cpp
 0x00675DB0,CSWCJournal::EnableSort,MATCH,MATCH-PENDING,R1,matching/src/m/sw_c_journal_sort.cpp
 0x00675DC0,CSWCJournal::DisableSort,MATCH,MATCH-PENDING,R1,matching/src/m/sw_c_journal_sort.cpp
 0x00675DD0,CExoStringList::GetCount,MATCH,MATCH-PENDING,R1,matching/src/m/sw_exo_string_list_count.cpp
@@ -7598,7 +7598,7 @@ address,name,bytes,status,rules,file
 0x006763D0,CSWCWorldJournal::SortItemsByName,MATCH,MATCH-PENDING,R1,matching/src/m/sw_c_world_journal.cpp
 0x00676470,CSWCJournal::HasNewEntries,MATCH,MATCH-PENDING,R1,matching/src/m/sw_c_quest_journal.cpp
 0x006764A0,CExoArrayList<T>::Add,MATCH,MATCH-PENDING,R1,matching/src/m/sw_c_journal_pending_add.cpp
-0x00676530,CSWCSortedJournalArrayList::SortList,NONMATCH,NONMATCH,R1,matching/src/m/sw_c_quest_journal.cpp
+0x00676530,CSWCSortedJournalArrayList::SortList,MATCH,MATCH-PENDING,R1,matching/src/m/sw_c_quest_journal.cpp
 0x00676B00,CSWCQuestJournal::ClearQuests,MATCH,MATCH-PENDING,R1,matching/src/m/sw_c_quest_journal.cpp
 0x00676BA0,CSWCJournal::CallFullUpdateComplete,MATCH,MATCH-PENDING,R1,matching/src/m/sw_c_journal_accessors.cpp
 0x00676BC0,CSWCJournal::SetActiveSortBy,MATCH,MATCH-PENDING,R1,matching/src/m/sw_c_journal_sort.cpp
@@ -7717,7 +7717,7 @@ address,name,bytes,status,rules,file
 0x0067D110,CSWGuiTutorial::PlaceRightOf,MATCH,MATCH-PENDING,R1,matching/src/m/sw_gui_pazaak_tutorial.cpp
 0x0067D1C0,CSWGuiTutorial::PlaceAbove,MATCH,MATCH-PENDING,R1,matching/src/m/sw_gui_pazaak_tutorial.cpp
 0x0067D260,CSWGuiTutorial::HandleInputEvent,MATCH,MATCH-PENDING,R1,matching/src/m/sw_gui_pazaak_tutorial.cpp
-0x0067D340,CSWGuiWagerPopup::UpdateWagerText,MATCH,MATCH-PENDING,R1,matching/src/m/sw_gui_pazaak_wager.cpp
+0x0067D340,CSWGuiWagerPopup::UpdateWagerText,MATCH,MATCH,,matching/src/m/sw_gui_pazaak_wager.cpp
 0x0067D3B0,CSWGuiPazaakStart::HandleWagerExit,MATCH,MATCH-PENDING,R1,matching/src/m/sw_gui_pazaak_start.cpp
 0x0067D3D0,CSWGuiPazaakStart::HandleQuitDialog,MATCH,MATCH-PENDING,R1,matching/src/m/sw_gui_pazaak_start.cpp
 0x0067D450,CSWGuiPazaakStart::IsOtherCardActiveControl,MATCH,MATCH-PENDING,R1,matching/src/m/sw_gui_pazaak_start.cpp
@@ -8518,7 +8518,7 @@ address,name,bytes,status,rules,file
 0x006B2800,CSWGuiInGameInventory::OnFullHealth,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_inventory.cpp
 0x006B2860,CSWGuiInGameInventory::OnSquadFullHealth,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_inventory.cpp
 0x006B28C0,CSWGuiCharacterPanel::UpdateCharacter,MATCH,MATCH-PENDING,R1,matching/src/pilot4/b/f006b28c0.cpp
-0x006B2A80,CSWGuiInGameInventory::SetNextFilter,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_inventory.cpp
+0x006B2A80,CSWGuiInGameInventory::SetNextFilter,MATCH,MATCH,,matching/src/l/sw_gui_inventory.cpp
 0x006B2C90,CSWGuiInGameInventory::CheckFilter,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_inventory.cpp
 0x006B2DC0,CSWGuiInGameInventory::UpdatePortraits,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_inventory.cpp
 0x006B2EC0,CSWGuiInGameInventory::OnChangeCharacter,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_inventory.cpp
@@ -8534,13 +8534,13 @@ address,name,bytes,status,rules,file
 0x006B4C90,CSWGuiInGameEquip::GetSlotItemIdIndex,MATCH,MATCH,,matching/src/l/sw_gui_equip.cpp
 0x006B4D40,CSWGuiInGameItemEntry::Draw,MATCH,MATCH,,matching/src/l/sw_gui_inventory_entry.cpp
 0x006B4DB0,CSWGuiInGameItemEntry::Initialize,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_inventory_entry.cpp
-0x006B4FE0,CSWGuiInGameItemEntry::GetNumItems,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_inventory_equip_callbacks.cpp
+0x006B4FE0,CSWGuiInGameItemEntry::GetNumItems,MATCH,MATCH,,matching/src/l/sw_gui_inventory_equip_callbacks.cpp
 0x006B5060,CSWGuiInGameItemEntry::SetCanUse,MATCH,MATCH,,matching/src/l/sw_gui_inventory_entry.cpp
 0x006B51D0,CSWGuiContainer::OnPanelAdded,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_inventory.cpp
 0x006B5250,CSWGuiContainer::OnPanelRemoved,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_inventory.cpp
 0x006B5270,CSWGuiStoreItemEntry::SetExtent,NONMATCH,NONMATCH,R1,matching/src/l/sw_gui_store_entry.cpp
 0x006B53F0,CSWGuiStoreItemEntry::Initialize,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_store_entry.cpp
-0x006B5600,CSWGuiInGameEquip::GetIcon,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_equip.cpp
+0x006B5600,CSWGuiInGameEquip::GetIcon,MATCH,MATCH,,matching/src/l/sw_gui_equip.cpp
 0x006B56B0,CSWGuiInGameEquip::SetDescription,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_equip.cpp
 0x006B5760,CSWGuiInGameEquip::EquipItem,NONMATCH,NONMATCH,R1,matching/src/l/sw_gui_equip.cpp
 0x006B5890,CSWGuiInGameEquip::EquipItem,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_equip.cpp
@@ -8599,7 +8599,7 @@ address,name,bytes,status,rules,file
 0x006BE370,CSWGuiPartySelectionSlot::SetSelected,MATCH,MATCH,,matching/src/l/sw_gui_party_selection.cpp
 0x006BE420,CSWGuiPartySelectionSlot::~CSWGuiPartySelectionSlot,MATCH,MATCH,,matching/src/l/sw_gui_panel_dtors_novtable.cpp
 0x006BE490,CSWGuiPartySelection::OnPanelRemoved,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_party_selection.cpp
-0x006BE4E0,CSWGuiPartySelection::UpdateCount,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_party_selection.cpp
+0x006BE4E0,CSWGuiPartySelection::UpdateCount,MATCH,MATCH,,matching/src/l/sw_gui_party_selection.cpp
 0x006BEC90,CSWGuiPartySelection::ConfirmPartySelection,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_party_selection.cpp
 0x006BECC0,CSWGuiPartySelection::SetAddRemoveLabel,MATCH,MATCH,,matching/src/l/sw_gui_party_selection.cpp
 0x006BED70,CSWGuiPartySelectionSlot::CSWGuiPartySelectionSlot,NONMATCH,NONMATCH,,matching/src/l/sw_gui_party_selection_ctor.cpp
@@ -8698,7 +8698,7 @@ address,name,bytes,status,rules,file
 0x006C8170,?,MATCH,UNCHECKED,,matching/src/l/sw_gui_generated_delete.cpp
 0x006C8190,CSWGuiInGameAreaTransition::~CSWGuiInGameAreaTransition,MATCH,MATCH,,matching/src/l/sw_gui_panel_dtors_novtable.cpp
 0x006C8200,CSWGuiSaveLoadEntry::GetPlayerPortrait,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_save_load_entry.cpp
-0x006C8250,CSWGuiSaveLoadEntry::GetGameDirectory,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_save_load.cpp
+0x006C8250,CSWGuiSaveLoadEntry::GetGameDirectory,MATCH,MATCH,,matching/src/l/sw_gui_save_load.cpp
 0x006C82F0,CSWGuiSaveGameEditBox::HandleChar,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_save_load.cpp
 0x006C8410,CSWGuiSaveNamePanel::OnPanelAdded,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_save_load.cpp
 0x006C8460,CSWGuiSaveNamePanel::OnPanelRemoved,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_save_load.cpp
@@ -8710,7 +8710,7 @@ address,name,bytes,status,rules,file
 0x006C8900,CSWGuiSaveLoad::DeleteGame,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_save_load.cpp
 0x006C89D0,CSWGuiSaveLoad::ShowGame,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_save_load_show.cpp
 0x006C8E50,CSWGuiSaveLoadEntry::LoadData,MATCH,MATCH-PENDING,R1 R2,matching/src/l/sw_gui_save_load_entry_load.cpp
-0x006C9780,CSWGuiSaveLoadEntry::SetName,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_save_load_entry_name.cpp
+0x006C9780,CSWGuiSaveLoadEntry::SetName,MATCH,MATCH,,matching/src/l/sw_gui_save_load_entry_name.cpp
 0x006C9A90,CSWGuiSaveLoad::ExtractSaveGame,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_save_load.cpp
 0x006C9D50,CSWGuiSaveNamePanel::HandleOkButton,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_save_name_panel.cpp
 0x006C9DD0,CSWGuiSaveGameEditBox::DestroyBase,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_save_name_panel.cpp
@@ -8905,7 +8905,7 @@ address,name,bytes,status,rules,file
 0x006DDB80,CSWGuiOptionsGraphicsAdvanced::OnDiscardChanges,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_options_family_events.cpp
 0x006DDB90,CSWGuiOptionsSound::HandleInputEvent,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_options_settings.cpp
 0x006DDC80,CSWGuiOptionsSound::SetDescription,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_options_settings.cpp
-0x006DDD70,CSWGuiOptionsSoundAdvanced::SetEAXText,MATCH,MATCH-PENDING,R1 R2,matching/src/l/sw_gui_options_settings2.cpp
+0x006DDD70,CSWGuiOptionsSoundAdvanced::SetEAXText,MATCH,MATCH-PENDING,R2,matching/src/l/sw_gui_options_settings2.cpp
 0x006DDE50,CSWGuiOptionsSoundAdvanced::SetDescription,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_options_settings.cpp
 0x006DDF40,CSWGuiOptionsSoundAdvanced::EnableEAXControls,MATCH,MATCH,,matching/src/l/sw_gui_options_settings.cpp
 0x006DDFA0,CSWGuiOptionsSoundAdvanced::OnEnterOption,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_options_family_slider_events.cpp
@@ -9082,7 +9082,7 @@ address,name,bytes,status,rules,file
 0x006E7B40,CSWGuiLevelUpCharGen::OnPanelAdded,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_levelup_chargen.cpp
 0x006E7B70,CSWGuiLevelUpCharGen::~CSWGuiLevelUpCharGen,MATCH,MATCH,,matching/src/l/sw_gui_levelup_chargen.cpp
 0x006E7DD0,CSWGuiLevelUpCharGen::DetermineClass,MATCH,MATCH,,matching/src/l/sw_gui_levelup_chargen.cpp
-0x006E7EC0,CSWGuiLevelUpCharGen::SetNameString,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_levelup_chargen.cpp
+0x006E7EC0,CSWGuiLevelUpCharGen::SetNameString,MATCH,MATCH,,matching/src/l/sw_gui_levelup_chargen.cpp
 0x006E7F70,CSWGuiLevelUpCharGen::AbilitiesChanged,NONMATCH,NONMATCH,R1,matching/src/l/sw_gui_levelup_chargen.cpp
 0x006E8500,CSWGuiLevelUpCharGen::NewAbilityScores,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_levelup_chargen.cpp
 0x006E85A0,CSWGuiLevelUpCharGen::ClearAbilities,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_levelup_chargen.cpp
@@ -9124,7 +9124,7 @@ address,name,bytes,status,rules,file
 0x006EB420,CSWGuiMainCharGen::CSWGuiMainCharGen,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_main_chargen_ctor.cpp
 0x006EBEE0,?,MATCH,UNCHECKED,,matching/src/l/sw_gui_main_chargen_ctor.cpp
 0x006EBF00,CSWGuiMainCharGen::~CSWGuiMainCharGen,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_main_chargen_dtor.cpp
-0x006EC120,CSWGuiKeyMapButton::GetActionId,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_keymappings.cpp
+0x006EC120,CSWGuiKeyMapButton::GetActionId,MATCH,MATCH,,matching/src/l/sw_gui_keymappings.cpp
 0x006EC250,CSWGuiKeyMapButton::SetExtent,NONMATCH,NONMATCH,R1,matching/src/l/sw_gui_keymappings.cpp
 0x006EC350,CSWGuiKeyMapButton::Draw,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_keymap_button_draw.cpp
 0x006EC380,CSWGuiKeyMapButton::HitCheckMouse,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_keymap_button.cpp
@@ -9136,7 +9136,7 @@ address,name,bytes,status,rules,file
 0x006EC6E0,CSWGuiKeyMapButton::UpdateColor,MATCH,MATCH,,matching/src/l/sw_gui_keymap_button.cpp
 0x006EC770,CSWGuiKeyMapButton::SetUnchangable,MATCH,MATCH,,matching/src/l/sw_gui_keymap_button.cpp
 0x006EC7D0,CSWGuiKeyMapButton::SetDescription,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_keymappings.cpp
-0x006ECCC0,CSWGuiKeyMapButton::ResetToDefault,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_keymappings.cpp
+0x006ECCC0,CSWGuiKeyMapButton::ResetToDefault,MATCH,MATCH,,matching/src/l/sw_gui_keymappings.cpp
 0x006ECE60,CSWGuiKeyMapButton::PostChangeToEvent,NONMATCH,NONMATCH,R1,matching/src/l/sw_gui_keymappings.cpp
 0x006ECFB0,CSWGuiInGameOptKeyMappings::~CSWGuiInGameOptKeyMappings,MATCH,MATCH,,matching/src/l/sw_gui_keymappings.cpp
 0x006ECFD0,CSWGuiInGameOptKeyMappings::FillListBox,NONMATCH,NONMATCH,R1,matching/src/l/sw_gui_keymappings.cpp
@@ -9153,7 +9153,7 @@ address,name,bytes,status,rules,file
 0x006ED5E0,CSWGuiKeyMapButton::OnEventClicked,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_keymappings.cpp
 0x006ED610,CSWGuiInGameOptKeyMappings::CreateOption,NONMATCH,NONMATCH,R1,matching/src/l/sw_gui_keymappings.cpp
 0x006ED930,CSWGuiInGameOptKeyMappings::FillListWithEvents,NONMATCH,NONMATCH,R1,matching/src/l/sw_gui_keymappings.cpp
-0x006EDA80,CSWGuiInGameOptKeyMappings::UpdateEvent,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_keymappings.cpp
+0x006EDA80,CSWGuiInGameOptKeyMappings::UpdateEvent,MATCH,MATCH,,matching/src/l/sw_gui_keymappings.cpp
 0x006EDBD0,CSWGuiKeyMapButton::UpdateEvent,NONMATCH,NONMATCH,,matching/src/l/sw_gui_keymappings.cpp
 0x006EDC90,CSWGuiInGameOptKeyMappings::CSWGuiInGameOptKeyMappings,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_keymappings.cpp
 0x006EE040,CSWGuiInGameOptKeyMappings::Update,MATCH,MATCH,,matching/src/l/sw_gui_keymappings.cpp

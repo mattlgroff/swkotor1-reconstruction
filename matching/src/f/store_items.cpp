@@ -2,11 +2,7 @@
 // and taking an item into the store inventory. Own CSWSItem / CSWSStore
 // layout subset (store_waypoint.cpp keeps the lifetime members).
 
-class CExoString {
-public:
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CSWSItem;
 class CSWSCreature;

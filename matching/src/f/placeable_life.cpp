@@ -1,14 +1,7 @@
 // CSWSPlaceable lifetime / area / 2DA helpers
 // (b0058_f2_surfmesh_placeable, 0x00584950..0x00587A50).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

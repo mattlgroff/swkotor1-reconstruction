@@ -22,16 +22,7 @@ public:
 Quaternion operator~(const Quaternion &q);
 Vector operator*(const Quaternion &q, const Vector &v);
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    char *CStr() const;
-    void Format(const char *szFormat, ...);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

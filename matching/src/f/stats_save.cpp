@@ -5,15 +5,7 @@ class CSWSCreature;
 class CSWSCreatureStats;
 class CSWSItem;
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    char *CStr() const;
-    void Format(const char *szFormat, ...);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

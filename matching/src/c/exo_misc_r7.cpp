@@ -28,13 +28,7 @@ public:
 
 extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    char* CStr() const;                             // 0x005E5670
-};
+#include "shared/exo_string.h"
 
 class CExoStringList {
 public:

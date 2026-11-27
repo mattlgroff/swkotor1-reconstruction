@@ -22,16 +22,7 @@ bool AurSetGlobalWindVariation(float fA, float fB); // 0x00453140
 unsigned char AurControlPart(char* sCommand);       // 0x0044B900
 void SetClearColor(const char* sColor);             // 0x00401690
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    char* CStr() const;                             // 0x005E5670
-    int CompareNoCase(const char* s) const;         // 0x005E58C0
-    void Format(const char* sFormat, ...);          // 0x005E5680
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

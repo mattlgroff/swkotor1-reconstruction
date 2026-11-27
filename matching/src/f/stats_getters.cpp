@@ -140,15 +140,7 @@ class CSWInventory;
 
 class CSWSCreatureStats;
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    CExoString(const CExoString &s);
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

@@ -6,34 +6,7 @@
 
 extern "C" int __cdecl tolower(int c);
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005b3190
-    CExoString(const char* sString);
-    CExoString(const char* sString, int nLength);   // 0x005e5b70
-    CExoString(int nValue);                         // 0x005e5bc0
-    CExoString(const CExoString& sString);
-    ~CExoString();
-    CExoString& operator=(const CExoString& sString);
-    CExoString& operator=(const char* sString);     // 0x005e5140
-    int operator==(const char* sString) const;      // 0x005e5290
-    int operator==(const CExoString& sString) const; // 0x005e5200
-    int Find(char c, int nStart) const;             // 0x005e5f20
-    void Format(const char* sFormat, ...);          // 0x005e5680
-    CExoString SubString(int nStart, int nCount) const; // 0x005e6270
-    int operator!=(const char* sString) const;      // 0x005e5390
-    char* CStr() const;                             // 0x005e5670
-    int GetLength() const;                          // 0x005e5790
-    int IsEmpty() const;                            // 0x005e58a0
-    CExoString operator+(const CExoString& sString) const; // 0x005e5d10
-    CExoString LowerCase() const;                   // 0x005e6080
-    char operator[](int nIndex) const;              // 0x005e5600
-    int AsINT() const;                              // 0x005e5630
-    float AsFLOAT() const;                          // 0x005e5650
-    int CompareNoCase(const CExoString& sString) const; // 0x005e6450
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

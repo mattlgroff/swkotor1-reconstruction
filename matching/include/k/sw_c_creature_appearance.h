@@ -15,26 +15,7 @@ struct Quaternion {
     Quaternion() { z = 0.0f; y = 0.0f; x = 0.0f; w = 1.0f; }
 };
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(int n);                              // 0x005E5BC0
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;  // 0x005E5D10
-    char operator[](int n) const;                   // 0x005E5600
-    int Find(const CExoString& s, int nStart) const;  // 0x005E5EB0
-    int Find(char c, int nStart) const;             // 0x005E5F20
-    char* CStr();                                   // 0x005E5670
-    int GetLength() const;                          // 0x005E5790
-    int IsEmpty() const;                            // 0x005E58A0
-    void Format(char* szFormat, ...);               // 0x005E5680
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

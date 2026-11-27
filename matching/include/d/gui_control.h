@@ -5,21 +5,7 @@
 #ifndef D_GUI_CONTROL_H
 #define D_GUI_CONTROL_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005b3190
-    CExoString(const char* sString);                // 0x005e5a90
-    CExoString(const CExoString& sString);          // 0x005e5b00
-    ~CExoString();                                  // 0x005e5c20
-    CExoString& operator=(const CExoString& s);     // 0x005e5c50
-    CExoString& operator=(const char* s);           // 0x005e5140
-    char* CStr() const;                             // 0x005e5c40
-    int operator==(const CExoString& s) const;      // 0x005e5200
-    int operator==(const char* s) const;            // 0x005e5290
-    CExoString operator+(const CExoString& s) const; // 0x005e5d10
-};
+#include "shared/exo_string.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;

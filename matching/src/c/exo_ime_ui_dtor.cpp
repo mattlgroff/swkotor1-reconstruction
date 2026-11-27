@@ -1,13 +1,7 @@
 // CExoImeUI destructor (worker C s1). Layout from bucket j's exo_ime.h:
 // three CExoString members at +0x110/+0x118/+0x120.
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    ~CExoString();                                  // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 class CExoImeUI {
 public:

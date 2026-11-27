@@ -3,19 +3,7 @@
 // follows LoadFromTemplate's padding). Round s10. Own minimal layouts; most
 // member names here are placeholders (offsets are from the original).
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    CExoString &operator=(const char *s);
-    int operator==(const char *s) const;
-    int IsEmpty() const;
-    void Format(const char *szFormat, ...);
-    char *CStr();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

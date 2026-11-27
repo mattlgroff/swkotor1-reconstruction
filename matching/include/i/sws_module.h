@@ -95,27 +95,7 @@ extern "C" char* strncpy(char* d, const char* s, size_t n);
 extern "C" int strcmp(const char* a, const char* b);
 #pragma intrinsic(strcmp)
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    CExoString(int n);                              // 0x005E5BC0
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    int operator==(const char* s) const;            // 0x005E5290
-    int operator==(const CExoString& s) const;      // 0x005E5200
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    char* CStr() const;                             // 0x005E5670
-    int GetLength() const;                          // 0x005E5790
-    int Find(char c, int nStart) const;             // 0x005E5F20
-    CExoString LowerCase() const;                   // 0x005E6080
-    CExoString Right(int nCount) const;             // 0x005E6170
-    void Format(const char* szFormat, ...);         // 0x005E5680
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 // 8 bytes; Compare is 0x005EA020 (non-zero when equal).
 class CExoLocString {

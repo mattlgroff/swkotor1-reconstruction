@@ -1,14 +1,7 @@
 // CSWSStore and CSWSWaypoint lifetime / area glue
 // (b005c_f2_journal_store, 0x005C6AB0-0x005C8630).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const CExoString &s);
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

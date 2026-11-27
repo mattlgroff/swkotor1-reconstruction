@@ -1,14 +1,6 @@
 // Pilot 4 arm B: 0x006B28C0, GUI character panel refresh (portrait, level, HP).
 
-class CExoString {
-public:
-    CExoString();                               // 0x005B3190
-    CExoString(int n);                          // 0x005E5BC0
-    ~CExoString();                              // 0x005E5C20
-    void Format(const char *format, ...);       // 0x005E5680
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

@@ -2,16 +2,7 @@
 #ifndef M_SW_C_JOURNAL_PENDING_UPDATE_H
 #define M_SW_C_JOURNAL_PENDING_UPDATE_H
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-
-    CExoString();                                  // 0x005B3190
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                 // 0x005E5C20
-    CExoString& operator=(const CExoString& s);    // 0x005E5C50
-};
+#include "shared/exo_string.h"
 
 struct CSWCJournalPendingUpdate {
     CExoString m_sText;

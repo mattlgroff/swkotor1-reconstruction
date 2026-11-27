@@ -1,14 +1,6 @@
 // CSWSCreatureStats leaves (b005a_f2_dialog_stats).
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    char *CStr() const;
-    void Format(const char *fmt, ...);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

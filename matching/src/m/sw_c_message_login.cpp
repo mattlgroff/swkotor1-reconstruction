@@ -1,13 +1,7 @@
 // CSWCMessage::HandleServerToPlayerLogin (nwchandlemessage.o); the name
 // follows the playable reference (recovered_client_handle_login).
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 class CClientExoApp {
 public:

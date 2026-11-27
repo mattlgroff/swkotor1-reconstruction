@@ -1,12 +1,7 @@
 // small lifetime leaves (b0058_f_lifetime_leaves): strings,
 // item arrays, inventories, pathfinding, VM, sound, input.
 
-class CExoString {
-public:
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 // A class whose only destructible member is a CExoString at +0: its
 // destructor is a single tail jump into ~CExoString.

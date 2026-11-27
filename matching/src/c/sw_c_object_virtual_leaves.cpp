@@ -3,12 +3,7 @@
 // real vtable targets (slot offsets from the playable vtable tables). They
 // are declared non-virtual here: only their bodies are compared.
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    ~CExoString();                                  // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

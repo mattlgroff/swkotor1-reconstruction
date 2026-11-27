@@ -2,15 +2,7 @@
 // resolves its icon and model resources, falling back to the base item's
 // defaults.
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    char* CStr() const;                             // 0x005E5670
-    void __cdecl Format(const char* sFormat, ...);  // 0x005E5680
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

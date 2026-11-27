@@ -4,17 +4,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    char *CStr() const;
-    void Format(const char *szFormat, ...);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:
@@ -466,11 +456,28 @@ int CSWSEncounter::LoadEncounterGeometry(CResGFF *pRes, CResList &cList)
 void CSWSEncounter::ReadEncounterScriptsFromGff(CResGFF *pRes, CResStruct *pStruct)
 {
     int bSuccess;
-    m_sScripts[0] = pRes->ReadFieldCResRef(pStruct, "OnEntered", bSuccess, m_sScripts[0]).GetResRef();
-    m_sScripts[1] = pRes->ReadFieldCResRef(pStruct, "OnExit", bSuccess, m_sScripts[1]).GetResRef();
-    m_sScripts[2] = pRes->ReadFieldCResRef(pStruct, "OnHeartbeat", bSuccess, m_sScripts[2]).GetResRef();
-    m_sScripts[3] = pRes->ReadFieldCResRef(pStruct, "OnExhausted", bSuccess, m_sScripts[3]).GetResRef();
-    m_sScripts[4] = pRes->ReadFieldCResRef(pStruct, "OnUserDefined", bSuccess, m_sScripts[4]).GetResRef();
+    // NOTE: the original assigns each script name through a temporary
+    // CExoString, destroyed at once, although operator=(const char*) exists.
+    {
+        CExoString sScript(pRes->ReadFieldCResRef(pStruct, "OnEntered", bSuccess, m_sScripts[0]).GetResRef());
+        m_sScripts[0] = sScript;
+    }
+    {
+        CExoString sScript(pRes->ReadFieldCResRef(pStruct, "OnExit", bSuccess, m_sScripts[1]).GetResRef());
+        m_sScripts[1] = sScript;
+    }
+    {
+        CExoString sScript(pRes->ReadFieldCResRef(pStruct, "OnHeartbeat", bSuccess, m_sScripts[2]).GetResRef());
+        m_sScripts[2] = sScript;
+    }
+    {
+        CExoString sScript(pRes->ReadFieldCResRef(pStruct, "OnExhausted", bSuccess, m_sScripts[3]).GetResRef());
+        m_sScripts[3] = sScript;
+    }
+    {
+        CExoString sScript(pRes->ReadFieldCResRef(pStruct, "OnUserDefined", bSuccess, m_sScripts[4]).GetResRef());
+        m_sScripts[4] = sScript;
+    }
 }
 
 // FUNCTION: SWKOTOR 0x00593270

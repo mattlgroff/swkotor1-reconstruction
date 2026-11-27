@@ -5,21 +5,7 @@
 #ifndef D_GUI_PARTS_H
 #define D_GUI_PARTS_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005b3190
-    CExoString(const char* sString);                // 0x005e5a90
-    ~CExoString();                                  // 0x005e5c20
-    CExoString& operator=(const CExoString& s);     // 0x005e5c50
-    CExoString& operator=(const char* s);           // 0x005e5140
-    CExoString operator+(const CExoString& s) const; // 0x005e5d10
-    CExoString SubString(int nStart, int nCount) const; // 0x005e6270
-    void Format(const char* sFormat, ...);          // 0x005e5680
-    char* CStr() const;                             // 0x005e5670
-    int GetLength() const;                          // 0x005e5790
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

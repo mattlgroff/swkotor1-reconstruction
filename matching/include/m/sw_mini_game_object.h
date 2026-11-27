@@ -160,18 +160,7 @@ public:
     }
 };
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    int operator==(const CExoString& s) const;       // 0x005E5200
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

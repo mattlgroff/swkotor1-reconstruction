@@ -1,9 +1,4 @@
-class CExoString { public:
- char* m_sString; unsigned long m_nBufferLength;
- CExoString(); CExoString(int); ~CExoString();
- CExoString& operator=(const CExoString&);
- CExoString operator+(const CExoString&) const;
-};
+#include "shared/exo_string.h"
 class CSWSObject;
 class CTlkTable { public: void SetCustomToken(int,const CExoString&); };
 class CSWTlkTable : public CTlkTable { public: CExoString Fetch(unsigned long,CSWSObject*,int,int); };

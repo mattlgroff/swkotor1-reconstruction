@@ -1,17 +1,7 @@
 // CSWSStore::LoadStore / LoadFromTemplate / SaveStore
 // (b005c_f2_journal_store): UTM template load and GFF load / save of a store.
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    void Format(const char *szFormat, ...);
-    char *CStr();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

@@ -2,15 +2,7 @@
 #define K_SW_C_PLACEABLE_DOOR_H
 #include <math.h>
 #include <string.h>
-class CExoString {
-public:
- char* m_sString; unsigned long m_nBufferLength;
- CExoString(); CExoString(const char*); CExoString(const CExoString&); ~CExoString();
- CExoString& operator=(const char*);
- CExoString& operator=(const CExoString&);
- CExoString operator+(const CExoString&) const;
- CExoString SubString(int,int) const; char* CStr() const;
-};
+#include "shared/exo_string.h"
 class CSWCObject;
 class CResRef;
 class CSWCDoor;

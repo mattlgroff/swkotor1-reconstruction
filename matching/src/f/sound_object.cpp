@@ -1,14 +1,7 @@
 // CSWSSoundObject and CSWSAmbientSound
 // (b005c_f2_sound_luo / b005c_sound_object_clears, 0x005C8660-0x005CA02A).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const CExoString &s);
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

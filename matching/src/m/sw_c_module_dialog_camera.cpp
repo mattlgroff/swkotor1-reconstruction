@@ -1,14 +1,6 @@
 // CSWCModule dialogue-camera queries and transitions.
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    char* CStr() const;                             // 0x005E5670
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

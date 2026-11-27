@@ -1,7 +1,7 @@
 // Native message-box controls, text, and panel lifetime. Standalone layout.
 struct CSWGuiExtent { int left,top,width,height; };
 class CSWGuiControl;
-class CExoString { public: char* m_sString; unsigned long m_nLength; CExoString(const CExoString&); ~CExoString(); int GetLength() const; };
+#include "shared/exo_string.h"
 class CSWGuiManager;
 class CSWGuiPanel {
 public:

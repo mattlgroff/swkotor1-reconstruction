@@ -1,18 +1,6 @@
 // CSWClass 2DA table loaders (b005b_f2_class_loaders, b005b_f2_combat).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    CExoString(const CExoString &s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    CExoString operator+(const CExoString &s) const;
-    int GetLength() const;
-    void Format(const char *szFormat, ...);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

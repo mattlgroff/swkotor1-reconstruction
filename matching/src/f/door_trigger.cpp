@@ -25,13 +25,7 @@ public:
     }
 };
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

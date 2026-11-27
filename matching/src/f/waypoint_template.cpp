@@ -1,16 +1,7 @@
 // CSWSWaypoint::LoadWaypoint / LoadFromTemplate (b005c_f2_journal_store):
 // GFF and UTW template loading of a waypoint.
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    void Format(const char *szFormat, ...);
-    char *CStr();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

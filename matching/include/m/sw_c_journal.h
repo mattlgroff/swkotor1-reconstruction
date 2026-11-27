@@ -2,23 +2,7 @@
 #ifndef M_SW_C_JOURNAL_H
 #define M_SW_C_JOURNAL_H
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    int operator==(const CExoString& s) const;      // 0x005E5200
-    int operator<(const CExoString& s) const;       // 0x005E5410
-    int operator>(const CExoString& s) const;       // 0x005E5490
-    char* CStr() const;                             // 0x005E5670
-    void Format(const char* fmt, ...);              // 0x005E5680
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

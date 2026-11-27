@@ -1,10 +1,6 @@
 // CGuiInGame::~CGuiInGame (guiingame.o). Standalone layout: only the
 // members with destructors (+0xB18 .. +0xB58) and the owned pointers.
-class CExoString {
-public:
-    char* m_sString; unsigned long m_nLength;
-    ~CExoString(); // 0x005E5C20
-};
+#include "shared/exo_string.h"
 class CExoLinkedListInternal {
 public:
     void* m_pcExoLinkedListNode;

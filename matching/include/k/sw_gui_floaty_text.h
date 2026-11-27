@@ -5,11 +5,7 @@
 #ifndef K_SW_GUI_FLOATY_TEXT_H
 #define K_SW_GUI_FLOATY_TEXT_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

@@ -1,13 +1,6 @@
 // CSWSDoor constructor and small accessors (round s8, 0x00589EE0-0x0058A1E0).
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    CExoString &operator=(const char *s);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

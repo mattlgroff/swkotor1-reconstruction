@@ -1,11 +1,5 @@
 // Notifications from the character creation subpanels.
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nLength;
-    CExoString(const CExoString& value); // 0x005E5B00
-    ~CExoString();
-};
+#include "shared/exo_string.h"
 class CSWGuiMainCharGen {
 public:
     void PortraitChanged();  // 0x006EA9F0

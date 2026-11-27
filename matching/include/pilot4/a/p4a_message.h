@@ -2,15 +2,7 @@
 #ifndef P4A_MESSAGE_H
 #define P4A_MESSAGE_H
 
-class CExoString {
-public:
-    CExoString();                                       // 0x005E5A90
-    ~CExoString();                                      // 0x005E5C20
-    CExoString& operator=(const CExoString& s);         // 0x005E5C50
-
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

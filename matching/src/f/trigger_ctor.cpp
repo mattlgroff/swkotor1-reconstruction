@@ -1,14 +1,6 @@
 // CSWSTrigger constructor and name accessor (round s8, 0x0058EAE0, 0x0058ED60).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    CExoString &operator=(const char *s);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

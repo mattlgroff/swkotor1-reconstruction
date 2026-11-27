@@ -12,13 +12,7 @@ public:
 
 Vector Normalize(const Vector &v);
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CSWSObject;
 class CSWSDoor;

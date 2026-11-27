@@ -4,14 +4,7 @@ extern "C" void *memset(void *p, int c, unsigned int n);
 #pragma intrinsic(memset)
 extern "C" void free(void *p);
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const CExoString &s);
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

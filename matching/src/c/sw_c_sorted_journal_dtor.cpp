@@ -1,12 +1,6 @@
 // CSWCSortedJournalArrayList destructor (worker C s1).
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    ~CExoString();                                  // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 struct SJournalEntry {
     char pad_0x0[0x3c];

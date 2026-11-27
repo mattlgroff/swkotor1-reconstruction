@@ -3,12 +3,7 @@
 
 void __cdecl operator delete(void* p);              // 0x006FA390
 
-class CExoString {
-public:
-    ~CExoString();                                  // 0x005E5C20
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 template <class T>
 class CExoArrayList {

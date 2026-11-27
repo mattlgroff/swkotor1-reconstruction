@@ -32,16 +32,7 @@ public:
 
 CAurObject* NewCAurObject(const char* szModel, const char* szName, int a, int b);   // 0x00449CC0
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    char* CStr() const;                             // 0x005E5670
-
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 struct CSWMiniTrackPoint {
     CResRef m_cName;                                // 0x00

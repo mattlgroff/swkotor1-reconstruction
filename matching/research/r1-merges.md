@@ -98,6 +98,25 @@ free operators changed their register allocation.
   (`inline Vector operator-(const Vector&, const Vector&)` and friends). They
   are R16 work, not R1: fold them into `vector_ops.h` unit by unit.
 
+## CExoString (`shared/exo_string.h`)
+
+216 copies; the layout (`char* m_sString; unsigned long m_nBufferLength`)
+agreed everywhere but in member names, and the Mac tables name all 36
+methods, every one an out-of-line function that `c/exo_string_r8.cpp`
+matches. The canonical declares them all, in address order.
+
+The byte gate lost two functions, both for the same reason: they assign a
+`char*` to a `CExoString` and the original builds a temporary `CExoString`
+for it, destroyed at once, although 275 matched call sites elsewhere use
+`operator=(const char*)` directly. Their old copies lacked that overload, so
+the conversion happened implicitly. Neither `CExoString(x)` nor a cast
+reproduces the code; a named temporary in its own block does, and each site
+carries a `// NOTE:` saying so (`CSWSEncounter::ReadEncounterScriptsFromGff`,
+`CSWSPlaceable::LoadBodyBag`). One copy's `IsNotEmpty(0)` was
+`operator[](0)` under another name.
+
+Result: no match lost.
+
 ## CResRef: not merged yet (two copy behaviours)
 
 163 copies; the layout (`char m_resRef[16]`) and the method list agree with

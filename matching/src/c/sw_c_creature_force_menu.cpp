@@ -1,13 +1,7 @@
 // CSWCCreature::ForceMenuAction (nwccreature.o), rewritten by worker C s14
 // with a translation-unit-local layout.
 
-class CExoString {
-public:
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 #include "shared/vector.h"
 

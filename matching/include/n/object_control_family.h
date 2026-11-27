@@ -5,7 +5,7 @@
 Vector Normalize(const Vector&); // 0x004AB180
 class CExoString;
 class CResRef { public: char data[16]; CResRef(const CExoString&); CResRef operator=(const CResRef&); int operator==(const char*) const; void CopyToString(CExoString&) const; };
-class CExoString { public: char* data; unsigned long length; CExoString(); ~CExoString(); int GetLength() const; char* CStr() const; CExoString& operator=(const CExoString&); };
+#include "shared/exo_string.h"
 // Descriptive name for the recovered 28-byte queue record; padding is untouched.
 struct FireForgetAnimation {
     int active; unsigned short animation; unsigned short pad_0x6;

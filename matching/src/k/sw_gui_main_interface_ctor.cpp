@@ -4,15 +4,7 @@
 // local map-view label's destructor is inlined, so CSWGuiLabel's is an
 // inline virtual destructor here (out-of-line copy 0x00419D10).
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    void Format(const char* szFormat, ...);         // 0x005E5680
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

@@ -4,12 +4,7 @@
 #include "shared/vector.h"
 struct CSWGuiExtent { int left,top,width,height; };
 class CSWGuiControl;
-class CExoString {
-public:
-    char* m_sString; unsigned long m_nLength;
-    CExoString(); CExoString(const char* s); ~CExoString();
-    CExoString& operator=(const CExoString& s);
-};
+#include "shared/exo_string.h"
 class CResRef { public: char m_resRef[16]; CResRef(const char* s); };
 class CTlkTable {
 public:

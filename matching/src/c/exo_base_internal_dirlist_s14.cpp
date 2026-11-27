@@ -3,25 +3,7 @@
 
 #include <string.h>
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    CExoString();                                   // 0x005B3190
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    char* CStr() const;                             // 0x005E5670
-    int GetLength() const;                          // 0x005E5790
-    char operator[](int n) const;                   // 0x005E5600
-    void Format(const char* format, ...);           // 0x005E5680
-    int operator==(const char* s) const;            // 0x005E5290
-    int operator<(const CExoString& s) const;       // 0x005E5410
-    int operator>=(const CExoString& s) const;      // 0x005E5580
-    CExoString LowerCase() const;                   // 0x005E6080
-};
+#include "shared/exo_string.h"
 
 class CExoAliasList {
 public:

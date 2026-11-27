@@ -2,14 +2,7 @@
 // Member offsets as sw_gui_galaxy_map.cpp; control classes as
 // sw_gui_in_game_map_ctor.cpp.
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

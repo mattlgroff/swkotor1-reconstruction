@@ -4,23 +4,7 @@
 #ifndef MATCHING_N_GUI_IN_GAME_DIALOG_H
 #define MATCHING_N_GUI_IN_GAME_DIALOG_H
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    int CompareNoCase(const char* s) const;         // 0x005E58C0
-    int IsEmpty() const;                            // 0x005E58A0
-    char* CStr() const;                             // 0x005E5670
-    int operator==(const char* s) const;            // 0x005E5290
-    int operator!=(const char* s) const;            // 0x005E5390
-};
+#include "shared/exo_string.h"
 
 typedef void* CExoLinkedListPosition;
 

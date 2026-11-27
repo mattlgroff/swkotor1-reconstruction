@@ -8,15 +8,7 @@ public:
     CResRef(const CResRef &cResRef);
 };
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    char *CStr() const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:

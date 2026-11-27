@@ -1,13 +1,7 @@
 // CSWCJournal destructor (worker C s1). The sorted-list destructor stays an
 // out-of-line call (0x005FCB50), so it lives in sw_c_sorted_journal_dtor.cpp.
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    ~CExoString();                                  // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 struct CSWCJournalString {
     unsigned long m_nId;                            // 0x00

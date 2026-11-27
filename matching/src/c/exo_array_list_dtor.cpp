@@ -2,13 +2,7 @@
 // (b0060_client_dtors_forwarders). Kept apart from exo_input.h's
 // CExoArrayList, whose users must not see a destructor.
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    ~CExoString();                                  // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 struct ExoLocString_st {
     int m_nLanguage;                                // 0x00

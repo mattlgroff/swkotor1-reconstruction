@@ -4,18 +4,7 @@
 
 void* __cdecl operator new(unsigned int n);         // 0x006FA7E6
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    int AsINT() const;                              // 0x005E5630
-    float AsFLOAT() const;                          // 0x005E5650
-    void Format(const char* format, ...);           // 0x005E5680
-};
+#include "shared/exo_string.h"
 
 class CExoIni {
 public:

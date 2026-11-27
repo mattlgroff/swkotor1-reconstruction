@@ -3,19 +3,7 @@
 #ifndef I_AUTOSAVE_PARAMS_H
 #define I_AUTOSAVE_PARAMS_H
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    int operator==(const CExoString& s) const;      // 0x005E5200
-    char* CStr() const;                             // 0x005E5670
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;

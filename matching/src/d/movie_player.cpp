@@ -105,19 +105,7 @@ extern "C" __declspec(dllimport) void* __stdcall CreateThread(void* pAttr, unsig
                                                               void* pParam, unsigned long nFlags,
                                                               unsigned long* pThreadId);
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                   // 0x005b3190
-    ~CExoString();                  // 0x005e5c20
-    CExoString& operator=(const char* s);           // 0x005e5140
-    CExoString& operator=(const CExoString& s);     // 0x005e5c50
-    CExoString operator+(const CExoString& s) const; // 0x005e5d10
-    char* CStr() const;                             // 0x005e5670
-    void Format(const char* sFormat, ...);          // 0x005e5680
-    int operator!=(const char* s) const;            // 0x005e5390
-};
+#include "shared/exo_string.h"
 
 template <class T>
 class CExoArrayList {

@@ -3,16 +3,7 @@
 // Names follow the playable build (SpawnRoom, PlayAnimation); the scene's
 // room/walkmesh factory slots keep descriptive names.
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    char* CStr() const;                             // 0x005E5670
-    void Format(const char* fmt, ...);              // 0x005E5680
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

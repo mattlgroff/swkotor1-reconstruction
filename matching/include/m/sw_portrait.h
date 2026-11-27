@@ -5,21 +5,7 @@
 
 #include <stddef.h>
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int operator==(const char* s) const;            // 0x005E5290
-    int GetLength() const;                          // 0x005E5790
-
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

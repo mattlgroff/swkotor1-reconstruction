@@ -1,15 +1,7 @@
 // CSWGuiInGameGalaxyMap planet cycling (swguiingamemap.o). The two cycling
 // methods and the party-table planet queries have descriptive names.
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

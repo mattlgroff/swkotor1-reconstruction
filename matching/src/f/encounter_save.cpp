@@ -1,12 +1,7 @@
 // CSWSEncounter::SaveEncounter (round s10, 0x00591350). Own minimal layout;
 // member names follow encounter_load.cpp.
 
-class CExoString {
-public:
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

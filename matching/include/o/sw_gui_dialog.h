@@ -4,30 +4,7 @@
 #ifndef O_SW_GUI_DIALOG_H
 #define O_SW_GUI_DIALOG_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* sString);                // 0x005E5A90
-    CExoString(int n);                              // 0x005E5BC0
-    CExoString(const CExoString& sString);          // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int IsEmpty() const;                          // 0x005E58A0
-    int AsINT() const;                            // 0x005E5630
-    int GetLength() const;                          // 0x005E5790
-    char* CStr() const;                             // 0x005E5670
-    void Format(const char* szFormat, ...);         // 0x005E5680
-    int Find(char c, int nStart) const;             // 0x005E5F20
-    int Find(const CExoString& s, int nStart) const;    // 0x005E5EB0
-    CExoString Left(int nCount) const;              // 0x005E5F70
-    char operator[](int nIndex) const;              // 0x005E5600
-    int operator>(const CExoString& s) const;       // 0x005E5490
-    CExoString Right(int nCount) const;             // 0x005E6170
-};
+#include "shared/exo_string.h"
 
 #include "shared/vector.h"
 

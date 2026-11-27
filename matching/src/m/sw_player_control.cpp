@@ -2,13 +2,7 @@
 // Virtual slot names other than Control are descriptive; the base class
 // slots are shared do-nothing stubs.
 
-class CExoString {
-public:
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 extern "C" double __cdecl fabs(double);
 #pragma intrinsic(fabs)

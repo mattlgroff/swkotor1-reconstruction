@@ -1,13 +1,6 @@
 // Pilot group 1: CExoKeyTable. Needs /GX (EH frame for new).
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();
-    ~CExoString();
-    CExoString& operator=(const CExoString& sString);
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

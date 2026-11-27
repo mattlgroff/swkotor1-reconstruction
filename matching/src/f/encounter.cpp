@@ -1,14 +1,7 @@
 // CSWArea ctor / static bounding boxes, CSWSEncounter lifetime and
 // activate list, CSWSAreaOfEffectObject duration (0x0058F6B0..0x00595560).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

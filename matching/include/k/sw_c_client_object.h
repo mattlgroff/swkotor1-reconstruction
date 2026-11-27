@@ -4,17 +4,7 @@
 #ifndef K_SW_C_CLIENT_OBJECT_H
 #define K_SW_C_CLIENT_OBJECT_H
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    CExoString();
-    CExoString(const CExoString&);
-    CExoString(const char*);                                         // 0x005E5A90
-    explicit CExoString(int);                                        // 0x005E5BC0
-    ~CExoString();
-    CExoString& operator=(const char*);                              // 0x005E5140
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

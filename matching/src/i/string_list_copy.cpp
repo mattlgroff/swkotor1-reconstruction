@@ -1,12 +1,6 @@
 // CExoStringMovieList constructor (0x004B71E0): copies a CExoString
 // list (name from the caller-side symbol in symbols.csv).
-class CExoString {
-public:
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 template <class T>
 class CExoArrayList {

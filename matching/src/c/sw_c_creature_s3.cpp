@@ -6,20 +6,7 @@
 
 #include "shared/vector.h"
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(int n);                              // 0x005E5BC0
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    int IsEmpty() const;                            // 0x005E58A0
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    char* CStr() const;                             // 0x005E5670
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:

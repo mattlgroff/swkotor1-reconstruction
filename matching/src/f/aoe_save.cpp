@@ -12,16 +12,7 @@ Vector CrossProduct(const Vector &a, const Vector &b);      // 0x004AB210
 Vector Normalize(const Vector &v);                          // 0x004AB180
 Vector operator/(const Vector &v, float f);                 // 0x00437A90
 
-class CExoString {
-public:
-    CExoString();                                           // 0x005B3190
-    CExoString(const char *s);                              // 0x005E5A90
-    ~CExoString();                                          // 0x005E5C20
-    CExoString &operator=(const CExoString &s);             // 0x005E5C50
-    int operator==(const char *s) const;                    // 0x005E5290
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 struct CResStruct;
 

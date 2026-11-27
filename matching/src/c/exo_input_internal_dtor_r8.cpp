@@ -1,13 +1,7 @@
 // ~CExoInputInternal (b005e6 cluster), worker C r8. Self-contained: the
 // member containers need destructors that exo_input.h's users must not see.
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    ~CExoString();                                  // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 typedef void* CExoLinkedListPosition;
 

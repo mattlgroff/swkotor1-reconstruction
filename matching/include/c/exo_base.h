@@ -4,52 +4,7 @@
 
 class CResRef;
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    CExoString();                                   // 0x005B3190
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString(int n);                              // 0x005E5BC0
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-
-    void Insert(const CExoString& s, int nPosition);    // 0x005E57B0
-    int CompareNoCase(const char* s) const;         // 0x005E58C0
-    int ComparePrefixNoCase(const CExoString& s, int nSize) const;   // 0x005E5900
-    int StripNonAlphaNumeric(int bLower, int bAllowEmail, int bAllowPunctuation);   // 0x005E5950
-    int CompareNoCase(const CExoString& s) const;   // 0x005E6450
-    int AsINT() const;                              // 0x005E5630
-    char* CStr() const;                             // 0x005E5670
-    int GetLength() const;                          // 0x005E5790
-    unsigned char IsNotEmpty(int b) const;          // 0x005E5600 (= operator[])
-
-    // r8 (matching/src/c/exo_string_r8.cpp)
-    CExoString(const char* s, int nLength);         // 0x005E5B70
-    int operator==(const CExoString& s) const;      // 0x005E5200
-    int operator==(const char* s) const;            // 0x005E5290
-    int operator!=(const CExoString& s) const;      // 0x005E5310
-    int operator!=(const char* s) const;            // 0x005E5390
-    int operator<(const CExoString& s) const;       // 0x005E5410
-    int operator>(const CExoString& s) const;       // 0x005E5490
-    int operator<=(const CExoString& s) const;      // 0x005E5500
-    int operator>=(const CExoString& s) const;      // 0x005E5580
-    char operator[](int n) const;                   // 0x005E5600
-    float AsFLOAT() const;                          // 0x005E5650
-    void Format(const char* format, ...);           // 0x005E5680
-    int IsEmpty() const;                            // 0x005E58A0
-    int Find(const CExoString& s, int nStart) const;    // 0x005E5EB0
-    int Find(char c, int nStart) const;             // 0x005E5F20
-    CExoString Left(int nCount) const;              // 0x005E5F70
-    CExoString LowerCase() const;                   // 0x005E6080
-    CExoString Right(int nCount) const;             // 0x005E6170
-    CExoString SubString(int nStart, int nCount) const; // 0x005E6270
-    CExoString UpperCase() const;                   // 0x005E6360
-};
+#include "shared/exo_string.h"
 
 typedef void* CExoLinkedListPosition;
 

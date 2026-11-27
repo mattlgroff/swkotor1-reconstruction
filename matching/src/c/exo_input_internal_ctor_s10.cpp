@@ -10,15 +10,7 @@ void __cdecl operator delete(void* p);              // 0x006FA390
 typedef void* HINSTANCE;
 typedef void* HWND;
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-};
+#include "shared/exo_string.h"
 
 class CExoLinkedListInternal {
 public:

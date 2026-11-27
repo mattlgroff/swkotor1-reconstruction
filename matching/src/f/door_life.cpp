@@ -1,17 +1,7 @@
 // CSWSDoor / CSWSTrigger lifetime, open-state and mine helpers
 // (b0058_f2_door_trigger, 0x005890D0..0x0058F690).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    CExoString &operator=(const char *s);
-    int operator==(const CExoString &s) const;
-    int CompareNoCase(const char *s) const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

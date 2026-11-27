@@ -22,24 +22,7 @@ float GetPitch(const Quaternion& q);                // 0x004A9F40
 float GetRoll(const Quaternion& q);                 // 0x004AA020
 Quaternion EulerToQuaternion(float fYaw, float fPitch, float fRoll);   // 0x004ACAC0
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    char* CStr() const;                             // 0x005E5670
-    int GetLength() const;                          // 0x005E5790
-    int operator==(const char* s) const;            // 0x005E5290
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int IsEmpty() const;                            // 0x005E58A0
-    void Format(const char* szFormat, ...);         // 0x005E5680
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

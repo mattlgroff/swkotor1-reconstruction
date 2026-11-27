@@ -7598,7 +7598,7 @@ address,name,status,diff_insns,file
 0x006763D0,?SortItemsByName@CSWCWorldJournal@@QAEHHHH@Z,MATCH,0,matching/src/m/sw_c_world_journal.cpp
 0x00676470,CSWCJournal::HasNewEntries,MATCH,0,matching/src/m/sw_c_quest_journal.cpp
 0x006764A0,?Add@?$CExoArrayList@UCSWCJournalPendingUpdate@@@@QAEXUCSWCJournalPendingUpdate@@@Z,MATCH,0,matching/src/m/sw_c_journal_pending_add.cpp
-0x00676530,CSWCSortedJournalArrayList::SortList,NONMATCH,4,matching/src/m/sw_c_quest_journal.cpp
+0x00676530,CSWCSortedJournalArrayList::SortList,MATCH,0,matching/src/m/sw_c_quest_journal.cpp
 0x00676B00,CSWCQuestJournal::ClearQuests,MATCH,0,matching/src/m/sw_c_quest_journal.cpp
 0x00676BA0,CSWCJournal::CallFullUpdateComplete,MATCH,0,matching/src/m/sw_c_journal_accessors.cpp
 0x00676BC0,CSWCJournal::SetActiveSortBy,MATCH,0,matching/src/m/sw_c_journal_sort.cpp

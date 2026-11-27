@@ -4,15 +4,7 @@
 
 class Vector;
 class CResRef { public: CResRef(); char m_ref[16]; };
-class CExoString {
-public:
-    char* m_sString; unsigned long m_nBufferLength;
-    CExoString();
-    ~CExoString();
-    CExoString& operator=(const CExoString&);
-    char* CStr() const;
-    int GetLength() const;
-};
+#include "shared/exo_string.h"
 class CSWCAreaObject {
 public:
     virtual ~CSWCAreaObject();

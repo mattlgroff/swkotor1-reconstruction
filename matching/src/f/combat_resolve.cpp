@@ -1,21 +1,7 @@
 // CSWSCreature weapon-discharge 2DA getters and combat resolvers
 // (b005b_f2_combat).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    CExoString(const CExoString &s);
-    CExoString(int n);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    CExoString operator+(const CExoString &s) const;
-    char operator[](int nIndex) const;
-    CExoString SubString(int nStart, int nCount) const;
-    int AsINT() const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:

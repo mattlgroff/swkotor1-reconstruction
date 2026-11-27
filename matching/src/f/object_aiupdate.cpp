@@ -3,13 +3,7 @@
 // these function starts is in functions.csv: each follows the previous
 // function's padding.
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 #include "shared/vector.h"
 

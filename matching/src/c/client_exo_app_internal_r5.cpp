@@ -775,7 +775,7 @@ void CClientExoAppInternal::EndPazaakGame(int bWon, int nWager, int bRun, int nE
         StartPazaakGame(m_nPazaakDeck, (int)&m_sPazaakScript, 0, 1, nExtra);
         return;
     }
-    if (g_pVirtualMachine && m_sPazaakScript.IsNotEmpty(0)) {
+    if (g_pVirtualMachine && m_sPazaakScript[0]) {
         g_pVirtualMachine->RunScript(&m_sPazaakScript, OBJECT_INVALID, 0);
     }
     m_pGuiManager->PlayGuiSound(5);

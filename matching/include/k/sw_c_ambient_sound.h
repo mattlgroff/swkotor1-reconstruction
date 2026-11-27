@@ -4,20 +4,7 @@
 #ifndef K_SW_C_AMBIENT_SOUND_H
 #define K_SW_C_AMBIENT_SOUND_H
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    int operator!=(const char* s) const;            // 0x005E5390
-    int CompareNoCase(const CExoString& s) const;   // 0x005E6450
-    CExoString UpperCase() const;                   // 0x005E6360
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

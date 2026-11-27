@@ -1,19 +1,7 @@
 // CSWRace / CSWFeat / CSWSkill TLK text getters and ctors, CSWRoom
 // (b005c_f2_journal_store, 0x005C78D0-0x005C7DC0, 0x005CD700-0x005CD970).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    CExoString(const CExoString &s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    CExoString operator+(const CExoString &s) const;
-    char *CStr() const;
-    int CompareNoCase(const char *s) const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

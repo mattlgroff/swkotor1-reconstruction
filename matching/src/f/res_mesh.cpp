@@ -57,15 +57,7 @@ public:
     char pad_0x24[0x4];
 };
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    char *CStr() const;
-    void Format(const char *szFormat, ...);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

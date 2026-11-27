@@ -5,31 +5,7 @@
 
 #include <stddef.h>
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(int n);                              // 0x005E5BC0
-    int AsINT() const;                              // 0x005E5630
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    char* CStr() const;                             // 0x005E5670
-    int operator==(const CExoString& s) const;      // 0x005E5200
-    int IsEmpty() const;                            // 0x005E58A0
-    int CompareNoCase(const char* s) const;         // 0x005E58C0
-    int Find(char c, int nStart) const;             // 0x005E5F20
-    char operator[](int n) const;                   // 0x005E5600
-    CExoString& operator=(const char* s);           // 0x005E5140
-    int operator!=(const char* s) const;            // 0x005E5390
-    int GetLength() const;                          // 0x005E5790
-    CExoString Right(int nCount) const;             // 0x005E6170
-    CExoString Left(int nCount) const;              // 0x005E5F70
-    CExoString operator+(const CExoString& s) const; // 0x005E5D10
-    void Format(char* sFormat, ...);                // 0x005E5680
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 #include "shared/vector.h"
 

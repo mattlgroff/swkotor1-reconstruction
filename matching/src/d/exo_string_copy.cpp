@@ -1,10 +1,6 @@
 // CopyString's temporary and placement copy constructor (0x00406c70).
 
-class CExoString {
-public:
-    CExoString(const CExoString& s);
-    ~CExoString();
-};
+#include "shared/exo_string.h"
 
 void* __cdecl operator new(unsigned int, void* p);
 

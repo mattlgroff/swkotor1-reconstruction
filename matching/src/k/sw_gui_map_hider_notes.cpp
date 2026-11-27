@@ -3,14 +3,7 @@
 // in-game map's note arrows. Names follow the playable reconstruction
 // (InitializeMapNotes, GetNextMapNote, GetPrevMapNote) and are descriptive.
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

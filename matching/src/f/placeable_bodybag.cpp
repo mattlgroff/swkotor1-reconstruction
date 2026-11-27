@@ -2,15 +2,7 @@
 // placeable from the placeables 2DA row instead of a GFF. Own minimal layout;
 // member names follow placeable_ctor.cpp / placeable_save.cpp where known.
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:
@@ -205,7 +197,12 @@ int CSWSPlaceable::LoadBodyBag(unsigned char nAppearance)
     m_n290 = 0;
     m_bPlot = 0;
     m_n274 = 18;
-    m_sPortrait = "";
+    // NOTE: the original assigns each empty string through a temporary
+    // CExoString, destroyed at once, although operator=(const char*) exists.
+    {
+        CExoString sEmpty("");
+        m_sPortrait = sEmpty;
+    }
     m_nAppearance = nAppearance;
     m_nHitPoints = 15;
     SetCurrentHitPoints(15);
@@ -224,22 +221,70 @@ int CSWSPlaceable::LoadBodyBag(unsigned char nAppearance)
     sLocName.ClearLocString();
     sLocName.SetStrRef(38612);
     m_sDescription = sLocName;
-    m_sScripts[10] = "";
-    m_sScripts[0] = "";
-    m_sScripts[1] = "";
-    m_sScripts[2] = "";
-    m_sScripts[3] = "";
-    m_sScripts[4] = "";
-    m_sScripts[5] = "";
-    m_sScripts[6] = "";
-    m_sScripts[7] = "";
-    m_sScripts[8] = "";
-    m_sScripts[9] = "";
-    m_sScripts[11] = "";
-    m_sScripts[12] = "";
-    m_sScripts[13] = "";
-    m_sScripts[14] = "";
-    m_sScripts[15] = "";
+    {
+        CExoString sEmpty("");
+        m_sScripts[10] = sEmpty;
+    }
+    {
+        CExoString sEmpty("");
+        m_sScripts[0] = sEmpty;
+    }
+    {
+        CExoString sEmpty("");
+        m_sScripts[1] = sEmpty;
+    }
+    {
+        CExoString sEmpty("");
+        m_sScripts[2] = sEmpty;
+    }
+    {
+        CExoString sEmpty("");
+        m_sScripts[3] = sEmpty;
+    }
+    {
+        CExoString sEmpty("");
+        m_sScripts[4] = sEmpty;
+    }
+    {
+        CExoString sEmpty("");
+        m_sScripts[5] = sEmpty;
+    }
+    {
+        CExoString sEmpty("");
+        m_sScripts[6] = sEmpty;
+    }
+    {
+        CExoString sEmpty("");
+        m_sScripts[7] = sEmpty;
+    }
+    {
+        CExoString sEmpty("");
+        m_sScripts[8] = sEmpty;
+    }
+    {
+        CExoString sEmpty("");
+        m_sScripts[9] = sEmpty;
+    }
+    {
+        CExoString sEmpty("");
+        m_sScripts[11] = sEmpty;
+    }
+    {
+        CExoString sEmpty("");
+        m_sScripts[12] = sEmpty;
+    }
+    {
+        CExoString sEmpty("");
+        m_sScripts[13] = sEmpty;
+    }
+    {
+        CExoString sEmpty("");
+        m_sScripts[14] = sEmpty;
+    }
+    {
+        CExoString sEmpty("");
+        m_sScripts[15] = sEmpty;
+    }
     m_n398 = 0;
     SetAnimation(10000);
     g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(GetTag(), GetId());

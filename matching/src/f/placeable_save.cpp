@@ -1,11 +1,6 @@
 // CSWSPlaceable::SavePlaceable (round s8, 0x00586A70).
 
-class CExoString {
-public:
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

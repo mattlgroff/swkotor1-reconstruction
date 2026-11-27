@@ -5,14 +5,7 @@
 #ifndef L_SW_PAZAAK_H
 #define L_SW_PAZAAK_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    char operator[](int nIndex) const;              // 0x005E5600
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

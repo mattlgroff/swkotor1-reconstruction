@@ -1,10 +1,4 @@
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    CExoString(const char* s);
-    ~CExoString();
-};
+#include "shared/exo_string.h"
 
 class CSWPartyTable {
 public:

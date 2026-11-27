@@ -2,17 +2,7 @@
 // (0x005CB350-0x005CB730): CSWVirtualMachineCommands::ExecuteCommandSWMG_*,
 // CSWMGGunBank::SetBulletModel and the float test at 0x005CB440.
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    CExoString &operator=(const char *s);
-    char *CStr() const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

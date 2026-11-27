@@ -6,14 +6,7 @@
 
 #include "l/sw_behavior_camera_dialog.h"
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-
-    CExoString(const char* szSource);           // 0x005E5A90
-    ~CExoString();                              // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:

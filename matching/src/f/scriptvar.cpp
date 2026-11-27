@@ -1,23 +1,7 @@
 // CSWSScriptVarTable accessors and lifetime
 // (b0059_f2_scriptvar_dialog).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    CExoString(const CExoString &s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    int operator==(const CExoString &s) const;
-    int operator==(const char *s) const;
-    char operator[](int n) const;
-    int GetLength() const;
-    CExoString Left(int n) const;
-    CExoString SubString(int nStart, int nCount) const;
-
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 #include "shared/vector.h"
 

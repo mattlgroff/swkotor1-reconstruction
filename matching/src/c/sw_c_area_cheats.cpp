@@ -11,17 +11,7 @@
 #define CHEAT_MIN(a, b) (((a) > (b)) ? (b) : (a))
 #define CHEAT_MAX(a, b) (((a) < (b)) ? (b) : (a))
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    int AsINT() const;                              // 0x005E5630
-    char* CStr();                                   // 0x005E5670
-    void Format(const char* sFormat, ...);          // 0x005E5680
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoIni {
 public:

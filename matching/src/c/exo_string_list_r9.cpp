@@ -5,15 +5,7 @@
 
 extern "C" __declspec(dllimport) int __stdcall MessageBoxA(void* hWnd, const char* sText, const char* sCaption, unsigned int nType);   // IAT 0x0073D418
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    char* CStr() const;                             // 0x005E5670
-};
+#include "shared/exo_string.h"
 
 class CExoStringList {
 public:

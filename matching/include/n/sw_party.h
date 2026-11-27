@@ -20,16 +20,7 @@ Vector Normalize(const Vector& v);                      // 0x004AB180
 float Magnitude(const Vector& v);                       // 0x004AB100, descriptive
 float DegreesToRadians(float fDegrees);                 // 0x004A96D0, descriptive
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    void Format(const char* fmt, ...);              // 0x005E5680
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:

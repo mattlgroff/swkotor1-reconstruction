@@ -8,11 +8,7 @@
 
 #define OBJECT_INVALID 0x7f000000
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

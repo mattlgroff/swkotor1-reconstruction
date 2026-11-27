@@ -2,7 +2,7 @@
 // mouse-relative positioning. Standalone layout; label at +0x64.
 struct CSWGuiExtent { int left,top,width,height; };
 class CSWGuiControl;
-class CExoString { public: char* m_sString; unsigned long m_nLength; CExoString(const char* s); ~CExoString(); };
+#include "shared/exo_string.h"
 class CResRef { public: char m_resRef[16]; CResRef(const char* s); };
 class CSWGuiTextLayout { public: CSWGuiExtent GetExtent(); }; // 0x00414F10, descriptive
 class CSWGuiTextParams { public: char pad_0x0[0x50]; CSWGuiTextLayout* m_pLayout; char pad_0x54[4]; };

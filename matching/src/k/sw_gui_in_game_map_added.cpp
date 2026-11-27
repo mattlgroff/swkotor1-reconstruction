@@ -2,16 +2,7 @@
 // map notes and the party-select / return-to-Ebon-Hawk button states.
 // Panel offsets as sw_gui_in_game_map.cpp; server classes trimmed.
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    char* CStr() const;                             // 0x005E5670
-    void Format(const char* szFormat, ...);         // 0x005E5680
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

@@ -1,10 +1,6 @@
 // Send a system administration command from the client to the server.
 #include <string.h>
-class CExoString {
-public:
-    int GetLength() const; // 0x005E5790
-    char* CStr() const;    // 0x005E5670
-};
+#include "shared/exo_string.h"
 class CNetLayer {
 public:
     int SendMessageToPlayer(unsigned long player, unsigned char* message,

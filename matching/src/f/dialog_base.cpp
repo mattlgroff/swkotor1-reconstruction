@@ -1,15 +1,7 @@
 // CSWSDialog node classes and small dialog / journal records
 // (0x0059E860-0x0059F5B0).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const CExoString &s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoLocString {
 public:

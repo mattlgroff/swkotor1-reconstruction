@@ -45,7 +45,7 @@ CSWGuiInGameMenu::CSWGuiInGameMenu() {}
 // FUNCTION: SWKOTOR 0x00628100 SYMBOL: ??1CSWGuiInGameMenu@@UAE@XZ
 // Implicit CSWGuiInGameMenu destructor (emitted with the vtable).
 // FUNCTION: SWKOTOR 0x006280E0 SYMBOL: ??_GCSWGuiInGameMenu@@UAEPAXI@Z
-class CExoString { public: char* m_pString; unsigned long m_length; ~CExoString(); };
+#include "shared/exo_string.h"
 class CGuiInGameDialogMessage { public: CExoString m_sSpeaker,m_sText; ~CGuiInGameDialogMessage(); };
 // FUNCTION: SWKOTOR 0x00628600
 CGuiInGameDialogMessage::~CGuiInGameDialogMessage() {}

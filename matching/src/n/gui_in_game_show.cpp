@@ -1,10 +1,5 @@
 // CGuiInGame::ShowSWInGameGui (guiingame.o). Standalone layout.
-class CExoString {
-public:
-    char* m_sString; unsigned long m_nLength;
-    CExoString(const char* s); // 0x005E5A90
-    ~CExoString(); // 0x005E5C20
-};
+#include "shared/exo_string.h"
 class CVirtualMachine { public: int RunScript(CExoString* sScript,unsigned long oid,int bArg); /* 0x005D0FC0 */ };
 #include "shared/globals.h"
 class CExoSound { public: void SetSoundMode(int nMode); /* 0x005D5E80 */ };

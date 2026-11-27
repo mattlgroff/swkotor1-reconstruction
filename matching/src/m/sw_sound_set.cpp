@@ -1,14 +1,7 @@
 // CSoundSet / CSoundSetList (soundset.o) and their
 // CResHelper<CResSSF, 2060> base.
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

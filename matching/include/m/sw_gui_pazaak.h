@@ -9,20 +9,7 @@
 #ifndef M_SW_GUI_PAZAAK_H
 #define M_SW_GUI_PAZAAK_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* sString);                // 0x005E5A90
-    CExoString(int n);                              // 0x005E5BC0
-    CExoString(const CExoString& sString);          // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    char* CStr() const;                             // 0x005E5670
-};
+#include "shared/exo_string.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;

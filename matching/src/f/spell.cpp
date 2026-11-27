@@ -1,19 +1,7 @@
 // CSWSpell construction and the prerequisite/master-spell id
 // parser (b0059_f2_scriptvar_dialog).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const CExoString &s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    CExoString &operator=(const char *s);
-    char operator[](int n) const;
-    int GetLength() const;
-
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CResRef {
 public:

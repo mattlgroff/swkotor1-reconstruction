@@ -14,20 +14,7 @@ class CSWSAreaOfEffectObject;
 class CWorldTimer;
 class CSWSArea;
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int operator==(const char* s) const;            // 0x005E5290
-    int CompareNoCase(const CExoString& s) const;   // 0x005E6450
-    char* CStr() const;                             // 0x005E5670
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 struct CResRef {
     void CopyToString(CExoString& s) const;         // 0x00405F70
