@@ -275,18 +275,9 @@ public:
     unsigned char m_bBumpMapLightsDisabled;             // +0xf4
 };
 
-extern int g_bVertexProgramRefresh;                     // 0x007A193C
-extern int g_bDynamicLights;                            // 0x007B92DC
-extern int g_nActiveLights;                             // 0x008305E8 (placeholder name)
-extern int g_nMaxShadowLights;                          // 0x007A1938 (placeholder name)
-extern float g_fShadowLightFadeTime;                    // 0x007A1948 (placeholder name)
-extern int g_nDynamicActiveLights;                      // 0x008305EC (placeholder name)
-extern short g_nHeadLight;                              // 0x0078E388 (placeholder name)
+#include "shared/globals.h"
 void AurEnableHeadLight();                              // 0x0044DA60
 float* AurMakeColor(const Vector& vColor, const float& fAlpha);     // 0x004AAAB0
-extern const unsigned int g_aGLLightParams[];           // 0x0073F320 (placeholder name)
-extern Vector g_vHeadLightAmbient;                      // 0x007A1958 (placeholder name)
-extern Vector g_vHeadLightDiffuse;                      // 0x007A194C (placeholder name)
 class RenderCamera {
 public:
     char pad_0x0[0x7c];

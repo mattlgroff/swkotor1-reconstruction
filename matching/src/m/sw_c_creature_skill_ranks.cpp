@@ -7,7 +7,7 @@ public:
     unsigned char m_nNumSkills;
 };
 
-extern CSWRules* g_pRules;
+#include "shared/globals.h"
 
 class CSWCCreatureStats {
 public:

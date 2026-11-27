@@ -33,7 +33,7 @@ public:
     C2DAs* m_p2DArrays;                             // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWCArea {
 public:
@@ -90,10 +90,6 @@ public:
 };
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern const int COMBAT_MODE_OFF;                   // 0x0074F220 (0)
-extern const int COMBAT_MODE_ON;                    // 0x0074F224 (1)
-extern int g_bPlayerControlFastMove;                // 0x00833BAC
-extern float g_fPlayerControlFastRate;              // 0x007A25F8 (15.0)
 
 #define OBJECT_INVALID 0x7f000000
 

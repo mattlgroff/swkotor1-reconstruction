@@ -6,9 +6,7 @@
 #include <stdio.h>
 #include "c/exo_base.h"
 
-extern char g_sExoEmptyString[];                    // 0x008328A4 "" (.data)
-extern char* g_pExoStringFormatBuffer;              // 0x008328A8
-extern unsigned long g_nExoStringFormatBufferSize;  // 0x008328AC
+#include "shared/globals.h"
 
 CExoString::CExoString()
 {

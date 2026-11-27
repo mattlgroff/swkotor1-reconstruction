@@ -36,9 +36,8 @@ public:
 
 extern unsigned short EFFECT_TYPE_SETSTATE;        // 0x0074669C (8)
 extern unsigned short EFFECT_TYPE_AC_DECREASE;     // 0x00746740
-extern int AC_TYPE_DODGE;               // 0x007468B0 (0, placeholder name)
+#include "shared/globals.h"
 extern int AC_VS_DAMAGE_TYPE_ALL;       // 0x0074688C (0x4007)
-extern unsigned short DURATION_TYPE_TEMPORARY;  // 0x007473C0 (1)
 
 class CSWRules {
 public:
@@ -46,7 +45,6 @@ public:
     unsigned char m_nDifficultyRacialType;  // 0xaa
 };
 
-extern CSWRules *g_pRules;              // 0x007A3A28
 
 class CSWSCombatAttackData {
 public:

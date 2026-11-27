@@ -48,7 +48,7 @@ class CClientAIMaster { public: int AddObject(CSWCObject*); };
 class CClientExoApp { public: CSWCModule* GetModule(); CGameObjectArray* GetGameObjectArray(); CClientAIMaster* GetClientAIMaster(); };
 class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
 extern CAppManager* g_pAppManager;
-extern const unsigned char GAME_OBJECT_VALID;
+#include "shared/globals.h"
 class CSWCMessage { public:
  unsigned long ReadOBJECTIDClient(); unsigned long ReadDWORD(int); int MessageReadOverflow(int);
  int HandleServerToPlayerAreaOfEffectUpdate_Add();

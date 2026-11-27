@@ -133,9 +133,7 @@ class Gob;
 Scene* __cdecl FindScene(char* szName);         // 0x0044fd60
 int __cdecl GobListFindIndex(char* szName);     // 0x00440410
 
-extern CExoArrayList<Gob*> g_lGobs;             // 0x007a8a58
-extern int g_nGobsCreated;                      // 0x007a8a1c
-extern int g_nGobCount;                         // 0x007a8a18
+#include "shared/globals.h"
 
 class Gob : public CAurObject {
 public:

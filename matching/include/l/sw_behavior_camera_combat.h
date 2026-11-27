@@ -29,7 +29,7 @@ public:
     char pad_0x00[0xb8];
     CTwoDimArrays* m_p2DArrays;                 // +0xb8
 };
-extern CSWRules* g_pRules;                      // 0x007A3A28
+#include "shared/globals.h"
 
 class CClientOptions {
 public:
@@ -104,15 +104,12 @@ public:
 };
 extern CAppManager* g_pAppManager;              // 0x007A39FC
 
-extern int g_bSwapMouseButtons;                 // 0x008338F0
-extern int g_bRenderQA;                         // 0x008327EC
 
 class CSWGuiManager {
 public:
     void SaveMousePosition();                   // 0x0040A3D0
     void RestoreOldMousePosition();             // 0x0040C7D0
 };
-extern CSWGuiManager* g_pGuiManager;            // 0x007A39F4
 
 // Spring integrators embedded in the cameras (descriptive names; the
 // playable source calls them CSWRK4Acceleration / CSWRK4SplitAcceleration):

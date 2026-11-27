@@ -82,7 +82,7 @@ public:
     int array_size;
 };
 
-extern const float g_fMessageZero;                  // 0x0073D700 (0.0f)
+#include "shared/globals.h"
 
 // vtable 0x007465A4
 class CNWMessage {

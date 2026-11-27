@@ -88,25 +88,11 @@ extern PFNGLALPHAFRAGMENTOP2ATI glAlphaFragmentOp2ATI;          // 0x007bb5e8
 extern PFNGLCOLORFRAGMENTOP3ATI glColorFragmentOp3ATI;          // 0x007bb7fc
 extern PFNGLALPHAFRAGMENTOP3ATI glAlphaFragmentOp3ATI;          // 0x007bb680
 
-extern unsigned char g_bSoftShadowsAllowed;     // 0x0078dae9
-extern int g_bSoftShadows;                      // 0x0078e420
+#include "shared/globals.h"
 extern int g_nScreenWidth;                      // 0x0078d1d4
 extern int g_nScreenHeight;                     // 0x0078d1d8
 extern int g_nPowerWidth;                       // 0x007a6890
 extern int g_nPowerHeight;                      // 0x007a6894
-extern unsigned int g_nRootTexture;             // 0x007a687c
-extern unsigned int g_nSoftShadowTexture;       // 0x007a68f8
-extern void* g_hSoftShadowPbuffer1;             // 0x007a68e8
-extern void* g_hSoftShadowDC1;                  // 0x007a68ec
-extern void* g_hSoftShadowContext1;             // 0x007a68f0
-extern unsigned int g_nSoftShadowTexture1;      // 0x007a68f4
-extern void* g_hSoftShadowPbuffer2;             // 0x007a68fc
-extern void* g_hSoftShadowDC2;                  // 0x007a6900
-extern void* g_hSoftShadowContext2;             // 0x007a6904
-extern unsigned int g_nSoftShadowTexture2;      // 0x007a6908
-extern unsigned int g_nBloomShaderATI;          // 0x007a6928 (also the soft-shadow blur)
-extern void* g_hGLContext;                      // 0x007a6854
-extern void* g_hGLDC;                           // 0x007a47e4
 
 int AurSoftShadowsAvailable();                  // 0x0045f7b0
 int AurATISoftShadowsAvailable();               // 0x0045f7e0

@@ -47,6 +47,6 @@ Vector PlaneIntersect(const Vector& n, float d, const Vector& a,
                       const Vector& b);                     // 0x004AB250
 void BuildMatrix(float* pOut, const Vector* pPos, const Quaternion* pOri);  // 0x004AA9C0
 
-extern float g_fZeroEpsilon;                // 0x0073D700
+#include "shared/globals.h"
 
 #endif

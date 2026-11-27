@@ -56,20 +56,14 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 class CVirtualMachine {
 public:
     int RunScript(CExoString *psFileName, unsigned long oid, int bFlag);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
 
-extern unsigned short g_nEffectTypeVisual;
-extern unsigned short g_nEffectSubTypeMagical;
-extern int g_nEffectVisualParam;
-extern int g_nDoorStateFirst;
-extern int g_nDoorStateLast;
 extern unsigned long EVENT_DESTROY_OBJECT;
 
 class CGameEffect {

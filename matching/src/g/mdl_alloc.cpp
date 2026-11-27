@@ -2,7 +2,7 @@
 // element types, and the face constructors their array news call.
 #include "g/mdl_node.h"
 
-extern int g_nTriFaceCount;         // 0x007a8a00
+#include "shared/globals.h"
 
 // Skin vertex weight record (0x34 bytes, plain data).
 struct SkinVertexWeight {

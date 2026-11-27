@@ -83,12 +83,10 @@ public:
     void SetCaptureKeyboardKeys(int bCapture);      // 0x005DF720
 };
 
-extern CExoInput* g_pExoInput;                      // 0x007A39E4
+#include "shared/globals.h"
 
 // CExoIni is declared in l/sw_gui_options_in_game.h.
 
-extern const unsigned long g_nKeyMapKeyBase;        // 0x0074D3D8
-extern const unsigned long g_nKeyMapEscapeKey;      // 0x0074D45C
 
 class CSWGuiInGameOptKeyMappings : public CSWGuiPanel {
 public:

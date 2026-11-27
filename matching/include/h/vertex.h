@@ -39,7 +39,7 @@ public:
 class NodeVertexAnim;
 class NodeVertexDangly;
 
-extern int g_nNodeVertexBytes;          // 0x00830238
+#include "shared/globals.h"
 
 // 0x56 bytes (0x58 with padding).
 class NodeVertex {
@@ -165,16 +165,11 @@ int AurBumpProgramCreate();                                             // 0x004
 int AurBumpMappingAvailable();                                          // 0x0045FB10
 int AurVertexProgramsAvailable();                                       // 0x0045F770
 
-extern int g_bDisableTexCoordArray;     // 0x008305E0
-extern unsigned int g_eColorArray;      // 0x0073F3A0
-extern unsigned int g_eTexCoordArray;   // 0x0073F398
 void ActivateTextureStage(int nStage);  // 0x00425250
 int AurGLCaps710();                     // 0x0045F710, multitexture available
 typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int texture);
 extern PFNCLIENTACTIVETEXTURE glClientActiveTextureARB; // 0x007BB6B0
 extern unsigned int g_nActiveTextureUnit;   // 0x007A6898
-extern int g_bARBVertexProgram;         // 0x0078E5EC
-extern int g_bNVVertexProgram;          // 0x0078E8C0
 typedef void (__stdcall* PFNVERTEXATTRIBPTR)(unsigned int index, int size,
     unsigned int type, unsigned char normalized, int stride, const void* p);
 extern PFNVERTEXATTRIBPTR g_pglVertexAttribPointerARB;  // 0x007BB7D8

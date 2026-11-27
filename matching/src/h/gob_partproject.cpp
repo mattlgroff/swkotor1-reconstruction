@@ -58,9 +58,7 @@ public:
 
 void SetBeaming();                          // 0x00471450
 
-extern int g_bPartTransform;                // 0x0078E5F0
-extern int g_bProjectWorldSpace;            // 0x007B9374, descriptive
-extern int g_nPartsProjected;               // 0x00827FA8, descriptive
+#include "shared/globals.h"
 
 class MdlNodeTriMesh {
 public:

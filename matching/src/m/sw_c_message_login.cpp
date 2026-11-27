@@ -21,7 +21,7 @@ public:
 };
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern int g_bModuleLoadEnabled;                    // 0x008328FC
+#include "shared/globals.h"
 
 class CSWCMessage {
 public:

@@ -73,7 +73,7 @@ void PerlinTextureController::BuildPerlinImage(unsigned char* pImage, int nSize)
     delete[] pLevels;
 }
 
-extern int g_nAurFrameCounter;          // 0x007A46F4
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00462800
 void RandomTextureController::Update()
@@ -222,10 +222,6 @@ void LifeTextureController::Update()
 
 float CosLookup(float f);                       // 0x004AADF0 (table cosine)
 extern float g_fFrameTime;                      // 0x0078E574
-extern float g_fRingAmplitude;                  // 0x0078E560, descriptive
-extern float g_fRingFrequency;                  // 0x0078E564, descriptive
-extern float g_fRingPhaseScale;                 // 0x0078E568, descriptive
-extern float g_fRingPhaseSpeed;                 // 0x0078E56C, descriptive
 
 static inline float Clamp(float v, float fMin, float fMax)
 {

@@ -35,115 +35,7 @@ public:
 };
 
 // Column indices cached by the column-aware loaders.
-extern int g_nFootstepPitchOffsetColumn;     // 0x007A21A0
-extern int g_nFootstepRollingColumn;         // 0x007A219C
-extern int g_nWeaponSoundPitchOffsetColumn;  // 0x007A21A4
-extern int g_nRegenForceRegenColumn;         // 0x007A21AC
-extern int g_nRegenHealthRegenColumn;        // 0x007A21A8
-extern int g_nAnimAttackColumn;              // 0x007A217C
-extern int g_nAnimDamageColumn;              // 0x007A2168
-extern int g_nAnimDialogColumn;              // 0x007A2170
-extern int g_nAnimDodgeColumn;               // 0x007A2178
-extern int g_nAnimFireForgetColumn;          // 0x007A214C
-extern int g_nAnimHideEquippedItemsColumn;   // 0x007A2180
-extern int g_nAnimLoopingColumn;             // 0x007A2154
-extern int g_nAnimNameColumn;                // 0x007A2174
-extern int g_nAnimOverlayColumn;             // 0x007A2150
-extern int g_nAnimParryColumn;               // 0x007A216C
-extern int g_nAnimPauseColumn;               // 0x007A215C
-extern int g_nAnimRunningColumn;             // 0x007A2164
-extern int g_nAnimStationaryColumn;          // 0x007A2158
-extern int g_nAnimWalkingColumn;             // 0x007A2160
-extern int g_nForceAdjustEvilCostColumn;     // 0x007A2188
-extern int g_nForceAdjustGoodCostColumn;     // 0x007A2184
-extern int g_nDialogAnimDialogColumn;        // 0x007A2190
-extern int g_nDialogAnimFireForgetColumn;    // 0x007A218C
-extern int g_nDialogAnimLoopingColumn;       // 0x007A2194
-extern int g_nDialogAnimOverlayColumn;       // 0x007A2198
-extern int g_nAppearanceCol_ABORTONPARRY;  // 0x7A20C0
-extern int g_nAppearanceCol_BACKUPHEAD;  // 0x7A20C4
-extern int g_nAppearanceCol_CameraHeightOffset;  // 0x7A20C8
-extern int g_nAppearanceCol_CAMERASPACE;  // 0x7A20CC
-extern int g_nAppearanceCol_CREPERSPACE;  // 0x7A20D0
-extern int g_nAppearanceCol_DisableInjuredAnim;  // 0x7A20D4
-extern int g_nAppearanceCol_DRIVEACCl;  // 0x7A20D8
-extern int g_nAppearanceCol_DriveAnimRun;  // 0x7A20E4
-extern int g_nAppearanceCol_DriveAnimWalk;  // 0x7A20E0
-extern int g_nAppearanceCol_DriveMaxSpeed;  // 0x7A20DC
-extern int g_nAppearanceCol_ENVMAP;  // 0x7A20E8
-extern int g_nAppearanceCol_FootstepType;  // 0x7A20EC
-extern int g_nAppearanceCol_HEAD_ARC_H;  // 0x7A20F4
-extern int g_nAppearanceCol_HEAD_ARC_V;  // 0x7A20F8
-extern int g_nAppearanceCol_HEADBONE;  // 0x7A20FC
-extern int g_nAppearanceCol_HEADTRACK;  // 0x7A2100
-extern int g_nAppearanceCol_HEIGHT;  // 0x7A2104
-extern int g_nAppearanceCol_HITRADIUS;  // 0x7A210C
-extern int g_nAppearanceCol_hitdist;  // 0x7A2108
-extern int g_nAppearanceCol_GROUNDTILT;  // 0x7A20F0
-extern int g_nAppearanceCol_MODELTYPE;  // 0x7A2110
-extern int g_nAppearanceCol_NORMALHEAD;  // 0x7A2114
-extern int g_nAppearanceCol_PERSPACE;  // 0x7A2118
-extern int g_nAppearanceCol_RACE;  // 0x7A211C
-extern int g_nAppearanceCol_RUNDIST;  // 0x7A2120
-extern int g_nAppearanceCol_SIZECATEGORY;  // 0x7A2124
-extern int g_nAppearanceCol_SoundAppType;  // 0x7A2128
-extern int g_nAppearanceCol_WALKDIST;  // 0x7A212C
-extern int g_nAppearanceSoundsCol_ArmorType;  // 0x7A2144
-extern int g_nAppearanceSoundsCol_FallDirt;  // 0x7A2130
-extern int g_nAppearanceSoundsCol_FallHard;  // 0x7A2138
-extern int g_nAppearanceSoundsCol_FallMetal;  // 0x7A2134
-extern int g_nAppearanceSoundsCol_FallWater;  // 0x7A213C
-extern int g_nAppearanceSoundsCol_Weapon;  // 0x7A2140
-extern int g_nGenderCol_GENDER;  // 0x7A2148
-extern int g_nSurfaceMaterialCol_Name;  // 0x7A21B0
-extern int g_nVisualEffectCol_Imp_HeadCon_Node;  // 0x7A21B4
-extern int g_nVisualEffectCol_Imp_Impact_Node;  // 0x7A21B8
-extern int g_nVisualEffectCol_Imp_Root_H_Node;  // 0x7A21C8
-extern int g_nVisualEffectCol_Imp_Root_L_Node;  // 0x7A21C4
-extern int g_nVisualEffectCol_Imp_Root_M_Node;  // 0x7A21BC
-extern int g_nVisualEffectCol_Imp_Root_S_Node;  // 0x7A21C0
-extern int g_nVisualEffectCol_LowQuality;  // 0x7A21CC
-extern int g_nVisualEffectCol_OrientWithGround;  // 0x7A21D0
-extern int g_nVisualEffectCol_ShakeDelay;  // 0x7A21DC
-extern int g_nVisualEffectCol_ShakeDuration;  // 0x7A21D8
-extern int g_nVisualEffectCol_ShakeType;  // 0x7A21D4
-extern int g_nVisualEffectCol_SoundDuration;  // 0x7A21E4
-extern int g_nVisualEffectCol_SoundImpact;  // 0x7A21E0
-extern int g_nPersistentVisualEffectCol_DurationVFX;  // 0x7A21E8
-extern int g_nPersistentVisualEffectCol_OrientWithGround;  // 0x7A21EC
-extern int g_nPersistentVisualEffectCol_SHAPE;  // 0x7A21F0
-extern int g_nPersistentVisualEffectCol_RADIUS;  // 0x7A21F4
-extern int g_nPersistentVisualEffectCol_WIDTH;  // 0x7A21F8
-extern int g_nPersistentVisualEffectCol_LENGTH;  // 0x7A21FC
-extern int g_nPersistentVisualEffectCol_MODELMIN01;  // 0x7A2200
-extern int g_nPersistentVisualEffectCol_MODEL01;  // 0x7A2204
-extern int g_nPersistentVisualEffectCol_MODELMIN02;  // 0x7A2208
-extern int g_nPersistentVisualEffectCol_MODEL02;  // 0x7A220C
-extern int g_nPersistentVisualEffectCol_MODELMIN03;  // 0x7A2210
-extern int g_nPersistentVisualEffectCol_MODEL03;  // 0x7A2214
-extern int g_nPersistentVisualEffectCol_NUMACT01;  // 0x7A2218
-extern int g_nPersistentVisualEffectCol_NUMACT02;  // 0x7A221C
-extern int g_nPersistentVisualEffectCol_NUMACT03;  // 0x7A2220
-extern int g_nPersistentVisualEffectCol_DURATION01;  // 0x7A2224
-extern int g_nPersistentVisualEffectCol_DURATION02;  // 0x7A2228
-extern int g_nPersistentVisualEffectCol_DURATION03;  // 0x7A222C
-extern int g_nPersistentVisualEffectCol_EDGEWGHT01;  // 0x7A2230
-extern int g_nPersistentVisualEffectCol_EDGEWGHT02;  // 0x7A2234
-extern int g_nPersistentVisualEffectCol_EDGEWGHT03;  // 0x7A2238
-extern int g_nPersistentVisualEffectCol_SoundOneShot;  // 0x7A223C
-extern int g_nPersistentVisualEffectCol_SoundOneShotPercentage;  // 0x7A2240
-extern int g_nCreatureSpeedCol_RUNRATE;  // 0x7A2244
-extern int g_nCreatureSpeedCol_WALKRATE;  // 0x7A2248
-extern int g_nDoorTypesCol_SoundAppType;  // 0x7A224C
-extern int g_nGenericDoorsCol_SoundAppType;  // 0x7A2250
-extern int g_nPlaceablesCol_SoundAppType;  // 0x7A2254
-extern int g_nPlaceablesCol_StrRef;  // 0x7A2258
-extern int g_nPlaceablesCol_IgnoreStaticHitcheck;  // 0x7A225C
-extern int g_nPlaceableSoundsCol_ArmorType;  // 0x7A2260
-extern int g_nPlaceableSoundsCol_Locked;  // 0x7A2264
-extern int g_nPlaceableSoundsCol_Opened;  // 0x7A2268
-extern int g_nPlaceableSoundsCol_Closed;  // 0x7A226C
-extern int g_nPlaceableSoundsCol_Destroyed;  // 0x7A2270
+#include "shared/globals.h"
 
 class CTwoDimArrays {
 public:
@@ -1462,7 +1354,6 @@ int CTwoDimArrays::Load2DArrays_PlaceableSounds()
     return 0;
 }
 
-extern unsigned char g_nAppMode;  // 0x007A39DC (1: client)
 
 // FUNCTION: SWKOTOR 0x005C4730
 int CTwoDimArrays::LoadIPRPCostTables()

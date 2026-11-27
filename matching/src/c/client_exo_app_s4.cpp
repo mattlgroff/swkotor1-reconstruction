@@ -4,7 +4,7 @@
 
 #include "c/client_exo_app.h"
 
-extern float g_fFPS;                                // 0x007A22B4
+#include "shared/globals.h"
 
 extern "C" __declspec(dllimport) void __stdcall PostQuitMessage(int nExitCode);
 

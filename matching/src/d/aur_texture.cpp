@@ -25,17 +25,10 @@ extern PFN_LOADIMAGES3TC g_pfnLoadImageS3TC;    // 0x0078d420
 extern PFN_LOADIMAGEDDS g_pfnLoadImageDDS;      // 0x0078d40c
 extern PFN_LOADIMAGETGA g_pfnLoadImageTGA;      // 0x0078d414
 extern PFN_LOADIMAGE g_pfnLoadImageRaw;         // 0x0078d404
-extern int g_bAurTextureDisableDDS;             // 0x007a4700
-extern float g_fAurTextureDynamicMemoryRatio;   // 0x0078d3f0
+#include "shared/globals.h"
 extern PFN_LOADIMAGEPLT g_pfnLoadImagePLT;      // 0x0078d41c
 extern PFN_IMAGEHOOK g_pfnImageHook;            // 0x007a46f8
 extern PFN_RELEASEHOOK g_pfnReleaseHook;        // 0x007a46fc
-extern unsigned char* g_pLayerTable;            // 0x007a4704
-extern unsigned char* g_pLayerAlpha;            // 0x007a4708
-extern unsigned char g_bBumpMaps;               // 0x007a46d4
-extern unsigned char g_aBumpTable[];            // 0x007a4764
-extern int g_nAurTextureMaxTexID;               // 0x007a46bc
-extern int g_nActiveTextureStage;               // 0x007a6898
 extern PFN_GLACTIVETEXTURE g_pfnglActiveTextureARB; // 0x007bb80c
 
 void ImageGamma(int nWidth, int nHeight, int nBpp, void* pData, float fGamma);  // 0x0045dd90

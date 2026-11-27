@@ -21,13 +21,7 @@ struct VertexProgramLighting {
     int m_n40;                                      // +0x40 (placeholder name)
 };
 
-extern char* g_pCurrentVertexProgramSource;             // 0x008305DC (placeholder name)
-extern unsigned char g_nCurrentVertexProgramLighting;   // 0x008305D8 (placeholder name)
-extern int g_bVertexProgramRefresh;                     // 0x007A193C
-extern unsigned int g_vertex_program_current_generation;    // 0x00830540
-extern int g_bUseARBVertexProgram;                      // 0x0078E5EC
-extern short g_bHeadLight;                              // 0x0078E388
-extern Scene* g_pActiveScene;                           // 0x007B92A0 (placeholder name)
+#include "shared/globals.h"
 extern unsigned char(__stdcall* g_pfnIsProgramARB)(unsigned int);          // 0x007BB5B8
 extern unsigned char(__stdcall* g_pfnIsProgramNV)(unsigned int);           // 0x007BB5AC
 extern void(__stdcall* g_pfnGenProgramsARB)(int, unsigned int*);           // 0x007BB528 (placeholder name)

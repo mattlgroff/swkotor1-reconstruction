@@ -7,8 +7,7 @@
 #include "b/sws_item.h"
 #include "b/server_info.h"
 
-extern const unsigned char GAME_OBJECT_VALID;               // 0x0074666C
-extern const unsigned char OBJECT_TYPE_ITEM;                // 0x00746635
+#include "shared/globals.h"
 extern const unsigned char OBJECT_TYPE_PLACEABLE;           // 0x00746638
 
 class CSWSPlayerLUOInventory;

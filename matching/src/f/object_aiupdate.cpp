@@ -49,7 +49,7 @@ public:
     int RunScriptSituation(void *pScript, unsigned long oid, int bFlag);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
+#include "shared/globals.h"
 
 class CGameObject;
 class CSWSArea;
@@ -84,10 +84,7 @@ public:
 
 extern CAppManager *g_pAppManager;
 extern const unsigned long OBJECT_INVALID;         // 0x00746644
-extern char g_cObjectArraySuccess;                 // 0x0074666C
-extern const int EVENT_AI_LATER;                   // 0x007441E0
 extern const unsigned long EVENT_SIGNAL_EVENT;     // 0x007441DC
-extern const unsigned long EVENT_TIMED_EVENT;      // 0x007441B8
 
 class CScriptEvent {
 public:

@@ -116,7 +116,7 @@ struct CClientOptions {
     unsigned char m_nDifficulty;                    // 0x04
 };
 
-extern int g_nDamageMultiplier;                     // 0x007A1B30 (descriptive name)
+#include "shared/globals.h"
 extern const int EFFECT_TYPE_TEMPORARY_HITPOINTS;   // 0x007466B8 (descriptive name)
 
 // NONMATCH (51): the original reads the effect type word twice (no CSE) and picks other scratch

@@ -6,18 +6,10 @@
 
 extern "C" __declspec(dllimport) void __stdcall PostQuitMessage(int nExitCode);
 
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
-extern const unsigned char OBJECT_TYPE_AREA;        // 0x00746633
+#include "shared/globals.h"
 extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
-extern const unsigned char OBJECT_TYPE_ITEM;        // 0x00746635
-extern const unsigned char OBJECT_TYPE_TRIGGER;     // 0x00746636
-extern const unsigned char OBJECT_TYPE_PROJECTILE;  // 0x00746637
 extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
 extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
-extern const unsigned char OBJECT_TYPE_AREAOFEFFECT;    // 0x0074663A
-extern const unsigned char OBJECT_TYPE_SOUND;       // 0x0074663E
-extern const int KEY_DISPLAY_FIRST;                 // 0x0074D3D8
-extern const int KEY_DISPLAY_LAST;                  // 0x0074D3DC
 
 #include "shared/vector.h"
 
@@ -69,8 +61,6 @@ struct COptionsFlags {
     unsigned char m_nFlags;                         // 0x08
 };
 
-extern int g_bMouseButtonDown;                      // 0x008338F4
-extern int g_bSwapMouseButtons;                     // 0x008338F0
 
 class CSWGuiModalWarningBox {
 public:
@@ -232,9 +222,7 @@ public:
     virtual void SetGamma(float f);                 // 0x24
 };
 
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 extern CRender* g_pRender;                          // 0x007A39F8
-extern const int MUSIC_STATE_NORMAL;                // 0x0074C5EC
 
 class CSWGuiManagerMouse {
 public:
@@ -281,9 +269,6 @@ public:
     void SetPlayerCreature(unsigned long oid);      // 0x006364C0
 };
 
-extern CExoInput* g_pExoInput;                      // 0x007A39E4
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
-extern CToolTipGlobals* g_pToolTipGlobals;          // 0x007A39F4
 
 // FUNCTION: SWKOTOR 0x005EE8F0
 int CClientExoAppInternal::GetPauseState(unsigned char nType)

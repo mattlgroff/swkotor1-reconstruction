@@ -7,9 +7,8 @@
 
 #include "o/sw_gui_main_chargen.h"
 
-extern Vector g_vGuiDisabledTextColor;              // 0x007A2408
+#include "shared/globals.h"
 extern Vector g_vAbilityColorGranted;               // 0x007A23C0
-extern const unsigned short RACIAL_TYPE_DROID;      // 0x0074BF10
 
 // The level-up stats calls of the skill screen.
 class CSWCLevelUpStatsS : public CSWCLevelUpStatsL {

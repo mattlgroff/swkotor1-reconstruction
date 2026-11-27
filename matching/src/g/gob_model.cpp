@@ -11,7 +11,7 @@ class MdlNode;
 class Model;
 class Animation;
 
-extern int g_nModelMemory;                  // 0x007a6990
+#include "shared/globals.h"
 
 int __cdecl MdlNodeCountNodes(MdlNode* pRoot, int n);              // 0x00438400
 void __cdecl MdlNodeBuildMap(MdlNode* pRoot, MdlNode* pModelRoot, int* pCount);  // 0x00439a10

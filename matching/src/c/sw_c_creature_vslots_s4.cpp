@@ -62,7 +62,7 @@ public:
 };
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
+#include "shared/globals.h"
 
 #include "shared/vector.h"
 

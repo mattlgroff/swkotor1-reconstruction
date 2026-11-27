@@ -9,9 +9,8 @@ public:
 };
 class CServerAIMaster { public: void AddEventDeltaTime(unsigned long, unsigned long, unsigned long,
     unsigned long, unsigned long, void*); }; // 0x004B08D0
-extern const int EVENT_AI_LATER; // 0x007441E0
+#include "shared/globals.h"
 extern const unsigned short EFFECT_TYPE_VISUALEFFECT; // 0x007466F4
-extern const unsigned short DURATION_TYPE_7473B8; // 0x007473B8
 class CSWSObject;
 class CGameObject;
 class CSWSCreature;
@@ -63,9 +62,6 @@ public:
     char pad_20[0x8c-0x20];
 };
 #pragma pack(pop)
-extern const int EFFECT_TYPE_0746828; // 0x00746828
-extern const int EFFECT_TYPE_074682C; // 0x0074682C
-extern const unsigned short DURATION_TYPE_7473C8; // 0x007473C8
 class CSWSCreature {
 public:
     int CalculateDamagePower(CSWSObject* pTarget);

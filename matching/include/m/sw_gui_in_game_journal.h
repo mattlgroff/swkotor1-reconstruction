@@ -78,7 +78,7 @@ struct CSWGuiExtent {
 
 #include "shared/vector.h"
 
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
+#include "shared/globals.h"
 extern Vector g_vAbilityColorGranted;               // 0x007A23C0
 
 class CTlkTable {
@@ -86,7 +86,6 @@ public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 
 class CExoLocString {
 public:
@@ -114,7 +113,6 @@ public:
     C2DAs* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 // A quest journal entry as returned by CSWGuiInGameJournal::GetQuestEntryAt.
 struct SJournalEntry {
@@ -162,9 +160,6 @@ public:
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
-extern int g_nJournalSortOrder;                     // 0x00833A90
-extern int g_bJournalUpdated;                       // 0x00833A94
-extern unsigned long g_anJournalSortStrRefs[4];     // 0x007A2474 (descriptive)
 
 class CSWGuiControl;
 class CSWGuiPanel;

@@ -20,10 +20,8 @@ public:
     virtual void v20();
     virtual void SetGamma(float fGamma, int bApply); // 0x24
 };
-extern CRenderWindow* g_pRenderWindow; // 0x007A39F8
+#include "shared/globals.h"
 
-extern Vector g_vDifficultyExitColor; // 0x007A23B4 (enabled text)
-extern Vector g_vKeyMapLockedTextColor; // 0x007A2408 (disabled text)
 
 // FUNCTION: SWKOTOR 0x006DDC80
 void CSWGuiOptionsSound::SetDescription(unsigned long nStrRef)

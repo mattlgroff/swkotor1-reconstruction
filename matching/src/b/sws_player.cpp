@@ -35,7 +35,7 @@ public:
 };
 
 extern const int EFFECT_TYPE_DISGUISE;                          // 0x00746774 (0x3E)
-extern const unsigned char OBJECT_TYPE_LAST_NON_GAME;           // 0x00746633 (4)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00561080
 CGameObject* CSWSPlayer::GetGameObject()

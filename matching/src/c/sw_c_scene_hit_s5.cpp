@@ -45,7 +45,7 @@ public:
 };
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern int g_bHitWalkmesh;                          // 0x0078E5A8
+#include "shared/globals.h"
 
 class Scene {
 public:

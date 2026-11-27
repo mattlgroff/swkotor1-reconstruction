@@ -36,7 +36,7 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender); // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                              // 0x007A3A08
+#include "shared/globals.h"
 
 // The player's language, then the default and module languages, then the
 // first stored entry; a bare StrRef is fetched from the talk table and its

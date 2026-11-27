@@ -44,18 +44,10 @@ public:
 };
 
 extern CAppManager* g_pAppManager;                  // 0x007a39fc
-extern CRenderWindow* g_pRenderWindow;              // 0x007a39f8
+#include "shared/globals.h"
 extern int g_nScreenWidth;                          // 0x0078d1d4
 extern int g_nScreenHeight;                         // 0x0078d1d8
 extern unsigned char g_nScreenDepth;                // 0x0078d1e0
-extern unsigned long g_nSavedScreenWidth;           // 0x0078d1f0
-extern unsigned long g_nSavedScreenHeight;          // 0x0078d1f4
-extern unsigned char g_nSavedScreenDepth;           // 0x0078d1f8
-extern int g_bRereadVideoMode;                      // 0x0078d1fc
-extern int g_bMovieVideoMode;                       // 0x007a3c54
-extern int g_nMovieResolutionNesting;               // 0x007a3cb8
-extern int g_bMovieResolutionChanged;               // 0x007a3cbc
-extern int g_bMovieResolutionLocked;                // 0x007a3cc0
 
 void __cdecl AurSetAntiAliasingMode(int nMode);     // 0x0044f2f0
 int __cdecl ReInitAurora(int nWidth, int nHeight, unsigned char nDepth, int bFullScreen, int nArg); // 0x00403800

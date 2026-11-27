@@ -19,8 +19,7 @@ int CSWSMessage::SendServerToServerAdminMessage(unsigned long nPlayerId, const C
     return bResult;
 }
 
-extern const char* g_sServerStatusKey;                       // 0x007A1F14 ("ServerStatus")
-extern const char* g_sPlayerListKey;                         // 0x007A1F3C ("PlayerList")
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00579A80
 void CSWSMessage::SendServerToServerAdminPlayerList(unsigned long nPlayerId)
@@ -31,9 +30,6 @@ void CSWSMessage::SendServerToServerAdminPlayerList(unsigned long nPlayerId)
     SendServerToServerAdminMessage(nPlayerId, sMessage);
 }
 
-extern const char* g_sModuleLoadedKey;                      // 0x007A1F1C
-extern const char* g_sIdleKey;                              // 0x007A1F20
-extern const char* g_sModuleRunningKey;                     // 0x007A1F24
 
 // FUNCTION: SWKOTOR 0x00579920
 void CSWSMessage::SendServerToServerAdminServerStatus(unsigned long nPlayerId)

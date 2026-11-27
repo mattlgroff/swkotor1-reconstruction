@@ -109,7 +109,7 @@ class CSWRules {
 public:
     int IsFeatUseable(unsigned short nFeat);
 };
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 struct CSWClassFeat {
     unsigned short m_nFeat;

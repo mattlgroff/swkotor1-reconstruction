@@ -539,11 +539,8 @@ public:
     CSWSkill *m_pSkills;             // +0xb4
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
-extern const unsigned char CLASS_TYPE_JEDI_GUARDIAN;
-extern const unsigned char CLASS_TYPE_JEDI_CONSULAR;
-extern const unsigned char CLASS_TYPE_JEDI_SENTINEL;
 
 // FUNCTION: SWKOTOR 0x005A58B0
 char CSWSCreatureStats::GetTotalSTRBonus()

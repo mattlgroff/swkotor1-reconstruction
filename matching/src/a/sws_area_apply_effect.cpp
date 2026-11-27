@@ -49,10 +49,7 @@ public:
     void ApplyEffect(CGameEffect* pEffect, int bLoadingGame, int bArg3); // 0x004D14F0
 };
 
-extern const int g_nEffectAreaOfEffect;  // 0x007466F8
-extern const int g_nEffectSummonCreature; // 0x00746694
-extern const int g_nEffectVisualEffect;  // 0x007466F4
-extern const int g_nEffectLink;          // 0x0074671C
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0050C6B0
 void CSWSArea::ApplyEffect(CGameEffect* pEffect, Vector* pPosition, Vector* pOrientation)

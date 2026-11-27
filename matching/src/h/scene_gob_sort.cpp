@@ -15,7 +15,7 @@ public:
     char pad_0x108[0x77];
     unsigned char m_bPriority;
 };
-extern int g_bOrderByPriority; // 0x0078E3B4, descriptive
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00450270
 int GobOrderCmp(const GobSortView** pa, const GobSortView** pb)

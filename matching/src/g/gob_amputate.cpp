@@ -97,7 +97,7 @@ public:
 
 Part* __cdecl FindPart(Part* pRoot, char* szName);  // 0x0043fe00
 
-extern int g_bNoModelDelete;                    // 0x007a8a04
+#include "shared/globals.h"
 
 class Gob {
 public:

@@ -85,7 +85,7 @@ public:
 };
 
 Vector operator/(const Vector& v, float f);     // 0x00437A90
-extern int g_nLastObjectRoom;                   // 0x007FBF68
+#include "shared/globals.h"
 
 // NONMATCH 6: frame is 0xC larger (the original builds the division result
 // in vPos's slot) and the +0x51 bit test is `test byte ptr` here.

@@ -190,26 +190,8 @@ extern PFNPROGRAMPARAMETER g_pfnProgramParameter4fNV;      // 0x007BB7AC
 
 extern Scene* g_pScene;                         // 0x007B92A0
 extern RenderCamera* g_pRenderCamera;           // 0x007BB4E8
-extern int g_bARBVertexProgram;                 // 0x0078E5EC
-extern unsigned int g_aBlendFactors[];          // 0x0073F270
-extern unsigned int g_eGLTexture2D;             // 0x0078D44C
-extern unsigned int g_eGLFog;                   // 0x0078D450
-extern unsigned int g_eGLTexture3D;             // 0x0078D46C
-extern unsigned int g_eTexCoordArray;           // 0x0073F398
-extern unsigned int g_eAttribArray5;            // 0x0073F3B4, descriptive
-extern unsigned int g_eTangentArray;            // 0x0073F3B8
-extern unsigned int g_eBinormalArray;           // 0x0073F3BC
-extern unsigned int g_eTexNormalArray;          // 0x0073F3C0
+#include "shared/globals.h"
 extern unsigned int g_nActiveTextureUnit;       // 0x007A6898
-extern float g_fBumpLightScale;                 // 0x0078E648, descriptive
-extern char g_szBumpDiffuseVP[];                // 0x0079A600, descriptive
-extern int g_nBumpDiffuseVPContext;             // 0x00830558, descriptive
-extern char g_szBumpSpecularVP[];               // 0x0079A218, descriptive
-extern int g_nBumpSpecularVPContext;            // 0x00830554, descriptive
-extern int g_bBumpSpecularMagnitude;            // 0x0078E5F4, descriptive
-extern int g_nBumpSpecularMode;                 // 0x0078E634, descriptive
-extern float g_fBumpSpecularScale;              // 0x0078E630, descriptive
-extern const float g_fZero;                     // 0x0073D700
 
 static inline void SetVertexProgramParameter(unsigned int nIndex, float x, float y, float z, float w)
 {

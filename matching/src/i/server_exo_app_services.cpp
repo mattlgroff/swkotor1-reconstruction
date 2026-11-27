@@ -31,13 +31,12 @@ public:
     ~CVirtualMachine();                                             // 0x005D0FB0
     char m_pad0[4];
 };
-extern CVirtualMachine* g_pVirtualMachine;                          // 0x007A3A00
+#include "shared/globals.h"
 
 class CScriptCompiler {
 public:
     ~CScriptCompiler();                                             // 0x005D1120
 };
-extern CScriptCompiler* g_pScriptCompiler;                          // 0x007A3A04 (placeholder name)
 
 class CTlkTable {
 public:
@@ -47,9 +46,7 @@ public:
     ~CTlkTable();                                                   // 0x0041E100
     char m_pad0[0x58];
 };
-extern CTlkTable* g_pTlkTable;                                      // 0x007A3A08
 
-extern unsigned char g_nAppMode;                                    // 0x007A39DC
 
 class CSWSRules : public CSWRules {
 public:
@@ -77,7 +74,6 @@ public:
     void SetMusicState(int nState);                                 // 0x005D5E80
 };
 extern CExoSound* g_pExoSound;                                      // 0x007A39EC
-extern const int MUSIC_STATE_NORMAL;                                // 0x0074C5EC
 
 class CAppManager {
 public:

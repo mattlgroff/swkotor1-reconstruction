@@ -60,23 +60,10 @@ bool StaticPartNeedsMat(PartTriMesh* pPart, MdlNodeTriMesh* pNode, unsigned char
                         unsigned char* pbNeedsMat);     // 0x0046F410
 void DynamicPartCalculateMaterial(Gob* pGob, Vector* pColor, Vector* pOffset, float* pAlpha);  // 0x0046F490
 
-extern Scene* g_pAnimatingScene;            // 0x007B92A0
-extern unsigned int g_eGLFog;               // 0x0078D450
-extern unsigned int g_eGLFront;             // 0x0073F2EC
-extern unsigned int g_eGLAmbient;           // 0x0073F2FC
-extern unsigned int g_eGLDiffuse;           // 0x0073F300
-extern unsigned int g_eGLEmission;          // 0x0073F304
-extern Vector g_vWhite;                     // 0x0078E894
-extern unsigned char g_bTextureStateDirty;  // 0x0078E330, descriptive
-extern unsigned char g_bLastMatDynamic;     // 0x0078E8BC, descriptive
+#include "shared/globals.h"
 // File-static: the store is scheduled after the m_bFog reload only when
 // the compiler knows it cannot alias the part.
 static unsigned char g_bMatFog;             // 0x0078E8BD, descriptive
-extern float g_fLastMatAlpha;               // 0x0078E8B8, descriptive
-extern int g_bNVVertexProgram;              // 0x0078E8C0
-extern int g_bEMBMEnabled;                  // 0x0078E66C
-extern int g_bMatDisabled;                  // 0x00828040, descriptive
-extern int g_bMatForce;                     // 0x00828048, descriptive
 
 // NONMATCH: identical except that cl enregisters the constant 1 in ebx
 // (guard bit, fog flag and bDynamic); the original keeps immediates.

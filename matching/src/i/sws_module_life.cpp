@@ -245,8 +245,7 @@ extern CAppManager* g_pAppManager;                  // 0x007A39FC
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
 extern const unsigned long OBJECT_INVALID;          // 0x00746644
-extern const unsigned char OBJECT_TYPE_MODULE;      // 0x00746632
-extern const unsigned long g_nModuleDefaultA4;      // 0x0074410C
+#include "shared/globals.h"
 
 #include "shared/vector.h"
 
@@ -266,9 +265,7 @@ public:
     int RunScript(CExoString* psScript, unsigned long oid, int bOid);  // 0x005D0FC0
     int RunScriptSituation(void* pScript, unsigned long oid, int bOid);    // 0x005D0FD0
 };
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 
-extern const unsigned long EVENT_TIMED_EVENT;       // 0x007441B8
 extern const unsigned long EVENT_SIGNAL_EVENT;      // 0x007441DC
 
 class CSWSModule : public CResHelper<CResIFO, 2014>, public CGameObject {

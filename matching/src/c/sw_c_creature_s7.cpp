@@ -104,16 +104,7 @@ public:
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern int g_nAppearanceCol_SoundAppType;           // 0x007A2128
-extern int g_nAppearanceCol_FootstepType;           // 0x007A20EC
-extern int g_nAppearanceCol_SIZECATEGORY;           // 0x007A2124
-extern int g_nFootstepRollingColumn;                // 0x007A219C
-extern int g_nFootstepPitchOffsetColumn;            // 0x007A21A0
-extern int g_nSurfaceMaterialCol_Name;              // 0x007A21B0
-extern int g_nAppearanceCol_HEADTRACK;              // 0x007A2100
-extern int g_nAppearanceCol_HEADBONE;               // 0x007A20FC
-extern CExoString g_sLookAtBoneOverride;            // 0x008338D0 (descriptive)
+#include "shared/globals.h"
 
 float VectorMagnitude(const Vector& v);             // 0x004AB100
 Vector VectorSubtract(const Vector& a, const Vector& b);   // 0x00423BC0 (cdecl)
@@ -276,7 +267,6 @@ public:
     int m_bB4;                                      // 0xb4 (descriptive)
 };
 
-extern const float g_fRunRatio;                        // 0x007A22F4 (descriptive)
 
 struct CClientOptionsX {
     char pad_0x0[0x6d];
@@ -311,7 +301,6 @@ public:
 };
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
 
 class CSWCObject {
 public:

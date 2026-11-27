@@ -3,9 +3,7 @@
 #include "b/vm_commands.h"
 #include "b/sws_creature.h"
 
-extern const unsigned long OBJECT_INVALID_ID;               // 0x00746644
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633 (4)
-extern const int IMMUNITY_TYPE_MAX;                         // 0x00746978 (0x21)
+#include "shared/globals.h"
 
 // Inventory-disturb fields of CSWSObject (CSWSObject itself stays data-free
 // in sws_creature.h).

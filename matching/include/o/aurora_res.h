@@ -76,7 +76,7 @@ public:
     int RemoveEncapsulatedResourceFile(const CExoString& sName); // 0x00408820
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
+#include "shared/globals.h"
 
 // Plain resources: loaded flag, size and data pointer (as CResNCS).
 // CResMDX::OnResourceFreed (0x00710E60) and the inherited

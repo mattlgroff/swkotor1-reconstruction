@@ -17,7 +17,7 @@ struct NewController {
     char pad_0xd[3];
 };
 
-extern int g_nControllers;      // 0x007FBAE8
+#include "shared/globals.h"
 
 // Add with the growth expanded (operator new / delete).
 __forceinline void AddFloat(CExoArrayList<float>* pList, float f)
@@ -91,8 +91,6 @@ public:
 };
 
 extern LoadingModel* g_pLoadingModel;   // 0x007FBAE4
-extern int g_bCullKeys;                 // 0x0078E590
-extern int g_bCompressQuaternions;      // 0x0078E588
 
 // NONMATCH (99 insns): first draft. The original keeps the zero in ebp,
 // copies the time value through an integer register, tests the model flag

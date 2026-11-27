@@ -154,7 +154,7 @@ public:
 CAurScene* __cdecl NewCAurScene(const char* sName);     // 0x00458e70
 CAurCamera* __cdecl NewCAurCamera(const char* sName);   // 0x0045d930
 CAurObject* __cdecl NewCAurObject(const char* sModel, const char* sName, int a, int b); // 0x00449cc0
-extern Vector g_vGuiSceneAmbient;                       // 0x0078d3d8
+#include "shared/globals.h"
 
 extern "C" CAurGUIImage* NewCAurGUIImage(const char* sName);   // 0x0045a260
 CAurGUIString* NewCAurGUIString(const char* sText, const char* sFont,
@@ -374,7 +374,6 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender); // 0x0041e550
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007a3a08
 extern unsigned char g_nGender;                     // 0x0073ecd0
 
 class CSWGuiSafePanel;
@@ -395,6 +394,5 @@ public:
     CSWGuiSafeLabel* m_pSafeLabel;                  // 0x84
 };
 
-extern CSWGuiManager* g_pGuiManager;                // 0x007a39f4
 
 #endif

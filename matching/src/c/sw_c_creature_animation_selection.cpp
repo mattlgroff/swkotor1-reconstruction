@@ -6,7 +6,7 @@ public:
 };
 class C2DAs { public: char pad_0x0[0x78]; C2DA* m_pReactionTable; };
 class CSWRules { public: char pad_0x0[0xb8]; C2DAs* m_p2DArrays; };
-extern CSWRules* g_pRules;
+#include "shared/globals.h"
 
 class CSWCCreature {
 public:

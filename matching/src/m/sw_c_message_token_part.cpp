@@ -7,7 +7,7 @@ class CExoString { public:
 class CSWSObject;
 class CTlkTable { public: void SetCustomToken(int,const CExoString&); };
 class CSWTlkTable : public CTlkTable { public: CExoString Fetch(unsigned long,CSWSObject*,int,int); };
-extern CTlkTable* g_pTlkTable;
+#include "shared/globals.h"
 extern CSWTlkTable* g_pTlkTableAlt; // 0x007A3A0C
 class CSWCMessage { public: int GetSingleCustomTokenStringPart(int,unsigned long,CExoString*); };
 // FUNCTION: SWKOTOR 0x006500B0

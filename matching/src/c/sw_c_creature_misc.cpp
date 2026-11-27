@@ -11,8 +11,7 @@
 
 Vector NormalizeVector(const Vector& v);            // 0x004AB180
 
-extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
+#include "shared/globals.h"
 
 struct Quaternion {
     float w, x, y, z;
@@ -189,7 +188,6 @@ public:
 };
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern int g_bCameraResetPending;                   // 0x007A2288
 
 class CSWBaseItem {
 public:
@@ -208,7 +206,6 @@ public:
     CSWBaseItemArray* m_pBaseItems;                 // 0x34
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWCItem : public CGameObject {
 public:
@@ -340,7 +337,6 @@ public:
     int m_bOverrideLightsaber;                      // 0x3d8
 };
 
-extern char g_sLightsaberContactNode[];             // 0x0074F368
 
 // FUNCTION: SWKOTOR 0x0060B920
 void CSWCCreature::ResetCameraToFollow()

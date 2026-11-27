@@ -28,7 +28,7 @@ public:
     CTwoDimArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 class CGameEffect {
 public:
@@ -73,29 +73,9 @@ public:
 
 extern CAppManager *g_pAppManager;
 
-extern const int EFFECT_TRUETYPE_DAMAGE_IMMUNITY;
-extern const int EFFECT_TRUETYPE_IMMUNITY;
-extern const int IMMUNITY_TYPE_COUNT;
-extern const int IMMUNITY_TYPE_MIND_SPELLS;
-extern const int IMMUNITY_TYPE_POISON;
-extern const int IMMUNITY_TYPE_DISEASE;
-extern const int IMMUNITY_TYPE_FEAR;
-extern const int IMMUNITY_TYPE_TRAP;
 extern const int IMMUNITY_TYPE_PARALYSIS;
-extern const int IMMUNITY_TYPE_BLINDNESS;
-extern const int IMMUNITY_TYPE_DEAFNESS;
 extern const int IMMUNITY_TYPE_SLOW;
 extern const int IMMUNITY_TYPE_ENTANGLE;
-extern const int IMMUNITY_TYPE_SILENCE;
-extern const int IMMUNITY_TYPE_STUN;
-extern const int IMMUNITY_TYPE_SLEEP;
-extern const int IMMUNITY_TYPE_CHARM;
-extern const int IMMUNITY_TYPE_DOMINATE;
-extern const int IMMUNITY_TYPE_CONFUSED;
-extern const int IMMUNITY_TYPE_CURSED;
-extern const int IMMUNITY_TYPE_DAZED;
-extern const int IMMUNITY_TYPE_ABILITY_DECREASE;
-extern const int IMMUNITY_TYPE_NONE;    // 0x007468FC
 
 class CSWSCreatureStats {
 public:

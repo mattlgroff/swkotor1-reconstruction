@@ -56,7 +56,7 @@ public:
     unsigned long ReleaseResObject(CRes* pRes);     // 0x00409CF0
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
+#include "shared/globals.h"
 
 extern "C" char* __cdecl strncpy(char* szDest, const char* szSrc, unsigned int nCount);
 

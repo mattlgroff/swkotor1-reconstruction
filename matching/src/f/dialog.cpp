@@ -136,7 +136,7 @@ public:
     char GetGameObject(unsigned long id, CGameObject **ppObject);
 };
 
-extern char g_cObjectArraySuccess;
+#include "shared/globals.h"
 
 class CSWSModule {
 public:
@@ -160,7 +160,6 @@ public:
     int GetRunScriptReturnValue(int *pnType, void **ppValue);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
 
 class CServerExoApp {
 public:

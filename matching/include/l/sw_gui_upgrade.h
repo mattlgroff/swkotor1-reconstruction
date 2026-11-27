@@ -31,7 +31,7 @@ public:
     int CleanDirectory(const CExoString& sAlias, int bDirs, int bRecurse);   // 0x00409460
     int NukeDirectory(const CExoString& sAlias, int bDirs, int bRecurse);    // 0x00409480
 };
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
+#include "shared/globals.h"
 
 class CSWBaseItem;
 class CSWBaseItemArrayL {
@@ -45,7 +45,6 @@ struct CSWUpgradeSlotInfo {
     int m_nNameStrRef;
     int m_n8;
 };
-extern CSWUpgradeSlotInfo g_aUpgradeSlots[4][4];    // 0x00756FB4
 
 class CSWSItem;
 class CSWInventory {
@@ -142,11 +141,7 @@ public:
     void HideUpgradeScreen();                       // 0x0062E870
 };
 
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
 extern Vector g_vAbilityColorGranted;               // 0x007A23C0
-extern Vector g_vKeyMapLockedColor;                 // 0x007A2384
-extern Vector g_vKeyMapLockedTextColor;             // 0x007A2408
-extern Vector g_vUpgradeAvailableColor;             // 0x007A2378 (descriptive)
 
 // An upgradable item line in the item-select list box. vtable 0x00757108.
 #ifdef L_UPGRADE_ENTRY_DTOR

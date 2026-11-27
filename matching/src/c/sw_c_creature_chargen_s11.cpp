@@ -101,7 +101,7 @@ public:
     CSWClass* GetClassObject(unsigned char nClass) { return &m_lstClasses[nClass]; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 template <class T> class CExoArrayList {
 public:

@@ -37,7 +37,7 @@ class CVirtualMachine {
 public:
     int RunScript(CExoString* sScript, unsigned long oidSelf, int nScriptType);  // 0x005D0FC0
 };
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
+#include "shared/globals.h"
 
 class CSWSPlayerCharacterQuery;
 

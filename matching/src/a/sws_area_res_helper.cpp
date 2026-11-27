@@ -26,7 +26,7 @@ public:
     CRes* GetResObject(const CResRef& cResRef, unsigned short nType); // 0x004074D0
     int ReleaseResObject(CRes* pRes);               // 0x00409CF0
 };
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
+#include "shared/globals.h"
 
 class CResGFF : public CRes {
 public:

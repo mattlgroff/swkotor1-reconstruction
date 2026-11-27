@@ -16,7 +16,7 @@ public:
 };
 
 extern const int EFFECT_TYPE_SPELL_IMMUNITY;        // 0x00746744 (placeholder name)
-extern const float BROADCAST_SPELL_RANGE_SQUARED;   // 0x007455BC (placeholder name)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004CB890
 void CSWSObject::BroadcastSpellData(void* pSpell, CSWCCMessageData* pData)

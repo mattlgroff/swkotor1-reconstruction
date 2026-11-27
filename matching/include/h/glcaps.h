@@ -10,13 +10,7 @@ extern "C" int __cdecl strncmp(const char*, const char*, unsigned int);
 
 extern "C" __declspec(dllimport) void __stdcall glGetIntegerv(unsigned int, int*);
 
-extern int g_nGLExtensions;         // 0x007BB85C
-extern int g_bGLExtension860;       // 0x007BB860
-extern unsigned char g_bNoVBO;      // 0x007B927D
-extern int g_nShaderLevel;          // 0x0078E500
-extern int g_bGL4FC;                // 0x0078E4FC
-extern int g_bARBVertexProgram;     // 0x0078E5EC
-extern unsigned int g_eMaxTextureUnits; // 0x0073F26C
+#include "shared/globals.h"
 
 // Extension masks.
 extern int g_nExt480, g_nExt484, g_nExt48C, g_nExt490, g_nExt49C, g_nExt4A0,

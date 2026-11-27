@@ -13,9 +13,8 @@ struct Quaternion {
     Quaternion(Vector vAxis, float fAngle);         // 0x004AC960
 };
 
-extern Vector g_vZAxis;                             // 0x007A19B0 (0, 0, 1)
+#include "shared/globals.h"
 
-extern float g_fGroundTiltScale;                    // 0x007A2680
 
 float GetYaw(const Vector& v);                      // 0x004AA0F0
 float GetPitch(const Quaternion& q);                // 0x004A9F40

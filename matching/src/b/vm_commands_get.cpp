@@ -3,8 +3,7 @@
 #include "b/vm_commands.h"
 #include "b/sws_creature.h"
 
-extern const unsigned long OBJECT_INVALID_ID;               // 0x00746644
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633 (4)
+#include "shared/globals.h"
 extern int ABILITY_STRENGTH;                                // 0x00746838
 extern int ABILITY_DEXTERITY;                               // 0x0074683C
 extern int ABILITY_CONSTITUTION;                            // 0x00746840

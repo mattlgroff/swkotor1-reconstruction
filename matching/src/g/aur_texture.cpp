@@ -4,11 +4,7 @@
 // src/batches/b0041_aur_texture.cpp.
 #include "g/aur_texture.h"
 
-extern int g_bAuroraInitialised;        // 0x007b90f0
-extern int g_nTextureMem;               // 0x0078d3f4
-extern int g_bTexturesLocked;           // 0x007a4714
-extern unsigned int g_nLastBoundGLName; // 0x007a47b8
-extern int g_bProceduralTextures;       // 0x0078d430
+#include "shared/globals.h"
 
 void AurInitFont();                     // 0x0044cc40
 void AurFreeFont();                     // 0x0044cc60
@@ -320,10 +316,6 @@ extern "C" __declspec(dllimport) void __stdcall glGenTextures(int n, unsigned in
 extern "C" int __cdecl strcmp(const char* a, const char* b);
 extern "C" char* __cdecl strcpy(char* d, const char* s);
 
-extern const unsigned int g_nGLTex2DConst;       // 0x0073f23c
-extern const unsigned int g_nGLMagFilterConst;   // 0x0073f364
-extern const unsigned int g_nGLMinFilterConst;   // 0x0073f368
-extern unsigned int g_nGLTextureCubeMapEnable;   // 0x0078d47c
 extern void(__stdcall* g_pglActiveTextureARB)(unsigned int nUnit);  // 0x007bb80c
 
 int AurHasMultiTexture();                        // 0x0045f710
@@ -466,7 +458,6 @@ extern "C" char* __cdecl strstr(const char* s, const char* sub);
 extern "C" int __cdecl _stricmp(const char* a, const char* b);
 extern "C" __declspec(dllimport) void __stdcall glFinish();
 
-extern short g_nColourDepth;                     // 0x007b9220
 
 int AurS3TCSize(int nWidth, int nHeight, int nBpp);              // 0x0045e270
 unsigned char AurNeedFinish();                                   // 0x0045f640
@@ -610,9 +601,6 @@ CAurTextureBasic* AurTextureFind(char* szName, char* szFile, int* pInts, int nCo
 
 // --- GL name ordering ---------------------------------------------------------
 
-extern CExoArrayList<int> g_lGLNameOrdering;    // 0x007a478c
-extern unsigned int g_nMaxGLName;               // 0x007a46bc
-extern int g_nHashedCount;                      // 0x007a4748
 
 void AurTextureSortOrdered(CAurTextureBasic** pList, int nCount);  // 0x0041e9c0
 
@@ -679,26 +667,7 @@ CExoArrayList<int>* AurTextureGetOrdering()
 
 // --- texture memory budget ------------------------------------------------------
 
-extern float g_fTextureMemScale;                // 0x0078d3f0
-extern float g_fLightmapMemScale;               // 0x0078d3f8
-extern int g_aMemLightmaps[5];                  // 0x007a469c
-extern int g_aMemTextures[5];                   // 0x007a46c0
-extern int g_nMemTotal;                         // 0x007a46d8
-extern int g_nMemLightmaps;                     // 0x007a46dc
-extern int g_nMemTextures;                      // 0x007a46e0
-extern int g_aMemByKind[4];                     // 0x007a46e4
-extern int g_nMemFrame;                         // 0x007a46f4
-extern int g_nBindCountPeak;                    // 0x007a46b0
-extern int g_nStat724;                          // 0x007a4724
-extern int g_nStat728;                          // 0x007a4728
-extern int g_nStat72c;                          // 0x007a472c
-extern int g_nStat730;                          // 0x007a4730
-extern int g_nStatPeak754;                      // 0x007a4754
-extern int g_nStatPeak758;                      // 0x007a4758
-extern int g_nStatPeak75c;                      // 0x007a475c
-extern int g_nStatPeak760;                      // 0x007a4760
 extern float g_fFrameTime;                      // 0x0078e574
-extern float g_fFrameTimePeak;                  // 0x007a4750
 
 void AurTextureMemCheck(CExoArrayList<CAurTextureBasic*>* pList, int nLimit,
                         int* pOut, float fScale);   // 0x00421ac0
@@ -765,7 +734,6 @@ void AurTextureMakeCurrent()
 
 // --- CAurTextureBasic lifetime ---------------------------------------------
 
-extern int g_nTextureCount;                     // 0x007a4718
 
 // FUNCTION: SWKOTOR 0x00422f40
 CAurTextureBasic::~CAurTextureBasic()

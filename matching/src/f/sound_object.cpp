@@ -222,7 +222,7 @@ public:
 };
 
 extern CAppManager *g_pAppManager;
-extern const unsigned char g_nObjectTypeSound;     // 0x0074663E
+#include "shared/globals.h"
 
 class CSWSObject : public CGameObject {
 public:

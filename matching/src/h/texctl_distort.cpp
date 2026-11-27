@@ -7,7 +7,7 @@
 float CosLookup(float fAngle);              // 0x004AADF0
 float SinLookup(float fAngle);              // 0x004AAE30
 
-extern unsigned char g_aDistortImage[];     // 0x007BB870
+#include "shared/globals.h"
 
 // NONMATCH (42 insns): same statements; the original re-initialises the
 // row pointer and index per branch and keeps the column in memory.

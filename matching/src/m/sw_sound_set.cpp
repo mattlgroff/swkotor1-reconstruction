@@ -51,7 +51,7 @@ public:
     unsigned long ReleaseResObject(CRes* pRes);     // 0x00409CF0
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
+#include "shared/globals.h"
 
 template <class T, int nType>
 class CResHelper {
@@ -136,7 +136,6 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender); // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 extern unsigned char g_nGender;                     // 0x0073ECD0
 
 struct CSSFHeader {

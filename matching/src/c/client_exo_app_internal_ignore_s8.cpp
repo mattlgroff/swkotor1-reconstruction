@@ -74,7 +74,7 @@ public:
     unsigned char GetGameObject(unsigned long id, CGameObject** ppObject);  // 0x004D8230
 };
 
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
+#include "shared/globals.h"
 
 class CSWCObject : public CGameObject {
 public:
@@ -142,7 +142,6 @@ public:
     CSWBaseItemArray* m_pBaseItemArray;             // 0x34
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CClientExoApp {
 public:

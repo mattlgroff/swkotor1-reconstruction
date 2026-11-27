@@ -13,10 +13,7 @@ struct Quaternion {
     Quaternion() {}
 };
 
-extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
-extern const int EFFECT_FORCE_SHIELD;               // 0x00746824
-extern int g_bUpdateCreatureOnMove;                 // 0x0083395C
+#include "shared/globals.h"
 
 class CSWCCreature;
 class CSWSCreature;
@@ -145,7 +142,6 @@ struct CSWCAttackData {
     int m_bRanged;                                  // 0x20
 };
 
-extern int g_nDebugAttackAnimation;                 // 0x008338BC
 
 class CSWCAreaX {
 public:
@@ -329,14 +325,6 @@ public:
     C2DAs* m_p2DArrays;                             // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern int g_nHeadTurnRateColumn;                   // 0x007A2118
-extern int g_nAppearanceCol_SIZECATEGORY;           // 0x007A2124
-extern int g_nHeadBoneColumn;                       // 0x007A20D0
-extern int g_nHeadTurnHColumn;                      // 0x007A20F4
-extern int g_nHeadTurnVColumn;                      // 0x007A20F8
-extern const float g_fDefaultHeadTurnH;             // 0x00740A0C
-extern const float g_fDefaultHeadTurnV;             // 0x007455DC
 
 Vector __cdecl NormalizeVector(const Vector& v);    // 0x004AB180
 
@@ -542,7 +530,6 @@ public:
 };
 
 extern CExoSoundInternal* g_pExoSound;              // 0x007A39EC
-extern char g_sFootstepPrefix[];                    // 0x0074F378
 
 
 // FUNCTION: SWKOTOR 0x0060B8A0

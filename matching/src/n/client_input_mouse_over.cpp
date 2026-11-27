@@ -7,15 +7,13 @@ public:
     int SetMouseCursor(int nCursor,int nOption,int bAlternate); // 0x005DF5C0
     int GetLastSetMouseDownState(); // 0x005DF730
 };
-extern CExoInput* g_pExoInput; // 0x007A39E4
+#include "shared/globals.h"
 class CSWGuiControl;
 class CSWGuiManager {
 public:
     char pad_0x0[8]; CSWGuiControl* m_pMouseOverControl;
     void SetSoftwareMouseCursor(int nCursor,int nOption,int bAlternate); // 0x0040A270
 };
-extern CSWGuiManager* g_pGuiManager; // 0x007A39F4
-extern int g_nMouseDownState; // 0x008338F4
 class CClientExoApp { public: unsigned long GetPlayerCreatureId(); /* 0x005ED550 */ };
 class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
 extern CAppManager* g_pAppManager; // 0x007A39FC

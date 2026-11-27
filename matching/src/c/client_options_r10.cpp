@@ -12,7 +12,7 @@ public:
     void CopyToString(CExoString& s) const;         // 0x00405F70
 };
 
-extern CExoString g_sDefaultTexturePack;            // 0x008338D8
+#include "shared/globals.h"
 
 class C2DA {
 public:
@@ -35,7 +35,6 @@ public:
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CExoSound {
 public:
@@ -55,7 +54,6 @@ public:
     void UpdateAllFonts();                          // 0x0040B420
 };
 
-extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
 
 #include "shared/vector.h"
 
@@ -126,9 +124,6 @@ public:
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
-extern float g_fFarClipOverride;                    // 0x007A2320
-extern float g_fFarClipOverride2;                   // 0x007A2324
-extern float g_fFarClipOverride3;                   // 0x007A2328
 
 void AurEnableShadows();                            // 0x0044EE20
 void AurEnableGrass();                              // 0x0044EE30

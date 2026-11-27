@@ -8,7 +8,7 @@ extern void AurEnableVertexBufferObjectsWriteOnly(); // 0x0044EF80
 extern int ReInitAurora(int nWidth, int nHeight, unsigned char nDepth, int bFullScreen, int bReload); // 0x00403800
 extern int g_nScreenDepth; // 0x0078D1E0
 extern int g_nScreenRefreshRate; // 0x0078D1DC
-extern CSWGuiManager* g_pGuiManager; // 0x007A39F4
+#include "shared/globals.h"
 
 // Win32 DEVMODEA (0x9C bytes); only the fields used here are named.
 struct DEVMODEA {
@@ -38,7 +38,6 @@ public:
     virtual void v00();
     virtual int IsFullScreen(); // 0x04
 };
-extern CRenderWindow* g_pRenderWindow; // 0x007A39F8
 
 // FUNCTION: SWKOTOR 0x006DFD10
 void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)

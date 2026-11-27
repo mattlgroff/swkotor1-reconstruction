@@ -5,8 +5,7 @@
 #include "a/sws_combat_round.h"
 #include "shared/float_to_int.h"
 
-extern int g_nDamageIndex;                      // 0x008327E0
-extern const float g_fInvLog10Of2;              // 0x00745FF8
+#include "shared/globals.h"
 
 extern "C" double __cdecl log10(double x);
 #pragma intrinsic(log10)

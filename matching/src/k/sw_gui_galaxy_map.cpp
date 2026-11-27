@@ -23,7 +23,7 @@ public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
+#include "shared/globals.h"
 extern int g_bDo3DGui;                              // 0x0078D1E4 (descriptive)
 
 class CSWGuiTextParams {
@@ -93,7 +93,6 @@ public:
     int RunScript(CExoString* psScript, unsigned long oidSelf, int bOid);  // 0x005D0FC0
 };
 
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 
 class CGuiInGame {
 public:

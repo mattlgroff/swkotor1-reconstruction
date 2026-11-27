@@ -33,35 +33,8 @@ public:
 };
 
 // --- globals ----------------------------------------------------------------
-extern short g_bHeadLight;              // 0x0078e388
-extern int g_bShadows;                  // 0x0078e3a8
-extern int g_bGrass;                    // 0x0078e3ac
-extern int g_bSoftShadows;              // 0x0078e420
-extern int g_bFrameBufferEffects;       // 0x0078d98c
-extern char g_bDisableVBO;              // 0x007b927d
+#include "shared/globals.h"
 extern char g_bVBOWriteOnly;            // 0x0078e398
-extern int g_bATISoftShadowsUnlocked;   // 0x007bb860
-extern char g_bSpeedBlur;               // 0x007a6880
-extern char g_bSaturation;              // 0x007a6881
-extern char g_bScanNoise;               // 0x007a6882
-extern float g_fSpeedBlurRatio;         // 0x0078d43c
-extern char g_bInterleavedAnimations;   // 0x007b92f4
-extern char g_bVSync;                   // 0x0078d438
-extern char g_szVersion[];              // 0x007b9228
-extern float g_vFogColor[3];            // 0x0078db24
-extern float g_fFogDistance;            // 0x007a6884
-extern unsigned long g_nClearColor;     // 0x0078e394
-extern float g_fMaxAnisotropy;          // 0x007a6858
-extern int g_nAnisotropyRequested;      // 0x007a685c
-extern int g_nAnisotropy;               // 0x007b9278
-extern int g_nPrevAntiAliasingMode;     // 0x0078d440
-extern int g_nAntiAliasingMode;         // 0x007a6888
-extern int g_bUseARBVertexProgram;      // 0x0078e5ec
-extern float g_fStartupDelay;           // 0x007b9270
-extern float g_fAvailPhysKB;            // 0x007b9274
-extern short g_nScreenWidthUnknown;     // 0x007b9220
-extern CAurInternalGL* g_pAurora;       // 0x007b921c
-extern int g_nAuroraRefs;               // 0x007b9218
 
 typedef void (__stdcall *PFNSWAPINTERVAL)(int);
 typedef void (__stdcall *PFNPROGRAMPARAM4F)(unsigned int, unsigned int,
@@ -87,19 +60,6 @@ public:
     ~CAurProgram();                      // 0x004a2830
 };
 
-extern CAurProgram* g_pProgram83037c;    // 0x0083037c
-extern CAurProgram* g_pProgram830380;    // 0x00830380
-extern CAurProgram* g_pProgram830384;    // 0x00830384
-extern CAurProgram* g_pProgram827fec;    // 0x00827fec
-extern CAurProgram* g_pProgram827ff0;    // 0x00827ff0
-extern CAurProgram* g_pProgram827ff4;    // 0x00827ff4
-extern CAurProgram* g_pProgram827ff8;    // 0x00827ff8
-extern CAurProgram* g_pProgram827ffc;    // 0x00827ffc
-extern CAurProgram* g_pProgram830388;    // 0x00830388
-extern CAurProgram* g_pProgram83038c;    // 0x0083038c
-extern CAurProgram* g_pProgram828014;    // 0x00828014
-extern char* g_szProgramText83028c;      // 0x0083028c
-extern char* g_szProgramText830290;      // 0x00830290
 extern void* g_hWnd;                     // 0x007a39d8
 
 void ResetVertexPrograms_004a2470();     // 0x004a2470
@@ -624,8 +584,6 @@ void AurSetVertexProgramParameter(unsigned int nIndex, float x, float y,
         g_pfnProgramParameter4fNV(0x8620, nIndex, x, y, z, w);
 }
 
-extern unsigned int g_aMaterialFaces[];  // 0x0073f2ec
-extern unsigned int g_aMaterialParams[]; // 0x0073f2f8
 
 // FUNCTION: SWKOTOR 0x0044f880
 void AurMaterialfv(int nFace, int nParam, const float* pValues)
@@ -646,8 +604,6 @@ typedef int (__stdcall *PFNGETPIXELFORMATATTRIBIVARB)(void* hdc, int iPixelForma
 extern PFNCHOOSEPIXELFORMATARB g_pfnChoosePixelFormatARB;           // 0x007bb730
 extern PFNGETPIXELFORMATATTRIBIVARB g_pfnGetPixelFormatAttribivARB; // 0x007bb63c
 extern void* g_hWnd;                                                // 0x007a39d8
-extern short g_nColorBits;                                          // 0x007b9220
-extern short g_nDepthBits;                                          // 0x007b9224
 int AurHasMultisample();                                            // 0x0046ed70
 
 // FUNCTION: SWKOTOR 0x0044f140

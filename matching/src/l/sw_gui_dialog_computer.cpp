@@ -5,7 +5,7 @@
 #define L_GUI_TEXT_PARAMS_EXACT
 #include "l/sw_gui_tutorial_box.h"
 
-extern Vector g_vDialogTopColor;                    // 0x007A239C (descriptive)
+#include "shared/globals.h"
 
 class CSWSItem {
 public:

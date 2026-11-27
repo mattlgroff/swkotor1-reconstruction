@@ -14,8 +14,7 @@ public:
     void ProcessSkinSeams();                    // 0x00438fa0
 };
 
-extern unsigned char g_bModelGate;              // 0x007b8fc0
-extern int g_bModelVariants;                    // 0x00828068
+#include "shared/globals.h"
 
 Model* __cdecl LoadModel(FILE* pMdl, FILE* pMdx);     // 0x00464200
 void __cdecl CreateReferenceObjects(Gob* pGob, Part* pPart);    // 0x004448c0

@@ -4,15 +4,10 @@
 #define OBJECT_INVALID 0x7f000000
 
 extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
-extern const unsigned char OBJECT_TYPE_ITEM;        // 0x00746635
-extern const unsigned char OBJECT_TYPE_TRIGGER;     // 0x00746636
+#include "shared/globals.h"
 extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
 extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
-extern const unsigned char OBJECT_TYPE_AREA_OF_EFFECT;  // 0x0074663A
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
 
-extern int g_bCameraFollowFlag;                     // 0x007A2484
-extern int g_bModuleLoadEnabled;                    // 0x008328FC
 
 #include "shared/vector.h"
 
@@ -171,7 +166,6 @@ public:
     CSWBaseItemArray* GetBaseItemArray() { return m_pBaseItems; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 int GetIsBeam(unsigned short nEffect);              // 0x004CA960
 

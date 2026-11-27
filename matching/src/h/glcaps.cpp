@@ -288,8 +288,7 @@ int AurGetStencilClearValue()
     return g_nStencilClear;
 }
 
-extern int g_nExt4EC;               // 0x0078E4EC
-extern int g_n5D8;                  // 0x0078E5D8
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0046ED70
 int AurGLCaps5D8()

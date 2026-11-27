@@ -51,11 +51,7 @@ public:
 };
 
 extern CAppManager* g_pAppManager;                  // 0x007a39fc
-extern CExoInput* g_pExoInput;                      // 0x007a39e4
-extern CSWGuiManager* g_pGuiManager;                // 0x007a39f4
-extern int g_bShowFrameInfo;                        // 0x007a3a40
-extern int g_bFrameInfoTextInput;                   // 0x007a3cb4
-extern int g_bSwapMouseButtons;                     // 0x008338f0
+#include "shared/globals.h"
 
 void __cdecl HandleFrameInfoChar(char cChar);         // 0x00401f00
 

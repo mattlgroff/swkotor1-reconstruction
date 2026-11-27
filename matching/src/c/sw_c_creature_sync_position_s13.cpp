@@ -20,9 +20,7 @@ public:
     CTwoDimArrays* m_p2DArrays;                     // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern int g_nAppearanceCol_WALKDIST;               // 0x007A212C
-extern int g_nAppearanceCol_RUNDIST;                // 0x007A2120
+#include "shared/globals.h"
 
 class CSWCCreatureAppearance {
 public:

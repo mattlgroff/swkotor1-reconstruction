@@ -330,12 +330,7 @@ extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 int lockcamera(char* szArgs);                       // 0x0060B2A0 (debug command)
 
-extern float g_fCameraShakePeriod;                  // 0x007A246C
-extern float g_fCameraShakeDegrees;                 // 0x007A2470
-extern float g_fCameraFollowA;                      // 0x007A2450
-extern float g_fCameraFollowB;                      // 0x007A2454
-extern float g_fCameraFollowC;                      // 0x007A2458
-extern float g_fCameraFollowPitch;                  // 0x007A245C
+#include "shared/globals.h"
 
 class Scene;
 class CSWCArea {

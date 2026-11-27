@@ -88,7 +88,7 @@ public:
     CSWFeat *GetFeat(unsigned short nFeat);
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 class CSWSArea;
 

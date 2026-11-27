@@ -172,7 +172,7 @@ int CExoLocString::GetStringLoc(int nLanguage, CExoString& s, unsigned char nGen
     return p->GetString(nLanguage * 2 + nIndex, s);
 }
 
-extern int g_bAsyncReadComplete;                    // 0x008328BC
+#include "shared/globals.h"
 
 class CExoFileInternal {
 public:

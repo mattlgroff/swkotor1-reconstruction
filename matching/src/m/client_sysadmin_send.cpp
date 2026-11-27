@@ -20,7 +20,7 @@ public:
 };
 class CAppManager { public: char pad_0x00[4]; CClientExoApp* m_pClientExoApp; };
 extern CAppManager* g_pAppManager; // 0x007A39FC
-extern unsigned long PLAYERID_SERVER; // 0x0074C528
+#include "shared/globals.h"
 class CClientMsgSysAdmin {
 public:
     void SendSysAdminToServerMessage(const CExoString* text);

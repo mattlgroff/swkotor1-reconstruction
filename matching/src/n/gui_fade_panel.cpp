@@ -16,7 +16,7 @@ public:
     CExoString GetSimpleString(unsigned long nStrRef); // 0x0041E8F0
     void ParseTokens(CExoString* pString); // 0x0041DD30
 };
-extern CTlkTable* g_pTlkTable;
+#include "shared/globals.h"
 class CSWGuiTextParams { public: char pad_0x0[0x58]; void SetText(const CExoString& s); };
 class CSWGuiControl { public: virtual ~CSWGuiControl(); char pad_0x4[0x4c]; };
 class CSWGuiLabel : public CSWGuiControl {

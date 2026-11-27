@@ -81,22 +81,13 @@ public:
     CTwoDimArrays* m_p2DArrays;                     // +0xB8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern int g_nAnimFireForgetColumn;                 // 0x007A214C
-extern int g_nAnimLoopingColumn;                    // 0x007A2154
-extern int g_nAnimDialogColumn;                     // 0x007A2170
-extern int g_nDialogAnimFireForgetColumn;           // 0x007A218C
-extern int g_nDialogAnimDialogColumn;               // 0x007A2190
-extern int g_nDialogAnimLoopingColumn;              // 0x007A2194
-extern int g_nDialogAnimOverlayColumn;              // 0x007A2198
-extern int g_bGuiFlag;                              // 0x007A2370
+#include "shared/globals.h"
 
 class CVirtualMachine {
 public:
     int RunScript(CExoString* psFileName, unsigned long oid, int bOid); // 0x005D0FC0
 };
 
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 
 #include "shared/vector.h"
 
@@ -115,9 +106,6 @@ public:
 };
 
 extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern int g_n74C5FC;                               // 0x0074C5FC, sound mode for modal panels
-extern const int SOUND_MODE_NORMAL;                 // 0x0074C5EC
-extern int g_bLetterbox;                            // 0x0083390C
 
 class CSWPartyTable {
 public:
@@ -312,7 +300,6 @@ public:
     void CoolDownEvent(unsigned long nEvent, unsigned long nTime);  // 0x005DF4B0
 };
 
-extern CExoInput* g_pExoInput;                      // 0x007A39E4
 
 class CExoStreamingSoundSource {
 public:

@@ -5,7 +5,7 @@
 #include "b/sws_item.h"
 #include "b/server_exo_app.h"
 
-extern const char g_szCreditsTemplate[];                    // 0x007471C0 (credits item template)
+#include "shared/globals.h"
 
 class CSWGuiInGame {
 public:

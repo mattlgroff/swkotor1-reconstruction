@@ -186,7 +186,7 @@ public:
     char m_pad45[0x5c - 0x45];
     unsigned char m_bAsyncResult;                   // +0x5c (placeholder name)
 };
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
+#include "shared/globals.h"
 
 class CResGFF : public CRes {
 public:
@@ -397,15 +397,8 @@ class CSWSArea;
 class CSWSPlayer;
 class CSWSWaypoint;
 
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
-extern const unsigned char OBJECT_TYPE_TRIGGER;     // 0x00746636
 extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
-extern const unsigned char OBJECT_TYPE_WAYPOINT;    // 0x0074663B
 extern const int EFFECT_TYPE_TIMESTOP;              // 0x0074677C
-extern const int PLOT_PATH_OK;                      // 0x00745DBC
-extern const int PLOT_PATH_DONE;                    // 0x00745DC0
-extern const int PLOT_PATH_FAIL;                    // 0x00745DC4
-extern int g_bWalkDebug;                            // 0x00832838
 
 class CGameObjectArray {
 public:
@@ -716,15 +709,11 @@ public:
 
 extern unsigned long EVENT_SIGNAL_EVENT;            // 0x007441DC
 const char* SetFramesPerSecond(const char* szFPS);  // 0x005EE4A0
-extern int g_nModuleFrameLock;                      // 0x00832904 (placeholder name)
-extern int g_bConsoleOverlay;                       // 0x0078E360
-extern float g_fFrameLock;                          // 0x007A3C64 (placeholder name)
 
 class CVirtualMachine {
 public:
     int RunScript(CExoString* psScript, unsigned long oid, int bOid);  // 0x005D0FC0
 };
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 
 struct CSWSModuleExpansion {
     CExoLocString m_sName;                          // +0x00
@@ -774,9 +763,6 @@ public:
     CTlkTableToken* m_pTokens;                      // +0x48
     unsigned long m_nTokens;                        // +0x4c
 };
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
-extern const int MIN_CUSTOM_TOKEN;                  // 0x0073ECCC
-extern unsigned __int64 g_nNextEffectID;            // 0x007A1B40
 
 // Player list entry walked by GetPrimaryPlayerIndex.
 struct CSWSModulePlayerEntry {

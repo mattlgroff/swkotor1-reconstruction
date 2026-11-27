@@ -67,7 +67,7 @@ public:
     CExoArrayList<CSWSJournalEntry> m_aEntries;                 // 0x00
 };
 
-extern int g_nJournalSortOrder;                                 // 0x00833A90
+#include "shared/globals.h"
 
 #define PARTY_NUM_NPCS 9
 

@@ -2,8 +2,7 @@
 // type queries, checked downcasts, ref counting and parse thunks.
 #include "g/mdl_node.h"
 
-extern int g_nTriFaceCount;         // 0x007a8a00
-extern int g_bModelNoDelete;        // 0x007a8a04
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0043e0f0
 MaxFace_PostProcess::~MaxFace_PostProcess()

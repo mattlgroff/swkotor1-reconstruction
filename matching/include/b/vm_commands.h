@@ -34,14 +34,13 @@ public:
     void* m_pInternal;                                      // 0x00
 };
 
-extern CVirtualMachine* g_pVirtualMachine;                  // 0x007A3A00
+#include "shared/globals.h"
 
 #define ENGINE_STRUCTURE_EFFECT 0
 #define ENGINE_STRUCTURE_EVENT  1
 #define ENGINE_STRUCTURE_LOCATION 2
 #define ENGINE_STRUCTURE_TALENT 3
 
-extern const unsigned char GAME_OBJECT_VALID;               // 0x0074666C (0)
 
 class CResGFF;
 struct CResStruct;

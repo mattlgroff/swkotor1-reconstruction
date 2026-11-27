@@ -45,12 +45,8 @@ Quaternion EulerToQuaternion(float fYaw, float fPitch, float fRoll);  // 0x004AC
 Quaternion RotationArc(Vector vFrom, Vector vTo);                   // 0x004AB630
 Quaternion operator*(const Quaternion& a, const Quaternion& b);     // 0x004A9AC0
 
-extern const float g_fZero;                         // 0x0073D700
+#include "shared/globals.h"
 extern unsigned char g_nGender;                     // 0x0073ECD0
-extern const unsigned char OBJECT_TYPE_ITEM;        // 0x00746635
-extern const unsigned char g_nObjectArraySuccess;   // 0x0074666C
-extern int g_bItemGroundAlign;                      // 0x00833A98 (descriptive)
-extern int g_bHitStatic;                            // 0x007FBF4C
 
 struct __declspec(align(8)) STR_RES {
     CExoString m_sText;                             // 0x00
@@ -62,7 +58,6 @@ class CTlkTable {
 public:
     int Fetch(unsigned long nStrRef, STR_RES& res, unsigned char nGender);  // 0x0041E550
 };
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 
 // Collaborators ----------------------------------------------------------
 
@@ -167,7 +162,6 @@ public:
     char pad_0x0[0x34];
     CSWBaseItemArray* m_pBaseItemArray;             // 0x34
 };
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWCArea {
 public:

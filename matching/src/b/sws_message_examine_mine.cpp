@@ -5,7 +5,7 @@
 #include "b/sws_item.h"
 #include "b/sws_door.h"
 
-extern const unsigned char OBJECT_TYPE_TRIGGER;             // 0x00746636 (7)
+#include "shared/globals.h"
 extern const unsigned char OBJECT_TYPE_PLACEABLE;           // 0x00746638 (9)
 extern const unsigned char OBJECT_TYPE_DOOR;                // 0x00746639 (10)
 

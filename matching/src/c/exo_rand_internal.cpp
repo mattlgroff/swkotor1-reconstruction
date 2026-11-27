@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-extern unsigned long g_nRandMask;                   // 0x007A2280
+#include "shared/globals.h"
 
 class CExoRandInternal {
 public:

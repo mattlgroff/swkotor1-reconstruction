@@ -17,9 +17,7 @@ int __stdcall gluBuild2DMipmaps(unsigned int target, int components, int w, int 
 void* __cdecl operator new[](size_t n);
 void __cdecl operator delete[](void* p);
 
-extern unsigned int g_nLookUpTexture;           // 0x007bb868
-extern int g_nCurrentStage;                     // 0x007a6898
-extern int g_aCurrentStageTID[6];               // 0x007a683c
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00423d80
 void MakeLookUpTexture(float fExponent)

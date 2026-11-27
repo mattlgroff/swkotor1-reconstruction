@@ -105,10 +105,8 @@ public:
     unsigned long m_oidCreator;                     // 0x248
 };
 
-extern const int g_nEffectTrueType746708;          // 0x00746708
-extern const int g_nEffectTrueType746714;          // 0x00746714
+#include "shared/globals.h"
 
-extern unsigned __int64 g_nNextEffectID;            // 0x007A1B40 (placeholder name)
 
 // Action target record, 0x1c bytes (placeholder name; saved as ActionId,
 // GroupId, Target_Area, Target_Object, Target_LocX/Y/Z).

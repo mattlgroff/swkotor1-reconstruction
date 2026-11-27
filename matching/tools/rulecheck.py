@@ -166,19 +166,27 @@ def extern_data(text):
         # function prototypes are R25 business, function pointers are data
         if "(" in decl and not re.search(r"\(\s*(?:__\w+\s+)?\*", decl):
             continue
-        name = None
         fp = re.search(r"\(\s*(?:__\w+\s+)?\*\s*(?:const\s+)?([A-Za-z_]\w*)\s*\)", decl)
         if fp:
-            name = fp.group(1)
+            parts = [(fp.group(1), decl)]
         else:
-            nm = re.search(r"([A-Za-z_]\w*)\s*(?:\[[^\]]*\]\s*)*$", decl)
-            if nm:
-                name = nm.group(1)
-        if not name or name in KEYWORDS:
-            continue
-        typ = normalise(decl.replace(name, "@", 1))
-        typ = re.sub(r"\[[^\]]*\]", "[]", typ)  # extern T a[]; and a[N]; agree
-        found.append((name, typ, m.start()))
+            # `extern T a, *b, c[4];`: one entry per declarator, each with its type
+            pieces = decl.split(",")
+            head = re.match(r"(.*?)([*&\s]*[A-Za-z_]\w*\s*(?:\[[^\]]*\]\s*)*)$", pieces[0], re.S)
+            if not head:
+                continue
+            base = head.group(1)
+            parts = []
+            for piece in [head.group(2)] + pieces[1:]:
+                nm = re.search(r"([A-Za-z_]\w*)\s*(?:\[[^\]]*\]\s*)*$", piece)
+                if nm:
+                    parts.append((nm.group(1), base + " " + piece))
+        for name, one in parts:
+            if not name or name in KEYWORDS:
+                continue
+            typ = normalise(one.replace(name, "@", 1))
+            typ = re.sub(r"\[[^\]]*\]", "[]", typ)  # extern T a[]; and a[N]; agree
+            found.append((name, typ, m.start()))
     return found
 
 

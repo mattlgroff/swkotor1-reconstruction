@@ -38,7 +38,7 @@ class CSWBaseItemArray { public: CSWBaseItem* GetBaseItem(int); };
 class CSWRules { public: char pad_000[0x34]; CSWBaseItemArray* m_pBaseItemArray;
  CSWBaseItemArray* GetBaseItemArray() { return m_pBaseItemArray; }
 };
-extern CSWRules* g_pRules;
+#include "shared/globals.h"
 class CClientAIMaster;
 class CClientExoApp { public: CResRef GetItemDropSound(unsigned char);
  CSWCCreature* GetCreatureByGameObjectID(unsigned long); CClientAIMaster* GetClientAIMaster();

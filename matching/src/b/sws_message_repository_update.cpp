@@ -6,7 +6,7 @@
 #include "b/sws_player.h"
 #include "b/sws_item.h"
 
-extern const unsigned char OBJECT_TYPE_ITEM;                // 0x00746635
+#include "shared/globals.h"
 
 struct CExoLinkedListNode;
 

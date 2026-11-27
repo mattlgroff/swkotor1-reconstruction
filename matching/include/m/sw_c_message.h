@@ -69,7 +69,7 @@ public:
 };
 
 extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern unsigned long PLAYERID_SERVER;               // 0x0074C528 (0xFFFFFFFD)
+#include "shared/globals.h"
 
 class CNWMessage {
 public:

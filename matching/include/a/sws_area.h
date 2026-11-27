@@ -179,7 +179,7 @@ struct CSWSAreaValue8 {
     int m_n0;
     int m_n4;
 };
-extern CSWSAreaValue8 g_cAreaValue8;               // 0x007A1B48 (placeholder name)
+#include "shared/globals.h"
 
 Vector NormalizeVector(const Vector& vVector);      // 0x004AB180
 
@@ -201,7 +201,6 @@ class CExoResMan {
 public:
     int Exists(const CResRef& cResRef, unsigned short nType, unsigned long* pSize); // 0x00408BC0
 };
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
 
 extern "C" double __cdecl ceil(double x);
 
@@ -216,7 +215,6 @@ class CVirtualMachine {
 public:
     int RunScript(CExoString* psFile, unsigned long oidSelf, int bOid);   // 0x005D0FC0
 };
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 
 extern "C" int __cdecl rand(void);
 
@@ -473,8 +471,6 @@ public:
     char pad_0x24d[0x280 - 0x24d];
 };
 
-extern const unsigned char g_nGameObjectFound;      // 0x0074666C
-extern const unsigned char g_nObjectTypeArea;       // 0x00746633 (placeholder name)
 
 class CGameObjectArray {
 public:
@@ -496,7 +492,6 @@ public:
     char pad_0x2[0x34 - 0x2];
 };
 
-extern const unsigned long EVENT_0x7441DC;          // 0x007441DC (placeholder name)
 
 class CSWPartyTable {
 public:
@@ -694,7 +689,6 @@ public:
 
     C2DAs* Get2DArrays() { return m_p2DArrays; }
 };
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWSArea {
 public:

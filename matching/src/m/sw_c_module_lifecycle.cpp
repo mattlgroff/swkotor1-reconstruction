@@ -87,9 +87,8 @@ public:
     virtual ~CCameraBehavior();
 };
 
-extern const unsigned char OBJECT_TYPE_MODULE;      // 0x00746632
+#include "shared/globals.h"
 extern const unsigned long OBJECT_INVALID;          // 0x00746644
-extern const unsigned long g_nModuleDefaultA4;      // 0x0074410C, descriptive
 
 class CSWCModule : public CGameObject {
 public:

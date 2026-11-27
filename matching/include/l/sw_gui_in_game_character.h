@@ -7,7 +7,7 @@
 
 #include "l/sw_gui_script_select.h"
 
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
+#include "shared/globals.h"
 
 Vector operator*(const Quaternion& q, const Vector& v);     // 0x004A9BB0
 Quaternion YawPitchRoll(float fYaw, float fPitch, float fRoll);     // 0x004ACAC0

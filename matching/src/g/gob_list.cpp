@@ -10,7 +10,7 @@ public:
     char m_szName[0x20];                    // +0x38
 };
 
-extern CExoArrayList<Gob*> g_lGobs;         // 0x007a8a58
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00440410
 // NONMATCH (3): the original loads szName into ebp in the prologue, ahead of

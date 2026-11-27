@@ -13,7 +13,7 @@ public:
     int m_nMouseY;
 };
 
-extern CSWGuiManager* g_pGuiManager;   // 0x007A39F4
+#include "shared/globals.h"
 extern int g_nScreenWidth;             // 0x0078D1D4
 extern int g_nScreenHeight;            // 0x0078D1D8
 

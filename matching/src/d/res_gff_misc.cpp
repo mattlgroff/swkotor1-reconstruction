@@ -2,7 +2,7 @@
 // table helpers (0x00410520 / 0x00410560, used by CTlkTable).
 #include "d/res_gff.h"
 
-extern unsigned long g_aGffCRCTable[256];          // 0x007a4178
+#include "shared/globals.h"
 
 #pragma auto_inline(off)
 

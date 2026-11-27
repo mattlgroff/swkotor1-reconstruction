@@ -54,32 +54,7 @@ public:
     void Bind(void* p, int n);                          // 0x004a24d0
 };
 
-extern char g_bEditorProgramsBuilt;     // 0x007b9226
-extern int g_bVertexPrograms;           // 0x0078e5ec
-extern unsigned int g_eVertexProgramTarget; // 0x0078d46c
-extern char* g_szProgramText0;          // 0x0083028c
-extern char* g_szProgramText1;          // 0x00830290
-extern char g_szVertexProgramA[];       // 0x007990f0
-extern char g_szVertexProgramB[];       // 0x00792658
-extern char g_szVertexProgramBNV[];     // 0x0079b5a8
-extern char g_szVertexProgramC[];       // 0x0079c310
-extern char g_szVertexProgramD[];       // 0x0078feb8
-extern char g_szVertexProgramDNV[];     // 0x0079ab28
-extern char g_szVertexProgramENV[];     // 0x00798cc8
-extern int g_nProgramParams544;         // 0x00830544
-extern int g_nProgramParams548;         // 0x00830548
-extern int g_nProgramParams54c;         // 0x0083054c
-extern int g_nProgramParams560;         // 0x00830560
-extern int g_nProgramParams564;         // 0x00830564
-extern int g_nProgramParams580;         // 0x00830580
-extern VertexProgram* g_pProgram37c;    // 0x0083037c
-extern VertexProgram* g_pProgram380;    // 0x00830380
-extern VertexProgram* g_pProgram384;    // 0x00830384
-extern VertexProgram* g_pProgramfec;    // 0x00827fec
-extern VertexProgram* g_pProgramff0;    // 0x00827ff0
-extern VertexProgram* g_pProgramff4;    // 0x00827ff4
-extern VertexProgram* g_pProgramff8;    // 0x00827ff8
-extern VertexProgram* g_pProgramffc;    // 0x00827ffc
+#include "shared/globals.h"
 
 void LoadExtensions();                  // 0x00436490
 int AurVertexProgramsAvailable();       // 0x0045f770

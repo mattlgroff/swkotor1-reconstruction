@@ -6,7 +6,7 @@ typedef unsigned int size_t;
 void* __cdecl operator new[](size_t n);
 void __cdecl operator delete[](void* p);
 
-extern int g_nShadowMemoryPeak;                 // 0x00828050
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00426940
 // Name not recorded; one scratch block that only ever grows.
@@ -64,7 +64,6 @@ public:
     float m_fScale;                             // +0x1b4
 };
 
-extern int g_bBlackFog;                         // 0x008305e0
 
 // Scene virtuals; 0x0044f3a0-0x0044f3c0, 0x0044f780, 0x0044f800,
 // 0x0044f810, 0x0044f8c0, 0x0044fc80, 0x0044fca0, 0x0044fd40 and

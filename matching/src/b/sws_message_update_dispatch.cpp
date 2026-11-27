@@ -1,7 +1,7 @@
 // Game-object update control; local minimal layouts preserve the server ABI.
 #include "b/sws_message.h"
 
-extern const unsigned char GAME_OBJECT_VALID; // 0x0074666C
+#include "shared/globals.h"
 
 class CSWSArea;
 

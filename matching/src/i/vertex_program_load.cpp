@@ -1,7 +1,7 @@
 typedef void (__stdcall *GlProgramStringARB)(unsigned int, unsigned int, int, const char*);
 typedef void (__stdcall *GlLoadProgramNV)(unsigned int, unsigned int, int, const unsigned char*);
 
-extern int g_programs_arb_0078e5ec;
+#include "shared/globals.h"
 extern GlProgramStringARB gl_program_string_arb_007bb580;
 extern GlLoadProgramNV gl_load_program_nv_007bb5e4;
 

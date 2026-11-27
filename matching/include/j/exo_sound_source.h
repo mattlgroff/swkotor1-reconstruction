@@ -19,7 +19,7 @@ inline Vector operator-(Vector a, Vector b)
 
 float __cdecl FUN_004ab100(const Vector* v);        // 0x004AB100 (magnitude)
 
-extern unsigned char g_nDefaultSourceVolume;        // 0x0074C5E8
+#include "shared/globals.h"
 
 class CExoTimers {
 public:

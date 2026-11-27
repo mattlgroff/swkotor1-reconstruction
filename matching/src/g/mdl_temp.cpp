@@ -5,9 +5,7 @@ void __cdecl operator delete[](void* p) throw();
 #include "g/mdl_ctor.h"
 
 // Scratch lists shared by the post-process (see mdl_misc.cpp).
-extern CExoArrayList<int> g_lSkinScratch0;      // 0x007a8a70
-extern CExoArrayList<int> g_lSkinScratch1;      // 0x007a8a7c
-extern CExoArrayList<int> g_lSkinScratch2;      // 0x007a8a88
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0043c090
 void MdlNodeTriMesh::InternalRemoveTemporaryArrays()

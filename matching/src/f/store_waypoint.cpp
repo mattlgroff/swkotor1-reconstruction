@@ -88,12 +88,10 @@ public:
 };
 
 extern CAppManager *g_pAppManager;
-extern const unsigned char g_nObjectTypeStore;     // 0x0074663D
+#include "shared/globals.h"
 extern const unsigned char g_nObjectTypeWaypoint;  // 0x0074663B
 extern const unsigned long g_oidInvalid;
 extern const unsigned long EVENT_SIGNAL_EVENT;     // 0x007441DC
-extern const unsigned long EVENT_TIMED_EVENT;      // 0x007441B8
-extern const int EVENT_AI_LATER;                   // 0x007441E0
 
 class CVirtualMachine {
 public:
@@ -101,7 +99,6 @@ public:
     int RunScriptSituation(void *pScript, unsigned long oid, int bFlag);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
 
 class CScriptEvent {
 public:

@@ -105,18 +105,9 @@ public:
     int AllocateImposter(int nIndex, int nVertices, const void* pVertices);
     int SetUp(int nVertices, const void* pVertices);    // 0x00432090
 };
-extern ImposterManager g_ImposterManager;          // 0x0078db30
+#include "shared/globals.h"
 
-extern int g_bUseViewMatrix;                       // 0x0078d494
 
-extern int g_nCurrentStage;                        // 0x007a6898
-extern int g_aCurrentStageTID[6];                  // 0x007a683c
-extern int g_nFilmNoiseTexture;                    // 0x007a68d0
-extern void* g_hGLContext;                         // 0x007a6854
-extern void* g_hGLDC;                              // 0x007a47e4
-extern int g_n827fa0;                              // 0x00827fa0
-extern int g_n827fa4;                              // 0x00827fa4
-extern unsigned int g_aPrimitiveModes[];           // 0x0073f334
 
 // Just the texture-coordinate fields of a trimesh node.
 class MdlNodeTriMesh {

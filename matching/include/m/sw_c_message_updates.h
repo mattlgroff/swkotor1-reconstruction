@@ -20,7 +20,7 @@ class CSWBaseItemArray { public: CSWBaseItem* GetBaseItem(int); };
 class CSWRules { public: char pad_000[0x34]; CSWBaseItemArray* m_pBaseItemArray; char pad_038[0xb8-0x38]; CTwoDimArrays* m_p2DArrays;
  CSWBaseItemArray* GetBaseItemArray() { return m_pBaseItemArray; }
  CTwoDimArrays* Get2DArrays() { return m_p2DArrays; } };
-extern CSWRules* g_pRules;
+#include "shared/globals.h"
 class CSWCArea { public: char pad_000[0x184]; int m_nAreaState; void AddCorpse(unsigned long); };
 class CSWCModule { public: char pad_000[0x48]; CSWCArea* m_pArea; };
 class CSWSCreature;
@@ -182,7 +182,6 @@ class CClientExoApp { public:
 };
 class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
 extern CAppManager* g_pAppManager;
-extern const unsigned char GAME_OBJECT_VALID;
 class CExoSound { public: int PlayOneShotSoundAt(const CResRef&,Vector,float,unsigned long,unsigned long,unsigned long,unsigned long,unsigned long); };
 extern CExoSound* g_pExoSound;
 void SwitchWeaponEvent(unsigned long,const char*,CSWCCreature*); // descriptive 0x00610F40

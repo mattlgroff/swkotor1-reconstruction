@@ -285,7 +285,7 @@ public:
     int LoadScriptSituation(void** ppScript, CResGFF* pRes, CResStruct* pStruct); // 0x005D1100
     void DeleteScriptSituation(CVirtualMachineScript* pScript);   // 0x005D1110
 };
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
+#include "shared/globals.h"
 
 // 0x74 bytes.
 class CSWSObjectActionNode {
@@ -557,7 +557,6 @@ public:
     char pad_0x90[0xb8 - 0x90];
     CSWS2DArrays* m_p2DArrays;                      // 0xb8 (placeholder name)
 };
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CGameEffect {
 public:
@@ -603,11 +602,7 @@ public:
     char pad_0x0[0x14];
 };
 
-extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
-extern unsigned char g_nDefaultGender;              // 0x0073ECD0
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
 extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
-extern const unsigned char OBJECT_TYPE_AREA_OF_EFFECT;  // 0x0074663A
 
 // vtable 0x00745F18
 class CSWSObject : public CGameObject {

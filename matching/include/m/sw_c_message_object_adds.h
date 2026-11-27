@@ -18,7 +18,7 @@ class CTwoDimArrays { public:
 class CSWRules { public: char pad_000[0xb8]; CTwoDimArrays* m_p2DArrays;
  CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
 };
-extern CSWRules* g_pRules;
+#include "shared/globals.h"
 class CSWCArea { public: char pad_000[0x184]; void* m_pScene; };
 class CSWCModule { public: char pad_000[0x48]; CSWCArea* m_pArea; };
 class CGameObject { public: virtual ~CGameObject();
@@ -97,8 +97,6 @@ class CClientExoApp { public:
 };
 class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
 extern CAppManager* g_pAppManager;
-extern const unsigned char GAME_OBJECT_VALID;
-extern int g_bShowAllTriggers; // 0x0083285C
 class CSWCMessage { public:
  unsigned long ReadOBJECTIDClient(); unsigned char ReadBYTE(int); unsigned short ReadWORD(int);
  int ReadBOOL(); float ReadFLOAT(float,int); int MessageReadOverflow(int);

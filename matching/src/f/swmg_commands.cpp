@@ -41,7 +41,7 @@ public:
     int StackPushObject(unsigned long oidValue);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
+#include "shared/globals.h"
 
 class CAurNamed {
 public:

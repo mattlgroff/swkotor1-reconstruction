@@ -37,7 +37,7 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& res, unsigned char nGender); // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
+#include "shared/globals.h"
 extern unsigned char g_nGender;                     // 0x0073ECD0
 
 class CExoLocString {
@@ -238,6 +238,5 @@ public:
     void ClearQuests();
 };
 
-extern int g_bJournalUpdated;                       // 0x00833A94
 
 #endif

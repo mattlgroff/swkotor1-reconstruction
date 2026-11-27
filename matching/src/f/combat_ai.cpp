@@ -81,28 +81,22 @@ public:
 
 extern int EFFECT_TYPE_VISUALEFFECT;   // 0x007466F4 (0x1e)
 extern int EFFECT_TYPE_SETSTATE;       // 0x0074669C (8)
-extern int EFFECT_TYPE_SLOW;                     // 0x00746688 (3; NWN true type 3 = slow)
+#include "shared/globals.h"
 extern int EFFECT_TYPE_POISON;         // 0x00746708 (0x23, placeholder)
 extern int EFFECT_TYPE_ABILITY_DECREASE;  // 0x00746710 (0x25, placeholder)
-extern int EFFECT_TYPE_746788;         // 0x00746788 (0x43)
 extern int EFFECT_TYPE_DEATH;          // 0x007466C8
 extern int EFFECT_TYPE_DAMAGE;         // 0x00746714
 extern int EFFECT_TYPE_DAMAGE_SHIELD;  // 0x00746770
 extern int EFFECT_TYPE_FORCE_JUMP;     // 0x00746810
 
-extern int g_nDamageIndex;             // 0x008327E0
-extern const float g_fInvLog10Of2;     // 0x00745FF8
 
 extern "C" int __cdecl rand();
 extern "C" double __cdecl log10(double x);
 #pragma intrinsic(log10)
 extern unsigned short DURATION_TYPE_INSTANT;      // 0x007473B8 (0)
-extern unsigned short DURATION_TYPE_TEMPORARY;    // 0x007473C0 (1)
-extern unsigned short DURATION_TYPE_PERMANENT;    // 0x007473C4
 
 float Magnitude(const Vector &v);                           // 0x004AB100 (cdecl)
 Vector NormalizeVector(const Vector &v);                    // 0x004AB180 (cdecl)
-extern unsigned char IMMUNITY_TYPE_SNEAK_ATTACK;   // 0x0074696C (0x1e, placeholder)
 extern unsigned char IMMUNITY_TYPE_CRITICAL_HIT;   // 0x00746970 (0x1f, placeholder)
 
 class CSWSCreatureListEntry {
@@ -150,9 +144,6 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;              // 0x007A3A28
-extern int EFFECT_TYPE_PROPERTY55;      // 0x007467E8
-extern int EFFECT_TYPE_PROPERTY56;      // 0x007467EC
 
 class CSWSCombatAttackData {
 public:
@@ -301,7 +292,6 @@ public:
 };
 
 extern CAppManager *g_pAppManager;      // 0x007A39FC
-extern int g_bDebugNoDamage;            // 0x00832878 (placeholder name)
 
 class CSWSCreature;
 class CSWSObject;

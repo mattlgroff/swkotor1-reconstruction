@@ -94,7 +94,7 @@ public:
     C2DAs* m_p2DArrays;                         // 0xb8
     C2DAs* Get2DArrays() { return m_p2DArrays; }
 };
-extern CSWRules* g_pRules;                      // 0x007A3A28
+#include "shared/globals.h"
 
 int IsIgnoredVisualEffect(int nVisual);         // 0x004CA960 (placeholder name)
 
@@ -442,18 +442,6 @@ public:
 };
 extern CAppManager* g_pAppManager;              // 0x007A39FC
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
-extern const unsigned char g_nGameObjectFound;   // 0x0074666C
-extern const unsigned long g_nEventRemoveAoE;    // 0x007441E0 (0x0b)
-extern const unsigned long g_nEventRemoveEffect;  // 0x007441EC (placeholder name)
-extern const unsigned long g_nEvent4;            // 0x007441C4 (4)
-extern const unsigned long g_nEvent7441C8;       // 0x007441C8
-extern const unsigned short g_nDurationInstant;
-extern const unsigned short g_nDurationTemporary;  // 0x007473C0
-extern const unsigned short g_nDurationPermanent;  // 0x007473C4 (placeholder name)
-extern const unsigned short g_nDurationEquipped;   // 0x007473C8 (placeholder name)
-extern const unsigned char g_nObjectTypeA;       // 0x00746634
-extern const unsigned char g_nObjectTypeB;       // 0x00746638
-extern const unsigned char g_nObjectTypeC;       // 0x00746639  // 0x007473B8
 
 // vtable 0x00744254
 class CGameEffectApplierRemover {

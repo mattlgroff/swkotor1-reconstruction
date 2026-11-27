@@ -51,12 +51,7 @@ extern PFNWGLBINDTEXIMAGEARB wglReleaseTexImageARB;                 // 0x007BB6D
 float* AurMakeColor(const Vector& vColor, const float& fAlpha);     // 0x004AAAB0
 void FrameBufferModificationPixelShaders(int nMode, int a, int b, int c, int d); // 0x004299C0
 
-extern float g_fSpeedBlurRatio;                         // 0x0078D43C
-extern unsigned int g_nBloomTexture;                    // 0x007A68C0
-extern void* g_hBloomPbuffer;                           // 0x007A68C4
-extern unsigned int g_nRootTexture;                     // 0x007A687C
-extern int g_nWindowWidth;                              // 0x0078D1D4
-extern int g_nWindowHeight;                             // 0x0078D1D8
+#include "shared/globals.h"
 
 void RenderAccumulationBlur(unsigned int nTexture);     // 0x00433DA0
 

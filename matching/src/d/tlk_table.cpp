@@ -7,7 +7,7 @@ extern "C" int __cdecl memcmp(const void* a, const void* b, unsigned int n);
 extern "C" int __cdecl strncmp(const char* a, const char* b, unsigned int n);
 #pragma intrinsic(memcmp)
 
-extern const char* g_sTlkFileVersion;       // 0x0078d3ec -> "V3.0"
+#include "shared/globals.h"
 
 #define TLK_FOURCC(p) \
     ((((((unsigned long)(unsigned char)(p)[3] << 8) | (unsigned char)(p)[2]) << 8 \

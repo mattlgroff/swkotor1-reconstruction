@@ -1,7 +1,7 @@
 // PartLight material color.
 extern "C" __declspec(dllimport) void __stdcall glColor4f(float, float, float, float);
 #include "shared/vector.h"
-extern Vector g_vPartLightColor; // 0x0078E8AC; descriptive
+#include "shared/globals.h"
 
 inline float ReadColor(const float& x) { return x; }
 

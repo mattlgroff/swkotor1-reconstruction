@@ -11,7 +11,7 @@ public:
                       unsigned long* pTime);                        // 0x004ADF50
 };
 
-extern const unsigned long g_nMillisecondsPerSecond;               // 0x00744174 (placeholder name)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004CAC30
 void CSWSObject::AddActionNodeParameter(CSWSObjectActionNode* pNode, unsigned long nIndex,

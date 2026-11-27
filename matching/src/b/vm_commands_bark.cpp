@@ -20,7 +20,7 @@ public:
     char pad_0x0[0xb4];
     int m_nB4;
 };
-extern CTlkTable* g_pTlkTable;                              // 0x007A3A08
+#include "shared/globals.h"
 extern unsigned char g_nGender;                             // 0x0073ECD0
 
 // NONMATCH (11): GUI state uses a different scratch register.

@@ -8,10 +8,7 @@ void DrawAxisAlignedFrame(const Vector& a, const Vector& b, const Vector& c);
 void Transform(const Vector* pPos, const Quaternion* pOri, int bForce);
 }
 
-extern int g_nTransformMode;        // 0x0078D494
-extern int g_nTransformCount;       // 0x00827FA8
-extern float g_aTransformMatrix[16];    // 0x008280A0
-extern float g_fRadToDeg;           // 0x00742EF8
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0046EF10
 void GLRender::DrawAxisAlignedFrame(const Vector& a, const Vector& b, const Vector& c)
@@ -65,7 +62,6 @@ void GLRender::Transform(const Vector* pPos, const Quaternion* pOri, int bForce)
     glRotatef(acos(s_qOri.w) * 2.0 * g_fRadToDeg, vAxis.x, vAxis.y, vAxis.z);
 }
 
-extern Vector g_aWalkMeshColors[32];    // 0x0078E6A8
 
 // FUNCTION: SWKOTOR 0x0046F200
 unsigned long* GetWalkMeshColors()
@@ -98,7 +94,6 @@ unsigned long* GetInverseWalkMeshColors()
 }
 
 typedef void (__stdcall* PFNPROGRAM)(unsigned int, unsigned int);
-extern int g_bARBVertexProgram;         // 0x0078E5EC
 extern PFNPROGRAM g_pfnBindProgramARB;  // 0x007BB788
 extern PFNPROGRAM g_pfnBindProgramNV;   // 0x007BB834
 

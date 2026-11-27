@@ -104,8 +104,7 @@ public:
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
-extern const unsigned char OBJECT_TYPE_SOUND;       // 0x0074663E
-extern const unsigned char GAME_OBJECT_ADD_OK;      // 0x0074666C
+#include "shared/globals.h"
 
 class CSWCMessage {
 public:

@@ -123,12 +123,7 @@ public:
                            CExoString* pValue);     // 0x00413DE0
 };
 
-extern int g_nAppearanceCol_SIZECATEGORY;           // 0x007A2124
-extern int g_nVisualEffectCol_ShakeType;            // 0x007A21D4
-extern int g_nVisualEffectCol_ShakeDuration;        // 0x007A21D8
-extern int g_nVisualEffectCol_ShakeDelay;           // 0x007A21DC
-extern int g_nVisualEffectCol_SoundImpact;          // 0x007A21E0
-extern int g_nVisualEffectCol_SoundDuration;        // 0x007A21E4
+#include "shared/globals.h"
 
 class CTwoDimArrays {
 public:
@@ -146,7 +141,6 @@ public:
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWCObject;
 class CSWCCreature;
@@ -306,7 +300,6 @@ public:
     unsigned char GetGameObject(unsigned long oid, CGameObject** ppObject);   // 0x004D8230
 };
 
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
 
 class CSWSCreature {
 public:

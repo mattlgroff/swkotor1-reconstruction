@@ -474,9 +474,7 @@ public:
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
 extern CExoBase* g_pExoBase;                        // 0x007A39E0
 extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
-extern int g_bSwapMouseButtons;                     // 0x008338F0
-extern unsigned long g_bReinitializeVideoMode;      // 0x007A3A2C
+#include "shared/globals.h"
 
 struct CClientResRefSlot {
     char m_resRef[16];

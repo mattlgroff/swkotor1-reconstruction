@@ -10,15 +10,7 @@ public:
     char pad_0x0[0x201c];
 };
 
-extern int g_bUseHardwareSkin;              // 0x0078E5EC
-extern char g_szSkinVPHw[];                 // 0x00792658
-extern char g_szSkinVPSw[];                 // 0x0079B5A8
-extern char g_szSkinSphereMapVP[];          // 0x0079E958
-extern char g_szSkinCubeMapVPHw[];          // 0x007938C8
-extern char g_szSkinCubeMapVPSw[];          // 0x0079F128
-extern int g_nSkinVPType;                   // 0x00830578
-extern int g_nSkinSphereMapVPType;          // 0x0083058C
-extern int g_nSkinCubeMapVPType;            // 0x00830590
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00487310
 VertexProgram* GetSkinVP()

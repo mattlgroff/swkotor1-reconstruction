@@ -144,10 +144,7 @@ public:
     char pad_0x0[0x38];
 };
 
-extern const int g_nInputAnySlot;                   // 0x0074D3C4 (-1)
-extern const unsigned long g_nInputMouseAxisX;      // 0x0074D3EC (3)
-extern const unsigned long g_nInputMouseAxisY;      // 0x0074D3F0 (4)
-extern float g_fMouseDeltaScale;                    // 0x007A2278 (100.0f)
+#include "shared/globals.h"
 extern int g_nScreenHeight;                         // 0x0078D1D8
 extern void* g_hWnd;                                // 0x007A39D8
 
@@ -262,15 +259,6 @@ public:
 
 extern "C" HRESULT __stdcall DirectInput8Create(HINSTANCE h, unsigned long dwVersion,
                                                 const _GUID& riid, void** ppv, void* pOuter);  // 0x005E50C0
-extern const _GUID IID_IDirectInput8A;              // 0x0074D6F4
-extern const _GUID GUID_SysKeyboard;                // 0x0074D694
-extern const _GUID GUID_SysMouse;                   // 0x0074D6A4
-extern const DIDATAFORMAT c_dfDIKeyboard;           // 0x0074D8FC
-extern const DIDATAFORMAT c_dfDIMouse;              // 0x0074DB04
-extern const int g_nInputDeviceKeyboard;            // 0x0074D3C8 (0)
-extern const int g_nInputDeviceMouse;               // 0x0074D3CC (1)
-extern const int g_nInputDeviceJoystick;            // 0x0074D3D0 (2)
-extern int g_nRawInputUnknown;                      // 0x008328A0
 
 #define DIPROP_BUFFERSIZE (*(const _GUID*)1)
 
@@ -299,8 +287,6 @@ struct CExoKeyboardBuffer {
     unsigned long m_nUnknown08;                     // 0x08
 };
 
-extern const int g_nFirstKeyIndex;                  // 0x0074D3D8
-extern const int g_nLastKeyIndex;                   // 0x0074D3DC
 
 class CExoTimers {
 public:

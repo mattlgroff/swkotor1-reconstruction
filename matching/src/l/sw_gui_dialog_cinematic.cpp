@@ -4,7 +4,7 @@
 #define L_GUI_TEXT_PARAMS_EXACT
 #include "l/sw_gui_tutorial_box.h"
 
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x006A8B40
 CSWGuiDialogCinematic::CSWGuiDialogCinematic(CSWGuiManager* pManager)

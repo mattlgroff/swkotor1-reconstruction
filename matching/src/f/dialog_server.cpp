@@ -171,7 +171,7 @@ public:
     char GetGameObject(unsigned long id, CGameObject **ppObject);
 };
 
-extern char g_cObjectArraySuccess;
+#include "shared/globals.h"
 
 class CWorldTimer {
 public:
@@ -197,7 +197,6 @@ public:
     int GetIgnoreConversationStartRange();
 };
 
-extern float g_fDialogSpeakerRange;  // 0x0074744C (placeholder name, 1000.0)
 
 class CSWSDialogSpeaker {
 public:
@@ -246,8 +245,6 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES &strRes, unsigned char nGender);
 };
 
-extern CTlkTable *g_pTlkTable;       // 0x007A3A08
-extern int g_bLogConversations;      // 0x00833A9C (placeholder name)
 
 class CSWCCreatureStats {
 public:
@@ -433,7 +430,6 @@ public:
 };
 
 
-extern unsigned char g_nDefaultGender;  // 0x0073ECD0 (placeholder name)
 
 class CSWSDialog {
 public:

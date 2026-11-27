@@ -14,7 +14,7 @@ public:
     CSWFeat* GetFeat(unsigned short nFeat);         // 0x00550C00
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWSItem {
 public:
@@ -165,7 +165,6 @@ public:
     CClientExoAppT* m_pClientExoApp;                // 0x04
 };
 
-extern CAppManagerT* g_pAppManagerT;                // 0x007A39FC (g_pAppManager)
 
 class CSWCCreatureTarget {
 public:

@@ -11,7 +11,7 @@ public:
     virtual ~CClientVFX();
 };
 
-extern CExoLinkedListInternal* g_lCachedVFX; // 0x00833BC8
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00690910
 void UnloadCachedVFX()

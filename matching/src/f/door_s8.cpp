@@ -54,7 +54,7 @@ public:
     int RunScript(CExoString *psFileName, unsigned long oid, int bFlag);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
+#include "shared/globals.h"
 
 class CSWSArea {
 public:
@@ -87,10 +87,6 @@ public:
     Vector m_avUse[2];               // +0x70
 };
 
-extern int g_nDoorStateClosed;
-extern int g_nDoorStateOpen1;
-extern int g_nDoorStateOpen2;
-extern int g_nDoorDebugMode;
 
 class CSWSDoor : public CSWSObject {
 public:
@@ -364,7 +360,6 @@ void CSWSTrigger::GetBoundingBox(float *pMinX, float *pMinY, float *pMaxX, float
     *pMaxY = m_fMaxY;
 }
 
-extern float g_fTriggerRadius;
 
 // FUNCTION: SWKOTOR 0x0058CE40
 int CSWSTrigger::InTrigger(Vector *pPoint)

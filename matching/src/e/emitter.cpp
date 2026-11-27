@@ -300,8 +300,7 @@ public:
 
 void RemoveFromSceneManager(Part* pPart);           // 0x004554B0
 
-extern int g_nParticleCount;                        // 0x0083046C
-extern int g_nChunkVisible;                         // 0x007B92A0
+#include "shared/globals.h"
 Part* NewPartFromModel(char* szModel, char* szName, int a, int b);  // 0x00449CC0 (cdecl)
 
 class Particle {
@@ -360,19 +359,7 @@ public:
     int m_nFlags;                                   // +0x50
 };
 
-extern float g_fLastEmitterF58;                     // 0x00830494
 
-extern int g_nEmitterCount;                         // 0x00830470
-extern int g_bDrawEmitters;                         // 0x00830498
-extern int g_nRenderNormal;                         // 0x00798B6C
-extern int g_nRenderBillboardToLocalZ;              // 0x00798B70
-extern int g_nRenderBillboardToWorldZ;              // 0x00798B74
-extern int g_nRenderLinked;                         // 0x00798B78
-extern int g_nRenderAlignedToWorldZ;                // 0x00798B7C
-extern short g_nLightningRenderFlags;               // 0x00798B80
-extern short g_nEmitterRenderFlags;                 // 0x00798B84
-extern int g_nRenderAlignedToParticleDir;           // 0x00798B88
-extern int g_nRenderMotionBlur;                     // 0x00798B8C
 
 class PartEmitter : public Part {
 public:
@@ -695,13 +682,6 @@ __declspec(dllimport) void __stdcall glEnableClientState(unsigned int array);
 __declspec(dllimport) void __stdcall glDisableClientState(unsigned int array);
 }
 
-extern unsigned int g_nCapLighting;                 // 0x0078D45C
-extern unsigned int g_nCapBlend;                    // 0x0078D448
-extern unsigned int g_nCapAlphaTest;                // 0x0078D44C
-extern const unsigned int g_nVertexArray;           // 0x0073F3A4
-extern const unsigned int g_nColorArray;            // 0x0073F3A0
-extern const unsigned int g_nTexCoordArray;         // 0x0073F398
-extern const unsigned int g_nNormalArray;           // 0x0073F39C
 
 void DrawSphere(float fRadius, Vector* pPosition, Vector* pColor, float fAlpha, int nFlags);  // 0x00431A50
 
@@ -1011,7 +991,6 @@ Part* MdlNodeEmitter::InternalCreateInstance(Gob* pScene)
 // ---------------------------------------------------------------------------
 // PartTrigger
 
-extern const unsigned short g_nTriggerNodeType;     // 0x00740A40
 
 class MdlNodeTrigger : public MdlNode {
 public:
@@ -1152,17 +1131,12 @@ PartTrigger::PartTrigger(MdlNode* pNode)
     m_fAlpha = 0.5f;
 }
 
-extern float g_fTriggerAlpha;                       // 0x008304B8
-extern unsigned int g_nCapDepthTest;                // 0x0078D458
 extern "C" {
 __declspec(dllimport) void __stdcall glPushAttrib(unsigned int mask);
 __declspec(dllimport) void __stdcall glPopAttrib();
 __declspec(dllimport) void __stdcall glColor4fv(const float* v);
 __declspec(dllimport) void __stdcall glBlendFunc(unsigned int sfactor, unsigned int dfactor);
 }
-extern const unsigned int g_nBlendSrcAlpha;         // 0x0073F270
-extern const unsigned int g_nBlendOneMinusSrcAlpha; // 0x0073F274
-extern const unsigned int g_nBlendOne;              // 0x0073F278
 
 // FUNCTION: SWKOTOR 0x0049DA40
 void PartTrigger::Render(int nFlags)

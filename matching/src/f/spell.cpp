@@ -34,7 +34,7 @@ public:
     int GetSimpleString(unsigned long strref, STR_RES *pRes, unsigned char nGender);
 };
 
-extern CTlkTable *g_pTlkTable;
+#include "shared/globals.h"
 extern const unsigned char g_nGender;
 
 class C2DA {
@@ -55,9 +55,6 @@ public:
     CTwoDimArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;
-extern int g_nForceAdjustGoodCostColumn;     // 0x007A2184
-extern int g_nForceAdjustEvilCostColumn;     // 0x007A2188
 
 class CSWSpell {
 public:

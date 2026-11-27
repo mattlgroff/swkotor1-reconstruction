@@ -23,8 +23,7 @@ __declspec(dllimport) void __stdcall glReadPixels(int x, int y, int w, int h,
                                                   unsigned int format, unsigned int type,
                                                   void* pixels);
 
-extern const unsigned int g_nSnapshotFormat;    // 0x0073f370 (GL_RGB)
-extern int g_nSnapshotCount;                    // 0x007a47b4
+#include "shared/globals.h"
 
 void __cdecl ImageFlipY(unsigned char* p, int w, int h, int bpp);           // 0x0045d990
 void __cdecl ImageWriteTGA(char* szFile, int w, int h, int bpp, unsigned char* p);  // 0x0045f2a0
@@ -32,8 +31,6 @@ unsigned char* __cdecl ImageScale(unsigned char* p, int w, int h, int bpp,
                                   int nNewW, int nNewH);                   // 0x0045dad0
 void __cdecl SaveScreenShot(char* szName, int nSize, int bSquare, int bPad);
 
-extern int g_nScreenShotCount;                  // 0x007a47b0
-extern int g_bRenderingScreenShot;              // 0x007b9350
 
 class Gob;
 Gob* __cdecl GobListFind(char* szName);         // 0x00440460

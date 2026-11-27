@@ -101,7 +101,7 @@ public:
     char pad_0x0[0x34];
     CSWBaseItemArray* m_pBaseItemArray;             // 0x34
 };
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWSItem {
 public:

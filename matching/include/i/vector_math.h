@@ -2,7 +2,7 @@
 #ifndef I_VECTOR_MATH_H
 #define I_VECTOR_MATH_H
 
-extern const float g_fZero;                         // 0x0073D700 (0.0f)
+#include "shared/globals.h"
 extern const float g_fOne;                          // 0x0073D764 (1.0f)
 
 #include "shared/vector.h"
@@ -87,12 +87,7 @@ Vector NormalizeVector(const Vector& v);                                    // 0
 Vector NormalOf(const Vector& a, const Vector& b, const Vector& c);         // 0x004ACA00
 Quaternion YawPitchRoll(float fYaw, float fPitch, float fRoll);             // 0x004ACAC0
 
-extern Vector g_vXAxis;                             // 0x007A1998
-extern Vector g_vYAxis;                             // 0x007A19A4
-extern Vector g_vZAxis;                             // 0x007A19B0
 Quaternion normalize(Quaternion q);                                         // 0x004A9D60
 
-extern const float g_afCosTable[32];                // 0x00743FE8
-extern const float g_afSinTable[32];                // 0x00744070
 
 #endif

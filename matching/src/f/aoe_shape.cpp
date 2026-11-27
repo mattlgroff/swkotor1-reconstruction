@@ -59,7 +59,7 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;              // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWSCreature;
 class CGameObject;
@@ -114,7 +114,6 @@ public:
 };
 
 extern CAppManager *g_pAppManager;      // 0x007A39FC
-extern char g_cObjectArraySuccess;
 extern unsigned long g_oidInvalid;      // 0x00746644
 
 class CGameObject {

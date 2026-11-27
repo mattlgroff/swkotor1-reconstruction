@@ -85,9 +85,8 @@ struct CSWRace {
     char pad_0x1e[0x16];
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 extern const unsigned short RACIAL_TYPE_HUMAN;      // 0x0074BF14
-extern const unsigned char CLASS_TYPE_SCOUT;        // 0x0074B319
 
 class CSWCCreatureStats {
 public:

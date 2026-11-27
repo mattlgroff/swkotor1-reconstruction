@@ -30,7 +30,7 @@ extern "C" unsigned int __cdecl strlen(const char*);
 extern "C" char* __cdecl strcpy(char*, const char*);
 #pragma intrinsic(strlen, strcpy)
 
-extern unsigned char g_bBinaryModel;        // 0x007B927C
+#include "shared/globals.h"
 char* AurResGetNextLine();                  // 0x0044BFA0
 
 struct NewController;

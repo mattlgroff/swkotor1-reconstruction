@@ -21,8 +21,7 @@ public:
 };
 extern CAppManager* g_pAppManager;                                  // 0x007A39FC
 
-extern const unsigned long PLAYER_ID_ALL_PLAYERS;                   // 0x0074C52C
-extern const unsigned long PLAYER_ID_SERVER_ADMIN;                  // 0x0074C534 (placeholder name)
+#include "shared/globals.h"
 
 #pragma pack(push, 4)
 class CWorldTimer {

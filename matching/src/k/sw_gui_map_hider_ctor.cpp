@@ -162,7 +162,7 @@ struct CSWGuiMapNote {
     unsigned long m_oidNote;
 };
 
-extern Vector g_vGuiColor23F0;                      // 0x007A23F0
+#include "shared/globals.h"
 extern Vector g_vAbilityColorGranted;               // 0x007A23C0
 
 class CSWGuiMapHider : public CSWGuiControl {

@@ -1,7 +1,6 @@
 // Journal item highlighting.
 #include "shared/vector.h"
-extern Vector g_vKeyMapChangedColor;     // 0x007A23FC
-extern Vector g_vDifficultyExitColor;    // 0x007A23B4
+#include "shared/globals.h"
 extern Vector g_vAbilityColorGranted;    // 0x007A23C0
 
 class CSWGuiJournalItemEntry {

@@ -79,7 +79,7 @@ public:
 };
 
 extern CAppManager *g_pAppManager;
-extern int g_bPathfindDebug;         // 0x00832880 (placeholder name)
+#include "shared/globals.h"
 
 class CAvoidCreature {
 public:

@@ -57,7 +57,7 @@ public:
     char pad_0x4d[3];
 };
 
-extern const unsigned char g_nAnimationTreeType;    // 0x00740A12
+#include "shared/globals.h"
 void AnimationProcess(MaxTree* pTree, void* pData);  // 0x00481880
 
 class Animation : public MaxTree {

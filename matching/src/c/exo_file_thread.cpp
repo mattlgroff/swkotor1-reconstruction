@@ -47,7 +47,7 @@ public:
     ~CExoFileThread();
 };
 
-extern CExoFileThread g_cExoFileThread;             // 0x008328B0
+#include "shared/globals.h"
 
 // Read-ahead worker: each wake-up reads into the queued buffer, then suspends
 // itself until the next request. A real start missing from functions.csv.

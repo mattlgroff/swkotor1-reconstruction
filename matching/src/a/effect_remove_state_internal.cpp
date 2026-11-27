@@ -1,7 +1,7 @@
 #include "a/effect_list_handler.h"
 
 class CVirtualMachine { public: int RunScript(CExoString*, unsigned long, int); };
-extern CVirtualMachine* g_pVirtualMachine; // 0x007A3A00
+#include "shared/globals.h"
 struct CCreatureScriptView { char pad_0x00[0x260]; CExoString m_sScript; };
 
 // FUNCTION: SWKOTOR 0x004DA870

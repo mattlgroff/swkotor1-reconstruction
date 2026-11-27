@@ -299,7 +299,7 @@ public:
     unsigned char GetNumSkills() { return m_nNumSkills; }
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 class CSWSCreatureStats {
 public:

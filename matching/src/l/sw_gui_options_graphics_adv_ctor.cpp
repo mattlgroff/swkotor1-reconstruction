@@ -3,7 +3,7 @@
 #include "l/sw_gui_options_in_game.h"
 
 extern int AurTestAntiAliasingMode(int nSamples); // 0x0044F140
-extern Vector g_vKeyMapLockedTextColor; // 0x007A2408 (disabled text)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x006E16E0
 CSWGuiOptionsGraphicsAdvanced::CSWGuiOptionsGraphicsAdvanced(CSWGuiManager* pManager, CSWGuiOptionsGraphics* pParent)

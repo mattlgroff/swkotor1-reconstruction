@@ -45,7 +45,7 @@ struct CResRef {
     char m_resRef[16];
 };
 
-extern const float g_fZero;                         // 0x0073D700
+#include "shared/globals.h"
 
 class C2DA {
 public:
@@ -155,20 +155,9 @@ class CSWSArea;
 class CSWSCreature;
 class CSWSObject;
 
-extern const unsigned char GAME_OBJECT_VALID;               // 0x0074666C
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633
 extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634
-extern const unsigned char OBJECT_TYPE_ITEM;                // 0x00746635
-extern const unsigned char OBJECT_TYPE_TRIGGER;             // 0x00746636
 extern const unsigned char OBJECT_TYPE_PLACEABLE;           // 0x00746638
 extern const unsigned char OBJECT_TYPE_DOOR;                // 0x00746639
-extern const unsigned char OBJECT_TYPE_AREA_OF_EFFECT;      // 0x0074663A
-extern const unsigned char OBJECT_TYPE_WAYPOINT;            // 0x0074663B
-extern const unsigned char OBJECT_TYPE_ENCOUNTER;           // 0x0074663C
-extern const unsigned char OBJECT_TYPE_STORE;               // 0x0074663D
-extern const unsigned char OBJECT_TYPE_SOUND;               // 0x0074663E
-extern const unsigned long OBJECT_INVALID_ID;               // 0x00746644
-extern const unsigned long CLIENT_OBJECT_MASK;              // 0x0074665C
 
 template <class T>
 class CExoArrayList {
@@ -411,7 +400,6 @@ public:
     CSWS2DArrays* m_p2DArrays;                      // +0xb8 (placeholder name)
     char m_padbc[0xdc - 0xbc];
 };
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CExoDebug {
 public:
@@ -543,7 +531,6 @@ public:
     int RemoveFile(const CExoString& sFileName, unsigned short nType);             // 0x00406B20
     char m_pad0[0x60];
 };
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
 
 class CSWSArea {
 public:

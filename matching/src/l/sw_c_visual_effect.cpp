@@ -4,7 +4,7 @@
 
 #include "l/sw_c_visual_effect.h"
 
-extern short g_nSpeedBlurCount;                     // 0x00833BCC
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x006A0480
 int CSWCVisualEffectOnObject::IsReady()

@@ -12,7 +12,7 @@ public:
 };
 
 Vector Normalize(const Vector& v);                      // 0x004AB180
-extern float g_fDialogCameraOffset;                     // 0x00743264
+#include "shared/globals.h"
 
 class CCameraX {
 public:
@@ -66,7 +66,6 @@ public:
 
 Vector operator-(const Vector& a, const Vector& b);    // 0x00423BC0
 float Magnitude(const Vector& v);                       // 0x004AB100
-extern float g_fAreaTransitionDistance;                 // 0x00741870
 
 class CSWGuiBarkBubbleX : public CSWGuiPanelX {
 public:
@@ -217,10 +216,6 @@ public:
     int operator!=(const char* s) const;                // 0x005E5390
 };
 
-extern int g_bGuiFlag;                                  // 0x007A2370
-extern int g_bLetterbox;                                // 0x0083390C
-extern int g_bPauseFlag;                                // 0x007B92AC
-extern int g_nSoundModeZero;                            // 0x0074C5EC
 
 class CGob2 {
 public:

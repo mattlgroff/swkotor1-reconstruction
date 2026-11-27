@@ -8,11 +8,7 @@
 
 #include "shared/vector.h"
 
-extern float g_fFogDensity;                         // 0x0078E6A0
-extern float g_fAmbientScale;                       // 0x0078E408
-extern int g_bLockCamera;                           // 0x007A22B8
-extern float g_fLightningAmbient;                   // 0x00832C70
-extern const int g_nAreaSoundMode;                  // 0x0074C5EC
+#include "shared/globals.h"
 
 extern "C" int __cdecl rand();
 

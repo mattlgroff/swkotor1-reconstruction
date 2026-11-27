@@ -137,7 +137,7 @@ public:
     int CreatureAcquireItem(unsigned long oidCreature, const CResRef& cResRef);   // 0x005ED7E0
 };
 
-extern int g_bCheatToggle7A267C;                    // 0x007A267C (descriptive)
+#include "shared/globals.h"
 
 class CAppManager {
 public:

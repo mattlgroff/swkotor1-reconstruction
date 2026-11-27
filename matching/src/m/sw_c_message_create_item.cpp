@@ -28,7 +28,7 @@ public:
     int Exists(const CResRef& cRes, unsigned short nType, unsigned long* pSize);  // 0x00408BC0
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
+#include "shared/globals.h"
 
 class CSWBaseItem {
 public:
@@ -53,7 +53,6 @@ public:
     CSWBaseItemArray* m_pBaseItemArray;             // 0x34
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWCItem {
 public:

@@ -8,8 +8,7 @@
 
 #include "shared/vector.h"
 
-extern float g_fFogDensity;                         // 0x0078E6A0
-extern float g_fAmbientScale;                       // 0x0078E408
+#include "shared/globals.h"
 
 class CSWCAreaObject {
 public:
@@ -39,9 +38,6 @@ struct CSWCRoom {
     char pad_0x0[0x48];
 };
 
-extern float g_fAmbientBright;                      // 0x007A22AC
-extern float g_fAmbientDark;                        // 0x007A22B0
-extern const float g_fDarkThreshold;               // 0x00740C84 (3.0f)
 
 class CSWSArea {
 public:

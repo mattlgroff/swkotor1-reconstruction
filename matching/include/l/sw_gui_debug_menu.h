@@ -6,7 +6,7 @@
 
 #include "l/sw_gui_skill_info.h"
 
-extern CExoString g_sBuildNumber;                   // 0x007A3CC4
+#include "shared/globals.h"
 
 class CGuiInGameDebug : public CGuiInGame {
 public:

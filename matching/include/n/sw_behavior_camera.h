@@ -239,8 +239,7 @@ public:
     float m_fFarClip3;                          // +0x48
 };
 
-extern const int g_nCameraSettingsTypeOnAStick;     // 0x0075182C
-extern int g_nPendingCameraStyle;                   // 0x007A242C
+#include "shared/globals.h"
 
 // Client object: only its id and position are used by the cameras.
 class CSWCObject {
@@ -252,10 +251,6 @@ public:
     Vector m_vPosition;                         // +0x24
 };
 
-extern int g_bSwapMouseButtons;                     // 0x008338F0
-extern float g_fCameraTiltUpLimit;                  // 0x007A2420
-extern float g_fCameraTiltDownLimit;                // 0x007A2424
-extern float g_fCameraRotation;                     // 0x007A2428
 
 // vtable 0x0075165C
 class CSWCameraOnAStick : public CSWCameraBehaviorBase {
@@ -353,7 +348,6 @@ public:
     char pad_0x00[0xb8];
     CTwoDimArrays* m_p2DArrays;                 // +0xb8
 };
-extern CSWRules* g_pRules;                      // 0x007A3A28
 
 class CSWCArea {
 public:

@@ -172,64 +172,7 @@ void CGameEffect::SetCreator(unsigned long oid)
     }
 }
 
-extern const int g_nEffectTrueType74667C;  // 0x0074667C
-extern const int g_nEffectTrueType746684;  // 0x00746684
-extern const int g_nEffectTrueType746698;  // 0x00746698
-extern const int g_nEffectTrueType7466AC;  // 0x007466AC
-extern const int g_nEffectTrueType7466B8;  // 0x007466B8
-extern const int g_nEffectTrueType7466C4;  // 0x007466C4
-extern const int g_nEffectTrueType7466D0;  // 0x007466D0
-extern const int g_nEffectTrueType7466D4;  // 0x007466D4
-extern const int g_nEffectTrueType7466DC;  // 0x007466DC
-extern const int g_nEffectTrueType7466E0;  // 0x007466E0
-extern const int g_nEffectTrueType7466F8;  // 0x007466F8
-extern const int g_nEffectTrueType7466FC;  // 0x007466FC
-extern const int g_nEffectTrueType74669C;  // 0x0074669C
-extern const int g_nEffectTrueType746690;  // 0x00746690
-extern const int g_nEffectTrueType746730;  // 0x00746730
-extern const int g_nEffectTrueType746734;  // 0x00746734
-extern const int g_nEffectTrueType746680;  // 0x00746680
-extern const int g_nEffectTrueType746688;  // 0x00746688
-extern const int g_nEffectTrueType74670C;  // 0x0074670C
-extern const int g_nEffectTrueType746710;  // 0x00746710
-extern const int g_nEffectTrueType7466A4;  // 0x007466A4
-extern const int g_nEffectTrueType7466A8;  // 0x007466A8
-extern const int g_nEffectTrueType7466B0;  // 0x007466B0
-extern const int g_nEffectTrueType7466B4;  // 0x007466B4
-extern const int g_nEffectTrueType7466BC;  // 0x007466BC
-extern const int g_nEffectTrueType7466C0;  // 0x007466C0
-extern const int g_nEffectTrueType74673C;  // 0x0074673C
-extern const int g_nEffectTrueType746740;  // 0x00746740
-extern const int g_nEffectTrueType7466EC;  // 0x007466EC
-extern const int g_nEffectTrueType7466F0;  // 0x007466F0
-extern const int g_nEffectTrueType7466E4;  // 0x007466E4
-extern const int g_nEffectTrueType7466E8;  // 0x007466E8
-extern const int g_nEffectTrueType746700;  // 0x00746700
-extern const int g_nEffectTrueType746704;  // 0x00746704
-extern const int g_nEffectTrueType746758;  // 0x00746758
-extern const int g_nEffectTrueType74675C;  // 0x0074675C
-extern const int g_nEffectTrueType746738;  // 0x00746738
-extern const int g_nEffectTrueType7467A4;  // 0x007467A4
-extern const int g_nEffectTrueType746748;  // 0x00746748
-extern const int g_nEffectTrueType746770;  // 0x00746770
-extern const int g_nEffectTrueType7467C4;  // 0x007467C4
-extern const int g_nEffectTrueType746774;  // 0x00746774
-extern const int g_nEffectTrueType746778;  // 0x00746778
-extern const int g_nEffectTrueType74679C;  // 0x0074679C
-extern const int g_nEffectTrueType746794;  // 0x00746794
-extern const int g_nEffectTrueType74677C;  // 0x0074677C
-extern const int g_nEffectTrueType7467A0;  // 0x007467A0
-extern const int g_nEffectTrueType746780;  // 0x00746780
-extern const int g_nEffectTrueType74674C;  // 0x0074674C
-extern const int g_nEffectTrueType746798;  // 0x00746798
-extern const int g_nEffectTrueType7467A8;  // 0x007467A8
-extern const int g_nEffectTrueType7467AC;  // 0x007467AC
-extern const int g_nEffectTrueType746744;  // 0x00746744
-extern const int g_nEffectTrueType74680C;  // 0x0074680C
-extern const int g_nEffectTrueType7466F4;  // 0x007466F4
-extern const int g_nEffectTrueType746808;  // 0x00746808
-extern const int g_nEffectTrueType746810;  // 0x00746810
-extern const int g_nEffectTrueType746818;  // 0x00746818
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00503A70
 int CGameEffect::GetScriptEffectType()

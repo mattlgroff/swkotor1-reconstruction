@@ -119,8 +119,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionGiveItem(int nCommandId, int 
     return 0;
 }
 
-extern int g_bDebugActions;                                 // 0x0083281C (name guessed)
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633 (4)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0052CBE0
 int CSWVirtualMachineCommands::ExecuteCommandActionFollowLeader(int nCommandId, int nParameters)
@@ -286,7 +285,6 @@ int CSWVirtualMachineCommands::ExecuteCommandActionResumeConversation(int nComma
     return 0;
 }
 
-extern const float MOVE_AWAY_DEFAULT_RANGE;                 // 0x00746B10 (40.0f, name guessed)
 
 // NONMATCH (24): the original keeps pObject in edi from the area check on;
 // ours keeps the constant 1 in edi. Scoping vDiff and the action block gives
@@ -443,7 +441,6 @@ public:
                           unsigned long nObject, unsigned long nEventId, void* pEventData); // 0x004B08D0
 };
 
-extern const unsigned long EVENT_TIMED_EVENT;               // 0x007441B8 (1)
 
 // FUNCTION: SWKOTOR 0x0052E720
 int CSWVirtualMachineCommands::ExecuteCommandAssignCommand(int nCommandId, int nParameters)

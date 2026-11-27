@@ -17,12 +17,9 @@ public:
     int GetItemInInventory(unsigned long oidItem);          // 0x005C6BB0
 };
 
-extern const unsigned long EVENT_TIMED_EVENT;               // 0x007441B8
-extern const unsigned long EVENT_0x7441F4;                  // 0x007441F4 (use one charge)
+#include "shared/globals.h"
 extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634
-extern const unsigned char OBJECT_TYPE_ITEM;                // 0x00746635
 extern const unsigned char OBJECT_TYPE_PLACEABLE;           // 0x00746638
-extern const unsigned char OBJECT_TYPE_STORE;               // 0x0074663D
 
 // NONMATCH (14): only the possessor lookup differs; the original loads
 // m_oidPossessor into eax before the app pointer into edx (direct

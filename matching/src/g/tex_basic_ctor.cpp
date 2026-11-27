@@ -8,8 +8,7 @@ extern "C" char* __cdecl strcpy(char* d, const char* s);
 #pragma intrinsic(strcpy)
 
 unsigned short AurTextureCalculateHashID(char* szName, unsigned short nCount, int* pInts);  // 0x0041f4d0
-extern int g_nTextureCount;                     // 0x007a4718
-extern unsigned char g_bTextureModeDynamic;     // 0x0078d400
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00423150
 CAurTextureBasic::CAurTextureBasic(char* szName, char* szFile)

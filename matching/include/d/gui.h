@@ -422,14 +422,9 @@ public:
     unsigned char m_nUnloadRims;                    // 0x34 (1: RIMS:CHARGEN, 2: RIMS:MAINMENU)
 };
 
-extern CExoResMan* g_pExoResMan;                // 0x007a39e8
-extern CSWGuiManager* g_pGuiManager;            // 0x007a39f4
-extern CExoInput* g_pExoInput;                  // 0x007a39e4
+#include "shared/globals.h"
 extern int g_nScreenWidth;                      // 0x0078d1d4
 extern int g_nScreenHeight;                     // 0x0078d1d8
-extern char* g_aCursorNames[];                  // 0x0078d240
-extern CExoString g_aResolutionSuffixes[];      // 0x007a3d50
-extern int g_bDrawSafeRegion;                   // 0x007a3d4c
 
 void GuiBeginFrame();                           // 0x0044ed90
 void GuiUpdateFrame(float fDelta);              // 0x00418300

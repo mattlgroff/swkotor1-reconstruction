@@ -75,7 +75,7 @@ public:
     CSWSkill* m_lstSkills;                          // 0xb4
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CClientExoApp {
 public:

@@ -34,9 +34,7 @@ public:
 };
 
 extern CExoBase* g_pExoBase;                        // 0x007A39E0
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
-extern unsigned char g_nNumLiveDirectories;         // 0x0073ECD2
+#include "shared/globals.h"
 
 class CClientExoAppInternal {
 public:

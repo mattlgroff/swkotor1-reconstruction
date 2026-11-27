@@ -4,7 +4,7 @@
 #define OBJECT_INVALID 0x7f000000
 
 extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
+#include "shared/globals.h"
 
 class CGameObject;
 

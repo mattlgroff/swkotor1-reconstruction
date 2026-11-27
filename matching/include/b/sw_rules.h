@@ -101,6 +101,6 @@ public:
     class CSWBaseItemArray* GetBaseItemArray() { return m_pBaseItemArray; }
 };
 
-extern CSWRules* g_pRules;      // 0x007A3A28
+#include "shared/globals.h"
 
 #endif

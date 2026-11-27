@@ -220,14 +220,7 @@ public:
     unsigned char m_nVolume;                        // 0x46
 };
 
-extern int g_bSoundPaused;                          // 0x00832890
-extern int g_nSoundModeBack;                        // 0x0074C5EC
-extern int g_nSoundModeMuted;                       // 0x0074C5F0
-extern int g_nSoundModeQuiet1;                      // 0x0074C5F4
-extern int g_nSoundModeQuiet2;                      // 0x0074C5F8
-extern int g_nSoundModeQuiet3;                      // 0x0074C5FC
-extern int g_nSoundModePauseAll;                    // 0x0074C600
-extern int g_nSoundModeResumeAll;                   // 0x0074C604
+#include "shared/globals.h"
 
 // One +0x108 entry, built from soundprovider.2da.
 struct CSoundProviderInfo {
@@ -278,7 +271,6 @@ struct CSoundArray {
     int array_size;                                 // 0x08
 };
 
-extern int g_bSoundDisabled;                        // 0x00832894
 
 class CExoSoundInternal {
 public:

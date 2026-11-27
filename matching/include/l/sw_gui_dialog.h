@@ -89,7 +89,7 @@ public:
     void RestoreOldMousePosition();                 // 0x0040C7D0
     void HandleMouseMove(int x, int y);             // 0x0040C1E0
 };
-extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
+#include "shared/globals.h"
 
 // Text parameters embedded in labels/controls.
 class CSWGuiTextParams {

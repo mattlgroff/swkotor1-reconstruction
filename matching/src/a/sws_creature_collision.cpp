@@ -6,7 +6,7 @@ struct CCollisionActionListNode {
     void* m_pNext;
     CSWSObjectActionNode* m_pAction;
 };
-extern int g_bCollisionDisabled;                    // 0x007A1B34 (descriptive)
+#include "shared/globals.h"
 
 // NONMATCH (15): return-block placement and register allocation differ.
 // FUNCTION: SWKOTOR 0x004F62A0

@@ -22,28 +22,7 @@ void CSWSCreature::Fn4F1460()
     }
 }
 
-extern const int EFFECT_TYPE_0746830;                // 0x00746830 (list-end sentinel, placeholder name)
-extern const int EFFECT_TYPE_07466A4;                // 0x007466A4 (placeholder name)
-extern const int EFFECT_TYPE_07466AC;                // 0x007466AC (placeholder name)
-extern const int EFFECT_TYPE_0746684;                // 0x00746684 (placeholder name)
-extern const int EFFECT_TYPE_07466B0;                // 0x007466B0 (placeholder name)
-extern const int EFFECT_TYPE_07466D8;                // 0x007466D8 (placeholder name)
-extern const int EFFECT_TYPE_0746788;                // 0x00746788 (placeholder name)
-extern const int EFFECT_TYPE_074670C;                // 0x0074670C (placeholder name)
-extern const int EFFECT_TYPE_0746700;                // 0x00746700 (placeholder name)
-extern const int EFFECT_TYPE_0746794;                // 0x00746794 (placeholder name)
-extern const int EFFECT_TYPE_0746798;                // 0x00746798 (placeholder name)
-extern const int EFFECT_TYPE_07467A8;                // 0x007467A8 (placeholder name)
-extern const int EFFECT_TYPE_07467AC;                // 0x007467AC (placeholder name)
-extern const int EFFECT_TYPE_07467A0;                // 0x007467A0 (placeholder name)
-extern const int EFFECT_TYPE_0746764;                // 0x00746764 (placeholder name)
-extern const int EFFECT_TYPE_0746780;                // 0x00746780 (placeholder name)
-extern const int EFFECT_TYPE_0746744;                // 0x00746744 (placeholder name)
-extern const int EFFECT_TYPE_0746770;                // 0x00746770 (placeholder name)
-extern const int EFFECT_TYPE_0746758;                // 0x00746758 (placeholder name)
-extern const int EFFECT_TYPE_07466E4;                // 0x007466E4 (placeholder name)
-extern const int EFFECT_TYPE_0746680;                // 0x00746680 (placeholder name)
-extern const int EFFECT_TYPE_07466D4;                // 0x007466D4 (placeholder name)
+#include "shared/globals.h"
 
 // Virtual slot 0xd8; no functions.csv row (the 0x004F1460 row spans it).
 // FUNCTION: SWKOTOR 0x004F14F0

@@ -4,10 +4,8 @@
 #include "b/sws_player.h"
 #include "b/sws_creature.h"
 
-extern const unsigned char GAME_OBJECT_VALID;               // 0x0074666C
+#include "shared/globals.h"
 extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634 (5)
-extern const unsigned char OBJECT_TYPE_ITEM;                // 0x00746635 (6)
-extern const unsigned char OBJECT_TYPE_TRIGGER;             // 0x00746636 (7)
 extern const unsigned char OBJECT_TYPE_PLACEABLE;           // 0x00746638 (9)
 
 // FUNCTION: SWKOTOR 0x0056E190

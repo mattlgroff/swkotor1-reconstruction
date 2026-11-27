@@ -63,10 +63,7 @@ public:
 };
 
 // Profiling counters for the client AI update.
-extern unsigned __int64 g_nClientAIEndTime;         // 0x00832C58
-extern unsigned __int64 g_nClientAIStartTime;       // 0x00832C60
-extern float g_fClientModuleUpdateTime;             // 0x00832C68
-extern float g_fClientAIUpdateTime;                 // 0x00832C6C
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x006047A0
 int CClientAIList::AddObject(CSWCObject* pObject)

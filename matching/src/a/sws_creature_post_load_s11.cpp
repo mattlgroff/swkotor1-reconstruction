@@ -7,7 +7,7 @@ public:
     void AddMember(unsigned long oid, int bArg);    // 0x005BFA70
 };
 
-extern const unsigned short EFFECT_TYPE_074678C;    // 0x0074678C (68, placeholder name)
+#include "shared/globals.h"
 
 static inline int AddObjectToLookupTable(const CExoString& sTag, unsigned long oid)
 {

@@ -121,9 +121,7 @@ public:
     CExoArrayList<unsigned int> m_aTargets; // +0x50
 };
 
-extern RequestPoolManager* g_pRequestPoolManager;  // 0x007a68a4
-extern int g_nPoolBytes;                           // 0x007a68a8
-extern int g_nPoolPages;                           // 0x007a68ac
+#include "shared/globals.h"
 extern unsigned char g_bVBOWriteOnly;              // 0x0078e398
 
 #endif

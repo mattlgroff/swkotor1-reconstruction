@@ -14,7 +14,7 @@ public:
     CResRef operator=(const char* s);               // 0x00406290
 };
 
-extern const char g_sEmpty[];                       // 0x0073D71C
+#include "shared/globals.h"
 
 struct CSWGuiActionData {
     unsigned long m_n0, m_n4, m_n8, m_nC;

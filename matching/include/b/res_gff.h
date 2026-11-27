@@ -39,7 +39,7 @@ public:
     int RemoveResourceDirectory(const CExoString& sDirectory);         // 0x004088D0
 };
 
-extern CExoResMan* g_pExoResMan;    // 0x007A39E8
+#include "shared/globals.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;

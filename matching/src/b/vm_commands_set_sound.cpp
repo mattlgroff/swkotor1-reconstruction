@@ -5,8 +5,7 @@
 #include "b/sws_message.h"
 #include "b/party_table.h"
 
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633
-extern int g_bShipBuild;                                    // 0x00832834 (name guessed)
+#include "shared/globals.h"
 
 void AurEnableSpeedBlur();                                  // 0x0044F0A0
 void AurDisableSpeedBlur();                                 // 0x0044F0B0

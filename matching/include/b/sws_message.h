@@ -33,7 +33,7 @@ public:
 };
 
 // .rdata player id used by broadcasts (0x0074C52C).
-extern const unsigned long PLAYER_ID_ALL_PLAYERS;
+#include "shared/globals.h"
 
 // vtable 0x007465A4 (CNWMessage)
 class CNWMessage {

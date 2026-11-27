@@ -54,7 +54,7 @@ public:
     int Exists(const CResRef& r, unsigned short nType, unsigned long* pSize);  // 0x00408BC0
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
+#include "shared/globals.h"
 
 class C2DA {
 public:
@@ -83,24 +83,8 @@ public:
     C2DArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 // Cached appearance.2da column indices (placeholder names).
-extern int g_nAppearanceColModelType;               // 0x007A2110
-extern int g_nAppearanceColCameraOffset;            // 0x007A20C8
-extern int g_nAppearanceColRunRate;                 // 0x007A2120
-extern int g_nAppearanceColHitRadius;               // 0x007A2118
-extern int g_nAppearanceColHeight;                  // 0x007A2104
-extern int g_nAppearanceColUnknown20D8;             // 0x007A20D8
-extern int g_nAppearanceColUnknown20DC;             // 0x007A20DC
-extern int g_nAppearanceColUnknown20E0;             // 0x007A20E0
-extern int g_nAppearanceColUnknown20E4;             // 0x007A20E4
-extern int g_nAppearanceColUnknown20F0;             // 0x007A20F0
-extern int g_nAppearanceColUnknown20C4;             // 0x007A20C4
-extern int g_nAppearanceColUnknown2114;             // 0x007A2114
-extern int g_nAppearanceColEnvMap;                  // 0x007A20E8
-extern int g_nAppearanceColRace;                    // 0x007A211C
-extern int g_nGenderColGender;                      // 0x007A2148
 
 extern const unsigned long g_oidInvalid;            // 0x00746644 (OBJECT_INVALID)
 

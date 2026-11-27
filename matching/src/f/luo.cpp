@@ -481,7 +481,7 @@ public:
     unsigned char m_nNumSkills;                         // +0xab
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 class CSWCombatInformation {
 public:

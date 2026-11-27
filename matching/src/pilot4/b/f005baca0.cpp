@@ -66,8 +66,7 @@ class CSWRules {
 public:
     unsigned short RollDice(unsigned char nDice, unsigned char nSides);  // 0x00550B60
 };
-extern CSWRules *g_pRules;                      // 0x007A3A28
-extern int g_nDebugAttackRoll;                  // 0x00832874
+#include "shared/globals.h"
 extern const unsigned char IMMUNITY_TYPE_CRITICAL_HIT;  // 0x00746970
 
 class CSWSCreature;

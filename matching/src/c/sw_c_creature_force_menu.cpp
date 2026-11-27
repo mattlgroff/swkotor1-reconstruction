@@ -28,7 +28,7 @@ public:
     CTwoDimArrays* m_p2DArrays;                     // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWCMessage {
 public:
@@ -54,7 +54,6 @@ public:
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
-extern const unsigned short RACIAL_TYPE_DROID;      // 0x0074BF10
 
 class CSWCCreatureStats {
 public:

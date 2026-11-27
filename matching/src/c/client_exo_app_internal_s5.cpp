@@ -56,7 +56,7 @@ unsigned long FindVideoMode(unsigned long nWidth, unsigned long nHeight, unsigne
 unsigned long FindNearestVideoMode(unsigned long nWidth, unsigned long nHeight, unsigned char nDepth,
                                    unsigned long nRefresh); // 0x0070D0A0
 
-extern int g_bMovieVideoMode;                       // 0x007A3C54 (descriptive)
+#include "shared/globals.h"
 extern unsigned long g_nScreenWidth;                // 0x0078D1D4
 extern unsigned long g_nScreenHeight;               // 0x0078D1D8
 extern unsigned char g_nScreenDepth;                // 0x0078D1E0
@@ -81,8 +81,6 @@ public:
 };
 
 extern CRender* g_pRender;                          // 0x007A39F8
-extern int g_nActivateState;                        // 0x007A3A2C
-extern int g_bWindowed;                             // 0x007A3A30
 
 int ReInitAurora(unsigned long nWidth, unsigned long nHeight, unsigned long nDepth, int bFullScreen,
                  int b);                            // 0x00403800
@@ -121,11 +119,6 @@ class CSWSObject : public CGameObject {
 
 #include "shared/vector.h"
 
-extern Vector g_vAbilityColorAvailable;             // 0x007A23D8
-extern Vector g_vAbilityColorLocked;                // 0x007A23E4
-extern Vector g_vFloatyTextColorWhite;              // 0x007A23A8 (descriptive)
-extern Vector g_vKeyMapChangedColor;                // 0x007A23FC
-extern Vector g_vFloatyTextColor23F0;               // 0x007A23F0 (descriptive)
 
 class CGuiInGame {
 public:
@@ -160,7 +153,6 @@ public:
     CTwoDimArrays* m_p2DArrays;                     // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 void AurTextureResetAll();                          // 0x00421D50
 void AurTextureSetDynamicMemoryRatio(float fRatio); // 0x0041E9B0

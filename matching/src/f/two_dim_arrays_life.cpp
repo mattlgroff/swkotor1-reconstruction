@@ -33,7 +33,7 @@ public:
     int GetNumRows() { return m_nNumRows; }
 };
 
-extern unsigned char g_nAppMode;  // 0x007A39DC (1: client)
+#include "shared/globals.h"
 
 class CTwoDimArrays {
 public:

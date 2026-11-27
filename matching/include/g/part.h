@@ -27,8 +27,7 @@ void __cdecl AurTextureRelease(int nTexture);      // 0x00423f50
 extern "C" int __cdecl _stricmp(const char* a, const char* b); // 0x0070acaf
 Part* __cdecl FindPart(Part* pRoot, char* szName);   // 0x0043fe00
 
-extern int g_nPartCount;            // 0x007a8a10
-extern int g_nPartTriMeshCount;     // 0x007a8a14
+#include "shared/globals.h"
 
 class CAurPart {
 public:

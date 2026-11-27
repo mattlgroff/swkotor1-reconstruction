@@ -345,22 +345,8 @@ public:
 };
 
 // --- globals ---------------------------------------------------------------
-extern unsigned int g_aGLTextureTargets[];      // 0x0078d448
-extern unsigned int g_nGLTexture2D;             // 0x0078d458
-extern unsigned int g_nGLTextureCubeMap;        // 0x0078d478
-extern int g_nAnisotropyRequested;              // 0x007a685c
+#include "shared/globals.h"
 extern int g_nActiveTextureUnit;                // 0x007a6898
-extern unsigned int g_aBoundTextures[];         // 0x007a683c
-extern int g_nBindLimit;                        // 0x007a470c
-extern int g_nBindCount;                        // 0x007a4710
-extern unsigned char g_bTextureModeDynamic;     // 0x0078d400
-extern unsigned char g_bBumpMaps;               // 0x007a46d4
-extern unsigned char g_b7a46d5;                 // 0x007a46d5
-extern SafePointer<CAurTexture> g_pNullTexture; // 0x007a477c
-extern CExoArrayList<CAurTextureBasic*> g_lTextures;        // 0x007a4770
-extern CExoArrayList<CAurTextureBasic*> g_lOrderedA;    // 0x007a4780
-extern CExoArrayList<CAurTextureBasic*> g_lHashed;      // 0x007a4798
-extern CExoArrayList<CAurTextureBasic*> g_lOrderedB;    // 0x007a47a4
 
 int AurHasCubeMaps();                           // 0x0045f8b0
 

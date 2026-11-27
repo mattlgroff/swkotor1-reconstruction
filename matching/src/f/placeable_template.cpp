@@ -250,22 +250,10 @@ public:
     int RunScriptSituation(void *pSituation, unsigned long oid, int bOid);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
-extern int g_bDebugEventStrings;                    // 0x008327E4 (placeholder name)
-extern const unsigned char g_nImmunityTypeTrap;     // 0x00746910 (placeholder name)
+#include "shared/globals.h"
 
-extern const unsigned long EVENT_TIMED_EVENT;
-extern const unsigned long EVENT_REMOVE_FROM_AREA;
-extern const unsigned long EVENT_APPLY_EFFECT;
-extern const unsigned long EVENT_OPEN_OBJECT;
-extern const unsigned long EVENT_SPELL_IMPACT;
-extern const unsigned long EVENT_PLAY_ANIMATION;
 extern const unsigned long EVENT_SIGNAL_EVENT;      // 0x007441DC
 extern const unsigned long EVENT_DESTROY_OBJECT;
-extern const unsigned long EVENT_REMOVE_EFFECT;
-extern const unsigned long EVENT_ON_MELEE_ATTACKED; // 0x007441F0
-extern const unsigned long EVENT_FEEDBACK_MESSAGE;  // 0x0074420C (placeholder name)
-extern const unsigned long EVENT_ACQUIRE_ITEM;      // 0x00744218
 
 class CSWSPlaceable : public CSWSObject {
 public:

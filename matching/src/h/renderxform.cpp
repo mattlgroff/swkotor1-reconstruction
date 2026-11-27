@@ -9,7 +9,7 @@ namespace GLRender {
 void Transform(const Vector* pPos, const Quaternion* pOri, int bForce);    // 0x0046F060
 }
 
-extern int g_bTransformParts;       // 0x0078E5F0
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0046F6B0 SYMBOL: ?Transform@@YAXPBVVector@@PBVQuaternion@@H@Z
 void Transform(const Vector* pPos, const Quaternion* pOri, int bForce)
@@ -93,10 +93,6 @@ struct EnvMapSource {
 typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int);
 extern PFNCLIENTACTIVETEXTURE glActiveTextureARB;    // 0x007BB80C
 extern unsigned int g_nActiveTextureUnit;   // 0x007A6898
-extern unsigned int g_eTextureMatrix;       // 0x0073F29C
-extern unsigned int g_eModelviewMatrix;     // 0x0073F298
-extern EnvMapSource* g_pEnvMapSource;       // 0x007BB4E8
-extern Vector g_vEnvMapPosition;            // 0x00828074
 
 // FUNCTION: SWKOTOR 0x0046F780
 void DoEnvMapTransform(CAurTexture* pTexture, unsigned int nUnit)

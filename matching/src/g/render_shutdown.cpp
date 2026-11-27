@@ -29,49 +29,15 @@ public:
     virtual void LoseBuffers();                                     // 0x28
 };
 
-extern RequestPoolManager* g_pRequestPoolManager;  // 0x007a68a4
+#include "shared/globals.h"
 extern void* g_hWnd;                        // 0x007a39d8
-extern void* g_hGLDC;                       // 0x007a47e4
-extern void* g_hGLContext;                  // 0x007a6854
 
-extern void* g_hSoftShadowPbuffer1;         // 0x007a68e8
-extern void* g_hSoftShadowDC1;              // 0x007a68ec
-extern void* g_hSoftShadowContext1;         // 0x007a68f0
-extern unsigned int g_nSoftShadowTexture1;  // 0x007a68f4
-extern unsigned int g_nSoftShadowTexture;   // 0x007a68f8
-extern void* g_hSoftShadowPbuffer2;         // 0x007a68fc
-extern void* g_hSoftShadowDC2;              // 0x007a6900
-extern void* g_hSoftShadowContext2;         // 0x007a6904
-extern unsigned int g_nSoftShadowTexture2;  // 0x007a6908
 
-extern unsigned int g_nRootTexture;         // 0x007a687c
-extern unsigned int g_nColorRamp0;          // 0x007a6870
-extern unsigned int g_nColorRamp1;          // 0x007a6874
-extern unsigned int g_nColorRamp2;          // 0x007a6878
 extern unsigned int g_nBloomRamp0;          // 0x007a6864
 extern unsigned int g_nBloomRamp1;          // 0x007a6868
 extern unsigned int g_nBloomRamp2;          // 0x007a686c
-extern unsigned int g_nSaturationProgram;   // 0x007a68e4
-extern unsigned int g_nDistortionProgram;   // 0x007a68d4
 
-extern char g_bFrameBufferActive;           // 0x007a6860
-extern void* g_ahBloomDC[6];                // 0x007a47ec
-extern void* g_ahBloomContext[6];           // 0x007a4804
-extern void* g_ahBloomPbuffer[6];           // 0x007a6824
-extern unsigned int g_anBloomTexture[6];    // 0x007a47c4
-extern unsigned int g_nBloomTexture;        // 0x007a68c0
-extern void* g_hBloomPbuffer;               // 0x007a68c4
-extern void* g_hBloomDC;                    // 0x007a68c8
-extern void* g_hBloomContext;               // 0x007a68cc
 
-extern unsigned int g_nColorRampAlphaShaderATI; // 0x007a690c
-extern unsigned int g_nCopyShaderATI;           // 0x007a6910
-extern unsigned int g_nConvolutionShaderATI;    // 0x007a6914
-extern unsigned int g_nColorMatrixShaderATI;    // 0x007a6918
-extern unsigned int g_nAccumBlurShaderATI;      // 0x007a691c
-extern unsigned int g_nFilmNoiseShaderATI;      // 0x007a6920
-extern unsigned int g_nDistortionShaderATI;     // 0x007a6924
-extern unsigned int g_nColorRampShaderATI;      // 0x007a692c
 
 int AurATISoftShadowsAvailable();               // 0x0045f7e0
 int AurATIFrameBufferModificationsAvailable();  // 0x0045f860

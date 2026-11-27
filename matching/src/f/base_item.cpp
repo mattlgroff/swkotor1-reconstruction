@@ -78,7 +78,7 @@ public:
     CSWBaseItemArray *m_pBaseItemArray; // +0x34
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 class CSWItem {
 public:

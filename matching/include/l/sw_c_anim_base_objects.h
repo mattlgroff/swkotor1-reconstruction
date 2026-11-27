@@ -86,8 +86,7 @@ public:
     C2DArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern int g_nAnimNameColumn;                       // 0x007A2174
+#include "shared/globals.h"
 
 // Common animation interface base (vtable 0x00754AE4, one slot).
 class CAnimBase {

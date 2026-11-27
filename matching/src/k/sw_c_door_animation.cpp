@@ -15,11 +15,7 @@ public:
 };
 
 extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern int g_nDoorTypesCol_SoundAppType;            // 0x007A224C
-extern int g_nGenericDoorsCol_SoundAppType;         // 0x007A2250
-extern int g_nPlaceableSoundsCol_Opened;            // 0x007A2268
-extern int g_nPlaceableSoundsCol_Closed;            // 0x007A226C
-extern int g_nPlaceableSoundsCol_Destroyed;         // 0x007A2270
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00684030
 void CSWCDoor::UpdateAnimation()

@@ -36,8 +36,7 @@ public:
 
 IntList* AurTextureGetOrdering();           // 0x00421970
 
-extern CExoArrayList<CapPart*> g_aCapBuckets[];     // 0x007FC008
-extern CExoArrayList<CapPart*> g_lStaticMeshes;     // 0x007FBF84
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00455A40
 void Scene::DoCapBucket()

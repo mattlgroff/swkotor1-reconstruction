@@ -32,10 +32,7 @@ Vector Normalize(const Vector& v);                                   // 0x004ab1
 void ClipProjection(Vector* pPoint, Vector* pLight, Plane* pFrustum);  // 0x0046f650
 void* AllocateShadowMemory(int nSize);                               // 0x00426940
 
-extern unsigned short g_aShadowVertexMarks[];  // 0x007a4820
-extern void* g_pShadowVertices;                // 0x007a47e8
-extern int g_bShadowNoClip;                    // 0x007a68e0
-extern int g_bShadowClampFar;                  // 0x0078d994
+#include "shared/globals.h"
 
 // Renumbers the marked vertices 1..n and writes, for each, the vertex and its
 // projection away from the light; the scaled direction and a point follow

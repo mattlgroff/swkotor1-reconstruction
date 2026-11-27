@@ -176,6 +176,6 @@ public:
     void RemoveControl(CSWGuiControl* pControl);    // 0x00688060
 };
 
-extern CSWGuiMainInterface* g_pMainInterface;       // 0x00833BB4 (descriptive)
+#include "shared/globals.h"
 
 #endif

@@ -129,16 +129,7 @@ public:
     CSWBaseItem* GetBaseItem(int nItem) { return m_pBaseItemArray->GetBaseItem(nItem); }
     CSWFeat* GetFeat(unsigned short nFeat);         // 0x00550C00
 };
-extern CSWRules* g_pRules;
-extern int g_nAppearanceColHitRadius;               // 0x007A2118 (cached 2DA column, placeholder names)
-extern int g_nAppearanceColPerSpace;                // 0x007A20D0
-extern int g_nAppearanceColCrePerSpace;             // 0x007A20CC
-extern int g_nAppearanceColWalkDist;                // 0x007A2108
-extern int g_nAppearanceColHeight;                  // 0x007A2104
-extern int g_nAppearanceCol_DisableInjuredAnim;     // 0x007A20D4
-extern int g_nAppearanceCol_SIZECATEGORY;           // 0x007A2124
-extern int g_nAppearanceCol_MODELTYPE;              // 0x007A2110
-extern int g_nAppearanceColPrefAttackDist;          // 0x007A210C (placeholder name)                          // 0x007A3A28
+#include "shared/globals.h"
 
 template <class T> class CExoArrayList {
 public:
@@ -184,7 +175,6 @@ class CVirtualMachine {
 public:
     int RunScript(CExoString* psFile, unsigned long oidSelf, int bOid);   // 0x005D0FC0
 };
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 
 #pragma pack(push, 4)
 class CGameEffect {
@@ -210,23 +200,7 @@ public:
 
 extern const int EFFECT_TYPE_AC_INCREASE;           // 0x0074673C
 extern const int EFFECT_TYPE_AC_DECREASE;           // 0x00746740
-extern const int EFFECT_TYPE_0746738;               // 0x00746738 (47, placeholder name)
-extern const int EFFECT_TYPE_0746778;               // 0x00746778 (63, placeholder name)
-extern const int EFFECT_TYPE_0746828;               // 0x00746828 (108, placeholder name)
-extern const int EFFECT_TYPE_074682C;               // 0x0074682C (109, placeholder name)
-extern const int EFFECT_TYPE_07466F0;               // 0x007466F0 (29, placeholder name)
-extern const int EFFECT_TYPE_0746768;               // 0x00746768 (59, placeholder name)
-extern const unsigned short g_nDurationEquipped;    // 0x007473C8 (placeholder name)
-extern const float g_fRate125;                      // 0x0073F400 (0.125f)
-extern const float g_fRate15;                       // 0x0073F414 (1.5f)
-extern const float g_fThousand;                     // 0x0073D6FC (1000.0f)
-extern const float g_fHundred;                      // 0x00741838 (100.0f)
-extern const float g_fZero;                         // 0x0073D700 (0.0f)
-extern const int AI_ACTION_RESULT_005140D0;         // 0x00745DC4 (placeholder name)
-extern const int AI_ACTION_RESULT_005140E0;         // 0x00745DC0 (placeholder name)
 extern const int DAMAGE_FLAG_00;                    // 0x00746850
-extern const int EVENT_AI_SOON;                     // 0x007441C4 (placeholder name)
-extern const int EVENT_AI_LATER;                    // 0x007441E0 (placeholder name)
 
 class CSWSAction {
 public:
@@ -321,10 +295,7 @@ public:
 };
 
 extern const unsigned long OBJECT_INVALID;          // 0x00746644
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
-extern const unsigned char OBJECT_TYPE_ITEM;        // 0x00746635
 extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
-extern const unsigned char OBJECT_TYPE_TRIGGER;     // 0x00746636
 extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
 class CSWPartyTable {
 public:
@@ -389,9 +360,6 @@ public:
     char pad_0x0[0xc8];
     int m_nC8;                                      // 0xc8 (placeholder name)
 };
-extern const unsigned short RACE_TYPE_0074BF10;     // 0x0074BF10 (5, placeholder name)
-extern const unsigned short RACE_TYPE_0074BF14;     // 0x0074BF14 (6, placeholder name)
-extern int g_b7A1B34;                               // 0x007A1B34 (placeholder name)
 
 class CSWPartyMember {
 public:
@@ -813,8 +781,6 @@ public:
     char pad_0x2[0x34 - 0x2];
 };
 
-extern const unsigned long EVENT_0x7441DC;          // 0x007441DC (placeholder name)
-extern const unsigned char OBJECT_TYPE_0746633;     // 0x00746633 (placeholder name)
 
 Vector VectorSubtract(const Vector& a, const Vector& b);    // 0x00423BC0 (placeholder name)
 Vector NormalizeVector(const Vector& v);            // 0x004AB180

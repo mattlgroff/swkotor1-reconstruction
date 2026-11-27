@@ -74,8 +74,7 @@ public:
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern int g_nWeaponSoundPitchColumn;               // 0x007A21A4 (descriptive)
+#include "shared/globals.h"
 
 class CSWCCombatAttackData;
 
@@ -84,7 +83,6 @@ public:
     int Exists(const CResRef& cResRef, unsigned short nType, unsigned long* pSize);   // 0x00408BC0
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
 
 class CSWCCreatureStats {
 public:

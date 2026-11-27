@@ -4,8 +4,7 @@
 #include "b/sws_creature.h"
 #include "b/party_table.h"
 
-extern const unsigned char OBJECT_TYPE_MODULE;              // 0x00746632 (3)
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633 (4)
+#include "shared/globals.h"
 
 // Per-object value read by 0x0053E220 (+0x150 on plain objects, +0x314 on
 // the vtable 0x5c kind).

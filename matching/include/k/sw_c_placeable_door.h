@@ -299,19 +299,17 @@ class CWorldTimer { public: void GetWorldTime(unsigned long*,unsigned long*);
  int SubtractWorldTimes(unsigned long,unsigned long,unsigned long,unsigned long,unsigned long*,unsigned long*); };
 extern unsigned char g_nObjectTypePlaceable; // 00746638
 extern unsigned char g_nObjectTypeDoor; // 00746639
-extern const char g_sEmpty[]; // 0073D71C
+#include "shared/globals.h"
 class CClientObject;
 class CGameObject;
 class CClientAIList { public: int RemoveObject(CClientObject*); };
 class CClientAIMaster { public: void* vptr; CClientAIList m_List; CClientAIList* GetAIList() { return &m_List; } };
 class CGameObjectArray { public: unsigned char Delete(unsigned long,CGameObject**); };
-extern const unsigned char g_nObjectArraySuccess; // 0074666C
 class C2DA { public: int GetINTEntry(int,const CExoString&,int*); int GetFLOATEntry(int,const CExoString&,float*);
  int GetINTEntry(int,int,int*); /* 00413510 */ int GetCExoStringEntry(int,int,CExoString*); /* 00413190 */
  int GetCExoStringEntry(int,const CExoString&,CExoString*); /* 00413270 */ };
 class C2DAs { public: char pad0[0x24]; C2DA* m_pDoorTypes; C2DA* m_pGenericDoors; C2DA* m_pPlaceables; char pad30[0x48-0x30]; C2DA* m_pLightColors; char pad4c[0x70-0x4c]; C2DA* m_pPlaceableSounds; C2DA* GetPlaceables() { return m_pPlaceables; } C2DA* GetLightColors() { return m_pLightColors; } C2DA* GetPlaceableSounds() { return m_pPlaceableSounds; } };
 class CSWRules { public: char pad0[0xb8]; C2DAs* m_p2DArrays; C2DAs* Get2DArrays() { return m_p2DArrays; } };
-extern CSWRules* g_pRules;
 class CResRef { public: char m_resRef[16]; void CopyToString(CExoString&) const; };
 class CSWCAnimBasePlaceable : public CSWCAnimBase { public: CSWCAnimBasePlaceable(); };
 class CSWCAnimBaseDoor : public CSWCAnimBase { public: CSWCAnimBaseDoor(); };

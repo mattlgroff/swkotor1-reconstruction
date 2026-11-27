@@ -115,9 +115,7 @@ public:
     CSWCRoom* m_pRooms;                             // 0x260
 };
 
-extern const float AREA_WIND_SCALE_NONE;            // 0x0073D700
-extern const float AREA_WIND_SCALE_LIGHT;           // 0x0073D764
-extern const float AREA_WIND_SCALE_STRONG;          // 0x00741BE0
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00605090
 int CSWCArea::SetFogColor(const Vector* pColor)

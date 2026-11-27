@@ -22,7 +22,7 @@ public:
     virtual void SetObjectScale(float fScale, int bRecurse);   // +0xcc
 };
 
-extern int g_nGeomFadeMode;                     // 0x0078e3a0
+#include "shared/globals.h"
 
 class Scene {
 public:

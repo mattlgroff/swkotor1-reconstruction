@@ -71,7 +71,7 @@ public:
     void SetMusicState(int nState);                                 // 0x005D5E80
 };
 extern CExoSound* g_pExoSound;                                      // 0x007A39EC
-extern const int SOUND_MODE_MOVIE;                                  // 0x0074C5F8
+#include "shared/globals.h"
 
 void PlayDelayedSound(float fDelay, int a, int b);                  // 0x00401C10
 

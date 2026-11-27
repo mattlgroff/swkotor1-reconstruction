@@ -6,12 +6,8 @@
 #include "shared/float_to_int.h"
 
 extern const unsigned short EFFECT_TYPE_DAMAGE;             // 0x00746714
-extern const int DAMAGE_POWER_NORMAL;                       // 0x00746894 (0)
-extern const int DAMAGE_POWER_MAX;                          // 0x007468AC (6, name guessed)
-extern const unsigned short EFFECT_TYPE_AREA_OF_EFFECT;     // 0x007466F8
+#include "shared/globals.h"
 extern const unsigned short DURATION_TYPE_INSTANT;          // 0x007473B8 (0)
-extern int g_nDamageIndex;                                  // 0x008327E0
-extern const float g_fInvLog10Of2;                          // 0x00745FF8
 
 extern "C" double __cdecl log10(double x);
 #pragma intrinsic(log10)

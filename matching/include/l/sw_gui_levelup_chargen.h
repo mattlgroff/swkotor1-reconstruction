@@ -124,10 +124,7 @@ public:
 };
 
 extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern int g_nSoundModeZero;                        // 0x0074C5EC
-extern int g_bGuiFlag;                              // 0x007A2370
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
-extern Vector g_vKeyMapLockedTextColor;             // 0x007A2408
+#include "shared/globals.h"
 
 class CSWGuiLevelUpPanel;
 

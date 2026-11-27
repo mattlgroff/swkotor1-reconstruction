@@ -13,8 +13,7 @@ public:
 extern CAppManager* g_pAppManager;                                  // 0x007A39FC
 
 // The live server internals (placeholder name).
-extern CServerExoAppInternal* g_pServerExoAppInternal;              // 0x00831FDC
-extern const unsigned long PLAYER_ID_INVALID;                       // 0x0074C524 (placeholder name)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004B7230
 CServerExoAppInternal::~CServerExoAppInternal()

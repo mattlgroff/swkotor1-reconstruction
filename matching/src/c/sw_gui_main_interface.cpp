@@ -2,7 +2,7 @@
 
 class CSWGuiControl;
 
-extern int g_bUnknown8338F8;                        // 0x008338F8
+#include "shared/globals.h"
 
 class CSWGuiPanel {
 public:

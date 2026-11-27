@@ -110,7 +110,7 @@ public:
 };
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern int g_nForcedGuiAlignment;                   // 0x007A22F8 (descriptive, -1 = unset)
+#include "shared/globals.h"
 
 class CSWCCreatureStats {
 public:

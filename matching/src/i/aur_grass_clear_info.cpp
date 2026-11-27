@@ -1,4 +1,4 @@
-extern unsigned int g_aur_grass_info_count;
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004A67A0
 void AurGrassClearInfo()

@@ -3,9 +3,8 @@
 #include "b/vm_commands.h"
 #include "b/sws_creature.h"
 
-extern const unsigned long OBJECT_INVALID_ID;               // 0x00746644
+#include "shared/globals.h"
 extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634
-extern const unsigned char OBJECT_TYPE_AREA_OF_EFFECT;      // 0x0074663A
 
 // Event bookkeeping on every server object (CSWSObject keeps its members
 // out of the shared header, see worker-b notes).

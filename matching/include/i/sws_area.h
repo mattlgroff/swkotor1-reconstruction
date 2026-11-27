@@ -212,11 +212,8 @@ public:
     int m_bAreaTransition;                          // 0x2b4 (placeholder name)
 };
 
-extern const unsigned char g_nGameObjectFound;      // 0x0074666C
+#include "shared/globals.h"
 extern const unsigned char g_nObjectTypeTrigger;    // 0x00746636 (placeholder name)
-extern int g_bDebugOverlap;                         // 0x00832838 (placeholder name)
-extern int g_bDebugDirectLine;                      // 0x008327C4 (placeholder name)
-extern int g_bDebugDirectLineHeights;               // 0x008327C8 (placeholder name)
 int VectorEqual(const Vector& a, const Vector& b);  // 0x004AA980 (placeholder name)
 
 class CGameObjectArray {

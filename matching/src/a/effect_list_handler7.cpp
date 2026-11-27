@@ -211,7 +211,7 @@ public:
     char pad_0x2[0x34 - 0x2];
 };
 
-extern const unsigned long EVENT_0x7441DC;      // 0x007441DC (placeholder name)
+#include "shared/globals.h"
 
 // CSWSModule: the CGameObject base sits at +0x1c (only the id is used here)
 class CSWSModuleBase7 {
@@ -454,7 +454,6 @@ public:
     void DisplayFloatyDataToSelf(unsigned long nData);  // 0x004EF560
 };
 
-extern const unsigned long g_nMillisecondsPerMinute;  // 0x00744178 (60000)
 
 // FUNCTION: SWKOTOR 0x004E2720
 int CSWSEffectListHandler::OnApplyDisease(CSWSObject* pObject, CGameEffect* pEffect,

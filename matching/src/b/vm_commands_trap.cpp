@@ -9,7 +9,7 @@
 #include "b/sws_item.h"
 #include "b/exo_array_list.h"
 
-extern const unsigned char OBJECT_TYPE_TRIGGER;             // 0x00746636 (7)
+#include "shared/globals.h"
 extern const unsigned char OBJECT_TYPE_PLACEABLE;           // 0x00746638 (9)
 extern const unsigned char OBJECT_TYPE_DOOR;                // 0x00746639 (10)
 extern const unsigned long EVENT_SIGNAL_EVENT;              // 0x007441DC (name guessed)

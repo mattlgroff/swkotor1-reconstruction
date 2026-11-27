@@ -47,10 +47,7 @@ public:
     int m_nY;              // +0x430
 };
 
-extern CExoArrayList<CAurPostString*> g_aPostStrings; // 0x007b90fc
-extern AurColor g_cPostStart;                         // 0x0078e368
-extern AurColor g_cPostEnd;                           // 0x0078e378
-extern AurColor g_cCurrentColor;                      // 0x00798bb4
+#include "shared/globals.h"
 extern float g_fFrameTime;                            // 0x0078e574
 
 void AurDrawString(CAurPostString* p, int nX, int nY); // 0x0044ce50
@@ -123,10 +120,6 @@ CAurPostString::CAurPostString(const char* sz, int nX, int nY, float fLife)
     m_cEnd.a = g_cPostEnd.a;
 }
 
-extern int g_bAurPrintf;                // 0x007b90f8
-extern unsigned char g_bAurPrintfRight; // 0x0078e364
-extern int g_nAurPrintfColumn;          // 0x007b90f4
-extern int g_nAurPrintfRow;             // 0x007b90e8
 
 // FUNCTION: SWKOTOR 0x0044d4f0
 void AurPrintf(const char* szFormat, ...)

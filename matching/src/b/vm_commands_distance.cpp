@@ -4,7 +4,7 @@
 #include "b/sws_creature.h"
 #include "b/global_variable_table.h"
 
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633
+#include "shared/globals.h"
 
 float Magnitude(const Vector& v);                           // 0x004AB100
 
@@ -200,7 +200,6 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDistanceToObject2D(int nCommandI
 
 #include <math.h>
 
-extern int g_bExoDebugDisabled;                             // 0x0083282C (.data)
 
 // Stripped debug output: the arguments are still evaluated.
 inline void ExoDebugLog(const char* sText) {}

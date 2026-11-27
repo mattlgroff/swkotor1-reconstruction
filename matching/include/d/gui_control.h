@@ -135,8 +135,7 @@ public:
     void* m_pImage;                                 // 0x28
 };
 
-extern Vector g_vDisabledColor;                 // 0x0078d3b4
-extern Vector g_vHilightColor;                  // 0x0078d3c0
+#include "shared/globals.h"
 
 class CSWGuiManager {
 public:
@@ -157,7 +156,6 @@ public:
     void DisplayToolTip(const CExoString& sText);   // 0x0040b490
 };
 
-extern CSWGuiManager* g_pGuiManager;            // 0x007a39f4
 
 CSWGuiExtent IntersectExtents(const CSWGuiExtent& a, const CSWGuiExtent& b); // 0x0040a4a0
 
@@ -175,8 +173,6 @@ public:
     CExoInputEvent* GetEvent(unsigned long nId, int nClass); // 0x005df4c0
 };
 
-extern CExoInput* g_pExoInput;                  // 0x007a39e4
-extern const int g_nFirstKeyIndex;              // 0x0074d3d8
 
 class CClientExoApp {
 public:
@@ -196,7 +192,6 @@ public:
     CExoString GetSimpleString(unsigned long nStrRef); // 0x0041e8f0
 };
 
-extern CTlkTable* g_pTlkTable;                  // 0x007a3a08
 
 class C2DA {
 public:
@@ -216,7 +211,6 @@ public:
     C2DArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                      // 0x007a3a28
 
 class CSWGuiBorderParams {
 public:

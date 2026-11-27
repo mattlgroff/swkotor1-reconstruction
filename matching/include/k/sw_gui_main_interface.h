@@ -49,13 +49,8 @@ void AurGUIStartLayer();                            // 0x004591B0
 int AurGUISetupViewport(int x, int y, int w, int h, Vector* pColor, int n, float fAlpha); // 0x004592F0
 void AurGUIStopLayer();                             // 0x004592B0
 void AurGUICloseViewport();                         // 0x00459580
-extern Vector g_vGuiViewportColor;                  // 0x0078D3D8
+#include "shared/globals.h"
 extern Vector g_vBlack;                             // 0x00833910
-extern Vector g_vGuiColor23B4;                      // 0x007A23B4 (descriptive)
-extern Vector g_vGuiColor23D8;                      // 0x007A23D8 (descriptive)
-extern Vector g_vGuiColor23E4;                      // 0x007A23E4 (descriptive)
-extern Vector g_vGuiColor23F0;                      // 0x007A23F0 (descriptive)
-extern Vector g_vGuiColor23FC;                      // 0x007A23FC (descriptive)
 
 class CSWGuiControl;
 
@@ -72,7 +67,6 @@ public:
     void UpdateToolTip(CExoString* pText);          // 0x0040A340
 };
 
-extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
 
 typedef void* CExoLinkedListPosition;
 
@@ -151,7 +145,6 @@ public:
     CSWSpellArray* m_pSpellArray;                   // 0x8c
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWSCombatRound {
 public:
@@ -683,7 +676,6 @@ public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 
 class CSWGuiPanel {
 public:
@@ -829,8 +821,6 @@ public:
     int m_bDirty;                                   // 0xea4
 };
 
-extern int g_bClearTargetOnAction;                 // 0x008338F8
-extern int g_bDrawGui;                              // 0x007A2288
 
 // 0x1b4 bytes (matching/src/d: dtor 0x0041B610).
 class CSWGuiLabelHilight : public CSWGuiLabel {

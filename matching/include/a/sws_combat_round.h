@@ -122,7 +122,7 @@ public:
 extern CAppManager* g_pAppManager;
 
 // Base time of a scheduled attack animation (0x008327DC).
-extern int g_nCombatAnimationTime;
+#include "shared/globals.h"
 
 #include "shared/vector.h"
 

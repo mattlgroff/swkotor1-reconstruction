@@ -33,9 +33,7 @@ public:
     static void Transform(const Vector* pPos, const Quaternion* pOri, int bForce);  // 0x0046F060
 };
 
-extern int g_bPartTransform;                // 0x0078E5F0
-extern int g_nPartDrawDepth;                // 0x0078E5E0
-extern Vector g_vPartDraw;                  // 0x0078E8AC
+#include "shared/globals.h"
 
 class MdlNodeTriMesh {
 public:

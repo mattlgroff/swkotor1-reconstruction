@@ -161,7 +161,7 @@ public:
     CSWSpellArray* m_pSpellArray;                   // 0x8c
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWCCreature {
 public:

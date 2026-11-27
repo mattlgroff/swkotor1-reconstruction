@@ -53,7 +53,7 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;              // 0x007A3A28
+#include "shared/globals.h"
 
 template <class T>
 class CExoArrayList {
@@ -147,16 +147,9 @@ public:
     char pad_0xc[0x80];
 };
 
-extern unsigned short EFFECT_TYPE_VISUAL_EFFECT;   // 0x007466F4
-extern unsigned short SUBTYPE_MAGICAL;             // 0x007473B8
 extern unsigned short EFFECT_TYPE_LINK;            // 0x0074671C
 extern unsigned short EFFECT_TYPE_DEATH;           // 0x007466C8
 extern unsigned char IMMUNITY_TYPE_04;             // 0x0074690C
-extern unsigned char IMMUNITY_TYPE_06;             // 0x00746914
-extern unsigned char IMMUNITY_TYPE_12;             // 0x0074692C
-extern unsigned char IMMUNITY_TYPE_13;             // 0x00746930
-extern unsigned char IMMUNITY_TYPE_16;             // 0x00746934
-extern unsigned long g_nEventProjectileMiss;       // 0x007441C8
 
 class CServerAIMaster {
 public:

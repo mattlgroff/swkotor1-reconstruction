@@ -28,140 +28,25 @@ extern PFNWGLGETEXTENSIONSSTRINGARB wglGetExtensionsStringARB;  // 0x007bb7ec
 
 // GL / WGL extension entry points (function-pointer globals).
 extern void* glMultiTexCoord2fARB;                        // 0x007bb6e8
-extern void* glMultiTexCoord2iARB;                        // 0x007bb604
-extern void* glMultiTexCoord3fARB;                        // 0x007bb568
-extern void* glMultiTexCoord2fvARB;                       // 0x007bb7f8
-extern void* glMultiTexCoord3fvARB;                       // 0x007bb6ac
-extern void* glMultiTexCoord4fvARB;                       // 0x007bb7e8
+#include "shared/globals.h"
 extern void* glActiveTextureARB;                          // 0x007bb80c
 extern void* glClientActiveTextureARB;                    // 0x007bb6b0
 extern void* glBindBufferARB;                             // 0x007bb7b4
 extern void* glDeleteBuffersARB;                          // 0x007bb7bc
 extern void* glGenBuffersARB;                             // 0x007bb5b4
-extern void* glIsBufferARB;                               // 0x007bb728
 extern void* glBufferDataARB;                             // 0x007bb544
 extern void* glBufferSubDataARB;                          // 0x007bb75c
-extern void* glGetBufferSubDataARB;                       // 0x007bb828
 extern void* glMapBufferARB;                              // 0x007bb634
 extern void* glUnmapBufferARB;                            // 0x007bb6e0
 extern void* glGetBufferParameterivARB;                   // 0x007bb5a4
-extern void* glGetBufferPointervARB;                      // 0x007bb778
-extern void* glVertexAttrib1sARB;                         // 0x007bb65c
-extern void* glVertexAttrib1fARB;                         // 0x007bb72c
-extern void* glVertexAttrib1dARB;                         // 0x007bb5a8
-extern void* glVertexAttrib2sARB;                         // 0x007bb6f0
-extern void* glVertexAttrib2fARB;                         // 0x007bb798
-extern void* glVertexAttrib2dARB;                         // 0x007bb60c
-extern void* glVertexAttrib3sARB;                         // 0x007bb58c
-extern void* glVertexAttrib3fARB;                         // 0x007bb5cc
-extern void* glVertexAttrib3dARB;                         // 0x007bb7a4
-extern void* glVertexAttrib4sARB;                         // 0x007bb600
-extern void* glVertexAttrib4fARB;                         // 0x007bb668
-extern void* glVertexAttrib4dARB;                         // 0x007bb7d4
-extern void* glVertexAttrib4NubARB;                       // 0x007bb760
-extern void* glVertexAttrib1svARB;                        // 0x007bb7d0
-extern void* glVertexAttrib1fvARB;                        // 0x007bb740
-extern void* glVertexAttrib1dvARB;                        // 0x007bb844
-extern void* glVertexAttrib2svARB;                        // 0x007bb758
-extern void* glVertexAttrib2fvARB;                        // 0x007bb574
-extern void* glVertexAttrib2dvARB;                        // 0x007bb6c8
-extern void* glVertexAttrib3svARB;                        // 0x007bb7cc
-extern void* glVertexAttrib3fvARB;                        // 0x007bb5d4
-extern void* glVertexAttrib3dvARB;                        // 0x007bb780
-extern void* glVertexAttrib4bvARB;                        // 0x007bb82c
-extern void* glVertexAttrib4svARB;                        // 0x007bb548
-extern void* glVertexAttrib4ivARB;                        // 0x007bb564
-extern void* glVertexAttrib4ubvARB;                       // 0x007bb540
-extern void* glVertexAttrib4usvARB;                       // 0x007bb66c
-extern void* glVertexAttrib4uivARB;                       // 0x007bb708
-extern void* glVertexAttrib4fvARB;                        // 0x007bb794
-extern void* glVertexAttrib4dvARB;                        // 0x007bb5c4
-extern void* glVertexAttrib4NbvARB;                       // 0x007bb650
-extern void* glVertexAttrib4NsvARB;                       // 0x007bb52c
-extern void* glVertexAttrib4NivARB;                       // 0x007bb848
-extern void* glVertexAttrib4NubvARB;                      // 0x007bb690
-extern void* glVertexAttrib4NusvARB;                      // 0x007bb69c
-extern void* glVertexAttrib4NuivARB;                      // 0x007bb748
-extern void* glVertexAttribPointerARB;                    // 0x007bb7d8
-extern void* glEnableVertexAttribArrayARB;                // 0x007bb79c
-extern void* glDisableVertexAttribArrayARB;               // 0x007bb770
-extern void* glProgramStringARB;                          // 0x007bb580
-extern void* glBindProgramARB;                            // 0x007bb788
 extern void* glDeleteProgramsARB;                         // 0x007bb724
-extern void* glGenProgramsARB;                            // 0x007bb528
-extern void* glProgramEnvParameter4dARB;                  // 0x007bb54c
-extern void* glProgramEnvParameter4dvARB;                 // 0x007bb718
-extern void* glProgramEnvParameter4fARB;                  // 0x007bb850
-extern void* glProgramEnvParameter4fvARB;                 // 0x007bb6bc
-extern void* glProgramLocalParameter4dARB;                // 0x007bb76c
-extern void* glProgramLocalParameter4dvARB;               // 0x007bb588
-extern void* glProgramLocalParameter4fARB;                // 0x007bb73c
-extern void* glProgramLocalParameter4fvARB;               // 0x007bb784
-extern void* glGetProgramEnvParameterdvARB;               // 0x007bb6a4
-extern void* glGetProgramEnvParameterfvARB;               // 0x007bb56c
-extern void* glGetProgramLocalParameterdvARB;             // 0x007bb618
-extern void* glGetProgramLocalParameterfvARB;             // 0x007bb6e4
-extern void* glGetProgramivARB;                           // 0x007bb670
-extern void* glGetProgramStringARB;                       // 0x007bb808
-extern void* glGetVertexAttribdvARB;                      // 0x007bb77c
-extern void* glGetVertexAttribfvARB;                      // 0x007bb71c
-extern void* glGetVertexAttribivARB;                      // 0x007bb684
-extern void* glGetVertexAttribPointervARB;                // 0x007bb764
-extern void* glIsProgramARB;                              // 0x007bb5b8
 extern void* glCombinerParameterfvNV;                     // 0x007bb7a8
-extern void* glCombinerParameterivNV;                     // 0x007bb81c
-extern void* glCombinerParameterfNV;                      // 0x007bb678
-extern void* glCombinerParameteriNV;                      // 0x007bb664
-extern void* glCombinerInputNV;                           // 0x007bb738
-extern void* glCombinerOutputNV;                          // 0x007bb59c
-extern void* glFinalCombinerInputNV;                      // 0x007bb654
-extern void* glGetCombinerInputParameterfvNV;             // 0x007bb53c
-extern void* glGetCombinerInputParameterivNV;             // 0x007bb810
-extern void* glGetCombinerOutputParameterfvNV;            // 0x007bb6a8
-extern void* glGetCombinerOutputParameterivNV;            // 0x007bb84c
-extern void* glGetFinalCombinerInputParameterfvNV;        // 0x007bb640
-extern void* glGetFinalCombinerInputParameterivNV;        // 0x007bb6d8
 extern void* glCombinerStageParameterfvNV;                // 0x007bb6f8
-extern void* glFogCoordPointerEXT;                        // 0x007bb648
-extern void* glFogCoordfEXT;                              // 0x007bb7e0
-extern void* glLockArraysEXT;                             // 0x007bb6b4
-extern void* glUnlockArraysEXT;                           // 0x007bb5bc
-extern void* glSecondaryColor3fvEXT;                      // 0x007bb714
-extern void* glGenProgramsNV;                             // 0x007bb7b0
-extern void* glDeleteProgramsNV;                          // 0x007bb6f4
-extern void* glLoadProgramNV;                             // 0x007bb5e4
-extern void* glBindProgramNV;                             // 0x007bb834
-extern void* glTrackMatrixNV;                             // 0x007bb744
-extern void* glProgramParameter4fNV;                      // 0x007bb7ac
-extern void* glExecuteProgramNV;                          // 0x007bb7f0
-extern void* glGetProgramParameterfvNV;                   // 0x007bb55c
-extern void* glVertexAttribPointerNV;                     // 0x007bb854
-extern void* glIsProgramNV;                               // 0x007bb5ac
-extern void* glVertexAttrib1fvNV;                         // 0x007bb734
-extern void* glVertexAttrib2fvNV;                         // 0x007bb820
-extern void* glVertexAttrib3fvNV;                         // 0x007bb768
-extern void* glVertexAttrib4fvNV;                         // 0x007bb5fc
-extern void* wglAllocateMemoryNV;                         // 0x007bb658
-extern void* wglFreeMemoryNV;                             // 0x007bb5e0
-extern void* glVertexArrayRangeNV;                        // 0x007bb7c0
-extern void* glDeleteFencesNV;                            // 0x007bb638
-extern void* glGenFencesNV;                               // 0x007bb57c
-extern void* glIsFenceNV;                                 // 0x007bb660
-extern void* glTestFenceNV;                               // 0x007bb5ec
-extern void* glGetFenceivNV;                              // 0x007bb800
-extern void* glFinishFenceNV;                             // 0x007bb584
-extern void* glSetFenceNV;                                // 0x007bb560
-extern void* glGetCompressedTexImageARB;                  // 0x007bb5f0
-extern void* glCompressedTexImage2DARB;                   // 0x007bb774
-extern void* glPNTrianglesiATI;                           // 0x007bb644
-extern void* glPNTrianglesfATI;                           // 0x007bb614
 extern void* wglChoosePixelFormatARB;                     // 0x007bb730
 extern void* wglCreatePbufferARB;                         // 0x007bb530
 extern void* wglGetPbufferDCARB;                          // 0x007bb6b8
 extern void* wglReleasePbufferDCARB;                      // 0x007bb578
 extern void* wglDestroyPbufferARB;                        // 0x007bb598
-extern void* wglGetPixelFormatAttribivARB;                // 0x007bb63c
-extern void* wglQueryPbufferARB;                          // 0x007bb7a0
 extern void* wglMakeContextCurrentARB;                    // 0x007bb818
 extern void* wglBindTexImageARB;                          // 0x007bb7b8
 extern void* wglReleaseTexImageARB;                       // 0x007bb6d0
@@ -179,97 +64,11 @@ extern void* glAlphaFragmentOp1ATI;                       // 0x007bb710
 extern void* glAlphaFragmentOp2ATI;                       // 0x007bb5e8
 extern void* glAlphaFragmentOp3ATI;                       // 0x007bb680
 extern void* glSetFragmentShaderConstantATI;              // 0x007bb5d8
-extern void* glBeginVertexShaderEXT;                      // 0x007bb7c8
-extern void* glEndVertexShaderEXT;                        // 0x007bb830
-extern void* glBindVertexShaderEXT;                       // 0x007bb534
-extern void* glGenVertexShadersEXT;                       // 0x007bb7c4
-extern void* glDeleteVertexShadersEXT;                    // 0x007bb694
-extern void* glShaderOp1EXT;                              // 0x007bb628
-extern void* glShaderOp2EXT;                              // 0x007bb698
-extern void* glShaderOp3EXT;                              // 0x007bb790
-extern void* glSwizzleEXT;                                // 0x007bb610
-extern void* glWriteMaskEXT;                              // 0x007bb630
-extern void* glInsertComponentEXT;                        // 0x007bb720
-extern void* glExtractComponentEXT;                       // 0x007bb67c
-extern void* glGenSymbolsEXT;                             // 0x007bb6dc
-extern void* glSetInvariantEXT;                           // 0x007bb61c
-extern void* glSetLocalConstantEXT;                       // 0x007bb7e4
-extern void* glVariantbvEXT;                              // 0x007bb6a0
-extern void* glVariantsvEXT;                              // 0x007bb590
-extern void* glVariantivEXT;                              // 0x007bb814
-extern void* glVariantfvEXT;                              // 0x007bb5d0
-extern void* glVariantdvEXT;                              // 0x007bb7dc
-extern void* glVariantubEXT;                              // 0x007bb674
-extern void* glVariantusEXT;                              // 0x007bb5c8
-extern void* glVariantuiEXT;                              // 0x007bb6c0
-extern void* glVariantPointerEXT;                         // 0x007bb70c
-extern void* glEnableVariantClientStateEXT;               // 0x007bb838
-extern void* glDisableVariantClientStateEXT;              // 0x007bb6ec
-extern void* glBindLightParameterEXT;                     // 0x007bb6fc
-extern void* glBindMaterialParameterEXT;                  // 0x007bb5f8
-extern void* glBindTexGenParameterEXT;                    // 0x007bb64c
-extern void* glBindTextureUnitParameterEXT;               // 0x007bb5dc
-extern void* glBindParameterEXT;                          // 0x007bb6c4
-extern void* glIsVariantEnabledEXT;                       // 0x007bb83c
-extern void* glGetVariantBooleanvEXT;                     // 0x007bb62c
-extern void* glGetVariantIntegervEXT;                     // 0x007bb558
-extern void* glGetVariantFloatvEXT;                       // 0x007bb608
-extern void* glGetVariantPointervEXT;                     // 0x007bb524
-extern void* glGetInvariantBooleanvEXT;                   // 0x007bb704
-extern void* glGetInvariantIntegervEXT;                   // 0x007bb5f4
-extern void* glGetInvariantFloatvEXT;                     // 0x007bb5b0
-extern void* glGetLocalConstantBooleanvEXT;               // 0x007bb700
-extern void* glGetLocalConstantIntegervEXT;               // 0x007bb74c
-extern void* glGetLocalConstantFloatvEXT;                 // 0x007bb5c0
 extern void* glActiveStencilFaceEXT;                      // 0x007bb624
-extern void* wglCreateBufferRegionARB;                    // 0x007bb688
-extern void* wglDeleteBufferRegionARB;                    // 0x007bb78c
-extern void* wglSaveBufferRegionARB;                      // 0x007bb594
-extern void* wglRestoreBufferRegionARB;                   // 0x007bb824
-extern void* wglSwapIntervalEXT;                          // 0x007bb538
-extern void* wglGetSwapIntervalEXT;                       // 0x007bb570
 
 // Capability bits, one global mask per extension.
-extern unsigned int g_nCap_GL_EXT_stencil_two_side;      // 0x0078e4e0
-extern unsigned int g_nCap_GL_EXT_bgra;                  // 0x0078e480
-extern unsigned int g_nCap_GL_ARB_multitexture;          // 0x0078e484
-extern unsigned int g_nCap_GL_EXT_texture_env_combine;   // 0x0078e488
-extern unsigned int g_nCap_GL_NV_register_combiners;     // 0x0078e48c
-extern unsigned int g_nCap_GL_NV_register_combiners2;    // 0x0078e4dc
-extern unsigned int g_nCap_GL_EXT_texture_cube_map;      // 0x0078e490
-extern unsigned int g_nCap_GL_EXT_fog_coord;             // 0x0078e494
-extern unsigned int g_nCap_GL_EXT_secondary_color;       // 0x0078e498
-extern unsigned int g_nCap_GL_NV_vertex_program;         // 0x0078e49c
-extern unsigned int g_nCap_GL_EXT_texture_filter_anisotropic; // 0x0078e4a0
-extern unsigned int g_nCap_GL_NV_texture_shader;         // 0x0078e4a8
-extern unsigned int g_nCap_GL_NV_vertex_array_range;     // 0x0078e4ac
-extern unsigned int g_nCap_GL_NV_vertex_array_range2;    // 0x0078e4b0
-extern unsigned int g_nCap_GL_NV_fence;                  // 0x0078e4b4
-extern unsigned int g_nCap_GL_ARB_texture_compression;   // 0x0078e4b8
-extern unsigned int g_nCap_GL_EXT_texture_compression_s3tc; // 0x0078e4bc
-extern unsigned int g_nCap_GL_ATI_pn_triangles;          // 0x0078e4c0
-extern unsigned int g_nCap_GL_EXT_compiled_vertex_array; // 0x0078e4c4
-extern unsigned int g_nCap_WGL_ARB_render_texture;       // 0x0078e4c8
-extern unsigned int g_nCap_GL_SGIS_generate_mipmap;      // 0x0078e4cc
-extern unsigned int g_nCap_GL_ATI_fragment_shader;       // 0x0078e4d0
-extern unsigned int g_nCap_GL_ARB_vertex_program;        // 0x0078e4d4
-extern unsigned int g_nCap_GL_ARB_depth_texture;         // 0x0078e4f4
-extern unsigned int g_nCap_GL_ARB_vertex_buffer_object;  // 0x0078e4d8
-extern unsigned int g_nCap_WGL_NV_render_texture_rectangle; // 0x0078e4e4
-extern unsigned int g_nCap_WGL_ARB_buffer_region;        // 0x0078e4e8
-extern unsigned int g_nCap_WGL_EXT_swap_control;         // 0x0078e4f0
 
-extern unsigned int g_nGLCaps;                  // 0x007bb85c
 extern unsigned char g_bVBOWriteOnly;           // 0x0078e398
-extern float g_fMaxAnisotropy;                  // 0x007a6858
-extern int g_bVertexPrograms;                   // 0x0078e5ec
-extern unsigned int g_eVertexProgramTarget;     // 0x0078d46c
-extern char g_szVertexProgram0[];               // 0x0078f600
-extern char g_szVertexProgram1[];               // 0x00791240
-extern char g_szProgramSuffixATI[];             // 0x0078fe18
-extern char g_szProgramSuffixNV[];              // 0x0078fd78
-extern char* g_szProgramText0;                  // 0x0083028c
-extern char* g_szProgramText1;                  // 0x00830290
 
 typedef void (*CombinerFn)();
 typedef void (*CombinerConstantFn)(float* pColor);
@@ -301,7 +100,6 @@ public:
     virtual void RestoreBuffers();                                  // 0x2c
 };
 
-extern RequestPoolManager* g_pRequestPoolManager;  // 0x007a68a4
 
 // FUNCTION: SWKOTOR 0x00436490
 // NONMATCH (582, all a 4-byte shift after +0xe0a): the capability checks

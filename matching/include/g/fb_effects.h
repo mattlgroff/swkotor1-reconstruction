@@ -170,81 +170,17 @@ void _glBlendFunc(int nSrc, int nDst);      // 0x00401670
 extern const unsigned int g_aGLBlendFactors[];   // 0x0073f270
 int AurGLCaps7E0();                         // 0x0045f7e0
 
-extern unsigned int g_nSoftShadowTexture;   // 0x007a68f8
+#include "shared/globals.h"
 extern unsigned int g_nPowerWidth;          // 0x007a6890
 extern unsigned int g_nPowerHeight;         // 0x007a6894
 extern int g_nScreenWidth;                  // 0x0078d1d4
 extern int g_nScreenHeight;                 // 0x0078d1d8
-extern int g_nCurrentStage;                 // 0x007a6898
-extern CAurTexture* g_pFilmNoiseTexture;    // 0x007a68d0
-extern unsigned int g_nFilmNoiseShaderATI;  // 0x007a6920
-extern unsigned int g_nDistortionShaderATI; // 0x007a6924
-extern unsigned int g_nDistortionProgram;   // 0x007a68d4
 extern CAurTexture* g_pDistortionTexture;   // 0x007a68d8
-extern unsigned int g_nGLStencilTest;       // 0x0078d470
-extern float g_fSpeedBlurRatio;             // 0x0078d43c
-extern unsigned int g_nBloomTexture;        // 0x007a68c0
-extern void* g_hBloomPbuffer;               // 0x007a68c4
-extern unsigned int g_nRootTexture;         // 0x007a687c
-extern unsigned int g_nAccumBlurShaderATI;  // 0x007a691c
-extern void* g_hGLDC;                       // 0x007a47e4
-extern void* g_hGLContext;                  // 0x007a6854
-extern void* g_hBloomDC;                    // 0x007a68c8
-extern void* g_hBloomContext;               // 0x007a68cc
-extern float g_fSaturation;                 // 0x007a6884
-extern Vector g_vSaturationTint;            // 0x0078db24
-extern float g_fBloomAlpha;                 // 0x0078daf8
-extern float g_fBloomOffset;                // 0x0078db00
-extern float g_fBloomScale;                 // 0x0078db04
-extern float g_afBloomKernelATI[25];        // 0x0078e230
-extern float g_afBloomKernel[25];           // 0x0078e2a0
-extern unsigned int g_nBloomShaderATI;      // 0x007a6928
-extern void* g_ahBloomDC[6];                // 0x007a47ec
-extern void* g_ahBloomContext[6];           // 0x007a4804
-extern void* g_ahBloomPbuffer[6];           // 0x007a6824
-extern unsigned int g_anBloomTexture[6];    // 0x007a47c4
-extern int g_nBloomSource;                  // 0x007a6938
-extern int g_nBloomLevel;                   // 0x0078db08
-extern float g_fBloomSize;                  // 0x0078db0c
-extern unsigned int g_nCapBlend;            // 0x0078d448
-extern unsigned int g_nCapAlphaTest;        // 0x0078d44c
-extern unsigned int g_nCapLighting;         // 0x0078d45c
-extern unsigned int g_eGLDepthTest;         // 0x0078d474
-extern int g_bConvolutionKeep;              // 0x0078db20
-extern int g_bFrameBufferEffects;           // 0x0078d98c
-extern int g_bSaturationAvailable;          // 0x0078d97c
-extern char g_bSaturation;                  // 0x007a6881
-extern char g_bFrameBufferActive;           // 0x007a6860
-extern char g_bFrameBufferEnabled;          // 0x0078daf4
-extern int g_bSpeedBlurAvailable;           // 0x0078d984
-extern char g_bSpeedBlur;                   // 0x007a6880
-extern char g_bBloomRendered;               // 0x0078d990
-extern char g_bAccumFrameRendered;          // 0x007a698c
-extern int g_bOverbrighten;                 // 0x007a68bc
-extern int g_bConvolutionAvailable;         // 0x0078d974
-extern int g_bDistortionAvailable;          // 0x0078d980
-extern int g_bScanNoiseAvailable;           // 0x0078d978
-extern char g_bScanNoise;                   // 0x007a6882
-extern int g_bFilmNoiseAvailable;           // 0x0078d988
-extern char g_bFilmNoise;                   // 0x007a6883
-extern char g_bFrameRendered;               // 0x007a698d
-extern unsigned int g_eGLFog;               // 0x0078d450
-extern void* g_hSoftShadowPbuffer1;         // 0x007a68e8
-extern void* g_hSoftShadowDC1;              // 0x007a68ec
-extern void* g_hSoftShadowContext1;         // 0x007a68f0
-extern unsigned int g_nSoftShadowTexture1;  // 0x007a68f4
-extern void* g_hSoftShadowPbuffer2;         // 0x007a68fc
-extern void* g_hSoftShadowDC2;              // 0x007a6900
-extern void* g_hSoftShadowContext2;         // 0x007a6904
-extern unsigned int g_nSoftShadowTexture2;  // 0x007a6908
 extern int g_nBloomRamp0;                   // 0x007a6864
 extern int g_nBloomRamp1;                   // 0x007a6868
 extern int g_nBloomRamp2;                   // 0x007a686c
 // The per-channel colour textures (lane: glRed/Green/BlueTexture) that the
 // convolution passes feed the shader instead of the bloom ramps.
-extern unsigned int g_nColorRamp0;          // 0x007a6870
-extern unsigned int g_nColorRamp1;          // 0x007a6874
-extern unsigned int g_nColorRamp2;          // 0x007a6878
 
 void FrameBufferModificationPixelShaders(int nMode, int a, int b, int c, int d);    // 0x004299c0
 void FrameBufferModificationPixelShadersATI(int nMode, int a, int b, int c, int d); // 0x004293f0

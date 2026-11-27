@@ -585,8 +585,7 @@ public:
     void GetResRefFromFile(CResRef& cResRef, const CExoString& sFile); // 0x004065a0
 };
 
-extern CExoResMan* g_pExoResMan;            // 0x007a39e8
-extern unsigned long g_aCRCTable[256];      // 0x007a3d78
+#include "shared/globals.h"
 
 // Defined out of line (not inlined at /Ob1): one COMDAT for every T.
 template <class T>

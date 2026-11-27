@@ -16,9 +16,8 @@ class CExoInput {
 public:
     void UnpauseRumble();                                           // 0x005DF580
 };
-extern CExoInput* g_pExoInput;                                      // 0x007A39E4
+#include "shared/globals.h"
 
-extern unsigned char g_nLiveFolderCount;                            // 0x0073ECD2
 
 // FUNCTION: SWKOTOR 0x004B51A0
 int CServerExoAppInternal::GetModulePreviouslyVisited(CExoString& sModule)

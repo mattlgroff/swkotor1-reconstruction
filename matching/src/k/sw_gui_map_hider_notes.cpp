@@ -124,7 +124,7 @@ public:
 };
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
+#include "shared/globals.h"
 
 struct CSWGuiMapNote {
     unsigned long m_oidNote;

@@ -13,11 +13,9 @@ public:
 
 class CGameObjectArray;
 // CGameObjectArray lookup result (.rdata 0x0074666C, 0 = success).
-extern const unsigned char GAME_OBJECT_ARRAY_SUCCESS;
+#include "shared/globals.h"
 
 // Panel ids compared from .rdata (0x00747E8C, 0x00747E90).
-extern const int GUI_PANEL_POPUP_A;
-extern const int GUI_PANEL_POPUP_B;
 
 // Visual effect ids that carry a beam source/origin (0x004CA960, cdecl).
 int IsBeamVisualEffect(unsigned short nEffect);
@@ -35,9 +33,7 @@ public:
     unsigned long m_nTokensCustom;                  // 0x4c
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 // Tokens up to this number are engine tokens, not sent (.rdata 0x0073ECCC).
-extern const int TLK_CUSTOM_TOKEN_FIRST;
 
 // FUNCTION: SWKOTOR 0x00567E60
 int CSWSMessage::SendServerToPlayerMessage(unsigned long nPlayerId, unsigned char nMajor,

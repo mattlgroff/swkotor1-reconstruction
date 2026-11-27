@@ -3,14 +3,13 @@
 // id, +0x2A0 player control.
 #include "shared/vector.h"
 class CExoInput { public: void ClearEvents(); /* 0x005DF4E0 */ };
-extern CExoInput* g_pExoInput; // 0x007A39E4
+#include "shared/globals.h"
 class CGameObject { public: virtual ~CGameObject(); unsigned long m_idSelf; };
 class CSWSCreature : public CGameObject {};
 class CServerExoApp { public: CSWSCreature* GetPlayerCreature(); /* 0x004B2820 */ };
 class CClientExoApp { public: unsigned long ServerToClientObjectId(unsigned long oid); /* 0x005EDA50 */ };
 class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CServerExoApp* m_pServerExoApp; };
 extern CAppManager* g_pAppManager; // 0x007A39FC
-extern int g_nDefaultCombatMode; // 0x0074F224
 class CSWCCreature { public: char pad_0x0[0x30]; Vector m_vPosition; void SetCombatMode(int nMode); /* 0x0060F090 */ };
 class CSWMiniCamera {
 public:

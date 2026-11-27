@@ -1,6 +1,6 @@
 #include "m/sw_c_message_handlers.h"
 class CTlkTable { public: void SetCustomToken(int, const CExoString&); };
-extern CTlkTable* g_pTlkTable;
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0064BF30
 int CSWCMessage::HandleServerToPlayerSetCustomToken(unsigned char minor)

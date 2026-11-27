@@ -41,7 +41,7 @@ static inline Model* GetLoadedModel(MaxTree* pTree)
 }
 
 extern CExoArrayList<Model*> g_lModels;     // 0x007A8A64
-extern float g_fKeyEpsilon;                 // 0x0078E58C
+#include "shared/globals.h"
 
 struct NewController {
     int data[4];

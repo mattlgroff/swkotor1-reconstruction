@@ -31,7 +31,7 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender); // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
+#include "shared/globals.h"
 extern unsigned char g_nGender;                     // 0x0073ECD0
 
 class CSWClass {
@@ -46,7 +46,6 @@ public:
     CSWClass* m_lstClasses;                         // 0xac
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWCCreatureStats_ClassInfo {
 public:

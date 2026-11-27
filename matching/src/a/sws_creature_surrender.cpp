@@ -1,7 +1,7 @@
 // CSWSCreature::SurrenderToEnemies (nwscreatureai.cpp).
 #include "a/sws_creature.h"
 
-extern const float PROJECTILE_BROADCAST_RANGE;      // 0x00747440
+#include "shared/globals.h"
 
 class CSWSFaction {
 public:

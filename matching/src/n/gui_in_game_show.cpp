@@ -6,10 +6,9 @@ public:
     ~CExoString(); // 0x005E5C20
 };
 class CVirtualMachine { public: int RunScript(CExoString* sScript,unsigned long oid,int bArg); /* 0x005D0FC0 */ };
-extern CVirtualMachine* g_pVirtualMachine; // 0x007A3A00
+#include "shared/globals.h"
 class CExoSound { public: void SetSoundMode(int nMode); /* 0x005D5E80 */ };
 extern CExoSound* g_pExoSound; // 0x007A39EC
-extern int g_nGuiSoundMode; // 0x0074C5FC
 class CSWSCreatureStats { public: int CanLevelUp(); /* 0x005A6810 */ };
 class CSWSCreature { public: char pad_0x0[0xa74]; CSWSCreatureStats* m_pStats; };
 class CSWCCreature { public: CSWSCreature* GetServerCreature(); /* 0x0060FB20 */ };

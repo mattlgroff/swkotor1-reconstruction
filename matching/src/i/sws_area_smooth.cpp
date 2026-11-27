@@ -3,10 +3,7 @@
 // placed.
 #include <stddef.h>
 
-extern const int g_nSmoothStateStart;   // 0x0074C444 (placeholder name)
-extern const int g_nSmoothStatePass1;   // 0x0074C448 (placeholder name)
-extern const int g_nSmoothStatePass2;   // 0x0074C44C (placeholder name)
-extern const int g_nSmoothStatePass3;   // 0x0074C450 (placeholder name)
+#include "shared/globals.h"
 
 class CPathfindInformation {
 public:

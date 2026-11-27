@@ -55,8 +55,7 @@ public:
 };
 
 extern const unsigned long OBJECT_INVALID;          // 0x00746644
-extern const unsigned char OBJECT_TYPE_PROJECTILE;  // 0x00746637
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
+#include "shared/globals.h"
 
 // Linked list ---------------------------------------------------------------
 
@@ -209,7 +208,6 @@ public:
     char pad_0x90[0xb8 - 0x90];
     C2DAs* m_p2DArrays;                             // 0xb8
 };
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CWorldTimer {
 public:

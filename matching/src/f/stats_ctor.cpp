@@ -92,7 +92,7 @@ public:
     unsigned char m_nNumSkills;      // +0xab
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 extern const unsigned short RACIAL_TYPE_HUMAN;
 
 class CSWSCreatureStats {

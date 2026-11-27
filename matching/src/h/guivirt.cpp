@@ -13,14 +13,7 @@ __declspec(dllimport) void __stdcall glColor4ubv(const unsigned char* v);
 __declspec(dllimport) void __stdcall glVertex4f(float x, float y, float z, float w);
 }
 
-extern short g_nGUILayer;                       // 0x007B9460
-extern short g_aGUIRects[][5];                  // 0x007B9468 {x, y, w, h, bClear}
-extern int g_bAurNoGUIDraw;                     // 0x007BB4D0
-extern int g_nGUIImageFlag;                     // 0x007A689C
-extern unsigned int g_nGLDepthTest;             // 0x0078D45C
-extern unsigned int g_nGLTexture2D;             // 0x0078D458
-extern unsigned int g_nGLBlend;                 // 0x0078D448
-extern unsigned int g_nGLLineStrip;             // 0x0073F358
+#include "shared/globals.h"
 
 void AurTextureRelease(CAurObject* pTexture);   // 0x00420D70
 
@@ -452,13 +445,6 @@ void CAurGUIImageInternal::DrawAlpha(float fAlpha)
 // ---------------------------------------------------------------------------
 // Batched GUI image drawing, destructor, factory
 
-extern int g_nGUIBufferCount;                   // 0x007BB4D4
-extern int g_nGUIBatchTexture;                  // 0x007BB4D8
-extern CAurGUIImageData* g_pGUIBatchData;       // 0x007BB4DC
-extern unsigned char g_bGUIBatchTriangles;      // 0x007BB4E0
-extern float g_afGUIAlpha[];                    // 0x007B9248
-extern float g_fGUIFlushAlpha;                  // 0x0078E43C
-extern char g_aGUIVertexBuffer[];               // 0x007B94D0
 
 extern "C" __declspec(dllimport) void __stdcall glColor4f(float r, float g, float b, float a);
 

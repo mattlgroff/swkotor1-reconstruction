@@ -140,17 +140,7 @@ public: char data[16]; CSWPortrait(); ~CSWPortrait(); int SetPortraitId(unsigned
 class C2DA { public: int GetINTEntry(int,int,int*); };
 class CTwoDimArrays { public: char pad_0x0[0x3c]; C2DA* m_pAnimations; };
 class CSWRules { public: char pad_0x0[0xb8]; CTwoDimArrays* m_p2DArrays; };
-extern CSWRules* g_pRules; // 0x007A3A28
-extern int g_nAnimStationaryColumn;
-extern int g_nAnimPauseColumn;
-extern int g_nAnimWalkingColumn;
-extern int g_nAnimRunningColumn;
-extern int g_nAnimLoopingColumn;
-extern int g_nAnimFireForgetColumn;
-extern int g_nAnimOverlayColumn;
-extern int g_nAnimParryColumn;
-extern int g_nAnimAttackColumn;
-extern int g_nAnimHideEquippedItemsColumn;
+#include "shared/globals.h"
 class CSWCModule;
 class CGuiInGame { public: char pad_0x0[0xb4]; int m_bItemsHidden; int IsLoopingDialogAnimation(unsigned short); int IsFireForgetDialogAnimation(unsigned short); };
 class CWorldTimer {

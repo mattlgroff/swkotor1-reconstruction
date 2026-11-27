@@ -13,7 +13,7 @@ public:
     int GetLength() const; // 0x005E5790
 };
 class CTlkTable { public: CExoString GetSimpleString(unsigned long nStrRef); };
-extern CTlkTable* g_pTlkTable;
+#include "shared/globals.h"
 #include "shared/vector.h"
 template <class T> class CExoArrayList {
 public:
@@ -265,8 +265,6 @@ void CSWGuiInGameMenu::OnMsgButtonPressed(CSWGuiControl*) { g_pAppManager->m_pCl
 
 struct CFeedbackMessage { CExoString m_sText; int m_n08; unsigned char m_nType; };
 struct CDialogMessage { CExoString m_sText; CExoString m_sSpeaker; };
-extern Vector g_vFeedbackColor;     // 0x007A23B4, descriptive
-extern Vector g_vFeedbackAltColor;  // 0x007A23D8, descriptive
 extern Vector g_vAbilityColorGranted; // 0x007A23C0 (not d's g_vHilightColor 0x0078D3C0)
 class CSWGuiInGameMessages : public CSWGuiPanel {
 public:
@@ -448,7 +446,6 @@ void CSWGuiInGameMessages::AddDialogMessages(const CDialogMessage* pMessages,uns
     }
 }
 
-extern int g_bMessageCheatShown; // 0x008338E8, descriptive
 
 // FUNCTION: SWKOTOR 0x00628260
 void CSWGuiInGameMessages::HandleInputEvent(int nEvent,int bDown)

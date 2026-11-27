@@ -152,7 +152,7 @@ public:
     Vector* m_pConstraints;                 // +0x1b4
 };
 
-extern int g_nPartCount;            // 0x007a8a10
+#include "shared/globals.h"
 
 // Per-mesh scratch lists built while post-processing a trimesh (0x6c).
 class MdlNodeTriMesh_PostProcess {
@@ -211,7 +211,6 @@ public:
     CAurObjectLightContainer* m_pLights;    // +0x178
 };
 
-extern CExoArrayList<Gob*> g_lGobs;         // 0x007a8a58
 
 // vtable 0x00740c08
 class PartLight : public Part {
@@ -245,8 +244,6 @@ public:
     Material();                             // 0x0047b290
 };
 
-extern int g_nNextTriMeshId;                // 0x0078e328
-extern int g_nPartTriMeshCount;             // 0x007a8a14
 
 struct TriMeshTVert {
     int u;

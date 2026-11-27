@@ -7,8 +7,7 @@
 #include "b/server_exo_app.h"
 #include <math.h>
 
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633 (4)
-extern const unsigned char GAME_OBJECT_VALID;               // 0x0074666C
+#include "shared/globals.h"
 
 class CSWSPlayerLUOSortedObjectList {
 public:

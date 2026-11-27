@@ -102,7 +102,7 @@ public:
     unsigned long m_anExperienceTable[50];  // +0x38
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 class CSWSCreature {
 public:

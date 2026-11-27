@@ -15,8 +15,7 @@ public:
     unsigned char m_bSkipNoClip;        // +0x5e
 };
 
-extern CHitInfo g_DefaultHitInfo;       // 0x007b93a8
-extern float g_fHitMinAlpha;            // 0x0078e858
+#include "shared/globals.h"
 
 Quaternion operator-(const Quaternion& q);                     // 0x004a9b50
 Vector operator*(const Quaternion& q, const Vector& v);        // 0x004a9bb0

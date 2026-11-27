@@ -46,9 +46,7 @@ public:
 };
 
 extern const unsigned char g_nObjectTypeDoor;      // 0x00746639
-extern int g_nDoorStateClosed;
-extern int g_nDoorStateOpen1;
-extern int g_nDoorStateOpen2;
+#include "shared/globals.h"
 
 class CSWSObject;
 

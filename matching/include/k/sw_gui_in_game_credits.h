@@ -49,7 +49,7 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender);  // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
+#include "shared/globals.h"
 extern unsigned char g_nGender;                     // 0x0073ECD0
 
 class C2DA {
@@ -83,7 +83,6 @@ public:
     void SetSize(int nWidth, int nHeight);          // 0x0040BE70
 };
 
-extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
 
 class CSWGuiTextParams {
 public:
@@ -257,11 +256,6 @@ extern int g_nScreenHeight;                         // 0x0078D1D8
 void ResumeTimers();                                // 0x00403DE0
 
 // Screen state saved while the evil-ending credits force 640x480.
-extern int g_nCreditsSavedScreenHeight;             // 0x00833BB8
-extern int g_nCreditsSavedGuiHeight;                // 0x00833BBC
-extern int g_nCreditsSavedGuiWidth;                 // 0x00833BC0
-extern int g_nCreditsSavedScreenWidth;              // 0x00833BC4
-extern float g_fCreditsScrollRate;                  // 0x007A2670 (305.0)
 
 // vtable 0x007541F0; ??_G 0x0068F6D0 (matching/src/c).
 class CSWGuiInGameCredits : public CSWGuiPanel {

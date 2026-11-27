@@ -26,7 +26,7 @@ inline CWorldTimer* CClientExoAppInternal::GetActiveTimer(unsigned long oid)
 
 extern "C" __declspec(dllimport) void __stdcall Sleep(unsigned long nMs);
 
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
+#include "shared/globals.h"
 extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
 
 class CExoStreamingSoundSource {
@@ -76,20 +76,11 @@ public:
 void PauseTimers();                                 // 0x00403CF0
 void ResumeTimers();                                // 0x00403DE0
 
-extern CExoInput* g_pExoInput;                      // 0x007A39E4
-extern const int MUSIC_STATE_NORMAL;                // 0x0074C5EC (0)
-extern const int MUSIC_STATE_COMBAT_PAUSED;         // 0x0074C5F4 (2)
-extern const unsigned char OBJECT_TYPE_ITEM;        // 0x00746635
-extern int g_nMusicStateMenu;                       // 0x0074C5F0
-extern int g_nMusicStateNone;                       // 0x0074C5EC
 
 class CDeletable {
 public:
     virtual ~CDeletable();
 };
-extern CDeletable* g_pUnknown8338FC;                // 0x008338FC
-extern CDeletable* g_pUnknown8338EC;                // 0x008338EC
-extern CDeletable* g_pUnknown7A3A28;                // 0x007A3A28
 
 // FUNCTION: SWKOTOR 0x005EE920
 CSWCQuestJournal* CClientExoAppInternal::CreateQuestJournal()
@@ -719,7 +710,6 @@ void CClientExoAppInternal::RestartMoviesIfNecessary()
 
 // Worker C s1 additions.
 
-extern int g_bCameraFollowFlag;                     // 0x007A2484
 
 class CSWPlayerControlCamRelative {
 public:
@@ -794,7 +784,6 @@ void CClientExoAppInternal::ResetGuis(int n)
 }
 
 void SetClearColor(const char* sColor);             // 0x00401690
-extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
 
 // FUNCTION: SWKOTOR 0x005F8290
 void CClientExoAppInternal::UnloadModule()

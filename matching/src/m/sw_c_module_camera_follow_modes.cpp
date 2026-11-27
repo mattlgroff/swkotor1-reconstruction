@@ -6,8 +6,7 @@
 extern "C" double __cdecl fabs(double x);
 #pragma intrinsic(fabs)
 
-extern float g_fCameraTurnThreshold;                // 0x007A2460
-extern float g_fCameraTurnScale;                    // 0x007A2464
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00640700
 void CSWCModule::UpdateCameraModeChaseCam()

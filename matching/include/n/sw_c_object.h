@@ -39,15 +39,12 @@ public:
     CResRef GetPortrait(unsigned char n);           // 0x00678EF0
 };
 
-extern const char g_sEmpty[];                       // 0x0073D71C
+#include "shared/globals.h"
 extern const unsigned long OBJECT_INVALID;          // 0x00746644
-extern const unsigned char OBJECT_TYPE_ITEM;        // 0x00746635
 extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
 extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
-extern int g_bUpdateCreatureOnMove;                 // 0x0083395C
 extern int g_nScreenWidth;                          // 0x0078D1D4
 extern int g_nScreenHeight;                         // 0x0078D1D8
-extern const float g_fZero;                         // 0x0073D700
 extern const float g_fOne;                          // 0x0073D764
 
 // Linked list -----------------------------------------------------------

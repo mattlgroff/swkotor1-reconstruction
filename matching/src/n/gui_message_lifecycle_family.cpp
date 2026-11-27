@@ -84,9 +84,8 @@ public:
     void SaveMousePosition(); void RestoreOldMousePosition(); void MoveMouseToPosition(int,int);
     void AddPanel(CSWGuiPanel*,int,int);
 };
-extern CSWGuiManager* g_pGuiManager;
+#include "shared/globals.h"
 class CTlkTable { public: void ParseTokens(CExoString*); CExoString GetSimpleString(unsigned long); };
-extern CTlkTable* g_pTlkTable;
 // FUNCTION: SWKOTOR 0x00625200
 void CSWGuiMessageBox::UpdateControls() {
     m_ok.SetEnabled((m_nFlags>>2)&1);

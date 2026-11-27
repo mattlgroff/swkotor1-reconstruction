@@ -56,8 +56,7 @@ public:
 };
 
 extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern const int g_nSoundModeMovie;                 // 0x0074C5F8
-extern const int g_nSoundModeMenu;                  // 0x0074C5FC
+#include "shared/globals.h"
 
 class CWorldTimer {
 public:
@@ -112,7 +111,6 @@ public:
     C2DArrays* m_p2DArrays;                         // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CNWMessage {
 public:

@@ -169,11 +169,8 @@ public:
     int m_bUseCurrentForcePoints;                   // 0xa9c (descriptive)
 };
 
-extern const unsigned short RACIAL_TYPE_DROID;      // 0x0074BF10
+#include "shared/globals.h"
 extern const unsigned short RACIAL_TYPE_HUMAN;      // 0x0074BF14
-extern const unsigned short g_nForceTargetHuman;    // 0x0074BF34 (descriptive)
-extern const unsigned short g_nForceTargetDroid;    // 0x0074BF38 (descriptive)
-extern const unsigned short g_nForceTargetOther;    // 0x0074BF3C (descriptive)
 
 class CSWCItem {
 public:
@@ -225,7 +222,6 @@ public:
     CSWBaseItemArray* GetBaseItemArray() { return m_pBaseItemArray; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CGameObject {
 public:

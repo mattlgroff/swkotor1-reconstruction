@@ -245,8 +245,6 @@ public:
 
 #define SWAP(a, b) { int t = a; a = b; b = t; }
 
-extern bool g_bNvStripBadEdge;                      // 0x008302A4
-extern CExoArrayList<NvFaceInfo*> g_lNvStripFaces;  // 0x008302A8
-extern int g_nNvStripNumSamples;                    // 0x00798A94
+#include "shared/globals.h"
 
 #endif

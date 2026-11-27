@@ -45,7 +45,7 @@ public:
     unsigned char GetObjectGender();
 };
 
-extern unsigned char g_nDefaultObjectGender;           // 0x0073ECD0
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00674B40 SYMBOL: ?GetObjectGender@CSWTlkTable@@QAEEXZ
 unsigned char CSWTlkTable::GetObjectGender()

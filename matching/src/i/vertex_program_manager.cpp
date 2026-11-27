@@ -6,10 +6,7 @@ struct VertexProgramData {
     int enabled;
 };
 
-extern VertexProgramData** g_vertex_program_data_008305cc;
-extern int g_vertex_program_size_008305d0;
-extern int g_vertex_program_capacity_008305d4;
-extern int g_programs_arb_0078e5ec;
+#include "shared/globals.h"
 typedef void (__stdcall *GlDeleteProgramsARB)(int, const unsigned int*);
 extern GlDeleteProgramsARB gl_delete_programs_arb_007bb724;
 extern GlDeleteProgramsARB gl_delete_programs_nv_007bb6f4;

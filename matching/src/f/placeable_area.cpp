@@ -46,8 +46,7 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;
-extern int g_bShowPlaceableBoxes;
+#include "shared/globals.h"
 
 class CSWSArea {
 public:

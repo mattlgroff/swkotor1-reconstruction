@@ -4,7 +4,7 @@
 #include "b/sws_creature.h"
 #include "b/server_exo_app.h"
 
-extern int g_bDebugActions;                                 // 0x0083281C (descriptive)
+#include "shared/globals.h"
 
 // CSWSObject +0xfc (sws_creature.h keeps CSWSObject data-free).
 struct CSWSObjectActionView {

@@ -30,7 +30,7 @@ public:
     int GetSimpleString(unsigned long strref, STR_RES *pRes, unsigned char nGender);
 };
 
-extern CTlkTable *g_pTlkTable;
+#include "shared/globals.h"
 extern const unsigned char g_nGender;
 
 class CSWBaseItem {

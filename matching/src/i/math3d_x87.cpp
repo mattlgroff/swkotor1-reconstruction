@@ -46,8 +46,7 @@ static inline float Row(float a, float b, float c, float x, float y, float z)
     return a * x + b * y + c * z;
 }
 
-extern int g_bQuaternionIdentityTest;                    // 0x007A1980
-extern float g_fRadToDeg;                               // 0x00742EF8
+#include "shared/globals.h"
 
 // NONMATCH: cl factors the 2 out of the last two terms of each row (x87
 // reassociation) and assigns different stack slots to the products.

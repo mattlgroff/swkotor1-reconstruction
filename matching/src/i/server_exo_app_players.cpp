@@ -13,8 +13,7 @@ public:
 };
 extern CAppManager* g_pAppManager;                                  // 0x007A39FC
 
-extern const unsigned long PLAYER_ID_ALL_PLAYERS;                   // 0x0074C52C
-extern const unsigned long PLAYER_ID_SERVER_ADMIN;                  // 0x0074C534
+#include "shared/globals.h"
 
 // NONMATCH: the original has an aligned (and esp, -8) frame with both
 // player-name copies in separate slots; same calls and flow otherwise.

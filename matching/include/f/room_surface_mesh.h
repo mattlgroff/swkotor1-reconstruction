@@ -58,7 +58,7 @@ public:
     void SetResObject(const CResRef &cResRef, unsigned short nType, CRes *pRes);
 };
 
-extern CExoResMan *g_pExoResMan;
+#include "shared/globals.h"
 
 class C2DA {
 public:
@@ -80,7 +80,6 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;
 
 // The BWM file header (0x88 bytes).
 struct CSWWalkMeshHeader {

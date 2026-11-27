@@ -27,7 +27,7 @@ class CExoInput {
 public:
     void ClearEvents();                             // 0x005DF4E0
 };
-extern CExoInput* g_pExoInput;                      // 0x007A39E4
+#include "shared/globals.h"
 
 class CClientExoApp {
 public:
@@ -48,10 +48,6 @@ public:
 };
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
-extern unsigned char g_nAppMode;                    // 0x007A39DC (placeholder name)
-extern int g_nDriveForward;                         // 0x008338F0 (placeholder name)
-extern int g_nDriveTurn;                            // 0x008338F4 (placeholder name)
-extern int g_nDriveStrafe;                          // 0x008338F8 (placeholder name)
 
 void PrintModuleName(const char* sName);            // 0x00401430 (placeholder name)
 

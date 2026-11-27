@@ -9111,10 +9111,10 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?GetCount@CExoStringList@@QAEHXZ,public: int __thiscall CExoStringList::GetCount(void),0x00675DD0,defines,9
 ?GetDoneCount@CSWCJournal@@QAEHXZ,public: int __thiscall CSWCJournal::GetDoneCount(void),0x00675DD0,calls,1
 ?Allocate@?$CExoArrayList@UCSWCJournalPendingUpdate@@@@QAEXH@Z,public: void __thiscall CExoArrayList<struct CSWCJournalPendingUpdate>::Allocate(int),0x00675DE0,defines,2
-?SortItemsByDate@CSWCSortedJournalArrayList@@QAEHHH@Z,"public: int __thiscall CSWCSortedJournalArrayList::SortItemsByDate(int,int)",0x00675ED0,defines,3
-?SortItemsByName@CSWCSortedJournalArrayList@@QAEHHH@Z,"public: int __thiscall CSWCSortedJournalArrayList::SortItemsByName(int,int)",0x00675F10,defines,1
-?SortItemsByPlanet@CSWCSortedJournalArrayList@@QAEHHH@Z,"public: int __thiscall CSWCSortedJournalArrayList::SortItemsByPlanet(int,int)",0x00676050,defines,1
-?SortItemsByPriority@CSWCSortedJournalArrayList@@QAEHHH@Z,"public: int __thiscall CSWCSortedJournalArrayList::SortItemsByPriority(int,int)",0x006760A0,defines,1
+?SortItemsByDate@CSWCSortedJournalArrayList@@QAEHHH@Z,"public: int __thiscall CSWCSortedJournalArrayList::SortItemsByDate(int,int)",0x00675ED0,defines,4
+?SortItemsByName@CSWCSortedJournalArrayList@@QAEHHH@Z,"public: int __thiscall CSWCSortedJournalArrayList::SortItemsByName(int,int)",0x00675F10,defines,2
+?SortItemsByPlanet@CSWCSortedJournalArrayList@@QAEHHH@Z,"public: int __thiscall CSWCSortedJournalArrayList::SortItemsByPlanet(int,int)",0x00676050,defines,2
+?SortItemsByPriority@CSWCSortedJournalArrayList@@QAEHHH@Z,"public: int __thiscall CSWCSortedJournalArrayList::SortItemsByPriority(int,int)",0x006760A0,defines,2
 ?Remove@CSWCQuestJournal@@QAEXABVCExoString@@@Z,public: void __thiscall CSWCQuestJournal::Remove(class CExoString const &),0x006760F0,calls,1
 ?SetJournalPicture@CSWCQuestJournal@@QAEXABVCExoString@@G@Z,"public: void __thiscall CSWCQuestJournal::SetJournalPicture(class CExoString const &,unsigned short)",0x00676260,defines,2
 ?GetActiveEntryAt@CSWCJournal@@QAEPAUCSWCJournalEntry@@H@Z,public: struct CSWCJournalEntry * __thiscall CSWCJournal::GetActiveEntryAt(int),0x00676310,defines,1
@@ -9126,6 +9126,7 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?HasNewEntries@CSWCJournal@@QAEHXZ,public: int __thiscall CSWCJournal::HasNewEntries(void),0x00676470,defines,2
 ?Add@?$CExoArrayList@UCSWCJournalPendingUpdate@@@@QAEXUCSWCJournalPendingUpdate@@@Z,public: void __thiscall CExoArrayList<struct CSWCJournalPendingUpdate>::Add(struct CSWCJournalPendingUpdate),0x006764A0,defines,2
 ?SortList@CSWCJournalList@@QAEXXZ,public: void __thiscall CSWCJournalList::SortList(void),0x00676530,calls,4
+?SortList@CSWCSortedJournalArrayList@@QAEXXZ,public: void __thiscall CSWCSortedJournalArrayList::SortList(void),0x00676530,defines,1
 ?Add@CSWCJournal@@QAEXUSJournalEntry@@G@Z,"public: void __thiscall CSWCJournal::Add(struct SJournalEntry,unsigned short)",0x00676610,calls,1
 ?ClearQuests@CSWCQuestJournal@@QAEXXZ,public: void __thiscall CSWCQuestJournal::ClearQuests(void),0x00676B00,defines,2
 ?CallFullUpdateComplete@CSWCJournal@@QAEXXZ,public: void __thiscall CSWCJournal::CallFullUpdateComplete(void),0x00676BA0,defines,1

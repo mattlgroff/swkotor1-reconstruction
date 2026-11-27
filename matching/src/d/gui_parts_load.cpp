@@ -20,7 +20,7 @@ public:
                            const Vector& vDefault); // 0x004122a0
 };
 
-extern float g_fGuiPulseAlpha;                      // 0x0078d3d4
+#include "shared/globals.h"
 
 #define GUI_MIN(a, b) ((a) < (b) ? (a) : (b))
 

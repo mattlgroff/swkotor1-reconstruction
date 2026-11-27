@@ -14,7 +14,7 @@ public:
     unsigned char m_bMainMenuLoaded : 1;    // 0x34 bit 1 (RIMS:MAINMENU)
 };
 
-extern CExoResMan* g_pExoResMan;            // 0x007a39e8
+#include "shared/globals.h"
 
 extern "C" int __cdecl AurGUISetupViewport(int x, int y, int w, int h, Vector* pAmbient, int a, float f); // 0x004592f0
 extern "C" void __cdecl AurGUICloseViewport();  // 0x00459580

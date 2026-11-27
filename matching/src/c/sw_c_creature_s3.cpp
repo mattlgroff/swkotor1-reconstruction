@@ -82,7 +82,7 @@ public:
     CSWBaseItemArray* GetBaseItems() { return m_pBaseItems; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CCreatureAppearanceS3 {
 public:
@@ -90,7 +90,6 @@ public:
     unsigned short m_nAppearanceType;               // 0x18
 };
 
-extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
 
 class CSWCCreature;
 class CSWCItem;
@@ -766,14 +765,6 @@ extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
 extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
 extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
 
-extern int g_nAppearanceCol_SoundAppType;           // 0x007A2128
-extern int g_nAppearanceSoundsCol_Weapon;           // 0x007A2140
-extern int g_nAppearanceSoundsCol_ArmorType;        // 0x007A2144
-extern int g_nWeaponSoundPitchOffsetColumn;         // 0x007A21A4
-extern int g_nDoorTypesCol_SoundAppType;            // 0x007A224C
-extern int g_nGenericDoorsCol_SoundAppType;         // 0x007A2250
-extern int g_nPlaceablesCol_SoundAppType;           // 0x007A2254
-extern int g_nPlaceableSoundsCol_ArmorType;         // 0x007A2260
 
 class CSWCCombatAttackData {
 public:

@@ -6,9 +6,8 @@
 #include "b/sws_player.h"
 
 extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634
-extern const unsigned char OBJECT_TYPE_ITEM;                // 0x00746635
+#include "shared/globals.h"
 extern const unsigned long OBJECT_INVALID;                  // 0x00746644
-extern const unsigned char GAME_OBJECT_ARRAY_SUCCESS;       // 0x0074666C
 
 // FUNCTION: SWKOTOR 0x005530A0
 CSWSItem::CSWSItem(unsigned long nId)

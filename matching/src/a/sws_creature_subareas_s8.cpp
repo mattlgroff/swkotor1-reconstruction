@@ -51,7 +51,7 @@ public:
     CSWSAreaOfEffectObject* GetAreaOfEffectByGameObjectID(unsigned long oid); // 0x004AE7D0
 };
 extern const unsigned long OBJECT_INVALID;          // 0x00746644
-extern int g_bSubAreaTriggerOverride;               // 0x007A1B54 (descriptive name)
+#include "shared/globals.h"
 class CAppManager {
 public:
     void* vptr;

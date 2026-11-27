@@ -78,7 +78,7 @@ public:
 };
 
 extern CAppManager *g_pAppManager;
-extern float g_fSafeProjectileRange;
+#include "shared/globals.h"
 
 class CSWSObject {
 public:

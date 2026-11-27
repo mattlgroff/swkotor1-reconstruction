@@ -55,7 +55,7 @@ void CExoArrayList<T>::Allocate(int n)
 // FUNCTION: SWKOTOR 0x004A6C70 SYMBOL: ?Allocate@?$CExoArrayList@UCAurGrassRecord@@@@QAEXH@Z
 template void CExoArrayList<CAurGrassRecord>::Allocate(int n);
 
-extern CExoArrayList<CAurGrassRecord> g_aAurGrassInfo;  // 0x00831E44 (placeholder name)
+#include "shared/globals.h"
 
 // Stores grass material nIndex (growing the table with defaults first),
 // normalising its four probabilities to sum to 1 (placeholder name).

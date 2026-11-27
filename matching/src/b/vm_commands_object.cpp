@@ -25,7 +25,7 @@ public:
 };
 
 extern CExoBase* g_pExoBase;                                // 0x007A39E0
-extern int g_bExoDebugDisabled;                             // 0x0083282C (.data)
+#include "shared/globals.h"
 
 // Stripped debug output: the arguments are still evaluated.
 inline void ExoDebugLog(const char* sText, const char* sTimestamp) {}
@@ -36,8 +36,6 @@ public:
     void SetCustomToken(int nToken, const CExoString& sValue); // 0x0041DB50
 };
 
-extern CTlkTable* g_pTlkTable;                              // 0x007A3A08
-extern const int MIN_CUSTOM_TOKEN;                          // 0x0073ECCC (.rdata)
 
 // The listen-pattern matches kept on the object (+0x1a0).
 struct CSWSListenObject {
@@ -220,8 +218,6 @@ public:
     void DoorAction(int a1, int a2);                        // 0x00589600 (name guessed)
 };
 
-extern const unsigned char OBJECT_TYPE_MODULE;              // 0x00746632 (3)
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633 (4)
 
 // The generic object's local variable table (+0x110).
 class CSWSObjectVarTableView : public CGameObject {

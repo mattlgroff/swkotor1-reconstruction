@@ -17,22 +17,7 @@ extern PFNVERTEXATTRIBARRAY g_pfnEnableVertexAttribArray;   // 0x007BB79C
 extern PFNVERTEXATTRIBARRAY g_pfnDisableVertexAttribArray;  // 0x007BB770
 
 extern float g_fOne;               // 0x0073D764
-extern int g_bRenderEMBM;           // 0x0078E65C
-extern int g_bEMBMLightmaps;        // 0x0078E608
-extern int g_bEMBMBasePass;         // 0x0078E650
-extern int g_bEMBMBumpPass;         // 0x0078E658
-extern int g_bEMBMAdditive;         // 0x00827FE8
-extern CombinerCaps* g_pCombinerCaps;   // 0x007B92A0
-extern unsigned int g_eGLAlphaTest;     // 0x0078D448
-extern unsigned int g_eGLFog;           // 0x0078D450
-extern unsigned int g_eTangentArray;    // 0x0073F3B8
-extern unsigned int g_eBinormalArray;   // 0x0073F3BC
-extern unsigned int g_eTexNormalArray;  // 0x0073F3C0
-extern VertexProgram* g_pVPLightmapped;     // 0x00827FEC
-extern VertexProgram* g_pVPFog;             // 0x00827FF0
-extern VertexProgram* g_pVPBase;            // 0x00827FF4
-extern VertexProgram* g_pVPBump;            // 0x00827FF8
-extern VertexProgram* g_pVPBumpLightmapped; // 0x00827FFC
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00470860
 void RenderEMBM(PartTriMesh* pPart)

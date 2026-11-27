@@ -147,10 +147,8 @@ public:
 };
 
 extern CAppManager *g_pAppManager;
-extern CSWRules *g_pRules;
-extern char g_cObjectArraySuccess;
+#include "shared/globals.h"
 extern unsigned long EVENT_SIGNAL_EVENT;
-extern unsigned long EVENT_PLACEABLE_CLOSED;
 
 class CScriptEvent {
 public:
@@ -159,9 +157,6 @@ public:
     char pad_0x2[0x32];
 };
 
-extern unsigned short g_nEffectTypeVisual;
-extern unsigned short g_nEffectSubTypeMagical;
-extern int g_nEffectVisualParam;
 
 class CGameEffect {
 public:

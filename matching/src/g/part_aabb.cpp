@@ -11,9 +11,7 @@ public:
     AABBNode* m_pAABBRoot;              // +0x19c
 };
 
-extern MdlNodeTriMesh* g_pHitAABBMesh;  // 0x007a69b0
-extern CHitInfo* g_pHitAABBInfo;        // 0x007a69b4
-extern int g_nHitAABBDirection;         // 0x007a8a24
+#include "shared/globals.h"
 
 int HitCheckAABBNode(AABBNode* pNode, const Vector* pStart, const Vector* pEnd,
                      float fScale);     // 0x00441570

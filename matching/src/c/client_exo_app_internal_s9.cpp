@@ -115,7 +115,7 @@ public:
 };
 
 extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern float g_fListenerOffsetBlend;                // 0x007A22A0 (descriptive)
+#include "shared/globals.h"
 
 class CSWCameraOnAStick {
 public:

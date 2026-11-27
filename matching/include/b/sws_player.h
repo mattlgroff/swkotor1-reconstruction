@@ -9,7 +9,7 @@
 #include "b/sws_creature.h"
 
 // .rdata copy of the invalid object id (0x7F000000) some sites load.
-extern const unsigned long OBJECT_INVALID_ID;                   // 0x00746644
+#include "shared/globals.h"
 
 class CGameObject;
 class CSWSCreature;

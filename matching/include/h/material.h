@@ -63,14 +63,7 @@ extern "C" __declspec(dllimport) void __stdcall glAlphaFunc(unsigned int, float)
 extern "C" __declspec(dllimport) void __stdcall glMaterialfv(unsigned int, unsigned int,
                                                             const float*);
 
-extern int g_bUseLightMapTexture;       // 0x0078E5FC
-extern unsigned int g_aBlendFactors[];  // 0x0073F270
-extern int g_bAlphaTest;                // 0x00798A8C
-extern float g_fAlphaRef;               // 0x00798A90
-extern unsigned int g_eAlphaFunc;       // 0x0073F2B0
-extern float g_fMaterialAlpha;          // 0x0078E390
-extern unsigned int g_eMaterialFace;    // 0x0073F2EC
-extern unsigned int g_eMaterialDiffuse; // 0x0073F300
+#include "shared/globals.h"
 
 // Validates a texture reference; the results are dropped by the callers.
 static inline CAurTexture* CheckTexture(CAurTexture* p)

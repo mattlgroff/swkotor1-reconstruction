@@ -38,7 +38,7 @@ extern "C" int __cdecl rand(void);                  // 0x006FC447
 
 // Card value by card code: 0..5 +1..+6, 6..11 -1..-6, 12..17 flip +-1..6,
 // 18..27 the main-deck 1..10. Descriptive name.
-extern int g_nPazaakCardValues[28];                 // 0x007A26B8
+#include "shared/globals.h"
 
 // A Pazaak card {value, flag}; the constructor only clears the flag.
 struct CPazaakCard {

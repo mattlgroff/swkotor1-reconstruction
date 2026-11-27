@@ -53,8 +53,7 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;
-extern float g_fTriggerRadius;
+#include "shared/globals.h"
 extern const unsigned char g_nObjectTypeTrigger;   // 0x00746636
 
 class CSWSObject;

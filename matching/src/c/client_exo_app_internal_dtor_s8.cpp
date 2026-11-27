@@ -17,7 +17,7 @@ public:
     CExoString& operator=(const char* s);           // 0x005E5140
 };
 
-extern const unsigned long OBJECT_INVALID_ID;      // 0x00746644
+#include "shared/globals.h"
 
 class CExoTimers {
 public:
@@ -261,13 +261,8 @@ public:
     int Exists(const CResRefName& cRes, unsigned short nType, int b);   // 0x00408BC0
 };
 
-extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
-extern CExoInput* g_pExoInput;                      // 0x007A39E4
 extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
-extern CAuroraInterface* g_pAuroraInterface;        // 0x007A39F0 (descriptive)
 extern void* g_pRender;                             // 0x007A39F8
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
 class CSWParty {
 public:
     int IsPartyMember(unsigned long oid);           // 0x006349C0 (returns the NPC index)

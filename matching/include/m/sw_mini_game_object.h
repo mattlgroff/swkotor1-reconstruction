@@ -13,7 +13,7 @@
 #include "shared/vector_ops.h"
 
 Vector operator/(const Vector& v, float f);         // 0x00437A90
-extern float g_fMiniInertiaScale;                   // 0x007A2488 (descriptive)
+#include "shared/globals.h"
 
 // Position / velocity pair integrated by the mini game (0x18 bytes).
 struct CSWMiniState {
@@ -219,7 +219,6 @@ public:
     int RunScript(CExoString* psFile, unsigned long oidSelf, int bOid);   // 0x005D0FC0
 };
 
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 
 inline CVirtualMachine* GetVirtualMachine() { return g_pVirtualMachine; }
 
@@ -251,11 +250,6 @@ public:
                          int b, int c);             // 0x005D5E00
 };
 
-extern unsigned char g_nMiniGameAccelVolume;        // 0x0074C5E8
-extern Vector g_vMiniHitPoint;                      // 0x007B93A8
-extern Vector g_vMiniHitPos;                        // 0x007B93C4
-extern Vector g_vMiniHitNormal;                     // 0x007B93E8
-extern char* g_szMiniHitPart;                       // 0x007B93F4
 
 extern CExoSound* g_pExoSound;                      // 0x007A39EC
 

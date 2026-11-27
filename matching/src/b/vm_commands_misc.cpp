@@ -18,7 +18,7 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender); // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                              // 0x007A3A08
+#include "shared/globals.h"
 extern unsigned char g_nGender;                             // 0x0073ECD0
 
 class CSWCCMessageData {
@@ -54,7 +54,6 @@ public:
     CSWCArea* m_pArea;                                      // 0x48
 };
 
-extern int g_nScriptVar;                                    // 0x00832828 (.data)
 
 // FUNCTION: SWKOTOR 0x00535B70
 int CSWVirtualMachineCommands::ExecuteCommandExecuteScript(int nCommandId, int nParameters)
@@ -423,10 +422,7 @@ public:
     void SetSoundMode(int nMode);                           // 0x005D5E80
 };
 
-extern CExoInput* g_pExoInput;                              // 0x007A39E4
 extern CExoSound* g_pExoSound;                              // 0x007A39EC
-extern const int SOUND_MODE_NORMAL;                         // 0x0074C5EC (0)
-extern const int SOUND_MODE_MOVIE;                          // 0x0074C5F8 (3)
 
 // FUNCTION: SWKOTOR 0x00540ED0
 int CSWVirtualMachineCommands::ExecuteCommandPlayMovie(int nCommandId, int nParameters)

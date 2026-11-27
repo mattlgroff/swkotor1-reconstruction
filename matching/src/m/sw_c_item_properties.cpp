@@ -29,7 +29,7 @@ public:
     char pad_0x0[0x34];
     CSWBaseItemArray* m_pBaseItemArray;
 };
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWCItemProperty {
 public:

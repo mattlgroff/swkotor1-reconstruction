@@ -123,7 +123,7 @@ public:
 };
 
 extern CExoBase* g_pExoBase;                        // 0x007A39E0
-extern unsigned char g_nLiveFolderCount;            // 0x0073ECD2 (descriptive)
+#include "shared/globals.h"
 
 struct CSWGuiExtent {
     int left;
@@ -134,7 +134,6 @@ struct CSWGuiExtent {
 
 #include "shared/vector.h"
 
-extern Vector g_vPazaakButtonHilight;               // 0x007A23B4
 extern Vector g_vAbilityColorGranted;               // 0x007A23C0
 
 class CTlkTable {
@@ -142,7 +141,6 @@ public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 
 class C2DA {
 public:
@@ -163,7 +161,6 @@ public:
     CTwoDimArrays* m_p2DArrays;                     // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CClientOptions {
 public:

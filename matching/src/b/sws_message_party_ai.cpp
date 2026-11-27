@@ -3,7 +3,7 @@
 #include "b/sws_creature.h"
 #include "b/sws_player.h"
 
-extern const unsigned char GAME_OBJECT_VALID;               // 0x0074666C
+#include "shared/globals.h"
 
 // The player's +0x10 list holds party entries (declared with the object
 // entry type in the shared header).

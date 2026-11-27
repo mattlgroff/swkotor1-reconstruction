@@ -50,7 +50,7 @@ void BSPTraverse(BSPNode* pNode, void (*pfn)(BSPNode*, LightScene*),
     LightScene* pScene);                            // 0x004ACEA0
 void UpdateRoomLights(BSPNode* pNode, LightScene* pScene);  // 0x0046B790
 
-extern CExoArrayList<BSPNode*> g_lLightTiles;       // 0x007FBFE4
+#include "shared/globals.h"
 extern CExoArrayList<LightBin*> g_lActiveBins;      // 0x007FBF9C
 extern int g_n7FBF2C;
 

@@ -23,10 +23,7 @@ public:
 
 #include "shared/vector.h"
 
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
-extern Vector g_vGuiDisabledTextColor;              // 0x007A2408
-extern Vector g_vUpgradeAvailableColor;             // 0x007A2378
-extern Vector g_vGuiDisabledBorderColor;            // 0x007A2384
+#include "shared/globals.h"
 
 class CSWGuiTextParams {
 public:

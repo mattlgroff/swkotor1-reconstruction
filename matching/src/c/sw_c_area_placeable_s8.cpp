@@ -31,7 +31,7 @@ public:
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWCArea;
 
@@ -102,7 +102,6 @@ public:
 };
 
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
 
 class CSWCArea {
 public:

@@ -205,7 +205,7 @@ public:
     C2DAs* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 extern int g_bDo3DGui;                              // 0x0078D1E4
 
 struct CSWGuiGalaxyPlanet {

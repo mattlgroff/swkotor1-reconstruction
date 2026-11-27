@@ -39,9 +39,7 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;              // 0x007A3A28
-extern int g_nCreatureSpeedWalkColumn;  // 0x007A2248 (placeholder name)
-extern int g_nCreatureSpeedRunColumn;   // 0x007A2244 (placeholder name)
+#include "shared/globals.h"
 
 class CSWSCreature {
 public:

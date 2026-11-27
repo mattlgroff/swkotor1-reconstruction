@@ -117,10 +117,7 @@ public:
     char pad_0x0[0xc]; C2DA* m_pAppearanceTable;
     char pad_0x10[0x48]; C2DA* m_pFootstepTable;
 };
-extern int g_nAppearanceCol_FootstepType; // 0x007a20ec
-extern int g_nFootstepRollingColumn; // 0x007a219c
-extern int g_nAppearanceCol_SIZECATEGORY; // 0x007a2124
-extern int g_nFootstepPitchOffsetColumn; // 0x007a21a0
+#include "shared/globals.h"
 #include "shared/vector.h"
 class CExoSoundSource {
 public:
@@ -173,7 +170,6 @@ class CSWRules {
 public: char pad_0x0[0x34]; CSWBaseItemArray* m_pBaseItems;
     char pad_0x38[0x80]; C2DAs* m_p2DArrays;
 };
-extern CSWRules* g_pRules;
 class CSceneHolder {
 public:
     virtual void v00();
@@ -215,7 +211,6 @@ public:
     char pad_0x0[0x104]; unsigned long m_idSelf;
     char pad_0x108[0x7c]; void* m_pScene;
 };
-extern const unsigned long OBJECT_INVALID_ID;
 class CSWCCreatureStats {
 public:
     char pad_0x0[0x70]; CResRef m_sPortrait;

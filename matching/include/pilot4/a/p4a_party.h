@@ -13,8 +13,7 @@ public:
 
 Vector operator*(const Quaternion& q, const Vector& v); // 0x004A9BB0
 
-extern Vector g_vUp;                                    // 0x007A19B0
-extern const float g_fDegToRad;                         // 0x007415F8
+#include "shared/globals.h"
 
 class CSWSArea {
 public:

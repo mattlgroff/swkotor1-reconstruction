@@ -106,11 +106,7 @@ public:
 };
 
 extern CAppManager *g_pAppManager;
-extern char g_cObjectArraySuccess;
-extern int g_nDoorStateClosed;
-extern int g_nDoorStateOpen1;
-extern int g_nDoorStateOpen2;
-extern unsigned char g_nFeatMines;
+#include "shared/globals.h"
 
 class CSWCollisionMesh {
 public:

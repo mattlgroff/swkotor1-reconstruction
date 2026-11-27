@@ -24,15 +24,7 @@ extern void (__stdcall *glAlphaFragmentOp1ATI)(unsigned int, unsigned int, unsig
 extern void (__stdcall *glAlphaFragmentOp2ATI)(unsigned int, unsigned int, unsigned int,
     unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int); // 0x007BB5E8
 
-extern unsigned int g_nATIShader_00830244;
-extern unsigned int g_nATIShader_00830248;
-extern unsigned int g_nATIShader_0083024C;
-extern unsigned int g_nATIShader_00830250;
-extern unsigned int g_nATIShader_00830254;
-extern unsigned int g_nATIShader_00830258;
-extern unsigned int g_nATIShader_0083025C;
-extern unsigned int g_nATIShader_00830260;
-extern unsigned int g_nATIShader_00830264;
+#include "shared/globals.h"
 
 inline void CheckGLError()
 {
@@ -218,9 +210,6 @@ void MakeLookUpTexture(float fPower);               // 0x00423D80
 CAurTexture* AurTextureGetNormalizationCubeMap();   // 0x004233E0
 
 extern unsigned int g_nActiveTextureUnit;   // 0x007A6898
-extern int g_aCurrentStageTID[];            // 0x007A683C
-extern int g_bFSEnvMapOn;                   // 0x00827FA0, descriptive
-extern int g_bFSTexture1On;                 // 0x00827FA4, descriptive
 
 // FUNCTION: SWKOTOR 0x0047A2F0
 void EnableFragmentShaders(int mode, CAurTexture* t0, CAurTexture* t1, CAurTexture* t2, CAurTexture* t3)

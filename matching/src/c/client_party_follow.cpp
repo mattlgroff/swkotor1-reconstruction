@@ -30,7 +30,7 @@ public:
 };
 
 extern CAppManager* g_pAppManager;        // 0x007A39FC
-extern CVirtualMachine* g_pVirtualMachine; // 0x007A3A00
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x005F2A20
 void __fastcall TogglePartyFollow(void*, void*)

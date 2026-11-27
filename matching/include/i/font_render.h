@@ -59,7 +59,7 @@ void AurTextureRelease(CAurTexture* pTexture);          // 0x00420D70
 struct CAurColor {
     float r, g, b, a;
 };
-extern CAurColor g_cDefaultStringColor;                 // 0x00798BB4 (placeholder name)
+#include "shared/globals.h"
 
 class CAurFontRender {
 public:
@@ -71,7 +71,6 @@ public:
     SafePointer<CAurTexture> m_pTexture;                // +0x1c
 };
 
-extern CExoArrayList<CAurFontRender*> g_aFonts;         // 0x0083052C
 
 void AurDeleteAllFonts();                               // 0x004A22E0
 

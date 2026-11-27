@@ -2,7 +2,7 @@
 // queues the counter-spell actions (sibling of AddCounterSpellActions).
 #include "a/sws_creature.h"
 
-extern const int AI_ACTION_IN_PROGRESS;              // 0x00745DBC
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00514270
 int CSWSCreature::AIActionCounterSpell(CSWSObjectActionNode* pNode)

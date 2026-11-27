@@ -3,9 +3,7 @@
 #include "b/sws_creature.h"
 #include "b/sws_player.h"
 
-extern const unsigned char GAME_OBJECT_VALID;               // 0x0074666C
-extern const float AI_SOUND_RANGE;                           // 0x00747444, 1000.0f
-extern const float AI_WHISPER_RANGE;                         // 0x00747448 (name guessed)
+#include "shared/globals.h"
 
 static inline Vector VectorDelta(const Vector& a, const Vector& b)
 {

@@ -70,14 +70,7 @@ extern PFNGLCOLORFRAGMENTOP2ATI glColorFragmentOp2ATI;          // 0x007bb840
 extern PFNGLCOLORFRAGMENTOP3ATI glColorFragmentOp3ATI;          // 0x007bb7fc
 extern PFNGLALPHAFRAGMENTOP1ATI glAlphaFragmentOp1ATI;          // 0x007bb710
 
-extern unsigned int g_nColorRampAlphaShaderATI; // 0x007a690c
-extern unsigned int g_nCopyShaderATI;           // 0x007a6910
-extern unsigned int g_nConvolutionShaderATI;    // 0x007a6914
-extern unsigned int g_nColorMatrixShaderATI;    // 0x007a6918
-extern unsigned int g_nAccumBlurShaderATI;      // 0x007a691c
-extern unsigned int g_nFilmNoiseShaderATI;      // 0x007a6920
-extern unsigned int g_nDistortionShaderATI;     // 0x007a6924
-extern unsigned int g_nColorRampShaderATI;      // 0x007a692c
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00427490
 void SetupATIFrameBuffer()

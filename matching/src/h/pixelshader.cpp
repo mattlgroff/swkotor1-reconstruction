@@ -4,7 +4,7 @@
 #include "h/glcaps.h"
 
 bool aurATIFragmentShadersBumpMapAvailable();   // 0x0045FB90
-extern int g_n5DC;                  // 0x0078E5DC
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0046EDA0
 int AurPixelShadersAvailable()

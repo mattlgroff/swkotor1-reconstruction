@@ -59,7 +59,7 @@ public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
+#include "shared/globals.h"
 
 class CAurGUIImage;
 CAurGUIImage* NewCAurGUIImage(char* sName);         // 0x0045A260
@@ -330,7 +330,6 @@ public:
 
 typedef char KMainInterfaceSize[(sizeof(CSWGuiMainInterface) == 0xc8cc) ? 1 : -1];
 
-extern CSWGuiMainInterface* g_pMainInterface;       // 0x00833BB4 (descriptive)
 
 typedef void (CSWGuiPanel::*CSWGuiCallback)(CSWGuiControl*);
 

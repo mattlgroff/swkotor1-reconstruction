@@ -8,15 +8,7 @@ Scene* FindScene(char* szName);                         // 0x0044FD60
 void SceneAddSpecialPart(Scene* pScene, ScenePart* pPart);      // 0x0046C420
 void SceneRemoveSpecialPart(Scene* pScene, ScenePart* pPart);   // 0x0046C4A0
 
-extern __int64 g_nAnimStartTime;                        // 0x007B9298
-extern Scene* g_pAnimatingScene;                        // 0x007B92A0
-extern __int64 g_nAnimEndTime;                          // 0x007B9288
-extern float g_fAnimSeconds;                            // 0x007B92D0
-extern int g_bAnimCulling;                              // 0x0078E3B8
-extern unsigned char g_bAnimVisibleOnly;                // 0x007B92F4
-extern CExoArrayList<void*> g_lSceneLights;             // 0x007FBF78
-extern CExoArrayList<void*> g_lSceneEmitters;           // 0x0080AA74
-extern CExoArrayList<void*> g_lSceneObjects;            // 0x007FBFCC
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00451C80
 void Scene::Animate(int n)
@@ -201,8 +193,6 @@ struct SceneTileSlot {
     int m_n8;
 };
 
-extern CExoArrayList<Scene*> g_lScenes;                 // 0x007B9398
-extern SceneTileSlot g_aSceneTileSlots[5000];           // 0x008194E4
 
 // FUNCTION: SWKOTOR 0x00458BE0
 Scene::~Scene()
@@ -250,8 +240,6 @@ int BSPHitCheck(BSPNodeBase* pRoot, Vector vStart, Vector vEnd, Vector* pHit,
                 int (*pfn)(BSPNode*, Vector, Vector, Vector*));                    // 0x004AD260
 int BoxIntersect(Vector* pStart, Vector* pEnd, Vector* pMin, Vector* pMax);       // 0x004AA610
 
-extern CHitInfo g_DefaultHitInfo;                       // 0x007B93A8
-extern CHitInfo* g_pBSPHitInfo;                         // 0x007FBF48, descriptive
 
 // NONMATCH (7 insns): store order only; the original writes the hit type
 // between the y and z words of each hit-point copy. The static CHitInfo at

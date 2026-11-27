@@ -191,7 +191,7 @@ public:
     char pad_0x0[0x8c];
     CSWSpellArray* m_pSpellArray;                   // 0x8c
 };
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWSCreatureStats {
 public:
@@ -246,16 +246,6 @@ public:
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
-extern const int g_nTRUE;                           // 0x00746678
-extern const unsigned char g_nObjectTypeCreature;   // 0x00746634 (placeholder name)
-extern const unsigned short g_nDurationTemporary;   // 0x007473C0
-extern const unsigned short g_nDurationInnate;      // 0x007473BC (placeholder name)
-extern const unsigned short g_nDurationEquipped;    // 0x007473C8 (placeholder name)
-extern const int g_nEffectType7466A0;               // 0x007466A0
-extern const int g_nEffectType7466F4;               // 0x007466F4
-extern const int g_nEffectType74671C;               // 0x0074671C
-extern const int g_nEffectType746780;               // 0x00746780
-extern const int g_nEffectType746788;               // 0x00746788
 
 // vtable 0x00745F18
 class CSWSObject : public CGameObject {

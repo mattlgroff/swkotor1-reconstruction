@@ -63,10 +63,9 @@ public:
     unsigned long m_bTokenFlag : 1;                 // 0x5c bit 0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
+#include "shared/globals.h"
 extern CTlkTable* g_pTlkTableAlt;                   // 0x007A3A0C
 extern unsigned char g_nGender;                     // 0x0073ECD0
-extern unsigned char g_nBarkVolume;                 // 0x0074C5E8
 
 class CWorldTimer {
 public:

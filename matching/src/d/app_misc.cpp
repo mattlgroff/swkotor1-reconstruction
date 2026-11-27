@@ -311,10 +311,7 @@ void CAppManager::CreateServer(int nMode)
     m_pServerExoApp->Initialize();
 }
 
-extern void* g_hWindow;             // 0x007a39d4
-extern CExoString g_sWindowTitle;   // 0x007a3cdc
-extern CExoString g_sWindowSubTitle; // 0x007a3ccc
-extern int g_bQuitRequested;        // 0x007a39b8
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00401440
 void __cdecl UpdateWindowTitle()
@@ -393,12 +390,6 @@ void __cdecl ParseEventCaptureArgs(int argc, char** argv)
     }
 }
 
-extern unsigned int g_nGLCap0;      // 0x0078d454
-extern unsigned int g_nGLCap1;      // 0x0078d474
-extern unsigned int g_nGLCap2;      // 0x0078d45c
-extern unsigned int g_nGLCap3;      // 0x0078d458
-extern unsigned int g_nGLCap4;      // 0x0078d448
-extern unsigned int g_nGLCap5;      // 0x0078d44c
 
 // FUNCTION: SWKOTOR 0x00401bb0
 void __cdecl InitGLState()
@@ -433,14 +424,7 @@ public:
     virtual void SetGamma(float f, int bApply); // 0x24
 };
 
-extern int g_bAppActive;            // 0x007a3a38
 extern CExoSound* g_pExoSound;      // 0x007a39ec
-extern int g_nSoundModeInactive;    // 0x0074c600
-extern int g_nSoundModeActive;      // 0x0074c604
-extern CRenderWindow* g_pRenderWindow; // 0x007a39f8
-extern int g_bWindowed;             // 0x007a3a30
-extern int g_nActivateState;        // 0x007a3a2c
-extern void* g_hMainWindow;         // 0x007a39d8
 
 // FUNCTION: SWKOTOR 0x00401d90
 void __cdecl AppDeactivate()
@@ -509,10 +493,6 @@ void __cdecl AurDisableHeadLight(); // 0x0044da80
 void __cdecl AurPostString(const char* s, int x, int y, float fLife); // 0x0044d490
 void __cdecl AurRenderStrings();    // 0x0044d6a0
 
-extern int g_bClientHeadLight;      // 0x007a3c50 (app-side flag; not the Aurora 0x0078e388 one)
-extern int g_bShowFrameInfo;        // 0x007a3a40
-extern char g_szFrameInfo[];        // 0x007a3a4c
-extern int g_nNetStatusTime;        // 0x0074c538
 
 // FUNCTION: SWKOTOR 0x00401c10
 void __cdecl RunFrame(float fDelta, int bRunServer, int bNoRender)

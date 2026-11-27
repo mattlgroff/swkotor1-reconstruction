@@ -239,9 +239,8 @@ public:
     int SaveScriptSituation(void* pScript, CResGFF* pGFF, CResStruct* pStruct);  // 0x005D10F0
     int LoadScriptSituation(void** ppScript, CResGFF* pGFF, CResStruct* pStruct); // 0x005D1100
 };
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
+#include "shared/globals.h"
 
-extern int g_bLogEvents;                            // 0x00831FD8 (unnamed)
 void LogEventAdd(unsigned long nCaller, unsigned long nObject, void* pEventData);  // 0x004AF630 (unnamed)
 
 struct CSWSCombatAttackData {

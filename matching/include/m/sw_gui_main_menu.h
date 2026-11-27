@@ -61,7 +61,7 @@ public:
 };
 
 extern CExoBase* g_pExoBase;                        // 0x007A39E0
-extern unsigned char g_nLiveFolderCount;            // 0x0073ECD2 (descriptive)
+#include "shared/globals.h"
 
 template <class T>
 class CExoArrayList {
@@ -146,7 +146,6 @@ public:
 
 extern Vector g_vBlack;                             // 0x00833910
 extern Vector g_vAbilityColorGranted;               // 0x007A23C0
-extern Vector g_vPazaakButtonHilight;               // 0x007A23B4
 extern int g_nScreenWidth;                          // 0x0078D1D4
 extern int g_nScreenHeight;                         // 0x0078D1D8
 
@@ -171,7 +170,6 @@ public:
     unsigned char m_nFlags;                         // 0x34
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
 
 class CTlkTable {
 public:
@@ -180,7 +178,6 @@ public:
     void SetCustomToken(int nToken, const CExoString& sValue);  // 0x0041DB50
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 
 class CExoSound {
 public:
@@ -188,7 +185,6 @@ public:
 };
 
 extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern int g_nSoundModeBack;                        // 0x0074C5EC
 
 class CExoIni {
 public:
@@ -214,8 +210,6 @@ public:
                             unsigned long nFlags);  // 0x005D4CB0
 };
 
-extern unsigned long PLAYERID_SERVER;               // 0x0074C528 (0xFFFFFFFD)
-extern unsigned char g_nConnectionType;             // 0x0074C540 (descriptive)
 
 class CSWCMessage {
 public:

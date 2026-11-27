@@ -2,8 +2,7 @@
 #include "b/sws_message.h"
 
 // .rdata object id constants.
-extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
-extern const unsigned long CLIENT_OBJECT_MASK;      // 0x0074665C
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00520980
 CSWSMessage::CSWSMessage()

@@ -201,6 +201,6 @@ public:
 };
 
 extern CAppManager* g_pAppManager;                                   // 0x007A39FC
-extern const unsigned char g_nObjectArraySuccess;                    // 0x0074666C
+#include "shared/globals.h"
 
 #endif

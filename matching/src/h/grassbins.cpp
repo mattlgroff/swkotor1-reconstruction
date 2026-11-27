@@ -34,7 +34,7 @@ public:
 
 typedef CExoArrayList<CAurTriangleBin*> TriangleBinList;
 
-extern float g_fGrassBinSize;       // 0x0078E428
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00456E00
 void InitGrassBins(Vector vMin, Vector vMax, CExoArrayList<TriangleBinList>* pBins)

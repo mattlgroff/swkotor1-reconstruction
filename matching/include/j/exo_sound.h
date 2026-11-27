@@ -14,9 +14,7 @@ public:
 
 int __cdecl operator==(const Vector& a, const Vector& b);    // 0x004AA980
 
-extern int g_bSoundDisabled;                        // 0x00832894
-extern int g_n74C5F4;                               // 0x0074C5F4
-extern int g_n74C5FC;                               // 0x0074C5FC
+#include "shared/globals.h"
 
 class CExoTimers {
 public:

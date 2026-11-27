@@ -12,7 +12,7 @@ class CClientExoApp { public:
 };
 class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
 extern CAppManager* g_pAppManager;
-extern unsigned long PLAYERID_SERVER;
+#include "shared/globals.h"
 class CSWCMessage { public:
  int MessageReadOverflow(int); int MessageReadUnderflow(int);
  int SendPlayerToServerLogin_LoginLocalCharacter(const CResRef&,int);

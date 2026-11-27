@@ -137,7 +137,7 @@ public:
     int RemovePanel(CSWGuiPanel* pPanel);           // 0x0040C830
 };
 
-extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
+#include "shared/globals.h"
 
 class CSWGuiTextParams {
 public:
@@ -332,10 +332,7 @@ public:
     int m_nAIState;                                 // 0x22c
 };
 
-extern const char* g_szPazaakCardText[28];          // 0x007A2600
 
-extern Vector g_vPazaakButtonColor;                 // 0x007A2408
-extern Vector g_vPazaakButtonHilight;               // 0x007A23B4
 
 // vtable 0x00753120; inline constructor only (the owners expand it).
 class CSWGuiActivatedButton : public CSWGuiButton {
@@ -546,7 +543,6 @@ public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 
 class CAppManager {
 public:
@@ -642,9 +638,6 @@ public:
     CSWGuiTutorial m_cTutorial;                     // 0x7f8c
 };
 
-extern Vector g_vPazaakFlashColor;                  // 0x007A23CC
-extern Vector g_vAbilityColorAvailable;             // 0x007A23D8
-extern int g_bPazaakShowOpponentHand;               // 0x00833BB0
 
 // vtable 0x00753358.
 class CSWGuiPazaakGame : public CSWGuiPanel {

@@ -5,8 +5,7 @@
 #include "b/sws_item.h"
 #include "b/sws_player.h"
 
-extern const unsigned long OBJECT_INVALID_ID;               // 0x00746644
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633
+#include "shared/globals.h"
 
 class CSWParty {
 public:
@@ -308,7 +307,6 @@ int CSWVirtualMachineCommands::ExecuteCommandGetRacialType(int nCommandId, int n
     return g_pVirtualMachine->StackPushInteger(nRace) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
 }
 
-extern int g_nScriptVar;                                    // 0x00832828 (.data)
 
 // Last-spell state shared by creatures, placeables and doors (CSWSObject).
 struct CSWSObjectSpellView {
@@ -574,8 +572,6 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender); // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                              // 0x007A3A08
-extern const unsigned char GENDER_MALE;                     // 0x0073ECD0
 
 // FUNCTION: SWKOTOR 0x0053D610
 int CSWVirtualMachineCommands::ExecuteCommandGetStringByStrRef(int nCommandId, int nParameters)

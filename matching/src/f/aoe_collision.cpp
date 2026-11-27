@@ -146,7 +146,7 @@ public:
 };
 
 extern CAppManager *g_pAppManager;
-extern char g_cObjectArraySuccess;
+#include "shared/globals.h"
 extern unsigned long g_oidInvalid;
 extern unsigned long EVENT_SIGNAL_EVENT;
 
@@ -344,7 +344,6 @@ public:
     CSWSpellArray *m_pSpellArray;    // +0x8c
 };
 
-extern CSWRules *g_pRules;
 
 class CSWSAreaOfEffectObject : public CSWSObject {
 public:
@@ -541,7 +540,6 @@ public:
     int ReleaseResObject(CRes *pRes);
 };
 
-extern CExoResMan *g_pExoResMan;
 
 struct CSWCollisionFace {
     int m_anVertex[3];

@@ -204,14 +204,7 @@ public:
     CExoString CacheResource(const CExoString& sName, unsigned short nType);       // 0x004085F0
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
-extern CExoInput* g_pExoInput;                      // 0x007A39E4
-extern const int SOUND_MODE_MOVIE;                  // 0x0074C5F8
-extern const int MUSIC_STATE_COMBAT_PAUSED;         // 0x0074C5F4
-extern int g_bCameraResetPending;                   // 0x007A2288
-extern int g_bAppActive;                            // 0x007A3A38
-extern const int MUSIC_STATE_NORMAL;                // 0x0074C5EC
+#include "shared/globals.h"
 void PumpMessages();                                // 0x00401510
 void PauseTimers();                                 // 0x00403CF0
 void ResumeTimers();                                // 0x00403DE0
@@ -235,7 +228,6 @@ public:
     void PlayMoviesAsync(const CExoStringMovieList& lstMovies, int a, int b);  // 0x0070C200
     void PlayMoviesAsync(CExoArrayList<CExoString>& lstMovies, unsigned long nFlags, CExoArrayList<int>* pMovieFlags);  // 0x0070C200
 };
-extern const int g_nSoundModeMenu;                  // 0x0074C5FC
 
 // FUNCTION: SWKOTOR 0x00602C90
 void CClientExoAppInternal::UpdateConnectionStall()
@@ -1011,7 +1003,6 @@ public:
     void SetMovieShown(const CExoString& sMovie, int bShown);   // 0x0061D230
 };
 
-extern unsigned char g_nNumLiveDirectories;         // 0x0073ECD2 (descriptive)
 
 // FUNCTION: SWKOTOR 0x005FBBF0
 int CClientExoAppInternal::AddMovieToExoArrayList(const CExoString& sMovie, CExoArrayList<CExoString>& lstMovies)

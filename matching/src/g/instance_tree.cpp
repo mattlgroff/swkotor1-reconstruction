@@ -6,7 +6,7 @@
 class Gob;
 class Part;
 
-extern float g_fControlWeight;                  // 0x00798b38
+#include "shared/globals.h"
 
 class MdlNode {
 public:

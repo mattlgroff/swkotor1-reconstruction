@@ -67,10 +67,7 @@ int AurTextureSetMem(int nMem);                     // 0x00421D90
 // Folded onto the shared "return 0" leaf 0x0063E7F0; real name unknown.
 int AurInterfaceStub(int nArg1, int nArg2);
 
-extern const char g_sEmpty[];                       // 0x0073D71C
-extern int g_nMaxTextureMemory;                     // 0x007A399C
-extern CExoLinkedList<CAuroraModel> g_lRequestedModels; // 0x00834094
-extern CExoString g_asTexturePacks[4];              // 0x00834098
+#include "shared/globals.h"
 
 // The renderer's resource callbacks.
 extern unsigned char* (*g_pfnAurResGet)(const char*, const char*, int*); // 0x007B8FC4

@@ -16,7 +16,7 @@ public:
     void DeleteScriptSituation(void* pScript);      // 0x005D1110
 };
 
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
+#include "shared/globals.h"
 
 struct STR_RES {
     CExoString sString;                             // 0x00
@@ -29,22 +29,15 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender); // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
-extern const unsigned char GENDER_MALE;             // 0x0073ECD0
 
 // .rdata action results.
 extern const unsigned long ACTION_IN_PROGRESS;      // 0x00745DBC (1)
 extern const unsigned long ACTION_COMPLETE;         // 0x00745DC0 (2)
 extern const unsigned long ACTION_FAILED;           // 0x00745DC4 (3)
-extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
-extern const unsigned char OBJECT_TYPE_AREA_OF_EFFECT; // 0x0074663A
 
 // Hearing range of AI sounds (.rdata 0x00747444, 1000.0f).
-extern const float AI_SOUND_RANGE;
 
 // Reputation override (-1 = off).
-extern int g_nReputationOverride;                   // 0x007A2068
 
 class CSWSAreaOfEffectObject : public CSWSObject {
 public:

@@ -26,10 +26,7 @@ struct tagMSG {
 #define WM_MBUTTONUP 0x0208
 #define WM_MOUSEWHEEL 0x020A
 
-extern const unsigned long g_nInputMouseLeft;       // 0x0074D3E0
-extern const unsigned long g_nInputMouseRight;      // 0x0074D3E4
-extern const unsigned long g_nInputMouseMiddle;     // 0x0074D3E8
-extern const unsigned long g_nInputMouseWheel;      // 0x0074D3F4
+#include "shared/globals.h"
 
 // Buffers the cursor position of a button message unless a SetMousePos
 // warp is pending (descriptive helpers; expanded inline in each case).

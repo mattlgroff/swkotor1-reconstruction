@@ -16,7 +16,7 @@ public:
     CSWSkill *m_pSkills;             // +0xb4
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 struct CSWClassSkill {
     unsigned short m_nSkill;         // +0x0

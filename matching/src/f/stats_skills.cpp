@@ -38,7 +38,7 @@ public:
     CSWSkill *m_pSkills;             // +0xb4
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 extern const int ABILITY_STRENGTH;
 extern const int ABILITY_DEXTERITY;

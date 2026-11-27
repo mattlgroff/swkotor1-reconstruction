@@ -178,7 +178,7 @@ AnimTreeRun::~AnimTreeRun()
         delete m_pTree;
 }
 
-extern int g_bEventTimeFilter;      // 0x00798B14
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00486560
 void Gob::DoEvent(char* szEvent, void* pData)

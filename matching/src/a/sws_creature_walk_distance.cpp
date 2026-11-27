@@ -40,12 +40,7 @@ float CSWSCreature::FUN_005111c0()
     }
     return fTotal;
 }
-extern const float g_fSpeedThousand; // 0x0073D6FC
-extern const float g_fSpeedOne; // 0x0073D764
-extern const float g_fSpeedHundredth; // 0x0073DFEC
-extern const float g_fSpeedTenth; // 0x0073E798
-extern const float g_fSpeedMilli; // 0x0073D708
-extern const float g_fSpeedScale; // 0x00747C40
+#include "shared/globals.h"
 // NONMATCH: 12 diff: multiplication scheduling and cap stack-slot reuse.
 // FUNCTION: SWKOTOR 0x00512F10
 float CSWSCreature::ComputeSpeedFactor(float fDistance, int nMilliseconds)

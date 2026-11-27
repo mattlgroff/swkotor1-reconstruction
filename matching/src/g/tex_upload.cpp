@@ -38,8 +38,7 @@ int __stdcall gluBuild2DMipmaps(unsigned int target, int components, int width,
 #define GL_GENERATE_MIPMAP_SGIS 0x8191
 #define GL_NEAREST_MIPMAP_NEAREST 0x2700
 
-extern int g_aCubeFaceOrder[6];         // 0x0078db50
-extern int g_aCubeFaceRotation[6];      // 0x0078db38
+#include "shared/globals.h"
 
 unsigned char* ImageGetSubImage(unsigned char* pImage, int nWidth, int nHeight,
                                 int nBpp, int x, int y, int w, int h);   // 0x0045f000
@@ -52,7 +51,6 @@ typedef void (__stdcall* PFNCOMPRESSEDTEXIMAGE2D)(unsigned int target, int level
     unsigned int internalformat, int width, int height, int border, int imageSize,
     const void* data);
 extern PFNCOMPRESSEDTEXIMAGE2D g_pglCompressedTexImage2DARB;   // 0x007bb774
-extern unsigned int g_aGLCompressedFormats[];                  // 0x0073f36c
 
 int AurBumpMappingAvailable();                                           // 0x0045fb10
 int AurSGIMipmapAvailable();                                             // 0x0045f910

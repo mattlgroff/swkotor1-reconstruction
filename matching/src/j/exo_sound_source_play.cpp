@@ -2,7 +2,7 @@
 // source helpers defined in exo_sound_source.cpp stay out-of-line calls.
 #include "j/exo_sound_source.h"
 
-extern int g_bSoundPaused;                          // 0x00832890
+#include "shared/globals.h"
 
 // Compiled-out trace: the arguments are still evaluated right to left.
 inline void SoundTrace(int, const char*) {}

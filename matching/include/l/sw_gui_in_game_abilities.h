@@ -470,9 +470,7 @@ public:
 };
 
 extern Vector g_vAbilityColorGranted;               // 0x007A23C0
-extern Vector g_vAbilityColorAvailable;             // 0x007A23D8
-extern Vector g_vAbilityColorLocked;                // 0x007A23E4
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
+#include "shared/globals.h"
 
 // A row of up to three chained abilities with arrows between them;
 // vtable 0x007578A8, 0x47c bytes, ctor 0x006CCCC0, ??_G 0x006CD420,

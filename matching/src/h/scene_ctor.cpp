@@ -113,8 +113,7 @@ CAurTexture* AurTextureGetReference(char* szName, int n);   // 0x00423A60
 int AurGLCaps560();                         // 0x0045F560
 void ResetVertexPrograms_004a2470();        // 0x004A2470
 
-extern int g_nFocusGobCounter;              // 0x007B92D8, descriptive
-extern CExoArrayList<Scene*> g_lScenes;     // 0x007B9398
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00458790
 Scene::Scene(char* szName) : m_gob("c_FocusGob")

@@ -19,21 +19,7 @@ void AurVertexProgramMakeCurrent();         // 0x004A23B0
 void Transform(const Vector* pPos, const Quaternion* pOri, int bForce);    // 0x0046F6B0
 void DrawDebugCircle(float fRadius, Vector* pCenter, Vector* pColor, float fScale, int n);  // 0x00431A50
 
-extern unsigned int g_eGLTexture2D;     // 0x0078D44C
-extern unsigned int g_eGLTexture2DB;    // 0x0078D458
-extern unsigned int g_eGLLighting;      // 0x0078D45C
-extern unsigned int g_eGLDepthTest;     // 0x0078D474
-extern unsigned int g_eGLFog;           // 0x0078D450
-extern unsigned int g_eGLFogStart;      // 0x0078D484
-extern unsigned int g_eGLFogEnd;        // 0x0078D488
-extern unsigned int g_eGLFogDensity;    // 0x0078D48C
-extern unsigned int g_eGLFogColor;      // 0x0078D490
-extern int g_aFogModes[3];              // 0x0073F25C
-extern int g_bForceFog;                 // 0x007B930C
-extern int g_bBlackFog;                 // 0x008305E0
-extern int g_bShowAllPersonalSpace;     // 0x007B9314
-extern int g_bShowPaths;                // 0x007B9318
-extern float g_fZeroEpsilon;            // 0x0073D700
+#include "shared/globals.h"
 
 class GobPart {
 public:

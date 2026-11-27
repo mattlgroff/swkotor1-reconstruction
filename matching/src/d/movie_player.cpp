@@ -194,7 +194,7 @@ public:
 };
 
 extern CAppManager* g_pAppManager;  // 0x007a39fc
-extern void* g_hMainWindow;         // 0x007a39d8
+#include "shared/globals.h"
 extern int g_nScreenWidth;          // 0x0078d1d4
 extern int g_nScreenHeight;         // 0x0078d1d8
 
@@ -501,8 +501,6 @@ public:
     int m_bSwapMouseButtons;        // 0x54
 };
 
-extern void* g_hWindow;             // 0x007a39d4
-extern CExoMoviePlayerInternal* g_pMoviePlayer; // 0x007a3cf4
 
 inline CClientOptions* GetClientOptions() { return g_pAppManager->m_pClientExoApp->GetClientOptions(); }
 
@@ -579,8 +577,6 @@ public:
     virtual int IsFullScreen();     // 0x04
 };
 
-extern CRenderWindow* g_pRenderWindow;              // 0x007a39f8
-extern int g_bMovieResolutionLocked;                // 0x007a3cc0
 
 // FUNCTION: SWKOTOR 0x00405a50
 CExoMoviePlayerInternal::~CExoMoviePlayerInternal()
@@ -714,7 +710,6 @@ extern "C" __declspec(dllimport) int __stdcall BinkBufferSetScale(BINKBUFFER* hB
 extern "C" char* __cdecl strchr(const char* s, int c);
 
 extern void* g_hInstance;           // 0x007a39c0
-extern int g_bMovieWaitForFrame;    // 0x007a3c9c (descriptive)
 int g_bMovieClassRegistered;        // 0x007a3cfc
 
 // NONMATCH: 65 insns, body and calls line up; the original keeps the

@@ -22,15 +22,11 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strres, unsigned char nGender);   // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
+#include "shared/globals.h"
 extern const unsigned char g_nGender;               // 0x0073ECD0
-extern const unsigned char GAME_OBJECT_ARRAY_SUCCESS;   // 0x0074666C
 extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
-extern const unsigned char OBJECT_TYPE_ITEM;        // 0x00746635
-extern const unsigned char OBJECT_TYPE_TRIGGER;     // 0x00746636
 extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
 extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
-extern int g_nPlaceablesCol_StrRef;                 // 0x007A2258
 
 class C2DA {
 public:
@@ -49,7 +45,6 @@ public:
     CTwoDimArrays* m_p2DArrays;                     // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWCCreatureStats {
 public:

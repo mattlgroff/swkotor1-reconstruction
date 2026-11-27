@@ -58,8 +58,7 @@ MdlNodeAABB::MdlNodeAABB(char* szName) : MdlNodeTriMesh(szName)
 
 void __cdecl MdlNodeTriMesh_Fn50(MdlNode* pNode);   // 0x0043e480
 void __cdecl MdlNodeTriMesh_Fn54(MdlNode* pNode);   // 0x0043e490
-extern Vector g_vDefaultDiffuse;                    // 0x0078e33c
-extern Vector g_vDefaultAmbient;                    // 0x0078e348
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0044a640
 MdlNodeTriMesh::MdlNodeTriMesh(char* szName) : MdlNode(szName)

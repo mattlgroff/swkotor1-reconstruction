@@ -54,7 +54,6 @@ float FUN_004aaf50(const Vector& a, const Vector& b, const Plane& p);  // 0x004A
 Vector planelineintersection(const Vector& vNormal, float fDist,
                              const Vector& vStart, const Vector& vEnd);   // 0x004AB250
 
-extern const float g_fZero;                             // 0x0073D700
-extern const float g_fBoxEpsilon;                       // 0x00744104 (-0.02f)
+#include "shared/globals.h"
 
 #endif

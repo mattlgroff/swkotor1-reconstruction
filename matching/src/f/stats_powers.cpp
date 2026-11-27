@@ -45,7 +45,7 @@ public:
     CSWBaseItemArray *GetBaseItemArray() { return m_pBaseItemArray; }
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 class CItemRepository {
 public:

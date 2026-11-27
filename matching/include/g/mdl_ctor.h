@@ -132,8 +132,7 @@ class MdlNodeTrigger;
 class MdlNodeLightsaber;
 typedef void (*MdlNodeFn)(MdlNode*);
 
-extern int g_nMdlNodesAlive;    // 0x007a8a08
-extern int g_nMdlNodesTotal;    // 0x007a8a0c
+#include "shared/globals.h"
 
 class MdlNode {
 public:

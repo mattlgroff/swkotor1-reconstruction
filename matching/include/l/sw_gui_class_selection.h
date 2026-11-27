@@ -102,7 +102,7 @@ public:
     float x, y, z, w;
 };
 
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
+#include "shared/globals.h"
 extern Vector g_vAbilityColorGranted;               // 0x007A23C0
 
 // Engine frame step (descriptive name of 0x00401C10).
@@ -117,21 +117,18 @@ public:
     unsigned char m_bFlag0 : 1;                     // 0x34 bit 0 (descriptive)
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
 
 class CExoInput {
 public:
     void CoolDownEvent(unsigned long nEvent, unsigned long nMilliseconds);  // 0x005DF4B0
 };
 
-extern CExoInput* g_pExoInput;                      // 0x007A39E4
 
 class CTlkTable {
 public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 
 class C2DA {
 public:
@@ -157,8 +154,6 @@ public:
                             unsigned long nFlags);  // 0x005D4CB0
 };
 
-extern unsigned long PLAYERID_SERVER;               // 0x0074C528 (0xFFFFFFFD)
-extern unsigned char g_nConnectionType;             // 0x0074C540 (descriptive)
 
 class CSWCMessage {
 public:
@@ -511,9 +506,6 @@ struct CSWGuiClassChoice {
     unsigned long m_nDescription;                   // 0x4 strref
 };
 
-extern CSWGuiClassChoice g_aClassChoices[6];        // 0x007A2684 (descriptive)
-extern const unsigned char g_nClassScout;           // 0x0074B31A (1, descriptive)
-extern const unsigned char g_nClassScoundrel;       // 0x0074B31B (2, descriptive)
 
 class CSWGuiClassSelection;
 

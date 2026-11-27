@@ -9,9 +9,8 @@ extern int EFFECT_TYPE_DAMAGE_RESISTANCE;   // 0x00746684 (2)
 extern int EFFECT_TYPE_REGENERATE;          // 0x00746698 (7)
 extern int EFFECT_TYPE_DAMAGE_REDUCTION;    // 0x007466AC (0xc)
 extern int EFFECT_TYPE_DAMAGE_INCREASE;     // 0x007466B0
-extern int EFFECT_TYPE_DAMAGE_VULNERABILITY;// 0x007466C0 (0x11)
+#include "shared/globals.h"
 extern int EFFECT_TYPE_TRUESEEING;          // 0x0074679C (0x48)
-extern int EFFECT_TYPE_BONUS_FEAT;          // 0x007467C8 (0x53)
 extern int EFFECT_TYPE_ABILITY_INCREASE;    // 0x0074670C (36)
 extern int EFFECT_TYPE_ABILITY_DECREASE;    // 0x00746710 (37)
 extern int EFFECT_TYPE_AC_INCREASE;         // 0x0074673C (48)
@@ -22,66 +21,22 @@ extern int EFFECT_TYPE_SAVING_THROW_DECREASE;   // 0x007466E8 (27)
 extern int EFFECT_TYPE_FORCE_RESISTANCE_INCREASE; // 0x00746700 (33)
 extern int EFFECT_TYPE_ATTACK_DECREASE;     // 0x007466A8 (11)
 extern int EFFECT_TYPE_DAMAGE_DECREASE;     // 0x007466B4 (14)
-extern unsigned short SUBTYPE_EQUIPPED;     // 0x007473BC (3)
-extern int ITEM_SLOT_ATTACK_TYPE_RIGHT_WEAPON;  // 0x007468C8 (1)
-extern int ITEM_SLOT_ATTACK_TYPE_LEFT_WEAPON;   // 0x007468CC (2)
-extern int ITEM_SLOT_ATTACK_TYPE_CLAW1;         // 0x007468D0 (3)
-extern int ITEM_SLOT_ATTACK_TYPE_CLAW2;         // 0x007468D4 (4)
-extern int ITEM_SLOT_ATTACK_TYPE_CLAW3;         // 0x007468D8 (5)
-extern int ITEM_SLOT_ATTACK_TYPE_ONHAND;        // 0x007468DC (7)
-extern int ITEM_SLOT_DAMAGE_TYPE_RIGHT_WEAPON;  // 0x007468E4 (1)
-extern int ITEM_SLOT_DAMAGE_TYPE_LEFT_WEAPON;   // 0x007468E8 (2)
-extern int ITEM_SLOT_DAMAGE_TYPE_CLAW1;         // 0x007468EC
-extern int ITEM_SLOT_DAMAGE_TYPE_CLAW2;         // 0x007468F0
-extern int ITEM_SLOT_DAMAGE_TYPE_CLAW3;         // 0x007468F4
-extern int ITEM_SLOT_DAMAGE_TYPE_ONHAND;        // 0x007468F8
 extern int EFFECT_TYPE_ATTACK_INCREASE;     // 0x007466A4 (10)
-extern int EFFECT_TYPE_SPECIALWALK;         // 0x00746764 (0x3a)
-extern int EFFECT_TYPE_SPECIALWALK_END;     // 0x00746768 (0x3b)
 extern int EFFECT_TYPE_IMMUNITY;            // 0x007466D4 (0x16)
 extern int EFFECT_TYPE_DAMAGE_IMMUNITY;     // 0x007466BC (0x10)
 extern int IMMUNITY_TYPE_PARALYSIS;         // 0x00746914 (6)
 extern int IMMUNITY_TYPE_ENTANGLE;          // 0x00746920 (9)
 extern int IMMUNITY_TYPE_SLOW;              // 0x00746924 (0xa)
-extern int IMMUNITY_TYPE_MOVEMENT_SPEED_DECREASE; // 0x00746954 (0x18)
 // ApplyImmunity table (.rdata, named by decimal value, as f/combat_resolve.cpp).
-extern int IMMUNITY_TYPE_01;                // 0x00746900
-extern int IMMUNITY_TYPE_02;                // 0x00746904
-extern int IMMUNITY_TYPE_03;                // 0x00746908
 extern int IMMUNITY_TYPE_04;                // 0x0074690C
-extern int IMMUNITY_TYPE_19;                // 0x00746940
-extern int IMMUNITY_TYPE_28;                // 0x00746964
-extern int IMMUNITY_TYPE_29;                // 0x00746968
-extern int IMMUNITY_TYPE_30;                // 0x0074696C
-extern int IMMUNITY_TYPE_31;                // 0x00746970
-extern int IMMUNITY_TYPE_32;                // 0x00746974
-extern int EFFECT_TYPE_PROPERTY29;          // 0x00746754 (item property 29 effect)
-extern int EFFECT_TYPE_PROPERTY36;          // 0x00746758
-extern int EFFECT_TYPE_PROPERTY55;          // 0x007467E8
-extern int EFFECT_TYPE_PROPERTY56;          // 0x007467EC
-extern int EFFECT_TYPE_PROPERTY59;          // 0x00746774
 // Damage-type flags 0x00746850..0x00746884 (RemoveDamageImmunity switch).
 extern int DAMAGE_FLAG_00;              // 0x00746850
-extern int DAMAGE_FLAG_01;              // 0x00746854
-extern int DAMAGE_FLAG_02;              // 0x00746858
-extern int DAMAGE_FLAG_03;              // 0x0074685C
-extern int DAMAGE_FLAG_04;              // 0x00746860
-extern int DAMAGE_FLAG_05;              // 0x00746864
-extern int DAMAGE_FLAG_06;              // 0x00746868
-extern int DAMAGE_FLAG_07;              // 0x0074686C
-extern int DAMAGE_FLAG_08;              // 0x00746870
-extern int DAMAGE_FLAG_09;              // 0x00746874
-extern int DAMAGE_FLAG_10;              // 0x00746878
-extern int DAMAGE_FLAG_11;              // 0x0074687C
-extern int DAMAGE_FLAG_12;              // 0x00746880
-extern int DAMAGE_FLAG_13;              // 0x00746884
 extern int ABILITY_STRENGTH;                // 0x00746838
 extern int ABILITY_DEXTERITY;               // 0x0074683C
 extern int ABILITY_CONSTITUTION;            // 0x00746840
 extern int ABILITY_INTELLIGENCE;            // 0x00746844
 extern int ABILITY_WISDOM;                  // 0x00746848
 extern int ABILITY_CHARISMA;                // 0x0074684C
-extern int AC_DEFLECTION_BONUS_VS_DAMAGE;   // 0x0074688C (16391): AC modifier damage type
 
 class CExoString {
 public:
@@ -136,7 +91,6 @@ public:
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
     CSWBaseItem* GetBaseItem(int nBaseItem) { return m_pBaseItemArray->GetBaseItem(nBaseItem); }
 };
-extern CSWRules* g_pRules;
 
 #pragma pack(push, 4)
 class CGameEffect {

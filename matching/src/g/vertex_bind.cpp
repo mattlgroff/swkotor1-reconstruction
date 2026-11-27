@@ -25,9 +25,7 @@ extern PFNVERTEXATTRIBPTR g_pglVertexAttribPointerARB;      // 0x007bb7d8
 extern PFNVERTEXATTRIBPTRNV g_pglVertexAttribPointerNV;     // 0x007bb854
 extern PFNVERTEXATTRIBARRAY g_pfnEnableVertexAttribArray;   // 0x007bb79c
 extern PFNVERTEXATTRIBARRAY g_pfnDisableVertexAttribArray;  // 0x007bb770
-extern int g_bARBVertexProgram;                            // 0x0078e5ec
-extern int g_bNVVertexProgram;                             // 0x0078e8c0
-extern int g_nCurrentStage;                                // 0x007a6898
+#include "shared/globals.h"
 
 int HasMultiTexture();              // 0x0045f710
 int HasVertexBuffers();             // 0x0045fc90

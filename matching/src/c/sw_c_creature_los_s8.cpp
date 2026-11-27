@@ -37,7 +37,7 @@ public:
     unsigned char m_bIgnoreList;                    // 0x5c (descriptive)
 };
 
-extern CHitInfo g_cHitInfo;                         // 0x007B93A8
+#include "shared/globals.h"
 
 class Scene;
 int SceneHitCheck(Scene* pScene, Vector vFrom, Vector vTo, int b, void* pHit);   // 0x0060F1E0

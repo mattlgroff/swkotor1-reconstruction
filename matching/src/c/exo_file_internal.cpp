@@ -30,7 +30,7 @@ public:
     void* m_pBuffer;                                // 0x24
 };
 
-extern CExoFileThread g_cExoFileThread;             // 0x008328B0
+#include "shared/globals.h"
 
 class CExoFileInternal {
 public:
