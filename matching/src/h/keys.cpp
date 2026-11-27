@@ -31,6 +31,7 @@ public:
     MaxTree* ReadSync(char* szName, int nFlags);    // 0x004A15D0
 };
 
+#include "shared/globals.h"
 
 static inline Model* GetLoadedModel(MaxTree* pTree)
 {

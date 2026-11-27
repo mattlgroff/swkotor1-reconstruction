@@ -492,9 +492,8 @@ extern CExoArrayList<Gob*> g_l7FBFC0;           // 0x007FBFC0 distortion bucket
 extern CExoArrayList<Gob*> g_l7FBFF0;           // 0x007FBFF0 light saber bucket
 extern CExoArrayList<Gob*> g_l7FBF90;           // 0x007FBF90 blur bucket
 
-typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int texture);
 
-extern PFNCLIENTACTIVETEXTURE glClientActiveTextureARB; // 0x007BB6B0
+#include "shared/gl_ext.h"
 extern CExoArrayList<TriangleBin*> g_l80AA68;   // 0x0080AA68 triangle bins
 // File-scope in the original scene unit: MSVC knows no pointer aliases
 // them, so it delays the high-dword stores past member loads.

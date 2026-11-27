@@ -80,25 +80,10 @@ __declspec(dllimport) void __stdcall glVertex4f(float x, float y, float z, float
 #include "shared/vector.h"
 
 // GL extension entry points (function-pointer globals).
-typedef void(__stdcall* PFNGLACTIVETEXTUREARB)(unsigned int tex);
-typedef void(__stdcall* PFNGLMULTITEXCOORD2FARB)(unsigned int tex, float s, float t);
-typedef void(__stdcall* PFNGLBINDFRAGMENTSHADERATI)(unsigned int id);
-extern PFNGLACTIVETEXTUREARB glActiveTextureARB;           // 0x007bb80c
-extern PFNGLMULTITEXCOORD2FARB glMultiTexCoord2fARB;       // 0x007bb6e8
-extern PFNGLBINDFRAGMENTSHADERATI glBindFragmentShaderATI; // 0x007bb6cc
+#include "shared/gl_ext.h"
 typedef void(__stdcall* PFNGLBINDPROGRAMARB)(unsigned int target, unsigned int id);
 typedef void(__stdcall* PFNGLPROGRAMENVPARAMETER4FARB)(unsigned int target, unsigned int index,
                                                        float x, float y, float z, float w);
-typedef int(__stdcall* PFNWGLBINDTEXIMAGEARB)(void* hPbuffer, int iBuffer);
-typedef void(__stdcall* PFNGLSETFRAGMENTSHADERCONSTANTATI)(unsigned int dst, const float* value);
-extern PFNWGLBINDTEXIMAGEARB wglBindTexImageARB;                      // 0x007bb7b8
-extern PFNWGLBINDTEXIMAGEARB wglReleaseTexImageARB;                   // 0x007bb6d0
-extern PFNGLSETFRAGMENTSHADERCONSTANTATI glSetFragmentShaderConstantATI; // 0x007bb5d8
-typedef int(__stdcall* PFNWGLMAKECONTEXTCURRENTARB)(void* hDrawDC, void* hReadDC, void* hglrc);
-typedef void(__stdcall* PFNGLCOMBINERSTAGEPARAMETERFVNV)(unsigned int stage, unsigned int pname,
-                                                         const float* params);
-extern PFNGLCOMBINERSTAGEPARAMETERFVNV glCombinerStageParameterfvNV;  // 0x007bb6f8
-extern PFNWGLMAKECONTEXTCURRENTARB wglMakeContextCurrentARB;          // 0x007bb818
 extern PFNGLBINDPROGRAMARB g_pfnBindProgramARB;                       // 0x007bb788
 extern PFNGLPROGRAMENVPARAMETER4FARB g_pfnProgramEnvParameter4fARB;   // 0x007bb850
 

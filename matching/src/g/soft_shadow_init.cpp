@@ -44,49 +44,8 @@ __declspec(dllimport) int __stdcall wglMakeCurrent(void* hdc, void* hglrc);
 #define GL_TEXTURE2_ARB 0x84c2
 #define GL_TEXTURE3_ARB 0x84c3
 
-typedef void*(__stdcall* PFNWGLGETPBUFFERDCARB)(void* hPbuffer);
-typedef int(__stdcall* PFNWGLMAKECONTEXTCURRENTARB)(void* hDrawDC, void* hReadDC, void* hglrc);
-typedef unsigned int(__stdcall* PFNGLGENFRAGMENTSHADERSATI)(unsigned int range);
-typedef void(__stdcall* PFNGLBINDFRAGMENTSHADERATI)(unsigned int id);
-typedef void(__stdcall* PFNGLBEGINFRAGMENTSHADERATI)();
-typedef void(__stdcall* PFNGLENDFRAGMENTSHADERATI)();
-typedef void(__stdcall* PFNGLSAMPLEMAPATI)(unsigned int dst, unsigned int interp,
-                                           unsigned int swizzle);
-typedef void(__stdcall* PFNGLCOLORFRAGMENTOP2ATI)(unsigned int op, unsigned int dst,
-                                                  unsigned int dstMask, unsigned int dstMod,
-                                                  unsigned int arg1, unsigned int arg1Rep,
-                                                  unsigned int arg1Mod, unsigned int arg2,
-                                                  unsigned int arg2Rep, unsigned int arg2Mod);
-typedef void(__stdcall* PFNGLCOLORFRAGMENTOP3ATI)(unsigned int op, unsigned int dst,
-                                                  unsigned int dstMask, unsigned int dstMod,
-                                                  unsigned int arg1, unsigned int arg1Rep,
-                                                  unsigned int arg1Mod, unsigned int arg2,
-                                                  unsigned int arg2Rep, unsigned int arg2Mod,
-                                                  unsigned int arg3, unsigned int arg3Rep,
-                                                  unsigned int arg3Mod);
-typedef void(__stdcall* PFNGLALPHAFRAGMENTOP2ATI)(unsigned int op, unsigned int dst,
-                                                  unsigned int dstMod, unsigned int arg1,
-                                                  unsigned int arg1Rep, unsigned int arg1Mod,
-                                                  unsigned int arg2, unsigned int arg2Rep,
-                                                  unsigned int arg2Mod);
-typedef void(__stdcall* PFNGLALPHAFRAGMENTOP3ATI)(unsigned int op, unsigned int dst,
-                                                  unsigned int dstMod, unsigned int arg1,
-                                                  unsigned int arg1Rep, unsigned int arg1Mod,
-                                                  unsigned int arg2, unsigned int arg2Rep,
-                                                  unsigned int arg2Mod, unsigned int arg3,
-                                                  unsigned int arg3Rep, unsigned int arg3Mod);
 
-extern PFNWGLGETPBUFFERDCARB wglGetPbufferDCARB;                // 0x007bb6b8
-extern PFNWGLMAKECONTEXTCURRENTARB wglMakeContextCurrentARB;    // 0x007bb818
-extern PFNGLGENFRAGMENTSHADERSATI glGenFragmentShadersATI;      // 0x007bb754
-extern PFNGLBINDFRAGMENTSHADERATI glBindFragmentShaderATI;      // 0x007bb6cc
-extern PFNGLBEGINFRAGMENTSHADERATI glBeginFragmentShaderATI;    // 0x007bb7f4
-extern PFNGLENDFRAGMENTSHADERATI glEndFragmentShaderATI;        // 0x007bb554
-extern PFNGLSAMPLEMAPATI glSampleMapATI;                        // 0x007bb620
-extern PFNGLCOLORFRAGMENTOP2ATI glColorFragmentOp2ATI;          // 0x007bb840
-extern PFNGLALPHAFRAGMENTOP2ATI glAlphaFragmentOp2ATI;          // 0x007bb5e8
-extern PFNGLCOLORFRAGMENTOP3ATI glColorFragmentOp3ATI;          // 0x007bb7fc
-extern PFNGLALPHAFRAGMENTOP3ATI glAlphaFragmentOp3ATI;          // 0x007bb680
+#include "shared/gl_ext.h"
 
 #include "shared/globals.h"
 

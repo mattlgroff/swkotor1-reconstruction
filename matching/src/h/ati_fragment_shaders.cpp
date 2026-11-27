@@ -6,23 +6,7 @@ extern "C" __declspec(dllimport) unsigned int __stdcall glGetError();
 extern "C" const unsigned char* __stdcall gluErrorString(unsigned int);
 int AurGetGLError(); // 0x0044EEE0
 
-extern unsigned int (__stdcall *glGenFragmentShadersATI)(unsigned int); // 0x007BB754
-extern void (__stdcall *glBindFragmentShaderATI)(unsigned int); // 0x007BB6CC
-extern void (__stdcall *glBeginFragmentShaderATI)(); // 0x007BB7F4
-extern void (__stdcall *glEndFragmentShaderATI)(); // 0x007BB554
-extern void (__stdcall *glSampleMapATI)(unsigned int, unsigned int, unsigned int); // 0x007BB620
-extern void (__stdcall *glPassTexCoordATI)(unsigned int, unsigned int, unsigned int); // 0x007BB804
-extern void (__stdcall *glColorFragmentOp1ATI)(unsigned int, unsigned int, unsigned int, unsigned int,
-    unsigned int, unsigned int, unsigned int); // 0x007BB6D4
-extern void (__stdcall *glColorFragmentOp2ATI)(unsigned int, unsigned int, unsigned int, unsigned int,
-    unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int); // 0x007BB840
-extern void (__stdcall *glColorFragmentOp3ATI)(unsigned int, unsigned int, unsigned int, unsigned int,
-    unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int,
-    unsigned int, unsigned int, unsigned int); // 0x007BB7FC
-extern void (__stdcall *glAlphaFragmentOp1ATI)(unsigned int, unsigned int, unsigned int,
-    unsigned int, unsigned int, unsigned int); // 0x007BB710
-extern void (__stdcall *glAlphaFragmentOp2ATI)(unsigned int, unsigned int, unsigned int,
-    unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int); // 0x007BB5E8
+#include "shared/gl_ext.h"
 
 #include "shared/globals.h"
 

@@ -167,8 +167,7 @@ int AurVertexProgramsAvailable();                                       // 0x004
 
 void ActivateTextureStage(int nStage);  // 0x00425250
 int AurGLCaps710();                     // 0x0045F710, multitexture available
-typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int texture);
-extern PFNCLIENTACTIVETEXTURE glClientActiveTextureARB; // 0x007BB6B0
+#include "shared/gl_ext.h"
 typedef void (__stdcall* PFNVERTEXATTRIBPTR)(unsigned int index, int size,
     unsigned int type, unsigned char normalized, int stride, const void* p);
 extern PFNVERTEXATTRIBPTR g_pglVertexAttribPointerARB;  // 0x007BB7D8

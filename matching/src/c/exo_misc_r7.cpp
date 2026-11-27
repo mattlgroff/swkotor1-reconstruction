@@ -26,6 +26,7 @@ public:
     CExoDebug* m_pcExoDebug;                        // 0x08
 };
 
+#include "shared/globals.h"
 
 #include "shared/exo_string.h"
 

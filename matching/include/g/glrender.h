@@ -37,9 +37,7 @@ double __cdecl sin(double x);
 #define GL_TEXTURE0_ARB 0x84c0
 
 // GL extension entry points (function-pointer globals).
-typedef void(__stdcall* PFNGLACTIVETEXTUREARB)(unsigned int tex);
-extern PFNGLACTIVETEXTUREARB glClientActiveTextureARB;     // 0x007bb6b0
-extern PFNGLACTIVETEXTUREARB glActiveTextureARB;           // 0x007bb80c
+#include "shared/gl_ext.h"
 
 int HasMultiTexture();     // 0x0045f710
 int HasVertexBuffers();    // 0x0045fc90
@@ -66,16 +64,7 @@ Quaternion operator-(const Quaternion& q);                       // 0x004a9b50
 Matrix MakeMatrix(const Vector& v, const Quaternion& q);         // 0x004aa9c0
 
 // WGL_ARB_pixel_format / WGL_ARB_pbuffer entry points.
-typedef int(__stdcall* PFNWGLCHOOSEPIXELFORMATARB)(void* hdc, const int* piAttribs,
-                                                   const float* pfAttribs, unsigned int nMax,
-                                                   int* piFormats, unsigned int* pnFormats);
-typedef void*(__stdcall* PFNWGLCREATEPBUFFERARB)(void* hdc, int iFormat, int iWidth,
-                                                 int iHeight, const int* piAttribs);
-extern PFNWGLCHOOSEPIXELFORMATARB wglChoosePixelFormatARB;   // 0x007bb730
-extern PFNWGLCREATEPBUFFERARB wglCreatePbufferARB;           // 0x007bb530
 
-typedef void*(__stdcall* PFNWGLGETPBUFFERDCARB)(void* hPbuffer);
-extern PFNWGLGETPBUFFERDCARB wglGetPbufferDCARB;             // 0x007bb6b8
 extern "C" {
 __declspec(dllimport) void __stdcall glGenTextures(int n, unsigned int* textures);
 __declspec(dllimport) void __stdcall glBindTexture(unsigned int target, unsigned int texture);

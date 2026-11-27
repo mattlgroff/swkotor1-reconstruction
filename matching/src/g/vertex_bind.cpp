@@ -14,8 +14,7 @@ __declspec(dllimport) void __stdcall glTexCoordPointer(int size, unsigned int ty
 #define GL_UNSIGNED_BYTE 0x1401
 #define GL_TEXTURE0_ARB 0x84c0
 
-typedef void(__stdcall* PFNGLACTIVETEXTUREARB)(unsigned int tex);
-extern PFNGLACTIVETEXTUREARB glClientActiveTextureARB;     // 0x007bb6b0
+#include "shared/gl_ext.h"
 typedef void(__stdcall* PFNVERTEXATTRIBPTR)(unsigned int index, int size,
     unsigned int type, unsigned char normalized, int stride, const void* p);
 typedef void(__stdcall* PFNVERTEXATTRIBPTRNV)(unsigned int index, int size,

@@ -34,17 +34,8 @@ __declspec(dllimport) void __stdcall glVertex3f(float x, float y, float z);
 #define GL_CONSTANT_COLOR1_NV 0x852b
 #define WGL_FRONT_LEFT_ARB 0x2083
 
-typedef void(__stdcall* PFNGLACTIVETEXTUREARB)(unsigned int tex);
-typedef void(__stdcall* PFNGLMULTITEXCOORD2FARB)(unsigned int tex, float s, float t);
-typedef void(__stdcall* PFNGLCOMBINERSTAGEPARAMETERFVNV)(unsigned int stage, unsigned int pname,
-                                                        const float* params);
-typedef int(__stdcall* PFNWGLBINDTEXIMAGEARB)(void* hPbuffer, int iBuffer);
 
-extern PFNGLACTIVETEXTUREARB glActiveTextureARB;                    // 0x007BB80C
-extern PFNGLMULTITEXCOORD2FARB glMultiTexCoord2fARB;                // 0x007BB6E8
-extern PFNGLCOMBINERSTAGEPARAMETERFVNV glCombinerStageParameterfvNV; // 0x007BB6F8
-extern PFNWGLBINDTEXIMAGEARB wglBindTexImageARB;                    // 0x007BB7B8
-extern PFNWGLBINDTEXIMAGEARB wglReleaseTexImageARB;                 // 0x007BB6D0
+#include "shared/gl_ext.h"
 
 #include "shared/vector.h"
 

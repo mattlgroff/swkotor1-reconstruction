@@ -3,8 +3,7 @@
 // functions.csv).
 #include "g/fb_effects.h"
 
-typedef void(__stdcall* PFNGLCOMBINERPARAMETERFVNV)(unsigned int pname, const float* params);
-extern PFNGLCOMBINERPARAMETERFVNV glCombinerParameterfvNV;  // 0x007bb7a8
+#include "shared/gl_ext.h"
 
 // FUNCTION: SWKOTOR 0x00424940
 void SetCombinerConstant0(const Vector& vColor, float fAlpha)

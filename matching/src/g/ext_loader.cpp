@@ -24,47 +24,10 @@ void* __cdecl operator new[](size_t n);
 #define GL_VERTEX_PROGRAM_ARB 0x8620
 
 typedef const char*(__stdcall* PFNWGLGETEXTENSIONSSTRINGARB)(void* hDC);
-extern PFNWGLGETEXTENSIONSSTRINGARB wglGetExtensionsStringARB;  // 0x007bb7ec
+#include "shared/gl_ext.h"
 
 // GL / WGL extension entry points (function-pointer globals).
-extern void* glMultiTexCoord2fARB;                        // 0x007bb6e8
 #include "shared/globals.h"
-extern void* glActiveTextureARB;                          // 0x007bb80c
-extern void* glClientActiveTextureARB;                    // 0x007bb6b0
-extern void* glBindBufferARB;                             // 0x007bb7b4
-extern void* glDeleteBuffersARB;                          // 0x007bb7bc
-extern void* glGenBuffersARB;                             // 0x007bb5b4
-extern void* glBufferDataARB;                             // 0x007bb544
-extern void* glBufferSubDataARB;                          // 0x007bb75c
-extern void* glMapBufferARB;                              // 0x007bb634
-extern void* glUnmapBufferARB;                            // 0x007bb6e0
-extern void* glGetBufferParameterivARB;                   // 0x007bb5a4
-extern void* glDeleteProgramsARB;                         // 0x007bb724
-extern void* glCombinerParameterfvNV;                     // 0x007bb7a8
-extern void* glCombinerStageParameterfvNV;                // 0x007bb6f8
-extern void* wglChoosePixelFormatARB;                     // 0x007bb730
-extern void* wglCreatePbufferARB;                         // 0x007bb530
-extern void* wglGetPbufferDCARB;                          // 0x007bb6b8
-extern void* wglReleasePbufferDCARB;                      // 0x007bb578
-extern void* wglDestroyPbufferARB;                        // 0x007bb598
-extern void* wglMakeContextCurrentARB;                    // 0x007bb818
-extern void* wglBindTexImageARB;                          // 0x007bb7b8
-extern void* wglReleaseTexImageARB;                       // 0x007bb6d0
-extern void* glGenFragmentShadersATI;                     // 0x007bb754
-extern void* glBindFragmentShaderATI;                     // 0x007bb6cc
-extern void* glDeleteFragmentShaderATI;                   // 0x007bb550
-extern void* glBeginFragmentShaderATI;                    // 0x007bb7f4
-extern void* glEndFragmentShaderATI;                      // 0x007bb554
-extern void* glPassTexCoordATI;                           // 0x007bb804
-extern void* glSampleMapATI;                              // 0x007bb620
-extern void* glColorFragmentOp1ATI;                       // 0x007bb6d4
-extern void* glColorFragmentOp2ATI;                       // 0x007bb840
-extern void* glColorFragmentOp3ATI;                       // 0x007bb7fc
-extern void* glAlphaFragmentOp1ATI;                       // 0x007bb710
-extern void* glAlphaFragmentOp2ATI;                       // 0x007bb5e8
-extern void* glAlphaFragmentOp3ATI;                       // 0x007bb680
-extern void* glSetFragmentShaderConstantATI;              // 0x007bb5d8
-extern void* glActiveStencilFaceEXT;                      // 0x007bb624
 
 // Capability bits, one global mask per extension.
 
@@ -109,8 +72,7 @@ public:
 // ifs, a volatile pointer.
 void LoadExtensions()
 {
-    wglGetExtensionsStringARB =
-        (PFNWGLGETEXTENSIONSSTRINGARB)wglGetProcAddress("wglGetExtensionsStringARB");
+    wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
     const char* szGL = glGetString(GL_EXTENSIONS);
     const char* szWGL = 0;
     if (wglGetExtensionsStringARB)
@@ -171,24 +133,24 @@ void LoadExtensions()
         g_nGLCaps |= g_nCap_WGL_ARB_buffer_region;
     if (szWGL && AurCheckExtension("WGL_EXT_swap_control", szWGL))
         g_nGLCaps |= g_nCap_WGL_EXT_swap_control;
-    glMultiTexCoord2fARB = wglGetProcAddress("glMultiTexCoord2fARB");
+    glMultiTexCoord2fARB = (PFNGLMULTITEXCOORD2FARBPROC)wglGetProcAddress("glMultiTexCoord2fARB");
     glMultiTexCoord2iARB = wglGetProcAddress("glMultiTexCoord2iARB");
     glMultiTexCoord3fARB = wglGetProcAddress("glMultiTexCoord3fARB");
     glMultiTexCoord2fvARB = wglGetProcAddress("glMultiTexCoord2fvARB");
     glMultiTexCoord3fvARB = wglGetProcAddress("glMultiTexCoord3fvARB");
     glMultiTexCoord4fvARB = wglGetProcAddress("glMultiTexCoord4fvARB");
-    glActiveTextureARB = wglGetProcAddress("glActiveTextureARB");
-    glClientActiveTextureARB = wglGetProcAddress("glClientActiveTextureARB");
-    glBindBufferARB = wglGetProcAddress("glBindBufferARB");
-    glDeleteBuffersARB = wglGetProcAddress("glDeleteBuffersARB");
-    glGenBuffersARB = wglGetProcAddress("glGenBuffersARB");
+    glActiveTextureARB = (PFNGLACTIVETEXTUREARBPROC)wglGetProcAddress("glActiveTextureARB");
+    glClientActiveTextureARB = (PFNGLCLIENTACTIVETEXTUREARBPROC)wglGetProcAddress("glClientActiveTextureARB");
+    glBindBufferARB = (PFNGLBINDBUFFERARBPROC)wglGetProcAddress("glBindBufferARB");
+    glDeleteBuffersARB = (PFNGLDELETEBUFFERSARBPROC)wglGetProcAddress("glDeleteBuffersARB");
+    glGenBuffersARB = (PFNGLGENBUFFERSARBPROC)wglGetProcAddress("glGenBuffersARB");
     glIsBufferARB = wglGetProcAddress("glIsBufferARB");
-    glBufferDataARB = wglGetProcAddress("glBufferDataARB");
-    glBufferSubDataARB = wglGetProcAddress("glBufferSubDataARB");
+    glBufferDataARB = (PFNGLBUFFERDATAARBPROC)wglGetProcAddress("glBufferDataARB");
+    glBufferSubDataARB = (PFNGLBUFFERSUBDATAARBPROC)wglGetProcAddress("glBufferSubDataARB");
     glGetBufferSubDataARB = wglGetProcAddress("glGetBufferSubDataARB");
-    glMapBufferARB = wglGetProcAddress("glMapBufferARB");
-    glUnmapBufferARB = wglGetProcAddress("glUnmapBufferARB");
-    glGetBufferParameterivARB = wglGetProcAddress("glGetBufferParameterivARB");
+    glMapBufferARB = (PFNGLMAPBUFFERARBPROC)wglGetProcAddress("glMapBufferARB");
+    glUnmapBufferARB = (PFNGLUNMAPBUFFERARBPROC)wglGetProcAddress("glUnmapBufferARB");
+    glGetBufferParameterivARB = (PFNGLGETBUFFERPARAMETERIVARBPROC)wglGetProcAddress("glGetBufferParameterivARB");
     glGetBufferPointervARB = wglGetProcAddress("glGetBufferPointervARB");
     glVertexAttrib1sARB = wglGetProcAddress("glVertexAttrib1sARB");
     glVertexAttrib1fARB = wglGetProcAddress("glVertexAttrib1fARB");
@@ -231,7 +193,7 @@ void LoadExtensions()
     glDisableVertexAttribArrayARB = wglGetProcAddress("glDisableVertexAttribArrayARB");
     glProgramStringARB = wglGetProcAddress("glProgramStringARB");
     glBindProgramARB = wglGetProcAddress("glBindProgramARB");
-    glDeleteProgramsARB = wglGetProcAddress("glDeleteProgramsARB");
+    glDeleteProgramsARB = (PFNGLDELETEPROGRAMSARBPROC)wglGetProcAddress("glDeleteProgramsARB");
     glGenProgramsARB = wglGetProcAddress("glGenProgramsARB");
     glProgramEnvParameter4dARB = wglGetProcAddress("glProgramEnvParameter4dARB");
     glProgramEnvParameter4dvARB = wglGetProcAddress("glProgramEnvParameter4dvARB");
@@ -252,7 +214,7 @@ void LoadExtensions()
     glGetVertexAttribivARB = wglGetProcAddress("glGetVertexAttribivARB");
     glGetVertexAttribPointervARB = wglGetProcAddress("glGetVertexAttribPointervARB");
     glIsProgramARB = wglGetProcAddress("glIsProgramARB");
-    glCombinerParameterfvNV = wglGetProcAddress("glCombinerParameterfvNV");
+    glCombinerParameterfvNV = (PFNGLCOMBINERPARAMETERFVNVPROC)wglGetProcAddress("glCombinerParameterfvNV");
     glCombinerParameterivNV = wglGetProcAddress("glCombinerParameterivNV");
     glCombinerParameterfNV = wglGetProcAddress("glCombinerParameterfNV");
     glCombinerParameteriNV = wglGetProcAddress("glCombinerParameteriNV");
@@ -265,7 +227,7 @@ void LoadExtensions()
     glGetCombinerOutputParameterivNV = wglGetProcAddress("glGetCombinerOutputParameterivNV");
     glGetFinalCombinerInputParameterfvNV = wglGetProcAddress("glGetFinalCombinerInputParameterfvNV");
     glGetFinalCombinerInputParameterivNV = wglGetProcAddress("glGetFinalCombinerInputParameterivNV");
-    glCombinerStageParameterfvNV = wglGetProcAddress("glCombinerStageParameterfvNV");
+    glCombinerStageParameterfvNV = (PFNGLCOMBINERSTAGEPARAMETERFVNVPROC)wglGetProcAddress("glCombinerStageParameterfvNV");
     glFogCoordPointerEXT = wglGetProcAddress("glFogCoordPointerEXT");
     glFogCoordfEXT = wglGetProcAddress("glFogCoordfEXT");
     glLockArraysEXT = wglGetProcAddress("glLockArraysEXT");
@@ -299,30 +261,30 @@ void LoadExtensions()
     glCompressedTexImage2DARB = wglGetProcAddress("glCompressedTexImage2DARB");
     glPNTrianglesiATI = wglGetProcAddress("glPNTrianglesiATI");
     glPNTrianglesfATI = wglGetProcAddress("glPNTrianglesfATI");
-    wglChoosePixelFormatARB = wglGetProcAddress("wglChoosePixelFormatARB");
-    wglCreatePbufferARB = wglGetProcAddress("wglCreatePbufferARB");
-    wglGetPbufferDCARB = wglGetProcAddress("wglGetPbufferDCARB");
-    wglReleasePbufferDCARB = wglGetProcAddress("wglReleasePbufferDCARB");
-    wglDestroyPbufferARB = wglGetProcAddress("wglDestroyPbufferARB");
+    wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+    wglCreatePbufferARB = (PFNWGLCREATEPBUFFERARBPROC)wglGetProcAddress("wglCreatePbufferARB");
+    wglGetPbufferDCARB = (PFNWGLGETPBUFFERDCARBPROC)wglGetProcAddress("wglGetPbufferDCARB");
+    wglReleasePbufferDCARB = (PFNWGLRELEASEPBUFFERDCARBPROC)wglGetProcAddress("wglReleasePbufferDCARB");
+    wglDestroyPbufferARB = (PFNWGLDESTROYPBUFFERARBPROC)wglGetProcAddress("wglDestroyPbufferARB");
     wglGetPixelFormatAttribivARB = wglGetProcAddress("wglGetPixelFormatAttribivARB");
     wglQueryPbufferARB = wglGetProcAddress("wglQueryPbufferARB");
-    wglMakeContextCurrentARB = wglGetProcAddress("wglMakeContextCurrentARB");
-    wglBindTexImageARB = wglGetProcAddress("wglBindTexImageARB");
-    wglReleaseTexImageARB = wglGetProcAddress("wglReleaseTexImageARB");
-    glGenFragmentShadersATI = wglGetProcAddress("glGenFragmentShadersATI");
-    glBindFragmentShaderATI = wglGetProcAddress("glBindFragmentShaderATI");
-    glDeleteFragmentShaderATI = wglGetProcAddress("glDeleteFragmentShaderATI");
-    glBeginFragmentShaderATI = wglGetProcAddress("glBeginFragmentShaderATI");
-    glEndFragmentShaderATI = wglGetProcAddress("glEndFragmentShaderATI");
-    glPassTexCoordATI = wglGetProcAddress("glPassTexCoordATI");
-    glSampleMapATI = wglGetProcAddress("glSampleMapATI");
-    glColorFragmentOp1ATI = wglGetProcAddress("glColorFragmentOp1ATI");
-    glColorFragmentOp2ATI = wglGetProcAddress("glColorFragmentOp2ATI");
-    glColorFragmentOp3ATI = wglGetProcAddress("glColorFragmentOp3ATI");
-    glAlphaFragmentOp1ATI = wglGetProcAddress("glAlphaFragmentOp1ATI");
-    glAlphaFragmentOp2ATI = wglGetProcAddress("glAlphaFragmentOp2ATI");
-    glAlphaFragmentOp3ATI = wglGetProcAddress("glAlphaFragmentOp3ATI");
-    glSetFragmentShaderConstantATI = wglGetProcAddress("glSetFragmentShaderConstantATI");
+    wglMakeContextCurrentARB = (PFNWGLMAKECONTEXTCURRENTARBPROC)wglGetProcAddress("wglMakeContextCurrentARB");
+    wglBindTexImageARB = (PFNWGLBINDTEXIMAGEARBPROC)wglGetProcAddress("wglBindTexImageARB");
+    wglReleaseTexImageARB = (PFNWGLRELEASETEXIMAGEARBPROC)wglGetProcAddress("wglReleaseTexImageARB");
+    glGenFragmentShadersATI = (PFNGLGENFRAGMENTSHADERSATIPROC)wglGetProcAddress("glGenFragmentShadersATI");
+    glBindFragmentShaderATI = (PFNGLBINDFRAGMENTSHADERATIPROC)wglGetProcAddress("glBindFragmentShaderATI");
+    glDeleteFragmentShaderATI = (PFNGLDELETEFRAGMENTSHADERATIPROC)wglGetProcAddress("glDeleteFragmentShaderATI");
+    glBeginFragmentShaderATI = (PFNGLBEGINFRAGMENTSHADERATIPROC)wglGetProcAddress("glBeginFragmentShaderATI");
+    glEndFragmentShaderATI = (PFNGLENDFRAGMENTSHADERATIPROC)wglGetProcAddress("glEndFragmentShaderATI");
+    glPassTexCoordATI = (PFNGLPASSTEXCOORDATIPROC)wglGetProcAddress("glPassTexCoordATI");
+    glSampleMapATI = (PFNGLSAMPLEMAPATIPROC)wglGetProcAddress("glSampleMapATI");
+    glColorFragmentOp1ATI = (PFNGLCOLORFRAGMENTOP1ATIPROC)wglGetProcAddress("glColorFragmentOp1ATI");
+    glColorFragmentOp2ATI = (PFNGLCOLORFRAGMENTOP2ATIPROC)wglGetProcAddress("glColorFragmentOp2ATI");
+    glColorFragmentOp3ATI = (PFNGLCOLORFRAGMENTOP3ATIPROC)wglGetProcAddress("glColorFragmentOp3ATI");
+    glAlphaFragmentOp1ATI = (PFNGLALPHAFRAGMENTOP1ATIPROC)wglGetProcAddress("glAlphaFragmentOp1ATI");
+    glAlphaFragmentOp2ATI = (PFNGLALPHAFRAGMENTOP2ATIPROC)wglGetProcAddress("glAlphaFragmentOp2ATI");
+    glAlphaFragmentOp3ATI = (PFNGLALPHAFRAGMENTOP3ATIPROC)wglGetProcAddress("glAlphaFragmentOp3ATI");
+    glSetFragmentShaderConstantATI = (PFNGLSETFRAGMENTSHADERCONSTANTATIPROC)wglGetProcAddress("glSetFragmentShaderConstantATI");
     glBeginVertexShaderEXT = wglGetProcAddress("glBeginVertexShaderEXT");
     glEndVertexShaderEXT = wglGetProcAddress("glEndVertexShaderEXT");
     glBindVertexShaderEXT = wglGetProcAddress("glBindVertexShaderEXT");
@@ -365,7 +327,7 @@ void LoadExtensions()
     glGetLocalConstantBooleanvEXT = wglGetProcAddress("glGetLocalConstantBooleanvEXT");
     glGetLocalConstantIntegervEXT = wglGetProcAddress("glGetLocalConstantIntegervEXT");
     glGetLocalConstantFloatvEXT = wglGetProcAddress("glGetLocalConstantFloatvEXT");
-    glActiveStencilFaceEXT = wglGetProcAddress("glActiveStencilFaceEXT");
+    glActiveStencilFaceEXT = (PFNGLACTIVESTENCILFACEEXTPROC)wglGetProcAddress("glActiveStencilFaceEXT");
     wglCreateBufferRegionARB = wglGetProcAddress("wglCreateBufferRegionARB");
     wglDeleteBufferRegionARB = wglGetProcAddress("wglDeleteBufferRegionARB");
     wglSaveBufferRegionARB = wglGetProcAddress("wglSaveBufferRegionARB");
