@@ -292,10 +292,7 @@ public:
     unsigned long m_n20;             // +0x20
 };
 
-class CEncounterSpawnPoint {
-public:
-    char pad_0x0[0x10];
-};
+#include "shared/encounter_spawn_point.h"
 
 class CEncounterBuffer {
 public:

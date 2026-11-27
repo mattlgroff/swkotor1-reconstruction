@@ -255,12 +255,7 @@ public:
 };
 
 
-class CEncounterSpawnPoint {
-public:
-    CEncounterSpawnPoint();
-    Vector m_vPosition;              // +0x0
-    float m_fOrientation;            // +0xc
-};
+#include "shared/encounter_spawn_point.h"
 
 class CEncounterListEntry {
 public:
