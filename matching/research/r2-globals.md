@@ -38,19 +38,59 @@ Units disagreed on the type of 83 globals. 70 now have one declaration:
   from 26 to 29 differing instructions).
 - The rest take the type most units used, with no lost match.
 
-## Still declared in units
+## The held-back globals, resolved
 
-- **Type conflicts (13).** Units disagree on the type: signedness or
-  width (`unsigned short` against `int` for script constants, which changes
-  the load), or a different class for the same object (`LoadingModel*` and
-  `Model*`, `TriggerPart*` and `Part*`, `CExoArrayList<Part*>` and
-  `CExoArrayList<Gob*>`). The class cases are R1 layout views; the width
-  cases need the byte gate to pick the type.
-- **Function pointers and typedef-typed globals**: the GL and WGL extension
-  entry points, declared with different typedefs or calling-convention
-  spellings in different units.
-- **Names that are also a `#define` somewhere** (for example
-  `OBJECT_INVALID`), **declarator lists** (`extern T a, b;`) and
-  **declarations inside functions**.
+A second pass gave the rest one declaration each. R2-blocked byte matches
+went from 259 to 3; the byte gate lost nothing.
 
-Conflicting names: `ABILITY_CHARISMA`, `ABILITY_CONSTITUTION`, `ABILITY_DEXTERITY`, `ABILITY_INTELLIGENCE`, `ABILITY_STRENGTH`, `ABILITY_WISDOM`, `ACTION_COMPLETE`, `ACTION_FAILED`, `ACTION_IN_PROGRESS`, `AC_VS_DAMAGE_TYPE_ALL`, `DAMAGE_FLAG_00`, `DURATION_TYPE_INSTANT`, `EFFECT_TYPE_ABILITY_DECREASE`, `EFFECT_TYPE_ABILITY_INCREASE`, `EFFECT_TYPE_AC_DECREASE`, `EFFECT_TYPE_AC_INCREASE`, `EFFECT_TYPE_ATTACK_DECREASE`, `EFFECT_TYPE_ATTACK_INCREASE`, `EFFECT_TYPE_CONCEALMENT`, `EFFECT_TYPE_DAMAGE`, `EFFECT_TYPE_DAMAGE_DECREASE`, `EFFECT_TYPE_DAMAGE_IMMUNITY`, `EFFECT_TYPE_DAMAGE_IMMUNITY_INCREASE`, `EFFECT_TYPE_DAMAGE_INCREASE`, `EFFECT_TYPE_DAMAGE_REDUCTION`, `EFFECT_TYPE_DAMAGE_RESISTANCE`, `EFFECT_TYPE_DAMAGE_SHIELD`, `EFFECT_TYPE_DEATH`, `EFFECT_TYPE_DISGUISE`, `EFFECT_TYPE_FORCE_JUMP`, `EFFECT_TYPE_FORCE_RESISTANCE_DECREASE`, `EFFECT_TYPE_FORCE_RESISTANCE_INCREASE`, `EFFECT_TYPE_ICON`, `EFFECT_TYPE_IMMUNITY`, `EFFECT_TYPE_LINK`, `EFFECT_TYPE_POISON`, `EFFECT_TYPE_REGENERATE`, `EFFECT_TYPE_SAVING_THROW_DECREASE`, `EFFECT_TYPE_SAVING_THROW_INCREASE`, `EFFECT_TYPE_SETSTATE`, `EFFECT_TYPE_SKILL_DECREASE`, `EFFECT_TYPE_SKILL_INCREASE`, `EFFECT_TYPE_SPELL_IMMUNITY`, `EFFECT_TYPE_TEMPORARY_HITPOINTS`, `EFFECT_TYPE_TIMESTOP`, `EFFECT_TYPE_TRUESEEING`, `EFFECT_TYPE_VISUALEFFECT`, `EVENT_DESTROY_OBJECT`, `EVENT_SIGNAL_EVENT`, `IMMUNITY_TYPE_04`, `IMMUNITY_TYPE_CRITICAL_HIT`, `IMMUNITY_TYPE_ENTANGLE`, `IMMUNITY_TYPE_PARALYSIS`, `IMMUNITY_TYPE_SLOW`, `g_aGLBlendFactors`, `g_bVBOWriteOnly`, `g_fFrameTime`, `g_fOne`, `g_lActiveBins`, `g_lModels` ...
+- **Layout views renamed to the real class**, where the Mac symbol tables
+  name it: `CExoSoundInternal` -> `CExoSound` (`g_pExoSound`; the call is
+  `CExoSound::Play3DOneShotSound`, 0x005D5E10), `CExoBaseTimers` ->
+  `CExoBase` (`g_pExoBase`; `CExoBase::WcsToMbs`, 0x005E6690),
+  `LmScene` -> `Scene`, `LoadingModel` -> `Model`, `RenderCamera` ->
+  `Camera`, `LightBin` -> `Bin`, `TriggerPart` -> `Part`.
+- **Width and signedness, settled by the code's own uses**: the bloom ramps
+  are GL texture names (`unsigned int`, the reference type `DeleteTexture`
+  takes); `g_nPowerWidth`/`Height` are `unsigned int`, as the ATI
+  frame-buffer passes' conversions need (declaring them `int` loses seven
+  matches), so `FindSmallestPowerOf2WidthHeight` writes through
+  `unsigned int*`.
+- **Render bucket lists**: `scenebsp.cpp` only resets their counts, so their
+  element types are the ones `scene_buckets.cpp` reads (`Gob*`,
+  `PartEmitter*`, `TriangleBin*`, `Part*`).
+- **GL and WGL extension pointers** (`shared/gl_ext.h`): each is declared
+  once with a glext.h-style `PFN<NAME>PROC` type, and the loader casts each
+  `wglGetProcAddress` result. Twenty unit-local aliases that shared an
+  address with a loader global (`g_pfnBindProgramARB`, `g_pglVertexAttribPointerNV`,
+  `gl_program_string_arb_007bb580`, ...) now use the loader's name.
+- **Combiner pointers** (`shared/combiners.h`): three pointers had six names
+  and four typedefs; they take the loader's names and the signatures of the
+  functions stored in them (`EnableFragmentShaders(int, CAurTexture* x4)`,
+  `Set*Constant(const Vector&, float)`). These stay out of `globals.h`:
+  adding them there moved the stack slots of
+  `CSWCSortedJournalArrayList::SortList`, an unrelated unit, and lost its match.
+- **Resource callbacks** (`shared/aurora_callbacks.h`), typed as the
+  `CAuroraInterface` functions the constructor stores in them.
+- **`OBJECT_INVALID`** (`shared/object_id.h`): units whose bytes load it from
+  memory include the header; units whose bytes use the immediate keep a
+  macro and never see the header.
+- **Declarator lists** (`extern int a, b, c;`) are one declaration per line.
+- `g_hWnd` and `g_hInstance` are `void*`, as the units' own `HWND` and
+  `HINSTANCE` typedefs already made them.
+
+## Still open
+
+- `g_lRequestedModels` (three byte matches in `o/aurora_texture_packs.cpp`)
+  is a `CExoLinkedList<CAuroraModel>`, a template that unit defines itself;
+  it moves when `CExoLinkedList` is merged (R1).
+- **Aliases the checker cannot see.** Writable globals at one address are one
+  variable (ICF folds only functions and constants), but two reconstructions
+  name some of them differently: the raster callbacks at
+  0x0078D404-0x0078D424 and 0x007A46F8-FC are `g_pfnGetRaster` ... in
+  `aurora_callbacks.h` and `g_pfnLoadImageRaw` ... `g_pfnImageHook` in
+  `d/aur_texture.cpp` and `pilot3/aurtexture.cpp`, with different pointer
+  types. Unifying them changes those units' argument types; their users are
+  NONMATCH today.
+- `g_pTlkTableAlt` is `CTlkTable*` with a cast where `CSWTlkTable::Fetch`
+  (0x005EE390) is called through it; the original was probably
+  `CSWTlkTable*`, which needs `CSWTlkTable` complete in its other units (R1).
