@@ -198,43 +198,7 @@ public:
     int UnHilite(int a);                            // 0x006A0440 (placeholder name)
 };
 
-class CSWCVisualEffectOnObject {
-public:
-    CSWCVisualEffectOnObject();                     // 0x006A09E0
-    ~CSWCVisualEffectOnObject();                    // 0x006A1810
-    int IsReady();                                  // 0x006A0480
-    unsigned char GetType();                        // 0x006A0920
-    void DestroyModels();                           // 0x006A0BF0
-    void Detach();                                  // 0x006A0C70
-    int Load(unsigned short nEffect, int nDuration, unsigned long oidSelf,
-             unsigned long nTarget, unsigned long nNode, unsigned char nA,
-             unsigned char nB, Vector vOffset);     // 0x006A1880 (placeholder name)
-    void ReAttachVisualEffect();                    // 0x006A5000
-    void DetachAll();                               // 0x006A5F00
-    void StartVisualEffect();                       // 0x006A5FC0
-    void ShowVisualEffect(int bShow);               // 0x006A5A40
-    void StopVisualEffect(int bForce);              // 0x006A6590
-    void Reset();                                   // 0x006A6950
-    void Update(unsigned long nDelta);              // 0x006A6A50
-
-    char pad_0x0[0xa8];
-    unsigned long m_nA8;                            // 0xa8
-    char pad_0xac[0xbc - 0xac];
-    void* m_pBC;                                    // 0xbc
-    unsigned long m_bC0;                            // 0xc0
-    unsigned short m_nEffect;                       // 0xc4
-    unsigned char m_bC6;                            // 0xc6
-    unsigned char m_bC7;                            // 0xc7
-    unsigned char m_bC8;                            // 0xc8
-    char pad_0xc9[0xcc - 0xc9];
-    float m_fAlpha;                                 // 0xcc
-    char pad_0xd0[0xd8 - 0xd0];
-    unsigned char m_nPriority;                      // 0xd8
-    char pad_0xd9[0xdc - 0xd9];
-    int m_bDC;                                      // 0xdc
-    int m_bAttached;                                // 0xe0
-    char pad_0xe4[0xf8 - 0xe4];
-};
+#include "shared/swc_visual_effect_on_object.h"
 
 class CSWSObject {
 public:
