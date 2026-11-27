@@ -121,10 +121,7 @@ public:
     virtual int HasAnimation(unsigned short nAnim); // 0x50
 };
 
-class CSWCCamera {
-public:
-    void SetTargetFollow();                         // 0x006383B0
-};
+#include "shared/swc_camera.h"
 
 class CSceneHolder {
 public:
