@@ -180,11 +180,7 @@ public:
 };
 
 // Personal action list (CExoArrayList of target actions), 0xc bytes.
-struct CSWGuiTargetActionList {
-    CSWGuiTargetActionList();                       // 0x005A76D0
-    ~CSWGuiTargetActionList();                      // 0x005FBFB0
-    char pad_0x0[0xc];
-};
+#include "shared/sw_gui_target_action_list.h"
 
 // 0x1af0 bytes.
 class CSWGuiTargetActionMenu {

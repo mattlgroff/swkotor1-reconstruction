@@ -485,13 +485,7 @@ struct CSWGuiTargetAction {
 };
 #pragma pack(pop)
 
-struct CSWGuiTargetActionList {
-    CSWGuiTargetActionList();                       // 0x005A76D0 (CExoArrayList)
-    ~CSWGuiTargetActionList();                      // 0x005FBFB0
-    CSWGuiTargetAction* m_pData;                    // 0x00
-    int m_nCount;                                   // 0x04
-    int m_nAlloc;                                   // 0x08
-};
+#include "shared/sw_gui_target_action_list.h"
 
 class CSWCObject;
 
