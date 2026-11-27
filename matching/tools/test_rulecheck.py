@@ -51,6 +51,18 @@ class BodyRules(unittest.TestCase):
         self.assertEqual(findings("{\n    do { a(); } while (0);\n}"), ["R17"])
         self.assertEqual(findings("{\n    a();\n    ;\n}"), ["R17"])
 
+    def test_type_toggled_by_a_unit_macro(self):
+        with tempfile.TemporaryDirectory() as d:
+            h = Path(d) / "list.h"
+            h.write_text("template <class T> class CList {\npublic:\n#ifdef LIST_ADD_INLINE\n"
+                         "    __forceinline\n#endif\n    void Add(T t);\n};\n#ifdef SOME_GUARD_H\n#endif\n")
+            c = Path(d) / "a.cpp"
+            c.write_text('#define LIST_ADD_INLINE\n#include "list.h"\n')
+            b = Path(d) / "b.cpp"
+            b.write_text('#include "list.h"\n')
+            toggles = rc.toggled_types([rc.Unit(h), rc.Unit(c), rc.Unit(b)])
+        self.assertEqual(dict(toggles), {"CList": {"LIST_ADD_INLINE"}})
+
     def test_original_self_assignment_needs_a_label(self):
         # the retail code calls operator=(const&) on one object with itself
         labelled = "{\n    // NOTE: the original assigns s to itself\n    s = s;\n}"

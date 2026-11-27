@@ -39,7 +39,7 @@ is deliberately narrow so that genuine original code passes.
 
 | rule | what it requires | how `rulecheck.py` tests it |
 | --- | --- | --- |
-| R1 | Declare each type once, in a shared header every user includes. | a class or struct defined in two files with different bodies; a name declared both `class` and `struct` (MSVC mangles the two differently) |
+| R1 | Declare each type once, in a shared header every user includes. | a class or struct defined in two files with different bodies; a name declared both `class` and `struct` (MSVC mangles the two differently); a body that tests a macro some `.cpp` defines (`#ifdef H_ADD_OUT_OF_LINE`), so that unit sees a different type |
 | R2 | Declare each global once, as `extern` in a header, with one type. | an `extern` data declaration in a `.cpp`; a global declared with different types in different files; a global read through a cast of its image address (`*(int*)0x007A2370`) |
 | R4 | Use typed members, never fixed offsets. | `(T*)((char*)p + N)`; `this` in byte-pointer arithmetic |
 | R13 | Vtables come from evidence: every declared virtual is a slot. | virtuals named `pad` or `dummy` (slot placeholders such as `v40()` are open naming work, not violations) |
