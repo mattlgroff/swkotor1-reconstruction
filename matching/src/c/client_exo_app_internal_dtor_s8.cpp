@@ -229,10 +229,7 @@ public:
 
 #include "shared/aurora_interface.h"
 
-class CAurInternal {
-public:
-    static void DestroyCAuroraInstance();           // 0x0044ED80
-};
+#include "shared/aur_internal.h"
 
 class CResRefName {
 public:
