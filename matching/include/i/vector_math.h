@@ -87,8 +87,8 @@ void Outcode(Vector* pPoint, Vector* pMin, Vector* pMax, unsigned char* pCode); 
 float FUN_004aa0f0(const Vector& v);                                        // 0x004AA0F0
 float FUN_004aa130(const Vector& v);                                        // 0x004AA130
 Plane* FUN_004aaab0(const Vector& n, const float& d);                       // 0x004AAAB0
-float FUN_004aadf0(float f);                                                // 0x004AADF0
-float FUN_004aae30(float f);                                                // 0x004AAE30
+float CosLookup(float f);                                                   // 0x004AADF0
+float SinLookup(float f);                                                   // 0x004AAE30
 Vector FUN_004aae70(Vector a, Vector b);                                    // 0x004AAE70
 Vector FUN_004aaee0(Vector a, Vector b);                                    // 0x004AAEE0
 float FUN_004aaf50(const Vector& a, const Vector& b, const Plane& p);       // 0x004AAF50
@@ -110,7 +110,7 @@ extern Vector g_vYAxis;                             // 0x007A19A4
 extern Vector g_vZAxis;                             // 0x007A19B0
 Quaternion normalize(Quaternion q);                                         // 0x004A9D60
 
-extern const float g_afSinTable[32];                // 0x00743FE8
-extern const float g_afCosTable[32];                // 0x00744070
+extern const float g_afCosTable[32];                // 0x00743FE8
+extern const float g_afSinTable[32];                // 0x00744070
 
 #endif

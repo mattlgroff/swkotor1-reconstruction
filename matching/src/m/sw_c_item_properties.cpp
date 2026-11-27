@@ -29,6 +29,7 @@ public:
     char pad_0x0[0x34];
     CSWBaseItemArray* m_pBaseItemArray;
 };
+extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWCItemProperty {
 public:
@@ -49,7 +50,7 @@ public:
     char pad_0x0[0xc];
     unsigned long m_nBaseItem;
     char pad_0x10[0x110];
-    volatile unsigned long m_nNumActiveProperties;
+    unsigned long m_nNumActiveProperties;
     CSWCItemProperty* m_pActiveProperties;
     char pad_0x128[0x38];
     unsigned long m_oidEquippedBy;
@@ -76,7 +77,7 @@ void CSWCItem::SetNumActiveProperties(unsigned long nCount)
     if (m_pActiveProperties) {
         delete[] m_pActiveProperties;
     }
-    m_pActiveProperties = (CSWCItemProperty*)::operator new(m_nNumActiveProperties * 0x1c);
+    m_pActiveProperties = new CSWCItemProperty[m_nNumActiveProperties];
 }
 
 // FUNCTION: SWKOTOR 0x006466A0
@@ -106,7 +107,7 @@ int CSWCItem::GetPropertyByType(int nIndex)
 CSWBaseItemData* CSWCItem::SetStackSize(unsigned long nSize)
 {
     m_nStackSize = nSize;
-    return (*(CSWRules**)0x007a3a28)->m_pBaseItemArray->GetBaseItem((int)m_nBaseItem);
+    return g_pRules->m_pBaseItemArray->GetBaseItem((int)m_nBaseItem);
 }
 
 // NONMATCH (10 diff insns): loop values/semantics agree, but the original

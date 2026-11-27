@@ -2764,8 +2764,8 @@ _NewCAurGUIImage,_NewCAurGUIImage,0x0045A260,calls,4
 ?AurMakeColor@@YAPAMPAVVector@@PAM@Z,"float * __cdecl AurMakeColor(class Vector *,float *)",0x004AAAB0,calls,2
 ?FUN_004aaab0@@YAPAUPlane@@ABVVector@@ABM@Z,"struct Plane * __cdecl FUN_004aaab0(class Vector const &,float const &)",0x004AAAB0,defines,1
 ?FUN_004aaae0@@YAMMMMMM@Z,"float __cdecl FUN_004aaae0(float,float,float,float,float)",0x004AAAE0,defines,1
-?FUN_004aadf0@@YAMM@Z,float __cdecl FUN_004aadf0(float),0x004AADF0,defines,1
-?FUN_004aae30@@YAMM@Z,float __cdecl FUN_004aae30(float),0x004AAE30,defines,1
+?CosLookup@@YAMM@Z,float __cdecl CosLookup(float),0x004AADF0,defines,1
+?SinLookup@@YAMM@Z,float __cdecl SinLookup(float),0x004AAE30,defines,1
 ?FUN_004aae70@@YA?AVVector@@V1@0@Z,"class Vector __cdecl FUN_004aae70(class Vector,class Vector)",0x004AAE70,defines,1
 ?FUN_004aaee0@@YA?AVVector@@V1@0@Z,"class Vector __cdecl FUN_004aaee0(class Vector,class Vector)",0x004AAEE0,defines,1
 ?BoxPlaneSide@@YAMPAVVector@@0PAUPlane@@@Z,"float __cdecl BoxPlaneSide(class Vector *,class Vector *,struct Plane *)",0x004AAF50,calls,3
@@ -11531,7 +11531,7 @@ __real@447a0000,__real@447a0000,0x0073D6FC,data,32
 ?g_fZeroEpsilon@@3MA,float g_fZeroEpsilon,0x0073D700,data,8
 __real@00000000,__real@00000000,0x0073D700,data,265
 ??_C@_01IDAFKMJL@_?$AA@,`string',0x0073D704,data,1
-__real@3a83126f,__real@3a83126f,0x0073D708,data,21
+__real@3a83126f,__real@3a83126f,0x0073D708,data,22
 ??_C@_00CNPNBAHC@?$AA@,`string',0x0073D71C,data,537
 ?g_sEmpty@@3QBDB,char const * const g_sEmpty,0x0073D71C,data,10
 ??_C@_02DPKJAMEF@?$CFd?$AA@,`string',0x0073D720,data,86
@@ -12302,9 +12302,9 @@ __real@42b20000,__real@42b20000,0x007432D4,data,4
 ??_7CAurBehaviorCameraFollow@@6B@,const CAurBehaviorCameraFollow::`vftable',0x00743924,data,2
 ??_C@_01OHGJGJJP@?$FL?$AA@,`string',0x0074394C,data,1
 ??_7LightManager@@6B@,const LightManager::`vftable',0x00743958,data,2
-?g_afSinTable@@3QBMB,float const * const g_afSinTable,0x00743FE8,data,1
+?g_afCosTable@@3QBMB,float const * const g_afCosTable,0x00743FE8,data,1
 __real@40a2f983,__real@40a2f983,0x00744068,data,2
-?g_afCosTable@@3QBMB,float const * const g_afCosTable,0x00744070,data,1
+?g_afSinTable@@3QBMB,float const * const g_afSinTable,0x00744070,data,1
 __real@3e112e0be826d695,__real@3e112e0be826d695,0x007440F0,data,1
 __real@b727c5ac,__real@b727c5ac,0x007440F8,data,1
 ?g_fBoxEpsilon@@3MB,float const g_fBoxEpsilon,0x00744104,data,2
@@ -13160,6 +13160,7 @@ __real@3f6a161e,__real@3f6a161e,0x00748698,data,1
 ??_C@_0BK@GBDBKAIA@PRINTFLOAT2?3?5?$CF?$CF?$CF2d?4?$CF02df?6?$AA@,`string',0x007486FC,data,1
 ??_C@_0BB@GCBLLIFD@PRINTSTRING?3?5?$CFs?6?$AA@,`string',0x00748718,data,1
 ??_C@_05FLNDGCKL@names?$AA@,`string',0x0074872C,data,1
+__real@42700000,__real@42700000,0x00748734,data,1
 ??_C@_0L@KEKLHLEM@BACKUPHEAD?$AA@,`string',0x00748738,data,1
 ??_C@_0BF@BANMDFMK@NW_JOURNAL_PICTURE?$CFs?$AA@,`string',0x00748748,data,1
 ??_C@_09NNBMCPAB@ebo_m40ad?$AA@,`string',0x00748760,data,1
@@ -14501,6 +14502,7 @@ __real@41bc7edd,__real@41bc7edd,0x00753044,data,1
 ??_C@_08ELNBIBIM@HitCheck?$AA@,`string',0x00753944,data,1
 ??_C@_0N@INNMNHCF@CanSeeHeight?$AA@,`string',0x00753950,data,1
 ??_7CSWCDoor@@6B@,const CSWCDoor::`vftable',0x00753960,data,2
+??_C@_05JIFNPOFN@trans?$AA@,`string',0x00753AA8,data,1
 ??_C@_07OBKECFAM@closing?$AA@,`string',0x00753AB0,data,1
 ??_C@_07CPJOLGKM@opening?$AA@,`string',0x00753AB8,data,1
 ??_C@_0BO@BOENIIMK@?$CFs?5?$CFs?6?$CFs?3?5?$CFd?1?$CFd?6?$CFs?3?5?$CFd?6?$CFs?3?5?$CFd?$AA@,`string',0x00753AC4,data,1
@@ -15504,7 +15506,7 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_fFarClipOverride@@3MA,float g_fFarClipOverride,0x007A2320,data,6
 ?g_fFarClipOverride2@@3MA,float g_fFarClipOverride2,0x007A2324,data,6
 ?g_fFarClipOverride3@@3MA,float g_fFarClipOverride3,0x007A2328,data,6
-?g_bGuiFlag@@3HA,int g_bGuiFlag,0x007A2370,data,8
+?g_bGuiFlag@@3HA,int g_bGuiFlag,0x007A2370,data,9
 ?g_vUpgradeAvailableColor@@3VVector@@A,class Vector g_vUpgradeAvailableColor,0x007A2378,data,29
 ?g_vGuiDisabledBorderColor@@3VVector@@A,class Vector g_vGuiDisabledBorderColor,0x007A2384,data,18
 ?g_vKeyMapLockedColor@@3VVector@@A,class Vector g_vKeyMapLockedColor,0x007A2384,data,20
@@ -15530,7 +15532,7 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_vKeyMapChangedColor@@3UVector@@A,struct Vector g_vKeyMapChangedColor,0x007A23FC,data,9
 ?g_vKeyMapChangedColor@@3VVector@@A,class Vector g_vKeyMapChangedColor,0x007A23FC,data,12
 ?g_vGuiDisabledTextColor@@3VVector@@A,class Vector g_vGuiDisabledTextColor,0x007A2408,data,6
-?g_vKeyMapLockedTextColor@@3VVector@@A,class Vector g_vKeyMapLockedTextColor,0x007A2408,data,12
+?g_vKeyMapLockedTextColor@@3VVector@@A,class Vector g_vKeyMapLockedTextColor,0x007A2408,data,13
 ?g_vPazaakButtonColor@@3VVector@@A,class Vector g_vPazaakButtonColor,0x007A2408,data,4
 ?g_fCameraTiltUpLimit@@3MA,float g_fCameraTiltUpLimit,0x007A2420,data,2
 ?g_fCameraTiltDownLimit@@3MA,float g_fCameraTiltDownLimit,0x007A2424,data,2
@@ -15572,7 +15574,7 @@ _s_nLastConsoleFunc,_s_nLastConsoleFunc,0x0078E354,data,4
 ?g_pRender@@3PAXA,void * g_pRender,0x007A39F8,data,2
 ?g_pRenderWindow@@3PAVCRenderWindow@@A,class CRenderWindow * g_pRenderWindow,0x007A39F8,data,9
 ?g_pAppManager@@3PAUCAppManager@@A,struct CAppManager * g_pAppManager,0x007A39FC,data,2
-?g_pAppManager@@3PAVCAppManager@@A,class CAppManager * g_pAppManager,0x007A39FC,data,2612
+?g_pAppManager@@3PAVCAppManager@@A,class CAppManager * g_pAppManager,0x007A39FC,data,2614
 ?g_pVirtualMachine@@3PAVCVirtualMachine@@A,class CVirtualMachine * g_pVirtualMachine,0x007A3A00,data,1120
 ?g_pScriptCompiler@@3PAVCScriptCompiler@@A,class CScriptCompiler * g_pScriptCompiler,0x007A3A04,data,2
 ?g_pTlkTable@@3PAVCTlkTable@@A,class CTlkTable * g_pTlkTable,0x007A3A08,data,103
@@ -16046,9 +16048,9 @@ _g_szWord,_g_szWord,0x007FBAF8,data,3
 ?g_nSkinVPType@@3HA,int g_nSkinVPType,0x00830578,data,1
 ?g_nSkinSphereMapVPType@@3HA,int g_nSkinSphereMapVPType,0x0083058C,data,1
 ?g_nSkinCubeMapVPType@@3HA,int g_nSkinCubeMapVPType,0x00830590,data,1
-?g_vertex_program_data_008305cc@@3RAPAUVertexProgramData@@A,struct VertexProgramData * * g_vertex_program_data_008305cc,0x008305CC,data,3
+?g_vertex_program_data_008305cc@@3PAPAUVertexProgramData@@A,struct VertexProgramData * * g_vertex_program_data_008305cc,0x008305CC,data,3
 ?g_vertex_programs_008305cc@@3UVertexProgramArray@@A,struct VertexProgramArray g_vertex_programs_008305cc,0x008305CC,data,10
-?g_vertex_program_size_008305d0@@3HC,int volatile g_vertex_program_size_008305d0,0x008305D0,data,2
+?g_vertex_program_size_008305d0@@3HA,int g_vertex_program_size_008305d0,0x008305D0,data,2
 ?g_bBlackFog@@3HA,int g_bBlackFog,0x008305E0,data,4
 ?g_bDisableTexCoordArray@@3HA,int g_bDisableTexCoordArray,0x008305E0,data,1
 ?g_nActiveLights@@3HA,int g_nActiveLights,0x008305E8,data,1

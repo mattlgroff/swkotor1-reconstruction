@@ -1,6 +1,7 @@
 // vector / quaternion leaf helpers (0x004A9680-0x004AA9C0).
 #include "i/vector_math.h"
 #include <math.h>
+#include "shared/float_to_int.h"
 
 inline Vector operator*(const Vector& v, float f)
 {
@@ -204,31 +205,19 @@ Plane* FUN_004aaab0(const Vector& n, const float& d)
 }
 
 // FUNCTION: SWKOTOR 0x004AADF0
-float FUN_004aadf0(float f)
+float CosLookup(float f)
 {
-    int* pIndex = (int*)&f;
-    float fScaled = f * 5.0929582f;
-    __asm {
-        fld fScaled
-        mov edx, pIndex
-        frndint
-        fistp dword ptr [edx]
-    }
-    return g_afSinTable[*pIndex & 0x1f];
+    int nIndex;
+    FloatToInt(&nIndex, f * 5.0929582f);
+    return g_afCosTable[nIndex & 0x1f];
 }
 
 // FUNCTION: SWKOTOR 0x004AAE30
-float FUN_004aae30(float f)
+float SinLookup(float f)
 {
-    int* pIndex = (int*)&f;
-    float fScaled = f * 5.0929582f;
-    __asm {
-        fld fScaled
-        mov edx, pIndex
-        frndint
-        fistp dword ptr [edx]
-    }
-    return g_afCosTable[*pIndex & 0x1f];
+    int nIndex;
+    FloatToInt(&nIndex, f * 5.0929582f);
+    return g_afSinTable[nIndex & 0x1f];
 }
 
 // FUNCTION: SWKOTOR 0x004AAE70

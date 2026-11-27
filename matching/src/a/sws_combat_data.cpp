@@ -3,19 +3,10 @@
 // behavioural reference: src/unknown/sub_004d2070.cpp,
 // src/batches/b004d4_combat_attack_data.cpp).
 #include "a/sws_combat_round.h"
+#include "shared/float_to_int.h"
 
 extern int g_nDamageIndex;                      // 0x008327E0
 extern const float g_fInvLog10Of2;              // 0x00745FF8
-
-static inline void FloatToInt(int* pOut, float f)
-{
-    __asm {
-        fld f
-        mov edx, pOut
-        frndint
-        fistp dword ptr [edx]
-    }
-}
 
 extern "C" double __cdecl log10(double x);
 #pragma intrinsic(log10)

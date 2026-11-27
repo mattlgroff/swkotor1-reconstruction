@@ -3,6 +3,7 @@
 #include "b/vm_commands.h"
 #include "b/vm_effect.h"
 #include "b/sws_creature.h"
+#include "shared/float_to_int.h"
 
 extern const unsigned short EFFECT_TYPE_DAMAGE;             // 0x00746714
 extern const int DAMAGE_POWER_NORMAL;                       // 0x00746894 (0)
@@ -11,16 +12,6 @@ extern const unsigned short EFFECT_TYPE_AREA_OF_EFFECT;     // 0x007466F8
 extern const unsigned short DURATION_TYPE_INSTANT;          // 0x007473B8 (0)
 extern int g_nDamageIndex;                                  // 0x008327E0
 extern const float g_fInvLog10Of2;                          // 0x00745FF8
-
-static inline void FloatToInt(int* pOut, float f)
-{
-    __asm {
-        fld f
-        mov edx, pOut
-        frndint
-        fistp dword ptr [edx]
-    }
-}
 
 extern "C" double __cdecl log10(double x);
 #pragma intrinsic(log10)

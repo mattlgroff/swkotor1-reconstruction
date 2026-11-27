@@ -1,16 +1,7 @@
 // GL render helpers (0x0046EF10-0x0046F870).
 
 #include "h/renderpaths.h"
-
-static inline void FloatToInt(int* pOut, float f)
-{
-    __asm {
-        fld f
-        mov edx, pOut
-        frndint
-        fistp dword ptr [edx]
-    }
-}
+#include "shared/float_to_int.h"
 
 namespace GLRender {
 void DrawAxisAlignedFrame(const Vector& a, const Vector& b, const Vector& c);

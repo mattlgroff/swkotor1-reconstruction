@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include "shared/float_to_int.h"
 
 extern "C" int __cdecl _stricmp(const char* a, const char* b);
 
@@ -1369,16 +1370,6 @@ void PartEmitter::CalculateRadius()
         }
     }
     g_fLastEmitterF58 = m_f58;
-}
-
-static inline void FloatToInt(int* pOut, float f)
-{
-    __asm {
-        fld f
-        mov edx, pOut
-        frndint
-        fistp dword ptr [edx]
-    }
 }
 
 // FUNCTION: SWKOTOR 0x0048E460

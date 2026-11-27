@@ -1,5 +1,7 @@
 // grass bin grid setup (0x00456E00).
 
+#include "shared/float_to_int.h"
+
 extern "C" double __cdecl ceil(double);
 
 class CAurTriangleBin;
@@ -34,16 +36,6 @@ public:
 };
 
 typedef CExoArrayList<CAurTriangleBin*> TriangleBinList;
-
-static inline void FloatToInt(int* pOut, float f)
-{
-    __asm {
-        fld f
-        mov edx, pOut
-        frndint
-        fistp dword ptr [edx]
-    }
-}
 
 extern float g_fGrassBinSize;       // 0x0078E428
 

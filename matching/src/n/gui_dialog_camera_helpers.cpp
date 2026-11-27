@@ -17,7 +17,8 @@ class CGuiInGame {
 public:
     char pad_0x0[0x3c];
     CSWGuiDialogOutput* m_pDialogOutput;            // +0x3c
-    char pad_0x40[0x24];
+    CSWGuiDialogOutput* m_pDialogNormal;            // +0x40
+    char pad_0x44[0x20];
     int m_bDialogAnimationActive;                   // +0x64
     char pad_0x68[0x4c];
     int m_bDialogScrollFinished;                    // +0xB4
@@ -47,6 +48,5 @@ void CGuiInGame::DialogGuiDoneScroll()
 // FUNCTION: SWKOTOR 0x0062ABD0
 int CGuiInGame::IsCameraDialog()
 {
-    return m_pDialogOutput != 0 &&
-        (char*)m_pDialogOutput == *(char**)((char*)this + 0x40);
+    return m_pDialogOutput != 0 && m_pDialogOutput == m_pDialogNormal;
 }

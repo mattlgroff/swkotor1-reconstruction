@@ -2222,8 +2222,8 @@ address,name,status,diff_insns,file
 0x004AAAB0,FUN_004aaab0,MATCH,0,matching/src/i/vector_math.cpp
 0x004AAAE0,FUN_004aaae0,MATCH,0,matching/src/i/vector_math.cpp
 0x004AAB50,IntersectCircle2d,NONMATCH,20,matching/src/i/math3d_circle.cpp
-0x004AADF0,FUN_004aadf0,MATCH,0,matching/src/i/vector_math.cpp
-0x004AAE30,FUN_004aae30,MATCH,0,matching/src/i/vector_math.cpp
+0x004AADF0,CosLookup,MATCH,0,matching/src/i/vector_math.cpp
+0x004AAE30,SinLookup,MATCH,0,matching/src/i/vector_math.cpp
 0x004AAE70,FUN_004aae70,MATCH,0,matching/src/i/vector_math.cpp
 0x004AAEE0,FUN_004aaee0,MATCH,0,matching/src/i/vector_math.cpp
 0x004AAF50,FUN_004aaf50,MATCH,0,matching/src/i/vector_math.cpp
@@ -8474,7 +8474,7 @@ address,name,status,diff_insns,file
 0x006AC3E0,CSWGuiInGameAbilities::OnSwitchLeft,MATCH,0,matching/src/l/sw_gui_in_game_abilities_switch.cpp
 0x006AC660,CSWGuiInGameAbilities::OnSwitchRight,MATCH,0,matching/src/l/sw_gui_in_game_abilities_switch.cpp
 0x006AC8D0,CSWGuiInGameAbilities::SetButtonColor,MATCH,0,matching/src/l/sw_gui_in_game_abilities_switch.cpp
-0x006AC930,CSWGuiInGameSkillEntryV::SetStyle,NONMATCH,70,matching/src/l/sw_gui_skill_entry_style.cpp
+0x006AC930,CSWGuiInGameSkillEntryV::SetStyle,NONMATCH,50,matching/src/l/sw_gui_skill_entry_style.cpp
 0x006ACB40,CSWGuiInGameSkillEntry::SetSkill,MATCH,0,matching/src/l/sw_gui_in_game_abilities.cpp
 0x006ACC30,??_GCSWGuiInGameAbilities@@UAEPAXI@Z,MATCH,0,matching/src/l/sw_gui_in_game_abilities.cpp
 0x006ACC50,CSWGuiInGameSkillEntry::CSWGuiInGameSkillEntry,MATCH,0,matching/src/l/sw_gui_in_game_abilities.cpp

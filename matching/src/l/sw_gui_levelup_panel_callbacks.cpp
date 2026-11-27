@@ -59,7 +59,7 @@ void CSWGuiLevelUpPanel::OnPanelAdded()
     m_nLastState = m_nState;
     if (m_bCanCancel == 0) {
         m_btnBack.SetEnabled(0);
-        m_btnBack.m_cTextParams.SetColor(*(Vector*)0x007A2408);
+        m_btnBack.m_cTextParams.SetColor(g_vKeyMapLockedTextColor);
         m_btnCancel.m_nFlags &= ~2ul;
     }
     CSWGuiPanel::OnPanelAdded();

@@ -220,7 +220,7 @@ void LifeTextureController::Update()
     delete[] pOld;
 }
 
-float FUN_004aadf0(float f);                    // 0x004AADF0 (table cosine)
+float CosLookup(float f);                       // 0x004AADF0 (table cosine)
 extern float g_fFrameTime;                      // 0x0078E574
 extern float g_fRingAmplitude;                  // 0x0078E560, descriptive
 extern float g_fRingFrequency;                  // 0x0078E564, descriptive
@@ -258,9 +258,9 @@ void RingDistortTextureController::Update()
             float fDy2 = fDy * fDy;
             float fx = (x + 1.0f) * fInv - 0.5f;
             float fRadius = (float)sqrt(fx * fx + fDy2);
-            float a = FUN_004aadf0(g_fRingPhaseScale * m_fPhase + g_fRingFrequency * fRadius)
+            float a = CosLookup(g_fRingPhaseScale * m_fPhase + g_fRingFrequency * fRadius)
                 * g_fRingAmplitude + 0.5f;
-            float b = FUN_004aadf0(g_fRingPhaseScale * m_fPhase + g_fRingFrequency * fRadius)
+            float b = CosLookup(g_fRingPhaseScale * m_fPhase + g_fRingFrequency * fRadius)
                 * g_fRingAmplitude + 0.5f;
             float va = Clamp(a * 255.0f, 0.0f, 255.0f);
             float vb = Clamp(b * 255.0f, 0.0f, 255.0f);
