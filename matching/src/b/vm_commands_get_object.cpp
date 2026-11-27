@@ -20,10 +20,7 @@ struct CSWCCreatureIdView {
     unsigned long m_idSelf;                                 // 0x04
 };
 
-struct CSWSObjectPlotView {
-    char pad_0x0[0xf8];
-    int m_bPlotObject;                                      // 0xf8
-};
+#include "shared/sws_object_plot_view.h"
 
 // PC levelling-up object of the module.
 struct CSWSModuleLevelUpView {
