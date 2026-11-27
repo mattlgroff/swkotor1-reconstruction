@@ -344,9 +344,7 @@ struct CRumblePattern {
     int m_nPattern;
 };
 
-struct CActiveRumble {
-    int m_nPattern;
-};
+#include "shared/active_rumble.h"
 
 struct CGuiStringStruct {
     unsigned long m_nStrRef;                        // 0x00

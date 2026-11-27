@@ -70,14 +70,7 @@ struct CGuiStringStruct {
     CExoString m_sString;                           // 0x04
 };
 
-struct CActiveRumble {
-    int m_nPattern;                                 // 0x00
-    union {
-        int m_nTime;                                // 0x04
-        float m_fTime;                              // 0x04 (elapsed seconds)
-    };
-    int m_bActive;                                  // 0x08
-};
+#include "shared/active_rumble.h"
 
 #pragma pack(push, 4)
 class CWorldTimer {
