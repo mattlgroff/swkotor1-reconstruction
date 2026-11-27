@@ -165,7 +165,7 @@ public:
 };
 class CAppManager {
 public:
-    void* pad;
+    void* m_p00;
     CClientExoApp* m_pClientExoApp;
 };
 extern CAppManager* g_pAppManager;

@@ -71,7 +71,7 @@ public:
     void SetInputActive(int bActive, int bClear);      // 0x005eda10
     class CClientUnknown700* GetUnknown700();          // 0x005ed700
 
-    char pad[4];
+    char pad_0x4[4];
 };
 
 class CClientUnknown700 {
@@ -91,7 +91,7 @@ public:
     int GetPauseState(unsigned char nMask);             // 0x004ae980
     void SetPauseState(unsigned char nState, int bPause); // 0x004ae9a0
 
-    char pad[8];
+    char pad_0x0[8];
 };
 
 class CObjectTableManager {
@@ -99,7 +99,7 @@ public:
     CObjectTableManager();          // 0x004ae5d0
     ~CObjectTableManager();         // 0x004ae640
 
-    char pad[0x184];
+    char pad_0x0[0x184];
 };
 
 class CAppManager {
@@ -388,6 +388,7 @@ void __cdecl ParseEventCaptureArgs(int argc, char** argv)
             }
             GetClientExoApp()->setCaptureEventRate(nRate);
         } else if (strncmp(argv[i], "-epm", 4) == 0) {
+            // NOTE: the original tests -epm and does nothing
         }
     }
 }

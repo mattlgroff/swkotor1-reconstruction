@@ -143,7 +143,7 @@ int CSWSEffectListHandler::OnRemove9A4(CSWSObject* pObject, CGameEffect* pEffect
 // FUNCTION: SWKOTOR 0x004DDF20
 int CSWSEffectListHandler::OnRemoveCreatureOnly(CSWSObject* pObject, CGameEffect* pEffect)
 {
-    CSWSCreature* pCreature = pObject->AsSWSCreature();
+    CSWSCreature* pCreature = pObject->AsSWSCreature();  // NOTE: unused in the original
     return 1;
 }
 
@@ -171,7 +171,7 @@ int CSWSEffectListHandler::OnRemoveA9C(CSWSObject* pObject, CGameEffect* pEffect
 int CSWSEffectListHandler::OnApplyCreatureOnly(CSWSObject* pObject, CGameEffect* pEffect,
                                                int bLoadingGame)
 {
-    CSWSCreature* pCreature = pObject->AsSWSCreature();
+    CSWSCreature* pCreature = pObject->AsSWSCreature();  // NOTE: unused in the original
     return 0;
 }
 

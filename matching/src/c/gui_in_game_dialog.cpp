@@ -290,14 +290,14 @@ public:
     void* m_pInternal;
 };
 
-class CSWGuiInGamePanel0 : public CSWGuiPanelX { public: CSWGuiInGamePanel0(CSWGuiManagerPanels* p); char pad[0x42bc - 0x80]; };
-class CSWGuiInGamePanel1 : public CSWGuiPanelX { public: CSWGuiInGamePanel1(CSWGuiManagerPanels* p); char pad[0x1de8 - 0x80]; };
-class CSWGuiInGamePanel2 : public CSWGuiPanelX { public: CSWGuiInGamePanel2(CSWGuiManagerPanels* p); char pad[0x59f8 - 0x80]; };
-class CSWGuiInGamePanel3 : public CSWGuiPanelX { public: CSWGuiInGamePanel3(CSWGuiManagerPanels* p); char pad[0x3f98 - 0x80]; };
-class CSWGuiInGamePanel4 : public CSWGuiPanelX { public: CSWGuiInGamePanel4(CSWGuiManagerPanels* p); char pad[0xaf4 - 0x80]; };
-class CSWGuiInGamePanel5 : public CSWGuiPanelX { public: CSWGuiInGamePanel5(CSWGuiManagerPanels* p); char pad[0xfc8 - 0x80]; };
-class CSWGuiInGamePanel6 : public CSWGuiPanelX { public: CSWGuiInGamePanel6(CSWGuiManagerPanels* p); char pad[0x10dc - 0x80]; };
-class CSWGuiInGamePanel7 : public CSWGuiPanelX { public: CSWGuiInGamePanel7(CSWGuiManagerPanels* p); char pad[0x1dac - 0x80]; };
+class CSWGuiInGamePanel0 : public CSWGuiPanelX { public: CSWGuiInGamePanel0(CSWGuiManagerPanels* p); char pad_0x80[0x42bc - 0x80]; };
+class CSWGuiInGamePanel1 : public CSWGuiPanelX { public: CSWGuiInGamePanel1(CSWGuiManagerPanels* p); char pad_0x80[0x1de8 - 0x80]; };
+class CSWGuiInGamePanel2 : public CSWGuiPanelX { public: CSWGuiInGamePanel2(CSWGuiManagerPanels* p); char pad_0x80[0x59f8 - 0x80]; };
+class CSWGuiInGamePanel3 : public CSWGuiPanelX { public: CSWGuiInGamePanel3(CSWGuiManagerPanels* p); char pad_0x80[0x3f98 - 0x80]; };
+class CSWGuiInGamePanel4 : public CSWGuiPanelX { public: CSWGuiInGamePanel4(CSWGuiManagerPanels* p); char pad_0x80[0xaf4 - 0x80]; };
+class CSWGuiInGamePanel5 : public CSWGuiPanelX { public: CSWGuiInGamePanel5(CSWGuiManagerPanels* p); char pad_0x80[0xfc8 - 0x80]; };
+class CSWGuiInGamePanel6 : public CSWGuiPanelX { public: CSWGuiInGamePanel6(CSWGuiManagerPanels* p); char pad_0x80[0x10dc - 0x80]; };
+class CSWGuiInGamePanel7 : public CSWGuiPanelX { public: CSWGuiInGamePanel7(CSWGuiManagerPanels* p); char pad_0x80[0x1dac - 0x80]; };
 
 class CExoSoundSourceX {
 public:
