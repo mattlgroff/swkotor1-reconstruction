@@ -134,15 +134,25 @@ together), since they share headers.
    **Headers:**
    - Include paths are relative to `matching/include`:
      `#include "n/gui_in_game_n.h"`.
-   - Each bucket may declare its own minimal copy of a class with just the
-     members its functions use. Copy from other buckets' headers; don't
-     include across buckets when working in parallel.
+   - Declare each class once (rule R1 in [CODE_RULES.md](CODE_RULES.md)).
+     If a shared header for it exists in `matching/include/common/`,
+     include it. Don't write a new copy of a class another file already
+     defines: a function that depends on a disagreeing copy can match its
+     bytes and still not count as matched. Older buckets still hold such
+     copies; CODE_RULES.md has the plan that retires them.
+   - Declare globals as `extern` in the header of the unit that owns them,
+     not in the `.cpp` that uses them (R2).
    - Use a classic `#ifndef` include guard named after the bucket and file.
 5. **Annotate** each definition with `// FUNCTION: SWKOTOR 0x...` on the line
    above. Add `SYMBOL: <decorated name>` when the name alone is ambiguous
    (templates, overloads, compiler-generated functions).
 6. **Iterate** until the tool prints `OK`. Judge progress by the "diff
    insns" count, and see the source-shape notes in [README.md](README.md).
+   A spelling that matches only through a trick (a `volatile` local, an
+   empty `if`, an offset cast, a padding member, an `__asm` body) is a clue
+   to the real source, not a match: keep looking for what a BioWare
+   programmer would have written. CODE_RULES.md lists these tricks and the
+   human forms they usually hide.
 7. **Timebox** each function to about 20 minutes or 15 compiles. If it still
    doesn't match, keep the best attempt annotated (it counts as NONMATCH) and
    move on. Most remaining misses are register-allocation or stack-slot ties
@@ -162,10 +172,14 @@ together), since they share headers.
 2. Run `python matching/tools/symbolmap.py`. It refreshes `symbols.csv` and
    prints every symbol that maps to more than one address. A new entry
    there usually means a naming slip in your change.
-3. Commit the sources, headers, `matching/status.csv` and
+3. Run `python matching/tools/rulecheck.py` before and after your change.
+   It needs no compiler or exe. "Matched under the rules" must not go
+   down, and every function you add should pass it; `-v` lists each
+   MATCH-PENDING function and why.
+4. Commit the sources, headers, `matching/status.csv` and
    `matching/symbols.csv` together. Don't commit
    `matching/assets/progress.svg`: CI redraws it after the merge.
-4. Never commit `swkotor.exe`, compiler files, object files or anything
+5. Never commit `swkotor.exe`, compiler files, object files or anything
    extracted from the game. Don't edit `src/` in a matching change.
 
 ## Reviewing a matching change
@@ -186,3 +200,6 @@ and regenerating `status.csv` or `symbols.csv` are unnecessary.
   claims as matched must print `OK` with your own exe and compiler.
 - No address is annotated twice, the MATCH count did not drop, and
   `symbolmap.py` reports no new multi-address symbols.
+- `rulecheck.py` reports no drop in "matched under the rules". Report
+  that number next to the byte-match count: a byte-identical function that
+  fails a [match] rule is MATCH-PENDING, not a new match.

@@ -39,6 +39,9 @@ the function table and the stock-library records, using the coverage rules below
   at their original offsets, virtuals in vtable order, and callees declared
   but not defined.
 - `tools/matchcmp.py`: the compile-and-compare tool.
+- `tools/rulecheck.py`, [CODE_RULES.md](CODE_RULES.md): the code rules a
+  byte-identical function must also pass to count as matched, and their
+  checker.
 - `tools/libmatch.py`, `crt_libcmt.csv`: stock library functions in the exe.
 - `tools/symbolmap.py`, `symbols.csv`: symbol-to-address map, the bridge to
   the playable build.
@@ -275,7 +278,10 @@ direct call targets; the summary counts the starts `functions.csv` lacks.
 
 ## Source-shape notes
 
-These patterns made functions match:
+These patterns made functions match. Most are things a BioWare programmer
+would have written. The ones marked *clue* are not: they steer the
+compiler, so a function that needs them is MATCH-PENDING under
+[CODE_RULES.md](CODE_RULES.md) until the real source is found.
 
 - BioWare used inline getters heavily (`g_pRules->Get2DArrays()->...`). They
   change load order and register allocation.
@@ -289,11 +295,14 @@ These patterns made functions match:
 - An `fs:[0]` frame in the original means `-GX` plus a local object with a
   destructor.
 - An empty-state SEH frame in a constructor: give the list member a sized
-  constructor that contains a dead `new`.
+  constructor that contains a dead `new`. *Clue* (R17, dead code): look for
+  the real member type whose inline constructor allocates.
 - Recursive tree walkers: `#pragma inline_recursion(on)` plus a
   per-function `#pragma inline_depth(N)`, with N found by sweeping.
 - If ECX stays live across a call to a function compiled earlier in the same
-  `.cpp`, put the caller and callee in separate files.
+  `.cpp`, put the caller and callee in separate files. *Clue* (R15): units
+  should follow the original object files in the Mac debug map; check
+  whether the two functions were in different objects there.
 - Copying a member into a local just before the call that takes it can
   change register allocation.
 - Still unsolved; skip after two or three tries: cross-function register

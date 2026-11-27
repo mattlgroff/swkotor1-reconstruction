@@ -3,6 +3,8 @@
 The root CLAUDE.md and AGENTS.md remain the exact copies requested by the
 user. This file supplies their matching-specific paths and operating rules
 for this repository. See research/claude-workflow-audit.md for the evidence.
+The code rules, and what counts as matched, are in CODE_RULES.md: identical
+bytes alone are not a match.
 
 ## Scope and isolation
 
@@ -35,9 +37,17 @@ for this repository. See research/claude-workflow-audit.md for the evidence.
 - Write ordinary C++98 classes, padding, members and virtual slots. Declare
   external callees and globals. Do not copy instruction sequences, use raw
   absolute-address global loads, or alter public signatures solely for bytes.
-- Preserve shared base sizes when extending partial layouts. Isolate a
-  larger layout in the batch's translation unit if extending the common base
-  would shift existing derived members.
+- Declare each class once (CODE_RULES.md, R1): include its shared header
+  from matching/include/common/ when one exists, and never add a new local
+  copy of a class another file defines. Propose layout additions to a
+  shared header in the range notes for the coordinator.
+- Preserve shared base sizes when extending partial layouts. If extending
+  a base would shift existing derived members, the base layout is wrong:
+  record the conflict in the range notes instead of isolating a second
+  layout in the batch's translation unit.
+- A spelling that matches only through a volatile carrier, an empty block,
+  an offset cast, a padding member or an __asm body is MATCH-PENDING, not a
+  win. Keep it as the best attempt and report it separately.
 - Use canonical MSVC 7.0 `-O2 -Gy -GX` and the purchased original executable.
   Run verbose comparisons while developing, then check the whole owned
   folder. Keep the best defensible attempt annotated as NONMATCH.
@@ -71,6 +81,9 @@ for this repository. See research/claude-workflow-audit.md for the evidence.
 - After integration run the full matcher and regenerate `status.csv`. Reject
   duplicate addresses and every prior MATCH regression. Review deterioration
   of old NONMATCH attempts when shared declarations change.
+- Run `matching/tools/rulecheck.py` as well and reject any drop in matched
+  under the rules. Report new matches under the rules separately from new
+  byte matches.
 - Only AFTER the matcher finishes, regenerate `symbols.csv`: symbolmap reads
   the MATCH set from status.csv. Do not overlap those dependent report runs.
   Investigate new symbol conflicts or changed mapped addresses.
