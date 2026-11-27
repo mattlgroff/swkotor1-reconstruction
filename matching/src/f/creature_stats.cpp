@@ -40,10 +40,7 @@ public:
     unsigned char *m_pData;
 };
 
-class CSWSCombatData {
-public:
-    ~CSWSCombatData();
-};
+#include "shared/sws_combat_data.h"
 
 class CResGFFStruct {
 public:

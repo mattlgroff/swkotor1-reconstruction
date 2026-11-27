@@ -161,10 +161,7 @@ public:
     int m_nClientAnimation;                         // 0x3e8
 };
 
-struct CSWSCombatData {
-    char pad_0x0[0x34];
-    unsigned long m_oidTarget;                      // 0x34
-};
+#include "shared/sws_combat_data.h"
 
 class CSWSCreature {
 public:
