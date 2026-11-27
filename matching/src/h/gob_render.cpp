@@ -148,7 +148,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern CExoArrayList<Gob*> g_l7FBF90;           // 0x007FBF90 blur bucket
 
 static inline float ReadFloat(const float& f)
 {

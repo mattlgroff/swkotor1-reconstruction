@@ -61,7 +61,7 @@ struct TriggerColor {
 };
 
 // Trigger part (the scene trigger list at 0x0080AA74).
-class TriggerPart {
+class Part {
 public:
     virtual void V00(); virtual void V04(); virtual void V08(); virtual void V0C();
     virtual void V10(); virtual void V14(); virtual void V18(); virtual void V1C();
@@ -101,7 +101,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern CExoArrayList<TriggerPart*> g_l80AA74;   // 0x0080AA74 trigger parts
 
 static __forceinline void ClearStencil()
 {
@@ -118,7 +117,7 @@ static __forceinline void ClearStencil()
 // FUNCTION: SWKOTOR 0x00456300
 void Scene::DoHighlightTriggers(unsigned char bFlag)
 {
-    CExoArrayList<TriggerPart*> lTriggers;
+    CExoArrayList<Part*> lTriggers;
     int nBits = AurGetAvailableStencilBits();
     if (!nBits)
         return;
@@ -129,7 +128,7 @@ void Scene::DoHighlightTriggers(unsigned char bFlag)
         glDisable(g_nGLDepthTest);
         glDisable(g_nGLAlphaTest);
         for (int i = 0; i < g_l80AA74.num; i++) {
-            TriggerPart* pTrigger = g_l80AA74.element[i];
+            Part* pTrigger = g_l80AA74.element[i];
             if (pTrigger->m_bA8 && bFlag == pTrigger->m_bHighlightGroup) {
                 if (lTriggers.num == lTriggers.array_size)
                     lTriggers.Allocate(lTriggers.array_size ? lTriggers.array_size * 2 : 8);
@@ -168,7 +167,7 @@ void Scene::DoHighlightTriggers(unsigned char bFlag)
             glBlendFunc(g_aBlendFactors[0], g_aBlendFactors[1]);
             glStencilFunc(g_eGLLequal, nRef, 0xffffffff);
             glStencilOp(g_nGLKeep, g_nGLKeep, g_nGLKeep);
-            TriggerPart* pTrigger = lTriggers.element[k];
+            Part* pTrigger = lTriggers.element[k];
             if (pTrigger->m_bPulse) {
                 float fPulse = ((float)sin(pTrigger->m_fPulseRate * m_fHighlightTime) + 1.0f)
                     * pTrigger->m_fPulseAmplitude * 0.5f;

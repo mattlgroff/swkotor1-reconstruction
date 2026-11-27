@@ -486,24 +486,17 @@ public:
 
 #include "shared/globals.h"
 extern void (*g_pfnBlurSetup)();                // 0x0078E39C, descriptive
-extern CExoArrayList<Gob*> g_l7FBFC0;           // 0x007FBFC0 distortion bucket
-extern CExoArrayList<Gob*> g_l7FBFF0;           // 0x007FBFF0 light saber bucket
-extern CExoArrayList<Gob*> g_l7FBF90;           // 0x007FBF90 blur bucket
 
 #include "shared/gl_ext.h"
-extern CExoArrayList<TriangleBin*> g_l80AA68;   // 0x0080AA68 triangle bins
 // File-scope in the original scene unit: MSVC knows no pointer aliases
 // them, so it delays the high-dword stores past member loads.
 static __int64 g_nAnimStartTime;               // 0x007B9298
 static __int64 g_nAnimEndTime;                  // 0x007B9288
-extern CExoArrayList<PartEmitter*> g_l7FBF78;   // 0x007FBF78 emitter bucket
 static __int64 g_nRenderStartTime;              // 0x007B9280, descriptive
 static __int64 g_nRenderEndTime;                // 0x007B9290, descriptive
 
-extern CExoArrayList<Gob*> g_l7FBFCC;           // 0x007FBFCC gob bucket
 
 CExoArrayList<int>* AurTextureGetOrdering();     // 0x00421970
-extern CExoArrayList<Part*> g_l80AA74;          // 0x0080AA74 trigger parts           // 0x007BB4E8
 
 // FUNCTION: SWKOTOR 0x00450150
 void Scene::DoBinBucket()

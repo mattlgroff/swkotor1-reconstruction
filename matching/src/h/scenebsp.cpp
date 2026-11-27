@@ -158,13 +158,8 @@ static inline TileData* GetTileData(Scene* pScene, void* pKey)
 }
 
 BSPNode* FindTileIf(void* pTiles, Vector vPos, int (*pfn)(BSPNode*, Gob*), Gob* pKey);  // 0x004AD1A0
-extern CExoArrayList<Part*> g_l7FBFCC;  // 0x007FBFCC
-extern CExoArrayList<Part*> g_l7FBFC0;  // 0x007FBFC0
-extern CExoArrayList<Part*> g_l7FBFF0;  // 0x007FBFF0
-extern CExoArrayList<Part*> g_l7FBF90;  // 0x007FBF90
-extern CExoArrayList<Part*> g_l7FBF78;  // 0x007FBF78
-extern CExoArrayList<Part*> g_l80AA74;  // 0x0080AA74
-extern CExoArrayList<Part*> g_l80AA68;  // 0x0080AA68
+class PartEmitter;
+class TriangleBin;
 int GetNumBuckets();                                // 0x0041FEB0
 
 // FUNCTION: SWKOTOR 0x0046A610

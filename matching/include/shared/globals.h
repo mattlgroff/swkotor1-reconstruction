@@ -72,10 +72,12 @@ class MdlNodeTriMesh;
 class Model;
 class NvFaceInfo;
 class Part;
+class PartEmitter;
 class RequestPoolManager;
 class Scene;
 struct SceneTileSlot;
 struct ShadowEdge;
+class TriangleBin;
 class VertexProgram;
 struct VertexProgramArray;
 struct VertexProgramData;
@@ -1687,19 +1689,26 @@ extern int g_bShowWalkMesh;  // 0x007FBF5C, descriptive
 extern int g_nLastObjectRoom;  // 0x007FBF68
 extern CExoArrayList<Part*> g_l7FBF6C; // 0x007FBF6C
 extern CExoArrayList<void*> g_lSceneLights;  // 0x007FBF78
+extern CExoArrayList<PartEmitter*> g_l7FBF78;   // 0x007FBF78 emitter bucket
 extern CExoArrayList<CapPart*> g_lStaticMeshes;  // 0x007FBF84
 extern CExoArrayList<Part*> g_l7FBF84;  // 0x007FBF84
+extern CExoArrayList<Gob*> g_l7FBF90;           // 0x007FBF90 blur bucket
 extern CExoArrayList<Bin*> g_lActiveBins;       // 0x007FBF9C
 extern CExoArrayList<Part*> g_l7FBFA8;  // 0x007FBFA8
 extern CExoArrayList<Part*> g_lAllMeshParts;  // 0x007FBFB4
+extern CExoArrayList<Gob*> g_l7FBFC0;           // 0x007FBFC0 distortion bucket
 extern CExoArrayList<void*> g_lSceneObjects;  // 0x007FBFCC
+extern CExoArrayList<Gob*> g_l7FBFCC;           // 0x007FBFCC gob bucket
 extern CExoArrayList<Part*> g_l7FBFD8;  // 0x007FBFD8
 extern CExoArrayList<BSPNode*> g_lLightTiles;  // 0x007FBFE4
 extern CExoArrayList<Part*> g_l7FBFE4;  // 0x007FBFE4
+extern CExoArrayList<Gob*> g_l7FBFF0;           // 0x007FBFF0 light saber bucket
 extern CExoArrayList<Bin*> g_lPrevActiveBins;  // 0x007FBFFC
 extern CExoArrayList<Part*> g_aBucketsA[];  // 0x007FC008
 extern CExoArrayList<CapPart*> g_aCapBuckets[];  // 0x007FC008
+extern CExoArrayList<TriangleBin*> g_l80AA68;   // 0x0080AA68 triangle bins
 extern CExoArrayList<void*> g_lSceneEmitters;  // 0x0080AA74
+extern CExoArrayList<Part*> g_l80AA74;          // 0x0080AA74 trigger parts           // 0x007BB4E8
 extern CExoArrayList<Part*> g_aBucketsC[];  // 0x0080AA80
 extern CExoArrayList<Part*> g_aFadeBuckets[];  // 0x0080AA80
 extern CExoArrayList<Part*> g_aMeshBuckets[];  // 0x008194E0
