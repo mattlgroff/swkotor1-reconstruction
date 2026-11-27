@@ -31,10 +31,7 @@ public:
     CGameEffect* m_pLinkRight;                      // 0x2c
 };
 
-class CExoArrayListObjectId {
-public:
-    void AddUnique(unsigned long oid);              // 0x006449D0
-};
+#include "shared/exo_array_list_object_id.h"
 
 class CSWSObjectAoEList : public CSWSObject {
 public:

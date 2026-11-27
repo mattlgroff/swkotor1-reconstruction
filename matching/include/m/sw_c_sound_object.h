@@ -151,13 +151,7 @@ public:
 };
 
 // CExoArrayList<unsigned long> with its out-of-line Add.
-class CExoArrayListObjectId {
-public:
-    unsigned long* element;
-    int num;
-    int array_size;
-    void Add(unsigned long t);                      // 0x006449D0
-};
+#include "shared/exo_array_list_object_id.h"
 
 class CSWCArea {
 public:
