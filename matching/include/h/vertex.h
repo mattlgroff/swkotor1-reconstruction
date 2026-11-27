@@ -7,9 +7,7 @@
 
 int operator==(const Vector& a, const Vector& b);      // 0x004AA980
 
-struct Vector2 {
-    float u, v;
-};
+#include "shared/vector2.h"
 
 template <class T>
 class CExoArrayList {

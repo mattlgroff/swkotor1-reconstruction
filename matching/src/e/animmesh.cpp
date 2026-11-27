@@ -1,17 +1,7 @@
 // MdlNodeAnimMesh controller (0x00485660).
 #include "e/mdlanim.h"
 
-class Vector2 {
-public:
-    float x, y;
-
-    Vector2() {}
-    Vector2(float fX, float fY) { x = fX; y = fY; }
-    Vector2(const Vector2& v) { x = v.x; y = v.y; }
-    Vector2& operator=(const Vector2& v) { x = v.x; y = v.y; return *this; }
-    Vector2 operator+(const Vector2& v) const { return Vector2(x + v.x, y + v.y); }
-    Vector2 operator*(float f) const { return Vector2(x * f, y * f); }
-};
+#include "shared/vector2.h"
 
 // Vertex buffer locks (cdecl, forward through the global render interface).
 void* LockBuffer(void* pBuffer, int nOffset, int nSize, int nFlags);   // 0x00423F10
