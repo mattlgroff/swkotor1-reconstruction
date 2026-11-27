@@ -162,15 +162,7 @@ public:
 
 #include "shared/sws_player_store.h"
 
-class CSWSPlayerStoreGUI {
-public:
-    CSWSPlayerStoreGUI();                                       // 0x00560C20
-    void SetOpen(int bOpen);                                    // 0x00560C90
-    ~CSWSPlayerStoreGUI() { delete m_pStore; }
-
-    CSWSPlayerStore* m_pStore;                                  // 0x00
-    int m_bOpen;                                                // 0x04
-};
+#include "shared/sws_player_store_gui.h"
 
 class CSWSPlayerObjectRef {
 public:

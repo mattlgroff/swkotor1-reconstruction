@@ -222,10 +222,7 @@ public:
 };
 
 #include "shared/sws_player_store.h"
-class CSWSPlayerStoreGUI {
-public:
-    CSWSPlayerStore* m_pStore;
-};
+#include "shared/sws_player_store_gui.h"
 
 class CSWSPlayer {
 public:
