@@ -42,24 +42,7 @@ class NodeVertexDangly;
 #include "shared/globals.h"
 
 // 0x56 bytes (0x58 with padding).
-class NodeVertex {
-public:
-    NodeVertex(Vector* pPosition, Vector* pNormal, Vector* pV18, Vector* pV24,
-               Vector* pV30, Vector* pV3C, Vector* pColor);
-    bool operator==(NodeVertex& o);
-    NodeVertexAnim* AsAnim();
-    NodeVertexDangly* AsDangly();
-
-    Vector m_vPosition;         // +0x00
-    Vector m_vNormal;           // +0x0c
-    Vector m_v18;               // +0x18
-    Vector m_v24;               // +0x24
-    Vector m_v30;               // +0x30
-    Vector m_v3C;               // +0x3c
-    Vector m_vColor;            // +0x48
-    unsigned char m_nFlags;     // +0x54
-    unsigned char m_nType;      // +0x55 (1 anim, 2 dangly)
-};
+#include "shared/node_vertex.h"
 
 class NodeVertexDangly : public NodeVertex {
 public:

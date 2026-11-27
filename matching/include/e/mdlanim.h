@@ -97,13 +97,7 @@ public:
 class Part;
 class MdlNodeInstance;
 
-class NodeVertex {
-public:
-    NodeVertex(Vector* pPos, Vector* pTV0, Vector* pTV1, Vector* pTV2, Vector* pTV3,
-               Vector* pNormal, int n);     // 0x00478680
-    unsigned char operator==(NodeVertex& o);    // 0x00478820
-    char pad_0x0[0x58];
-};
+#include "shared/node_vertex.h"
 
 // Per-face vertex index record of the trimesh build data (0x14 bytes).
 struct MdlFaceIndices {
