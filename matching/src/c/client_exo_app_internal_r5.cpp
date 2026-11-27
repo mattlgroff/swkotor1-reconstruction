@@ -263,10 +263,7 @@ public:
     void PlaySoundSet(int nSound, int b);           // 0x00611470
 };
 
-class CSWPartyClient {
-public:
-    void SetPlayerCreature(unsigned long oid);      // 0x006364C0
-};
+#include "shared/sw_party_client.h"
 
 
 // FUNCTION: SWKOTOR 0x005EE8F0

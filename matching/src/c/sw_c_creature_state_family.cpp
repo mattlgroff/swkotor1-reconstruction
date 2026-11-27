@@ -246,12 +246,7 @@ public:
         num = n;
     }
 };
-class CSWPartyClient {
-public:
-    int SetPlayerCreature(unsigned long oid);       // 0x006364C0 (returns int: mov eax, ebp)
-    int RemovePartyMember(unsigned long oid); // 0x006349f0, descriptive callee name.
-    void SetPC(int nIndex);
-};
+#include "shared/sw_party_client.h"
 class CItemVisualState {
 public:
     virtual void v00();
