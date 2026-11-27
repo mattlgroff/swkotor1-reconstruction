@@ -1,9 +1,4 @@
-struct VertexProgramArray {
-    void* data;
-    int size;
-    int capacity;
-    void Allocate(int count);
-};
+#include "shared/vertex_program_array.h"
 
 #include "shared/globals.h"
 

@@ -13,13 +13,7 @@ struct VertexProgram {
     ~VertexProgram();
 };
 
-struct VertexProgramArray {
-    VertexProgram** data;
-    int size;
-    int capacity;
-
-    void Remove(VertexProgram* p);                      // 0x00445080
-};
+#include "shared/vertex_program_array.h"
 
 #include "shared/globals.h"
 
