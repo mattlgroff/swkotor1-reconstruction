@@ -1,14 +1,6 @@
 // Level-up preview state restoration and cancellation leaves.
 #include "l/sw_gui_in_game_character.h"
 
-namespace {
-inline void HideFlags(void* pControl)
-{
-    unsigned long* pFlags = (unsigned long*)((char*)pControl + 0x44);
-    *pFlags = (*pFlags & 0xFFFFFCFFul) | 0x400ul;
-}
-}
-
 // FUNCTION: SWKOTOR 0x006E87E0
 void CSWGuiLevelUpCharGen::ClearPowers()
 {
@@ -63,12 +55,12 @@ void CSWGuiLevelUpCharGen::CancelLevelUp()
     m_pManager->PopModalPanel();
     m_pLevelUpPanel->m_nFlags = (m_pLevelUpPanel->m_nFlags & 0xFFFFFCFFul) | 0x400ul;
     CSWGuiInGameCharacter* pCharacter = m_pCharacter;
-    HideFlags(this);
+    m_nFlags = (m_nFlags & 0xFFFFFCFFul) | 0x400ul;
     pCharacter->AttachModel();
-    if (*(int*)0x007A2370 == 0 && m_nInputClass != 2) {
+    if (g_bGuiFlag == 0 && m_nInputClass != 2) {
         m_pCharacter->m_nFlags = (m_pCharacter->m_nFlags & 0xFFFFFCFFul) | 0x400ul;
         CGuiInGame* pInGame = g_pAppManager->GetClientExoApp()->GetInGameGui();
-        *(unsigned long*)((char*)pInGame + 0x14) = 0;
+        pInGame->m_bCharacterScreenOpen = 0;
     }
     int nInputClass = m_nInputClass;
     g_pAppManager->GetClientExoApp()->SetInputClass(nInputClass, 1);

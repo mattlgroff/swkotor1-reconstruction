@@ -18,7 +18,7 @@ public:
     void* operator new(unsigned int n);     // 0x0043E1B0
     void operator delete(void* p);          // 0x0044AEC0
     int AddRef(Gob* pGob);                  // 0x0043E240
-    char pad[0xc4];
+    char pad_0x0[0xc4];
 };
 
 class Gob {
@@ -35,14 +35,14 @@ class LightManager {
 public:
     LightManager();                         // 0x004A38B0
     ~LightManager();
-    char pad[0xf8];
+    char pad_0x0[0xf8];
 };
 
 class WindManager {
 public:
     WindManager();                          // 0x004A6640
     ~WindManager();
-    char pad[0x858];
+    char pad_0x0[0x858];
 };
 
 class SafePointerHost : public CExoArrayList<void*> {

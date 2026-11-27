@@ -45,7 +45,7 @@ class CAurPostString {
 public:
     CAurPostString(const char* sz, int nX, int nY, float fLife); // 0x0044d320
     void Render();                                       // 0x0044d010
-    char pad[0x434];
+    char pad_0x0[0x434];
 };
 
 class CAurFont {

@@ -1,14 +1,14 @@
 struct VertexProgramData {
-    char pad[0x200c];
+    char pad_0x0[0x200c];
     unsigned int program_id;
     int allowed_lights;
     int generation;
     int enabled;
 };
 
-extern VertexProgramData** volatile g_vertex_program_data_008305cc;
-extern volatile int g_vertex_program_size_008305d0;
-extern volatile int g_vertex_program_capacity_008305d4;
+extern VertexProgramData** g_vertex_program_data_008305cc;
+extern int g_vertex_program_size_008305d0;
+extern int g_vertex_program_capacity_008305d4;
 extern int g_programs_arb_0078e5ec;
 typedef void (__stdcall *GlDeleteProgramsARB)(int, const unsigned int*);
 extern GlDeleteProgramsARB gl_delete_programs_arb_007bb724;

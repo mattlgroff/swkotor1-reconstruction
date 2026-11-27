@@ -99,7 +99,7 @@ Quaternion operator*(const Quaternion& a, const Quaternion& b);   // 0x004A9AC0
 Quaternion EulerToQuaternion(float fYaw, float fPitch, float fRoll);    // 0x004ACAC0
 class CAppManager {
 public:
-    void* pad;
+    void* m_p00;
     CClientExoApp* m_pClientExoApp;
 };
 extern CAppManager* g_pAppManager;              // 0x007A39FC

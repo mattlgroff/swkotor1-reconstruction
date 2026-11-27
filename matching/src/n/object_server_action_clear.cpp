@@ -12,6 +12,8 @@ public:
     CServerExoApp* m_pServerExoApp;                  // +0x08
 };
 
+extern CAppManager* g_pAppManager;                   // 0x007A39FC
+
 class CSWCObject {
 public:
     void* m_pVtable;
@@ -24,7 +26,7 @@ public:
 // FUNCTION: SWKOTOR 0x0063D470
 void CSWCObject::ClearAllActions()
 {
-    CAppManager* pAppManager = *(CAppManager**)0x007A39FC;
+    CAppManager* pAppManager = g_pAppManager;
     CServerExoApp* pServer = pAppManager->m_pServerExoApp;
     unsigned long nServerObject = pServer->ClientToServerObjectID(m_oidSelf);
     pServer->ClearAllActions(nServerObject);
@@ -33,7 +35,7 @@ void CSWCObject::ClearAllActions()
 // FUNCTION: SWKOTOR 0x0063D490
 void CSWCObject::ClearAllQueuedCombatActions()
 {
-    CAppManager* pAppManager = *(CAppManager**)0x007A39FC;
+    CAppManager* pAppManager = g_pAppManager;
     CServerExoApp* pServer = pAppManager->m_pServerExoApp;
     unsigned long nServerObject = pServer->ClientToServerObjectID(m_oidSelf);
     pServer->ClearAllQueuedCombatActions(nServerObject);

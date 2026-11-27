@@ -1,14 +1,6 @@
 // bilinear lookup used by the texture controllers (0x004608A0).
 
-static inline void FloatToInt(int* pOut, float f)
-{
-    __asm {
-        fld f
-        mov edx, pOut
-        frndint
-        fistp dword ptr [edx]
-    }
-}
+#include "shared/float_to_int.h"
 
 // FUNCTION: SWKOTOR 0x004608A0
 float FloatInterpolate(float* pData, float x, float y, int nWidth, int nHeight)

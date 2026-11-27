@@ -5,6 +5,8 @@
 // Names come from the debug map (matching/mac_names.csv) where it has them;
 // placeholder member names keep their offset in the name.
 
+#include "shared/float_to_int.h"
+
 template <class T>
 class CExoArrayList {
 public:
@@ -95,16 +97,6 @@ extern int EFFECT_TYPE_FORCE_JUMP;     // 0x00746810
 
 extern int g_nDamageIndex;             // 0x008327E0
 extern const float g_fInvLog10Of2;     // 0x00745FF8
-
-static inline void FloatToInt(int *pOut, float f)
-{
-    __asm {
-        fld f
-        mov edx, pOut
-        frndint
-        fistp dword ptr [edx]
-    }
-}
 
 extern "C" int __cdecl rand();
 extern "C" double __cdecl log10(double x);

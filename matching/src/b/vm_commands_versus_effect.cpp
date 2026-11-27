@@ -127,9 +127,13 @@ int CSWVirtualMachineCommands::ExecuteCommandVersusAlignmentEffect(int nCommandI
                 break;
             }
         } else if (nType == EFFECT_TYPE_DAMAGE_RESISTANCE) {
+            // NOTE: the original tests this type and does nothing
         } else if (nType == EFFECT_TYPE_DAMAGE_REDUCTION) {
+            // NOTE: the original tests this type and does nothing
         } else if (nType == EFFECT_TYPE_DAMAGE_IMMUNITY) {
+            // NOTE: the original tests this type and does nothing
         } else if (nType == EFFECT_TYPE_DAMAGE_IMMUNITY_INCREASE) {
+            // NOTE: the original tests this type and does nothing
         } else if (nType == EFFECT_TYPE_IMMUNITY) {
             switch (nCommandId) {
             case 0x163:
@@ -161,7 +165,9 @@ int CSWVirtualMachineCommands::ExecuteCommandVersusAlignmentEffect(int nCommandI
                 break;
             }
         } else if (nType == EFFECT_TYPE_FORCE_RESISTANCE_INCREASE) {
+            // NOTE: the original tests this type and does nothing
         } else if (nType == EFFECT_TYPE_FORCE_RESISTANCE_DECREASE) {
+            // NOTE: the original tests this type and does nothing
         } else if (nType == EFFECT_TYPE_SAVING_THROW_INCREASE) {
             switch (nCommandId) {
             case 0x163:

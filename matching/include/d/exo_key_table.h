@@ -191,7 +191,7 @@ public:
     CExoStringList* Merge(CExoStringList* pList, int a, int b);     // 0x005e9980
     int GetCount();                                                 // 0x00675dd0
 
-    char pad[0x14];
+    char pad_0x0[0x14];
 };
 
 // vtable 0x0073d86c

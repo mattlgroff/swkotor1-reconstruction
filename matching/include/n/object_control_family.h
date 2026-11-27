@@ -8,7 +8,7 @@ class CResRef { public: char data[16]; CResRef(const CExoString&); CResRef opera
 class CExoString { public: char* data; unsigned long length; CExoString(); ~CExoString(); int GetLength() const; char* CStr() const; CExoString& operator=(const CExoString&); };
 // Descriptive name for the recovered 28-byte queue record; padding is untouched.
 struct FireForgetAnimation {
-    int active; unsigned short animation; unsigned short pad;
+    int active; unsigned short animation; unsigned short pad_0x6;
     unsigned long day,tick,duration; float speed; void* data;
     FireForgetAnimation();
 };
@@ -138,8 +138,8 @@ class CSWPortrait {
 public: char data[16]; CSWPortrait(); ~CSWPortrait(); int SetPortraitId(unsigned short); CResRef GetPortrait(unsigned char);
 };
 class C2DA { public: int GetINTEntry(int,int,int*); };
-class CTwoDimArrays { public: char pad[0x3c]; C2DA* m_pAnimations; };
-class CSWRules { public: char pad[0xb8]; CTwoDimArrays* m_p2DArrays; };
+class CTwoDimArrays { public: char pad_0x0[0x3c]; C2DA* m_pAnimations; };
+class CSWRules { public: char pad_0x0[0xb8]; CTwoDimArrays* m_p2DArrays; };
 extern CSWRules* g_pRules; // 0x007A3A28
 extern int g_nAnimStationaryColumn;
 extern int g_nAnimPauseColumn;
@@ -152,7 +152,7 @@ extern int g_nAnimParryColumn;
 extern int g_nAnimAttackColumn;
 extern int g_nAnimHideEquippedItemsColumn;
 class CSWCModule;
-class CGuiInGame { public: char pad[0xb4]; int m_bItemsHidden; int IsLoopingDialogAnimation(unsigned short); int IsFireForgetDialogAnimation(unsigned short); };
+class CGuiInGame { public: char pad_0x0[0xb4]; int m_bItemsHidden; int IsLoopingDialogAnimation(unsigned short); int IsFireForgetDialogAnimation(unsigned short); };
 class CWorldTimer {
 public:
     void GetWorldTime(unsigned long*,unsigned long*);
@@ -168,7 +168,7 @@ public:
     virtual CSWSObject* AsSWSObject();
 };
 class CServerExoApp { public: unsigned long ClientToServerObjectID(unsigned long); CGameObject* GetGameObject(unsigned long); };
-class CAppManager { public: void* pad; CClientExoApp* m_pClientExoApp; CServerExoApp* m_pServerExoApp; };
+class CAppManager { public: void* m_p00; CClientExoApp* m_pClientExoApp; CServerExoApp* m_pServerExoApp; };
 extern CAppManager* g_pAppManager;
 class CSWCObject {
 public:
@@ -311,6 +311,6 @@ class CSWCCreature : public CSWCObject {
 public: char padfc[0x3cc-0xfc]; void* m_pEquippedItem; void ShowEquippedItems(); void UnregisterAnimationCallbacks(); // 0x00610550
 };
 template<class T> class CExoArrayList { public: T* element; int count,capacity; void AddUnique(T); void Remove(T); };
-class CSWCArea { public: char pad[0xbc]; CResRef m_cEnvMap; char padcc[0x20c-0xcc]; CExoArrayList<unsigned long> m_lObjects; };
-class CSWCModule { public: char pad[0x48]; CSWCArea* m_pArea; };
+class CSWCArea { public: char pad_0x0[0xbc]; CResRef m_cEnvMap; char padcc[0x20c-0xcc]; CExoArrayList<unsigned long> m_lObjects; };
+class CSWCModule { public: char pad_0x0[0x48]; CSWCArea* m_pArea; };
 #endif

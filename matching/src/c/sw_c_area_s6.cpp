@@ -165,7 +165,7 @@ public:
     CSWCAmbientSound(CSWCArea* pArea);              // 0x0068DF40
     ~CSWCAmbientSound();                            // 0x0068E0D0
     void StopAll(int bFade);                        // 0x0068E1B0
-    char pad[0x10c];
+    char pad_0x0[0x10c];
 };
 
 class CSWSArea {

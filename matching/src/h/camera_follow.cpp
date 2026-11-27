@@ -1,6 +1,6 @@
 // Camera follow behavior; CAurCamera virtual slot +0x7c.
-class Gob { public: char pad[4]; };
-class CAurBehavior { public: char pad[0x14]; };
+class Gob { public: char pad_0x0[4]; };
+class CAurBehavior { public: char pad_0x0[0x14]; };
 class CAurBehaviorCameraFollow : public CAurBehavior {
 public:
     CAurBehaviorCameraFollow(Gob*, Gob*); // 0x0049FE80

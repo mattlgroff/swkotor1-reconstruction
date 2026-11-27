@@ -97,7 +97,7 @@ struct CResList {
     unsigned long m_nType;
     unsigned long m_nIndex;
     unsigned long m_nCount;
-    char pad[0x8];
+    char pad_0xc[0x8];
 };
 
 class CResGFF {

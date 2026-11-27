@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "shared/float_to_int.h"
 
 // FUNCTION: SWKOTOR 0x0045D990
 void ImageFlipY(unsigned char* pData, int nWidth, int nHeight, int nBpp)
@@ -226,16 +227,6 @@ unsigned short* ImageReadPLT(char* szName, int* pWidth, int* pHeight)
     fread(pData, 1, header.nWidth * header.nHeight * 2, f);
     fclose(f);
     return pData;
-}
-
-static inline void FloatToInt(int* pOut, float f)
-{
-    __asm {
-        fld f
-        mov edx, pOut
-        frndint
-        fistp dword ptr [edx]
-    }
 }
 
 // FUNCTION: SWKOTOR 0x0045E5B0

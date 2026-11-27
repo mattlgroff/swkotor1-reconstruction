@@ -330,7 +330,7 @@ public:
 
 class CAppManager {
 public:
-    void* pad;
+    void* m_p00;
     CClientExoApp* m_pClientExoApp;
 
     CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }

@@ -199,7 +199,7 @@ void CSWGuiUpgrade::UpdateItems()
     int nEnd = nCount + nFirst;
     for (int i = nFirst; i < nEnd; i++) {
         if (m_aSlotItems[i]) {
-            CSWBaseItem* pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(m_aSlotItems[i]->GetBaseItemType());
+            CSWBaseItem* pBaseItem = g_pRules->m_pBaseItems->GetBaseItem(m_aSlotItems[i]->GetBaseItemType());  // NOTE: unused in the original
             cIcon = m_aSlotItems[i]->GetIcon();
         } else {
             cIcon = g_aUpgradeSlots[m_nType - 1][i].m_sIcon;

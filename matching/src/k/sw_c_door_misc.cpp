@@ -42,7 +42,7 @@ void CSWCDoor::SetIsAreaTransition(int b)
     if (b == 0) {
         CSWCDoorTransition* pTransition = GetTransitionData(0xff, 1);
         if (pTransition != 0)
-            pTransition->vB0((const char*)0x00753aa8);
+            pTransition->vB0("trans");
     }
     m_bIsAreaTransition = b;
 }

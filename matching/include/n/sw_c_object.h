@@ -346,7 +346,7 @@ extern CAppManager* g_pAppManager;                  // 0x007A39FC
 struct FireForgetAnimation {
     int active;
     unsigned short animation;
-    unsigned short pad;
+    unsigned short pad_0x6;
     unsigned long day, tick, duration;
     float speed;
     void* data;

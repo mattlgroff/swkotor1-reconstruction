@@ -219,6 +219,7 @@ int Camera::Animate(float fDeltaT)
             pAnim = m_pAnimation;
             float t = pAnim->m_fTime / pAnim->m_fDuration;
             if (pAnim->m_n10 == 0) {
+                // NOTE: linear, t is used unchanged
             } else if (pAnim->m_n10 == 1) {
                 t = 1.0f - ((float)cos(t * 3.1415927f) + 1.0f) * 0.5f;
             } else if (pAnim->m_n10 == 2) {

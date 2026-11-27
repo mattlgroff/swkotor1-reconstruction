@@ -51,8 +51,8 @@ __forceinline Vector operator*(const Quaternion &q, const Vector &v)
                   m20 * v.x + m21 * v.y + m22 * v.z);
 }
 
-float FUN_004aadf0(float f);                    // 0x004AADF0 (table cosine)
-float FUN_004aae30(float f);                    // 0x004AAE30 (table sine)
+float CosLookup(float f);                       // 0x004AADF0 (table cosine)
+float SinLookup(float f);                       // 0x004AAE30 (table sine)
 
 class CAurWind {
 public:
@@ -92,10 +92,10 @@ Vector CAurWind::GetGlobalWindNoPoint(const Vector &vPos, float fScale)
         fAngleY = (fNoiseY * m_fAmplitudeY * 2.0f - m_fAmplitudeY) * 0.5f;
     }
     float fSinY, fCosY, fSinX, fCosX;
-    fCosX = FUN_004aadf0(fAngleX);
-    fSinX = FUN_004aae30(fAngleX);
-    fCosY = FUN_004aadf0(fAngleY);
-    fSinY = FUN_004aae30(fAngleY);
+    fCosX = CosLookup(fAngleX);
+    fSinX = SinLookup(fAngleX);
+    fCosY = CosLookup(fAngleY);
+    fSinY = SinLookup(fAngleY);
     q.w = fCosY * fCosX;
     q.x = fCosX * fSinY;
     q.y = fSinY * fSinX;
