@@ -1250,6 +1250,7 @@ extern CAppManagerT* g_pAppManagerT;  // 0x007A39FC (g_pAppManager)
 extern CVirtualMachine* g_pVirtualMachine;  // 0x007A3A00
 extern CScriptCompiler* g_pScriptCompiler;  // 0x007A3A04 (placeholder name)
 extern CTlkTable* g_pTlkTable;  // 0x007a3a08
+extern CTlkTable* g_pTlkTableAlt;                   // 0x007A3A0C
 extern unsigned __int64 g_nSessionStartTime;  // 0x007A3A20
 extern CSWRules* g_pRules;  // 0x007A3A28
 extern CDeletable* g_pUnknown7A3A28;  // 0x007A3A28
