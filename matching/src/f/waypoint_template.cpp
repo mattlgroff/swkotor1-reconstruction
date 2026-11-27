@@ -21,12 +21,7 @@ public:
     unsigned long m_nStrRef;
 };
 
-class Vector {
-public:
-    Vector() : x(0.0f), y(0.0f), z(0.0f) {}
-    void Normalize();
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CResRef {
 public:

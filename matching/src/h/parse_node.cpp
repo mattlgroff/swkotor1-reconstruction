@@ -20,7 +20,7 @@ public:
     }
 };
 
-struct Vector { float x, y, z; };
+#include "shared/vector.h"
 struct Quaternion { float w, x, y, z; };
 
 extern "C" int __cdecl sscanf(const char*, const char*, ...);

@@ -55,11 +55,7 @@ public:
                            CExoString* pValue);     // 0x00413270
 };
 
-struct Vector {
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 int operator==(const Vector& a, const Vector& b);  // 0x004AA980 (cdecl)
 

@@ -26,10 +26,7 @@ __declspec(dllimport) void __stdcall glClear(unsigned int mask);
 
 #define GL_VIEWPORT 0x0ba2
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 template <class T>
 class CExoArrayList {

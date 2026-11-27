@@ -1,10 +1,6 @@
 // CSWCMessage::HandleServerToPlayerCreatureUpdate_Add (nwchandlemessage.o).
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0; y = 0; z = 0; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 void* operator new(unsigned int nSize);
 void operator delete(void* p);

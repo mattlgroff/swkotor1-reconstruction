@@ -7,10 +7,7 @@ extern "C" __declspec(dllimport) void __stdcall glScalef(float, float, float);
 #define __max(a, b) (((a) > (b)) ? (a) : (b))
 #define __min(a, b) (((a) < (b)) ? (a) : (b))
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

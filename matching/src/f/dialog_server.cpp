@@ -79,20 +79,7 @@ public:
     float ReadFieldFLOAT(CResStruct *pStruct, char *szLabel, int &bSuccess, float fDefault);
 };
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) : x(fX), y(fY), z(fZ) {}
-    float x, y, z;
-    Vector operator-(const Vector &v) const
-    {
-        Vector r;
-        r.x = x - v.x;
-        r.y = y - v.y;
-        r.z = z - v.z;
-        return r;
-    }
-};
+#include "shared/vector_ops.h"
 
 class CSWSArea;
 class CSWSCreature;

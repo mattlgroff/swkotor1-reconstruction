@@ -1,7 +1,7 @@
 // CSWGuiFade (swguiingame.o, vtable 0x0074FC60, 0x1B8 bytes): the global
 // fade panel. Standalone layout; +0x4C alpha and +0x50 colour belong to the
 // CSWGuiPanel base (SetAlpha 0x00404B00).
-struct Vector { float x,y,z; Vector() {} Vector(float a,float b,float c) { x=a; y=b; z=c; } };
+#include "shared/vector.h"
 struct CSWGuiExtent { int left,top,width,height; };
 class CSWGuiControl;
 class CExoString {

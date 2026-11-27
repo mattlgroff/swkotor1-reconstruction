@@ -4,9 +4,7 @@
 
 #include <stdlib.h>
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CResRef {
 public:

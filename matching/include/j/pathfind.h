@@ -3,10 +3,7 @@
 #ifndef J_PATHFIND_H
 #define J_PATHFIND_H
 
-struct Vector {
-    Vector() { x = 0; y = 0; z = 0; }               // 0x00409E70
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CPathfindInformation {
 public:

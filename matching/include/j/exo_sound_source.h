@@ -10,11 +10,7 @@
 
 struct _iobuf;
 
-struct Vector {
-    Vector() { x = 0; y = 0; z = 0; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 inline Vector operator-(Vector a, Vector b)
 {

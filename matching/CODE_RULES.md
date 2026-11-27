@@ -146,6 +146,7 @@ python matching/tools/matchcmp.py -q --report matching/status.csv matching/src  
 python matching/tools/rulecheck.py --report matching/rules.csv                   # rule gate
 python matching/tools/rulecheck.py --list R4 R17                                 # findings
 python -m unittest discover -s matching/tools -p "test_*.py"                     # tool tests
+python matching/tools/mergetype.py TYPE shared/type.h                           # R1 merge; then --compile
 ```
 
 `rulecheck.py` needs no compiler or game files. It reads `status.csv`, so
@@ -162,9 +163,12 @@ run it after the byte gate.
   `CExoArrayList` names its members `element`/`num` in
   `l/sw_gui_class_selection.h` and `m_pArray`/`m_nCount` in
   `l/sw_gui_inventory_equip.h`, and `CGuiInGame` has a different member at
-  `+0x14` in `l/sw_gui_dialog.h` and `n/gui_in_game_dialog.h`. Until they are merged into one declaration
-  per type, the functions that use them are `MATCH-PENDING` under R1. New
-  work must not add copies (CONTRIBUTING.md, step 4).
+  `+0x14` in `l/sw_gui_dialog.h` and `n/gui_in_game_dialog.h`. Until they
+  are merged into one declaration per type, the functions that use them are
+  `MATCH-PENDING` under R1. New work must not add copies (CONTRIBUTING.md,
+  step 4). Merged types live in `include/shared/`: `tools/mergetype.py` does
+  the mechanical part, and [research/r1-merges.md](research/r1-merges.md)
+  records each merge's evidence and gate results. Merged so far: `Vector`.
 - **R7 stays advisory.** Placeholder names never block a match.
 
 ## Fakematch patterns seen in this tree

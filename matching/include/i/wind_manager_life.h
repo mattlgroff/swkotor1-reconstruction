@@ -4,25 +4,7 @@
 #ifndef I_WIND_MANAGER_LIFE_H
 #define I_WIND_MANAGER_LIFE_H
 
-class Vector {
-public:
-    Vector()
-    {
-        x = 0.0f;
-        y = 0.0f;
-        z = 0.0f;
-    }
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector.h"
 
 inline Vector operator*(float f, const Vector& v)
 {

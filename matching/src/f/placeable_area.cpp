@@ -16,12 +16,7 @@ public:
     char m_resRef[16];
 };
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

@@ -2,11 +2,7 @@
 
 #include "c/exo_base.h"
 
-struct Vector {
-    Vector() {}
-    Vector(float a, float b, float c) : x(a), y(b), z(c) {}
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CAurObject;
 

@@ -15,11 +15,7 @@ public:
     char* CStr() const;                             // 0x005E5670
 };
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 
 class C2DA {

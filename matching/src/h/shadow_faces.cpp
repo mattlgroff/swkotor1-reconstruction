@@ -1,9 +1,6 @@
 // Stencil-shadow face classification for a trimesh node (0x004741A0).
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct FaceAdjacency {
     int n[3];

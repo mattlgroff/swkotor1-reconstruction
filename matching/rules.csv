@@ -33,7 +33,7 @@ address,name,bytes,status,rules,file
 0x00403CF0,ChangeResolutionForMovie,MATCH,MATCH-PENDING,R1 R2,matching/src/d/app_resolution.cpp
 0x00403DE0,RestoreResolutionFromMovie,MATCH,MATCH-PENDING,R1 R2,matching/src/d/app_resolution.cpp
 0x00403F20,InitApplication,MATCH,MATCH-PENDING,R1 R2,matching/src/d/app_window.cpp
-0x00404AE0,Vector::Vector,MATCH,MATCH-PENDING,R1,matching/src/d/movie_player.cpp
+0x00404AE0,?,MATCH,UNCHECKED,,matching/src/d/movie_player.cpp
 0x00404B00,CSWGuiFadePanel::SetAlpha,MATCH,MATCH,,matching/src/d/movie_player.cpp
 0x00404B60,_glOrtho,MATCH,MATCH,,matching/src/d/movie_player.cpp
 0x00404BB0,CExoMoviePlayerInternal::CloseMovie,MATCH,MATCH-PENDING,R1,matching/src/d/movie_player.cpp
@@ -158,7 +158,7 @@ address,name,bytes,status,rules,file
 0x00409D70,CRes::CRes,MATCH,MATCH-PENDING,R1,matching/src/d/res.cpp
 0x00409DC0,CSWGuiExtent::Load,MATCH,MATCH-PENDING,R1,matching/src/d/gui_panel.cpp
 0x00409E60,CSWGuiPanel::HandleInputEvent,MATCH,MATCH-PENDING,R1,matching/src/d/gui_panel.cpp
-0x00409E70,Vector::Vector,MATCH,MATCH-PENDING,R1,matching/src/d/vector.cpp
+0x00409E70,CAppManager::CAppManager,MATCH,MATCH-PENDING,R1,matching/src/d/app_misc.cpp
 0x00409E80,CSWGuiObject::~CSWGuiObject,MATCH,MATCH-PENDING,R1,matching/src/d/gui_panel.cpp
 0x00409E90,CSWGuiObject::SetExtent,MATCH,MATCH-PENDING,R1,matching/src/d/gui_panel.cpp
 0x00409EB0,CSWGuiObject::v10,MATCH,MATCH-PENDING,R1,matching/src/d/gui_panel.cpp
@@ -787,10 +787,10 @@ address,name,bytes,status,rules,file
 0x00423B40,RequestPoolManagerSys::GetPoolSize,MATCH,MATCH,,matching/src/g/glrender.cpp
 0x00423B50,RequestPoolManagerSys::GetBuffer,MATCH,MATCH,,matching/src/g/glrender.cpp
 0x00423B70,AbsF,MATCH,MATCH,,matching/src/g/glrender.cpp
-0x00423B90,operator+,MATCH,MATCH-PENDING,R1,matching/src/g/glrender.cpp
-0x00423BC0,operator-,MATCH,MATCH-PENDING,R1,matching/src/g/glrender.cpp
-0x00423BF0,operator*,MATCH,MATCH-PENDING,R1,matching/src/g/glrender.cpp
-0x00423C20,operator*,MATCH,MATCH-PENDING,R1,matching/src/g/glrender.cpp
+0x00423B90,operator+,MATCH,MATCH,,matching/src/g/glrender.cpp
+0x00423BC0,operator-,MATCH,MATCH,,matching/src/g/glrender.cpp
+0x00423BF0,operator*,MATCH,MATCH,,matching/src/g/glrender.cpp
+0x00423C20,operator*,MATCH,MATCH,,matching/src/g/glrender.cpp
 0x00423C40,Quaternion::axis,MATCH,MATCH-PENDING,R1,matching/src/g/glrender.cpp
 0x00423CD0,DisableCombiners,MATCH,MATCH-PENDING,R2,matching/src/g/glrender.cpp
 0x00423D80,MakeLookUpTexture,MATCH,MATCH-PENDING,R2,matching/src/g/gl_textures.cpp
@@ -802,8 +802,8 @@ address,name,bytes,status,rules,file
 0x00423F90,CreateCubeTexture,MATCH,MATCH-PENDING,R1 R2,matching/src/g/tex_upload.cpp
 0x00424230,CreateProcessedCubeTexture,MATCH,MATCH-PENDING,R1 R2,matching/src/g/tex_upload.cpp
 0x00424580,AurBuild2DMipMaps,NONMATCH,NONMATCH,,matching/src/g/tex_upload.cpp
-0x00424940,SetCombinerConstant0,MATCH,MATCH-PENDING,R1 R2,matching/src/g/nv_constants.cpp
-0x00424960,SetCombinerConstant1,MATCH,MATCH-PENDING,R1 R2,matching/src/g/nv_constants.cpp
+0x00424940,SetCombinerConstant0,MATCH,MATCH-PENDING,R2,matching/src/g/nv_constants.cpp
+0x00424960,SetCombinerConstant1,MATCH,MATCH-PENDING,R2,matching/src/g/nv_constants.cpp
 0x00424980,CreateTexture,NONMATCH,NONMATCH,R1 R2,matching/src/g/tex_upload.cpp
 0x00424D70,GetCompressedContactSheetOffset,MATCH,MATCH,,matching/src/g/glrender.cpp
 0x00424DD0,CreateProcessedTexture,NONMATCH,NONMATCH,R1 R2,matching/src/g/tex_upload.cpp
@@ -858,7 +858,7 @@ address,name,bytes,status,rules,file
 0x0042E5B0,RequestPoolManagerSys::Lock,MATCH,MATCH,,matching/src/g/request_pool.cpp
 0x0042E5E0,RequestPoolManagerSys::Unlock,MATCH,MATCH,,matching/src/g/request_pool.cpp
 0x004318F0,DrawTriangles,MATCH,MATCH-PENDING,R1,matching/src/g/gl_debug_draw.cpp
-0x00431A50,DrawSphereBound,MATCH,MATCH-PENDING,R1,matching/src/g/gl_debug_draw.cpp
+0x00431A50,DrawSphereBound,MATCH,MATCH,,matching/src/g/gl_debug_draw.cpp
 0x00431BB0,DrawPoolVerticesPCT,MATCH,MATCH-PENDING,R2,matching/src/g/gl_draw.cpp
 0x00431CC0,DrawQuadsPCT,MATCH,MATCH-PENDING,R2,matching/src/g/gl_draw.cpp
 0x00431DB0,DrawPoolQuadsPCT,MATCH,MATCH-PENDING,R2,matching/src/g/gl_draw.cpp
@@ -875,11 +875,11 @@ address,name,bytes,status,rules,file
 0x004331D0,RenderForceDistortion,MATCH,MATCH-PENDING,R2,matching/src/g/fb_overlay.cpp
 0x00433580,RenderFrameToTextureATI,MATCH,MATCH-PENDING,R2,matching/src/g/fb_bloom.cpp
 0x004337A0,RenderFrameToTexture,MATCH,MATCH-PENDING,R2,matching/src/g/fb_bloom.cpp
-0x00433970,RenderAccumulationBlurATI,MATCH,MATCH-PENDING,R1 R2,matching/src/g/fb_overlay.cpp
-0x00433DA0,RenderAccumulationBlur,MATCH,MATCH-PENDING,R1 R2,matching/src/pilot4/a/glrender_accum_blur.cpp
+0x00433970,RenderAccumulationBlurATI,MATCH,MATCH-PENDING,R2,matching/src/g/fb_overlay.cpp
+0x00433DA0,RenderAccumulationBlur,MATCH,MATCH-PENDING,R2,matching/src/pilot4/a/glrender_accum_blur.cpp
 0x004340F0,RenderOverlayOverbrighten,MATCH,MATCH-PENDING,R2,matching/src/g/fb_overlay.cpp
 0x00434240,RenderOverlayOverbrightenATI,MATCH,MATCH-PENDING,R2,matching/src/g/fb_overlay.cpp
-0x004343D0,RenderSaturationAdjustmentATI,NONMATCH,NONMATCH,R1 R2,matching/src/g/fb_overlay.cpp
+0x004343D0,RenderSaturationAdjustmentATI,NONMATCH,NONMATCH,R2,matching/src/g/fb_overlay.cpp
 0x00434CC0,RequestPoolManagerVBO::LoseBuffers,MATCH,MATCH-PENDING,R2,matching/src/g/request_pool.cpp
 0x00434E70,RequestPoolManagerVBO::RestoreBuffers,MATCH,MATCH-PENDING,R2,matching/src/g/request_pool.cpp
 0x00434F30,RequestPoolManagerVBO::RequestPoolManagerVBO,NONMATCH,NONMATCH,,matching/src/g/request_pool.cpp
@@ -900,8 +900,8 @@ address,name,bytes,status,rules,file
 0x00436470,RequestPoolManagerVBO::RequestPoolManagerVBO,MATCH,MATCH,,matching/src/g/request_pool.cpp
 0x00436490,LoadExtensions,NONMATCH,NONMATCH,R2,matching/src/g/ext_loader.cpp
 0x00437520,FrameBufferModifications,MATCH,MATCH-PENDING,R1 R2,matching/src/g/fb_modify.cpp
-0x00437A60,operator*,MATCH,MATCH-PENDING,R1,matching/src/g/vector_ops.cpp
-0x00437A90,operator/,MATCH,MATCH-PENDING,R1,matching/src/g/vector_ops.cpp
+0x00437A60,operator*,MATCH,MATCH,,matching/src/g/vector_ops.cpp
+0x00437A90,operator/,MATCH,MATCH,,matching/src/g/vector_ops.cpp
 0x00437AF0,Matrix::Matrix,MATCH,MATCH-PENDING,R1,matching/src/g/vector_ops.cpp
 0x00437BA0,Matrix::Matrix,MATCH,MATCH-PENDING,R1,matching/src/g/vector_ops.cpp
 0x00437C10,MdlNodeEmitter::PostProcess,MATCH,MATCH-PENDING,R1,matching/src/g/vector_ops.cpp
@@ -1278,7 +1278,7 @@ address,name,bytes,status,rules,file
 0x0044EF70,AurDisableVertexBufferObjectsWriteOnly,MATCH,MATCH-PENDING,R2,matching/src/g/aurora_api.cpp
 0x0044EF80,AurEnableVertexBufferObjectsWriteOnly,MATCH,MATCH-PENDING,R2,matching/src/g/aurora_api.cpp
 0x0044EF90,AurATIUnlockSoftShadowsForHotFix,MATCH,MATCH-PENDING,R2,matching/src/g/aurora_api.cpp
-0x0044EFB0,AurAddDrawableSquare,MATCH,MATCH-PENDING,R1,matching/src/g/aurora_api.cpp
+0x0044EFB0,AurAddDrawableSquare,MATCH,MATCH,,matching/src/g/aurora_api.cpp
 0x0044F050,AurRemoveDrawableSquare,MATCH,MATCH,,matching/src/g/aurora_api.cpp
 0x0044F070,thunk_FUN_00436490,MATCH,MATCH,,matching/src/g/aurora_api.cpp
 0x0044F080,AurDisableShadows,MATCH,MATCH-PENDING,R2,matching/src/g/aurora_api.cpp
@@ -1423,7 +1423,7 @@ address,name,bytes,status,rules,file
 0x00459190,AurSetColor,MATCH,MATCH,,matching/src/h/gui.cpp
 0x004591B0,AurGUIStartLayer,MATCH,MATCH-PENDING,R2,matching/src/h/gui.cpp
 0x004592B0,AurGUIStopLayer,MATCH,MATCH-PENDING,R2,matching/src/h/gui.cpp
-0x004592F0,AurGUISetupViewport,NONMATCH,NONMATCH,R1 R2,matching/src/h/gui.cpp
+0x004592F0,AurGUISetupViewport,NONMATCH,NONMATCH,R2,matching/src/h/gui.cpp
 0x00459580,AurGUICloseViewport,MATCH,MATCH-PENDING,R2,matching/src/h/gui.cpp
 0x00459610,CAurGUIStringInternal::GetFontScale,MATCH,MATCH-PENDING,R1,matching/src/h/guivirt.cpp
 0x00459630,CAurGUIStringInternal::DrawBounds,MATCH,MATCH-PENDING,R1 R2,matching/src/h/guivirt.cpp
@@ -1669,7 +1669,7 @@ address,name,bytes,status,rules,file
 0x0046A590,BinaryInsertModel,MATCH,MATCH-PENDING,R1 R2,matching/src/h/keys.cpp
 0x0046A5F0,InsertModel,MATCH,MATCH-PENDING,R1 R2,matching/src/h/keys.cpp
 0x0046A610,AurClearActiveBins,MATCH,MATCH-PENDING,R2,matching/src/h/scenebsp.cpp
-0x0046A620,Vector::IsZero,MATCH,MATCH-PENDING,R1,matching/src/h/scenemisc.cpp
+0x0046A620,Vector::IsZero,MATCH,MATCH,,matching/src/h/scenemisc.cpp
 0x0046A660,NodeIsTile,MATCH,MATCH-PENDING,R1,matching/src/h/scenebsp.cpp
 0x0046A680,SceneBSPGetTileData,MATCH,MATCH-PENDING,R1,matching/src/h/scenebsp.cpp
 0x0046A6B0,PartOutside,MATCH,MATCH-PENDING,R1 R2,matching/src/h/scenebsp.cpp
@@ -1704,7 +1704,7 @@ address,name,bytes,status,rules,file
 0x0046C510,SceneBSPRemovePart,NONMATCH,NONMATCH,R1,matching/src/h/sceneremove.cpp
 0x0046C850,SceneBSPDeleteRoomData,MATCH,MATCH,,matching/src/h/sceneremove.cpp
 0x0046CA30,UpdateStaticLighting,MATCH,MATCH-PENDING,R1 R2,matching/src/h/scenemisc.cpp
-0x0046CAE0,ActivateBinsInRange,MATCH,MATCH-PENDING,R1 R2,matching/src/h/scenemisc.cpp
+0x0046CAE0,ActivateBinsInRange,MATCH,MATCH-PENDING,R2,matching/src/h/scenemisc.cpp
 0x0046CC00,AddLightToRooms,MATCH,MATCH-PENDING,R1,matching/src/h/scenebsp.cpp
 0x0046CD70,AddEmitterToRooms,NONMATCH,NONMATCH,R1,matching/src/h/scenerooms.cpp
 0x0046CE70,AddObjectToRooms,NONMATCH,NONMATCH,R1 R2,matching/src/h/scenerooms.cpp
@@ -1725,14 +1725,14 @@ address,name,bytes,status,rules,file
 0x0046EE00,FUN_0046ee00,MATCH,MATCH-PENDING,R2,matching/src/h/scenemisc.cpp
 0x0046EE30,EnvMapTarget::SetValue94,MATCH,MATCH,,matching/src/h/scenebsp.cpp
 0x0046EE40,PartIsRenderable,MATCH,MATCH-PENDING,R2,matching/src/h/scenebsp.cpp
-0x0046EEA0,VectorLerp,MATCH,MATCH-PENDING,R1,matching/src/h/scenebsp.cpp
-0x0046EF10,GLRender::DrawAxisAlignedFrame,MATCH,MATCH-PENDING,R1,matching/src/h/glrender.cpp
+0x0046EEA0,VectorLerp,MATCH,MATCH,,matching/src/h/scenebsp.cpp
+0x0046EF10,GLRender::DrawAxisAlignedFrame,MATCH,MATCH,,matching/src/h/glrender.cpp
 0x0046F060,GLRender::Transform,NONMATCH,NONMATCH,R1 R2,matching/src/h/glrender.cpp
 0x0046F1A0,PartTriMesh::WithinRange,MATCH,MATCH-PENDING,R1,matching/src/h/part_range.cpp
 0x0046F200,GetWalkMeshColors,MATCH,MATCH-PENDING,R2,matching/src/h/glrender.cpp
 0x0046F300,GetInverseWalkMeshColors,MATCH,MATCH-PENDING,R2,matching/src/h/glrender.cpp
 0x0046F410,StaticPartNeedsMat,MATCH,MATCH-PENDING,R2,matching/src/h/partmat.cpp
-0x0046F490,DynamicPartCalculateMaterial,MATCH,MATCH-PENDING,R1,matching/src/h/partmat.cpp
+0x0046F490,DynamicPartCalculateMaterial,MATCH,MATCH,,matching/src/h/partmat.cpp
 0x0046F550,BindVertexProgram,MATCH,MATCH-PENDING,R2,matching/src/h/glrender.cpp
 0x0046F580,ClipProjectionCaps,MATCH,MATCH-PENDING,R1,matching/src/h/glrender.cpp
 0x0046F650,ClipProjection,MATCH,MATCH-PENDING,R1,matching/src/h/glrender.cpp
@@ -1760,7 +1760,7 @@ address,name,bytes,status,rules,file
 0x004713D0,RenderBumpmapFallback,MATCH,MATCH,,matching/src/h/rendervp.cpp
 0x00471430,PartTextureForwarder::Forward,MATCH,MATCH,,matching/src/h/rendervp.cpp
 0x00471450,SetBeaming,MATCH,MATCH-PENDING,R2,matching/src/h/rendervp.cpp
-0x004714B0,PartAxis::DrawAxis,MATCH,MATCH-PENDING,R1 R2,matching/src/h/rendervp.cpp
+0x004714B0,PartAxis::DrawAxis,MATCH,MATCH-PENDING,R2,matching/src/h/rendervp.cpp
 0x00471500,PartAnimMesh::Draw,MATCH,MATCH-PENDING,R1 R2,matching/src/h/rendervp.cpp
 0x00471560,PartAABB::Draw,MATCH,MATCH-PENDING,R1 R2,matching/src/h/part_aabb_draw.cpp
 0x004738C0,PartLight::Mat,MATCH,MATCH-PENDING,R1 R2,matching/src/h/part_light.cpp
@@ -1803,8 +1803,8 @@ address,name,bytes,status,rules,file
 0x00479430,VertexPrimitiveDangly::VertexPrimitiveDangly,MATCH,MATCH-PENDING,R1,matching/src/h/vertex.cpp
 0x004794C0,VertexPrimitiveSkinned::VertexPrimitiveSkinned,MATCH,MATCH-PENDING,R1,matching/src/h/vertex.cpp
 0x004794E0,InitializeATIFragmentShaders,MATCH,MATCH-PENDING,R2,matching/src/h/ati_fragment_shaders.cpp
-0x0047A280,SetFragmentShaderConstant0,MATCH,MATCH-PENDING,R1 R2,matching/src/h/fragment_shader_constants.cpp
-0x0047A2A0,SetFragmentShaderConstant1,MATCH,MATCH-PENDING,R1 R2,matching/src/h/fragment_shader_constants.cpp
+0x0047A280,SetFragmentShaderConstant0,MATCH,MATCH-PENDING,R2,matching/src/h/fragment_shader_constants.cpp
+0x0047A2A0,SetFragmentShaderConstant1,MATCH,MATCH-PENDING,R2,matching/src/h/fragment_shader_constants.cpp
 0x0047A2C0,ReportARBError,MATCH,MATCH,,matching/src/h/fragment_shader_constants.cpp
 0x0047A2F0,EnableFragmentShaders,MATCH,MATCH-PENDING,R1 R2,matching/src/h/ati_fragment_shaders.cpp
 0x0047ABC0,?,MATCH,UNCHECKED,,matching/src/h/material.cpp
@@ -2037,12 +2037,12 @@ address,name,bytes,status,rules,file
 0x0049D7D0,AurPartTriggerDelete,MATCH,MATCH-PENDING,R1,matching/src/e/emitter.cpp
 0x0049D810,PartTrigger::HitCheckGeom,MATCH,MATCH-PENDING,R1,matching/src/e/emitter.cpp
 0x0049D8E0,PartTrigger::~PartTrigger,MATCH,MATCH,,matching/src/e/emitter.cpp
-0x0049D9B0,AurPartTriggerSetColor,MATCH,MATCH-PENDING,R1,matching/src/e/emitter.cpp
+0x0049D9B0,AurPartTriggerSetColor,MATCH,MATCH,,matching/src/e/emitter.cpp
 0x0049DA00,PartTrigger::DrawVolume,MATCH,MATCH,,matching/src/e/emitter.cpp
 0x0049DA40,PartTrigger::Render,MATCH,MATCH-PENDING,R2,matching/src/e/emitter.cpp
 0x0049DB10,PartTrigger::PartTrigger,MATCH,MATCH-PENDING,R1,matching/src/e/emitter.cpp
 0x0049DB30,PartTrigger::PartTrigger,NONMATCH,NONMATCH,R1,matching/src/e/emitter.cpp
-0x0049DC10,PartTrigger::SetHighlight,NONMATCH,NONMATCH,R1,matching/src/e/emitter.cpp
+0x0049DC10,PartTrigger::SetHighlight,NONMATCH,NONMATCH,,matching/src/e/emitter.cpp
 0x0049E610,AurPartTriggerSetHighlight,MATCH,MATCH,,matching/src/e/emitter.cpp
 0x0049EB40,UpdateScenesAttach,MATCH,MATCH-PENDING,R1,matching/src/e/behavior.cpp
 0x0049EB90,UpdateDependentPosition,MATCH,MATCH-PENDING,R1,matching/src/e/behavior.cpp
@@ -2056,13 +2056,13 @@ address,name,bytes,status,rules,file
 0x0049EDA0,CAurBehaviorAttachRotate::Message,MATCH,MATCH,,matching/src/e/behavior.cpp
 0x0049EE00,CAurBehaviorCameraFollow::Message,MATCH,MATCH-PENDING,R1,matching/src/e/behavior.cpp
 0x0049F0C0,CAurBehaviorAttach::UpdateScenes,MATCH,MATCH-PENDING,R1,matching/src/e/behavior.cpp
-0x0049F0E0,CAurBehaviorAttach::GetTargetPosition,NONMATCH,NONMATCH,R1,matching/src/e/behavior.cpp
+0x0049F0E0,CAurBehaviorAttach::GetTargetPosition,MATCH,MATCH-PENDING,R1,matching/src/e/behavior.cpp
 0x0049F110,CAurBehavior::CAurBehavior,MATCH,MATCH-PENDING,R1,matching/src/e/behavior.cpp
 0x0049F130,CAurBehavior::AddDependency,MATCH,MATCH-PENDING,R1,matching/src/e/behavior.cpp
 0x0049F1F0,CAurBehavior::RemoveDependency,MATCH,MATCH-PENDING,R1,matching/src/e/behavior.cpp
 0x0049F270,CAurBehavior::Control,NONMATCH,NONMATCH,R1,matching/src/e/behavior.cpp
 0x0049F3B0,CAurBehaviorAttach::Control,NONMATCH,NONMATCH,R1 R2,matching/src/e/behavior.cpp
-0x0049F4F0,CAurBehaviorAttachTranslate::Control,NONMATCH,NONMATCH,R1,matching/src/e/behavior.cpp
+0x0049F4F0,CAurBehaviorAttachTranslate::Control,MATCH,MATCH-PENDING,R1,matching/src/e/behavior.cpp
 0x0049F5F0,CAurBehaviorAttachRotate::Control,MATCH,MATCH-PENDING,R1,matching/src/e/behavior.cpp
 0x0049F670,CAurBehaviorAttachNoOrientation::Control,MATCH,MATCH-PENDING,R1,matching/src/e/behavior.cpp
 0x0049FA70,CAurBehavior::~CAurBehavior,MATCH,MATCH-PENDING,R1,matching/src/e/behavior.cpp
@@ -2122,7 +2122,7 @@ address,name,bytes,status,rules,file
 0x004A28A0,LightManager::GetBumpMapLights,MATCH,MATCH-PENDING,R1,matching/src/i/light_manager_lists.cpp
 0x004A28B0,LightManager::GetLensFlareLights,MATCH,MATCH-PENDING,R1,matching/src/i/light_manager_lists.cpp
 0x004A28C0,LightCompare,MATCH,MATCH-PENDING,R1,matching/src/i/light_compare.cpp
-0x004A2A00,SetLightGL,NONMATCH,NONMATCH,R1 R2,matching/src/i/light_set_gl.cpp
+0x004A2A00,SetLightGL,NONMATCH,NONMATCH,R2,matching/src/i/light_set_gl.cpp
 0x004A2BC0,LightManager::~LightManager,MATCH,MATCH-PENDING,R1,matching/src/i/light_manager_life.cpp
 0x004A2DB0,LightManager::SetupLightsForThisGob,MATCH,MATCH-PENDING,R1,matching/src/i/light_manager_slots.cpp
 0x004A2DE0,LightManager::SetupLightsForThisRoom,MATCH,MATCH-PENDING,R1,matching/src/i/light_manager_slots.cpp
@@ -2193,15 +2193,15 @@ address,name,bytes,status,rules,file
 0x004A96D0,FUN_004a96d0,MATCH,MATCH,,matching/src/i/vector_math.cpp
 0x004A96E0,Round,MATCH,MATCH,,matching/src/i/vector_math.cpp
 0x004A9710,FUN_004a9710,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
-0x004A9740,Vector::operator+=,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
-0x004A9770,Vector::operator-=,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
-0x004A97A0,Vector::operator*=,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
-0x004A97D0,Vector::operator/=,MATCH,MATCH-PENDING,R1 R2,matching/src/i/vector_math.cpp
-0x004A9810,FUN_004a9810,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
-0x004A9850,FUN_004a9850,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
-0x004A98B0,lineproject,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
+0x004A9740,Vector::operator+=,MATCH,MATCH,,matching/src/i/vector_math.cpp
+0x004A9770,Vector::operator-=,MATCH,MATCH,,matching/src/i/vector_math.cpp
+0x004A97A0,Vector::operator*=,MATCH,MATCH,,matching/src/i/vector_math.cpp
+0x004A97D0,Vector::operator/=,MATCH,MATCH-PENDING,R2,matching/src/i/vector_math.cpp
+0x004A9810,FUN_004a9810,MATCH,MATCH,,matching/src/i/vector_math.cpp
+0x004A9850,FUN_004a9850,MATCH,MATCH,,matching/src/i/vector_math.cpp
+0x004A98B0,lineproject,MATCH,MATCH,,matching/src/i/vector_math.cpp
 0x004A99B0,Transpose,MATCH,MATCH-PENDING,R1,matching/src/i/math3d_x87.cpp
-0x004A9A60,FUN_004a9a60,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
+0x004A9A60,FUN_004a9a60,MATCH,MATCH,,matching/src/i/vector_math.cpp
 0x004A9AC0,FUN_004a9ac0,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
 0x004A9B50,FUN_004a9b50,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
 0x004A9B80,FUN_004a9b80,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
@@ -2212,39 +2212,39 @@ address,name,bytes,status,rules,file
 0x004A9E00,Slerp,MATCH,MATCH-PENDING,R1,matching/src/i/math3d_x87.cpp
 0x004A9F40,GetPitch,NONMATCH,NONMATCH,R1 R2,matching/src/i/math3d_x87.cpp
 0x004AA020,FUN_004aa020,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
-0x004AA0F0,FUN_004aa0f0,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
-0x004AA130,FUN_004aa130,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
-0x004AA160,Outcode,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
-0x004AA1F0,BoxIntersec,NONMATCH,NONMATCH,R1,matching/src/pilot1/vector_math.cpp
-0x004AA610,BoxIntersect,NONMATCH,NONMATCH,R1 R2,matching/src/i/math3d_x87.cpp
-0x004AA980,operator==,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
+0x004AA0F0,FUN_004aa0f0,MATCH,MATCH,,matching/src/i/vector_math.cpp
+0x004AA130,FUN_004aa130,MATCH,MATCH,,matching/src/i/vector_math.cpp
+0x004AA160,Outcode,MATCH,MATCH,,matching/src/i/vector_math.cpp
+0x004AA1F0,BoxIntersec,NONMATCH,NONMATCH,,matching/src/pilot1/vector_math.cpp
+0x004AA610,BoxIntersect,NONMATCH,NONMATCH,R2,matching/src/i/math3d_x87.cpp
+0x004AA980,operator==,MATCH,MATCH,,matching/src/i/vector_math.cpp
 0x004AA9C0,MakeMatrix4x4,MATCH,MATCH-PENDING,R1 R2,matching/src/i/math3d_matrix4.cpp
 0x004AAAB0,FUN_004aaab0,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
 0x004AAAE0,FUN_004aaae0,MATCH,MATCH-PENDING,R2,matching/src/i/vector_math.cpp
-0x004AAB50,IntersectCircle2d,NONMATCH,NONMATCH,R1 R2,matching/src/i/math3d_circle.cpp
+0x004AAB50,IntersectCircle2d,NONMATCH,NONMATCH,R2,matching/src/i/math3d_circle.cpp
 0x004AADF0,CosLookup,MATCH,MATCH,,matching/src/i/vector_math.cpp
 0x004AAE30,SinLookup,MATCH,MATCH,,matching/src/i/vector_math.cpp
-0x004AAE70,FUN_004aae70,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
-0x004AAEE0,FUN_004aaee0,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
+0x004AAE70,FUN_004aae70,MATCH,MATCH,,matching/src/i/vector_math.cpp
+0x004AAEE0,FUN_004aaee0,MATCH,MATCH,,matching/src/i/vector_math.cpp
 0x004AAF50,FUN_004aaf50,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
 0x004AAFC0,FUN_004aafc0,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
 0x004AB060,FUN_004ab060,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
-0x004AB100,FUN_004ab100,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
-0x004AB130,Vector::Normalize,NONMATCH,NONMATCH,R1 R2,matching/src/i/vector_normalize.cpp
-0x004AB180,NormalizeVector,NONMATCH,NONMATCH,R1 R2,matching/src/i/vector_normalize.cpp
-0x004AB1E0,FUN_004ab1e0,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
-0x004AB210,FUN_004ab210,MATCH,MATCH-PENDING,R1,matching/src/i/vector_math.cpp
-0x004AB250,planelineintersection,MATCH,MATCH-PENDING,R1,matching/src/i/math3d_statics.cpp
-0x004AB360,segmentproject,MATCH,MATCH-PENDING,R1,matching/src/i/math3d_statics.cpp
+0x004AB100,FUN_004ab100,MATCH,MATCH,,matching/src/i/vector_math.cpp
+0x004AB130,Vector::Normalize,NONMATCH,NONMATCH,R2,matching/src/i/vector_normalize.cpp
+0x004AB180,NormalizeVector,NONMATCH,NONMATCH,R2,matching/src/i/vector_normalize.cpp
+0x004AB1E0,FUN_004ab1e0,MATCH,MATCH,,matching/src/i/vector_math.cpp
+0x004AB210,FUN_004ab210,MATCH,MATCH,,matching/src/i/vector_math.cpp
+0x004AB250,planelineintersection,MATCH,MATCH,,matching/src/i/math3d_statics.cpp
+0x004AB360,segmentproject,MATCH,MATCH,,matching/src/i/math3d_statics.cpp
 0x004AB4C0,Plane::Transform,NONMATCH,NONMATCH,R1,matching/src/i/math3d_statics.cpp
 0x004AB630,RotationArc,MATCH,MATCH-PENDING,R1,matching/src/i/math3d_statics.cpp
-0x004AB750,polyhit,MATCH,MATCH-PENDING,R1,matching/src/i/vector_polyhit.cpp
-0x004AB9D0,polyhit,NONMATCH,NONMATCH,R1,matching/src/i/vector_polyhit.cpp
-0x004ABDD0,SphereIntersect,MATCH,MATCH-PENDING,R1 R2,matching/src/i/math3d_x87.cpp
-0x004ABF00,DistanceBetweenLines,MATCH,MATCH-PENDING,R1,matching/src/i/vector_line_distance.cpp
-0x004AC110,InterpolateBezier,MATCH,MATCH-PENDING,R1 R2,matching/src/i/math3d_bezier.cpp
+0x004AB750,polyhit,MATCH,MATCH,,matching/src/i/vector_polyhit.cpp
+0x004AB9D0,polyhit,NONMATCH,NONMATCH,,matching/src/i/vector_polyhit.cpp
+0x004ABDD0,SphereIntersect,MATCH,MATCH-PENDING,R2,matching/src/i/math3d_x87.cpp
+0x004ABF00,DistanceBetweenLines,MATCH,MATCH,,matching/src/i/vector_line_distance.cpp
+0x004AC110,InterpolateBezier,MATCH,MATCH-PENDING,R2,matching/src/i/math3d_bezier.cpp
 0x004AC960,Quaternion::Quaternion,NONMATCH,NONMATCH,R1,matching/src/i/math3d_quat.cpp
-0x004ACA00,NormalOf,MATCH,MATCH-PENDING,R1,matching/src/i/math3d_quat.cpp
+0x004ACA00,NormalOf,MATCH,MATCH,,matching/src/i/math3d_quat.cpp
 0x004ACAC0,YawPitchRoll,NONMATCH,NONMATCH,R1,matching/src/i/math3d_quat.cpp
 0x004ACB90,GetEulerRoll,NONMATCH,NONMATCH,R1,matching/src/i/math3d_x87.cpp
 0x004ACCA0,PointTo,MATCH,MATCH-PENDING,R1,matching/src/i/vector_point_to.cpp
@@ -3217,7 +3217,7 @@ address,name,bytes,status,rules,file
 0x004EFEF0,CSWSCreature::SetByte4C4,MATCH,MATCH-PENDING,R1,matching/src/a/sws_creature_broadcast.cpp
 0x004EFF30,CSWSCreature::GetIsInjured,MATCH,MATCH-PENDING,R1,matching/src/a/sws_creature.cpp
 0x004EFFA0,CSWGuiInterfaceAction::operator=,MATCH,MATCH-PENDING,R1,matching/src/a/sws_creature2.cpp
-0x004F0020,CSWSCreaturePartyFollowInfo::Reset,MATCH,MATCH-PENDING,R1,matching/src/a/sws_creature2.cpp
+0x004F0020,CSWSCreaturePartyFollowInfo::Reset,MATCH,MATCH,,matching/src/a/sws_creature2.cpp
 0x004F00A0,CSWSCreature::SetActivity,MATCH,MATCH-PENDING,R1,matching/src/a/sws_creature_activity.cpp
 0x004F0310,CSWSCreature::ReplaceEquipItemActions,NONMATCH,NONMATCH,R1,matching/src/a/sws_creature3.cpp
 0x004F0420,CSWSCreature::AddEquipItemActions,MATCH,MATCH-PENDING,R1,matching/src/a/sws_creature3.cpp
@@ -4502,8 +4502,8 @@ address,name,bytes,status,rules,file
 0x005806C0,CSWRoomSurfaceMesh::GetTriangleIndices,MATCH,MATCH-PENDING,R1,matching/src/f/surfmesh.cpp
 0x00580700,CSWRoomSurfaceMeshOrientation::SetOrientation,MATCH,MATCH-PENDING,R1,matching/src/f/surface_hit.cpp
 0x00580720,CSWRoomSurfaceMeshAABBNode::CSWRoomSurfaceMeshAABBNode,MATCH,MATCH-PENDING,R1,matching/src/f/room_surface_mesh.cpp
-0x00580750,CSWRoomSurfaceMeshHitInfo::ClearOutput,MATCH,MATCH-PENDING,R1,matching/src/f/surface_hit.cpp
-0x00580780,CSWRoomSurfaceMeshHitInfo::ClearAll,MATCH,MATCH-PENDING,R1,matching/src/f/surface_hit.cpp
+0x00580750,CSWRoomSurfaceMeshHitInfo::ClearOutput,MATCH,MATCH,,matching/src/f/surface_hit.cpp
+0x00580780,CSWRoomSurfaceMeshHitInfo::ClearAll,MATCH,MATCH,,matching/src/f/surface_hit.cpp
 0x005807C0,CSWRoomSurfaceMesh::LoadMeshBinary,MATCH,MATCH-PENDING,R1,matching/src/f/room_surface_mesh.cpp
 0x005808E0,CSWWalkMeshHeader::CSWWalkMeshHeader,MATCH,MATCH,,matching/src/f/room_surface_mesh.cpp
 0x00580920,CSWRoomSurfaceMesh::CheckAABBNode,NONMATCH,NONMATCH,R1,matching/src/f/room_surface_mesh.cpp
@@ -6946,7 +6946,7 @@ address,name,bytes,status,rules,file
 0x00630620,CGuiInGame::InitializeDialogAnimationData,NONMATCH,NONMATCH,R1,matching/src/n/gui_dialog_animation_allocation.cpp
 0x00631B70,CGuiInGame::ResetDialogAnimations,NONMATCH,NONMATCH,R1,matching/src/n/gui_in_game_dialog_node.cpp
 0x00631C60,CGuiInGame::ResetTalkAnimations,NONMATCH,NONMATCH,R1,matching/src/n/gui_in_game_dialog_node.cpp
-0x00632180,CGuiInGame::UpdateAreaTransitionGUI,NONMATCH,NONMATCH,R1 R2,matching/src/c/gui_in_game_dialog.cpp
+0x00632180,CGuiInGame::UpdateAreaTransitionGUI,MATCH,MATCH-PENDING,R1 R2,matching/src/c/gui_in_game_dialog.cpp
 0x00632300,CGuiInGame::AddToDialogNonDependantList,MATCH,MATCH-PENDING,R1,matching/src/n/gui_in_game_dialog_lists.cpp
 0x00632720,CGuiInGame::InitializeGlobal,MATCH,MATCH-PENDING,R1 R2,matching/src/n/gui_in_game_globals.cpp
 0x006332B0,CGuiInGame::CloseDialog,NONMATCH,NONMATCH,R1 R2,matching/src/n/gui_in_game_stunt_models.cpp
@@ -6965,7 +6965,7 @@ address,name,bytes,status,rules,file
 0x006349F0,CSWParty::RemoveCharacter,MATCH,MATCH-PENDING,R1,matching/src/n/sw_party_members.cpp
 0x00634A40,CSWParty::ClearParty,MATCH,MATCH-PENDING,R1,matching/src/n/sw_party_members.cpp
 0x00634A70,CSWParty::GetFollowRange,NONMATCH,NONMATCH,R1 R2,matching/src/n/sw_party_formation.cpp
-0x00634B60,CSWPartyFollowDataArray::Reset,NONMATCH,NONMATCH,R1,matching/src/n/sw_party_follow_data.cpp
+0x00634B60,CSWPartyFollowDataArray::Reset,NONMATCH,NONMATCH,,matching/src/n/sw_party_follow_data.cpp
 0x00634CC0,CSWPartyFollowDataArray::GetPathData,MATCH,MATCH-PENDING,R1,matching/src/n/sw_party_follow_data.cpp
 0x00634D40,CSWPartyFollowDataArray::FindClosestPartyMemeber_Current,MATCH,MATCH-PENDING,R1,matching/src/n/sw_party_follow_data.cpp
 0x00634DA0,CSWPartyFollowDataArray::FindFurthestPartyMemeber_Current,MATCH,MATCH-PENDING,R1,matching/src/n/sw_party_follow_data.cpp
@@ -6973,7 +6973,7 @@ address,name,bytes,status,rules,file
 0x00635350,CSWParty::IsPartyTogether,NONMATCH,NONMATCH,R1,matching/src/n/sw_party_follow.cpp
 0x00635460,CSWParty::GetPlayerCharacter,MATCH,MATCH-PENDING,R1 R2,matching/src/n/sw_party_lookup.cpp
 0x006359C0,CSWParty::RecalculateFollowPoint,MATCH,MATCH-PENDING,R1,matching/src/n/party_follow_state.cpp
-0x00635A90,CSWPartyFollowDataArray::CSWPartyFollowDataArray,MATCH,MATCH-PENDING,R1,matching/src/n/sw_party_follow_data.cpp
+0x00635A90,CSWPartyFollowDataArray::CSWPartyFollowDataArray,MATCH,MATCH,,matching/src/n/sw_party_follow_data.cpp
 0x00636170,CSWParty::CSWParty,NONMATCH,NONMATCH,R1,matching/src/n/sw_party_ctor.cpp
 0x00636840,CSWParty::TestAndResetPath,NONMATCH,NONMATCH,R1,matching/src/n/sw_party_follow.cpp
 0x006369D0,CSWParty::FollowStateChanged,MATCH,MATCH-PENDING,R1,matching/src/n/party_follow_state.cpp
@@ -7025,7 +7025,7 @@ address,name,bytes,status,rules,file
 0x0063C0C0,CSWCObject::ReplaceTextures,NONMATCH,NONMATCH,R1,matching/src/n/object_visual_texture_forwards.cpp
 0x0063C0E0,CSWCObject::GetAnimationLength,MATCH,MATCH-PENDING,R1,matching/src/n/object_animation_state.cpp
 0x0063C100,CSWCObject::GetLoopingAnimation,MATCH,MATCH-PENDING,R1,matching/src/n/object_control_members.cpp
-0x0063C110,CSWCObject::SetOrientation,NONMATCH,NONMATCH,R1,matching/src/n/object_model_control.cpp
+0x0063C110,CSWCObject::SetOrientation,MATCH,MATCH-PENDING,R1,matching/src/n/object_model_control.cpp
 0x0063C170,CSWCObject::AnimationStationary,MATCH,MATCH-PENDING,R1,matching/src/n/object_animation_predicates.cpp
 0x0063C1E0,CSWCObject::AnimationPause,MATCH,MATCH-PENDING,R1,matching/src/n/object_animation_predicates.cpp
 0x0063C240,CSWCObject::AnimationWalk,MATCH,MATCH-PENDING,R1,matching/src/n/object_animation_predicates.cpp
@@ -7448,15 +7448,15 @@ address,name,bytes,status,rules,file
 0x0066CA90,CSWTrackFollower::SetSoundVolume,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mini_game_object.cpp
 0x0066CAD0,CSWTrackFollower::GetModelName,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mini_game_object.cpp
 0x0066CB10,CSWTrackFollower::ValidateTarget170,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mini_game_object.cpp
-0x0066CB40,CSWMiniPlayer::ClampPosition,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mini_game_object.cpp
-0x0066CCF0,CSWMiniPlayer::SetPosition,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mini_game_object.cpp
+0x0066CB40,CSWMiniPlayer::ClampPosition,MATCH,MATCH,,matching/src/m/sw_mini_game_object.cpp
+0x0066CCF0,CSWMiniPlayer::SetPosition,MATCH,MATCH,,matching/src/m/sw_mini_game_object.cpp
 0x0066CD30,CSWMiniPlayer::GetInertia,NONMATCH,NONMATCH,R1,matching/src/m/sw_mini_game_object.cpp
 0x0066CE60,CSWMiniPlayer::SetBank,MATCH,MATCH,,matching/src/m/sw_track_follower.cpp
 0x0066CF20,CSWMiniPlayer::SetAxisModeV,MATCH,MATCH,,matching/src/m/sw_track_follower.cpp
 0x0066CF40,CSWMiniPlayer::SetF1D8,MATCH,MATCH,,matching/src/m/sw_mini_game_object.cpp
 0x0066CF70,CSWMiniPlayer::SetF1DC,MATCH,MATCH,,matching/src/m/sw_mini_game_object.cpp
 0x0066CFA0,CSWMiniPlayer::SetF1E0,MATCH,MATCH,,matching/src/m/sw_mini_game_object.cpp
-0x0066CFD0,CSWMiniPlayer::SetOffset,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mini_game_object.cpp
+0x0066CFD0,CSWMiniPlayer::SetOffset,MATCH,MATCH,,matching/src/m/sw_mini_game_object.cpp
 0x0066D030,CSWMiniPlayer::SetHook,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mini_game_object.cpp
 0x0066D090,CSWTrackFollower::SetAxisMode,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mini_game_object.cpp
 0x0066D0B0,CSWTrackFollower::LoadFromGFF,MATCH,MATCH-PENDING,R1,matching/src/m/sw_track_follower.cpp
@@ -7509,11 +7509,11 @@ address,name,bytes,status,rules,file
 0x00670640,CSWMiniObstacle::CSWMiniObstacle,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mini_obstacle.cpp
 0x006706C0,CSWMiniObstacle::PlayAnimation,MATCH,MATCH,,matching/src/m/sw_mini_obstacle.cpp
 0x006706E0,CSWMiniObstacle::~CSWMiniObstacle,NONMATCH,NONMATCH,R1,matching/src/m/sw_mini_obstacle.cpp
-0x00670750,CSWMiniState::CSWMiniState,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mini_state_ctor.cpp
+0x00670750,CSWMiniState::CSWMiniState,MATCH,MATCH,,matching/src/m/sw_mini_state_ctor.cpp
 0x006707A0,operator+,MATCH,MATCH,,matching/src/m/sw_mini_state.cpp
 0x00670830,operator*,MATCH,MATCH,,matching/src/m/sw_mini_state.cpp
-0x006708C0,operator/,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mini_state.cpp
-0x006709C0,MakeMiniState,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mini_state.cpp
+0x006708C0,operator/,MATCH,MATCH,,matching/src/m/sw_mini_state.cpp
+0x006709C0,MakeMiniState,MATCH,MATCH,,matching/src/m/sw_mini_state.cpp
 0x00670A10,CSWCMiniGame::UpdateAxisLinear,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mini_state.cpp
 0x00670A90,CSWCMiniGame::GetAccel,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mini_state.cpp
 0x00670B10,CSWMiniEnemy::GetTargetMask,MATCH,MATCH-PENDING,R1,matching/src/m/sw_mini_enemy.cpp
@@ -8794,7 +8794,7 @@ address,name,bytes,status,rules,file
 0x006D05E0,CSWGuiItemCreateMenu::OnItemSelected,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_debug_menu.cpp
 0x006D09C0,?,MATCH,UNCHECKED,,matching/src/l/sw_gui_debug_menu.cpp
 0x006D09E0,?,MATCH,UNCHECKED,,matching/src/l/sw_gui_debug_menu.cpp
-0x006D0A40,operator/,MATCH,MATCH-PENDING,R1,matching/src/l/sw_camera_clip.cpp
+0x006D0A40,operator/,MATCH,MATCH,,matching/src/l/sw_camera_clip.cpp
 0x006D0B20,CSWCameraClipBase::CSWCameraClipBase,NONMATCH,NONMATCH,R1,matching/src/l/sw_camera_clip.cpp
 0x006D0FC0,CSWCameraClipBase::GetAccelerationVector,MATCH,MATCH-PENDING,R1,matching/src/l/sw_camera_clip.cpp
 0x006D1030,CSWCameraClipBase::SetVelocity,MATCH,MATCH-PENDING,R1,matching/src/l/sw_camera_clip.cpp
@@ -9109,8 +9109,8 @@ address,name,bytes,status,rules,file
 0x006EA490,CSWCAnimBaseProjectile::~CSWCAnimBaseProjectile,MATCH,MATCH-PENDING,R1,matching/src/l/sw_c_anim_base_projectile.cpp
 0x006EA4E0,CSWCAnimBaseProjectile::LoadModel,MATCH,MATCH-PENDING,R1,matching/src/l/sw_c_anim_base_projectile.cpp
 0x006EA550,CSWCAnimBaseProjectile::PlayAnimation,MATCH,MATCH,,matching/src/l/sw_c_anim_base_projectile.cpp
-0x006EA680,CSWCAnimBaseProjectile::SetFacing,MATCH,MATCH-PENDING,R1,matching/src/l/sw_c_anim_base_projectile.cpp
-0x006EA6A0,CSWCAnimBaseProjectile::SetFacing,NONMATCH,NONMATCH,R1,matching/src/l/sw_c_anim_base_projectile.cpp
+0x006EA680,CSWCAnimBaseProjectile::SetFacing,MATCH,MATCH,,matching/src/l/sw_c_anim_base_projectile.cpp
+0x006EA6A0,CSWCAnimBaseProjectile::SetFacing,NONMATCH,NONMATCH,,matching/src/l/sw_c_anim_base_projectile.cpp
 0x006EA760,CSWGuiMainCharGen::SetVisiblePanel,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_main_chargen.cpp
 0x006EA810,CSWGuiMainCharGen::OnPanelAdded,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_main_chargen.cpp
 0x006EA830,CSWGuiMainCharGen::RemoveSubPanels,MATCH,MATCH-PENDING,R1,matching/src/l/sw_gui_main_chargen.cpp

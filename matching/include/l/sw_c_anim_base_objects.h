@@ -31,9 +31,7 @@ public:
     char m_resRef[16];
 };
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct Quaternion {
     float w, x, y, z;

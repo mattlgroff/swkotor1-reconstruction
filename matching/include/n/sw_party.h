@@ -4,23 +4,7 @@
 #ifndef MATCHING_N_SW_PARTY_H
 #define MATCHING_N_SW_PARTY_H
 
-class Vector {
-public:
-    float x, y, z;
-
-#ifdef N_SW_PARTY_ZERO_VECTOR
-    // The party constructor's translation unit sees a zeroing default
-    // constructor (member and array construction in 0x00636170).
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-#else
-    Vector() {}
-#endif
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    Vector& operator+=(const Vector& v);            // 0x004A9740
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:

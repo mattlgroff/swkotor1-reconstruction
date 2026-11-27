@@ -45,9 +45,7 @@ void ImageBumpMap(void* pData, int nWidth, int nHeight, int nBpp, unsigned char*
 int AurHasMultiTexture();                       // 0x0045f710
 int AurHasDDS();                                // 0x0045f950
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CAurTextureBasic;
 

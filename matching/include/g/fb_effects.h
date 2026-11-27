@@ -77,13 +77,7 @@ __declspec(dllimport) void __stdcall glVertex4f(float x, float y, float z, float
 #define GL_REPEAT 0x2901
 #define GL_FRAGMENT_SHADER_ATI 0x8920
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 // GL extension entry points (function-pointer globals).
 typedef void(__stdcall* PFNGLACTIVETEXTUREARB)(unsigned int tex);

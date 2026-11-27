@@ -1,9 +1,7 @@
 // CSWCCreature line-of-sight test, worker C s8 (nwccreature.o;
 // translation-unit-local layout).
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CGob;
 

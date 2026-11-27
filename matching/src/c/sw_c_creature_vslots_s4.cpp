@@ -64,11 +64,7 @@ public:
 extern CAppManager* g_pAppManager;                  // 0x007A39FC
 extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
 Vector Normalize(const Vector& v);                  // 0x004AB180
 

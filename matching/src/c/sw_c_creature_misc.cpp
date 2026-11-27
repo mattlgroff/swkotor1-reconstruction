@@ -7,11 +7,7 @@
 
 #define OBJECT_INVALID 0x7f000000
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
 Vector NormalizeVector(const Vector& v);            // 0x004AB180
 

@@ -19,9 +19,7 @@ public:
     CResRef operator=(const CExoString& s);         // 0x004061F0
 };
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWCCreature;
 class CSWCObject;

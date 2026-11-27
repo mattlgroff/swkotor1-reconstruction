@@ -1,7 +1,7 @@
 // CClientExoAppInternal::HandleMouseOver (clientinput.o). SetMouseCursor
 // (0x0061F980, matched in c/client_cursor_state.cpp) is defined here again
 // without an annotation so cl can inline it the way the original TU did.
-struct Vector { float x,y,z; };
+#include "shared/vector.h"
 class CExoInput {
 public:
     int SetMouseCursor(int nCursor,int nOption,int bAlternate); // 0x005DF5C0

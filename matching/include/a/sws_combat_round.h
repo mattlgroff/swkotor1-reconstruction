@@ -124,10 +124,7 @@ extern CAppManager* g_pAppManager;
 // Base time of a scheduled attack animation (0x008327DC).
 extern int g_nCombatAnimationTime;
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-};
+#include "shared/vector.h"
 
 class CSWSCombatRoundAction {
 public:

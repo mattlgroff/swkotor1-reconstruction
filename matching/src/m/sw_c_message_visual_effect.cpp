@@ -1,4 +1,4 @@
-struct Vector { float x,y,z; };
+#include "shared/vector.h"
 class CResRef { public: char m_ref[16]; CResRef(const char*); };
 class CSWCArea { public: char pad_000[0x184]; int m_nAreaState; };
 class CSWCModule { public: char pad_000[0x48]; CSWCArea* m_pArea; };
@@ -84,8 +84,8 @@ class CSWCMessage { public:
 // FUNCTION: SWKOTOR 0x0064C3C0
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_VisEffect()
 {
- Vector sourcePosition={0,0,0};
- Vector position={0,0,0};
+ Vector sourcePosition(0.0f, 0.0f, 0.0f);
+ Vector position(0.0f, 0.0f, 0.0f);
  float duration=0.0f;
  unsigned long targetID=ReadOBJECTIDClient();
  unsigned short effect=ReadWORD(16);
@@ -159,7 +159,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_VisEffect()
    target=dummy;
   }
   int instant=duration==0.0f;
-  Vector zero={0,0,0};
+  Vector zero(0.0f, 0.0f, 0.0f);
   if (targetID==OBJECT_INVALID) {
    target->ApplyVisualEffect(effect,instant,sourceID,beamTarget,a,b,position);
    return 1;

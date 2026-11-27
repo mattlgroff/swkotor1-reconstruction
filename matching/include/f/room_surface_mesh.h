@@ -6,16 +6,7 @@
 
 #include <stdio.h>
 
-class Vector {
-public:
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator+(const Vector &v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator-(const Vector &v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    Vector &operator*=(float f);
-    Vector &operator+=(const Vector &v);
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 Vector Normalize(const Vector &v);
 Vector NormalOf(const Vector &v0, const Vector &v1, const Vector &v2);

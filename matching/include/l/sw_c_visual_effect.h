@@ -5,15 +5,7 @@
 
 #define OBJECT_INVALID 0x7f000000
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    Vector& operator+=(const Vector& v);            // 0x004A9740
-};
+#include "shared/vector_ops.h"
 
 Vector NormalizeVector(const Vector& v);            // 0x004AB180
 int operator==(const Vector& a, const Vector& b);   // 0x004AA980

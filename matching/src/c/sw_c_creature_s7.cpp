@@ -4,13 +4,7 @@
 
 #include <stdlib.h>
 
-struct Vector {
-    Vector() {}
-    Vector(float a, float b, float c) : x(a), y(b), z(c) {}
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    float MagnitudeSquared() const { return x * x + y * y + z * z; }
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 class CResRef {
 public:

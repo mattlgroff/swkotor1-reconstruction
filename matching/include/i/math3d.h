@@ -4,27 +4,7 @@
 #ifndef I_MATH3D_H
 #define I_MATH3D_H
 
-class Vector {
-public:
-    Vector()
-    {
-        x = 0.0f;
-        y = 0.0f;
-        z = 0.0f;
-    }
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-
-    void Normalize();                                   // 0x004AB130
-
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

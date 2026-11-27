@@ -80,30 +80,29 @@ int CSWSArea::CountVisibleToPlayers(const Vector& vPosition, int nMax)
 {
     int nCount = 0;
     unsigned long oid;
-    Vector vEye;
     int bFound = GetFirstObjectIdInArea(&oid);
     if (bFound == 1) {
-        vEye = vPosition;
-    }
-    while (bFound == 1 && nCount < nMax) {
-        CGameObject* pObject;
-        if (GetServerExoApp()->GetObjectArray()->GetGameObject(oid, &pObject) == g_nGameObjectFound &&
-            pObject->AsSWSCreature() &&
-            ServerClientObject(m_idSelf)) {
-            Vector vCreature = pObject->AsSWSCreature()->m_vPosition;
-            Vector vDiff = vEye - vCreature;
-            if (vDiff.x * vDiff.x + vDiff.y * vDiff.y + vDiff.z * vDiff.z <= 900.0f) {
-                vEye.z += 1.5f;
-                vCreature.z += 1.5f;
-                Vector vHit(0.0f, 0.0f, 0.0f);
-                int nOut;
-                if (ClearLineOfSight(&vEye, &vCreature, &vHit, &nOut, OBJECT_INVALID,
-                                     OBJECT_INVALID, 0, 0) == 1) {
-                    nCount++;
+        Vector vEye = vPosition;
+        while (bFound == 1 && nCount < nMax) {
+            CGameObject* pObject;
+            if (GetServerExoApp()->GetObjectArray()->GetGameObject(oid, &pObject) == g_nGameObjectFound &&
+                pObject->AsSWSCreature() &&
+                ServerClientObject(m_idSelf)) {
+                Vector vCreature = pObject->AsSWSCreature()->m_vPosition;
+                Vector vDiff = vEye - vCreature;
+                if (vDiff.x * vDiff.x + vDiff.y * vDiff.y + vDiff.z * vDiff.z <= 900.0f) {
+                    vEye.z += 1.5f;
+                    vCreature.z += 1.5f;
+                    Vector vHit(0.0f, 0.0f, 0.0f);
+                    int nOut;
+                    if (ClearLineOfSight(&vEye, &vCreature, &vHit, &nOut, OBJECT_INVALID,
+                                         OBJECT_INVALID, 0, 0) == 1) {
+                        nCount++;
+                    }
                 }
             }
+            bFound = GetNextObjectIdInArea(&oid);
         }
-        bFound = GetNextObjectIdInArea(&oid);
     }
     return nCount;
 }

@@ -1,9 +1,6 @@
 // CSWArea lifetime (b0058_f_lifetime_leaves).
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWArea {
 public:

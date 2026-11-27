@@ -22,8 +22,8 @@ unsigned long CSWSArea::GetDoorCrossed(Vector* pFrom, Vector* pTo)
             continue;
         }
         Vector vPosition = pDoor->m_vPosition;
-        int bFrom = (vFrom - vPosition).Dot(pDoor->m_vOrientation) > 0.0f;
-        int bTo = (vTo - vPosition).Dot(pDoor->m_vOrientation) > 0.0f;
+        int bFrom = (vFrom - vPosition) * pDoor->m_vOrientation > 0.0f;
+        int bTo = (vTo - vPosition) * pDoor->m_vOrientation > 0.0f;
         if (bFrom != bTo) {
             return oidDoor;
         }

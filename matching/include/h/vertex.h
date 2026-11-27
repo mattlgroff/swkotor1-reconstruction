@@ -3,13 +3,7 @@
 #ifndef MATCHING_H_VERTEX_H
 #define MATCHING_H_VERTEX_H
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() { x = 0; y = 0; z = 0; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 int operator==(const Vector& a, const Vector& b);      // 0x004AA980
 

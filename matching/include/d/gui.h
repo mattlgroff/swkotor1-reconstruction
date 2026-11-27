@@ -44,17 +44,7 @@ struct CResList : public CResStruct {
     char m_pLabel[16];
 };
 
-class Vector {
-public:
-    float x, y, z;
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-};
+#include "shared/vector.h"
 
 class CRes {
 public:

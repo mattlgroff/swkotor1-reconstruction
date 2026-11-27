@@ -8,10 +8,7 @@
 
 #include <string.h>
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-};
+#include "shared/vector.h"
 
 struct Quaternion {
     float w, x, y, z;

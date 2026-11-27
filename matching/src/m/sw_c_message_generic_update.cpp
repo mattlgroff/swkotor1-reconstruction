@@ -1,4 +1,4 @@
-struct Vector { float x,y,z; };
+#include "shared/vector.h"
 class CResRef { public: char m_ref[16]; CResRef(); CResRef operator=(const CResRef&); };
 class CSWCDoor { public: void SetState(int); }; // descriptive 0x00683D40
 class CSWCObject { public:
@@ -81,7 +81,7 @@ class CSWCMessage { public:
 int CSWCMessage::HandleServerToPlayerGenericObjectUpdate_Update(unsigned long id,unsigned long mask)
 {
  CResRef portraitRef;
- Vector position = {0,0,0}, orientation = {0,0,0};
+ Vector position(0.0f, 0.0f, 0.0f), orientation(0.0f, 0.0f, 0.0f);
  CSWCObject* target = 0;
  CClientExoApp* client = g_pAppManager->m_pClientExoApp;
  CGameObject* object = client->GetGameObject(id);

@@ -196,9 +196,6 @@ void CSWGuiPanel::GetAbsoluteExtent(CSWGuiExtent* pExtent)
 CSWGuiPanel::CSWGuiPanel(CSWGuiManager* pManager)
     : m_lstControls(0)
 {
-    m_vColor.x = 0;
-    m_vColor.y = 0;
-    m_vColor.z = 0;
     m_pBorder = new CSWGuiBorder;
     m_pManager = pManager;
     m_pActiveControl = 0;

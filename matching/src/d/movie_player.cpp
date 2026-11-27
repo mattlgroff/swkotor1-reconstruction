@@ -326,21 +326,10 @@ void _glOrtho(double left, double right, double bottom, double top, double zNear
     glOrtho(left, right, bottom, top, zNear, zFar);
 }
 
-class Vector {
-public:
-    float x;
-    float y;
-    float z;
-    Vector(float fX, float fY, float fZ);
-};
+#include "shared/vector.h"
 
-// FUNCTION: SWKOTOR 0x00404ae0
-Vector::Vector(float fX, float fY, float fZ)
-{
-    x = fX;
-    y = fY;
-    z = fZ;
-}
+// The out-of-line copy of Vector's inline three-float constructor.
+// FUNCTION: SWKOTOR 0x00404ae0 SYMBOL: ??0Vector@@QAE@MMM@Z
 
 // The fading panel created by the movie player (0x1b8 bytes, ctor 0x00624810).
 class CSWGuiFadePanel {

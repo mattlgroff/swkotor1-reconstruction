@@ -6,16 +6,7 @@
 #ifndef N_SW_C_OBJECT_H
 #define N_SW_C_OBJECT_H
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-() const { return Vector(-x, -y, -z); }
-};
-inline float operator*(const Vector& a, const Vector& b)
-{
-    return a.x * b.x + a.y * b.y + a.z * b.z;
-}
+#include "shared/vector_ops.h"
 class Quaternion {
 public:
     float w, x, y, z;
@@ -25,11 +16,6 @@ public:
 Quaternion RotationArc(Vector vFrom, Vector vTo);   // 0x004AB630
 float Magnitude(const Vector& v);                   // 0x004AB100
 int operator==(const Vector& a, const Vector& b);   // 0x004AA980
-inline Vector operator-(const Vector& a, const Vector& b)
-{
-    return Vector(a.x - b.x, a.y - b.y, a.z - b.z);
-}
-
 class CExoString {
 public:
     char* m_sString;

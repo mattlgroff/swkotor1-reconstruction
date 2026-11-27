@@ -51,10 +51,7 @@ __int64 AurGetTime()
     return nCounter.QuadPart * 1000000 / s_nFrequency;
 }
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class WindManager {
 public:

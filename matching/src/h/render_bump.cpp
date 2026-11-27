@@ -8,13 +8,7 @@ extern "C" __declspec(dllimport) void __stdcall glBlendFunc(unsigned int, unsign
 extern "C" __declspec(dllimport) void __stdcall glEnableClientState(unsigned int);
 extern "C" __declspec(dllimport) void __stdcall glDisableClientState(unsigned int);
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 inline Vector operator-(const Vector& a, const Vector& b)
 {

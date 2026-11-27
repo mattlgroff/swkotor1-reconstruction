@@ -1,9 +1,7 @@
 // Sound behavior leaves: member layout follows the 0x00691000/30 binary accesses.
 #include "k/sw_c_ambient_sound.h"
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CAurPart;
 

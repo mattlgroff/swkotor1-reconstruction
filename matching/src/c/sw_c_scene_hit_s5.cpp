@@ -2,9 +2,7 @@
 // room walkmeshes (worker C s5). Descriptive name; the playable source calls
 // it SceneHitCheck. 0x0060F1E0 is a real start missing from functions.csv.
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWCollisionResult {
 public:

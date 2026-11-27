@@ -2,11 +2,7 @@
 // (translation-unit-local layout). Creature override of vtable slot 0x12c;
 // missing from functions.csv.
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 class C2DA {
 public:

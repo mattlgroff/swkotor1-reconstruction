@@ -3,16 +3,6 @@
 // the function table: starts after 0x00691A30's padding.
 #include "k/sw_c_trigger.h"
 
-inline Vector operator-(const Vector& v)
-{
-    return Vector(-v.x, -v.y, -v.z);
-}
-
-inline float operator*(const Vector& a, const Vector& b)
-{
-    return a.x * b.x + a.y * b.y + a.z * b.z;
-}
-
 class Quaternion {
 public:
     float w, x, y, z;

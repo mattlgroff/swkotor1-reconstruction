@@ -31,11 +31,7 @@ public:
     unsigned long m_oidNewAttackTarget;       // +0x9cc
 };
 
-class Vector {
-public:
-    Vector() {}
-    float x, y, z;
-};
+#include "shared/vector.h"
 Vector operator-(const Vector &a, const Vector &b);
 
 class CSWSCreature;

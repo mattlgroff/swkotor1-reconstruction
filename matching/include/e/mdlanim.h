@@ -62,19 +62,7 @@ CExoArrayList<T>& CExoArrayList<T>::operator=(const CExoArrayList<T>& o)
     return *this;
 }
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector(const Vector& v) { x = v.x; y = v.y; z = v.z; }
-    Vector& operator=(const Vector& v) { x = v.x; y = v.y; z = v.z; return *this; }
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    void operator+=(const Vector& v);           // 0x004A9740
-};
+#include "shared/vector_ops.h"
 
 // Plain RGB triple (implicit copy: the by-value pass is a block copy).
 struct AurColor {

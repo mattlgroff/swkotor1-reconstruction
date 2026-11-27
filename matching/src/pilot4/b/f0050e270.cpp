@@ -1,11 +1,6 @@
 // Pilot 4 arm B: 0x0050E270, reset of a block of vectors and ids.
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWSPathData {
 public:

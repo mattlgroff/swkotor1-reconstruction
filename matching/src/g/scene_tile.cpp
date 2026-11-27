@@ -1,10 +1,7 @@
 // Scene tile slots (vtable 0x741708 +0x28 / +0x2c): per-tile light
 // positions and flame objects. Behavioural reference:
 // src/units/0728/344241bbf2-m46_scene_c1.cpp, src/units/0694/aa8460a1b8-tile_scene.cpp.
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 int operator==(const Vector& a, const Vector& b);   // 0x004aa980
 

@@ -5,15 +5,7 @@
 
 #include "g/exo_list.h"
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-
-    Vector& operator*=(float f);                        // 0x004a97a0
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

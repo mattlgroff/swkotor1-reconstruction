@@ -1,5 +1,5 @@
 // Folded position setters used by client projectile and server object code.
-class Vector { public: float x, y, z; };
+#include "shared/vector.h"
 class CSWCProjectile {
 public:
     char pad_0x00[0x114];

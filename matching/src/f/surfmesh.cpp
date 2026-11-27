@@ -53,14 +53,7 @@ CExoArrayList<T> &CExoArrayList<T>::operator=(const CExoArrayList<T> &other)
     return *this;
 }
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector &operator*=(float f);
-    Vector &operator+=(const Vector &v);
-    float x, y, z;
-};
+#include "shared/vector.h"
 Vector Normalize(const Vector &v);
 double PlaneHeightAtPoint(const Vector &vNormal, float fDistance, const Vector &vPoint);
 

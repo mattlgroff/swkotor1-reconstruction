@@ -2,11 +2,7 @@
 // pMin/pMax get ebx/ebp swapped (forces disp8 on [ebp], +2 bytes per block)
 // and the z-high block schedules fxch differently.
 
-struct Vector {
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector.h"
 
 void Outcode(Vector* pPoint, Vector* pMin, Vector* pMax, unsigned char* pCode);
 

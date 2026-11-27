@@ -2,13 +2,7 @@
 
 #include "c/exo_base.h"
 
-struct Vector {
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-() const { return Vector(-x, -y, -z); }
-
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 inline float DotProduct(const Vector& a, const Vector& b)
 {

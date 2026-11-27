@@ -93,19 +93,7 @@ struct CSWGuiExtent {
     int height;
 };
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    float x, y, z;
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    Vector operator+(const Vector& o) const { return Vector(x + o.x, y + o.y, z + o.z); }
-};
+#include "shared/vector_ops.h"
 
 class CSWGuiControl;
 class CSWGuiPanel;

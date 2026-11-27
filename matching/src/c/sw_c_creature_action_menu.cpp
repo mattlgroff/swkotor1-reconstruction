@@ -124,9 +124,7 @@ public:
     int m_nRestrictMode;                            // 0x2b0
 };
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWInventory {
 public:

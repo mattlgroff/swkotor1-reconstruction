@@ -5,25 +5,7 @@
 extern const float g_fZero;                         // 0x0073D700 (0.0f)
 extern const float g_fOne;                          // 0x0073D764 (1.0f)
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    Vector& operator+=(const Vector& v);                    // 0x004A9740
-    Vector& operator-=(const Vector& v);                    // 0x004A9770
-    Vector& operator*=(float f);                            // 0x004A97A0
-    Vector& operator/=(float f);                            // 0x004A97D0
-    void Normalize();                                       // 0x004AB130
-
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector.h"
 
 // w first: x87 code multiplies/conjugates element 0 as the scalar part.
 class Quaternion {

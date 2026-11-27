@@ -10,9 +10,7 @@ public:
     char m_resRef[16];
 };
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 int __cdecl operator==(const Vector& a, const Vector& b);    // 0x004AA980
 

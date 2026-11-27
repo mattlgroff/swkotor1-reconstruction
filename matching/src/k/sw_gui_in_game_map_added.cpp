@@ -21,10 +21,7 @@ public:
     char m_resRef[16];
 };
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 extern Vector g_vDifficultyExitColor;               // 0x007A23B4
 extern Vector g_vGuiDisabledTextColor;              // 0x007A2408

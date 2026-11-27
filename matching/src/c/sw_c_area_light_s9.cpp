@@ -3,12 +3,7 @@
 
 #include "c/exo_base.h"
 
-struct Vector {
-    Vector() {}
-    Vector(float a, float b, float c) : x(a), y(b), z(c) {}
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 struct Quaternion {
     Quaternion() {}

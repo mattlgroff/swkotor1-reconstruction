@@ -121,7 +121,7 @@ extern int g_nAppearanceCol_FootstepType; // 0x007a20ec
 extern int g_nFootstepRollingColumn; // 0x007a219c
 extern int g_nAppearanceCol_SIZECATEGORY; // 0x007a2124
 extern int g_nFootstepPitchOffsetColumn; // 0x007a21a0
-struct Vector { float x, y, z; };
+#include "shared/vector.h"
 class CExoSoundSource {
 public:
     virtual ~CExoSoundSource();

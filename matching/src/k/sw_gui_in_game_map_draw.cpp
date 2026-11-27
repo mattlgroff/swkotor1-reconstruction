@@ -2,10 +2,7 @@
 // and party buttons, draws the panel, then the map image and the map hider
 // inside a viewport at the map label's extent.
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct CSWGuiExtent {
     int left;

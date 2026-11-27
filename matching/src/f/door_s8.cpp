@@ -3,15 +3,7 @@
 
 #include <math.h>
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-(const Vector &v) const { Vector r; r.x = x - v.x; r.y = y - v.y; r.z = z - v.z; return r; }
-    int IsZero() const { return x == 0.0f && y == 0.0f && z == 0.0f; }
-    float MagnitudeSquared() const { return x * x + y * y + z * z; }
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:

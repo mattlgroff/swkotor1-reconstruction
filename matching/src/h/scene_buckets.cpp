@@ -77,12 +77,7 @@ void CExoArrayList<T>::Allocate(int n)
         delete[] pOld;
 }
 
-struct Vector {
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 
 inline Vector operator-(const Vector& a, const Vector& b)

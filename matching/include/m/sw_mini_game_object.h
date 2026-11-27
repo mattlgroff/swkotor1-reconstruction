@@ -10,27 +10,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator*(float f) const
-    {
-        return Vector(f * x, f * y, f * z);
-    }
-    Vector& operator-=(const Vector& v);            // 0x004A9770
-};
+#include "shared/vector_ops.h"
 
 Vector operator/(const Vector& v, float f);         // 0x00437A90
 extern float g_fMiniInertiaScale;                   // 0x007A2488 (descriptive)
-inline Vector operator+(const Vector& a, const Vector& b)
-{
-    return Vector(a.x + b.x, a.y + b.y, a.z + b.z);
-}
-inline Vector operator-(const Vector& a, const Vector& b)
-{
-    return Vector(a.x - b.x, a.y - b.y, a.z - b.z);
-}
 
 // Position / velocity pair integrated by the mini game (0x18 bytes).
 struct CSWMiniState {

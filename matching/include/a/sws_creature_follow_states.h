@@ -3,10 +3,7 @@
 // Batch-local follow state declarations copied from the exact 00512D00
 // sibling and checked against 00512A60/00512B40/00512C20.
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 inline Vector operator-(const Vector &a, const Vector &b)
 {

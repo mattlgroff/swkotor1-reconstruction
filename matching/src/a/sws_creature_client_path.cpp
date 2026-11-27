@@ -1,9 +1,6 @@
 // Client path cancellation from the server creature. Batch-local partial
 // layouts preserve the existing creature and last-update base sizes.
-struct Vector {
-    Vector(float x1, float y1, float z1) { x = x1; y = y1; z = z1; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 class CLastUpdateObject {
 public:
     char pad_0[0x40];

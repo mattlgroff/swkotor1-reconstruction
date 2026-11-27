@@ -1,9 +1,6 @@
 // Pilot 4 arm B: 0x00512D00, creature follow-point path check.
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 inline Vector operator-(const Vector &a, const Vector &b)
 {

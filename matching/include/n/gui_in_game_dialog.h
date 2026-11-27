@@ -98,13 +98,7 @@ public:
 
 extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 class CResRef {
 public:

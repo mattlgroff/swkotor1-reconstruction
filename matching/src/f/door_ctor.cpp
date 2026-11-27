@@ -37,11 +37,7 @@ public:
     }
 };
 
-class Vector {
-public:
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

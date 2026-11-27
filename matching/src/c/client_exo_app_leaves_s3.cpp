@@ -64,9 +64,7 @@ int CNearestStructList::Find(unsigned long nKey, NearestCompareFn pCompare)
     return -1;
 }
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWCameraTarget {
 public:

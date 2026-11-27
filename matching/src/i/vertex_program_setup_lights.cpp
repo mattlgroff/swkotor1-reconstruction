@@ -6,19 +6,7 @@
 #include <string.h>
 #pragma intrinsic(strcpy, strcat, strlen)
 
-class Vector {
-public:
-    Vector()
-    {
-        x = 0.0f;
-        y = 0.0f;
-        z = 0.0f;
-    }
-
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector.h"
 
 class Matrix {
 public:

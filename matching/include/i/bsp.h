@@ -3,20 +3,7 @@
 #ifndef I_BSP_H
 #define I_BSP_H
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector.h"
 
 inline Vector operator-(const Vector& v)
 {

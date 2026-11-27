@@ -20,9 +20,7 @@ public:
     char* GetResRefStr() const;                     // 0x00405FE0
 };
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct Quaternion {
     float w, x, y, z;

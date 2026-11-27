@@ -45,13 +45,7 @@ int HasMultiTexture();     // 0x0045f710
 int HasVertexBuffers();    // 0x0045fc90
 void ActivateTextureStage(int nStage);   // 0x00425250
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

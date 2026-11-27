@@ -1,11 +1,7 @@
 // CClientExoAppInternal::SetInputClass (clientinput.o). Standalone layout:
 // +0x18 module, +0x40 in-game GUI, +0x9C input class, +0x28C pending player
 // id, +0x2A0 player control.
-struct Vector {
-    float x,y,z;
-    Vector() {}
-    Vector(float fx,float fy,float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 class CExoInput { public: void ClearEvents(); /* 0x005DF4E0 */ };
 extern CExoInput* g_pExoInput; // 0x007A39E4
 class CGameObject { public: virtual ~CGameObject(); unsigned long m_idSelf; };

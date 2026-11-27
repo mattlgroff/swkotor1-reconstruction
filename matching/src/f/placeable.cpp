@@ -1,10 +1,7 @@
 // CSWSPlaceable inventory / effect glue
 // (b0058_f2_surfmesh_placeable, 0x00584870..0x00587770).
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

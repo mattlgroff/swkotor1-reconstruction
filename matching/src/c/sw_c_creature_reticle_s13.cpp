@@ -3,17 +3,8 @@
 // (0x0063D560): the reticle sits on the "head_g" node of the body or head
 // model, else on "rootdummy".
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-() const { return Vector(-x, -y, -z); }
-};
+#include "shared/vector_ops.h"
 
-inline float operator*(const Vector& a, const Vector& b)
-{
-    return a.x * b.x + a.y * b.y + a.z * b.z;
-}
 
 class Quaternion {
 public:

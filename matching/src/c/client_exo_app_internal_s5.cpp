@@ -119,11 +119,7 @@ public:
 class CSWSObject : public CGameObject {
 };
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
 extern Vector g_vAbilityColorAvailable;             // 0x007A23D8
 extern Vector g_vAbilityColorLocked;                // 0x007A23E4

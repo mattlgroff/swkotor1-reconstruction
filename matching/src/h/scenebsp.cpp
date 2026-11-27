@@ -349,7 +349,7 @@ int GobOutside(Gob* pGob, CExoArrayList<Plane>* pPlanes)
         return 1;
     for (int i = 0; i < pPlanes->num; i++) {
         if (!g_bNoGobCulling) {
-            Vector vCenter = pGob->m_qOrientation * pGob->m_vCenterOffset + pGob->m_vPosition;
+            Vector vCenter = pGob->m_vPosition + pGob->m_qOrientation * pGob->m_vCenterOffset;
             if (SpherePlaneSide(&vCenter, pGob->m_fRadius, &pPlanes->element[i]) > 0.0f)
                 return 1;
         }
@@ -521,7 +521,7 @@ void SceneAddPartToRooms(Scene* pScene, Part* pPart)
     for (int i = 0; i < pScene->m_lRooms.num; i++) {
         BSPNode* pRoom = pScene->m_lRooms[i];
         if (pBox) {
-            Vector vCenter = (pBox->m_vMax + pBox->m_vMin) * 0.5f;
+            Vector vCenter = (pBox->m_vMin + pBox->m_vMax) * 0.5f;
             if (vCenter.x >= pRoom->m_vMin.x && vCenter.y >= pRoom->m_vMin.y
                 && vCenter.x <= pRoom->m_vMax.x && vCenter.y <= pRoom->m_vMax.y)
                 pRoom->m_pData->m_lEmitterBoxes.AddOutOfLine(pBox);

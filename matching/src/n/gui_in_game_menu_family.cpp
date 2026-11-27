@@ -14,7 +14,7 @@ public:
 };
 class CTlkTable { public: CExoString GetSimpleString(unsigned long nStrRef); };
 extern CTlkTable* g_pTlkTable;
-struct Vector { float x,y,z; };
+#include "shared/vector.h"
 template <class T> class CExoArrayList {
 public:
     T* m_pData; int m_nNum; int m_nAlloc;

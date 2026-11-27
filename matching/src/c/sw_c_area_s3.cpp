@@ -1,9 +1,7 @@
 // CSWCArea members (nwcarea.o, worker C s3) with a translation-unit local
 // area layout.
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWCVisualEffect {
 public:

@@ -1,10 +1,6 @@
 // CSWSTrigger::CreateNewGeometry (round s8, 0x0058D210).
 
-class Vector {
-public:
-    Vector();
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWSRoom;
 

@@ -18,9 +18,7 @@ public:
     CResRef operator=(const char* s);               // 0x00406290
 };
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWCCreature;
 class CSWCObject;

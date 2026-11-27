@@ -2,7 +2,7 @@
 #ifndef M_SW_C_MESSAGE_HANDLERS_H
 #define M_SW_C_MESSAGE_HANDLERS_H
 
-struct Vector;
+class Vector;
 class CResRef { public: CResRef(); char m_ref[16]; };
 class CExoString {
 public:
@@ -59,7 +59,7 @@ public:
     CSWCAreaObject();
 };
 
-struct Vector { float x, y, z; };
+#include "shared/vector.h"
 class CSWCAmbientSound {
 public:
     virtual void PlayMusic(int);

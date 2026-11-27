@@ -141,12 +141,7 @@ public:
 };
 #pragma pack(pop)
 
-struct Vector {
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWSCombatRound {
 public:

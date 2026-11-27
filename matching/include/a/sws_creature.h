@@ -31,14 +31,7 @@ public:
 };
 
 
-struct Vector {
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    float MagnitudeSquared() const { return x * x + y * y + z * z; }
-
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 class CResGFF {
 public:

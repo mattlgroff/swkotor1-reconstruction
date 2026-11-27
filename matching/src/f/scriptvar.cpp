@@ -19,10 +19,7 @@ public:
     unsigned long m_nBufferLength;
 };
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct CResStruct {
     unsigned long m_nIndex;

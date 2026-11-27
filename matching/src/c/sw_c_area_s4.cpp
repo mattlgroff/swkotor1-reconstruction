@@ -5,12 +5,7 @@
 
 #include <stdio.h>
 
-class Vector {
-public:
-    float x, y, z;
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
 inline Vector operator*(const Vector& v, float f)
 {

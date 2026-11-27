@@ -232,11 +232,7 @@ extern "C" __declspec(dllimport) int __stdcall GetMessageA(tagMSG* lpMsg, void* 
 extern "C" __declspec(dllimport) int __stdcall TranslateMessage(const tagMSG* lpMsg);
 extern "C" __declspec(dllimport) long __stdcall DispatchMessageA(const tagMSG* lpMsg);
 
-class Vector {
-public:
-    float x, y, z;
-    Vector();                       // 0x00409e70
-};
+#include "shared/vector.h"
 
 void UseVectors(Vector* p);
 
@@ -247,6 +243,10 @@ void NewVectors()
 }
 
 // FUNCTION: SWKOTOR 0x00401130 SYMBOL: ??_H@YGXPAXIHP6EPAX0@Z@Z
+
+// The out-of-line copy of Vector's inline default constructor, whose address
+// the vector constructor iterator takes for `new Vector[n]`.
+// FUNCTION: SWKOTOR 0x00409e70 SYMBOL: ??0Vector@@QAE@XZ
 
 // FUNCTION: SWKOTOR 0x00401160
 CAppManager::CAppManager()

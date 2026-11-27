@@ -57,9 +57,7 @@ public:
 
 extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWCCreature {
 public:

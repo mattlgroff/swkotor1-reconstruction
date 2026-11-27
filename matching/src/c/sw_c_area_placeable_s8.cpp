@@ -3,9 +3,7 @@
 
 #include "c/exo_base.h"
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct Quaternion {
     float w, x, y, z;

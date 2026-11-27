@@ -248,22 +248,7 @@ extern const unsigned long OBJECT_INVALID;          // 0x00746644
 extern const unsigned char OBJECT_TYPE_MODULE;      // 0x00746632
 extern const unsigned long g_nModuleDefaultA4;      // 0x0074410C
 
-class Vector {
-public:
-    Vector()
-    {
-        x = 0.0f;
-        y = 0.0f;
-        z = 0.0f;
-    }
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 // 0x34 bytes.
 class CScriptEvent {

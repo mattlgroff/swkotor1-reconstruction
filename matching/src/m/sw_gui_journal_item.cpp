@@ -1,5 +1,5 @@
 // Journal item highlighting.
-struct Vector { float x, y, z; };
+#include "shared/vector.h"
 extern Vector g_vKeyMapChangedColor;     // 0x007A23FC
 extern Vector g_vDifficultyExitColor;    // 0x007A23B4
 extern Vector g_vAbilityColorGranted;    // 0x007A23C0

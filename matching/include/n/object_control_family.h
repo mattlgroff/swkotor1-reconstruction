@@ -1,7 +1,7 @@
 // CSWCObject animation/table and server-link family; local complete layout.
 #ifndef N_OBJECT_CONTROL_FAMILY_H
 #define N_OBJECT_CONTROL_FAMILY_H
-struct Vector { float x,y,z; Vector& operator=(const Vector& v) { x=v.x; y=v.y; z=v.z; return *this; } };
+#include "shared/vector.h"
 Vector Normalize(const Vector&); // 0x004AB180
 class CExoString;
 class CResRef { public: char data[16]; CResRef(const CExoString&); CResRef operator=(const CResRef&); int operator==(const char*) const; void CopyToString(CExoString&) const; };

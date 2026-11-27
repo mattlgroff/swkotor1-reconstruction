@@ -77,12 +77,7 @@ public:
     ~MaxFace_PostProcess();
 };
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() { x = 0; y = 0; z = 0; }
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

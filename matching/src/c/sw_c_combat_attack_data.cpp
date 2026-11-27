@@ -3,11 +3,7 @@
 
 // CSWCCombatAttackData initialization and memberwise copying. The copy helper
 // name is descriptive: unlike a constructor, its EAX is not the destination.
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 class CSWCCombatAttackData {
 public:
     unsigned char m_nAttackType, m_nResult;

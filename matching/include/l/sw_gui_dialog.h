@@ -28,19 +28,7 @@ public:
     CExoString Right(int nCount) const;             // 0x005E6170
 };
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    Vector& operator-=(const Vector& v);            // 0x004A9770
-    void Normalize();                               // 0x004AB130
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct CSWGuiExtent {
     int left;

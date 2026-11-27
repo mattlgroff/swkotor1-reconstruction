@@ -5,11 +5,7 @@
 #include <math.h>
 #include "c/client_exo_app.h"
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
 class CExoInput {
 public:

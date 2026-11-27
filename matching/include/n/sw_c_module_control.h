@@ -15,16 +15,7 @@ public:
     void Remove(T value);                           // 0x00445080
 };
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector& operator+=(const Vector& v);            // 0x004A9740
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:

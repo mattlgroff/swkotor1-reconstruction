@@ -19,7 +19,7 @@ class CSWCModule;
 class CSWCSaveLoad;
 class CSWGuiManager;
 class CSWGuiLoadScreen;
-struct Vector;
+class Vector;
 class CSWCAmbientSound;
 class CMoviePlayer;
 class CSWCCreature;

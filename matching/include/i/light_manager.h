@@ -128,28 +128,7 @@ void CExoArrayList<T>::Allocate(int nSize)
 class Vector;
 int VectorEqual(const Vector& a, const Vector& b);      // 0x004AA980 (placeholder name)
 
-class Vector {
-public:
-    int IsEqual(const Vector& v) const { return VectorEqual(*this, v); }
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    Vector& operator-=(const Vector& v)
-    {
-        x -= v.x;
-        y -= v.y;
-        z -= v.z;
-        return *this;
-    }
-
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector.h"
 
 inline Vector operator-(const Vector& a, const Vector& b)
 {

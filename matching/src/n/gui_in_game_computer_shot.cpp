@@ -1,6 +1,6 @@
 // CGuiInGame::SetComputerCameraShot (guiingame.o). Standalone layout copied
 // from gui_in_game_set_shot.cpp.
-struct Vector { float x,y,z; };
+#include "shared/vector.h"
 class Quaternion {
 public:
     float w,x,y,z;

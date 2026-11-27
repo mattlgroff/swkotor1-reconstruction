@@ -4,11 +4,6 @@
 // 0x00682F20's padding.
 #include "k/sw_c_placeable_door.h"
 
-inline float operator*(const Vector& a, const Vector& b)
-{
-    return a.x * b.x + a.y * b.y + a.z * b.z;
-}
-
 struct KQuaternion : Quaternion {
     Vector ToDirection();                           // 0x0043E250
 };

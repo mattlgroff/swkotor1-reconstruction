@@ -46,13 +46,7 @@ extern PFNGLCOMBINERSTAGEPARAMETERFVNV glCombinerStageParameterfvNV; // 0x007BB6
 extern PFNWGLBINDTEXIMAGEARB wglBindTexImageARB;                    // 0x007BB7B8
 extern PFNWGLBINDTEXIMAGEARB wglReleaseTexImageARB;                 // 0x007BB6D0
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 float* AurMakeColor(const Vector& vColor, const float& fAlpha);     // 0x004AAAB0
 void FrameBufferModificationPixelShaders(int nMode, int a, int b, int c, int d); // 0x004299C0

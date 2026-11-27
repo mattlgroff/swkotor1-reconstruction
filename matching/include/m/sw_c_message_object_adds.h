@@ -1,6 +1,6 @@
 #ifndef M_SW_C_MESSAGE_OBJECT_ADDS_H
 #define M_SW_C_MESSAGE_OBJECT_ADDS_H
-struct Vector { float x,y,z; Vector() { x=0; y=0; z=0; } };
+#include "shared/vector.h"
 class CExoString { public: char* m_sString; unsigned long m_nBufferLength;
  CExoString(); CExoString(const char*); ~CExoString();
  CExoString& operator=(const CExoString&); CExoString& operator=(const char*);

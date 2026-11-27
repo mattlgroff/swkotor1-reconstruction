@@ -6,25 +6,9 @@
 
 #include <stddef.h>
 
-struct Vector {
-    Vector() {}
-    Vector(float fX, float fY, float fZ) : x(fX), y(fY), z(fZ) {}
-    float MagnitudeSquared() const { return x * x + y * y + z * z; }
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    float Dot(const Vector& v) const { return x * v.x + y * v.y + z * v.z; }
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    Vector& operator+=(const Vector& v)
-    {
-        x += v.x;
-        y += v.y;
-        z += v.z;
-        return *this;
-    }
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
-struct Vector;
+class Vector;
 class Quaternion {
 public:
     Quaternion() {}

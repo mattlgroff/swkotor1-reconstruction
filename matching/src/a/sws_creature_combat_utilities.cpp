@@ -1,5 +1,5 @@
 // Compact combat/hostility utilities adjacent to the creature action family.
-struct Vector { float x, y, z; };
+#include "shared/vector.h"
 class CGameEffect;
 class CExoString {
 public:

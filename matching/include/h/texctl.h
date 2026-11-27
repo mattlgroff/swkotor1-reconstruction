@@ -129,14 +129,7 @@ void CExoArrayList<T>::Allocate(int n)
         delete[] old;
 }
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector& operator/=(float f);                // 0x004A97D0
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

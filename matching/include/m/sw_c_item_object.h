@@ -33,11 +33,7 @@ public:
     CResRef(const CExoString& s);                   // 0x00406D60
 };
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 struct Quaternion {
     float w, x, y, z;

@@ -2,16 +2,7 @@
 
 #include "c/client_exo_app.h"
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-    Vector operator-() const { return Vector(-x, -y, -z); }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:

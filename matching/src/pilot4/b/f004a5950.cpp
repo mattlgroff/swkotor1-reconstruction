@@ -7,12 +7,7 @@
 // [edx+eax]. Everything before the rotation matches.
 #include <stdlib.h>
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 inline Vector operator*(const Vector &v, float f)
 {

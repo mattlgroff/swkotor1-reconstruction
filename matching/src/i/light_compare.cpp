@@ -11,10 +11,10 @@ int __cdecl LightCompare(const void* a, const void* b)
     LightNode* pNodeB = pB->m_pNode;
     int nPriorityA = pA->m_nSortPriority ? pA->m_nSortPriority : pA->m_pNode->m_nShadowPriority;
     int nPriorityB = pB->m_nSortPriority ? pB->m_nSortPriority : pNodeB->m_nShadowPriority;
-    if (pA->m_vColor.IsEqual(Vector(0.0f, 0.0f, 0.0f))) {
+    if (VectorEqual(pA->m_vColor, Vector(0.0f, 0.0f, 0.0f))) {
         return 1;
     }
-    if (pB->m_vColor.IsEqual(Vector(0.0f, 0.0f, 0.0f))) {
+    if (VectorEqual(pB->m_vColor, Vector(0.0f, 0.0f, 0.0f))) {
         return -1;
     }
     if (nPriorityA < nPriorityB) {

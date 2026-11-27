@@ -7,14 +7,7 @@
 #ifndef L_SW_C_PROJECTILE_H
 #define L_SW_C_PROJECTILE_H
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-};
+#include "shared/vector_ops.h"
 
 struct Quaternion {
     float w, x, y, z;

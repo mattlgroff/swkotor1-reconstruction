@@ -43,11 +43,7 @@ public:
     int WriteFieldVOID(CResStruct* pStruct, void* pData, unsigned long nSize, char* szLabel); // 0x00412C10
 };
 
-struct Vector {
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector.h"
 
 // Game-side command implementer (CScriptCompiler side, vtable slots used here).
 class CVirtualMachineCmdImplementer {

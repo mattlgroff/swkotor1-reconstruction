@@ -144,7 +144,7 @@ void PartTriMesh::Mat()
     if ((g_bNVVertexProgram || g_bEMBMEnabled) && AurVertexProgramsAvailable()) {
         Vector v = s_vEmission;
         if (g_pAnimatingScene && m_pGob)
-            v = v + g_pAnimatingScene->m_vAmbient * s_vDiffuse;
+            v = v + cmul(g_pAnimatingScene->m_vAmbient, s_vDiffuse);
         AurSetVertexProgramParameter(0x5d, v.x, v.y, v.z, 1.0f);
         AurSetVertexProgramParameter(0x5e, s_vAmbient.x, s_vAmbient.y, s_vAmbient.z, fAlpha);
         AurSetVertexProgramParameter(0x5f, s_vDiffuse.x, s_vDiffuse.y, s_vDiffuse.z, 1.0f);

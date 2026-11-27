@@ -14,9 +14,7 @@ extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
 extern int g_bCameraFollowFlag;                     // 0x007A2484
 extern int g_bModuleLoadEnabled;                    // 0x008328FC
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWCItem;
 class CSWCPlaceable;

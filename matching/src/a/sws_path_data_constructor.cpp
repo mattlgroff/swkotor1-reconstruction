@@ -1,11 +1,7 @@
 // The existing exact Clear method at 0050E270 establishes CSWSPathData's
 // 0x74-byte vector/identifier layout. The playable CAvoidCreature alias is
 // not used as a separate class owner.
-class Vector {
-public:
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 class CSWSPathData {
 public:
     CSWSPathData();

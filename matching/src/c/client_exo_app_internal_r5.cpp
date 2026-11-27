@@ -19,11 +19,7 @@ extern const unsigned char OBJECT_TYPE_SOUND;       // 0x0074663E
 extern const int KEY_DISPLAY_FIRST;                 // 0x0074D3D8
 extern const int KEY_DISPLAY_LAST;                  // 0x0074D3DC
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
 class CClientPlayer {
 public:

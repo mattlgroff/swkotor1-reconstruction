@@ -10,18 +10,7 @@ public:
     T& operator[](int i) { return element[i]; }
 };
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector& operator=(const Vector& v)
-    {
-        x = v.x;
-        y = v.y;
-        z = v.z;
-        return *this;
-    }
-};
+#include "shared/vector.h"
 
 inline float operator*(const Vector& a, const Vector& b)
 {

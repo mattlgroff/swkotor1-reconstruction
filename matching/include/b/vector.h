@@ -2,15 +2,7 @@
 #ifndef B_VECTOR_H
 #define B_VECTOR_H
 
-struct Vector {
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector& operator+=(const Vector& v);              // 0x004A9740
-
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector.h"
 
 int operator==(const Vector& a, const Vector& b);     // 0x004AA980
 Vector operator-(const Vector& a, const Vector& b);   // 0x00423BC0

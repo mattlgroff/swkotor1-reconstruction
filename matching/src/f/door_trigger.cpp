@@ -1,11 +1,6 @@
 // CSWSDoor / CSWSTrigger area glue (b0058_f2_door_trigger).
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

@@ -132,17 +132,7 @@ struct CSWGuiExtent {
     int height;
 };
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 extern Vector g_vPazaakButtonHilight;               // 0x007A23B4
 extern Vector g_vAbilityColorGranted;               // 0x007A23C0

@@ -11,10 +11,7 @@ public:
     unsigned long m_nBufferLength;
 };
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 template <class T>
 class CExoArrayList {

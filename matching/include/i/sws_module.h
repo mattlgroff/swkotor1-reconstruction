@@ -8,11 +8,7 @@
 
 #include <stddef.h>
 
-struct Vector {
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 // 0x48 bytes (+0x40 not touched by Initialize).
 class CWalkHitInfo {

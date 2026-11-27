@@ -1,7 +1,7 @@
 // CGuiInGame placeable-camera record setter (guiingame.o, name unknown:
 // placeholder SetPlaceableCamera). Records are 0x30 bytes at +0x1B4,
 // count at +0x1B0.
-struct Vector { float x,y,z; };
+#include "shared/vector.h"
 struct Quaternion { float w,x,y,z; };
 struct CSWPlaceableCamera {
     unsigned long m_nId; Vector m_vPosition; Quaternion m_qOrientation;

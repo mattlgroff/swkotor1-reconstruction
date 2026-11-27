@@ -3,16 +3,7 @@
 // aoe_collision.cpp (+0x22c area effect row, +0x230 shape, +0x238 radius,
 // +0x23c width, +0x240 length, +0x244 rectangle corners, +0x260 scripts).
 
-class Vector {
-public:
-    Vector();                                               // 0x00409E70
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-(const Vector &v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    Vector operator+(const Vector &v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    Vector operator-() const { return Vector(-x, -y, -z); }
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 Vector CrossProduct(const Vector &a, const Vector &b);      // 0x004AB210
 Vector Normalize(const Vector &v);                          // 0x004AB180

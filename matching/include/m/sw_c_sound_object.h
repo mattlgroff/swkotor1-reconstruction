@@ -6,10 +6,7 @@
 
 #include <stdlib.h>
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-};
+#include "shared/vector.h"
 
 class CResRef {
 public:

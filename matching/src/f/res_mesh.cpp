@@ -3,13 +3,7 @@
 
 #include <string.h>
 
-class Vector {
-public:
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-(const Vector &v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:

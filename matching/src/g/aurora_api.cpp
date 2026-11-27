@@ -23,11 +23,7 @@ extern "C" double __cdecl pow(double x, double y);
 #pragma intrinsic(memset, pow)
 extern "C" __declspec(dllimport) int __stdcall SetDeviceGammaRamp(void* hDC, void* pRamp);
 
-class Vector {
-public:
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

@@ -7,10 +7,7 @@ __declspec(dllimport) void __stdcall glPopMatrix();
 __declspec(dllimport) void __stdcall glScalef(float x, float y, float z);
 }
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

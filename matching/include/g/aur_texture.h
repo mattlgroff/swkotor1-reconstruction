@@ -96,13 +96,7 @@ void CExoArrayList<T>::Remove(T t)
 }
 #endif
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() { x = 0; y = 0; z = 0; }
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
 // --- SafePointer: a back-referenced pointer; the target keeps a list of the
 // SafePointers that point at it (+0x04) and clears them when it dies. ------

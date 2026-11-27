@@ -33,7 +33,7 @@ address,name,status,diff_insns,file
 0x00403CF0,ChangeResolutionForMovie,MATCH,0,matching/src/d/app_resolution.cpp
 0x00403DE0,RestoreResolutionFromMovie,MATCH,0,matching/src/d/app_resolution.cpp
 0x00403F20,InitApplication,MATCH,0,matching/src/d/app_window.cpp
-0x00404AE0,Vector::Vector,MATCH,0,matching/src/d/movie_player.cpp
+0x00404AE0,??0Vector@@QAE@MMM@Z,MATCH,0,matching/src/d/movie_player.cpp
 0x00404B00,CSWGuiFadePanel::SetAlpha,MATCH,0,matching/src/d/movie_player.cpp
 0x00404B60,_glOrtho,MATCH,0,matching/src/d/movie_player.cpp
 0x00404BB0,CExoMoviePlayerInternal::CloseMovie,MATCH,0,matching/src/d/movie_player.cpp
@@ -158,7 +158,7 @@ address,name,status,diff_insns,file
 0x00409D70,??_GCRes@@UAEPAXI@Z,MATCH,0,matching/src/d/res.cpp
 0x00409DC0,CSWGuiExtent::Load,MATCH,0,matching/src/d/gui_panel.cpp
 0x00409E60,CSWGuiPanel::HandleInputEvent,MATCH,0,matching/src/d/gui_panel.cpp
-0x00409E70,Vector::Vector,MATCH,0,matching/src/d/vector.cpp
+0x00409E70,??0Vector@@QAE@XZ,MATCH,0,matching/src/d/app_misc.cpp
 0x00409E80,CSWGuiObject::~CSWGuiObject,MATCH,0,matching/src/d/gui_panel.cpp
 0x00409E90,CSWGuiObject::SetExtent,MATCH,0,matching/src/d/gui_panel.cpp
 0x00409EB0,CSWGuiObject::v10,MATCH,0,matching/src/d/gui_panel.cpp
@@ -1368,7 +1368,7 @@ address,name,status,diff_insns,file
 0x00453E20,Scene::RenderGobLast,MATCH,0,matching/src/h/scene_order.cpp
 0x00453E70,Scene::RenderGobAfter,MATCH,0,matching/src/h/scene_order.cpp
 0x00453EC0,Scene::RenderGobBefore,MATCH,0,matching/src/h/scene_order.cpp
-0x00453F10,CollapsePartTree,NONMATCH,33,matching/src/h/scene_collapse.cpp
+0x00453F10,CollapsePartTree,NONMATCH,40,matching/src/h/scene_collapse.cpp
 0x00454470,ExpandReferenceParts,MATCH,0,matching/src/h/scene_reference.cpp
 0x004548A0,CAurRoom::CAurRoom,MATCH,0,matching/src/h/room.cpp
 0x00454940,Scene::SetVisibility,MATCH,0,matching/src/h/room.cpp
@@ -1384,7 +1384,7 @@ address,name,status,diff_insns,file
 0x00455A40,Scene::DoCapBucket,MATCH,0,matching/src/h/scenecap.cpp
 0x00455B60,Scene::DoFadeBuckets,NONMATCH,76,matching/src/h/scene_buckets.cpp
 0x00456250,Scene::DoStaticMeshShadows,NONMATCH,13,matching/src/h/scenecap.cpp
-0x00456300,Scene::DoHighlightTriggers,NONMATCH,283,matching/src/h/scene_highlight.cpp
+0x00456300,Scene::DoHighlightTriggers,NONMATCH,245,matching/src/h/scene_highlight.cpp
 0x004568D0,Scene::LoadVisibility,MATCH,0,matching/src/h/scene_visibility.cpp
 0x00456A00,?SetSize@?$CExoArrayList@V?$CExoArrayList@PAVCAurTriangleBin@@@@@@QAEXH@Z,MATCH,0,matching/src/h/trianglebin.cpp
 0x00456A60,CHitInfo::ClearOutput,MATCH,0,matching/src/h/scene.cpp
@@ -1492,7 +1492,7 @@ address,name,status,diff_insns,file
 0x0045C3C0,?AttachToObject@Camera@@W3AEPAVGobAttachment@@PAVGob@@PADH@Z,MATCH,0,matching/src/h/camera.cpp
 0x0045C3D0,?AttachToPart@Camera@@W3AEPAVGobAttachment@@PAVGob@@PAVPart@@H@Z,MATCH,0,matching/src/h/camera.cpp
 0x0045C3E0,?SetAttachment@Camera@@W3AEXPAVGobAttachment@@@Z,MATCH,0,matching/src/h/camera.cpp
-0x0045C3F0,?SetPosition@Camera@@W3AE?AUVector@@U2@@Z,MATCH,0,matching/src/h/camera.cpp
+0x0045C3F0,?SetPosition@Camera@@W3AE?AVVector@@V2@@Z,MATCH,0,matching/src/h/camera.cpp
 0x0045C400,?SetOrientation@Camera@@W3AE?AUQuaternion@@U2@@Z,MATCH,0,matching/src/h/camera.cpp
 0x0045C410,?SetAttachmentLight@Camera@@W3AEXH@Z,MATCH,0,matching/src/h/camera.cpp
 0x0045C420,?GetAttachment@Camera@@W3AEPAVGobAttachment@@H@Z,MATCH,0,matching/src/h/camera.cpp
@@ -1513,7 +1513,7 @@ address,name,status,diff_insns,file
 0x0045D760,Camera::GetViewVolume,MATCH,0,matching/src/h/camera.cpp
 0x0045D790,??0?$CExoArrayList@VPlane@@@@QAE@H@Z,MATCH,0,matching/src/h/camera.cpp
 0x0045D7C0,?Animate@Camera@@W3AEHM@Z,MATCH,0,matching/src/h/camera.cpp
-0x0045D7D0,?GetPosition@Camera@@W3AE?AUVector@@XZ,MATCH,0,matching/src/h/camera.cpp
+0x0045D7D0,?GetPosition@Camera@@W3AE?AVVector@@XZ,MATCH,0,matching/src/h/camera.cpp
 0x0045D7E0,?GetOrientation@Camera@@W3AE?AUQuaternion@@XZ,MATCH,0,matching/src/h/camera.cpp
 0x0045D7F0,?AsAurObject@Camera@@W3AEPAVGob@@XZ,MATCH,0,matching/src/h/camera.cpp
 0x0045D800,Camera::Camera,MATCH,0,matching/src/h/camera.cpp
@@ -1686,7 +1686,7 @@ address,name,status,diff_insns,file
 0x0046B430,NodeHasEmitterBox,MATCH,0,matching/src/h/scenebsp.cpp
 0x0046B460,NodeHasPart48,MATCH,0,matching/src/h/scenebsp.cpp
 0x0046B490,NodeHasGob,MATCH,0,matching/src/h/scenebsp.cpp
-0x0046B4C0,HitPartOnBSPNode,NONMATCH,24,matching/src/h/scenebsp.cpp
+0x0046B4C0,HitPartOnBSPNode,NONMATCH,27,matching/src/h/scenebsp.cpp
 0x0046B790,UpdateRoomLights,MATCH,0,matching/src/h/scenebsp.cpp
 0x0046BBC0,AurProcessActiveBins,MATCH,0,matching/src/h/scenebsp.cpp
 0x0046BC40,ClearRoomObjectLists,MATCH,0,matching/src/h/scenebsp.cpp
@@ -1707,13 +1707,13 @@ address,name,status,diff_insns,file
 0x0046CAE0,ActivateBinsInRange,MATCH,0,matching/src/h/scenemisc.cpp
 0x0046CC00,AddLightToRooms,MATCH,0,matching/src/h/scenebsp.cpp
 0x0046CD70,AddEmitterToRooms,NONMATCH,8,matching/src/h/scenerooms.cpp
-0x0046CE70,AddObjectToRooms,NONMATCH,6,matching/src/h/scenerooms.cpp
+0x0046CE70,AddObjectToRooms,NONMATCH,11,matching/src/h/scenerooms.cpp
 0x0046D070,CollectActiveRooms,MATCH,0,matching/src/h/scenebsp.cpp
 0x0046D130,SceneAddPartToRooms,MATCH,0,matching/src/h/scenebsp.cpp
 0x0046D1E0,SceneRemovePartFromRooms,MATCH,0,matching/src/h/scenebsp.cpp
 0x0046D250,??0?$CExoArrayList@H@@QAE@ABV0@@Z,MATCH,0,matching/src/h/scenebsp.cpp
 0x0046D2F0,SceneBSPRemoveTiledata,MATCH,0,matching/src/h/scene_tiledata.cpp
-0x0046DB60,LightNodeTile,NONMATCH,53,matching/src/h/scenelight.cpp
+0x0046DB60,LightNodeTile,NONMATCH,59,matching/src/h/scenelight.cpp
 0x0046DDA0,DoStaticLightBuckets,MATCH,0,matching/src/h/scenemisc.cpp
 0x0046DDF0,UpdateStaticLightingCallback,MATCH,0,matching/src/h/scenebsp.cpp
 0x0046DE10,LightManager::CollectLightsForGivenRoom,NONMATCH,73,matching/src/h/scenelight.cpp
@@ -1767,11 +1767,11 @@ address,name,status,diff_insns,file
 0x00473900,PartTriMesh::Mat,NONMATCH,128,matching/src/h/part_trimesh_mat.cpp
 0x00473EA0,Gob::PartDraw,MATCH,0,matching/src/h/gob_partdraw.cpp
 0x004741A0,ProcessFaces,MATCH,0,matching/src/h/shadow_faces.cpp
-0x00474710,Gob::PartProject,NONMATCH,65,matching/src/h/gob_partproject.cpp
+0x00474710,Gob::PartProject,NONMATCH,87,matching/src/h/gob_partproject.cpp
 0x00474C90,Gob::ProxyPartDraw,MATCH,0,matching/src/h/gobdraw.cpp
 0x00474E10,Gob::RenderBlur,MATCH,0,matching/src/h/gobdraw.cpp
 0x00474EA0,RenderLightMappedBumpDiffuse,NONMATCH,63,matching/src/h/render_bump.cpp
-0x00475450,RenderLightMappedBumpSpecular,NONMATCH,192,matching/src/h/render_bump.cpp
+0x00475450,RenderLightMappedBumpSpecular,NONMATCH,193,matching/src/h/render_bump.cpp
 0x00477830,TriMeshPart::Draw,MATCH,0,matching/src/h/renderdraw.cpp
 0x00477B60,TriMeshPart::DrawPrepared,MATCH,0,matching/src/h/renderdraw.cpp
 0x00478260,Gob::Render,MATCH,0,matching/src/h/gob_render.cpp
@@ -1938,10 +1938,10 @@ address,name,status,diff_insns,file
 0x004826B0,AnimateEvents,NONMATCH,90,matching/src/e/anim.cpp
 0x00482B70,NewController::GetKeyIndex,MATCH,0,matching/src/e/keyindex.cpp
 0x00482BF0,NewController::GetFloatValue,NONMATCH,2,matching/src/e/newcontroller.cpp
-0x00482D20,NewController::GetVectorValue,NONMATCH,101,matching/src/e/newcontroller.cpp
+0x00482D20,NewController::GetVectorValue,NONMATCH,108,matching/src/e/newcontroller.cpp
 0x00483050,NewController::GetQuaternionFromIndexLoc,MATCH,0,matching/src/e/newcontroller.cpp
 0x004831B0,NewController::GetQuaternionValue,NONMATCH,25,matching/src/e/newcontroller.cpp
-0x00483330,NewController::Control,NONMATCH,30,matching/src/e/newcontroller.cpp
+0x00483330,NewController::Control,NONMATCH,21,matching/src/e/newcontroller.cpp
 0x00484260,Part::SetChildState,MATCH,0,matching/src/e/keyindex.cpp
 0x00484C40,Gob::AddLastRunFlags,MATCH,0,matching/src/e/anim.cpp
 0x00484C70,Gob::RemoveLastRunFlags,MATCH,0,matching/src/e/anim.cpp
@@ -1961,7 +1961,7 @@ address,name,status,diff_insns,file
 0x004855D0,MdlNodeCamera::InternalControl,MATCH,0,matching/src/e/mdlnode.cpp
 0x00485600,MdlNodeReference::InternalControl,MATCH,0,matching/src/e/mdlnode.cpp
 0x00485630,MdlNodeTriMesh::InternalControl,MATCH,0,matching/src/e/mdlnode.cpp
-0x00485660,MdlNodeAnimMesh::InternalControl,NONMATCH,64,matching/src/e/animmesh.cpp
+0x00485660,MdlNodeAnimMesh::InternalControl,NONMATCH,137,matching/src/e/animmesh.cpp
 0x00485BD0,Gob::PlayAnimation,NONMATCH,107,matching/src/e/anim.cpp
 0x00486090,LookAtAnimation::~LookAtAnimation,MATCH,0,matching/src/e/animation.cpp
 0x00486140,LookAtAnimation::BuildAnimation,NONMATCH,366,matching/src/e/anim.cpp
@@ -2056,13 +2056,13 @@ address,name,status,diff_insns,file
 0x0049EDA0,CAurBehaviorAttachRotate::Message,MATCH,0,matching/src/e/behavior.cpp
 0x0049EE00,CAurBehaviorCameraFollow::Message,MATCH,0,matching/src/e/behavior.cpp
 0x0049F0C0,CAurBehaviorAttach::UpdateScenes,MATCH,0,matching/src/e/behavior.cpp
-0x0049F0E0,CAurBehaviorAttach::GetTargetPosition,NONMATCH,8,matching/src/e/behavior.cpp
+0x0049F0E0,CAurBehaviorAttach::GetTargetPosition,MATCH,0,matching/src/e/behavior.cpp
 0x0049F110,CAurBehavior::CAurBehavior,MATCH,0,matching/src/e/behavior.cpp
 0x0049F130,CAurBehavior::AddDependency,MATCH,0,matching/src/e/behavior.cpp
 0x0049F1F0,CAurBehavior::RemoveDependency,MATCH,0,matching/src/e/behavior.cpp
 0x0049F270,CAurBehavior::Control,NONMATCH,35,matching/src/e/behavior.cpp
 0x0049F3B0,CAurBehaviorAttach::Control,NONMATCH,19,matching/src/e/behavior.cpp
-0x0049F4F0,CAurBehaviorAttachTranslate::Control,NONMATCH,33,matching/src/e/behavior.cpp
+0x0049F4F0,CAurBehaviorAttachTranslate::Control,MATCH,0,matching/src/e/behavior.cpp
 0x0049F5F0,CAurBehaviorAttachRotate::Control,MATCH,0,matching/src/e/behavior.cpp
 0x0049F670,CAurBehaviorAttachNoOrientation::Control,MATCH,0,matching/src/e/behavior.cpp
 0x0049FA70,CAurBehavior::~CAurBehavior,MATCH,0,matching/src/e/behavior.cpp
@@ -2135,7 +2135,7 @@ address,name,status,diff_insns,file
 0x004A30E0,SetupVertexProgramLights,NONMATCH,55,matching/src/i/vertex_program_setup_lights.cpp
 0x004A35B0,LightManager::SetupLightsForThisPositionAndRadiusIn,MATCH,0,matching/src/i/light_manager.cpp
 0x004A36B0,LightManager::SetupLightsForThisPositionAndRadius,MATCH,0,matching/src/i/light_manager.cpp
-0x004A3770,LightManager::GetNearestLights,NONMATCH,5,matching/src/i/light_manager.cpp
+0x004A3770,LightManager::GetNearestLights,NONMATCH,10,matching/src/i/light_manager.cpp
 0x004A38B0,LightManager::LightManager,MATCH,0,matching/src/i/light_manager_life.cpp
 0x004A39F0,LightManager::AddLight,MATCH,0,matching/src/i/light_manager_life.cpp
 0x004A3AE0,LightManager::RemoveLight,MATCH,0,matching/src/i/light_manager_life.cpp
@@ -2597,7 +2597,7 @@ address,name,status,diff_insns,file
 0x004C3960,CSWSModule::SaveModuleFAC,MATCH,0,matching/src/i/sws_module_save.cpp
 0x004C3B10,CSWSModule::LoadTemporaryArea,NONMATCH,10,matching/src/i/sws_module_tags.cpp
 0x004C3C70,CSWSModule::SavePrimaryPlayerInfo,NONMATCH,17,matching/src/i/sws_module_save.cpp
-0x004C3EA0,CSWSModule::SetIntraAreaGoal,NONMATCH,20,matching/src/i/sws_module_path_leaf.cpp
+0x004C3EA0,CSWSModule::SetIntraAreaGoal,NONMATCH,30,matching/src/i/sws_module_path_leaf.cpp
 0x004C3FE0,??0CWorldJournalEntry@@QAE@XZ,MATCH,0,matching/src/i/sws_module.cpp
 0x004C4030,??1CWorldJournalEntry@@QAE@XZ,MATCH,0,matching/src/i/sws_module.cpp
 0x004C4080,??0CWorldJournalEntry@@QAE@ABV0@@Z,MATCH,0,matching/src/i/sws_module.cpp
@@ -2948,7 +2948,7 @@ address,name,status,diff_insns,file
 0x004D9680,CSWSEffectListHandler::OnApplyDamageImmunityDecrease,MATCH,0,matching/src/a/effect_list_handler.cpp
 0x004D9720,CSWSEffectListHandler::OnApplyEntangled,MATCH,0,matching/src/a/effect_list_handler7.cpp
 0x004D9970,CSWSEffectListHandler::OnRemoveEntangled,MATCH,0,matching/src/a/effect_list_handler.cpp
-0x004D99B0,CSWSEffectListHandler::OnApplyKnockdown,NONMATCH,14,matching/src/a/effect_list_handler8.cpp
+0x004D99B0,CSWSEffectListHandler::OnApplyKnockdown,NONMATCH,12,matching/src/a/effect_list_handler8.cpp
 0x004D9C50,CSWSEffectListHandler::OnRemoveCombatPause,MATCH,0,matching/src/a/effect_list_handler3.cpp
 0x004DA050,CSWSEffectListHandler::OnApplySetAIState,MATCH,0,matching/src/a/effect_list_handler2.cpp
 0x004DA090,CSWSEffectListHandler::OnApplyDeaf,MATCH,0,matching/src/a/effect_list_handler7.cpp
@@ -3232,7 +3232,7 @@ address,name,status,diff_insns,file
 0x004F0F90,CSWSCreature::GetPauseReadyAnimation,MATCH,0,matching/src/a/sws_creature.cpp
 0x004F0FD0,CSWSCreature::RemoveFromArea,NONMATCH,15,matching/src/a/sws_creature_remove_area.cpp
 0x004F1250,CSWSCreature::ResetCombatState4F1250,NONMATCH,2,matching/src/a/sws_creature2.cpp
-0x004F1310,CSWSCreature::DesiredAttackRange,NONMATCH,23,matching/src/a/sws_creature_s7.cpp
+0x004F1310,CSWSCreature::DesiredAttackRange,NONMATCH,32,matching/src/a/sws_creature_s7.cpp
 0x004F1460,CSWSCreature::Fn4F1460,MATCH,0,matching/src/a/sws_creature_ai_state_s9.cpp
 0x004F14F0,CSWSCreature::UpdateEffectPtrs,MATCH,0,matching/src/a/sws_creature_ai_state_s9.cpp
 0x004F17D0,CSWSCreature::LoadJournal,MATCH,0,matching/src/a/sws_creature_journal.cpp
@@ -4392,7 +4392,7 @@ address,name,status,diff_insns,file
 0x0056E360,CSWSMessage::WriteRepositoryUpdate,MATCH,0,matching/src/b/sws_message_repository_update.cpp
 0x0056E5F0,CSWSMessage::SendServerToPlayerSafeProjectileProjectile,MATCH,0,matching/src/b/sws_message_safe_projectile.cpp
 0x0056E6E0,CSWSMessage::SendServerToPlayerSafeProjectileSpell,MATCH,0,matching/src/b/sws_message_safe_projectile.cpp
-0x0056E850,CSWSMessage::TestPartyUpdateDifferences,NONMATCH,6,matching/src/b/sws_message_party_test.cpp
+0x0056E850,CSWSMessage::TestPartyUpdateDifferences,NONMATCH,9,matching/src/b/sws_message_party_test.cpp
 0x0056EBE0,CSWSMessage::SendServerToPlayerExamineGui_CreatureData,MATCH,0,matching/src/b/sws_message_examine_creature.cpp
 0x0056EE40,CSWSMessage::SendServerToPlayerExamineGui_ItemData,NONMATCH,85,matching/src/b/sws_message_examine_item.cpp
 0x0056F0A0,CSWSMessage::SendServerToPlayerExamineGui_PlaceableData,MATCH,0,matching/src/b/sws_message_send.cpp
@@ -4507,7 +4507,7 @@ address,name,status,diff_insns,file
 0x005807C0,CSWRoomSurfaceMesh::LoadMeshBinary,MATCH,0,matching/src/f/room_surface_mesh.cpp
 0x005808E0,CSWWalkMeshHeader::CSWWalkMeshHeader,MATCH,0,matching/src/f/room_surface_mesh.cpp
 0x00580920,CSWRoomSurfaceMesh::CheckAABBNode,NONMATCH,51,matching/src/f/room_surface_mesh.cpp
-0x00580AF0,CSWRoomSurfaceMesh::TransformAABBNode,NONMATCH,4,matching/src/f/room_surface_mesh.cpp
+0x00580AF0,CSWRoomSurfaceMesh::TransformAABBNode,NONMATCH,10,matching/src/f/room_surface_mesh.cpp
 0x00580BE0,CSWRoomSurfaceMesh::GetPerimeterVertex,MATCH,0,matching/src/f/room_surface_mesh.cpp
 0x00580C60,CSWRoomSurfaceMesh::GetEdgeVertices,MATCH,0,matching/src/f/room_surface_mesh.cpp
 0x00580D50,CSWRoomSurfaceMesh::WeldEdgeVertices,MATCH,0,matching/src/f/room_surface_mesh.cpp
@@ -4542,7 +4542,7 @@ address,name,status,diff_insns,file
 0x005849D0,CSWSPlaceable::AIUpdate,MATCH,0,matching/src/f/placeable_life.cpp
 0x00584AC0,CSWSPlaceable::RemoveItem,MATCH,0,matching/src/f/placeable.cpp
 0x00584B10,CSWSPlaceable::AcquireItem,MATCH,0,matching/src/f/placeable.cpp
-0x00584C20,CSWSPlaceable::GetNearestActionPoint,NONMATCH,50,matching/src/f/door_s8.cpp
+0x00584C20,CSWSPlaceable::GetNearestActionPoint,NONMATCH,66,matching/src/f/door_s8.cpp
 0x00584DB0,CSWSPlaceable::AddCastFakeSpellActions,MATCH,0,matching/src/f/placeable_life.cpp
 0x00585080,CSWSPlaceable::SetLightIsOn,MATCH,0,matching/src/f/placeable_life.cpp
 0x00585130,CSWSPlaceable::GetLightIsOn,MATCH,0,matching/src/f/placeable_life.cpp
@@ -4673,7 +4673,7 @@ address,name,status,diff_insns,file
 0x005955A0,CSWSAreaOfEffectObject::SetTargetObjID,MATCH,0,matching/src/f/aoe_collision.cpp
 0x00595B60,CSWSAreaOfEffectObject::RemoveFromSubAreas,MATCH,0,matching/src/f/aoe_collision.cpp
 0x00595D10,CSWSAreaOfEffectObject::AIUpdate,NONMATCH,12,matching/src/f/object_aiupdate.cpp
-0x00595F30,CSWSAreaOfEffectObject::AddToArea,NONMATCH,30,matching/src/f/aoe_shape.cpp
+0x00595F30,CSWSAreaOfEffectObject::AddToArea,NONMATCH,28,matching/src/f/aoe_shape.cpp
 0x005962D0,CSWSAreaOfEffectObject::RemoveFromArea,MATCH,0,matching/src/f/aoe_collision.cpp
 0x00596360,CSWSAreaOfEffectObject::JumpToPoint,MATCH,0,matching/src/f/aoe_collision.cpp
 0x005963D0,CSWSAreaOfEffectObject::~CSWSAreaOfEffectObject,MATCH,0,matching/src/f/aoe_collision.cpp
@@ -6299,7 +6299,7 @@ address,name,status,diff_insns,file
 0x005F50F0,?Add@?$CExoArrayList@UCGuiStringStruct@@@@QAEXUCGuiStringStruct@@@Z,MATCH,0,matching/src/c/client_gui_string_list.cpp
 0x005F5180,CSWCameraOnAStick::GetTargetHeadPosition,MATCH,0,matching/src/c/client_exo_app_leaves_s3.cpp
 0x005F51C0,CClientExoAppInternal::Initialize,MATCH,0,matching/src/c/client_exo_app_internal_s1.cpp
-0x005F5370,CClientExoAppInternal::UpdateSoundEngine,NONMATCH,49,matching/src/c/client_exo_app_internal_s9.cpp
+0x005F5370,CClientExoAppInternal::UpdateSoundEngine,NONMATCH,61,matching/src/c/client_exo_app_internal_s9.cpp
 0x005F56B0,CClientExoAppInternal::IsOnExclusionList,NONMATCH,4,matching/src/c/client_exo_app_internal_r5.cpp
 0x005F5720,CClientExoAppInternal::CreateCaptureEventFile,MATCH,0,matching/src/pilot4/a/client_exo_app_internal_capture.cpp
 0x005F5910,CClientExoAppInternal::setUpEventPlayBack,MATCH,0,matching/src/c/client_exo_app_internal_s5.cpp
@@ -6485,7 +6485,7 @@ address,name,status,diff_insns,file
 0x0060B900,?SetAnimationState@CSWCCreature@@QAEXHH@Z,MATCH,0,matching/src/c/sw_c_creature_r6.cpp
 0x0060B920,CSWCCreature::ResetCameraToFollow,MATCH,0,matching/src/c/sw_c_creature_misc.cpp
 0x0060B9B0,CSWCCreature::SetPosition,MATCH,0,matching/src/c/sw_c_creature_r6.cpp
-0x0060BA10,CSWCCreature::SetDesiredOrientationForLock,NONMATCH,10,matching/src/c/sw_c_creature_misc.cpp
+0x0060BA10,CSWCCreature::SetDesiredOrientationForLock,NONMATCH,13,matching/src/c/sw_c_creature_misc.cpp
 0x0060BAD0,CSWCCreature::ClearPathRequest,MATCH,0,matching/src/c/sw_c_creature_r6.cpp
 0x0060BB20,CSWCCreature::HandleConjuring,MATCH,0,matching/src/c/sw_c_creature_s7.cpp
 0x0060BDF0,CSWCCreature::MoveCreatureToPosition,NONMATCH,32,matching/src/c/sw_c_creature_s7.cpp
@@ -6581,7 +6581,7 @@ address,name,status,diff_insns,file
 0x0060FC00,CSWCCreature::GetTargetInterfaceTargetType,NONMATCH,21,matching/src/c/sw_c_creature_misc.cpp
 0x0060FCC0,CSWCCreatureTarget::GetTargetActionType,NONMATCH,12,matching/src/c/sw_c_creature_action_menu_s4.cpp
 0x0060FD80,CSWCCreature::GetReticlePoint,MATCH,0,matching/src/c/sw_c_creature_reticle_s13.cpp
-0x0060FF30,CSWCCreature::GetMenuPoint,NONMATCH,12,matching/src/c/sw_c_creature_menupoint_s8.cpp
+0x0060FF30,CSWCCreature::GetMenuPoint,NONMATCH,16,matching/src/c/sw_c_creature_menupoint_s8.cpp
 0x006100F0,CSWCCreature::Setup3DScene,NONMATCH,73,matching/src/c/sw_c_creature_s8.cpp
 0x00610490,CSWCCreature::GetFreeLookVideoEffect,NONMATCH,17,matching/src/c/sw_c_creature_s3.cpp
 0x00610550,CSWCCreature::UnregisterAnimationCallbacks,MATCH,0,matching/src/c/sw_c_creature_state_family.cpp
@@ -6946,7 +6946,7 @@ address,name,status,diff_insns,file
 0x00630620,CGuiInGame::InitializeDialogAnimationData,NONMATCH,4,matching/src/n/gui_dialog_animation_allocation.cpp
 0x00631B70,CGuiInGame::ResetDialogAnimations,NONMATCH,50,matching/src/n/gui_in_game_dialog_node.cpp
 0x00631C60,CGuiInGame::ResetTalkAnimations,NONMATCH,20,matching/src/n/gui_in_game_dialog_node.cpp
-0x00632180,CGuiInGame::UpdateAreaTransitionGUI,NONMATCH,7,matching/src/c/gui_in_game_dialog.cpp
+0x00632180,CGuiInGame::UpdateAreaTransitionGUI,MATCH,0,matching/src/c/gui_in_game_dialog.cpp
 0x00632300,CGuiInGame::AddToDialogNonDependantList,MATCH,0,matching/src/n/gui_in_game_dialog_lists.cpp
 0x00632720,CGuiInGame::InitializeGlobal,MATCH,0,matching/src/n/gui_in_game_globals.cpp
 0x006332B0,CGuiInGame::CloseDialog,NONMATCH,34,matching/src/n/gui_in_game_stunt_models.cpp
@@ -6977,7 +6977,7 @@ address,name,status,diff_insns,file
 0x00636170,CSWParty::CSWParty,NONMATCH,14,matching/src/n/sw_party_ctor.cpp
 0x00636840,CSWParty::TestAndResetPath,NONMATCH,3,matching/src/n/sw_party_follow.cpp
 0x006369D0,CSWParty::FollowStateChanged,MATCH,0,matching/src/n/party_follow_state.cpp
-0x00637630,CSWParty::Reset,NONMATCH,68,matching/src/pilot4/a/sw_party_reset.cpp
+0x00637630,CSWParty::Reset,NONMATCH,66,matching/src/pilot4/a/sw_party_reset.cpp
 0x00637890,CSWParty::ResetAllFollowData,NONMATCH,18,matching/src/n/sw_party_lifecycle.cpp
 0x00637A30,CSWCameraOnAStick::Message,MATCH,0,matching/src/n/sw_behavior_camera_stick.cpp
 0x00637AF0,CSWCameraOnAStick::ComputeDesiredPosition,MATCH,0,matching/src/n/sw_behavior_camera_stick.cpp
@@ -7025,7 +7025,7 @@ address,name,status,diff_insns,file
 0x0063C0C0,CSWCObject::ReplaceTextures,NONMATCH,3,matching/src/n/object_visual_texture_forwards.cpp
 0x0063C0E0,CSWCObject::GetAnimationLength,MATCH,0,matching/src/n/object_animation_state.cpp
 0x0063C100,CSWCObject::GetLoopingAnimation,MATCH,0,matching/src/n/object_control_members.cpp
-0x0063C110,CSWCObject::SetOrientation,NONMATCH,5,matching/src/n/object_model_control.cpp
+0x0063C110,CSWCObject::SetOrientation,MATCH,0,matching/src/n/object_model_control.cpp
 0x0063C170,CSWCObject::AnimationStationary,MATCH,0,matching/src/n/object_animation_predicates.cpp
 0x0063C1E0,CSWCObject::AnimationPause,MATCH,0,matching/src/n/object_animation_predicates.cpp
 0x0063C240,CSWCObject::AnimationWalk,MATCH,0,matching/src/n/object_animation_predicates.cpp
@@ -7123,7 +7123,7 @@ address,name,status,diff_insns,file
 0x00640090,CSWCModule::AcclTurnCamera,MATCH,0,matching/src/m/sw_c_module_camera_controls.cpp
 0x006401D0,CSWCModule::ZoomCamera,MATCH,0,matching/src/m/sw_c_module_camera_controls.cpp
 0x00640240,CSWCModule::ScrollCamera,MATCH,0,matching/src/m/sw_c_module_camera_controls.cpp
-0x006402F0,CSWCModule::GetNextCameraPosition,NONMATCH,56,matching/src/m/sw_c_module_camera_next_position.cpp
+0x006402F0,CSWCModule::GetNextCameraPosition,NONMATCH,52,matching/src/m/sw_c_module_camera_next_position.cpp
 0x00640640,CSWCModule::SetTimeOfDayState,MATCH,0,matching/src/m/sw_c_module_accessors.cpp
 0x00640700,CSWCModule::UpdateCameraModeChaseCam,MATCH,0,matching/src/m/sw_c_module_camera_follow_modes.cpp
 0x00640A80,CSWCModule::UpdateCameraModeBG,MATCH,0,matching/src/m/sw_c_module_camera_controls.cpp
@@ -8803,7 +8803,7 @@ address,name,status,diff_insns,file
 0x006D1190,CSWCameraClipBase::Update,MATCH,0,matching/src/l/sw_camera_clip.cpp
 0x006D12B0,CSWBehaviorCameraCombat::CSWBehaviorCameraCombat,MATCH,0,matching/src/l/sw_behavior_camera_combat.cpp
 0x006D14D0,CSWBehaviorCameraCombat::GetType,MATCH,0,matching/src/l/sw_behavior_camera_combat.cpp
-0x006D14E0,CSWBehaviorCameraCombat::CalculateDesiredLocation,NONMATCH,9,matching/src/l/sw_behavior_camera_combat.cpp
+0x006D14E0,CSWBehaviorCameraCombat::CalculateDesiredLocation,NONMATCH,11,matching/src/l/sw_behavior_camera_combat.cpp
 0x006D16F0,CSWBehaviorCameraCombat::GetNextYaw,MATCH,0,matching/src/l/sw_behavior_camera_combat.cpp
 0x006D1760,CSWBehaviorCameraCombat::GetNextPosition,MATCH,0,matching/src/l/sw_behavior_camera_combat.cpp
 0x006D1870,CSWBehaviorCameraCombat::SetTurn,MATCH,0,matching/src/l/sw_behavior_camera_combat.cpp

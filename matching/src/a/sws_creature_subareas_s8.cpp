@@ -1,5 +1,5 @@
 // Creature subarea updates during movement; unnamed layout members are descriptive.
-struct Vector { float x, y, z; };
+#include "shared/vector.h"
 template <class T> class CExoArrayList {
 public:
     T* element;

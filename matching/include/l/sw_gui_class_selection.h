@@ -88,17 +88,7 @@ struct CSWGuiZeroExtent : public CSWGuiExtent {
     CSWGuiZeroExtent() { left = top = width = height = 0; }
 };
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

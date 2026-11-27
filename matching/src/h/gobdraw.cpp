@@ -36,11 +36,6 @@ struct GobFade {
     float m_fFade;                  // +0x94
 };
 
-inline Vector operator*(const Vector& v, float f)
-{
-    return Vector(v.x * f, v.y * f, v.z * f);
-}
-
 class Part;
 
 class Gob {

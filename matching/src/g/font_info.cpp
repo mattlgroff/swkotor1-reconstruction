@@ -12,10 +12,7 @@ extern "C" void* __cdecl memcpy(void* d, const void* s, size_t n);
 // the scalar operator new / delete (0x006fa7e6 / 0x006fa390), as its
 // out-of-line Allocate (0x00421310) and ParseList's inlined SetSize do.
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 // The sized constructor's dead `new` leaves the owner's empty-state SEH
 // frame (see mdl_ctor.h).

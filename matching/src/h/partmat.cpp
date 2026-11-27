@@ -75,10 +75,10 @@ void DynamicPartCalculateMaterial(PartDyn* pPart, Vector* pColor, Vector* pOffse
 {
     if (pPart->m_bColorAnimated) {
         *pAlpha *= pPart->m_fAnimAlpha;
-        *pColor = *pColor * pPart->m_vColor;
+        *pColor = cmul(*pColor, pPart->m_vColor);
     }
     if (pPart->m_pModel->IsFadeAlpha())
         *pAlpha *= pPart->m_fFadeAlpha;
     if (pPart->m_bOffsetAnimated)
-        *pOffset = pPart->m_vOffset + *pOffset;
+        *pOffset = *pOffset + pPart->m_vOffset;
 }

@@ -6,14 +6,7 @@
 
 extern "C" __declspec(dllimport) void __stdcall glGetIntegerv(unsigned int pname, int* params);
 
-struct Vector {
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector& operator-=(const Vector& v);        // 0x004A9770
-    void Normalize();                           // 0x004AB130
-};
+#include "shared/vector.h"
 
 struct Quaternion {
     float w, x, y, z;

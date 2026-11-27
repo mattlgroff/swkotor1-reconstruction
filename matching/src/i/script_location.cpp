@@ -5,12 +5,6 @@
 // FUNCTION: SWKOTOR 0x004CA7A0
 CScriptLocation::CScriptLocation()
 {
-    m_vPosition.x = 0.0f;
-    m_vPosition.y = 0.0f;
-    m_vPosition.z = 0.0f;
-    m_vOrientation.x = 0.0f;
-    m_vOrientation.y = 0.0f;
-    m_vOrientation.z = 0.0f;
 }
 
 // FUNCTION: SWKOTOR 0x004CA7C0

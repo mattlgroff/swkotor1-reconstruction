@@ -1,5 +1,5 @@
 // CGuiInGame::SetShotFromScript (guiingame.o). Standalone layout.
-struct Vector { float x,y,z; };
+#include "shared/vector.h"
 class Quaternion {
 public:
     float w,x,y,z;

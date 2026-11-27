@@ -43,7 +43,7 @@ public:
     void SetPriorityGroup(unsigned char nGroup);    // 0x005D5BA0
     CResRef GetFilePlaying();                       // 0x005D6230
     void Set3D(int b3D);                            // 0x005D6290
-    void SetPosition(const struct Vector& v);       // 0x005D62C0
+    void SetPosition(const class Vector& v);       // 0x005D62C0
     void SetDistances(float fMin, float fMax);      // 0x005D62A0
 
     void* m_pInternal;                              // 0x00

@@ -37,10 +37,7 @@ public:
     char pad_0x98[0x8];
 };
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 template <class T>
 class CExoArrayList {

@@ -2,11 +2,7 @@
 // walk test between two points of the avoidance hexagon. Own minimal layouts;
 // several names are placeholders.
 
-class Vector {
-public:
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CWalkHitInfo {
 public:

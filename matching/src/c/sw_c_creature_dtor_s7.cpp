@@ -62,7 +62,7 @@ public:
 };
 
 struct CSWCCombatAttackData;
-struct Vector;
+class Vector;
 struct CPerceptionRecord;
 
 struct CSWCCreatureNameRecord {

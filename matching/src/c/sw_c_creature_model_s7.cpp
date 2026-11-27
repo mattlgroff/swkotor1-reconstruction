@@ -22,9 +22,7 @@ public:
     static void RequestModel(char* sModel);         // 0x0070D8D0
 };
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct Quaternion {
     float w, x, y, z;

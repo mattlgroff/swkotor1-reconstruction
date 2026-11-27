@@ -6,10 +6,7 @@ extern "C" double __cdecl ceil(double);
 
 class CAurTriangleBin;
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 template <class T>
 class CExoArrayList {

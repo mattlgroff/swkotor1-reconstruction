@@ -1,10 +1,7 @@
 // CSWSPlaceable::AcquireItemsFromObject (0x00588690), own TU so that
 // AcquireItem (placeable.cpp) stays out of line.
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

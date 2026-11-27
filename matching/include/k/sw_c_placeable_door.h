@@ -15,7 +15,7 @@ class CSWCObject;
 class CResRef;
 class CSWCDoor;
 void __cdecl DoorAnimationEvent(void*,const char*,CSWCDoor*);
-struct Vector { float x,y,z; Vector() { x=0; y=0; z=0; } Vector(float fX,float fY,float fZ) { x=fX; y=fY; z=fZ; } Vector operator-() const { return Vector(-x,-y,-z); } Vector operator+(const Vector& v) const { return Vector(x+v.x,y+v.y,z+v.z); } };
+#include "shared/vector_ops.h"
 struct Quaternion { float w,x,y,z; Quaternion() { z=0; y=0; x=0; w=1; } };
 class CAurObject {
 public:

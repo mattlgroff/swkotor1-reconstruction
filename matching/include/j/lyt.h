@@ -5,11 +5,7 @@
 
 #include "j/res.h"
 
-struct Vector {
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector.h"
 
 struct Quaternion {
     float w;

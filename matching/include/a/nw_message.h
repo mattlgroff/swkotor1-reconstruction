@@ -28,9 +28,7 @@ public:
     char m_resRef[16];
 };
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;

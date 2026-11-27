@@ -2,24 +2,7 @@
 #ifndef P4A_PARTY_H
 #define P4A_PARTY_H
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator+(const Vector& o) const { return Vector(x + o.x, y + o.y, z + o.z); }
-    Vector operator-() const
-    {
-        Vector r;
-        r.x = -x;
-        r.y = -y;
-        r.z = -z;
-        return r;
-    }
-    Vector& operator+=(const Vector& v);                // 0x004A9740
-    Vector& operator*=(float f);                        // 0x004A97A0
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:

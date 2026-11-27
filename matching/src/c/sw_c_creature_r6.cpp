@@ -6,11 +6,7 @@
 
 #include "c/exo_base.h"
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
 struct Quaternion {
     float w, x, y, z;
@@ -824,7 +820,6 @@ void CSWCCreature::SetAnimationState(int a, int b)
 // The extent ends at 0x0060F612: 0x0060F620 (ActionMenuTalk) is a separate start.
 void CSWCCreature::PartyMenuUseItem(unsigned long oidItem, CGameObject* pTarget)
 {
-    Vector v;
     unsigned long idSelf = m_idSelf;
     oidItem &= 0xbfffffff;
     if (pTarget->m_idSelf != idSelf) {
@@ -833,9 +828,7 @@ void CSWCCreature::PartyMenuUseItem(unsigned long oidItem, CGameObject* pTarget)
             pMessage->SendPlayerToServerInput_UseItem(oidItem, 0, 0, 0x7f000000, &m_vPosition);
         }
     } else {
-        v.x = 0.0f;
-        v.y = 0.0f;
-        v.z = 0.0f;
+        Vector v;
         CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
         if (pMessage) {
             pMessage->SendPlayerToServerInput_UseItem(oidItem, 0, 0, idSelf, &v);

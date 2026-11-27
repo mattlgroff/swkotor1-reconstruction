@@ -15,10 +15,7 @@ extern "C" void* __cdecl memset(void* dst, int c, unsigned int n);
 
 extern char* g_sGFFVersion;                 // 0x0078d3cc -> "V3.2"
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

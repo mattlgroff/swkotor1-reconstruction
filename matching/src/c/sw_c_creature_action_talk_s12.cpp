@@ -2,12 +2,7 @@
 // from functions.csv (it sat inside PartyMenuUseItem's extent); the default
 // action table stores it as the "i_dialog" handler. Name descriptive.
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fX, float fY, float fZ) : x(fX), y(fY), z(fZ) {}
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-};
+#include "shared/vector_ops.h"
 
 class CSWSObject {
 public:

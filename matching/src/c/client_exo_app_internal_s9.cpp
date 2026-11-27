@@ -97,14 +97,7 @@ public:
     virtual float GetMoveX();                       // 0x0c (descriptive)
 };
 
-struct Vector {
-    Vector() {}
-    Vector(float a, float b, float c) : x(a), y(b), z(c) {}
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    Vector& operator+=(const Vector& v);            // 0x004A9740
-    Vector& operator-=(const Vector& v);            // 0x004A9770
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 Vector operator*(const Vector& v, float f);         // 0x00423BF0
 

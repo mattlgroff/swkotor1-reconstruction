@@ -6,9 +6,7 @@
 #include "c/exo_base.h"
 
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 extern float g_fFogDensity;                         // 0x0078E6A0
 extern float g_fAmbientScale;                       // 0x0078E408

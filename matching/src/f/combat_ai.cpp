@@ -28,12 +28,7 @@ public:
 class Vector;
 Vector operator-(const Vector &a, const Vector &b);         // 0x00423BC0
 
-class Vector {
-public:
-    float x, y, z;
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 class CGameEffect {
 public:

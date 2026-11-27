@@ -9,9 +9,7 @@ public:
     unsigned long m_nBufferLength;
 };
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class C2DA {
 public:

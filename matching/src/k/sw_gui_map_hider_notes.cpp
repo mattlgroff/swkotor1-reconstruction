@@ -18,12 +18,7 @@ public:
     char pad_0x0[0x8];
 };
 
-class Vector {
-public:
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector.h"
 
 typedef void* CExoLinkedListPosition;
 
