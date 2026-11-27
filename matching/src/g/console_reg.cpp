@@ -12,11 +12,7 @@ int __cdecl fclose(FILE* f);
 }
 #pragma intrinsic(strcpy, strlen)
 
-// Loader callbacks for in-memory resources.
-extern unsigned char* (__cdecl* g_pfnAurResGet)(const char* szName,
-                                                const char* szExt,
-                                                int* pnSize); // 0x007b8fc4
-extern void (__cdecl* g_pfnAurResFree)(void* pHandle, int nArg);    // 0x007b8fc8
+#include "shared/aurora_callbacks.h"
 
 // No operator new[] / delete[] in scope: the list below allocates with
 // the scalar operator new / delete (0x006fa7e6 / 0x006fa390), as the
