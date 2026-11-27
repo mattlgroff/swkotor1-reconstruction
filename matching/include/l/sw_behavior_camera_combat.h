@@ -103,19 +103,7 @@ public:
 // playable source calls them CSWRK4Acceleration / CSWRK4SplitAcceleration):
 // a 4th-order Runge-Kutta step of {position, velocity} pulled towards an
 // input point. Vtable 0x00757BD4 (base) / 0x00757BD8 (split).
-struct CSWCameraClipState {
-    CSWCameraClipState() : m_vPosition(0.0f, 0.0f, 0.0f), m_vVelocity(0.0f, 0.0f, 0.0f)
-    {
-        m_vVelocity = Vector(0.0f, 0.0f, 0.0f);
-        m_vPosition = Vector(0.0f, 0.0f, 0.0f);
-    }
-    CSWCameraClipState(const Vector& vPosition, const Vector& vVelocity)
-        : m_vPosition(vPosition), m_vVelocity(vVelocity)
-    {
-    }
-    Vector m_vPosition;                         // +0x00
-    Vector m_vVelocity;                         // +0x0c
-};
+#include "shared/sw_camera_clip_state.h"
 
 CSWCameraClipState operator/(const CSWCameraClipState& s, float f);    // 0x006D0A40
 Vector operator/(const Vector& v, float f);    // 0x00437A90
