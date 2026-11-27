@@ -129,10 +129,7 @@ public:
 
 class CExoLinkedListNode;
 
-class RenderInterface {
-public:
-    static int IsResident(char* szName);
-};
+#include "shared/render_interface.h"
 
 #include "shared/aurora_interface.h"
 

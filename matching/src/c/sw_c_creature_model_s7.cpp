@@ -12,10 +12,7 @@ public:
     char m_resRef[16];
 };
 
-class RenderInterface {
-public:
-    static int IsResident(char* sModel);            // 0x0070D980
-};
+#include "shared/render_interface.h"
 
 #include "shared/aurora_interface.h"
 
