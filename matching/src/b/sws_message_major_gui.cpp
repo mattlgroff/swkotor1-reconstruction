@@ -1,6 +1,5 @@
 // CSWSMessage::WriteGameObjUpdate_MajorGUIPanels: player sheet, open
 // container and equipped-slot updates for one player.
-#define B_EXO_ARRAY_LIST_OPAQUE_ADD
 #include "b/sws_message.h"
 #include "b/sws_creature.h"
 #include "b/sws_player.h"

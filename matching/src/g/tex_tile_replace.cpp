@@ -2,7 +2,6 @@
 // This unit expands SafePointer assignment and CExoArrayList::Remove.
 #define G_EXO_ARRAY_LIST_REMOVE
 #define G_EXO_ARRAY_LIST_REMOVE_FORCEINLINE
-#define G_SAFE_POINTER_ASSIGN_FORCEINLINE
 #include "g/aur_texture.h"
 
 class Scene;
