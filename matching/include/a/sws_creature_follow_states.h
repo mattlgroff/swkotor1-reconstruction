@@ -28,17 +28,7 @@ public:
     int m_nCurrent;                             // 0xfa4
 };
 
-struct CFollowNode {
-    char pad_0x0[0x4];
-    int m_nState;                               // 0x04
-    char pad_0x8[0x10];
-    Vector m_vStart;                            // 0x18
-    int m_nStart;                               // 0x24
-    Vector m_vEnd;                              // 0x28
-    int m_nEnd;                                 // 0x34
-    char pad_38[0x5c-0x38];
-    Vector m_vTeleport;
-};
+#include "shared/follow_node.h"
 
 class CPathfindInformation;
 class CSWSArea { public: int TestSafePoint(const Vector* p, CPathfindInformation* pPath); }; // 0x004BE5E0, descriptive name

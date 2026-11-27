@@ -25,15 +25,7 @@ public:
     int m_nCurrent;                             // 0xfa4
 };
 
-struct CFollowNode {
-    char pad_0x0[0x4];
-    int m_nState;                               // 0x04
-    char pad_0x8[0x10];
-    Vector m_vStart;                            // 0x18
-    int m_nStart;                               // 0x24
-    Vector m_vEnd;                              // 0x28
-    int m_nEnd;                                 // 0x34
-};
+#include "shared/follow_node.h"
 
 class CSWSCreature {
 public:
