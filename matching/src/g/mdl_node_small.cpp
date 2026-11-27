@@ -261,7 +261,7 @@ void DeleteAurPart(CAurPart* p) { delete p; }
 void DeleteAurMeshBuffer(CAurMeshBuffer* p) { delete p; }
 
 // FUNCTION: SWKOTOR 0x0043e250
-Vector Quaternion::ToDirection()
+Vector Quaternion::ToDirection() const
 {
     return Vector((x * z + w * y) * 2.0f, (w * z - x * y) * 2.0f,
                   1.0f - (y * y + z * z) * 2.0f);

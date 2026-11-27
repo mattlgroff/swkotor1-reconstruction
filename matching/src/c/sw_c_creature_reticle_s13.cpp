@@ -10,7 +10,7 @@ class Quaternion {
 public:
     float w, x, y, z;
     Quaternion() { z = 0.0f; y = 0.0f; x = 0.0f; w = 1.0f; }
-    Vector ToDirection();                           // 0x0043E250
+    Vector ToDirection() const;                     // 0x0043E250
 };
 
 class CAurPart {
