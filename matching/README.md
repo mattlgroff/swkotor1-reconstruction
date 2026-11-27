@@ -29,6 +29,12 @@ for later passes. Another 395 functions are identical to the stock
 annotated function's current result. The tracker is rebuilt from that report,
 the function table and the stock-library records, using the coverage rules below.
 
+Byte-identical is not yet matched under the code rules
+([CODE_RULES.md](CODE_RULES.md)): `rules.csv` marks each byte-identical
+function `MATCH` or `MATCH-PENDING`. When the checker was added, 533 of the
+8,470 byte-identical functions passed every [match] rule; most of the rest
+are blocked only by the per-bucket copies of shared classes (R1).
+
 ## Layout
 
 - `src/<bucket>/*.cpp`: annotated sources. Each bucket (`a`..`n`) covers an
@@ -39,6 +45,9 @@ the function table and the stock-library records, using the coverage rules below
   at their original offsets, virtuals in vtable order, and callees declared
   but not defined.
 - `tools/matchcmp.py`: the compile-and-compare tool.
+- `tools/rulecheck.py`, `rules.csv`: the code-rule checker and its report
+  (MATCH, MATCH-PENDING or NONMATCH per function); see
+  [CODE_RULES.md](CODE_RULES.md).
 - `tools/libmatch.py`, `crt_libcmt.csv`: stock library functions in the exe.
 - `tools/symbolmap.py`, `symbols.csv`: symbol-to-address map, the bridge to
   the playable build.
@@ -275,27 +284,42 @@ direct call targets; the summary counts the starts `functions.csv` lacks.
 
 ## Source-shape notes
 
-These patterns made functions match:
+These patterns made functions match. The first list is ordinary source of
+the era. The second needs care: each can be what the original programmer
+wrote, but used without evidence it is a trick that only steers the
+compiler, and the function stays `MATCH-PENDING` or needs a reason recorded
+at the code ([CODE_RULES.md](CODE_RULES.md)).
+
+Genuine source shapes:
 
 - BioWare used inline getters heavily (`g_pRules->Get2DArrays()->...`). They
   change load order and register allocation.
 - The `if` body is laid out first. Invert the condition to flip the layout.
 - `if (a || b) return;` sometimes has to be two separate `if`s.
-- Declare address-taken locals in the narrowest block; this decides their
-  stack slots.
+- Declare address-taken locals in the narrowest block that already exists;
+  this decides their stack slots. Don't add a `{ }` block only to scope one.
 - Classes passed by value (`CResRef`) need a declared copy constructor.
 - `#pragma pack(4)` is needed where an `__int64` member sits at a 4-aligned
   offset.
 - An `fs:[0]` frame in the original means `-GX` plus a local object with a
   destructor.
-- An empty-state SEH frame in a constructor: give the list member a sized
-  constructor that contains a dead `new`.
+- A branch the original tests and leaves empty, or a call whose result it
+  never uses, stays in, labelled `// NOTE:` (R36).
+
+Use only with evidence:
+
+- An empty-state SEH frame in a constructor has been reproduced by giving
+  the list member a sized constructor that contains a dead `new`. Dead code
+  is fake (R17); look for the real member type or inline constructor.
 - Recursive tree walkers: `#pragma inline_recursion(on)` plus a
-  per-function `#pragma inline_depth(N)`, with N found by sweeping.
+  per-function `#pragma inline_depth(N)`, with N found by sweeping. Say at
+  the code why the pragma is believed original.
 - If ECX stays live across a call to a function compiled earlier in the same
-  `.cpp`, put the caller and callee in separate files.
+  `.cpp`, the two may belong to different source files. Split them only
+  where `link_order.csv` shows separate objects (R15).
 - Copying a member into a local just before the call that takes it can
-  change register allocation.
+  change register allocation. Keep the local only when it names a value the
+  function uses (R30).
 - Still unsolved; skip after two or three tries: cross-function register
   use, the placement of a merged `return 0` block, the else-after-return
   layout, and some x87 scheduling ties.
