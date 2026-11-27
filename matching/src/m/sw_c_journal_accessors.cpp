@@ -4,19 +4,7 @@ struct CSWCJournalEntry {
     char data[0x3c];
 };
 
-class CSWCJournalList {
-public:
-    CSWCJournalEntry* element;
-    int num;
-    int array_size;
-    unsigned long* m_pIndices;
-    int m_nNumIndices;
-    int m_nIndexCapacity;
-    int m_nSort;
-    int m_bChanged;
-
-    void SortList();                                // 0x00676530
-};
+#include "shared/swc_journal_list.h"
 
 class CSWCJournal {
 public:
