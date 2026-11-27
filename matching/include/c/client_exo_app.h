@@ -53,10 +53,7 @@ class CSWGuiInterfaceAction;
 class CSWGuiControl;
 class CExoFile;
 
-struct CHostileHilite {
-    unsigned long m_oidTarget;                      // 0x00
-    float m_fTimeLeft;                              // 0x04
-};
+#include "shared/hostile_hilite.h"
 
 struct CRumblePattern {
     int GetIntensity(float fTime, float* pfLeft, float* pfRight);  // 0x0068FDD0 (descriptive)

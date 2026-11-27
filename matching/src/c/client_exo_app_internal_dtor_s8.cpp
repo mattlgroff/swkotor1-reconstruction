@@ -330,10 +330,7 @@ struct CClientPazaakState {
     }
 };
 
-struct CHostileHilite {
-    unsigned long m_oidTarget;
-    int m_nType;
-};
+#include "shared/hostile_hilite.h"
 
 struct CRumblePattern {
     int m_nPattern;
