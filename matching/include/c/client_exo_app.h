@@ -399,17 +399,7 @@ public:
     unsigned char m_nCameraModeCurrent;              // +0x6e
 };
 
-class CClientUnknown700 {
-public:
-    int Unknown61b780();                            // 0x0061B780
-    char pad_0x0[0xc];
-    float m_fToolTipDelay;                          // 0x0c
-    char pad_0x10[0x4];
-    unsigned char m_nFeedbackFlags;                 // 0x14 (descriptive; 0x10 = floaty text)
-
-    float GetToolTipDelay() { return m_fToolTipDelay; }
-    float GetGamma(int b);                          // 0x0061D590
-};
+#include "shared/client_unknown700.h"
 
 void AurDisableSaturation();                        // 0x0044F0D0
 void AurDisableScanNoise();                         // 0x0044F0F0

@@ -59,10 +59,7 @@ public:
     char pad_0x4[4];
 };
 
-class CClientUnknown700 {
-public:
-    float GetValue();               // 0x0061d590
-};
+#include "shared/client_unknown700.h"
 
 class CServerExoApp {
 public:
