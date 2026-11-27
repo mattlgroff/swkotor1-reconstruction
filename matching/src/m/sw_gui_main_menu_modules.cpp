@@ -3,7 +3,6 @@
 // new button's constructor is inlined here, so this translation unit sees an
 // inline CSWGuiButton constructor.
 
-#define M_GUI_BUTTON_INLINE_CTOR
 #include "m/sw_gui_main_menu.h"
 
 typedef void (CSWGuiPanel::*PFN_GUI_CALLBACK)(CSWGuiControl*);

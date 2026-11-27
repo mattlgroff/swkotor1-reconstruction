@@ -1,7 +1,6 @@
 // CSWGuiTitleMovies (swguititlemovies.o): the title screen movie list
 // (layout "titlemovie", rows from the MOVIES: and live%d:movies folders,
 // sorted by the movies.2da Order column).
-#define L_GUI_BUTTON_INLINE_CTOR
 #include "l/sw_gui_title_movies.h"
 
 static inline CClientExoApp* GetClientExoApp()

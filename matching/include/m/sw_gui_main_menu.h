@@ -369,11 +369,7 @@ public:
 // vtable 0x0073e658.
 class CSWGuiButton : public CSWGuiNavigable {
 public:
-#ifdef M_GUI_BUTTON_INLINE_CTOR
     CSWGuiButton() {}
-#else
-    CSWGuiButton();                                 // 0x0041C0F0
-#endif
     virtual ~CSWGuiButton();                        // 0x00419DA0
     virtual void CopyStyle(const CSWGuiExtent& extent, CSWGuiButton* pFrom); // 0x98
     CSWGuiBorder m_cBorder;                         // 0x6c

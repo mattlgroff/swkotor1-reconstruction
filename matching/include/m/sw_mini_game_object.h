@@ -410,14 +410,12 @@ public:
 // CResHelper base (vtable 0x0074767C, destructor 0x00506BD0), 0x1c bytes.
 class CResHelperMiniGame {
 public:
-#ifdef M_INLINE_RES_HELPER_CTOR
     CResHelperMiniGame()
     {
         m_pRes = 0;
         m_cResRef = "";
         m_bAutoRequest = 0;
     }
-#endif
     virtual ~CResHelperMiniGame();                  // 0x00506BD0
     void SetResRef(const CResRef& cResRef, int bAutoRequest);   // 0x00506C30 (shared template)
 

@@ -1,7 +1,6 @@
 // CSWCMiniGame constructor (vtable 0x00752914); the CResHelper base
 // constructor is inlined here.
 
-#define M_INLINE_RES_HELPER_CTOR
 #include "m/sw_mini_game_object.h"
 
 // The client area: only its resource name is read here.
