@@ -159,9 +159,10 @@ run it after the byte gate.
 - **R1 and R2 are not relaxed, but most of the tree predates them.** Each
   address bucket was given its own copy of the classes it uses, so that
   parallel workers never touched the same files. Those copies disagree:
-  `CExoArrayList` names its members `element`/`num` in one bucket and
-  `m_pArray`/`m_nCount` in another, and `CGuiInGame` has a different member
-  at `+0x14` in different files. Until they are merged into one declaration
+  `CExoArrayList` names its members `element`/`num` in
+  `l/sw_gui_class_selection.h` and `m_pArray`/`m_nCount` in
+  `l/sw_gui_inventory_equip.h`, and `CGuiInGame` has a different member at
+  `+0x14` in `l/sw_gui_dialog.h` and `n/gui_in_game_dialog.h`. Until they are merged into one declaration
   per type, the functions that use them are `MATCH-PENDING` under R1. New
   work must not add copies (CONTRIBUTING.md, step 4).
 - **R7 stays advisory.** Placeholder names never block a match.
