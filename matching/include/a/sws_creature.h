@@ -221,10 +221,7 @@ public:
                            unsigned long oidObject, unsigned long nEvent, void* pData);  // 0x004B08D0
 };
 
-class CSWSPlayerStore {
-public:
-    unsigned long m_aSlotItems[18];
-};
+#include "shared/sws_player_store.h"
 class CSWSPlayerStoreGUI {
 public:
     CSWSPlayerStore* m_pStore;
