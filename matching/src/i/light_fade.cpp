@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include "i/light_manager.h"
 
-extern volatile float g_fFrameTime;                    // 0x0078E574 (placeholder name)
 #include "shared/globals.h"
 
 

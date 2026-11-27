@@ -234,7 +234,6 @@ public:
     int RunScript(CExoString *psFileName, unsigned long oid, int bOid);
 };
 
-extern unsigned long EVENT_SIGNAL_EVENT;
 
 class CAppManager {
 public:

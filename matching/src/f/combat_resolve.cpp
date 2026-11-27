@@ -147,9 +147,6 @@ public:
     char pad_0xc[0x80];
 };
 
-extern unsigned short EFFECT_TYPE_LINK;            // 0x0074671C
-extern unsigned short EFFECT_TYPE_DEATH;           // 0x007466C8
-extern unsigned char IMMUNITY_TYPE_04;             // 0x0074690C
 
 class CServerAIMaster {
 public:

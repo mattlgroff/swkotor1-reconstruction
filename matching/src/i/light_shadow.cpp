@@ -3,7 +3,7 @@
 #include <stddef.h>
 #include "i/light_manager.h"
 
-extern float g_fFrameTime;                              // 0x0078E574 (placeholder name)
+#include "shared/globals.h"
 
 // NONMATCH (27 insns, ~4 real): the original shares one `lea eax, [esi+98h]`
 // return block between the mode-2 exit and the end, and keeps separate

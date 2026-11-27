@@ -297,8 +297,6 @@ class CAppManager { public: void* vptr; CClientExoApp* m_pClientExoApp; CClientE
 extern CAppManager* g_pAppManager;
 class CWorldTimer { public: void GetWorldTime(unsigned long*,unsigned long*);
  int SubtractWorldTimes(unsigned long,unsigned long,unsigned long,unsigned long,unsigned long*,unsigned long*); };
-extern unsigned char g_nObjectTypePlaceable; // 00746638
-extern unsigned char g_nObjectTypeDoor; // 00746639
 #include "shared/globals.h"
 class CClientObject;
 class CGameObject;

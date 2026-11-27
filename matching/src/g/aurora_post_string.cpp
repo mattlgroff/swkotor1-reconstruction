@@ -48,7 +48,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern float g_fFrameTime;                            // 0x0078e574
 
 void AurDrawString(CAurPostString* p, int nX, int nY); // 0x0044ce50
 

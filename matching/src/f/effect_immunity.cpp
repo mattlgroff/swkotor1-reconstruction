@@ -73,9 +73,6 @@ public:
 
 extern CAppManager *g_pAppManager;
 
-extern const int IMMUNITY_TYPE_PARALYSIS;
-extern const int IMMUNITY_TYPE_SLOW;
-extern const int IMMUNITY_TYPE_ENTANGLE;
 
 class CSWSCreatureStats {
 public:

@@ -34,7 +34,6 @@ public:
 
 // --- globals ----------------------------------------------------------------
 #include "shared/globals.h"
-extern char g_bVBOWriteOnly;            // 0x0078e398
 
 typedef void (__stdcall *PFNSWAPINTERVAL)(int);
 typedef void (__stdcall *PFNPROGRAMPARAM4F)(unsigned int, unsigned int,

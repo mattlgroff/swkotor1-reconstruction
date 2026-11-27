@@ -86,7 +86,6 @@ public:
 
 // Cached appearance.2da column indices (placeholder names).
 
-extern const unsigned long g_oidInvalid;            // 0x00746644 (OBJECT_INVALID)
 
 class CAurObject;
 

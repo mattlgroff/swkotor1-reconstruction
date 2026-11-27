@@ -2145,7 +2145,7 @@ address,name,status,diff_insns,file
 0x004A3EE0,LightManager::PrioritizeBump,MATCH,0,matching/src/i/light_prioritize.cpp
 0x004A3F70,LightManager::EnableHighestPriorityLightsFade,NONMATCH,142,matching/src/i/light_fade.cpp
 0x004A4480,LightManager::EnableLightsDynamicOnly,MATCH,0,matching/src/i/light_manager_slots.cpp
-0x004A4580,LightManager::ControlLightsFade,NONMATCH,26,matching/src/i/light_fade.cpp
+0x004A4580,LightManager::ControlLightsFade,NONMATCH,29,matching/src/i/light_fade.cpp
 0x004A4B10,LightManager::GetShadowLights,NONMATCH,27,matching/src/i/light_shadow.cpp
 0x004A4F10,LightManager::DisableThisLight,MATCH,0,matching/src/i/light_manager.cpp
 0x004A4FF0,LightManager::EnableThisLight,MATCH,0,matching/src/i/light_manager.cpp
@@ -3558,7 +3558,7 @@ address,name,status,diff_insns,file
 0x005298A0,CSWGlobalVariableTable::SetValueString,MATCH,0,matching/src/b/global_variable_table.cpp
 0x005299B0,CSWGlobalVariableTable::WriteTable,NONMATCH,86,matching/src/b/global_variable_table.cpp
 0x00529EF0,CSWGlobalVariableTable::ReadTableWithoutCatalogue,NONMATCH,32,matching/src/b/global_variable_table.cpp
-0x0052A280,CSWGlobalVariableTable::ReadTableWithCatalogue,NONMATCH,195,matching/src/b/global_variable_table.cpp
+0x0052A280,CSWGlobalVariableTable::ReadTableWithCatalogue,NONMATCH,194,matching/src/b/global_variable_table.cpp
 0x0052ABE0,CSWGlobalVariableTable::ReadTable,MATCH,0,matching/src/b/global_variable_table.cpp
 0x0052AD10,CSWGlobalVariableTable::Save,MATCH,0,matching/src/b/global_variable_table.cpp
 0x0052ADE0,CSWGlobalVariableTable::Load,MATCH,0,matching/src/b/global_variable_table.cpp

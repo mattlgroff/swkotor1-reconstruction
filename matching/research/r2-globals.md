@@ -20,9 +20,24 @@ Result: 1779 globals from 2694 declarations in 500 files.
 Byte gate 8,475 / 9,538 (one NONMATCH attempt matched; none lost).
 Matched under the rules: 659 (was 579).
 
+## Type conflicts the gate settled
+
+Units disagreed on the type of 83 globals. 70 now have one declaration:
+
+- **Script constants** (`EFFECT_TYPE_*`, `DURATION_TYPE_*`, `IMMUNITY_TYPE_*`,
+  `ABILITY_*`, `DAMAGE_*`) are `const int`. Some units declared them
+  `unsigned short`, because the code there loads only the low word; MSVC 7.0
+  narrows the load of an `int` whose value is truncated to 16 bits at once,
+  so the `int` declaration reproduces both kinds of unit. The majority type
+  (`unsigned short`) lost nine matches; `const int` loses none.
+- `g_fFrameTime` is a plain `float`: the `volatile` one unit gave it was a
+  steering trick (`LightManager::ControlLightsFade`, a NONMATCH attempt, goes
+  from 26 to 29 differing instructions).
+- The rest take the type most units used, with no lost match.
+
 ## Still declared in units
 
-- **Type conflicts (83).** Units disagree on the type: signedness or
+- **Type conflicts (13).** Units disagree on the type: signedness or
   width (`unsigned short` against `int` for script constants, which changes
   the load), or a different class for the same object (`LoadingModel*` and
   `Model*`, `TriggerPart*` and `Part*`, `CExoArrayList<Part*>` and

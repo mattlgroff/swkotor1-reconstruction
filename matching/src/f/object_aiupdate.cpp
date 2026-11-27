@@ -84,7 +84,6 @@ public:
 
 extern CAppManager *g_pAppManager;
 extern const unsigned long OBJECT_INVALID;         // 0x00746644
-extern const unsigned long EVENT_SIGNAL_EVENT;     // 0x007441DC
 
 class CScriptEvent {
 public:

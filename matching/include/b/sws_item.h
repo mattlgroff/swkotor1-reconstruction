@@ -151,7 +151,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern const unsigned long EVENT_DESTROY_OBJECT;           // 0x007441E0 (11)
 
 // Minimal stub for the item TUs; b/sws_message.h has the full class.
 #ifndef B_SWS_MESSAGE_H

@@ -297,7 +297,7 @@ void CSWSCreature::SetPortraitId(unsigned short nPortraitId)
     m_nPortraitId = nPortraitId;
 }
 
-extern const unsigned long ACTION_IN_PROGRESS;      // 0x00745DBC
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004FCE90
 int CSWSCreature::AddCounterSpellActions(unsigned long oidTarget)

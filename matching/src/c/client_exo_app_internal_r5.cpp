@@ -222,7 +222,6 @@ public:
     virtual void SetGamma(float f);                 // 0x24
 };
 
-extern CRender* g_pRender;                          // 0x007A39F8
 
 class CSWGuiManagerMouse {
 public:

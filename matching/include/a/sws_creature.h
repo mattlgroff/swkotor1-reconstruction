@@ -198,9 +198,6 @@ public:
 };
 #pragma pack(pop)
 
-extern const int EFFECT_TYPE_AC_INCREASE;           // 0x0074673C
-extern const int EFFECT_TYPE_AC_DECREASE;           // 0x00746740
-extern const int DAMAGE_FLAG_00;                    // 0x00746850
 
 class CSWSAction {
 public:

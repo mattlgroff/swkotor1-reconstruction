@@ -374,7 +374,6 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender); // 0x0041e550
 };
 
-extern unsigned char g_nGender;                     // 0x0073ecd0
 
 class CSWGuiSafePanel;
 class CSWGuiSafeLabel;

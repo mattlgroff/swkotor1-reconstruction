@@ -209,7 +209,6 @@ void SetCurrentStageTID(int nStage, int nTID);      // 0x00426550
 void MakeLookUpTexture(float fPower);               // 0x00423D80
 CAurTexture* AurTextureGetNormalizationCubeMap();   // 0x004233E0
 
-extern unsigned int g_nActiveTextureUnit;   // 0x007A6898
 
 // FUNCTION: SWKOTOR 0x0047A2F0
 void EnableFragmentShaders(int mode, CAurTexture* t0, CAurTexture* t1, CAurTexture* t2, CAurTexture* t3)

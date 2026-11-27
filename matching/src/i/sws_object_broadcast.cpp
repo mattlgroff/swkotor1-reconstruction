@@ -30,7 +30,7 @@ public:
 
 Vector VectorSubtract(const Vector& a, const Vector& b);    // 0x00423BC0
 
-extern unsigned long EVENT_SIGNAL_EVENT;            // 0x007441DC
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004CD760
 void CSWSObject::BroadcastDialog(CExoString& sText, float fRange, int bFlag)

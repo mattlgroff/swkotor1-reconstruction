@@ -40,12 +40,6 @@ public:
 
 #include "shared/globals.h"
 
-extern const int ABILITY_STRENGTH;
-extern const int ABILITY_DEXTERITY;
-extern const int ABILITY_CONSTITUTION;
-extern const int ABILITY_INTELLIGENCE;
-extern const int ABILITY_WISDOM;
-extern const int ABILITY_CHARISMA;
 
 class CSWSCreature {
 public:

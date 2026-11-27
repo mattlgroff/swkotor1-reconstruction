@@ -5,7 +5,7 @@
 #include "b/sws_creature.h"
 #include "b/party_table.h"
 
-extern const unsigned short DURATION_TYPE_INSTANT;          // 0x007473B8 (0)
+#include "shared/globals.h"
 
 class CSWCCreatureServerView {
 public:

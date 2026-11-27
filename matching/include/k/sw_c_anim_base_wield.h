@@ -8,7 +8,7 @@
 
 #include "k/sw_c_anim_base_head.h"
 
-extern const unsigned long g_oidInvalid;            // 0x00746644 (0x7f000000)
+#include "shared/globals.h"
 
 class CExoSoundSource {
 public:

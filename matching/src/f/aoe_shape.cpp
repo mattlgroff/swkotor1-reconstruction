@@ -114,7 +114,6 @@ public:
 };
 
 extern CAppManager *g_pAppManager;      // 0x007A39FC
-extern unsigned long g_oidInvalid;      // 0x00746644
 
 class CGameObject {
 public:

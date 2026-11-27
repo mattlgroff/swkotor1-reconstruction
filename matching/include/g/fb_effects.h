@@ -167,10 +167,9 @@ int HasMultiTexture();                      // 0x0045f710
 int AurGLCaps820();                         // 0x0045f820
 int AurATIFrameBufferModificationsAvailable();   // 0x0045f860
 void _glBlendFunc(int nSrc, int nDst);      // 0x00401670
-extern const unsigned int g_aGLBlendFactors[];   // 0x0073f270
+#include "shared/globals.h"
 int AurGLCaps7E0();                         // 0x0045f7e0
 
-#include "shared/globals.h"
 extern unsigned int g_nPowerWidth;          // 0x007a6890
 extern unsigned int g_nPowerHeight;         // 0x007a6894
 extern int g_nScreenWidth;                  // 0x0078d1d4

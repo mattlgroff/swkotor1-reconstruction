@@ -89,9 +89,6 @@ public:
 
 extern CAppManager *g_pAppManager;
 #include "shared/globals.h"
-extern const unsigned char g_nObjectTypeWaypoint;  // 0x0074663B
-extern const unsigned long g_oidInvalid;
-extern const unsigned long EVENT_SIGNAL_EVENT;     // 0x007441DC
 
 class CVirtualMachine {
 public:

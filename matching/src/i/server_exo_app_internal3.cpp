@@ -26,7 +26,7 @@ public:
                           CScriptEvent* pEvent);                    // 0x004B08D0
 };
 
-extern const unsigned long EVENT_SIGNAL_EVENT;                      // 0x007441DC
+#include "shared/globals.h"
 
 class CPathfindInformation {
 public:

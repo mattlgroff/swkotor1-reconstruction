@@ -667,7 +667,6 @@ CExoArrayList<int>* AurTextureGetOrdering()
 
 // --- texture memory budget ------------------------------------------------------
 
-extern float g_fFrameTime;                      // 0x0078e574
 
 void AurTextureMemCheck(CExoArrayList<CAurTextureBasic*>* pList, int nLimit,
                         int* pOut, float fScale);   // 0x00421ac0

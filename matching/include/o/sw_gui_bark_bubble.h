@@ -65,7 +65,6 @@ public:
 
 #include "shared/globals.h"
 extern CTlkTable* g_pTlkTableAlt;                   // 0x007A3A0C
-extern unsigned char g_nGender;                     // 0x0073ECD0
 
 class CWorldTimer {
 public:

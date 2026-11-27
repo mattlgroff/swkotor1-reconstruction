@@ -34,10 +34,7 @@ public:
     char pad_0x10[0x8c - 0x10];
 };
 
-extern unsigned short EFFECT_TYPE_SETSTATE;        // 0x0074669C (8)
-extern unsigned short EFFECT_TYPE_AC_DECREASE;     // 0x00746740
 #include "shared/globals.h"
-extern int AC_VS_DAMAGE_TYPE_ALL;       // 0x0074688C (0x4007)
 
 class CSWRules {
 public:

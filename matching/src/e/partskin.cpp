@@ -14,7 +14,6 @@ void RenderSkinVP(void* pData);                 // 0x0048A520 (cdecl)
 void RenderSkinBumpedVP(void* pData);           // 0x0048C650 (cdecl)
 
 #include "shared/globals.h"
-extern void* g_pApp;                            // 0x007B92A0
 extern "C" __declspec(dllimport) void __stdcall glDisableClientState(unsigned int array);
 
 class SkinGob {

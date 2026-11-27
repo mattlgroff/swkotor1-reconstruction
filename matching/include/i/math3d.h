@@ -78,6 +78,5 @@ Vector FUN_004ab210(const Vector& a, const Vector& b);                     // 0x
 int operator==(const Vector& a, const Vector& b);                          // 0x004AA980
 
 #include "shared/globals.h"
-extern const float g_fOne;                          // 0x0073D764 (1.0f)
 
 #endif

@@ -101,7 +101,6 @@ public:
 };
 
 extern RenderCamera* g_pRenderCamera;           // 0x007BB4E8
-extern float g_fFrameTime;                      // 0x0078E574
 #include "shared/globals.h"
 extern CExoArrayList<TriggerPart*> g_l80AA74;   // 0x0080AA74 trigger parts
 

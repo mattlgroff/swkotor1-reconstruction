@@ -266,7 +266,6 @@ public:
     int RunScriptSituation(void* pScript, unsigned long oid, int bOid);    // 0x005D0FD0
 };
 
-extern const unsigned long EVENT_SIGNAL_EVENT;      // 0x007441DC
 
 class CSWSModule : public CResHelper<CResIFO, 2014>, public CGameObject {
 public:

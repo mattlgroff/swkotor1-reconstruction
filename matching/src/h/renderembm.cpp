@@ -16,7 +16,6 @@ typedef void (__stdcall* PFNVERTEXATTRIBARRAY)(unsigned int);
 extern PFNVERTEXATTRIBARRAY g_pfnEnableVertexAttribArray;   // 0x007BB79C
 extern PFNVERTEXATTRIBARRAY g_pfnDisableVertexAttribArray;  // 0x007BB770
 
-extern float g_fOne;               // 0x0073D764
 #include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00470860

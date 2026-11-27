@@ -494,7 +494,6 @@ extern CExoArrayList<Gob*> g_l7FBF90;           // 0x007FBF90 blur bucket
 typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int texture);
 
 extern PFNCLIENTACTIVETEXTURE glClientActiveTextureARB; // 0x007BB6B0
-extern unsigned int g_nActiveTextureUnit;       // 0x007A6898
 extern CExoArrayList<TriangleBin*> g_l80AA68;   // 0x0080AA68 triangle bins
 extern RenderCamera* g_pRenderCamera;
 // File-scope in the original scene unit: MSVC knows no pointer aliases
@@ -502,7 +501,6 @@ extern RenderCamera* g_pRenderCamera;
 static __int64 g_nAnimStartTime;               // 0x007B9298
 static __int64 g_nAnimEndTime;                  // 0x007B9288
 extern CExoArrayList<PartEmitter*> g_l7FBF78;   // 0x007FBF78 emitter bucket
-extern float g_fFrameTime;                      // 0x0078E574, descriptive
 static __int64 g_nRenderStartTime;              // 0x007B9280, descriptive
 static __int64 g_nRenderEndTime;                // 0x007B9290, descriptive
 typedef void (__stdcall* PFNPROGRAMPARAMETER)(unsigned int target, unsigned int index,

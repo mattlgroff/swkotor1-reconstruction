@@ -11,7 +11,6 @@
 #include <stdlib.h>
 
 #include "shared/globals.h"
-extern const int EFFECT_TYPE_LINK;                          // 0x0074671C
 
 // FUNCTION: SWKOTOR 0x00536C60
 int CSWVirtualMachineCommands::ExecuteCommandGetChallengeRating(int nCommandId, int nParameters)

@@ -34,7 +34,6 @@ public:
     char pad_0x0[0x4];
 };
 
-extern const int EFFECT_TYPE_DISGUISE;                          // 0x00746774 (0x3E)
 #include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00561080

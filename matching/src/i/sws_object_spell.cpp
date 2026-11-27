@@ -15,7 +15,6 @@ public:
     unsigned long m_nPlayerID;                      // 0x04
 };
 
-extern const int EFFECT_TYPE_SPELL_IMMUNITY;        // 0x00746744 (placeholder name)
 #include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004CB890

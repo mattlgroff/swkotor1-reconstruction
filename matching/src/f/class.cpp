@@ -31,7 +31,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern const unsigned char g_nGender;
 
 class CSWBaseItem {
 public:

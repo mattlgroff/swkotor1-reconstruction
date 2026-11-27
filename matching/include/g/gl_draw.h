@@ -63,7 +63,6 @@ void RenderSquares(int nId);                          // 0x00426000
 void AurDrawString(char* sz);                         // 0x00432040
 
 void _glOrtho(double l, double r, double b, double t, double n, double f); // 0x00404b60
-extern unsigned int g_aGLBlendFactors[];              // 0x0073f270
 
 class CAurFontTexture {
 public:

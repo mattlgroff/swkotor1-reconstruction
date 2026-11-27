@@ -31,9 +31,6 @@ public:
 
 
 // .rdata action results.
-extern const unsigned long ACTION_IN_PROGRESS;      // 0x00745DBC (1)
-extern const unsigned long ACTION_COMPLETE;         // 0x00745DC0 (2)
-extern const unsigned long ACTION_FAILED;           // 0x00745DC4 (3)
 
 // Hearing range of AI sounds (.rdata 0x00747444, 1000.0f).
 

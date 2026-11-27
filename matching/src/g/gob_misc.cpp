@@ -277,7 +277,6 @@ public:
 
 void __cdecl MdlNodeRemoveAnimation(MdlNode* pRoot, int nIndex);   // 0x00437db0
 
-extern CExoArrayList<Model*> g_lModels;     // 0x007a8a64
 
 class Model : public MaxTree {
 public:

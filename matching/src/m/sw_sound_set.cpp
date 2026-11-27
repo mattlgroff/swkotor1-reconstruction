@@ -136,7 +136,6 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender); // 0x0041E550
 };
 
-extern unsigned char g_nGender;                     // 0x0073ECD0
 
 struct CSSFHeader {
     char m_sFileType[4];

@@ -3,7 +3,7 @@
 #include "l/sw_gui_options_in_game.h"
 #include "l/sw_gui_in_game_abilities.h"
 
-extern int g_nScreenRefreshRate; // 0x0078D1DC
+#include "shared/globals.h"
 
 // Win32 DEVMODEA (0x9C bytes); only the fields used here are named.
 struct DEVMODEA {

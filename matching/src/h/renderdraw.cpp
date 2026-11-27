@@ -156,7 +156,6 @@ void TriMeshPart::DrawPrepared(int n)
 }
 
 int AurTextureGetTID(CAurTexture* p);       // 0x00420BF0
-extern float g_fOne;                // 0x0073D764
 
 // FUNCTION: SWKOTOR 0x00470D30
 int TriMeshPart::GetRenderPath()

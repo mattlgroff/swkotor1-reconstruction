@@ -708,7 +708,6 @@ int CSWVirtualMachineCommands::ExecuteCommandTalent(int nCommandId, int nParamet
     return 0;
 }
 
-extern const unsigned short EFFECT_TYPE_IMMUNITY;           // 0x007466D4 (0x16)
 
 #define B_MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define B_MIN(a, b) (((a) < (b)) ? (a) : (b))
@@ -796,10 +795,6 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsEffectValid(int nCommandId, in
     return 0;
 }
 
-extern const unsigned short EFFECT_TYPE_ABILITY_INCREASE;   // 0x0074670C
-extern const unsigned short EFFECT_TYPE_ABILITY_DECREASE;   // 0x00746710
-extern const int ABILITY_STRENGTH;                          // 0x00746838 (0)
-extern const int ABILITY_CHARISMA;                          // 0x0074684C (5)
 
 // FUNCTION: SWKOTOR 0x00530680
 int CSWVirtualMachineCommands::ExecuteCommandEffectAbilityDecrease(int nCommandId, int nParameters)
@@ -863,11 +858,6 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectAbilityIncrease(int nCommandI
     return 0;
 }
 
-extern const unsigned short EFFECT_TYPE_ATTACK_INCREASE;    // 0x007466A4 (0xa)
-extern const unsigned short EFFECT_TYPE_ATTACK_DECREASE;    // 0x007466A8 (0xb)
-extern const unsigned short EFFECT_TYPE_AC_INCREASE;        // 0x0074673C
-extern const unsigned short EFFECT_TYPE_AC_DECREASE;        // 0x00746740
-extern const int AC_VS_DAMAGE_TYPE_ALL;                     // 0x0074688C (0x4007)
 
 // FUNCTION: SWKOTOR 0x00530960
 int CSWVirtualMachineCommands::ExecuteCommandEffectACDecrease(int nCommandId, int nParameters)
@@ -1009,8 +999,6 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectAttackIncrease(int nCommandId
     return 0;
 }
 
-extern const unsigned short EFFECT_TYPE_DAMAGE_DECREASE;    // 0x007466B4
-extern const unsigned short EFFECT_TYPE_CONCEALMENT;        // 0x007467AC
 
 // FUNCTION: SWKOTOR 0x005319A0
 int CSWVirtualMachineCommands::ExecuteCommandEffectConcealment(int nCommandId, int nParameters)
@@ -1071,10 +1059,6 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectDamageDecrease(int nCommandId
     return 0;
 }
 
-extern const unsigned short EFFECT_TYPE_DAMAGE_RESISTANCE;  // 0x00746684 (2)
-extern const unsigned short EFFECT_TYPE_DAMAGE_REDUCTION;   // 0x007466AC (0xc)
-extern const unsigned short EFFECT_TYPE_DAMAGE_INCREASE;    // 0x007466B0
-extern const unsigned short EFFECT_TYPE_DAMAGE_IMMUNITY;    // 0x007466BC
 
 // FUNCTION: SWKOTOR 0x00532050
 int CSWVirtualMachineCommands::ExecuteCommandEffectDamageImmunityIncrease(int nCommandId, int nParameters)
@@ -1219,7 +1203,6 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectDamageResistance(int nCommand
     return 0;
 }
 
-extern const unsigned short EFFECT_TYPE_DAMAGE_SHIELD;      // 0x00746770
 
 // FUNCTION: SWKOTOR 0x00532690
 int CSWVirtualMachineCommands::ExecuteCommandEffectForceShield(int nCommandId, int nParameters)
@@ -1277,7 +1260,6 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectDamageShield(int nCommandId, 
     return 0;
 }
 
-extern const unsigned short DURATION_TYPE_INSTANT;          // 0x007473B8 (0)
 
 // FUNCTION: SWKOTOR 0x00532920
 int CSWVirtualMachineCommands::ExecuteCommandEffectForceDrain(int nCommandId, int nParameters)
@@ -1360,7 +1342,6 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectHitPointChangeWhenDying(int n
     return 0;
 }
 
-extern const unsigned short EFFECT_TYPE_LINK;               // 0x0074671C
 
 // Both pop failures return the overflow code (as the original does).
 // FUNCTION: SWKOTOR 0x00532F80
@@ -1487,8 +1468,6 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectMovementSpeedIncrease(int nCo
     return 0;
 }
 
-extern const unsigned short EFFECT_TYPE_POISON;             // 0x00746708 (0x23)
-extern const unsigned short EFFECT_TYPE_SKILL_DECREASE;     // 0x0074675C
 
 // FUNCTION: SWKOTOR 0x00533560
 int CSWVirtualMachineCommands::ExecuteCommandEffectPoison(int nCommandId, int nParameters)
@@ -1556,7 +1535,6 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSkillDecrease(int nCommandId,
     return 0;
 }
 
-extern const unsigned short EFFECT_TYPE_SKILL_INCREASE;     // 0x00746758
 
 // The effect is not deleted after the push (the original leaks it).
 // FUNCTION: SWKOTOR 0x00533D00
@@ -1591,7 +1569,6 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSkillIncrease(int nCommandId,
     return 0;
 }
 
-extern const unsigned short EFFECT_TYPE_SPELL_IMMUNITY;     // 0x00746744
 
 // FUNCTION: SWKOTOR 0x00533E70
 int CSWVirtualMachineCommands::ExecuteCommandEffectSpellImmunity(int nCommandId, int nParameters)
@@ -1654,9 +1631,6 @@ int CSWVirtualMachineCommands::ExecuteCommandEffectSpellLevelAbsorption(int nCom
     return 0;
 }
 
-extern const unsigned short EFFECT_TYPE_FORCE_RESISTANCE_INCREASE; // 0x00746700
-extern const unsigned short EFFECT_TYPE_FORCE_RESISTANCE_DECREASE; // 0x00746704
-extern const unsigned short EFFECT_TYPE_TEMPORARY_HITPOINTS;       // 0x007466B8
 
 // FUNCTION: SWKOTOR 0x00534120
 int CSWVirtualMachineCommands::ExecuteCommandEffectForceResistanceDecrease(int nCommandId, int nParameters)

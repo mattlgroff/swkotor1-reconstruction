@@ -35,7 +35,7 @@ public:
     Scene* m_pScene;                                                 // +0x184
 };
 
-extern unsigned char g_nObjectTypeTrigger;                           // 0x00746636
+#include "shared/globals.h"
 
 // 0x00670B20 is a folded "delete if non-null" body (also matched as
 // ExplosionDoneCallback); the trigger destructor passes only the part.

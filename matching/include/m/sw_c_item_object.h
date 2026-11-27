@@ -46,7 +46,6 @@ Quaternion RotationArc(Vector vFrom, Vector vTo);                   // 0x004AB63
 Quaternion operator*(const Quaternion& a, const Quaternion& b);     // 0x004A9AC0
 
 #include "shared/globals.h"
-extern unsigned char g_nGender;                     // 0x0073ECD0
 
 struct __declspec(align(8)) STR_RES {
     CExoString m_sText;                             // 0x00

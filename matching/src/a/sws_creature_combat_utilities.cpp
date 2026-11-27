@@ -10,7 +10,6 @@ public:
 class CServerAIMaster { public: void AddEventDeltaTime(unsigned long, unsigned long, unsigned long,
     unsigned long, unsigned long, void*); }; // 0x004B08D0
 #include "shared/globals.h"
-extern const unsigned short EFFECT_TYPE_VISUALEFFECT; // 0x007466F4
 class CSWSObject;
 class CGameObject;
 class CSWSCreature;

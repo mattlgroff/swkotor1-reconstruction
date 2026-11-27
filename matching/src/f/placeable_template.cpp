@@ -252,8 +252,6 @@ public:
 
 #include "shared/globals.h"
 
-extern const unsigned long EVENT_SIGNAL_EVENT;      // 0x007441DC
-extern const unsigned long EVENT_DESTROY_OBJECT;
 
 class CSWSPlaceable : public CSWSObject {
 public:

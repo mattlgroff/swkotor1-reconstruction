@@ -176,7 +176,6 @@ extern "C" __declspec(dllimport) void __stdcall glTexGeni(unsigned int, unsigned
 // GL enums kept in .data.
 
 
-extern unsigned int g_nActiveTextureUnit;   // 0x007A6898
 typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int);
 extern PFNCLIENTACTIVETEXTURE glActiveTextureARB;    // 0x007BB80C
 typedef void (__cdecl* PFNCOMBINERCONST)(Vector*, float);

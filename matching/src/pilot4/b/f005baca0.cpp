@@ -67,7 +67,6 @@ public:
     unsigned short RollDice(unsigned char nDice, unsigned char nSides);  // 0x00550B60
 };
 #include "shared/globals.h"
-extern const unsigned char IMMUNITY_TYPE_CRITICAL_HIT;  // 0x00746970
 
 class CSWSCreature;
 

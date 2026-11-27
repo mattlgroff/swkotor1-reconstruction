@@ -191,7 +191,6 @@ extern PFNPROGRAMPARAMETER g_pfnProgramParameter4fNV;      // 0x007BB7AC
 extern Scene* g_pScene;                         // 0x007B92A0
 extern RenderCamera* g_pRenderCamera;           // 0x007BB4E8
 #include "shared/globals.h"
-extern unsigned int g_nActiveTextureUnit;       // 0x007A6898
 
 static inline void SetVertexProgramParameter(unsigned int nIndex, float x, float y, float z, float w)
 {

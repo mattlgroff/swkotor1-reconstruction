@@ -17,6 +17,7 @@ class AurRes;
 struct AurResFileList;
 class BSPNode;
 class Bin;
+class CApp;
 class CAppManagerT;
 struct CAurColor;
 class CAurFont;
@@ -42,6 +43,7 @@ class CExoString;
 struct CFrameInfoLine;
 class CHitInfo;
 class CNetLayer;
+class CRender;
 class CRenderWindow;
 struct CSWEquipSlotInfo;
 struct CSWGuiClassChoice;
@@ -65,6 +67,7 @@ class ImposterManager;
 class Material;
 class MaxTree;
 class MdlNodeTriMesh;
+class Model;
 class NvFaceInfo;
 class Part;
 class RequestPoolManager;
@@ -86,6 +89,7 @@ extern float g_fZeroEpsilon;  // 0x0073D700
 extern const float g_fSpeedMilli;  // 0x0073D708
 extern const char g_sEmpty[];  // 0x0073D71C
 extern const float AREA_WIND_SCALE_LIGHT;  // 0x0073D764
+extern const float g_fOne;  // 0x0073D764 (1.0f)
 extern const float g_fSpeedOne;  // 0x0073D764
 extern const float g_fSpeedHundredth;  // 0x0073DFEC
 extern const float g_fSpeedTenth;  // 0x0073E798
@@ -93,6 +97,7 @@ extern const int MIN_CUSTOM_TOKEN;  // 0x0073ECCC
 extern const unsigned char GENDER_MALE;  // 0x0073ECD0
 extern unsigned char g_nDefaultGender;  // 0x0073ECD0
 extern unsigned char g_nDefaultObjectGender;  // 0x0073ECD0
+extern unsigned char g_nGender;  // 0x0073ecd0
 extern unsigned char g_nLiveFolderCount;  // 0x0073ECD2 (descriptive)
 extern unsigned char g_nNumLiveDirectories;  // 0x0073ECD2
 extern unsigned int g_nTrackModelViewProjection;  // 0x0073F218
@@ -102,6 +107,7 @@ extern const unsigned int g_nGLTex2DConst;  // 0x0073f23c
 extern int g_aFogModes[3];  // 0x0073F25C
 extern unsigned int g_eMaxTextureUnits;  // 0x0073F26C
 extern unsigned int g_aBlendFactors[];  // 0x0073F270
+extern unsigned int g_aGLBlendFactors[];  // 0x0073f270
 extern const unsigned int g_nBlendSrcAlpha;  // 0x0073F270
 extern unsigned int g_nGLSrcAlpha;  // 0x0073F270
 extern const unsigned int g_nBlendOneMinusSrcAlpha;  // 0x0073F274
@@ -200,7 +206,9 @@ extern const unsigned long EVENT_OPEN_OBJECT;  // 0x007441D0 (name guessed)
 extern const unsigned long EVENT_SPELL_IMPACT;  // 0x007441D4
 extern const unsigned long EVENT_0x7441DC;  // 0x007441DC (placeholder name)
 extern const unsigned long EVENT_DELAY_INVENTORY;  // 0x007441DC (10)
+extern const unsigned long EVENT_SIGNAL_EVENT;  // 0x007441DC (name guessed)
 extern const int EVENT_AI_LATER;  // 0x007441E0 (placeholder name)
+extern const unsigned long EVENT_DESTROY_OBJECT;  // 0x007441E0 (11)
 extern const unsigned long g_nEventRemoveAoE;  // 0x007441E0 (0x0b)
 extern const unsigned long EVENT_REMOVE_EFFECT;  // 0x007441EC (name guessed)
 extern const unsigned long g_nEventRemoveEffect;  // 0x007441EC (placeholder name)
@@ -214,10 +222,13 @@ extern const unsigned long EVENT_SUMMON_CREATURE;  // 0x00744214 (0x18, placehol
 extern const unsigned long EVENT_ACQUIRE_ITEM;  // 0x00744218
 extern const float BROADCAST_SPELL_RANGE_SQUARED;  // 0x007455BC (placeholder name)
 extern const float g_fDefaultHeadTurnV;  // 0x007455DC
+extern const unsigned long ACTION_IN_PROGRESS;  // 0x00745DBC
 extern const int AI_ACTION_IN_PROGRESS;  // 0x00745DBC
 extern const int PLOT_PATH_OK;  // 0x00745DBC
+extern const unsigned long ACTION_COMPLETE;  // 0x00745DC0
 extern const int AI_ACTION_RESULT_005140E0;  // 0x00745DC0 (placeholder name)
 extern const int PLOT_PATH_DONE;  // 0x00745DC0
+extern const unsigned long ACTION_FAILED;  // 0x00745DC4 (3)
 extern const int AI_ACTION_RESULT_005140D0;  // 0x00745DC4 (placeholder name)
 extern const int PLOT_PATH_FAIL;  // 0x00745DC4
 extern const float g_fInvLog10Of2;  // 0x00745FF8
@@ -230,6 +241,7 @@ extern const unsigned char g_nObjectTypeA;  // 0x00746634
 extern const unsigned char g_nObjectTypeCreature;  // 0x00746634 (placeholder name)
 extern const unsigned char OBJECT_TYPE_ITEM;  // 0x00746635
 extern const unsigned char OBJECT_TYPE_TRIGGER;  // 0x00746636
+extern const unsigned char g_nObjectTypeTrigger;  // 0x00746636 (placeholder name)
 extern const unsigned char OBJECT_TYPE_PROJECTILE;  // 0x00746637
 extern const unsigned char g_nObjectTypeB;  // 0x00746638
 extern const unsigned char g_nObjectTypeC;  // 0x00746639  // 0x007473B8
@@ -237,12 +249,14 @@ extern const unsigned char OBJECT_TYPE_AREAOFEFFECT;  // 0x0074663A
 extern const unsigned char OBJECT_TYPE_AREA_OF_EFFECT;  // 0x0074663A
 extern unsigned char g_nObjectTypeAreaOfEffect;  // 0x0074663A
 extern const unsigned char OBJECT_TYPE_WAYPOINT;  // 0x0074663B
+extern const unsigned char g_nObjectTypeWaypoint;  // 0x0074663B
 extern const unsigned char OBJECT_TYPE_ENCOUNTER;  // 0x0074663C
 extern const unsigned char OBJECT_TYPE_STORE;  // 0x0074663D
 extern const unsigned char g_nObjectTypeStore;  // 0x0074663D
 extern const unsigned char OBJECT_TYPE_SOUND;  // 0x0074663E
 extern const unsigned char g_nObjectTypeSound;  // 0x0074663E
 extern const unsigned long OBJECT_INVALID_ID;  // 0x00746644
+extern const unsigned long g_oidInvalid;  // 0x00746644 (0x7f000000)
 extern const unsigned long OBJECT_ALL_POSSESSOR;  // 0x0074664C (0x7FFFFFFF)
 extern const unsigned long CLIENT_OBJECT_MASK;  // 0x0074665C
 extern const unsigned char GAME_OBJECT_ADD_OK;  // 0x0074666C
@@ -259,44 +273,60 @@ extern const int EFFECT_TYPE_0746680;  // 0x00746680 (placeholder name)
 extern const unsigned short EFFECT_TYPE_HASTE;  // 0x00746680 (1)
 extern const int g_nEffectTrueType746680;  // 0x00746680
 extern const int EFFECT_TYPE_0746684;  // 0x00746684 (placeholder name)
+extern const int EFFECT_TYPE_DAMAGE_RESISTANCE;  // 0x00746684 (2)
 extern const int g_nEffectTrueType746684;  // 0x00746684
 extern int EFFECT_TYPE_SLOW;  // 0x00746688 (3; NWN true type 3 = slow)
 extern const int g_nEffectTrueType746688;  // 0x00746688
 extern const unsigned short EFFECT_TYPE_RESURRECTION;  // 0x0074668C (4)
 extern const int g_nEffectTrueType746690;  // 0x00746690
 extern const int g_nEffectSummonCreature;  // 0x00746694
+extern int EFFECT_TYPE_REGENERATE;  // 0x00746698 (7)
 extern const int g_nEffectTrueType746698;  // 0x00746698
+extern int EFFECT_TYPE_SETSTATE;  // 0x0074669C (8)
 extern const int g_nEffectTrueType74669C;  // 0x0074669C
 extern const int g_nEffectType7466A0;  // 0x007466A0
 extern const int EFFECT_TYPE_07466A4;  // 0x007466A4 (placeholder name)
+extern const int EFFECT_TYPE_ATTACK_INCREASE;  // 0x007466A4 (10)
 extern const int g_nEffectTrueType7466A4;  // 0x007466A4
+extern const int EFFECT_TYPE_ATTACK_DECREASE;  // 0x007466A8 (11)
 extern const int g_nEffectTrueType7466A8;  // 0x007466A8
 extern const int EFFECT_TYPE_07466AC;  // 0x007466AC (placeholder name)
+extern const int EFFECT_TYPE_DAMAGE_REDUCTION;  // 0x007466AC (12)
 extern const int g_nEffectTrueType7466AC;  // 0x007466AC
 extern const int EFFECT_TYPE_07466B0;  // 0x007466B0 (placeholder name)
+extern const int EFFECT_TYPE_DAMAGE_INCREASE;  // 0x007466B0 (13)
 extern const int g_nEffectTrueType7466B0;  // 0x007466B0
+extern const int EFFECT_TYPE_DAMAGE_DECREASE;  // 0x007466B4 (14)
 extern const int g_nEffectTrueType7466B4;  // 0x007466B4
+extern const int EFFECT_TYPE_TEMPORARY_HITPOINTS;  // 0x007466B8 (descriptive name)
 extern const int g_nEffectTrueType7466B8;  // 0x007466B8
+extern const int EFFECT_TYPE_DAMAGE_IMMUNITY;  // 0x007466BC (16)
 extern const int g_nEffectTrueType7466BC;  // 0x007466BC
+extern const int EFFECT_TYPE_DAMAGE_IMMUNITY_INCREASE;  // 0x007466C0 (17)
 extern int EFFECT_TYPE_DAMAGE_VULNERABILITY;  // 0x007466C0 (0x11)
 extern const int g_nEffectTrueType7466C0;  // 0x007466C0
 extern const unsigned short EFFECT_TYPE_ENTANGLE;  // 0x007466C4 (18)
 extern const int g_nEffectTrueType7466C4;  // 0x007466C4
+extern int EFFECT_TYPE_DEATH;  // 0x007466C8
 extern const unsigned short EFFECT_TYPE_KNOCKDOWN;  // 0x007466CC (20)
 extern const int g_nEffectTrueType7466D0;  // 0x007466D0
 extern const int EFFECT_TYPE_07466D4;  // 0x007466D4 (placeholder name)
+extern const int EFFECT_TYPE_IMMUNITY;  // 0x007466D4 (22)
 extern const int g_nEffectTrueType7466D4;  // 0x007466D4
 extern const int EFFECT_TYPE_07466D8;  // 0x007466D8 (placeholder name)
 extern const int g_nEffectTrueType7466DC;  // 0x007466DC
 extern const int g_nEffectTrueType7466E0;  // 0x007466E0
 extern const int EFFECT_TYPE_07466E4;  // 0x007466E4 (placeholder name)
+extern const int EFFECT_TYPE_SAVING_THROW_INCREASE;  // 0x007466E4 (26)
 extern const int g_nEffectTrueType7466E4;  // 0x007466E4
+extern const int EFFECT_TYPE_SAVING_THROW_DECREASE;  // 0x007466E8 (27)
 extern const int g_nEffectTrueType7466E8;  // 0x007466E8
 extern const unsigned short EFFECT_TYPE_MOVEMENT_SPEED_INCREASE;  // 0x007466EC
 extern const int g_nEffectTrueType7466EC;  // 0x007466EC
 extern const int EFFECT_TYPE_07466F0;  // 0x007466F0 (29, placeholder name)
 extern const unsigned short EFFECT_TYPE_MOVEMENT_SPEED_DECREASE;  // 0x007466F0
 extern const int g_nEffectTrueType7466F0;  // 0x007466F0
+extern int EFFECT_TYPE_VISUALEFFECT;  // 0x007466F4 (0x1e)
 extern unsigned short EFFECT_TYPE_VISUAL_EFFECT;  // 0x007466F4
 extern const int g_nEffectTrueType7466F4;  // 0x007466F4
 extern const int g_nEffectType7466F4;  // 0x007466F4
@@ -307,14 +337,21 @@ extern const int g_nEffectTrueType7466F8;  // 0x007466F8
 extern const unsigned short EFFECT_TYPE_BEAM;  // 0x007466FC (0x20)
 extern const int g_nEffectTrueType7466FC;  // 0x007466FC
 extern const int EFFECT_TYPE_0746700;  // 0x00746700 (placeholder name)
+extern const int EFFECT_TYPE_FORCE_RESISTANCE_INCREASE;  // 0x00746700 (33)
 extern const int g_nEffectTrueType746700;  // 0x00746700
+extern const int EFFECT_TYPE_FORCE_RESISTANCE_DECREASE;  // 0x00746704 (34)
 extern const int g_nEffectTrueType746704;  // 0x00746704
+extern int EFFECT_TYPE_POISON;  // 0x00746708 (0x23, placeholder)
 extern const int g_nEffectTrueType746708;  // 0x00746708
 extern const int EFFECT_TYPE_074670C;  // 0x0074670C (placeholder name)
+extern int EFFECT_TYPE_ABILITY_INCREASE;  // 0x0074670C (36)
 extern const int g_nEffectTrueType74670C;  // 0x0074670C
+extern int EFFECT_TYPE_ABILITY_DECREASE;  // 0x00746710 (37)
 extern const int g_nEffectTrueType746710;  // 0x00746710
+extern int EFFECT_TYPE_DAMAGE;  // 0x00746714
 extern const int g_nEffectTrueType746714;  // 0x00746714
 extern const unsigned short EFFECT_TYPE_HEAL;  // 0x00746718
+extern const int EFFECT_TYPE_LINK;  // 0x0074671C
 extern const int g_nEffectLink;  // 0x0074671C
 extern const int g_nEffectType74671C;  // 0x0074671C
 extern const unsigned short EFFECT_TYPE_MODIFYNUMATTACKS;  // 0x0074672C
@@ -323,9 +360,12 @@ extern const int g_nEffectTrueType746734;  // 0x00746734
 extern const int EFFECT_TYPE_0746738;  // 0x00746738 (47, placeholder name)
 extern const unsigned short EFFECT_TYPE_2F;  // 0x00746738 (0x2F)
 extern const int g_nEffectTrueType746738;  // 0x00746738
+extern const int EFFECT_TYPE_AC_INCREASE;  // 0x0074673C
 extern const int g_nEffectTrueType74673C;  // 0x0074673C
+extern const int EFFECT_TYPE_AC_DECREASE;  // 0x00746740
 extern const int g_nEffectTrueType746740;  // 0x00746740
 extern const int EFFECT_TYPE_0746744;  // 0x00746744 (placeholder name)
+extern const int EFFECT_TYPE_SPELL_IMMUNITY;  // 0x00746744 (placeholder name)
 extern const int g_nEffectTrueType746744;  // 0x00746744
 extern const unsigned short EFFECT_TYPE_DISPELMAGICALL;  // 0x00746748 (51)
 extern const int g_nEffectTrueType746748;  // 0x00746748
@@ -334,7 +374,9 @@ extern const int g_nEffectTrueType74674C;  // 0x0074674C
 extern int EFFECT_TYPE_PROPERTY29;  // 0x00746754 (item property 29 effect)
 extern const int EFFECT_TYPE_0746758;  // 0x00746758 (placeholder name)
 extern int EFFECT_TYPE_PROPERTY36;  // 0x00746758
+extern const int EFFECT_TYPE_SKILL_INCREASE;  // 0x00746758 (55)
 extern const int g_nEffectTrueType746758;  // 0x00746758
+extern const int EFFECT_TYPE_SKILL_DECREASE;  // 0x0074675C (56)
 extern const int g_nEffectTrueType74675C;  // 0x0074675C
 extern const unsigned short EFFECT_TYPE_HITPOINT_CHANGE_WHEN_DYING;  // 0x00746760
 extern const int EFFECT_TYPE_0746764;  // 0x00746764 (placeholder name)
@@ -343,11 +385,14 @@ extern const int EFFECT_TYPE_0746768;  // 0x00746768 (59, placeholder name)
 extern int EFFECT_TYPE_SPECIALWALK_END;  // 0x00746768 (0x3b)
 extern const unsigned short EFFECT_TYPE_FORCE_PUSHED;  // 0x0074676C (0x3C)
 extern const int EFFECT_TYPE_0746770;  // 0x00746770 (placeholder name)
+extern int EFFECT_TYPE_DAMAGE_SHIELD;  // 0x00746770
 extern const int g_nEffectTrueType746770;  // 0x00746770
+extern const int EFFECT_TYPE_DISGUISE;  // 0x00746774 (0x3E)
 extern int EFFECT_TYPE_PROPERTY59;  // 0x00746774
 extern const int g_nEffectTrueType746774;  // 0x00746774
 extern const int EFFECT_TYPE_0746778;  // 0x00746778 (63, placeholder name)
 extern const int g_nEffectTrueType746778;  // 0x00746778
+extern const int EFFECT_TYPE_TIMESTOP;  // 0x0074677C
 extern const int g_nEffectTrueType74677C;  // 0x0074677C
 extern const int EFFECT_TYPE_0746780;  // 0x00746780 (placeholder name)
 extern const unsigned short EFFECT_TYPE_SPELLLEVELABSORPTION;  // 0x00746780
@@ -355,6 +400,7 @@ extern const int g_nEffectTrueType746780;  // 0x00746780
 extern const int g_nEffectType746780;  // 0x00746780
 extern const int EFFECT_TYPE_0746788;  // 0x00746788 (placeholder name)
 extern int EFFECT_TYPE_746788;  // 0x00746788 (0x43)
+extern const int EFFECT_TYPE_ICON;  // 0x00746788 (read as a dword here)
 extern const int g_nEffectType746788;  // 0x00746788
 extern const unsigned short EFFECT_TYPE_074678C;  // 0x0074678C (68, placeholder name)
 extern const int EFFECT_TYPE_0746794;  // 0x00746794 (placeholder name)
@@ -362,6 +408,7 @@ extern const unsigned short EFFECT_TYPE_SEEINVISIBLE;  // 0x00746794
 extern const int g_nEffectTrueType746794;  // 0x00746794
 extern const int EFFECT_TYPE_0746798;  // 0x00746798 (placeholder name)
 extern const int g_nEffectTrueType746798;  // 0x00746798
+extern int EFFECT_TYPE_TRUESEEING;  // 0x0074679C (0x48)
 extern const int g_nEffectTrueType74679C;  // 0x0074679C
 extern const int EFFECT_TYPE_07467A0;  // 0x007467A0 (placeholder name)
 extern const int g_nEffectTrueType7467A0;  // 0x007467A0
@@ -369,6 +416,7 @@ extern const int g_nEffectTrueType7467A4;  // 0x007467A4
 extern const int EFFECT_TYPE_07467A8;  // 0x007467A8 (placeholder name)
 extern const int g_nEffectTrueType7467A8;  // 0x007467A8
 extern const int EFFECT_TYPE_07467AC;  // 0x007467AC (placeholder name)
+extern const int EFFECT_TYPE_CONCEALMENT;  // 0x007467AC (76)
 extern const int g_nEffectTrueType7467AC;  // 0x007467AC
 extern const unsigned short EFFECT_TYPE_APPEAR;  // 0x007467C0 (name guessed)
 extern const int g_nEffectTrueType7467C4;  // 0x007467C4
@@ -387,6 +435,7 @@ extern const unsigned short EFFECT_TYPE_LIGHTSABERTHROW;  // 0x00746808 (0x64)
 extern const int g_nEffectTrueType746808;  // 0x00746808
 extern const unsigned short EFFECT_TYPE_ASSUREDHIT;  // 0x0074680C (100)
 extern const int g_nEffectTrueType74680C;  // 0x0074680C
+extern int EFFECT_TYPE_FORCE_JUMP;  // 0x00746810
 extern const int g_nEffectTrueType746810;  // 0x00746810
 extern const unsigned short EFFECT_TYPE_ASSUREDDEFLECTION;  // 0x00746818 (103)
 extern const int g_nEffectTrueType746818;  // 0x00746818
@@ -397,6 +446,9 @@ extern const unsigned short EFFECT_TYPE_FORCE_SHIELD;  // 0x00746824
 extern const int EFFECT_TYPE_0746828;  // 0x00746828 (108, placeholder name)
 extern const int EFFECT_TYPE_074682C;  // 0x0074682C (109, placeholder name)
 extern const int EFFECT_TYPE_0746830;  // 0x00746830 (list-end sentinel, placeholder name)
+extern const int ABILITY_STRENGTH;  // 0x00746838 (0)
+extern const int ABILITY_CHARISMA;  // 0x0074684C (5)
+extern const int DAMAGE_FLAG_00;  // 0x00746850
 extern int DAMAGE_FLAG_01;  // 0x00746854
 extern int DAMAGE_FLAG_02;  // 0x00746858
 extern int DAMAGE_FLAG_03;  // 0x0074685C
@@ -413,6 +465,7 @@ extern int DAMAGE_FLAG_12;  // 0x00746880
 extern int DAMAGE_FLAG_13;  // 0x00746884
 extern const int DAMAGE_TYPE_MAX;  // 0x00746884 (0x2000)
 extern int AC_DEFLECTION_BONUS_VS_DAMAGE;  // 0x0074688C (16391): AC modifier damage type
+extern const int AC_VS_DAMAGE_TYPE_ALL;  // 0x0074688C (0x4007)
 extern const int DAMAGE_POWER_NORMAL;  // 0x00746894 (0)
 extern const int DAMAGE_POWER_MAX;  // 0x007468AC (6, name guessed)
 extern int AC_TYPE_DODGE;  // 0x007468B0 (0, placeholder name)
@@ -435,6 +488,7 @@ extern const int IMMUNITY_TYPE_NONE;  // 0x007468FC
 extern int IMMUNITY_TYPE_01;  // 0x00746900
 extern int IMMUNITY_TYPE_02;  // 0x00746904
 extern int IMMUNITY_TYPE_03;  // 0x00746908
+extern int IMMUNITY_TYPE_04;  // 0x0074690C
 extern const unsigned char g_nImmunityTypeTrap;  // 0x00746910 (placeholder name)
 extern unsigned char IMMUNITY_TYPE_06;  // 0x00746914
 extern unsigned char IMMUNITY_TYPE_12;  // 0x0074692C
@@ -447,12 +501,14 @@ extern int IMMUNITY_TYPE_29;  // 0x00746968
 extern int IMMUNITY_TYPE_30;  // 0x0074696C
 extern unsigned char IMMUNITY_TYPE_SNEAK_ATTACK;  // 0x0074696C (0x1e, placeholder)
 extern int IMMUNITY_TYPE_31;  // 0x00746970
+extern unsigned char IMMUNITY_TYPE_CRITICAL_HIT;  // 0x00746970 (0x1f, placeholder)
 extern int IMMUNITY_TYPE_32;  // 0x00746974
 extern const int IMMUNITY_TYPE_MAX;  // 0x00746978 (0x21)
 extern const int MISS_CHANCE_TYPE_NORMAL;  // 0x00746990 (0, name guessed)
 extern const float MOVE_AWAY_DEFAULT_RANGE;  // 0x00746B10 (40.0f, name guessed)
 extern const char g_szCreditsTemplate[];  // 0x007471C0 (credits item template)
 extern const unsigned short DURATION_TYPE_7473B8;  // 0x007473B8
+extern const unsigned short DURATION_TYPE_INSTANT;  // 0x007473B8
 extern unsigned short SUBTYPE_MAGICAL;  // 0x007473B8
 extern const unsigned short DURATION_TYPE_7473BC;  // 0x007473BC
 extern unsigned short SUBTYPE_EQUIPPED;  // 0x007473BC (3)
@@ -678,6 +734,8 @@ extern CSWEquipSlotInfo g_aEquipSlots[9];  // 0x00756560 (descriptive)
 extern CSWUpgradeSlotInfo g_aUpgradeSlots[4][4];  // 0x00756FB4
 extern int g_nWindowWidth;  // 0x0078D1D4
 extern int g_nWindowHeight;  // 0x0078D1D8
+extern unsigned long g_nScreenRefreshRate;  // 0x0078D1DC
+extern unsigned char g_nScreenDepth;  // 0x0078D1E0
 extern unsigned long g_nSavedScreenWidth;  // 0x0078d1f0
 extern unsigned long g_nSavedScreenHeight;  // 0x0078d1f4
 extern unsigned char g_nSavedScreenDepth;  // 0x0078d1f8
@@ -781,6 +839,7 @@ extern short g_bHeadLight;  // 0x0078e388
 extern short g_nHeadLight;  // 0x0078E388 (placeholder name)
 extern float g_fMaterialAlpha;  // 0x0078E390
 extern unsigned long g_nClearColor;  // 0x0078e394
+extern unsigned char g_bVBOWriteOnly;  // 0x0078e398
 extern int g_nGeomFadeMode;  // 0x0078e3a0
 extern int g_bShadows;  // 0x0078e3a8
 extern int g_bStencilDynamic;  // 0x0078E3A8, descriptive
@@ -845,6 +904,7 @@ extern float g_fRingPhaseScale;  // 0x0078E568, descriptive
 extern float g_fRingPhaseSpeed;  // 0x0078E56C, descriptive
 extern float g_fAnimationTime;  // 0x0078E574
 extern float g_fAurFrameDelta;  // 0x0078E574
+extern float g_fFrameTime;  // 0x0078e574
 extern int g_nShaderFrame;  // 0x0078E574
 extern int g_bCompressQuaternions;  // 0x0078E588
 extern float g_fKeyEpsilon;  // 0x0078E58C
@@ -1165,6 +1225,7 @@ extern CExoResMan* g_pExoResMan;  // 0x007A39E8
 extern CAuroraInterface* g_pAuroraInterface;  // 0x007A39F0 (descriptive)
 extern CSWGuiManager* g_pGuiManager;  // 0x007A39F4
 extern CToolTipGlobals* g_pToolTipGlobals;  // 0x007A39F4
+extern CRender* g_pRender;  // 0x007A39F8
 extern CRenderWindow* g_pRenderWindow;  // 0x007a39f8
 extern CAppManagerT* g_pAppManagerT;  // 0x007A39FC (g_pAppManager)
 extern CVirtualMachine* g_pVirtualMachine;  // 0x007A3A00
@@ -1269,6 +1330,7 @@ extern float g_fSaturation;  // 0x007a6884
 extern int g_nAntiAliasingMode;  // 0x007a6888
 extern const char* g_szWGLExtensions;  // 0x007a688c
 extern int g_nActiveTextureStage;  // 0x007a6898
+extern unsigned int g_nActiveTextureUnit;  // 0x007A6898
 extern int g_nCurrentStage;  // 0x007a6898
 extern int g_nGUIImageFlag;  // 0x007A689C
 extern RequestPoolManager* g_pRequestPoolManager;  // 0x007a68a4
@@ -1324,6 +1386,7 @@ extern int g_nGobsCreated;  // 0x007a8a1c
 extern int g_nHitAABBDirection;  // 0x007a8a24
 extern _iobuf* g_pTextureLog;  // 0x007a8a3c
 extern CExoArrayList<Gob*> g_lGobs;  // 0x007a8a58
+extern CExoArrayList<Model*> g_lModels;  // 0x007a8a64
 extern CExoArrayList<int> g_lSkinScratch0;  // 0x007a8a70
 extern CExoArrayList<int> g_lSkinScratch1;  // 0x007a8a7c
 extern CExoArrayList<int> g_lSkinScratch2;  // 0x007a8a88
@@ -1368,6 +1431,7 @@ extern int g_bRegisterCombiners;  // 0x007B92A0
 extern int g_nChunkVisible;  // 0x007B92A0
 extern Scene* g_pActiveScene;  // 0x007B92A0 (placeholder name)
 extern Scene* g_pAnimatingScene;  // 0x007B92A0
+extern CApp* g_pApp;  // 0x007B92A0
 extern CombinerCaps* g_pCombinerCaps;  // 0x007B92A0
 extern int g_bPauseFlag;  // 0x007B92AC
 extern float g_fMeshBucketSeconds;  // 0x007B92B0, descriptive
@@ -1782,6 +1846,10 @@ extern CExoLinkedListInternal* g_lCachedVFX;  // 0x00833BC8
 extern short g_nSpeedBlurCount;  // 0x00833BCC
 extern CExoLinkedList<CAuroraModel> g_lRequestedModels;  // 0x00834094
 extern CExoString g_asTexturePacks[4];  // 0x00834098
+extern const int ABILITY_CONSTITUTION;
+extern const int ABILITY_DEXTERITY;
+extern const int ABILITY_INTELLIGENCE;
+extern const int ABILITY_WISDOM;
 extern const float AI_GIVE_ITEM_RUN_DISTANCE_SQ;
 extern const int EFFECT_TRUETYPE_DAMAGE_IMMUNITY;
 extern const int EFFECT_TRUETYPE_IMMUNITY;
@@ -1800,11 +1868,14 @@ extern const int IMMUNITY_TYPE_DAZED;
 extern const int IMMUNITY_TYPE_DEAFNESS;
 extern const int IMMUNITY_TYPE_DISEASE;
 extern const int IMMUNITY_TYPE_DOMINATE;
+extern const int IMMUNITY_TYPE_ENTANGLE;
 extern const int IMMUNITY_TYPE_FEAR;
 extern const int IMMUNITY_TYPE_MIND_SPELLS;
+extern const int IMMUNITY_TYPE_PARALYSIS;
 extern const int IMMUNITY_TYPE_POISON;
 extern const int IMMUNITY_TYPE_SILENCE;
 extern const int IMMUNITY_TYPE_SLEEP;
+extern const int IMMUNITY_TYPE_SLOW;
 extern const int IMMUNITY_TYPE_STUN;
 extern const int IMMUNITY_TYPE_TRAP;
 extern const unsigned long PLAYER_ID_ALL_PLAYERS;
@@ -1850,6 +1921,8 @@ extern unsigned short g_nEffectSubTypeMagical;
 extern unsigned short g_nEffectTypeVisual;
 extern int g_nEffectVisualParam;
 extern unsigned char g_nFeatMines;
+extern unsigned char g_nObjectTypeDoor;  // 00746639
+extern unsigned char g_nObjectTypePlaceable;  // 00746638
 extern int g_programs_arb_0078e5ec;
 extern CExoString g_sExoFileRetryLog;
 extern int g_vertex_program_capacity_008305d4;

@@ -68,7 +68,6 @@ extern void* glActiveStencilFaceEXT;                      // 0x007bb624
 
 // Capability bits, one global mask per extension.
 
-extern unsigned char g_bVBOWriteOnly;           // 0x0078e398
 
 typedef void (*CombinerFn)();
 typedef void (*CombinerConstantFn)(float* pColor);

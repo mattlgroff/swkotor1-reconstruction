@@ -10,7 +10,7 @@ public:
     void* m_pcExoIniInternal;                       // 0x00
 };
 
-extern unsigned long g_nScreenRefreshRate;          // 0x0078D1DC
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x005F0C60
 int CClientExoAppInternal::IsValidResolution(int width, int height)

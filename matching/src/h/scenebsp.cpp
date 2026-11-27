@@ -163,7 +163,6 @@ extern CExoArrayList<Part*> g_l7FBFCC, g_l7FBFC0, g_l7FBFF0, g_l7FBF90, g_l7FBF7
 extern CExoArrayList<Part*> g_l7FBF84, g_l7FBF6C, g_l80AA74, g_l7FBFE4, g_l80AA68,
     g_l7FBFA8, g_l7FBFD8;
 extern int g_n7FBF28, g_n7FBF2C, g_n7FBF30;
-extern CExoArrayList<void*> g_lModels;              // 0x007A8A64
 int GetNumBuckets();                                // 0x0041FEB0
 
 // FUNCTION: SWKOTOR 0x0046A610

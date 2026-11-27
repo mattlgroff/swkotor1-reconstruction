@@ -201,7 +201,7 @@ void handleScreenSaver()
     }
 }
 
-extern unsigned int g_aGLBlendFactors[]; // 0x0073f270
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00401670
 void _glBlendFunc(int nSrc, int nDst)
@@ -311,7 +311,6 @@ void CAppManager::CreateServer(int nMode)
     m_pServerExoApp->Initialize();
 }
 
-#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00401440
 void __cdecl UpdateWindowTitle()

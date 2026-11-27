@@ -54,7 +54,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern const unsigned char g_nObjectTypeTrigger;   // 0x00746636
 
 class CSWSObject;
 

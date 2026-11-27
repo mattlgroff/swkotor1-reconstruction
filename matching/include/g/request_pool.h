@@ -122,6 +122,5 @@ public:
 };
 
 #include "shared/globals.h"
-extern unsigned char g_bVBOWriteOnly;              // 0x0078e398
 
 #endif

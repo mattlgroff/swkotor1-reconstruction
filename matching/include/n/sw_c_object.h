@@ -45,7 +45,6 @@ extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
 extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
 extern int g_nScreenWidth;                          // 0x0078D1D4
 extern int g_nScreenHeight;                         // 0x0078D1D8
-extern const float g_fOne;                          // 0x0073D764
 
 // Linked list -----------------------------------------------------------
 

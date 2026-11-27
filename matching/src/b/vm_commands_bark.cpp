@@ -21,7 +21,6 @@ public:
     int m_nB4;
 };
 #include "shared/globals.h"
-extern unsigned char g_nGender;                             // 0x0073ECD0
 
 // NONMATCH (11): GUI state uses a different scratch register.
 // FUNCTION: SWKOTOR 0x00548900

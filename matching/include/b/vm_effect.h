@@ -8,13 +8,6 @@
 
 // .rdata effect type words (loaded from memory, not immediates)
 #include "shared/globals.h"
-extern const unsigned short EFFECT_TYPE_SETSTATE;           // 0x0074669C (8)
-extern const unsigned short EFFECT_TYPE_DAMAGE_IMMUNITY_INCREASE; // 0x007466C0 (0x11)
-extern const unsigned short EFFECT_TYPE_SAVING_THROW_INCREASE; // 0x007466E4 (0x1A)
-extern const unsigned short EFFECT_TYPE_SAVING_THROW_DECREASE; // 0x007466E8 (0x1B)
-extern const unsigned short EFFECT_TYPE_VISUALEFFECT;       // 0x007466F4 (0x1E)
-extern const unsigned short EFFECT_TYPE_TRUESEEING;         // 0x0074679C (0x48)
-extern const unsigned short EFFECT_TYPE_FORCE_JUMP;         // 0x00746810 (0x66)
 
 #include "b/game_effect.h"
 

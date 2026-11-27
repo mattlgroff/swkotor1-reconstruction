@@ -79,25 +79,15 @@ public:
     unsigned char GetParam1Value() { return m_nParam1Value; }
 };
 
-extern int EFFECT_TYPE_VISUALEFFECT;   // 0x007466F4 (0x1e)
-extern int EFFECT_TYPE_SETSTATE;       // 0x0074669C (8)
 #include "shared/globals.h"
-extern int EFFECT_TYPE_POISON;         // 0x00746708 (0x23, placeholder)
-extern int EFFECT_TYPE_ABILITY_DECREASE;  // 0x00746710 (0x25, placeholder)
-extern int EFFECT_TYPE_DEATH;          // 0x007466C8
-extern int EFFECT_TYPE_DAMAGE;         // 0x00746714
-extern int EFFECT_TYPE_DAMAGE_SHIELD;  // 0x00746770
-extern int EFFECT_TYPE_FORCE_JUMP;     // 0x00746810
 
 
 extern "C" int __cdecl rand();
 extern "C" double __cdecl log10(double x);
 #pragma intrinsic(log10)
-extern unsigned short DURATION_TYPE_INSTANT;      // 0x007473B8 (0)
 
 float Magnitude(const Vector &v);                           // 0x004AB100 (cdecl)
 Vector NormalizeVector(const Vector &v);                    // 0x004AB180 (cdecl)
-extern unsigned char IMMUNITY_TYPE_CRITICAL_HIT;   // 0x00746970 (0x1f, placeholder)
 
 class CSWSCreatureListEntry {
 public:

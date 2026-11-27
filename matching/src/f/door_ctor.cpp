@@ -45,7 +45,6 @@ public:
     float w, x, y, z;
 };
 
-extern const unsigned char g_nObjectTypeDoor;      // 0x00746639
 #include "shared/globals.h"
 
 class CSWSObject;

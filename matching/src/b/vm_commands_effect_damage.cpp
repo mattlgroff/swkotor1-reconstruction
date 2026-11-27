@@ -5,9 +5,7 @@
 #include "b/sws_creature.h"
 #include "shared/float_to_int.h"
 
-extern const unsigned short EFFECT_TYPE_DAMAGE;             // 0x00746714
 #include "shared/globals.h"
-extern const unsigned short DURATION_TYPE_INSTANT;          // 0x007473B8 (0)
 
 extern "C" double __cdecl log10(double x);
 #pragma intrinsic(log10)

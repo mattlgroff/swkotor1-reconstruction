@@ -92,7 +92,6 @@ struct EnvMapSource {
 
 typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int);
 extern PFNCLIENTACTIVETEXTURE glActiveTextureARB;    // 0x007BB80C
-extern unsigned int g_nActiveTextureUnit;   // 0x007A6898
 
 // FUNCTION: SWKOTOR 0x0046F780
 void DoEnvMapTransform(CAurTexture* pTexture, unsigned int nUnit)

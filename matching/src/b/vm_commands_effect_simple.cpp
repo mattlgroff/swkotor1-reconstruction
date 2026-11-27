@@ -7,10 +7,6 @@
 #include "b/server_exo_app.h"
 
 #include "shared/globals.h"
-extern const unsigned short EFFECT_TYPE_REGENERATE;         // 0x00746698 (7)
-extern const unsigned short EFFECT_TYPE_DEATH;              // 0x007466C8 (19)
-extern const unsigned short EFFECT_TYPE_DISGUISE;           // 0x00746774 (62)
-extern const unsigned short EFFECT_TYPE_TIMESTOP;           // 0x0074677C (64)
 
 // NONMATCH (100): case-local stack packing. The original packs every case
 // local into the dead argument and new-temporary slots (8-byte frame) and

@@ -398,7 +398,6 @@ class CSWSPlayer;
 class CSWSWaypoint;
 
 extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
-extern const int EFFECT_TYPE_TIMESTOP;              // 0x0074677C
 
 class CGameObjectArray {
 public:
@@ -707,7 +706,6 @@ public:
     char m_pad2[0x34 - 2];
 };
 
-extern unsigned long EVENT_SIGNAL_EVENT;            // 0x007441DC
 const char* SetFramesPerSecond(const char* szFPS);  // 0x005EE4A0
 
 class CVirtualMachine {

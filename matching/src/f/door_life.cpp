@@ -64,7 +64,6 @@ public:
 };
 
 
-extern unsigned long EVENT_DESTROY_OBJECT;
 
 class CGameEffect {
 public:

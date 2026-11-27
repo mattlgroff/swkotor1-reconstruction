@@ -262,7 +262,6 @@ public:
 };
 
 extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern void* g_pRender;                             // 0x007A39F8
 class CSWParty {
 public:
     int IsPartyMember(unsigned long oid);           // 0x006349C0 (returns the NPC index)

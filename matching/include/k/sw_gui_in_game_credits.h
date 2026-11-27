@@ -50,7 +50,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern unsigned char g_nGender;                     // 0x0073ECD0
 
 class C2DA {
 public:

@@ -195,7 +195,6 @@ public:
 
 extern CAppManager *g_pAppManager;
 #include "shared/globals.h"
-extern unsigned long EVENT_SIGNAL_EVENT;
 
 class CScriptEvent {
 public:

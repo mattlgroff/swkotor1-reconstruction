@@ -2,8 +2,7 @@
 #include "b/vm_commands.h"
 #include "b/game_effect.h"
 
-extern const unsigned short EFFECT_TYPE_ICON;               // 0x00746788
-extern const unsigned short EFFECT_TYPE_LINK;               // 0x0074671C
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x005475A0
 int CSWVirtualMachineCommands::ExecuteCommandSetEffectIcon(int nCommandId, int nParameters)

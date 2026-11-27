@@ -2,7 +2,6 @@
 // list fits (0x00421ac0).
 #include "g/aur_texture.h"
 
-extern float g_fFrameTime;                      // 0x0078e574
 #include "shared/globals.h"
 
 void AurTextureCalculateNewTexMem(CExoArrayList<CAurTextureBasic*>* pList, int* pMem);  // 0x00420db0

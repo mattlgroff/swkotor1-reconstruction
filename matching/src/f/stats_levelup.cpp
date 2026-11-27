@@ -242,7 +242,7 @@ public:
     CServerExoApp *m_pServerExoApp;  // +0x8
 };
 
-extern unsigned long EVENT_SIGNAL_EVENT;
+#include "shared/globals.h"
 
 extern CAppManager *g_pAppManager;
 
@@ -672,7 +672,6 @@ public:
     CSWSkill *m_pSkills;             // +0xb4
 };
 
-#include "shared/globals.h"
 
 
 

@@ -47,7 +47,6 @@ extern CAppManager* g_pAppManager;                  // 0x007a39fc
 #include "shared/globals.h"
 extern int g_nScreenWidth;                          // 0x0078d1d4
 extern int g_nScreenHeight;                         // 0x0078d1d8
-extern unsigned char g_nScreenDepth;                // 0x0078d1e0
 
 void __cdecl AurSetAntiAliasingMode(int nMode);     // 0x0044f2f0
 int __cdecl ReInitAurora(int nWidth, int nHeight, unsigned char nDepth, int bFullScreen, int nArg); // 0x00403800

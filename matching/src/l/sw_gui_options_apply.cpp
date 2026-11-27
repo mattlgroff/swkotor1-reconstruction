@@ -6,8 +6,6 @@ extern void AurDisableVertexBufferObjects(); // 0x0044EF60
 extern void AurDisableVertexBufferObjectsWriteOnly(); // 0x0044EF70
 extern void AurEnableVertexBufferObjectsWriteOnly(); // 0x0044EF80
 extern int ReInitAurora(int nWidth, int nHeight, unsigned char nDepth, int bFullScreen, int bReload); // 0x00403800
-extern int g_nScreenDepth; // 0x0078D1E0
-extern int g_nScreenRefreshRate; // 0x0078D1DC
 #include "shared/globals.h"
 
 // Win32 DEVMODEA (0x9C bytes); only the fields used here are named.

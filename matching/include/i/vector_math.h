@@ -3,7 +3,6 @@
 #define I_VECTOR_MATH_H
 
 #include "shared/globals.h"
-extern const float g_fOne;                          // 0x0073D764 (1.0f)
 
 #include "shared/vector.h"
 

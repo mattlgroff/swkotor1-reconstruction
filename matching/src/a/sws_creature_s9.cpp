@@ -117,7 +117,6 @@ struct CClientOptions {
 };
 
 #include "shared/globals.h"
-extern const int EFFECT_TYPE_TEMPORARY_HITPOINTS;   // 0x007466B8 (descriptive name)
 
 // NONMATCH (51): the original reads the effect type word twice (no CSE) and picks other scratch
 // registers for the app-manager/rules loads; for/while forms and hoisted locals did not change it.

@@ -3,7 +3,7 @@
 // note members are descriptive.
 #include "k/sw_c_client_object.h"
 
-extern unsigned char g_nObjectTypeWaypoint;                          // 0x0074663B
+#include "shared/globals.h"
 
 class CSWCWaypoint : public CSWCObject {
 public:

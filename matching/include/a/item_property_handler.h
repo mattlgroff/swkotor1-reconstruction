@@ -5,38 +5,9 @@
 #define A_ITEM_PROPERTY_HANDLER_H
 
 // .rdata constants (extern const ints in the original, not folded).
-extern int EFFECT_TYPE_DAMAGE_RESISTANCE;   // 0x00746684 (2)
-extern int EFFECT_TYPE_REGENERATE;          // 0x00746698 (7)
-extern int EFFECT_TYPE_DAMAGE_REDUCTION;    // 0x007466AC (0xc)
-extern int EFFECT_TYPE_DAMAGE_INCREASE;     // 0x007466B0
 #include "shared/globals.h"
-extern int EFFECT_TYPE_TRUESEEING;          // 0x0074679C (0x48)
-extern int EFFECT_TYPE_ABILITY_INCREASE;    // 0x0074670C (36)
-extern int EFFECT_TYPE_ABILITY_DECREASE;    // 0x00746710 (37)
-extern int EFFECT_TYPE_AC_INCREASE;         // 0x0074673C (48)
-extern int EFFECT_TYPE_AC_DECREASE;         // 0x00746740 (49)
-extern int EFFECT_TYPE_SKILL_DECREASE;      // 0x0074675C (56)
-extern int EFFECT_TYPE_SAVING_THROW_INCREASE;   // 0x007466E4 (26)
-extern int EFFECT_TYPE_SAVING_THROW_DECREASE;   // 0x007466E8 (27)
-extern int EFFECT_TYPE_FORCE_RESISTANCE_INCREASE; // 0x00746700 (33)
-extern int EFFECT_TYPE_ATTACK_DECREASE;     // 0x007466A8 (11)
-extern int EFFECT_TYPE_DAMAGE_DECREASE;     // 0x007466B4 (14)
-extern int EFFECT_TYPE_ATTACK_INCREASE;     // 0x007466A4 (10)
-extern int EFFECT_TYPE_IMMUNITY;            // 0x007466D4 (0x16)
-extern int EFFECT_TYPE_DAMAGE_IMMUNITY;     // 0x007466BC (0x10)
-extern int IMMUNITY_TYPE_PARALYSIS;         // 0x00746914 (6)
-extern int IMMUNITY_TYPE_ENTANGLE;          // 0x00746920 (9)
-extern int IMMUNITY_TYPE_SLOW;              // 0x00746924 (0xa)
 // ApplyImmunity table (.rdata, named by decimal value, as f/combat_resolve.cpp).
-extern int IMMUNITY_TYPE_04;                // 0x0074690C
 // Damage-type flags 0x00746850..0x00746884 (RemoveDamageImmunity switch).
-extern int DAMAGE_FLAG_00;              // 0x00746850
-extern int ABILITY_STRENGTH;                // 0x00746838
-extern int ABILITY_DEXTERITY;               // 0x0074683C
-extern int ABILITY_CONSTITUTION;            // 0x00746840
-extern int ABILITY_INTELLIGENCE;            // 0x00746844
-extern int ABILITY_WISDOM;                  // 0x00746848
-extern int ABILITY_CHARISMA;                // 0x0074684C
 
 class CExoString {
 public:

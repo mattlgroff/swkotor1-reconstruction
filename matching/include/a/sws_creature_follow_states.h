@@ -19,8 +19,7 @@ inline float MagnitudeSquared(const Vector &v)
     return v.x * v.x + v.y * v.y + v.z * v.z;
 }
 
-extern const unsigned long ACTION_IN_PROGRESS;  // 0x00745DBC
-extern const unsigned long ACTION_COMPLETE;     // 0x00745DC0
+#include "shared/globals.h"
 
 class CSWFollowPath {
 public:

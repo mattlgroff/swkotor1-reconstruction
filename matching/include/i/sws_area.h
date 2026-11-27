@@ -213,7 +213,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern const unsigned char g_nObjectTypeTrigger;    // 0x00746636 (placeholder name)
 int VectorEqual(const Vector& a, const Vector& b);  // 0x004AA980 (placeholder name)
 
 class CGameObjectArray {

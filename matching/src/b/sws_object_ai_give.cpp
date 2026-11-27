@@ -10,10 +10,8 @@ public:
 };
 
 // .rdata action results.
-extern const unsigned long ACTION_COMPLETE;         // 0x00745DC0 (2)
-extern const unsigned long ACTION_FAILED;           // 0x00745DC4 (3)
-// Squared distance beyond which the giver runs (.rdata 0x00745E5C, 25.0f).
 #include "shared/globals.h"
+// Squared distance beyond which the giver runs (.rdata 0x00745E5C, 25.0f).
 
 static __forceinline CSWBaseItem* GetItemBaseItem(CSWSItem* pItem)
 {

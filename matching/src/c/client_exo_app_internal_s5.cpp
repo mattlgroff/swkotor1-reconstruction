@@ -59,8 +59,6 @@ unsigned long FindNearestVideoMode(unsigned long nWidth, unsigned long nHeight, 
 #include "shared/globals.h"
 extern unsigned long g_nScreenWidth;                // 0x0078D1D4
 extern unsigned long g_nScreenHeight;               // 0x0078D1D8
-extern unsigned char g_nScreenDepth;                // 0x0078D1E0
-extern unsigned long g_nScreenRefreshRate;          // 0x0078D1DC
 
 struct RECT {
     long left;
@@ -80,7 +78,6 @@ public:
     virtual void ReleaseDevice();                   // 0x18 (descriptive)
 };
 
-extern CRender* g_pRender;                          // 0x007A39F8
 
 int ReInitAurora(unsigned long nWidth, unsigned long nHeight, unsigned long nDepth, int bFullScreen,
                  int b);                            // 0x00403800

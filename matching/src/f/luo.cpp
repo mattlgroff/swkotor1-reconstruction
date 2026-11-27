@@ -87,7 +87,7 @@ public:
     }
 };
 
-extern const unsigned long g_oidInvalid;   // 0x00746644
+#include "shared/globals.h"
 
 // ---------------------------------------------------------------------------
 
@@ -481,7 +481,6 @@ public:
     unsigned char m_nNumSkills;                         // +0xab
 };
 
-#include "shared/globals.h"
 
 class CSWCombatInformation {
 public:

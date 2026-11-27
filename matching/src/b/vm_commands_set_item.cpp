@@ -97,7 +97,6 @@ int CSWVirtualMachineCommands::ExecuteCommandSetItemNonEquippable(int nCommandId
 }
 
 #include "shared/globals.h"
-extern const unsigned long EVENT_SIGNAL_EVENT;              // 0x007441DC (name guessed)
 
 // FUNCTION: SWKOTOR 0x005439D0
 int CSWVirtualMachineCommands::ExecuteCommandSignalEvent(int nCommandId, int nParameters)

@@ -43,8 +43,7 @@ public:
     float w, x, y, z;
 };
 
-extern const unsigned char g_nObjectTypePlaceable; // 0x00746638
-extern const unsigned long g_oidInvalid;           // 0x00746644
+#include "shared/globals.h"
 
 class CSWSObject;
 

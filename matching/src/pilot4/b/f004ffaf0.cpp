@@ -43,10 +43,6 @@ public:
 extern CAppManager *g_pAppManager;              // 0x007A39FC
 inline CServerExoApp *GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
-extern const unsigned long EFFECT_TYPE_ABILITY_INCREASE;       // 0x0074670C
-extern const unsigned long EFFECT_TYPE_ABILITY_DECREASE;       // 0x00746710
-extern const unsigned short EFFECT_TYPE_DEATH;  // 0x007466C8
-extern const unsigned short DURATION_TYPE_INSTANT;  // 0x007473B8
 #include "shared/globals.h"
 
 inline int IsAbilityEffect(unsigned short nType)

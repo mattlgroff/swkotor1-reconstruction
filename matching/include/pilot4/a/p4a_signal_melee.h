@@ -26,8 +26,6 @@ public:
 };
 #pragma pack(pop)
 
-extern const unsigned short EFFECT_TYPE_DAMAGE;         // 0x00746714
-extern const unsigned short DURATION_TYPE_INSTANT;      // 0x007473B8
 #include "shared/globals.h"
 
 class CSWSCombatAttackData {

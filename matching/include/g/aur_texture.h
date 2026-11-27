@@ -346,7 +346,6 @@ public:
 
 // --- globals ---------------------------------------------------------------
 #include "shared/globals.h"
-extern int g_nActiveTextureUnit;                // 0x007a6898
 
 int AurHasCubeMaps();                           // 0x0045f8b0
 

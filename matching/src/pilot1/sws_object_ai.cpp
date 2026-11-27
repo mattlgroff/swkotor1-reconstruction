@@ -22,9 +22,7 @@ public:
 
 extern CAppManager* g_pAppManager;
 
-extern unsigned long ACTION_IN_PROGRESS;
-extern unsigned long ACTION_COMPLETE;
-extern unsigned long ACTION_FAILED;
+#include "shared/globals.h"
 
 class CSWSCreature {
 public:

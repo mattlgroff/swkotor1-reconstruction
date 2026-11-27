@@ -2,7 +2,6 @@
 // register allocation (pProperty in edi, reloaded at the latch), frame (sub esp,8)
 // and the reloaded m_nType compare differ. The bitfield m_nSubType:3 is right.
 
-extern int EFFECT_TYPE_DAMAGE_INCREASE;            // 0x007466B0
 #include "shared/globals.h"
 
 class CSWRules {

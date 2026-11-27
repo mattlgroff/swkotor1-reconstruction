@@ -5,25 +5,7 @@
 #include "b/vm_commands.h"
 #include "b/game_effect.h"
 
-extern const int EFFECT_TYPE_ATTACK_INCREASE;               // 0x007466A4 (10)
-extern const int EFFECT_TYPE_ATTACK_DECREASE;               // 0x007466A8 (11)
-extern const int EFFECT_TYPE_DAMAGE_INCREASE;               // 0x007466B0 (13)
-extern const int EFFECT_TYPE_DAMAGE_DECREASE;               // 0x007466B4 (14)
 #include "shared/globals.h"
-extern const int EFFECT_TYPE_CONCEALMENT;                   // 0x007467AC (76)
-extern const int EFFECT_TYPE_DAMAGE_RESISTANCE;             // 0x00746684 (2)
-extern const int EFFECT_TYPE_DAMAGE_REDUCTION;              // 0x007466AC (12)
-extern const int EFFECT_TYPE_DAMAGE_IMMUNITY;               // 0x007466BC (16)
-extern const int EFFECT_TYPE_DAMAGE_IMMUNITY_INCREASE;      // 0x007466C0 (17)
-extern const int EFFECT_TYPE_IMMUNITY;                      // 0x007466D4 (22)
-extern const int EFFECT_TYPE_AC_INCREASE;                   // 0x0074673C (48)
-extern const int EFFECT_TYPE_AC_DECREASE;                   // 0x00746740 (49)
-extern const int EFFECT_TYPE_FORCE_RESISTANCE_INCREASE;     // 0x00746700 (33)
-extern const int EFFECT_TYPE_FORCE_RESISTANCE_DECREASE;     // 0x00746704 (34)
-extern const int EFFECT_TYPE_SAVING_THROW_INCREASE;         // 0x007466E4 (26)
-extern const int EFFECT_TYPE_SAVING_THROW_DECREASE;         // 0x007466E8 (27)
-extern const int EFFECT_TYPE_SKILL_INCREASE;                // 0x00746758 (55)
-extern const int EFFECT_TYPE_SKILL_DECREASE;                // 0x0074675C (56)
 
 // FUNCTION: SWKOTOR 0x00545470
 int CSWVirtualMachineCommands::ExecuteCommandVersusAlignmentEffect(int nCommandId, int nParameters)

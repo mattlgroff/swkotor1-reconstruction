@@ -40,7 +40,6 @@ static inline Model* GetLoadedModel(MaxTree* pTree)
     return g_pLoadingModel;
 }
 
-extern CExoArrayList<Model*> g_lModels;     // 0x007A8A64
 #include "shared/globals.h"
 
 struct NewController {

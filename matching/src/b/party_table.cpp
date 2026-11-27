@@ -72,7 +72,6 @@ public:
 
 #include "shared/globals.h"
 
-extern const unsigned short DURATION_TYPE_INSTANT;              // 0x007473B8 (0)
 
 struct FILETIME {
     unsigned long dwLowDateTime;
