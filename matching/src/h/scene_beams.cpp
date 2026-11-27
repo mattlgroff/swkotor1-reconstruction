@@ -30,7 +30,6 @@ public:
 };
 template<class T> class CExoArrayList { public: T* element; int num; int array_size; };
 #include "shared/globals.h"
-extern CExoArrayList<Part*> g_l7FBF6C; // 0x007FBF6C
 void SetBeaming(); // 0x00471450
 class Scene { public: void DoStaticMeshBeams(); };
 

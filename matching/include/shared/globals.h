@@ -1295,6 +1295,7 @@ extern unsigned char* g_pLayerTable;  // 0x007a4704
 extern unsigned char* g_pLayerAlpha;  // 0x007a4708
 extern int g_nBindLimit;  // 0x007a470c
 extern int g_nBindCount;  // 0x007a4710
+extern int g_n7A4710;  // 0x007A4710
 extern int g_bTexturesLocked;  // 0x007a4714
 extern int g_nTextureCount;  // 0x007a4718
 extern int g_nStat724;  // 0x007a4724
@@ -1455,6 +1456,7 @@ extern Scene* g_pAnimatingScene;  // 0x007B92A0
 extern CApp* g_pApp;  // 0x007B92A0
 extern CombinerCaps* g_pCombinerCaps;  // 0x007B92A0
 extern Scene* g_pScene;                         // 0x007B92A0
+extern int g_n7B92A8;  // 0x007B92A8
 extern int g_bPauseFlag;  // 0x007B92AC
 extern float g_fMeshBucketSeconds;  // 0x007B92B0, descriptive
 extern float g_fBinBucketSeconds;  // 0x007B92B4, descriptive
@@ -1686,6 +1688,9 @@ extern MaxTree* g_pCurrentTree;  // 0x007FBAE4
 extern Model* g_pLoadingModel;   // 0x007FBAE4
 extern int g_nControllers;  // 0x007FBAE8
 extern int g_bNoGobCulling;  // 0x007FBF20
+extern int g_n7FBF28;  // 0x007FBF28
+extern int g_n7FBF2C;  // 0x007FBF2C
+extern int g_n7FBF30;  // 0x007FBF30
 extern int g_nHitMask;  // 0x007FBF48
 extern CHitInfo* g_pBSPHitInfo;  // 0x007FBF48, descriptive
 extern int g_bHitStatic;  // 0x007FBF4C
@@ -1694,12 +1699,17 @@ extern int g_bHitGroundPlane;  // 0x007FBF54
 extern int g_nHitTests;  // 0x007FBF58
 extern int g_bShowWalkMesh;  // 0x007FBF5C, descriptive
 extern int g_nLastObjectRoom;  // 0x007FBF68
+extern CExoArrayList<Part*> g_l7FBF6C; // 0x007FBF6C
 extern CExoArrayList<void*> g_lSceneLights;  // 0x007FBF78
 extern CExoArrayList<CapPart*> g_lStaticMeshes;  // 0x007FBF84
+extern CExoArrayList<Part*> g_l7FBF84;  // 0x007FBF84
 extern CExoArrayList<Bin*> g_lActiveBins;       // 0x007FBF9C
+extern CExoArrayList<Part*> g_l7FBFA8;  // 0x007FBFA8
 extern CExoArrayList<Part*> g_lAllMeshParts;  // 0x007FBFB4
 extern CExoArrayList<void*> g_lSceneObjects;  // 0x007FBFCC
+extern CExoArrayList<Part*> g_l7FBFD8;  // 0x007FBFD8
 extern CExoArrayList<BSPNode*> g_lLightTiles;  // 0x007FBFE4
+extern CExoArrayList<Part*> g_l7FBFE4;  // 0x007FBFE4
 extern CExoArrayList<Bin*> g_lPrevActiveBins;  // 0x007FBFFC
 extern CExoArrayList<Part*> g_aBucketsA[];  // 0x007FC008
 extern CExoArrayList<CapPart*> g_aCapBuckets[];  // 0x007FC008
@@ -1718,10 +1728,16 @@ extern int g_bFSTexture1On;  // 0x00827FA4, descriptive
 extern int g_n827fa4;  // 0x00827fa4
 extern int g_nPartsProjected;  // 0x00827FA8, descriptive
 extern int g_nTransformCount;  // 0x00827FA8
+extern int g_n827FA8;  // 0x00827FA8
 extern int g_nGobsRendered;  // 0x00827FAC, descriptive
+extern int g_n827FAC;  // 0x00827FAC
 extern int g_nFlatTriangles;  // 0x00827FB0
 extern int g_nShadowTriangles;  // 0x00827fb0
+extern int g_n827FB0;  // 0x00827FB0
 extern int g_nFlatParts;  // 0x00827FB4
+extern int g_n827FB4;  // 0x00827FB4
+extern int g_n827FB8;  // 0x00827FB8
+extern int g_n827FBC;  // 0x00827FBC
 extern int g_bSkipA4;  // 0x00827FCC
 extern int g_bEnvMapBlendAdd;  // 0x00827FD4
 extern int g_bEMBMAdditive;  // 0x00827FE8

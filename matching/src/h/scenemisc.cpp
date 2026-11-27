@@ -51,7 +51,6 @@ void BSPTraverse(BSPNode* pNode, void (*pfn)(BSPNode*, LightScene*),
 void UpdateRoomLights(BSPNode* pNode, LightScene* pScene);  // 0x0046B790
 
 #include "shared/globals.h"
-extern int g_n7FBF2C;
 
 // FUNCTION: SWKOTOR 0x0046A620
 int Vector::IsZero()
@@ -103,8 +102,6 @@ void DoStaticLightBuckets(LightScene* pScene)
         BSPTraverse(pScene->m_pTiles, UpdateRoomLights, pScene);
 }
 
-extern int g_n7A4710, g_n827FAC, g_n827FB0, g_n827FB4, g_n827FB8, g_n827FA8,
-    g_n827FBC, g_n7B92A8;
 
 // FUNCTION: SWKOTOR 0x0046EE00
 void FUN_0046ee00()
