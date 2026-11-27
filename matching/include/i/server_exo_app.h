@@ -73,11 +73,7 @@ public:
 };
 class CSWSSoundObject;
 class CWorldTimer;
-class CSWVirtualMachineCommands {
-public:
-    virtual ~CSWVirtualMachineCommands();
-    char m_pad4[0x10 - 4];
-};
+#include "shared/sw_virtual_machine_commands.h"
 class CFactionManager;
 class CPathfindInformation;
 class CSWSModule;

@@ -3,13 +3,7 @@
 #include "i/autosave_params.h"
 #include <string.h>
 
-// FUNCTION: SWKOTOR 0x004B1330
-CVirtualMachineCmdImplementer::~CVirtualMachineCmdImplementer()
-{
-}
 
-// Hidden start inside functions.csv's 0x004B1330 entry.
-// FUNCTION: SWKOTOR 0x004B1340 SYMBOL: ??_GCVirtualMachineCmdImplementer@@UAEPAXI@Z
 
 // FUNCTION: SWKOTOR 0x004B1360
 CServerInfo::~CServerInfo()

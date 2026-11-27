@@ -169,7 +169,8 @@ run it after the byte gate.
   step 4). Merged types live in `include/shared/`: `tools/mergetype.py` does
   the mechanical part, and [research/r1-merges.md](research/r1-merges.md)
   records each merge's evidence and gate results. Merged so far: `Vector`,
-  `CExoString`, `CAppManager`, `CSWReentrantServerStats`.
+  `CExoString`, `CAppManager`, `CSWReentrantServerStats`,
+  `CSWVirtualMachineCommands`, `CVirtualMachineCmdImplementer`.
   Globals have one declaration each in `include/shared/globals.h`, apart from
   the cases [research/r2-globals.md](research/r2-globals.md) lists.
 - **R7 stays advisory.** Placeholder names never block a match.

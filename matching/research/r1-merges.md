@@ -137,6 +137,19 @@ without it `CServerExoAppInternal::SaveGame` allocates registers differently.
 
 Result: no match lost.
 
+## CSWVirtualMachineCommands and CVirtualMachineCmdImplementer (`shared/sw_virtual_machine_commands.h`)
+
+Four and three copies. Both classes follow `b/vm_commands.h`: the base's
+vtable (0x007450AC) has `_purecall` in every slot but the destructor, so the
+base declares its slots pure and its destructor inline; the Mac tables name
+that destructor's out-of-line copy (0x004B1330), which the compiler emits
+with the vtables in the unit that constructs the commands object, where its
+annotation now is. The minigame unit's 43 `ExecuteCommandSWMG_*`
+declarations joined the class, and its wrapper struct around the command
+table became the table itself (`m_pCommands[i]`).
+
+Result: no match lost.
+
 ## CResRef: not merged yet (two copy behaviours)
 
 163 copies; the layout (`char m_resRef[16]`) and the method list agree with

@@ -46,23 +46,7 @@ public:
 #include "shared/vector.h"
 
 // Game-side command implementer (CScriptCompiler side, vtable slots used here).
-class CVirtualMachineCmdImplementer {
-public:
-    virtual ~CVirtualMachineCmdImplementer();                       // 0x00
-    virtual void InitializeCommands();                              // 0x04
-    virtual int RunCommand(int nCommandId, int nParameters);        // 0x08
-    virtual void RunScriptStarted(CExoString* sScriptFile);         // 0x0c
-    virtual void ReportError(CExoString* sScriptFile, int nError);  // 0x10
-    virtual void* CreateGameDefinedStructure(int nType);            // 0x14
-    virtual void DestroyGameDefinedStructure(int nType, void* p);   // 0x18
-    virtual int Unknown1C();                                        // 0x1c
-    virtual void* CopyGameDefinedStructure(int nType, void* p);     // 0x20
-    virtual int SaveGameDefinedStructure(int nType, void* p, CResGFF* pGFF, CResStruct* pStruct); // 0x24
-    virtual int LoadGameDefinedStructure(int nType, void** ppValue, CResGFF* pGFF, CResStruct* pStruct); // 0x28
-
-    int m_bValidObjectRunScript;                                    // 0x04
-    unsigned long m_oidObjectRunScript;                             // 0x08
-};
+#include "shared/sw_virtual_machine_commands.h"
 
 class CVirtualMachineInternal;
 

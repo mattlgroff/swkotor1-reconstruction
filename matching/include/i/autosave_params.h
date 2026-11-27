@@ -97,15 +97,9 @@ struct KOTOR_AUTOSAVE_PARAMS {
     CStatusSummary m_cStatusSummary;                // +0x58
 };
 
-class CVirtualMachineCmdImplementer {
-public:
-    virtual ~CVirtualMachineCmdImplementer();       // 0x004B1330
-};
+#include "shared/sw_virtual_machine_commands.h"
 
-class CSWVirtualMachineCommands : public CVirtualMachineCmdImplementer {
-public:
-    virtual ~CSWVirtualMachineCommands();           // 0x0052C070
-};
+#include "shared/sw_virtual_machine_commands.h"
 
 // Unnamed 0x3c-byte record; FUN_004b13e0 seeds dwords 0, 1, 4 and 14.
 #include "shared/reentrant_server_stats.h"

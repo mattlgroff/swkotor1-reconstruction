@@ -2445,8 +2445,8 @@ address,name,status,diff_insns,file
 0x004B0AB0,CServerAIMaster::DeleteEventData,MATCH,0,matching/src/i/server_ai_master.cpp
 0x004B11C0,CServerAIMaster::ClearEventQueue,MATCH,0,matching/src/i/server_ai_master.cpp
 0x004B1200,CServerAIMaster::~CServerAIMaster,MATCH,0,matching/src/i/server_ai_master.cpp
-0x004B1330,CVirtualMachineCmdImplementer::~CVirtualMachineCmdImplementer,MATCH,0,matching/src/i/autosave_params.cpp
-0x004B1340,??_GCVirtualMachineCmdImplementer@@UAEPAXI@Z,MATCH,0,matching/src/i/autosave_params.cpp
+0x004B1330,??1CVirtualMachineCmdImplementer@@UAE@XZ,MATCH,0,matching/src/i/server_exo_app_services.cpp
+0x004B1340,??_GCVirtualMachineCmdImplementer@@UAEPAXI@Z,MATCH,0,matching/src/i/server_exo_app_services.cpp
 0x004B1360,CServerInfo::~CServerInfo,MATCH,0,matching/src/i/autosave_params.cpp
 0x004B13E0,CSWReentrantServerStats::FUN_004b13e0,MATCH,0,matching/src/i/autosave_params.cpp
 0x004B1400,KOTOR_AUTOSAVE_PARAMS::Reset,MATCH,0,matching/src/i/autosave_params.cpp
@@ -2457,7 +2457,7 @@ address,name,status,diff_insns,file
 0x004B15D0,CServerExoAppInternal::HandleMessage,MATCH,0,matching/src/i/server_exo_app_internal.cpp
 0x004B1650,CServerExoAppInternal::Initialize,MATCH,0,matching/src/i/server_exo_app_internal.cpp
 0x004B1680,CServerExoAppInternal::CopyModuleToCurrentGame,MATCH,0,matching/src/i/server_exo_app_internal.cpp
-0x004B16E0,??_GCSWVirtualMachineCommands@@UAEPAXI@Z,MATCH,0,matching/src/i/virtual_machine_commands_dtor.cpp
+0x004B16E0,??_GCSWVirtualMachineCommands@@UAEPAXI@Z,MATCH,0,matching/src/i/server_exo_app_services.cpp
 0x004B1700,CServerExoAppInternal::GetGameObject,MATCH,0,matching/src/i/server_exo_app_internal.cpp
 0x004B1740,CServerExoAppInternal::GetItemByGameObjectID,MATCH,0,matching/src/i/server_exo_app_internal.cpp
 0x004B1790,CServerExoAppInternal::GetCreatureByGameObjectID,MATCH,0,matching/src/i/server_exo_app_internal.cpp

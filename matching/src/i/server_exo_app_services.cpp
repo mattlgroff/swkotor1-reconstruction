@@ -340,3 +340,9 @@ int CServerExoAppInternal::UnloadModule()
     }
     return 1;
 }
+
+// Out-of-line copies of the command implementers' inline destructors, which
+// this unit's `new CSWVirtualMachineCommands` emits with the vtables.
+// FUNCTION: SWKOTOR 0x004B1330 SYMBOL: ??1CVirtualMachineCmdImplementer@@UAE@XZ
+// FUNCTION: SWKOTOR 0x004B1340 SYMBOL: ??_GCVirtualMachineCmdImplementer@@UAEPAXI@Z
+// FUNCTION: SWKOTOR 0x004B16E0 SYMBOL: ??_GCSWVirtualMachineCommands@@UAEPAXI@Z
