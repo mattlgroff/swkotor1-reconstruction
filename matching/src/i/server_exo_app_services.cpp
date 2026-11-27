@@ -33,10 +33,7 @@ public:
 };
 #include "shared/globals.h"
 
-class CScriptCompiler {
-public:
-    ~CScriptCompiler();                                             // 0x005D1120
-};
+#include "shared/script_compiler.h"
 
 class CTlkTable {
 public:
