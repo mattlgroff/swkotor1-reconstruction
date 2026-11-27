@@ -183,18 +183,15 @@ typedef void (__cdecl* PFNCOMBINERCOLOR)(Vector*, float);
 extern PFNCOMBINERCOLOR g_pfnCombinerColor;     // 0x007A47DC, descriptive
 extern PFNCOMBINERCOLOR g_pfnCombinerConst;     // 0x007A6820
 #include "shared/gl_ext.h"
-typedef void (__stdcall* PFNPROGRAMPARAMETER)(unsigned int, unsigned int, float, float, float, float);
-extern PFNPROGRAMPARAMETER g_pfnProgramEnvParameter4fARB;  // 0x007BB850
-extern PFNPROGRAMPARAMETER g_pfnProgramParameter4fNV;      // 0x007BB7AC
 
 #include "shared/globals.h"
 
 static inline void SetVertexProgramParameter(unsigned int nIndex, float x, float y, float z, float w)
 {
     if (g_bARBVertexProgram)
-        g_pfnProgramEnvParameter4fARB(0x8620, nIndex, x, y, z, w);
+        glProgramEnvParameter4fARB(0x8620, nIndex, x, y, z, w);
     else
-        g_pfnProgramParameter4fNV(0x8620, nIndex, x, y, z, w);
+        glProgramParameter4fNV(0x8620, nIndex, x, y, z, w);
 }
 
 static inline void SetVertexProgramParameter(unsigned int nIndex, const Vector& v, float w)

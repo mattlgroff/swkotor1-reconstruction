@@ -81,13 +81,6 @@ __declspec(dllimport) void __stdcall glVertex4f(float x, float y, float z, float
 
 // GL extension entry points (function-pointer globals).
 #include "shared/gl_ext.h"
-typedef void(__stdcall* PFNGLBINDPROGRAMARB)(unsigned int target, unsigned int id);
-typedef void(__stdcall* PFNGLPROGRAMENVPARAMETER4FARB)(unsigned int target, unsigned int index,
-                                                       float x, float y, float z, float w);
-extern PFNGLBINDPROGRAMARB g_pfnBindProgramARB;                       // 0x007bb788
-extern PFNGLPROGRAMENVPARAMETER4FARB g_pfnProgramEnvParameter4fARB;   // 0x007bb850
-
-
 
 inline Vector operator*(const Vector& v, float f)
 {

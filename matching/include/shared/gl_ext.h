@@ -44,6 +44,22 @@ typedef void (__stdcall* PFNGLPASSTEXCOORDATIPROC)(unsigned int, unsigned int, u
 typedef void (__stdcall* PFNGLACTIVETEXTUREARBPROC)(unsigned int tex);
 typedef int (__stdcall* PFNWGLMAKECONTEXTCURRENTARBPROC)(void* hDrawDC, void* hReadDC, void* hglrc);
 typedef void (__stdcall* PFNGLCOLORFRAGMENTOP2ATIPROC)(unsigned int op, unsigned int dst, unsigned int dstMask, unsigned int dstMod, unsigned int arg1, unsigned int arg1Rep, unsigned int arg1Mod, unsigned int arg2, unsigned int arg2Rep, unsigned int arg2Mod);
+typedef void (__stdcall* PFNGLBINDPROGRAMARBPROC)(unsigned int target, unsigned int id);
+typedef void (__stdcall* PFNGLBINDPROGRAMNVPROC)(unsigned int, unsigned int);
+typedef void (__stdcall* PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)(unsigned int target, int level, unsigned int internalformat, int width, int height, int border, int imageSize, const void* data);
+typedef void (__stdcall* PFNGLDELETEPROGRAMSNVPROC)(int, const unsigned int*);
+typedef void (__stdcall* PFNGLDISABLEVERTEXATTRIBARRAYARBPROC)(unsigned int index);
+typedef void (__stdcall* PFNGLENABLEVERTEXATTRIBARRAYARBPROC)(unsigned int index);
+typedef unsigned char (__stdcall* PFNGLISPROGRAMARBPROC)(unsigned int);
+typedef unsigned char (__stdcall* PFNGLISPROGRAMNVPROC)(unsigned int);
+typedef void (__stdcall* PFNGLLOADPROGRAMNVPROC)(unsigned int, unsigned int, int, const unsigned char*);
+typedef void (__stdcall* PFNGLPROGRAMENVPARAMETER4FARBPROC)(unsigned int target, unsigned int index, float x, float y, float z, float w);
+typedef void (__stdcall* PFNGLPROGRAMPARAMETER4FNVPROC)(unsigned int, unsigned int, float, float, float, float);
+typedef void (__stdcall* PFNGLPROGRAMSTRINGARBPROC)(unsigned int, unsigned int, int, const char*);
+typedef void (__stdcall* PFNGLVERTEXATTRIBPOINTERARBPROC)(unsigned int index, int size, unsigned int type, unsigned char normalized, int stride, const void* p);
+typedef void (__stdcall* PFNGLVERTEXATTRIBPOINTERNVPROC)(unsigned int index, int size, unsigned int type, int stride, const void* p);
+typedef int (__stdcall* PFNWGLGETPIXELFORMATATTRIBIVARBPROC)(void* hdc, int iPixelFormat, int iLayerPlane, unsigned int nAttributes, const int* piAttributes, int* piValues);
+typedef void (__stdcall* PFNWGLSWAPINTERVALEXTPROC)(int);
 
 extern PFNWGLCREATEPBUFFERARBPROC wglCreatePbufferARB;  // 0x007BB530
 extern PFNGLBUFFERDATAARBPROC glBufferDataARB;  // 0x007BB544
@@ -83,5 +99,21 @@ extern PFNGLPASSTEXCOORDATIPROC glPassTexCoordATI;  // 0x007BB804
 extern PFNGLACTIVETEXTUREARBPROC glActiveTextureARB;  // 0x007BB80C
 extern PFNWGLMAKECONTEXTCURRENTARBPROC wglMakeContextCurrentARB;  // 0x007BB818
 extern PFNGLCOLORFRAGMENTOP2ATIPROC glColorFragmentOp2ATI;  // 0x007BB840
+extern PFNGLBINDPROGRAMARBPROC glBindProgramARB;  // 0x007BB788
+extern PFNGLBINDPROGRAMNVPROC glBindProgramNV;  // 0x007BB834
+extern PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2DARB;  // 0x007BB774
+extern PFNGLDELETEPROGRAMSNVPROC glDeleteProgramsNV;  // 0x007BB6F4
+extern PFNGLDISABLEVERTEXATTRIBARRAYARBPROC glDisableVertexAttribArrayARB;  // 0x007BB770
+extern PFNGLENABLEVERTEXATTRIBARRAYARBPROC glEnableVertexAttribArrayARB;  // 0x007BB79C
+extern PFNGLISPROGRAMARBPROC glIsProgramARB;  // 0x007BB5B8
+extern PFNGLISPROGRAMNVPROC glIsProgramNV;  // 0x007BB5AC
+extern PFNGLLOADPROGRAMNVPROC glLoadProgramNV;  // 0x007BB5E4
+extern PFNGLPROGRAMENVPARAMETER4FARBPROC glProgramEnvParameter4fARB;  // 0x007BB850
+extern PFNGLPROGRAMPARAMETER4FNVPROC glProgramParameter4fNV;  // 0x007BB7AC
+extern PFNGLPROGRAMSTRINGARBPROC glProgramStringARB;  // 0x007BB580
+extern PFNGLVERTEXATTRIBPOINTERARBPROC glVertexAttribPointerARB;  // 0x007BB7D8
+extern PFNGLVERTEXATTRIBPOINTERNVPROC glVertexAttribPointerNV;  // 0x007BB854
+extern PFNWGLGETPIXELFORMATATTRIBIVARBPROC wglGetPixelFormatAttribivARB;  // 0x007BB63C
+extern PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;  // 0x007BB538
 
 #endif

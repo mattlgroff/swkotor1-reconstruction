@@ -11,9 +11,7 @@ public:
     virtual void Update();              // +0x18
 };
 
-typedef void (__stdcall* PFNPROGRAMPARAMETER)(unsigned int, unsigned int, float, float, float, float);
-extern PFNPROGRAMPARAMETER g_pfnProgramEnvParameter4fARB;  // 0x007BB850
-extern PFNPROGRAMPARAMETER g_pfnProgramParameter4fNV;      // 0x007BB7AC
+#include "shared/gl_ext.h"
 #include "shared/globals.h"
 
 void RenderEnvironmentMapped(PartTriMesh* pPart, int, unsigned char bDecal);   // 0x0046FF70
@@ -23,9 +21,9 @@ void RenderLightMapped(PartTriMesh* pPart);     // 0x0046FA40
 static inline void SetVertexProgramParameter(unsigned int nIndex, float x, float y, float z, float w)
 {
     if (g_bARBVertexProgram)
-        g_pfnProgramEnvParameter4fARB(0x8620, nIndex, x, y, z, w);
+        glProgramEnvParameter4fARB(0x8620, nIndex, x, y, z, w);
     else
-        g_pfnProgramParameter4fNV(0x8620, nIndex, x, y, z, w);
+        glProgramParameter4fNV(0x8620, nIndex, x, y, z, w);
 }
 
 // FUNCTION: SWKOTOR 0x00470FE0

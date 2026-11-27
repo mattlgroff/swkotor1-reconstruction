@@ -79,7 +79,6 @@ void CExoArrayList<T>::Allocate(int n)
 
 #include "shared/vector.h"
 
-
 inline Vector operator-(const Vector& a, const Vector& b)
 {
     return Vector(a.x - b.x, a.y - b.y, a.z - b.z);
@@ -250,7 +249,6 @@ struct VertexPC {
 
 void DrawVerticesPC(int nMode, VertexPC* pVertices, int nCount);   // 0x00431F70
 unsigned char AurGrassMaterialInUse(unsigned int material); // 0x004A6840
-
 
 struct GobModel {
     char pad_0x0[0x50];
@@ -492,7 +490,6 @@ extern CExoArrayList<Gob*> g_l7FBFC0;           // 0x007FBFC0 distortion bucket
 extern CExoArrayList<Gob*> g_l7FBFF0;           // 0x007FBFF0 light saber bucket
 extern CExoArrayList<Gob*> g_l7FBF90;           // 0x007FBF90 blur bucket
 
-
 #include "shared/gl_ext.h"
 extern CExoArrayList<TriangleBin*> g_l80AA68;   // 0x0080AA68 triangle bins
 // File-scope in the original scene unit: MSVC knows no pointer aliases
@@ -502,10 +499,7 @@ static __int64 g_nAnimEndTime;                  // 0x007B9288
 extern CExoArrayList<PartEmitter*> g_l7FBF78;   // 0x007FBF78 emitter bucket
 static __int64 g_nRenderStartTime;              // 0x007B9280, descriptive
 static __int64 g_nRenderEndTime;                // 0x007B9290, descriptive
-typedef void (__stdcall* PFNPROGRAMPARAMETER)(unsigned int target, unsigned int index,
-                                              float x, float y, float z, float w);
-extern PFNPROGRAMPARAMETER g_pfnProgramEnvParameter4fARB;  // 0x007BB850
-extern PFNPROGRAMPARAMETER g_pfnProgramParameter4fNV;      // 0x007BB7AC
+
 extern CExoArrayList<Gob*> g_l7FBFCC;           // 0x007FBFCC gob bucket
 
 CExoArrayList<int>* AurTextureGetOrdering();     // 0x00421970
@@ -564,9 +558,9 @@ void Scene::RenderSinglePass()
         AurSetVertexProgramParameter(0x5b, m[1], m[4], m[7], pos.y);
         AurSetVertexProgramParameter(0x5a, m[2], m[5], m[8], pos.z);
         if (g_bARBVertexProgram)
-            g_pfnProgramEnvParameter4fARB(0x8620, 0x59, 0.0f, 0.0f, 0.0f, 1.0f);
+            glProgramEnvParameter4fARB(0x8620, 0x59, 0.0f, 0.0f, 0.0f, 1.0f);
         else
-            g_pfnProgramParameter4fNV(0x8620, 0x59, 0.0f, 0.0f, 0.0f, 1.0f);
+            glProgramParameter4fNV(0x8620, 0x59, 0.0f, 0.0f, 0.0f, 1.0f);
     }
     DoFog();
     glEnable(g_nGLBlend);

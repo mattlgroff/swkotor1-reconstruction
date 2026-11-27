@@ -12,9 +12,7 @@ struct CombinerCaps {
     int m_bFogPass;                 // +0x60
 };
 
-typedef void (__stdcall* PFNVERTEXATTRIBARRAY)(unsigned int);
-extern PFNVERTEXATTRIBARRAY g_pfnEnableVertexAttribArray;   // 0x007BB79C
-extern PFNVERTEXATTRIBARRAY g_pfnDisableVertexAttribArray;  // 0x007BB770
+#include "shared/gl_ext.h"
 
 #include "shared/globals.h"
 
@@ -76,9 +74,9 @@ void RenderEMBM(PartTriMesh* pPart)
     glEnable(g_eGLTexture3D);
     if (g_bEMBMBumpPass) {
         if (g_bARBVertexProgram) {
-            g_pfnEnableVertexAttribArray(0xc);
-            g_pfnEnableVertexAttribArray(0xd);
-            g_pfnEnableVertexAttribArray(0xe);
+            glEnableVertexAttribArrayARB(0xc);
+            glEnableVertexAttribArrayARB(0xd);
+            glEnableVertexAttribArrayARB(0xe);
         } else {
             glEnableClientState(g_eTangentArray);
             glEnableClientState(g_eBinormalArray);
@@ -104,9 +102,9 @@ void RenderEMBM(PartTriMesh* pPart)
         g_pfnCombiner(0xd, 0, 0, 0, 0);
         g_pfnCombiner(0x1c, 0, 0, 0, 0);
         if (g_bARBVertexProgram) {
-            g_pfnDisableVertexAttribArray(0xc);
-            g_pfnDisableVertexAttribArray(0xd);
-            g_pfnDisableVertexAttribArray(0xe);
+            glDisableVertexAttribArrayARB(0xc);
+            glDisableVertexAttribArrayARB(0xd);
+            glDisableVertexAttribArrayARB(0xe);
         } else {
             glDisableClientState(g_eTangentArray);
             glDisableClientState(g_eBinormalArray);
