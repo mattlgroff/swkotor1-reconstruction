@@ -473,6 +473,13 @@ def main():
           f"instantiations and compiler-generated members)")
     for rule in sorted(per_rule, key=lambda s: int(s[1:])):
         print(f"  {rule}: {per_rule[rule]} byte-identical functions blocked")
+    copies = sum(len(ps) for n in dup_types for ps in bodies[n].values())
+    print(f"R1 backlog: {len(dup_types)} types defined differently in {copies} places; "
+          f"{len(kw_types)} declared both class and struct")
+    if args.list is not None and "R1" in args.list:
+        for n in sorted(dup_types, key=lambda n: -sum(len(p) for p in bodies[n].values())):
+            print(f"  {n}: {sum(len(p) for p in bodies[n].values())} definitions, "
+                  f"{len(bodies[n])} distinct")
     if advisory:
         print("advisory (does not block):")
         for k, v in sorted(advisory.items()):
