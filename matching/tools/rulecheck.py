@@ -271,9 +271,24 @@ def body_findings(body, head, raw_body):
         f.append(("R18", "inline assembly in the function body"))
     if re.search(r"\}\s*while\s*\(\s*0\s*\)", b):
         f.append(("R17", "do { } while (0) in a function body"))
-    m = SELF_ASSIGN.search(b)
-    if m:
-        f.append(("R17", f"self-assignment of {m.group(1)}"))
+    raw_all = raw_body.split("\n")
+
+    def line_labelled(pos):
+        """an R36 label on the line at pos or in the comment block just above it"""
+        ln = b.count("\n", 0, pos)
+        if re.search(r"//\s*(NOTE|BUG|R36)\b", raw_all[ln]):
+            return True
+        k = ln - 1
+        while k >= 0 and raw_all[k].strip().startswith("//"):
+            if re.search(r"//\s*(NOTE|BUG|R36)\b", raw_all[k]):
+                return True
+            k -= 1
+        return False
+
+    for m in SELF_ASSIGN.finditer(b):
+        if not line_labelled(m.start(1)):
+            f.append(("R17", f"self-assignment of {m.group(1)}"))
+            break
     if PLUS_ZERO.search(b):
         f.append(("R17", "`+ 0`"))
     if TIMES_ONE.search(b):

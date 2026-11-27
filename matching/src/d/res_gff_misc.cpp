@@ -22,37 +22,18 @@ void InitializeCRCTable()
     }
 }
 
+// CRC-32 of a string, stopping at nLength bytes or the terminator.
 // FUNCTION: SWKOTOR 0x00410560 SYMBOL: ComputeCRC
-__declspec(naked) unsigned long ComputeCRC(const char*, unsigned long)
+unsigned long ComputeCRC(const char* pData, unsigned long nLength)
 {
-    __asm {
-        push esi
-        mov esi, dword ptr [esp + 0xc]
-        xor eax, eax
-        xor edx, edx
-        test esi, esi
-        jbe crc_done
-        push edi
-        mov edi, dword ptr [esp + 0xc]
-    crc_loop:
-        xor ecx, ecx
-        mov cl, byte ptr [edx + edi]
-        test cl, cl
-        je crc_cleanup
-        xor ecx, eax
-        and ecx, 0xff
-        mov ecx, dword ptr [ecx*4 + g_aGffCRCTable]
-        shr eax, 8
-        inc edx
-        xor eax, ecx
-        cmp edx, esi
-        jb crc_loop
-    crc_cleanup:
-        pop edi
-    crc_done:
-        pop esi
-        ret
+    unsigned long nCRC = 0;
+    unsigned long i = 0;
+    while (i < nLength && pData[i]) {
+        unsigned long nIndex = ((unsigned char)pData[i] ^ nCRC) & 0xff;
+        i++;
+        nCRC = (nCRC >> 8) ^ g_aGffCRCTable[nIndex];
     }
+    return nCRC;
 }
 
 // FUNCTION: SWKOTOR 0x004111c0

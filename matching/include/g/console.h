@@ -131,7 +131,6 @@ void __cdecl AurResFreeDataBytes(AurRes* pRes, char* pData); // 0x0044bd50
 AurRes* __cdecl AurResFind(AurRes* pRes);                   // 0x0044bd70
 void __cdecl AurResRemove(AurRes* pRes);                    // 0x0044bdc0
 char* __cdecl AurResReadFile(int nSize);                    // 0x0044bee0
-char* __cdecl AurResReadData(int nSize);                    // 0x0044bf30
 char* __cdecl AurResGetData(int nSize);                     // 0x0044bfd0
 
 #endif

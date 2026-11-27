@@ -51,6 +51,15 @@ class BodyRules(unittest.TestCase):
         self.assertEqual(findings("{\n    do { a(); } while (0);\n}"), ["R17"])
         self.assertEqual(findings("{\n    a();\n    ;\n}"), ["R17"])
 
+    def test_original_self_assignment_needs_a_label(self):
+        # the retail code calls operator=(const&) on one object with itself
+        labelled = "{\n    // NOTE: the original assigns s to itself\n    s = s;\n}"
+        self.assertEqual(findings(labelled), [])
+        self.assertEqual(findings("{\n    s = s;  // BUG: no-op in the original\n}"), [])
+        two_lines = "{\n    // NOTE: the original assigns s\n    // to itself\n    s = s;\n}"
+        self.assertEqual(findings(two_lines), [])
+        self.assertEqual(findings("{\n    // NOTE: unrelated\n    a();\n    s = s;\n}"), ["R17"])
+
     def test_genuine_forms_pass(self):
         self.assertEqual(findings("{\n    while (*p++) ;\n}"), [])
         self.assertEqual(findings("{\n    int a[] = {1, 2};\n    return a[0] * 10 + 0x0;\n}"), [])

@@ -1,32 +1,24 @@
-class CExoString;
+// CExoResMan::CacheResource: the by-value overloads (exoresman.o in the Mac
+// symbol tables). The three-argument form only copies the name in this build.
 
-extern CExoString* __stdcall CopyString(CExoString* pOutput, CExoString* pInput,
-                                         unsigned short nType, unsigned short* pTypeSlot);
+#include "shared/exo_string.h"
 
 class CExoResMan {
 public:
-    CExoString* CacheResource(CExoString* pOutput, CExoString* pInput, unsigned short nType);
+    CExoString CacheResource(const CExoString& sName, unsigned short nType);
+    CExoString CacheResource(const CExoString& sName, unsigned short nType, int& nResult);
 };
 
-// FUNCTION: SWKOTOR 0x004085F0 SYMBOL: ?CacheResource@CExoResMan@@QAEPAVCExoString@@PAV2@0G@Z
-__declspec(naked) CExoString* CExoResMan::CacheResource(CExoString*, CExoString*, unsigned short)
+// FUNCTION: SWKOTOR 0x00406C70 SYMBOL: ?CacheResource@CExoResMan@@QAE?AVCExoString@@ABV2@GAAH@Z
+CExoString CExoResMan::CacheResource(const CExoString& sName, unsigned short nType, int& nResult)
 {
-    __asm {
-        push ecx
-        mov edx, dword ptr [esp + 10h]
-        push esi
-        mov esi, dword ptr [esp + 0ch]
-        lea eax, [esp + 14h]
-        push eax
-        mov eax, dword ptr [esp + 14h]
-        push edx
-        push eax
-        push esi
-        mov dword ptr [esp + 14h], 0
-        call CopyString
-        mov eax, esi
-        pop esi
-        pop ecx
-        ret 0ch
-    }
+    CExoString sResult(sName);
+    return sResult;
+}
+
+// FUNCTION: SWKOTOR 0x004085F0 SYMBOL: ?CacheResource@CExoResMan@@QAE?AVCExoString@@ABV2@G@Z
+CExoString CExoResMan::CacheResource(const CExoString& sName, unsigned short nType)
+{
+    int nResult;
+    return CacheResource(sName, nType, nResult);
 }

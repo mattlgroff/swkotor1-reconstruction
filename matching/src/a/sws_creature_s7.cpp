@@ -288,6 +288,8 @@ void CSWSCreature::SetPortraitId(unsigned short nPortraitId)
             CExoString sColumn("BaseResRef");
             g_pRules->Get2DArrays()->GetPortraits()->GetCExoStringEntry(nPortraitId, sColumn, &sResRef);
         }
+        // NOTE: the original assigns sResRef to itself: CExoString::operator=
+        // is called with this == &other.
         sResRef = sResRef;
         {
             CResRef cPortrait(sResRef.CStr());
