@@ -73,18 +73,7 @@ public:
     void SetDialogActive(int b);                        // 0x006A9C60
 };
 
-class CSWGuiManagerPanels {
-public:
-    void PlayGuiSound(int n);                           // 0x0040A140
-    void AddPanel(CSWGuiPanel* pPanel, int a, int b);   // 0x0040BC70
-    void SendToBack(CSWGuiPanel* pPanel);               // 0x0040BD20
-    int PanelExists(CSWGuiPanel* pPanel);               // 0x0040BD70
-    void PopModalPanel();                               // 0x0040BE00
-    void RemovePanel(CSWGuiPanel* pPanel);              // 0x0040C830
-
-    char pad_0x0[0x98];
-    int m_bLocked;                                      // 0x98
-};
+#include "shared/sw_gui_manager_panels.h"
 
 class CSWCMessageX {
 public:
