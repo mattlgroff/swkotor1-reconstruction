@@ -90,9 +90,7 @@ struct CExoInputRepeatEvent {
     char pad_0x4[0x18];
 };
 
-struct CExoInputBufferedPayload {
-    char pad_0x0[0x20];
-};
+#include "shared/exo_input_buffered_payload.h"
 
 struct CExoInputBufferedEvent {
     unsigned long m_nEvent;                         // 0x00
