@@ -71,7 +71,6 @@ class CGameObjectArray { public: unsigned char AddInternalObject(unsigned long*,
 class CClientAIMaster { public: int AddObject(CSWCObject*); };
 class CClientExoApp { public: CSWCModule* GetModule(); CGameObjectArray* GetGameObjectArray(); CClientAIMaster* GetClientAIMaster(); CGameObject* GetGameObject(unsigned long); };
 class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager;
 #include "shared/globals.h"
 extern const unsigned char OBJECT_TYPE_CREATURE, OBJECT_TYPE_PLACEABLE, OBJECT_TYPE_DOOR;
 #define OBJECT_INVALID 0x7f000000

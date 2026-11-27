@@ -311,7 +311,6 @@ public:
     CServerExoApp* m_pServerExoApp;                 // 0x08
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWPlayerControl {
 public:

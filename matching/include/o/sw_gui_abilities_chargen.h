@@ -8,7 +8,7 @@
 
 #include "o/sw_gui_main_chargen.h"
 
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
+#include "shared/globals.h"
 
 // The level-up stats calls of the ability screen.
 class CSWCLevelUpStatsA : public CSWCLevelUpStats {

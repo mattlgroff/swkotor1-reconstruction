@@ -242,7 +242,7 @@ public:
     CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
 };
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CVirtualMachine {
 public:
@@ -250,7 +250,6 @@ public:
     int RunScriptSituation(void *pSituation, unsigned long oid, int bOid);
 };
 
-#include "shared/globals.h"
 
 
 class CSWSPlaceable : public CSWSObject {

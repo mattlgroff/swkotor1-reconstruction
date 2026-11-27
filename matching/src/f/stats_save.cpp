@@ -218,7 +218,7 @@ public:
     CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
 };
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CSWClass {
 public:
@@ -299,7 +299,6 @@ public:
     unsigned char GetNumSkills() { return m_nNumSkills; }
 };
 
-#include "shared/globals.h"
 
 class CSWSCreatureStats {
 public:

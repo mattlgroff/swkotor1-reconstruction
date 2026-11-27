@@ -235,7 +235,6 @@ public:
     char pad_0x0[0x8];
     CServerExoApp* m_pServerExoApp;                 // 0x8
 };
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
 // DFS transposition-table entry (0x10 bytes, 0x200 entries).

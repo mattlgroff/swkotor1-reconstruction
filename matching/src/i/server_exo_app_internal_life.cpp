@@ -10,10 +10,9 @@ class CAppManager {
 public:
     CObjectTableManager* GetObjectTableManager(int nTable);         // 0x00401060
 };
-extern CAppManager* g_pAppManager;                                  // 0x007A39FC
+#include "shared/globals.h"
 
 // The live server internals (placeholder name).
-#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004B7230
 CServerExoAppInternal::~CServerExoAppInternal()

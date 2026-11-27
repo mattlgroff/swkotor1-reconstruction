@@ -129,7 +129,6 @@ public:
     CGuiInGame* GetInGameGui(); CSWCJournal* GetQuestJournal(); int SetInputClass(int nClass,int bArg);
 };
 class CAppManager { public: char pad_0x0[4]; CClientExoApp* m_pClient; CServerExoApp* m_pServer; };
-extern CAppManager* g_pAppManager;
 
 class CSWGuiInGameMenu : public CSWGuiPanel {
 public:
@@ -265,7 +264,6 @@ void CSWGuiInGameMenu::OnMsgButtonPressed(CSWGuiControl*) { g_pAppManager->m_pCl
 
 struct CFeedbackMessage { CExoString m_sText; int m_n08; unsigned char m_nType; };
 struct CDialogMessage { CExoString m_sText; CExoString m_sSpeaker; };
-extern Vector g_vAbilityColorGranted; // 0x007A23C0 (not d's g_vHilightColor 0x0078D3C0)
 class CSWGuiInGameMessages : public CSWGuiPanel {
 public:
     CSWGuiInGameMessages(CSWGuiManager* pManager);

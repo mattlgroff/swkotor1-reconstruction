@@ -492,7 +492,6 @@ public:
     unsigned long m_bSelected : 1;                  // 0x124
 };
 
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
 #include "shared/globals.h"
 
 // A row of up to three chained abilities with arrows between them;

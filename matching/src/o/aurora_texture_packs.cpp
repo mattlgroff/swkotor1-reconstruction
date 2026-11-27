@@ -68,6 +68,7 @@ int AurTextureSetMem(int nMem);                     // 0x00421D90
 int AurInterfaceStub(int nArg1, int nArg2);
 
 #include "shared/globals.h"
+extern CExoLinkedList<CAuroraModel> g_lRequestedModels; // 0x00834094
 
 // The renderer's resource callbacks.
 extern unsigned char* (*g_pfnAurResGet)(const char*, const char*, int*); // 0x007B8FC4

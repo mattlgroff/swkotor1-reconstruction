@@ -68,7 +68,7 @@ public:
     char pad_0x0[0x8];
     CServerExoApp* m_pServerExoApp;                 // 0x8
 };
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
 class CSWSFaction {
@@ -101,7 +101,6 @@ public:
     char pad_0x0[0x34];
     CSWBaseItemArray* m_pBaseItemArray;             // 0x34
 };
-#include "shared/globals.h"
 
 class CSWSItem {
 public:

@@ -173,7 +173,7 @@ public:
     CServerExoApp *m_pServerExoApp;  // +0x8
 };
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CSWSCombatAttackData {
 public:
@@ -539,7 +539,6 @@ public:
     CSWSkill *m_pSkills;             // +0xb4
 };
 
-#include "shared/globals.h"
 
 
 // FUNCTION: SWKOTOR 0x005A58B0

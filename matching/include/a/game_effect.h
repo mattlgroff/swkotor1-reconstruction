@@ -96,7 +96,7 @@ public:
     char pad_0x0[0x8];
     CServerExoApp* m_pServerExoApp;                 // 0x8
 };
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
 class CSWSAreaOfEffectObject {
@@ -105,7 +105,6 @@ public:
     unsigned long m_oidCreator;                     // 0x248
 };
 
-#include "shared/globals.h"
 
 
 // Action target record, 0x1c bytes (placeholder name; saved as ActionId,

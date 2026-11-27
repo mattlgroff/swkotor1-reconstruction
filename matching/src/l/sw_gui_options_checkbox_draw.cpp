@@ -1,7 +1,6 @@
 // Options checkbox drawing and layout-load colour overrides.
 #include "l/sw_gui_options_in_game.h"
 
-extern Vector g_vAbilityColorGranted; // 0x007A23C0 (selected text)
 #include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x006DE0E0

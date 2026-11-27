@@ -51,7 +51,6 @@ public:
 
     CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
 };
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 // FUNCTION: SWKOTOR 0x004B14F0
 CSWSModule* CServerExoAppInternal::GetModule()

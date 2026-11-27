@@ -50,7 +50,6 @@ public:
     int SetFocusControl(int nKey);                  // 0x0040b2a0
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007a39fc
 #include "shared/globals.h"
 
 void __cdecl HandleFrameInfoChar(char cChar);         // 0x00401f00

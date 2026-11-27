@@ -46,7 +46,6 @@ public:
     CSWSCreature* GetCreatureByGameObjectID(unsigned long oid); // 0x004AE770
 };
 class CAppManager { public: char pad_0[8]; CServerExoApp* m_pServer; };
-extern CAppManager* g_pAppManager; // 0x007A39FC
 const unsigned long OBJECT_INVALID = 0x7f000000;
 #pragma pack(push, 4)
 class CGameEffect {

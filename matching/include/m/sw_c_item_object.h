@@ -235,7 +235,6 @@ public:
     CClientExoApp* m_pClientExoApp;                 // 0x04
     CServerExoApp* m_pServerExoApp;                 // 0x08
 };
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 // Item classes -----------------------------------------------------------
 

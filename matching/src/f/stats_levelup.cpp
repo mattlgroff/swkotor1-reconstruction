@@ -244,7 +244,6 @@ public:
 
 #include "shared/globals.h"
 
-extern CAppManager *g_pAppManager;
 
 class CSWSCombatAttackData {
 public:

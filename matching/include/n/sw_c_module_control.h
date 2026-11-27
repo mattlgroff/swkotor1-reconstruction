@@ -326,11 +326,10 @@ public:
 
     CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
 };
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 int lockcamera(char* szArgs);                       // 0x0060B2A0 (debug command)
 
-#include "shared/globals.h"
 
 class Scene;
 class CSWCArea {

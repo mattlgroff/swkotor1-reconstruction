@@ -59,7 +59,6 @@ public:
     CServerExoApp* m_pServer;
     CServerExoApp* GetServer() { return m_pServer; }
 };
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 class CSWSArea {
 public:
     int IntersectingLineSegment(const Vector& from, const Vector& to,

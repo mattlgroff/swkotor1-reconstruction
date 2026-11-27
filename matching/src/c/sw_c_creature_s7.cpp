@@ -300,7 +300,6 @@ public:
     CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWCObject {
 public:

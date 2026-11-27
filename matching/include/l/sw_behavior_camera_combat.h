@@ -102,7 +102,6 @@ public:
     void* m_p00;
     CClientExoApp* m_pClientExoApp;
 };
-extern CAppManager* g_pAppManager;              // 0x007A39FC
 
 
 class CSWGuiManager {

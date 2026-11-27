@@ -400,7 +400,6 @@ public:
     CClientExoApp* m_pClientExoApp;                 // 0x4
     CServerExoApp* m_pServerExoApp;                 // 0x8
 };
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 inline CClientExoApp* GetClientExoApp() { return g_pAppManager->m_pClientExoApp; }
 

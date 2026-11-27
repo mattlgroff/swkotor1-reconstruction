@@ -19,9 +19,8 @@ public:
     CClientExoApp* m_pClientExoApp;                                 // +0x04
     CServerExoApp* m_pServerExoApp;                                 // +0x08
 };
-extern CAppManager* g_pAppManager;                                  // 0x007A39FC
-
 #include "shared/globals.h"
+
 
 #pragma pack(push, 4)
 class CWorldTimer {

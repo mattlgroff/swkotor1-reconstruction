@@ -231,7 +231,7 @@ public:
     void* m_p4;
     CServerExoApp* m_pServerExoApp;                 // +0x08
 };
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CVirtualMachine {
 public:
@@ -239,7 +239,6 @@ public:
     int SaveScriptSituation(void* pScript, CResGFF* pGFF, CResStruct* pStruct);  // 0x005D10F0
     int LoadScriptSituation(void** ppScript, CResGFF* pGFF, CResStruct* pStruct); // 0x005D1100
 };
-#include "shared/globals.h"
 
 void LogEventAdd(unsigned long nCaller, unsigned long nObject, void* pEventData);  // 0x004AF630 (unnamed)
 

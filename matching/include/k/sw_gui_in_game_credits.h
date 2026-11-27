@@ -249,9 +249,6 @@ public:
     CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern int g_nScreenWidth;                          // 0x0078D1D4
-extern int g_nScreenHeight;                         // 0x0078D1D8
 void ResumeTimers();                                // 0x00403DE0
 
 // Screen state saved while the evil-ending credits force 640x480.

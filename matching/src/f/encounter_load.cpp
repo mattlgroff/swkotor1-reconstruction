@@ -242,7 +242,6 @@ public:
     CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
 };
 
-extern CAppManager *g_pAppManager;
 
 // Points table indexed by whole challenge ratings 0..50; every encounter
 // constructor appends another 51 entries (original behaviour).

@@ -237,7 +237,6 @@ public:
     CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 void SwitchWeaponEvent(unsigned long nEvent, const char* szEvent, CSWCCreature* pCreature);  // 0x00610F40
 

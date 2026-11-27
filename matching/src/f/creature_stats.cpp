@@ -90,7 +90,7 @@ public:
     CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
 };
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CSWBaseItemArray;
 
@@ -102,7 +102,6 @@ public:
     unsigned long m_anExperienceTable[50];  // +0x38
 };
 
-#include "shared/globals.h"
 
 class CSWSCreature {
 public:

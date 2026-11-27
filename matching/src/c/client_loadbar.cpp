@@ -15,7 +15,7 @@ struct CClientExoAppInternalLoadBar {
     int m_nLoadBarState;             // +0x18c
 };
 
-extern CAppManager* g_pAppManager;   // 0x007A39FC
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x005F29F0
 void __fastcall ShutDownLoadGameLoadBar(CClientExoAppInternalLoadBar* pInternal, void*)

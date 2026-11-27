@@ -23,7 +23,7 @@ class CAppManager { public:
  char pad_00c[8]; CUnknown004b13e0* m_pLoading;
 
 };
-extern CAppManager* g_pAppManager;
+#include "shared/globals.h"
 class CSWCMessage { public:
  int MessageReadOverflow(int); int MessageReadUnderflow(int); unsigned long ReadDWORD(int);
  int HandleServerToPlayerLoadBar(unsigned char);

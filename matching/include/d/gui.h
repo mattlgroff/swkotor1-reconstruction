@@ -400,7 +400,7 @@ public:
     CClientExoApp* m_pClientExoApp; // 0x04
 };
 
-extern CAppManager* g_pAppManager;              // 0x007a39fc
+#include "shared/globals.h"
 
 class CExoTimers {
 public:
@@ -422,9 +422,6 @@ public:
     unsigned char m_nUnloadRims;                    // 0x34 (1: RIMS:CHARGEN, 2: RIMS:MAINMENU)
 };
 
-#include "shared/globals.h"
-extern int g_nScreenWidth;                      // 0x0078d1d4
-extern int g_nScreenHeight;                     // 0x0078d1d8
 
 void GuiBeginFrame();                           // 0x0044ed90
 void GuiUpdateFrame(float fDelta);              // 0x00418300

@@ -8,7 +8,6 @@ public: CWorldTimer* GetWorldTimer(); CClientOptions* GetOptions(); void* GetMin
     int SetPausedByCombat(int,int,int); int GetPazaakIsRunning();
 };
 class CAppManager { public: char pad_0x0[4]; CClientExoApp* m_pClient; void* m_pServer; };
-extern CAppManager* g_pAppManager;
 class CSWGuiTutorialBox { public: int HasTutorial(unsigned char); };
 class CSWGuiPanel { public: char pad_0x0[0x44]; unsigned long m_nFlags; };
 class CSWGuiMainInterface { public: char pad_0x0[0x5d04]; union { unsigned long m_nFlags; struct { unsigned long m_bOther:1,m_bMinimapHidden:1,m_nRest:30; }; }; };

@@ -93,7 +93,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern const unsigned short RACIAL_TYPE_HUMAN;
 
 class CSWSCreatureStats {
 public:

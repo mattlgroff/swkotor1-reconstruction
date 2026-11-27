@@ -50,7 +50,6 @@ int AurGUISetupViewport(int x, int y, int w, int h, Vector* pColor, int n, float
 void AurGUIStopLayer();                             // 0x004592B0
 void AurGUICloseViewport();                         // 0x00459580
 #include "shared/globals.h"
-extern Vector g_vBlack;                             // 0x00833910
 
 class CSWGuiControl;
 
@@ -303,7 +302,6 @@ public:
     CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWGuiTextParams {
 public:

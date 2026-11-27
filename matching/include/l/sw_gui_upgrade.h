@@ -141,7 +141,6 @@ public:
     void HideUpgradeScreen();                       // 0x0062E870
 };
 
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
 
 // An upgradable item line in the item-select list box. vtable 0x00757108.
 #ifdef L_UPGRADE_ENTRY_DTOR
@@ -246,7 +245,6 @@ public:
     char pad_0x18[0x34 - 0x18];
 };
 
-extern int g_bDo3DGui;                              // 0x0078D1E4 (descriptive)
 
 // Inline 3D model view control (vtable 0x00752E30); dtor 0x0067AC50, 0x90 bytes.
 class CSWGui3DSceneView : public CSWGuiControl {

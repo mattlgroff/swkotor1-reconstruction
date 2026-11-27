@@ -77,14 +77,13 @@ public:
     void SetUnknown1a8(int,int,int); // 0x005EDE10: verified three integer stores
 };
 class CAppManager { public: char pad_0x0[4]; CClientExoApp* m_pClient; };
-extern CAppManager* g_pAppManager;
+#include "shared/globals.h"
 class CSWGuiManager {
 public:
     CSWGuiPanel* PopModalPanel(); void PlayGuiSound(char);
     void SaveMousePosition(); void RestoreOldMousePosition(); void MoveMouseToPosition(int,int);
     void AddPanel(CSWGuiPanel*,int,int);
 };
-#include "shared/globals.h"
 class CTlkTable { public: void ParseTokens(CExoString*); CExoString GetSimpleString(unsigned long); };
 // FUNCTION: SWKOTOR 0x00625200
 void CSWGuiMessageBox::UpdateControls() {

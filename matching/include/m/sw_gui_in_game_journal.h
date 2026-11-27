@@ -79,7 +79,6 @@ struct CSWGuiExtent {
 #include "shared/vector.h"
 
 #include "shared/globals.h"
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
 
 class CTlkTable {
 public:
@@ -158,7 +157,6 @@ public:
     CClientExoApp* m_pClientExoApp;                 // 0x04
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 
 class CSWGuiControl;

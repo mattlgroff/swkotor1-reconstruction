@@ -681,7 +681,6 @@ public:
     char m_pad0c[0x14 - 0x0c];
     CAppManager14* m_p14;                           // +0x14
 };
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 inline CClientExoApp* GetClientExoApp() { return g_pAppManager->m_pClientExoApp; }
 

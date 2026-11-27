@@ -232,8 +232,6 @@ CAurInternalGL::~CAurInternalGL()
     Shutdown(1, 1);
 }
 
-extern int g_nScreenWidth;                  // 0x0078d1d4
-extern int g_nScreenHeight;                 // 0x0078d1d8
 
 // FUNCTION: SWKOTOR 0x0044e9e0
 void CAurInternalGL::Reshape(int nWidth, int nHeight)

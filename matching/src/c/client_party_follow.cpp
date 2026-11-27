@@ -29,7 +29,6 @@ public:
     int RunScript(CExoString* pScript, unsigned long oid, int b); // 0x005D0FC0
 };
 
-extern CAppManager* g_pAppManager;        // 0x007A39FC
 #include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x005F2A20

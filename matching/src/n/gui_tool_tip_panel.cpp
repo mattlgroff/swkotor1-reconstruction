@@ -17,8 +17,6 @@ public: CSWGuiLabel(); virtual ~CSWGuiLabel(); char pad_0x50[0x98]; CSWGuiTextPa
 };
 class CSWGuiManager { public: int m_nMouseX,m_nMouseY; };
 #include "shared/globals.h"
-extern int g_nScreenWidth;  // 0x0078D1D4
-extern int g_nScreenHeight; // 0x0078D1D8
 class CSWGuiPanel {
 public:
     CSWGuiPanel(CSWGuiManager* pManager); // 0x0040B570

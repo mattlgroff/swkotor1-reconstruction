@@ -7,7 +7,7 @@ class CClientExoApp { public: void* m_pVTable; CClientExoAppInternal* m_pcIntern
  unsigned char GetTutorialFlag(int); // established 0x005EDFF0 symbol
 };
 class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager;
+#include "shared/globals.h"
 void RunFrame(float,int,int);
 class CSWCMessage { public: unsigned char ReadBYTE(int); int MessageReadOverflow(int);
  int SendPlayerToServer_04_03(); int HandleServerToPlayerUpdate_LoadProgress(); };

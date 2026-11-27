@@ -124,7 +124,7 @@ public:
     char* m_pLargeTempBuffer;                       // 0x00
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 // Localized string table entry (0x0C bytes).
 class CERFString {

@@ -64,8 +64,6 @@ public:
 class CAurGUIImage;
 CAurGUIImage* NewCAurGUIImage(char* sName);         // 0x0045A260
 
-extern unsigned long g_nScreenWidth;                // 0x0078D1D4
-extern unsigned long g_nScreenHeight;               // 0x0078D1D8
 
 class CSWGuiManager {
 public:

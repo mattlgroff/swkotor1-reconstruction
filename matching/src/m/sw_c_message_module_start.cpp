@@ -11,7 +11,7 @@ public:
     CClientExoApp* m_pClientExoApp;                  // +0x04
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWCMessage {
 public:

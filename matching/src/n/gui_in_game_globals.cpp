@@ -39,7 +39,7 @@ public:
 };
 class CClientExoApp { public: CSWGuiManager* GetSWGuiManager(); /* 0x005EDA40 */ };
 class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
-extern CAppManager* g_pAppManager; // 0x007A39FC
+#include "shared/globals.h"
 class CGuiInGame {
 public:
     char pad_0x0[0x38]; CSWGuiManager* m_pGuiManager;

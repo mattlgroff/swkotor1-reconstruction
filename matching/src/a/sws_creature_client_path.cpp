@@ -33,7 +33,7 @@ public:
     char pad_0[8];
     CServerExoApp* m_pServerExoApp;
 };
-extern CAppManager* g_pAppManager;                    // 0x007A39FC
+#include "shared/globals.h"
 class CSWSCreature {
 public:
     char pad_0[4];

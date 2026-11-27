@@ -27,7 +27,7 @@ public:
     CClientExoApp* m_pClientExoApp;                 // 0x04
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 // Not in the function table: starts inside 0x0069E8D0's range.
 // FUNCTION: SWKOTOR 0x0069EB20

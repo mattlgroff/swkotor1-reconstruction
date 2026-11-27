@@ -11,9 +11,8 @@ class CAppManager {
 public:
     CObjectTableManager* GetObjectTableManager(int nTable);         // 0x00401060
 };
-extern CAppManager* g_pAppManager;                                  // 0x007A39FC
-
 #include "shared/globals.h"
+
 
 // NONMATCH: the original has an aligned (and esp, -8) frame with both
 // player-name copies in separate slots; same calls and flow otherwise.

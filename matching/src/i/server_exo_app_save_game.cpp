@@ -63,7 +63,7 @@ public:
     CSaveLoadStatus* m_pSaveLoadStatus;                             // +0x14
     CSaveLoadStatus* GetSaveLoadStatus() { return m_pSaveLoadStatus; }
 };
-extern CAppManager* g_pAppManager;                                  // 0x007A39FC
+#include "shared/globals.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
 class CExoSound {
@@ -71,7 +71,6 @@ public:
     void SetMusicState(int nState);                                 // 0x005D5E80
 };
 extern CExoSound* g_pExoSound;                                      // 0x007A39EC
-#include "shared/globals.h"
 
 void PlayDelayedSound(float fDelay, int a, int b);                  // 0x00401C10
 

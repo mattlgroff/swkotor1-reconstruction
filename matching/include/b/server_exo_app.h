@@ -194,7 +194,7 @@ public:
     CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
 };
 
-extern CAppManager* g_pAppManager;      // 0x007A39FC
+#include "shared/globals.h"
 
 #define INVALID_OBJECT_ID 0x7f000000
 

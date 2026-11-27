@@ -19,7 +19,6 @@ public:
     virtual CNetLayer* GetNetLayer(); // vtable +0x10
 };
 class CAppManager { public: char pad_0x00[4]; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager; // 0x007A39FC
 #include "shared/globals.h"
 class CClientMsgSysAdmin {
 public:

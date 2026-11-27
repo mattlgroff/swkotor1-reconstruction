@@ -82,7 +82,6 @@ public:
     CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
 };
 
-extern CAppManager *g_pAppManager;
 extern const unsigned long OBJECT_INVALID;         // 0x00746644
 
 class CScriptEvent {

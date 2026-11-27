@@ -136,7 +136,7 @@ public:
     CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 extern const unsigned long OBJECT_INVALID;          // 0x00746644
 extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
 

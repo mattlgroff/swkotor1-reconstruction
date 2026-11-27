@@ -66,7 +66,7 @@ public:
     CClientExoApp *GetClientExoApp() { return m_pClientExoApp; }
 };
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CSWSDialog {
 public:

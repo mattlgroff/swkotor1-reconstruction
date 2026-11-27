@@ -144,10 +144,6 @@ public:
     float x, y, z, w;
 };
 
-extern Vector g_vBlack;                             // 0x00833910
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
-extern int g_nScreenWidth;                          // 0x0078D1D4
-extern int g_nScreenHeight;                         // 0x0078D1D8
 
 void AurGUIStartLayer();                            // 0x004591B0
 int AurGUISetupViewport(int nX, int nY, int nWidth, int nHeight, Vector* pColor, int bClear,
@@ -256,7 +252,6 @@ public:
     CServerExoApp* m_pServerExoApp;                 // 0x08
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CGuiInGame {
 public:
@@ -467,7 +462,6 @@ public:
     virtual void AttachToHook(CAurObject* pObject, const char* sHook, int a);   // 0x74 (descriptive)
 };
 
-extern int g_bDo3DGui;                              // 0x0078D1E4 (descriptive)
 
 class CSWGuiScene {
 public:

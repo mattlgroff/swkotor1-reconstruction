@@ -172,8 +172,6 @@ int AurGLCaps7E0();                         // 0x0045f7e0
 
 extern unsigned int g_nPowerWidth;          // 0x007a6890
 extern unsigned int g_nPowerHeight;         // 0x007a6894
-extern int g_nScreenWidth;                  // 0x0078d1d4
-extern int g_nScreenHeight;                 // 0x0078d1d8
 extern CAurTexture* g_pDistortionTexture;   // 0x007a68d8
 extern int g_nBloomRamp0;                   // 0x007a6864
 extern int g_nBloomRamp1;                   // 0x007a6868

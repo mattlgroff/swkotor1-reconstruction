@@ -13,7 +13,7 @@ public:
     CGuiInGame* GetInGameGui();     // 0x005ED690
 };
 class CAppManager { public: char pad_0x00[4]; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager;  // 0x007A39FC
+#include "shared/globals.h"
 class CSWGuiPanel { public: void Draw(float delta); }; // 0x0040B760
 class CSWGuiInGameJournal : public CSWGuiPanel {
 public:

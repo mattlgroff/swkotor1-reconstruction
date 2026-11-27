@@ -630,7 +630,6 @@ public:
     CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 // The 0x28-byte block at CSWMiniGameObject + 0x1c.
 class CSWMiniHitInfo {

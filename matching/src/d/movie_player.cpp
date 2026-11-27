@@ -193,10 +193,7 @@ public:
     CClientExoApp* m_pClientExoApp; // 0x04
 };
 
-extern CAppManager* g_pAppManager;  // 0x007a39fc
 #include "shared/globals.h"
-extern int g_nScreenWidth;          // 0x0078d1d4
-extern int g_nScreenHeight;         // 0x0078d1d8
 
 void __cdecl RunFrame(float fDelta, int bRunServer, int bNoRender);    // 0x00401c10
 

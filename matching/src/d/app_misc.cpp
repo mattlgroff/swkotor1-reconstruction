@@ -122,7 +122,7 @@ public:
     void CreateServer(int nMode);
 };
 
-extern CAppManager* g_pAppManager;  // 0x007a39fc
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00401060
 CObjectTableManager* CAppManager::GetObjectTableManager(int nWhich)
@@ -201,7 +201,6 @@ void handleScreenSaver()
     }
 }
 
-#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00401670
 void _glBlendFunc(int nSrc, int nDst)

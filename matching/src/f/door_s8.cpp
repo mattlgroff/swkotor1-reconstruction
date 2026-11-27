@@ -47,14 +47,13 @@ public:
     CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
 };
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CVirtualMachine {
 public:
     int RunScript(CExoString *psFileName, unsigned long oid, int bFlag);
 };
 
-#include "shared/globals.h"
 
 class CSWSArea {
 public:

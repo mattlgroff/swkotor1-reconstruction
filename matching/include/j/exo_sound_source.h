@@ -53,7 +53,6 @@ public:
     CClientExoApp* m_pClientExoApp;                 // 0x04
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 // Miles Sound System (IAT 0x0073D4xx-0x0073D5xx).
 typedef void* HSAMPLE;

@@ -171,7 +171,6 @@ public:
     CClientExoApp *GetClientExoApp() { return m_pClientExoApp; }
 };
 
-extern CAppManager *g_pAppManager;
 
 class CSWArea {
 public:

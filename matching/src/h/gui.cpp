@@ -37,8 +37,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern int g_nScreenWidth;                      // 0x0078D1D4
-extern int g_nScreenHeight;                     // 0x0078D1D8
 
 int operator!=(const Vector& a, const Vector& b);   // 0x0043E1F0
 

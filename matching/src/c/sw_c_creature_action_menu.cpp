@@ -80,7 +80,7 @@ public:
     CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CExoLocString {
 public:
@@ -169,8 +169,6 @@ public:
     int m_bUseCurrentForcePoints;                   // 0xa9c (descriptive)
 };
 
-#include "shared/globals.h"
-extern const unsigned short RACIAL_TYPE_HUMAN;      // 0x0074BF14
 
 class CSWCItem {
 public:

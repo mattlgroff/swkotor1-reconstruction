@@ -44,7 +44,6 @@ class CClientExoApp { public: CResRef GetItemDropSound(unsigned char);
  CSWCCreature* GetCreatureByGameObjectID(unsigned long); CClientAIMaster* GetClientAIMaster();
 };
 class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager;
 class CExoSound { public: int PlayOneShotSound(const CResRef&,unsigned char,unsigned long,unsigned char,float,float); };
 extern CExoSound* g_pExoSound;
 class CSWCObject { public: virtual ~CSWCObject(); char pad_004[8]; int m_nBaseItem; };

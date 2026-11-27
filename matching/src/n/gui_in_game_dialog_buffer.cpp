@@ -27,7 +27,7 @@ public:
 };
 class CClientExoApp { public: CGameObject* GetGameObject(unsigned long oid); /* 0x005ED580 */ };
 class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
-extern CAppManager* g_pAppManager; // 0x007A39FC
+#include "shared/globals.h"
 class CGuiInGame {
 public:
     void AppendToDialogBuffer(const CExoString& sText,const CExoString& sName); // 0x0062B680

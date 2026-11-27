@@ -34,7 +34,6 @@ public:
     int m_nNPC;                                     // 0x450
 };
 
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
 #include "shared/globals.h"
 
 class L_PARTY_VTABLE CSWGuiPartySelection : public CSWGuiPanel {

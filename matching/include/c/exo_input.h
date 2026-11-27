@@ -145,7 +145,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern int g_nScreenHeight;                         // 0x0078D1D8
 extern void* g_hWnd;                                // 0x007A39D8
 
 extern "C" {

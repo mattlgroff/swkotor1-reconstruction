@@ -159,7 +159,6 @@ public:
 };
 class CServerExoApp { public: unsigned long ClientToServerObjectID(unsigned long); CGameObject* GetGameObject(unsigned long); };
 class CAppManager { public: void* m_p00; CClientExoApp* m_pClientExoApp; CServerExoApp* m_pServerExoApp; };
-extern CAppManager* g_pAppManager;
 class CSWCObject {
 public:
     virtual void v00();

@@ -283,7 +283,6 @@ public:
     CClientExoApp *GetClientExoApp() { return m_pClientExoApp; }
 };
 
-extern CAppManager *g_pAppManager;
 
 struct CExoLinkedListNode {
     CExoLinkedListNode *pPrev;

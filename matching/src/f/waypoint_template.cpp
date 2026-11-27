@@ -66,7 +66,7 @@ public:
     CServerExoApp *m_pServerExoApp;  // +0x8
 };
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CSWSWaypoint {
 public:

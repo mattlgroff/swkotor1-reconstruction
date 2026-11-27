@@ -119,10 +119,9 @@ public:
     CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
     CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
 };
-extern CAppManager* g_pAppManager;
+#include "shared/globals.h"
 
 // Base time of a scheduled attack animation (0x008327DC).
-#include "shared/globals.h"
 
 #include "shared/vector.h"
 

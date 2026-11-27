@@ -34,7 +34,7 @@ public:
     void EnableVideoEffect(int nEffect); // 0x005EDF10
 };
 class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
-extern CAppManager* g_pAppManager; // 0x007A39FC
+#include "shared/globals.h"
 class CSWGuiPanel {
 public:
     virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();

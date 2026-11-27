@@ -101,7 +101,7 @@ public:
     char pad_0x1c[0x34 - 0x1c];
 };
 
-extern int g_bDo3DGui;                              // 0x0078D1E4 (descriptive)
+#include "shared/globals.h"
 
 // Inline 3D model view control (vtable 0x00752E30); dtor 0x0067AC50, 0x90 bytes.
 class CSWGui3DSceneView : public CSWGuiControl {
@@ -124,7 +124,6 @@ public:
 };
 
 extern CExoSound* g_pExoSound;                      // 0x007A39EC
-#include "shared/globals.h"
 
 class CSWGuiLevelUpPanel;
 

@@ -221,7 +221,6 @@ public:
     CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
 };
 
-extern CAppManager *g_pAppManager;
 #include "shared/globals.h"
 
 class CSWSObject : public CGameObject {

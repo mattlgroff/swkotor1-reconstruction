@@ -50,7 +50,7 @@ public:
     CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class C2DA {
 public:
@@ -74,7 +74,6 @@ public:
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-#include "shared/globals.h"
 
 class CSWCCombatAttackData;
 

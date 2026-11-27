@@ -206,7 +206,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern int g_bDo3DGui;                              // 0x0078D1E4
 
 struct CSWGuiGalaxyPlanet {
     int m_nNameStrRef;                              // 0x00

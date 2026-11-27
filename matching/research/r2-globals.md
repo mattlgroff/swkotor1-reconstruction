@@ -17,7 +17,10 @@ move to `include/shared/globals.h` and what is still declared elsewhere.
   address; each keeps its own name.
 
 Result: 1779 globals from 2694 declarations in 500 files.
-Byte gate 8,475 / 9,538 (one NONMATCH attempt matched; none lost).
+Byte gate 8,474 / 9,538, the same as before the move. (An intermediate state
+matched `CSWCSortedJournalArrayList::SortList` too, but only through the order
+of unrelated declarations in its unit, which decides its stack slots; it is
+unmatched again, as it was before this work.)
 Matched under the rules: 659 (was 579).
 
 ## Type conflicts the gate settled

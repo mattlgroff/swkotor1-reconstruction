@@ -24,7 +24,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern int g_bDo3DGui;                              // 0x0078D1E4 (descriptive)
 
 class CSWGuiTextParams {
 public:
@@ -119,7 +118,6 @@ public:
     void PlayGuiSound(char nSound);                 // 0x0040A140
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWGuiButton {
 public:

@@ -163,7 +163,6 @@ public:
     CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 // FUNCTION: SWKOTOR 0x00617EB0
 // NONMATCH (13 diff insns, 1 byte): scheduling only - the appearance-table

@@ -89,7 +89,6 @@ public:
     CClientExoApp* m_pClientExoApp;                 // 0x04
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 #define OBJECT_INVALID 0x7f000000
 

@@ -155,7 +155,7 @@ public:
     void* m_p00;
     CClientExoApp* m_pClientExoApp;
 };
-extern CAppManager* g_pAppManager;
+#include "shared/globals.h"
 
 // Camera state captured by SaveCameraSettings for a later restore.
 class CSWCameraSettings {
@@ -239,7 +239,6 @@ public:
     float m_fFarClip3;                          // +0x48
 };
 
-#include "shared/globals.h"
 
 // Client object: only its id and position are used by the cameras.
 class CSWCObject {

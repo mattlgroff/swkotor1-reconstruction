@@ -86,7 +86,6 @@ struct CSWRace {
 };
 
 #include "shared/globals.h"
-extern const unsigned short RACIAL_TYPE_HUMAN;      // 0x0074BF14
 
 class CSWCCreatureStats {
 public:

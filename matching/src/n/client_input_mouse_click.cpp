@@ -29,7 +29,7 @@ public:
     CSWParty* GetSWParty(); // 0x005ED8B0
 };
 class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
-extern CAppManager* g_pAppManager; // 0x007A39FC
+#include "shared/globals.h"
 class CClientOptions { public: char pad_0x0[0x6d]; unsigned char m_nCameraMode; };
 class CSWGuiInGameInput { public: char pad_0x0[0x30]; int m_bInputActive; };
 class CSWGuiManager { public: void PlayGuiSound(char nSound); /* 0x0040A140 */ };

@@ -57,8 +57,6 @@ unsigned long FindNearestVideoMode(unsigned long nWidth, unsigned long nHeight, 
                                    unsigned long nRefresh); // 0x0070D0A0
 
 #include "shared/globals.h"
-extern unsigned long g_nScreenWidth;                // 0x0078D1D4
-extern unsigned long g_nScreenHeight;               // 0x0078D1D8
 
 struct RECT {
     long left;

@@ -73,7 +73,6 @@ public:
     CClientAIMaster* GetClientAIMaster();
 };
 class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager;
 class CSWCMessage {
 public:
     int ReadBOOL();

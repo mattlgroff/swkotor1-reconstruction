@@ -158,7 +158,7 @@ public:
     void* m_pUnknown00;
     CClientExoApp* m_pClientExoApp;
 };
-extern CAppManager* g_pAppManager;
+#include "shared/globals.h"
 class CSWCMessage {
 public:
     int MessageReadOverflow(int);

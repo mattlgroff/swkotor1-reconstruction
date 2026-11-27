@@ -16,7 +16,7 @@ public:
     CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
 };
 
-extern CAppManager* g_pAppManager;
+#include "shared/globals.h"
 
 class CSWBaseItemData;
 class CSWBaseItemArray {
@@ -29,7 +29,6 @@ public:
     char pad_0x0[0x34];
     CSWBaseItemArray* m_pBaseItemArray;
 };
-#include "shared/globals.h"
 
 class CSWCItemProperty {
 public:

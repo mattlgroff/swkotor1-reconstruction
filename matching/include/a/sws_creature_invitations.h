@@ -67,6 +67,6 @@ public:
     char pad_0[8];
     CServerExoApp* m_pServerExoApp;
 };
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 #endif

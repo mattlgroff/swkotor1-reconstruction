@@ -122,7 +122,6 @@ public:
     void* m_pcExoIniInternal;                       // 0x00
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 
 void AurEnableShadows();                            // 0x0044EE20

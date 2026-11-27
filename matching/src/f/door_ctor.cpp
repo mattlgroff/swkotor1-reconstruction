@@ -66,7 +66,6 @@ public:
     CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
 };
 
-extern CAppManager *g_pAppManager;
 
 class CGameObject {
 public:

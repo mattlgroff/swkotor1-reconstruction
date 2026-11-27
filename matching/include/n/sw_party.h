@@ -113,7 +113,6 @@ public:
     CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
 };
 
-extern CAppManager* g_pAppManager;                    // 0x007A39FC
 
 // One 0x88-byte party slot, at party +0x24 (CSWPartyMemberData).
 class CSWPartyMember {

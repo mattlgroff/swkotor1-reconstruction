@@ -103,7 +103,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
 
 // Engine frame step (descriptive name of 0x00401C10).
 void __cdecl RunFrame(float fDelta, int bRunServer, int bKeepFrame);  // 0x00401C10
@@ -189,7 +188,6 @@ public:
     CClientExoApp* m_pClientExoApp;                 // 0x04
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CAurObject {
 public:
@@ -435,7 +433,6 @@ public:
     CSWGuiText m_cText;                             // 0x154
 };
 
-extern int g_bDo3DGui;                              // 0x0078D1E4 (descriptive)
 
 class CSWGuiScene {
 public:

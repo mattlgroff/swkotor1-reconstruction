@@ -9,7 +9,6 @@
 #include "shared/vector.h"
 
 template <class T> class CExoArrayList;
-template <class T> class CExoLinkedList;
 template <class T> class SafePointer;
 struct AurColor;
 struct AurConsoleVar;
@@ -18,6 +17,7 @@ struct AurResFileList;
 class BSPNode;
 class Bin;
 class CApp;
+class CAppManager;
 class CAppManagerT;
 struct CAurColor;
 class CAurFont;
@@ -31,7 +31,6 @@ class CAurProgram;
 class CAurTexture;
 class CAurTextureBasic;
 class CAuroraInterface;
-class CAuroraModel;
 class CDeletable;
 class CEncounterPointsTable;
 class CExoFileThread;
@@ -537,6 +536,7 @@ extern const unsigned char CLASS_TYPE_JEDI_SENTINEL;  // 0x0074B31E
 extern const unsigned short RACE_TYPE_0074BF10;  // 0x0074BF10 (5, placeholder name)
 extern const unsigned short RACIAL_TYPE_DROID;  // 0x0074BF10
 extern const unsigned short RACE_TYPE_0074BF14;  // 0x0074BF14 (6, placeholder name)
+extern const unsigned short RACIAL_TYPE_HUMAN;  // 0x0074BF14
 extern const unsigned short RACIAL_TYPE_COUNT;  // 0x0074BF18 (name guessed)
 extern const unsigned short g_nForceTargetHuman;  // 0x0074BF34 (descriptive)
 extern const unsigned short g_nForceTargetDroid;  // 0x0074BF38 (descriptive)
@@ -732,10 +732,13 @@ extern const int g_nCameraSettingsTypeOnAStick;  // 0x0075182C
 extern unsigned long g_aInventoryFilterNames[6];  // 0x00756444 (descriptive)
 extern CSWEquipSlotInfo g_aEquipSlots[9];  // 0x00756560 (descriptive)
 extern CSWUpgradeSlotInfo g_aUpgradeSlots[4][4];  // 0x00756FB4
+extern int g_nScreenWidth;  // 0x0078d1d4
 extern int g_nWindowWidth;  // 0x0078D1D4
+extern int g_nScreenHeight;  // 0x0078D1D8
 extern int g_nWindowHeight;  // 0x0078D1D8
 extern unsigned long g_nScreenRefreshRate;  // 0x0078D1DC
 extern unsigned char g_nScreenDepth;  // 0x0078D1E0
+extern int g_bDo3DGui;  // 0x0078D1E4 (descriptive)
 extern unsigned long g_nSavedScreenWidth;  // 0x0078d1f0
 extern unsigned long g_nSavedScreenHeight;  // 0x0078d1f4
 extern unsigned char g_nSavedScreenDepth;  // 0x0078d1f8
@@ -1177,6 +1180,8 @@ extern Vector g_vDifficultyExitColor;  // 0x007A23B4
 extern Vector g_vFeedbackColor;  // 0x007A23B4, descriptive
 extern Vector g_vGuiColor23B4;  // 0x007A23B4 (descriptive)
 extern Vector g_vPazaakButtonHilight;  // 0x007A23B4
+extern Vector g_vAbilityColorGranted;  // 0x007A23C0
+extern Vector g_vDefaultReplyColor;  // 0x007A23C0
 extern Vector g_vPazaakFlashColor;  // 0x007A23CC
 extern Vector g_vAbilityColorAvailable;  // 0x007A23D8
 extern Vector g_vFeedbackAltColor;  // 0x007A23D8, descriptive
@@ -1227,6 +1232,7 @@ extern CSWGuiManager* g_pGuiManager;  // 0x007A39F4
 extern CToolTipGlobals* g_pToolTipGlobals;  // 0x007A39F4
 extern CRender* g_pRender;  // 0x007A39F8
 extern CRenderWindow* g_pRenderWindow;  // 0x007a39f8
+extern CAppManager* g_pAppManager;  // 0x007A39FC
 extern CAppManagerT* g_pAppManagerT;  // 0x007A39FC (g_pAppManager)
 extern CVirtualMachine* g_pVirtualMachine;  // 0x007A3A00
 extern CScriptCompiler* g_pScriptCompiler;  // 0x007A3A04 (placeholder name)
@@ -1260,6 +1266,7 @@ extern int g_nCompletionOffset;  // 0x007a3cf0
 extern CExoMoviePlayerInternal* g_pMoviePlayer;  // 0x007a3cf4
 extern int g_bDrawSafeRegion;  // 0x007a3d4c
 extern CExoString g_aResolutionSuffixes[];  // 0x007a3d50
+extern CExoString g_sComputerBGPrefix;  // 0x007A3D70
 extern unsigned long g_aCRCTable[256];  // 0x007a3d78
 extern unsigned long g_aGffCRCTable[256];  // 0x007a4178
 extern int g_aMemLightmaps[5];  // 0x007a469c
@@ -1830,6 +1837,7 @@ extern int g_bUnknown8338F8;  // 0x008338F8
 extern int g_nDriveStrafe;  // 0x008338F8 (placeholder name)
 extern CDeletable* g_pUnknown8338FC;  // 0x008338FC
 extern int g_bLetterbox;  // 0x0083390C
+extern Vector g_vBlack;  // 0x00833910
 extern int g_bUpdateCreatureOnMove;  // 0x0083395C
 extern int g_nJournalSortOrder;  // 0x00833A90
 extern int g_bJournalUpdated;  // 0x00833A94
@@ -1844,7 +1852,6 @@ extern int g_nCreditsSavedGuiWidth;  // 0x00833BC0
 extern int g_nCreditsSavedScreenWidth;  // 0x00833BC4
 extern CExoLinkedListInternal* g_lCachedVFX;  // 0x00833BC8
 extern short g_nSpeedBlurCount;  // 0x00833BCC
-extern CExoLinkedList<CAuroraModel> g_lRequestedModels;  // 0x00834094
 extern CExoString g_asTexturePacks[4];  // 0x00834098
 extern const int ABILITY_CONSTITUTION;
 extern const int ABILITY_DEXTERITY;

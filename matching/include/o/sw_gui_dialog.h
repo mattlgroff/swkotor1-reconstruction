@@ -590,11 +590,6 @@ public:
     CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern int g_nScreenWidth;                          // 0x0078D1D4
-extern int g_nScreenHeight;                         // 0x0078D1D8
-extern CExoString g_sComputerBGPrefix;              // 0x007A3D70
-extern Vector g_vDefaultReplyColor;                 // 0x007A23C0
 
 // Conversation panel; implicit destructor 0x006A6F30.
 class CSWGuiDialog : public CSWGuiPanel {
@@ -689,7 +684,6 @@ public:
     CDialogCamera* m_pCamera;                       // 0x207c
 };
 
-extern Vector g_vBlack;                             // 0x00833910
 
 // Cinematic letterbox bars; vtable 0x00755A78; implicit dtor 0x006A8A10.
 class CSWGuiLetterbox : public CSWGuiPanel {

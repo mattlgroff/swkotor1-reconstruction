@@ -89,8 +89,6 @@ extern PFNGLCOLORFRAGMENTOP3ATI glColorFragmentOp3ATI;          // 0x007bb7fc
 extern PFNGLALPHAFRAGMENTOP3ATI glAlphaFragmentOp3ATI;          // 0x007bb680
 
 #include "shared/globals.h"
-extern int g_nScreenWidth;                      // 0x0078d1d4
-extern int g_nScreenHeight;                     // 0x0078d1d8
 extern int g_nPowerWidth;                       // 0x007a6890
 extern int g_nPowerHeight;                      // 0x007a6894
 

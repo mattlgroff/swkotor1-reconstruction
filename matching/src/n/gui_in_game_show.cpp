@@ -30,7 +30,6 @@ public:
     void IndicateObject(CSWCObject* pObject,int bArg); // 0x005EDB70
 };
 class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
-extern CAppManager* g_pAppManager; // 0x007A39FC
 class CSWGuiInGameMenu { public: void SetActivePanel(int nPanel,int bArg); /* 0x00624BD0 */ };
 class CSWGuiBarkBubble { public: void Pause(); /* 0x006A9BB0 */ };
 class CGuiInGame {

@@ -133,7 +133,7 @@ public:
     CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWSpell {
 public:
@@ -161,7 +161,6 @@ public:
     CSWSpellArray* m_pSpellArray;                   // 0x8c
 };
 
-#include "shared/globals.h"
 
 class CSWCCreature {
 public:

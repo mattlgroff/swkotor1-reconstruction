@@ -64,7 +64,7 @@ public:
     CClientExoApp *m_pClientExoApp;           // +0x4
     CServerExoApp *m_pServerExoApp;           // +0x8
 };
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CSWSCreature {
 public:

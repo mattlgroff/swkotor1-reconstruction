@@ -47,7 +47,6 @@ class CGameObjectArray { public: unsigned char AddExternalObject(unsigned long*,
 class CClientAIMaster { public: int AddObject(CSWCObject*); };
 class CClientExoApp { public: CSWCModule* GetModule(); CGameObjectArray* GetGameObjectArray(); CClientAIMaster* GetClientAIMaster(); };
 class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager;
 #include "shared/globals.h"
 class CSWCMessage { public:
  unsigned long ReadOBJECTIDClient(); unsigned long ReadDWORD(int); int MessageReadOverflow(int);

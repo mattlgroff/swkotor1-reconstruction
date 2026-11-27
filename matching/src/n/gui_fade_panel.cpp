@@ -32,7 +32,6 @@ public:
     CGuiInGame* GetInGameGui(); CSWGuiManager* GetGuiManager();
 };
 class CAppManager { public: char pad_0x0[4]; CClientExoApp* m_pClient; };
-extern CAppManager* g_pAppManager;
 
 class CSWGuiPanel {
 public:

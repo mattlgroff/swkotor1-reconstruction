@@ -2,7 +2,6 @@
 // portraits, screenshot) for the highlighted save and recolours the buttons.
 #include "l/sw_gui_save_load.h"
 
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
 #include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x006C89D0

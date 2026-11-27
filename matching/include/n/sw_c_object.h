@@ -43,8 +43,6 @@ public:
 extern const unsigned long OBJECT_INVALID;          // 0x00746644
 extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
 extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
-extern int g_nScreenWidth;                          // 0x0078D1D4
-extern int g_nScreenHeight;                         // 0x0078D1D8
 
 // Linked list -----------------------------------------------------------
 
@@ -321,7 +319,6 @@ public:
     void* m_p0;
     CClientExoApp* m_pClientExoApp;                 // 0x04
 };
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 // Object -----------------------------------------------------------------
 
