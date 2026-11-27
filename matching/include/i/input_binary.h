@@ -253,12 +253,7 @@ public:
     int m_nBoneConst;                   // +0x1d4
 };
 
-class AABB {
-public:
-    char pad00[0x18];
-    AABB* m_pLeft;                      // +0x18
-    AABB* m_pRight;                     // +0x1c
-};
+#include "shared/aabb.h"
 
 class MdlNodeAABB : public MdlNodeTriMesh {
 public:

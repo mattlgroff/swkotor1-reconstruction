@@ -284,20 +284,7 @@ public:
 
 // Axis-aligned bounding box tree node; deleting a child goes through the
 // out-of-line scalar deleting destructor (0x0043e2a0).
-class AABB {
-public:
-    char pad00[0x18];
-    AABB* m_pLeft;              // +0x18
-    AABB* m_pRight;             // +0x1c
-
-    ~AABB()
-    {
-        if (m_pLeft)
-            delete m_pLeft;
-        if (m_pRight)
-            delete m_pRight;
-    }
-};
+#include "shared/aabb.h"
 
 class MdlNodeAABB : public MdlNodeTriMesh {
 public:
