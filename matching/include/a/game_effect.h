@@ -94,19 +94,7 @@ public:
 
 // Action target record, 0x1c bytes (placeholder name; saved as ActionId,
 // GroupId, Target_Area, Target_Object, Target_LocX/Y/Z).
-class CSWSActionTarget {
-public:
-    CSWSActionTarget();                             // 0x005034D0
-    int SaveData(CResGFF* pRes, CResStruct* pStruct);   // 0x005034F0
-
-    unsigned long m_nActionId;                      // 0x00
-    unsigned short m_nGroupId;                      // 0x04
-    unsigned long m_oidArea;                        // 0x08
-    float m_fX;                                     // 0x0c
-    float m_fY;                                     // 0x10
-    float m_fZ;                                     // 0x14
-    unsigned long m_oidTarget;                      // 0x18
-};
+#include "shared/sws_action_target.h"
 
 #pragma pack(push, 4)
 class CGameEffect {

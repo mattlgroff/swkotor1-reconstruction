@@ -247,9 +247,7 @@ struct CSWCCMessageData {
     int LoadData(CResGFF* pGFF, CResStruct* pStruct);   // 0x004D6B10
     char m_pad0[0x34];
 };
-struct CSWSActionTarget {
-    int SaveData(CResGFF* pGFF, CResStruct* pStruct);   // 0x005034F0 (placeholder class)
-};
+#include "shared/sws_action_target.h"
 class CGameEffect {
 public:
     CGameEffect(int bCreateNewID);                  // 0x00503E40
