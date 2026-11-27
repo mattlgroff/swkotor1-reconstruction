@@ -476,13 +476,7 @@ public:
 };
 
 
-class CSWCombatInformation {
-public:
-    CSWCombatInformation();
-    ~CSWCombatInformation();
-    void SetCombatInformation(CSWCombatInformation *pInfo);
-    char pad_0x0[0x48];
-};
+#include "shared/sw_combat_information.h"
 
 class CSWCreatureStatsUpdate {
 public:
