@@ -188,9 +188,7 @@ public:
     virtual ~CSWCSaveLoad();
 };
 
-struct CClientMessageHandler1c0 {
-    int m_n00;
-};
+#include "shared/client_message_handler1c0.h"
 
 class CSoundSetList {
 public:

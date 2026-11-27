@@ -199,10 +199,7 @@ public:
     void HandleMessage(unsigned char* pData, unsigned long nSize);   // 0x0066A640
 };
 
-class CClientMessageHandler1c0 {
-public:
-    void HandleMessage(unsigned char* pData, unsigned long nSize);   // 0x00675710
-};
+#include "shared/client_message_handler1c0.h"
 
 class CSWGuiManager {
 public:
