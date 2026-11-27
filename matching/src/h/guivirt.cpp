@@ -43,24 +43,7 @@ public:
 
 CAurFont* AurTextureGetReference(char* szName, int n);   // 0x00423A60
 
-class FontPtr {
-public:
-    CAurFont* m_p;
-
-    FontPtr() { m_p = 0; }
-    ~FontPtr()
-    {
-        if (m_p)
-            m_p->RemoveNoThrow((SafePointerBase*)this);
-    }
-    void Reset()
-    {
-        if (m_p)
-            m_p->Remove((SafePointerBase*)this);
-        m_p = 0;
-    }
-    FontPtr& operator=(CAurFont* p);            // 0x00447FA0
-};
+#include "shared/font_ptr.h"
 
 template <class T>
 class GUIList : public CExoArrayList<T> {
