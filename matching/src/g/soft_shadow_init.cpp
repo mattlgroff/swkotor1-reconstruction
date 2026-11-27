@@ -89,14 +89,14 @@ extern PFNGLCOLORFRAGMENTOP3ATI glColorFragmentOp3ATI;          // 0x007bb7fc
 extern PFNGLALPHAFRAGMENTOP3ATI glAlphaFragmentOp3ATI;          // 0x007bb680
 
 #include "shared/globals.h"
-extern int g_nPowerWidth;                       // 0x007a6890
-extern int g_nPowerHeight;                      // 0x007a6894
+extern unsigned int g_nPowerWidth;                       // 0x007a6890
+extern unsigned int g_nPowerHeight;                      // 0x007a6894
 
 int AurSoftShadowsAvailable();                  // 0x0045f7b0
 int AurATISoftShadowsAvailable();               // 0x0045f7e0
 void* CreatePBuffer(int nWidth, int nHeight);   // 0x00426560
-void FindSmallestPowerOf2WidthHeight(int nWidth, int nHeight, int* pWidth,
-                                     int* pHeight);     // 0x00427450
+void FindSmallestPowerOf2WidthHeight(int nWidth, int nHeight, unsigned int* pWidth,
+                                     unsigned int* pHeight);    // 0x00427450
 
 __forceinline void SetClampLinear(unsigned int nTarget)
 {

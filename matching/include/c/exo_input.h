@@ -283,7 +283,7 @@ public:
     unsigned __int64 GetHighResolutionTimer();      // 0x005E9260
 };
 
-class CExoBaseTimers {
+class CExoBase {
 public:
     void* m_p0;                                     // 0x00
     CExoTimers* m_pcExoTimers;                      // 0x04
@@ -298,7 +298,7 @@ struct DIPROPSTRING {
 
 #define DIPROP_KEYNAME (*(const _GUID*)20)
 
-extern CExoBaseTimers* g_pExoBase;                  // 0x007A39E0
+extern CExoBase* g_pExoBase;                  // 0x007A39E0
 
 class CExoRawInputInternal {
 public:

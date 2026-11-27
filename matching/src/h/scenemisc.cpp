@@ -21,7 +21,7 @@ public:
     BSPNode* m_pTiles;                  // +0xa0
 };
 
-class LightBin {
+class Bin {
 public:
     char pad_0x0[8];
     float m_fRadius;                    // +0x08
@@ -39,7 +39,7 @@ public:
 
 struct BinData {
     char pad_0x0[0x60];
-    CExoArrayList<LightBin*> m_lBins;   // +0x60
+    CExoArrayList<Bin*> m_lBins;   // +0x60
 };
 
 void BSPSphereCheck(BSPNode* pNode, Vector* pCenter, float fRadius,
@@ -51,7 +51,7 @@ void BSPTraverse(BSPNode* pNode, void (*pfn)(BSPNode*, LightScene*),
 void UpdateRoomLights(BSPNode* pNode, LightScene* pScene);  // 0x0046B790
 
 #include "shared/globals.h"
-extern CExoArrayList<LightBin*> g_lActiveBins;      // 0x007FBF9C
+extern CExoArrayList<Bin*> g_lActiveBins;      // 0x007FBF9C
 extern int g_n7FBF2C;
 
 // FUNCTION: SWKOTOR 0x0046A620
@@ -79,7 +79,7 @@ void ActivateBinsInRange(BinNode* pNode, Vector* pPos, float fMaxSq)
     BinData* pData = pNode->m_pData;
     int n = pData->m_lBins.num;
     for (int i = 0; i < n; i++) {
-        LightBin* pBin = pData->m_lBins[i];
+        Bin* pBin = pData->m_lBins[i];
         Vector d(0.0f, 0.0f, 0.0f);
         d = *pPos - pBin->m_vCenter;
         float f = VectorMagnitude(&d) - pBin->m_fRadius;

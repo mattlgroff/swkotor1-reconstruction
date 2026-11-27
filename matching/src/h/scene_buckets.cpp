@@ -203,7 +203,7 @@ public:
     void RenderGrassPolys(unsigned int material, Vector* eye, void* wind); // 0x004A6D30
 };
 
-class RenderCamera {
+class Camera {
 public:
     char pad_0x0[0x7c];
     Vector m_vPosition;                         // +0x7c
@@ -363,6 +363,7 @@ public:
 class Scene;
 class Gob;
 class Light;
+class CAurTexture;
 
 class WindManager {
 public:
@@ -472,7 +473,7 @@ public:
     int m_bFrameBufferEffects;                  // +0xd4, descriptive
     char pad_0xd8[0xc];
     void* m_pFilmNoiseTexture;                  // +0xe4
-    void* m_pDistortionTexture;                 // +0xe8
+    CAurTexture* m_pDistortionTexture;               // +0xe8
     char pad_0xec[0xc];
     SceneView m_View;                           // +0xf8, descriptive
     char pad_0xfc[0x270 - 0xfc];
@@ -495,7 +496,7 @@ typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int texture);
 
 extern PFNCLIENTACTIVETEXTURE glClientActiveTextureARB; // 0x007BB6B0
 extern CExoArrayList<TriangleBin*> g_l80AA68;   // 0x0080AA68 triangle bins
-extern RenderCamera* g_pRenderCamera;
+extern Camera* g_pRenderCamera;
 // File-scope in the original scene unit: MSVC knows no pointer aliases
 // them, so it delays the high-dword stores past member loads.
 static __int64 g_nAnimStartTime;               // 0x007B9298
@@ -507,7 +508,7 @@ typedef void (__stdcall* PFNPROGRAMPARAMETER)(unsigned int target, unsigned int 
                                               float x, float y, float z, float w);
 extern PFNPROGRAMPARAMETER g_pfnProgramEnvParameter4fARB;  // 0x007BB850
 extern PFNPROGRAMPARAMETER g_pfnProgramParameter4fNV;      // 0x007BB7AC
-extern void* g_pDistortionTexture;              // 0x007A68D8
+extern CAurTexture* g_pDistortionTexture;              // 0x007A68D8
 extern CExoArrayList<Gob*> g_l7FBFCC;           // 0x007FBFCC gob bucket
 
 CExoArrayList<int>* AurTextureGetOrdering();     // 0x00421970

@@ -154,7 +154,7 @@ public:
     CAurTexture* m_pTexture;        // +0xa4
 };
 
-class RenderCamera {
+class Camera {
 public:
     char m_pad00[0x7c];
     Vector m_vPosition;             // +0x7c
@@ -189,7 +189,7 @@ extern PFNPROGRAMPARAMETER g_pfnProgramEnvParameter4fARB;  // 0x007BB850
 extern PFNPROGRAMPARAMETER g_pfnProgramParameter4fNV;      // 0x007BB7AC
 
 extern Scene* g_pScene;                         // 0x007B92A0
-extern RenderCamera* g_pRenderCamera;           // 0x007BB4E8
+extern Camera* g_pRenderCamera;           // 0x007BB4E8
 #include "shared/globals.h"
 
 static inline void SetVertexProgramParameter(unsigned int nIndex, float x, float y, float z, float w)

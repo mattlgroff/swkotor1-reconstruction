@@ -278,12 +278,12 @@ public:
 #include "shared/globals.h"
 void AurEnableHeadLight();                              // 0x0044DA60
 float* AurMakeColor(const Vector& vColor, const float& fAlpha);     // 0x004AAAB0
-class RenderCamera {
+class Camera {
 public:
     char pad_0x0[0x7c];
     Vector m_vPosition;                                 // +0x7c
 };
-extern RenderCamera* g_pRenderCamera;                   // 0x007BB4E8
+extern Camera* g_pRenderCamera;                   // 0x007BB4E8
 void AurDisableHeadLight();                             // 0x0044DA80
 
 int __cdecl LightCompare(const void* a, const void* b); // 0x004A28C0 (placeholder name)

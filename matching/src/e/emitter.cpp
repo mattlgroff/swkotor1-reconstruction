@@ -91,12 +91,18 @@ Vector Normalize(const Vector& v);                  // 0x004AB180
 Vector CrossProduct(const Vector& a, const Vector& b);   // 0x004AB210
 Quaternion operator*(const Quaternion& a, const Quaternion& b);     // 0x004A9AC0
 
-class RenderCamera {
+class Camera {
 public:
-    char pad_0x0[0x7c];
+    char pad_0x0[0x30];
+    float m_fFadeStart;                             // +0x30
+    char pad_0x34[0x1c];
+    float m_fFade;                                  // +0x50
+    char pad_0x54[0x28];
     Vector m_vPosition;                             // +0x7c
+    char pad_0x88[0xc];
+    float m_fAlpha;                                 // +0x94
 };
-extern RenderCamera* g_pRenderCamera;               // 0x007BB4E8
+extern Camera* g_pRenderCamera;                     // 0x007BB4E8
 int BoxIntersect(Vector* pStart, Vector* pEnd, Vector* pMin, Vector* pMax);    // 0x004AA610
 int PolyHit(Vector* pVerts, int nVerts, Vector* pStart, Vector* pEnd,
             Vector* pHit, Vector* pNormal);         // 0x004AB9D0
@@ -127,15 +133,6 @@ public:
     char pad_0x174[0x1cc - 0x174];
 };
 
-class Camera {
-public:
-    char pad_0x0[0x30];
-    float m_fFadeStart;                             // +0x30
-    char pad_0x34[0x1c];
-    float m_fFade;                                  // +0x50
-    char pad_0x54[0x40];
-    float m_fAlpha;                                 // +0x94
-};
 
 // Safe pointer: registers its slot in the target's watcher list.
 template <class T>

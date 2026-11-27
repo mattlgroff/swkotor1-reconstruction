@@ -515,12 +515,13 @@ public:
     void SetLooping(int b);                         // 0x005D59D0
 };
 
-class CExoSoundInternal {
+class CExoSound {
 public:
-    void PlaySoundAt(const CResRef& r, Vector v, int a, int b, int c, int d, int e, int f);  // 0x005D5E10
+    int Play3DOneShotSound(const CResRef&, Vector, float, unsigned char, unsigned long, unsigned char,
+                           float, float);   // 0x005D5E10
 };
 
-extern CExoSoundInternal* g_pExoSound;              // 0x007A39EC
+extern CExoSound* g_pExoSound;              // 0x007A39EC
 
 
 // FUNCTION: SWKOTOR 0x0060B8A0
@@ -912,7 +913,7 @@ void CSWCCreature::DoFootstepAudio(unsigned char bSkip)
         sName = g_sFootstepPrefix;
         sName = sName + CExoString(rand() % 3 + 1);
         CResRef cResRef(sName);
-        g_pExoSound->PlaySoundAt(cResRef, m_vPosition, 0, 0x13, 0, 0, 0, 0);
+        g_pExoSound->Play3DOneShotSound(cResRef, m_vPosition, 0, 0x13, 0, 0, 0, 0);
     }
 }
 
