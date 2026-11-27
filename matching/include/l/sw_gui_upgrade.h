@@ -34,10 +34,7 @@ public:
 #include "shared/globals.h"
 
 class CSWBaseItem;
-class CSWBaseItemArrayL {
-public:
-    CSWBaseItem* GetBaseItem(int nBaseItem);        // 0x005B31A0
-};
+#include "shared/sw_base_item_array_l.h"
 
 // Per upgrade type (1-4) and slot: the empty-slot icon and slot name.
 struct CSWUpgradeSlotInfo {
