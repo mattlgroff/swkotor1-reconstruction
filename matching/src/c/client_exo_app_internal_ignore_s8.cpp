@@ -121,12 +121,7 @@ public:
     virtual CGob* FindPart(unsigned long nPart, int bRecurse);  // 0x98
 };
 
-class CSWItemBase {
-public:
-    virtual void v00();
-    char pad_0x4[0x8];
-    unsigned long m_nBaseItem;                      // 0x0c
-};
+#include "shared/sw_item_base.h"
 
 class CSWCItem : public CSWItemBase, public CItemGob {
 };
