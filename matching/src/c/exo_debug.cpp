@@ -10,21 +10,7 @@ public:
 
 #include "shared/exo_debug_internal.h"
 
-class CExoDebug {
-public:
-    CExoString m_sUnknown0;                         // 0x00
-    CExoDebugInternal* m_pcExoDebugInternal;        // 0x08
-    int m_nUnknownC;                                // 0x0c
-
-    CExoDebug();
-    ~CExoDebug();
-
-    void FlushScriptLogFile();
-    void OpenLogFiles(const CExoString& s);
-    void Warning(int nLine, char* sFile, char* sMessage);
-    void GetCurrentTimestamp(CExoString& s);
-    void WriteToScriptLogFile(const CExoString& s);
-};
+#include "shared/exo_debug.h"
 
 // FUNCTION: SWKOTOR 0x005E93E0
 void CExoDebug::FlushScriptLogFile()

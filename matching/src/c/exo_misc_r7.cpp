@@ -14,10 +14,7 @@ __declspec(dllimport) unsigned long __stdcall GetTickCount();                   
 __declspec(dllimport) int __stdcall MessageBoxA(void* hWnd, const char* sText, const char* sCaption, unsigned int nType);  // IAT 0x0073D418
 }
 
-class CExoDebug {
-public:
-    void Warning(int nLine, char* sFile, char* sMessage);   // 0x005E9400
-};
+#include "shared/exo_debug.h"
 
 class CExoBase {
 public:

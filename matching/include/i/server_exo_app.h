@@ -373,11 +373,7 @@ public:
     char m_padbc[0xdc - 0xbc];
 };
 
-class CExoDebug {
-public:
-    void OpenLogFiles(const CExoString& sName);     // 0x005E93F0
-    void GetCurrentTimestamp(CExoString& s);        // 0x005E9410
-};
+#include "shared/exo_debug.h"
 
 class CExoTimers {
 public:

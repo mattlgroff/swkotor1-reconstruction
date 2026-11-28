@@ -8,14 +8,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-class CExoDebug {
-public:
-    void GetCurrentTimestamp(CExoString& sTimestamp);       // 0x005E9410
-    void WriteToScriptLogFile(CExoString& sText);           // 0x005E9420
-    void FlushScriptLogFile();                              // 0x005E93E0
-
-    CExoString m_sScriptLog;                                // 0x00 (name guessed)
-};
+#include "shared/exo_debug.h"
 
 class CExoBase {
 public:
@@ -530,15 +523,15 @@ int CSWVirtualMachineCommands::ExecuteCommandPrintString(int nCommandId, int nPa
         if (!g_bExoDebugDisabled) {
             ExoDebugLog(sString.CStr());
         }
-        g_pExoBase->m_pcExoDebug->m_sScriptLog.Format("PRINTSTRING: %s\n", sString.CStr());
+        g_pExoBase->m_pcExoDebug->m_sUnknown0.Format("PRINTSTRING: %s\n", sString.CStr());
     } else {
         if (!g_bExoDebugDisabled) {
             ExoDebugLog(sString.CStr());
         }
-        g_pExoBase->m_pcExoDebug->m_sScriptLog.Format("%s\n", sString.CStr());
+        g_pExoBase->m_pcExoDebug->m_sUnknown0.Format("%s\n", sString.CStr());
     }
     if (!g_bExoDebugDisabled) {
-        g_pExoBase->m_pcExoDebug->WriteToScriptLogFile(g_pExoBase->m_pcExoDebug->m_sScriptLog);
+        g_pExoBase->m_pcExoDebug->WriteToScriptLogFile(g_pExoBase->m_pcExoDebug->m_sUnknown0);
         g_pExoBase->m_pcExoDebug->FlushScriptLogFile();
     }
     return 0;

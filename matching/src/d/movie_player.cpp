@@ -119,10 +119,7 @@ public:
     void* m_pcExoCriticalSectionInternal;
 };
 
-class CExoDebug {
-public:
-    void Warning(int nLine, char* sFile, char* sMessage);   // 0x005e9400
-};
+#include "shared/exo_debug.h"
 
 class CExoAliasList {
 public:

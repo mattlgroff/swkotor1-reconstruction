@@ -1,9 +1,6 @@
 // CExoLinkedListInternal position leaves (b005e5_exo_list_positions).
 
-class CExoDebug {
-public:
-    void Warning(int nLine, char* sFile, char* sMessage);   // 0x005E9400
-};
+#include "shared/exo_debug.h"
 
 class CExoBase {
 public:
