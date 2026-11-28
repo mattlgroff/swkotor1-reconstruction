@@ -386,7 +386,6 @@ public:
     virtual unsigned short GetPortraitId();                 // 0xd0
 
     unsigned long GetId() { return m_idSelf; }
-    int GetAILevel() { return m_nAILevel; }
 
     unsigned long m_idSelf;                                 // 0x4
     unsigned char m_nObjectType;                            // 0x8
@@ -441,6 +440,7 @@ public:
 
 class CSWSObject : public CGameObject {
 public:
+    int GetAILevel() { return m_nAILevel; }
     char pad_0xc[0xc];
     CExoString m_sTag;                              // 0x18
     char pad_0x20[0x30];

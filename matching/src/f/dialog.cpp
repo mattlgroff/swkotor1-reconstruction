@@ -44,13 +44,15 @@ class CSWSCreature;
 class CSWSPlaceable;
 class CSWSArea;
 
+class CSWSObject;
+
 class CGameObject {
 public:
     virtual ~CGameObject();
     virtual void v04();
     virtual void v08();
     virtual void v0c();
-    virtual CGameObject *AsSWSObject(); // +0x10
+    virtual CSWSObject *AsSWSObject(); // +0x10
     virtual void v14();
     virtual void v18();
     virtual void v1c();
@@ -66,8 +68,6 @@ public:
     virtual void v44();
     virtual CSWSPlaceable *AsSWSPlaceable(); // +0x48
 
-    CSWSArea *GetArea();
-    unsigned long GetNearestObjectByTag(const CExoString &sTag, int n);
     unsigned long m_idSelf;          // +0x4
     char pad_0x8[0x4];
     unsigned long GetID() { return m_idSelf; }
@@ -99,6 +99,8 @@ public:
 
 class CSWSObject : public CGameObject {
 public:
+    CSWSArea *GetArea();
+    unsigned long GetNearestObjectByTag(const CExoString &sTag, int n);
     char pad_0xc[0xc];
     CExoString m_sTag;                              // 0x18
     void SetDialogOwner(unsigned long oidOwner);
@@ -108,17 +110,15 @@ public:
     int m_nAILevel;                  // +0x78
 };
 
-class CSWSCreature : public CGameObject {
+class CSWSCreature : public CSWSObject {
 public:
-    char pad_0xc[0xc];
-    CExoString m_sTag;                              // 0x18
     void SetDialogState(int nState, int a, int b);
     int GetTimeSinceLastHostile(unsigned long nTime, int b);
     void SetCombatMode(int b);
     CSWSCombatRound *GetCombatRound();
     void ClearAllHostileActionsVs(CGameObject *pObject);
 
-    char pad_0x20[0xa68];
+    char pad_0x7c[0xa0c];
     int m_bPlayerControlled;         // +0xa88
 };
 
@@ -271,23 +271,23 @@ class CSWSDialog {
 public:
     unsigned long GetPlayerCharacterId();
     unsigned long GetDialogModel(int nIndex, int *pnModel);
-    int SendDialogModels(CGameObject *pObject, unsigned long nPlayer);
-    int GetSpeaker(CGameObject *pObject, const CExoString &sSpeaker);
+    int SendDialogModels(CSWSObject *pObject, unsigned long nPlayer);
+    int GetSpeaker(CSWSObject *pObject, const CExoString &sSpeaker);
     void BarkOneLine(unsigned long nEntry);
-    unsigned long GetStartEntry(CGameObject *pObject);
+    unsigned long GetStartEntry(CSWSObject *pObject);
     virtual ~CSWSDialog();
     void ClearDialogEntries();
     void ClearDialogReplies();
     void Cleanup();
     void ClearAllPlayerHostileActions();
-    void RunScript(CGameObject *pObject, const CResRef &cScript);
-    void RunEndConversationScript(CGameObject *pObject, int bOwnerOnly);
+    void RunScript(CSWSObject *pObject, const CResRef &cScript);
+    void RunEndConversationScript(CSWSObject *pObject, int bOwnerOnly);
     void LoadDialogLinkedNode(CDialogLink *pLink, CResGFF *pGFF, CResGFFStruct *pStruct,
                                      int *bSuccess, unsigned long nMax);
-    int CheckScript(CGameObject *pObject, const CResRef &cScript);
+    int CheckScript(CSWSObject *pObject, const CResRef &cScript);
     CExoString GetExoStringFromLocString(const CExoLocString &cLoc, unsigned char nGender);
     void ClearDialogOwnerInObject(unsigned long oidObject);
-    int GetStartEntryOneLiner(CGameObject *pObject, CExoLocString &sText, CResRef &cSound,
+    int GetStartEntryOneLiner(CSWSObject *pObject, CExoLocString &sText, CResRef &cSound,
                               CResRef &cScript);
     void InitializePsuedoRandomCameraAngles(CRes *pRes);
     void GiveDialogPlotXP(int nPlotIndex, float fXPPercentage);
@@ -345,7 +345,7 @@ void CSWSDialog::ClearDialogOwnerInObject(unsigned long oidObject)
 }
 
 // FUNCTION: SWKOTOR 0x0059ED70
-void CSWSDialog::RunScript(CGameObject *pObject, const CResRef &cScript)
+void CSWSDialog::RunScript(CSWSObject *pObject, const CResRef &cScript)
 {
     if (cScript == "")
         return;
@@ -355,7 +355,7 @@ void CSWSDialog::RunScript(CGameObject *pObject, const CResRef &cScript)
 }
 
 // FUNCTION: SWKOTOR 0x0059EE00
-int CSWSDialog::GetStartEntryOneLiner(CGameObject *pObject, CExoLocString &sText, CResRef &cSound,
+int CSWSDialog::GetStartEntryOneLiner(CSWSObject *pObject, CExoLocString &sText, CResRef &cSound,
                                       CResRef &cScript)
 {
     for (unsigned long i = 0; i < m_nStartingEntries; i++) {
@@ -421,7 +421,7 @@ void CSWSDialog::LoadDialogLinkedNode(CDialogLink *pLink, CResGFF *pGFF, CResGFF
 }
 
 // FUNCTION: SWKOTOR 0x0059EC90
-int CSWSDialog::CheckScript(CGameObject *pObject, const CResRef &cScript)
+int CSWSDialog::CheckScript(CSWSObject *pObject, const CResRef &cScript)
 {
     if (cScript == "")
         return 1;
@@ -482,7 +482,7 @@ void CSWSDialog::ClearAllPlayerHostileActions()
 }
 
 // FUNCTION: SWKOTOR 0x005A0A40
-void CSWSDialog::RunEndConversationScript(CGameObject *pObject, int bOwnerOnly)
+void CSWSDialog::RunEndConversationScript(CSWSObject *pObject, int bOwnerOnly)
 {
     if (m_bConversationStarted && !m_bEndScriptRun) {
         m_bEndScriptRun = 1;
@@ -491,7 +491,7 @@ void CSWSDialog::RunEndConversationScript(CGameObject *pObject, int bOwnerOnly)
         CGameObject *pFound;
         pArray->GetGameObject(m_oidOwner, &pFound);
         if (pFound) {
-            CGameObject *pOwner = pFound->AsSWSObject();
+            CSWSObject *pOwner = pFound->AsSWSObject();
             if (pOwner) {
                 CSWSArea *pArea = pOwner->GetArea();
                 if (!bOwnerOnly) {
@@ -526,7 +526,7 @@ unsigned long CSWSDialog::GetDialogModel(int nIndex, int *pnModel)
     if (nIndex >= 0 && nIndex < (int)m_nSpeakers) {
         CGameObject *pObject = g_pAppManager->GetServerExoApp()->GetGameObject(m_oidOwner);
         if (pObject && pObject->AsSWSObject()) {
-            CGameObject *pOwner = pObject->AsSWSObject();
+            CSWSObject *pOwner = pObject->AsSWSObject();
             CClientExoApp *pClient = g_pAppManager->m_pClientExoApp;
             unsigned long oid;
             if (m_pSpeakers[nIndex].m_sTag == "PLAYER") {
@@ -545,7 +545,7 @@ unsigned long CSWSDialog::GetDialogModel(int nIndex, int *pnModel)
 }
 
 // FUNCTION: SWKOTOR 0x005A0080
-int CSWSDialog::SendDialogModels(CGameObject *pObject, unsigned long nPlayer)
+int CSWSDialog::SendDialogModels(CSWSObject *pObject, unsigned long nPlayer)
 {
     CClientExoApp *pClient = g_pAppManager->m_pClientExoApp;
     CResRef *pModels = new CResRef[m_nSpeakers];
@@ -569,7 +569,7 @@ int CSWSDialog::SendDialogModels(CGameObject *pObject, unsigned long nPlayer)
 }
 
 // FUNCTION: SWKOTOR 0x005A3640
-unsigned long CSWSDialog::GetStartEntry(CGameObject *pObject)
+unsigned long CSWSDialog::GetStartEntry(CSWSObject *pObject)
 {
     for (unsigned long i = 0; i < m_nStartingEntries; i++) {
         if ((!(m_pEntries[m_pStartingEntries[i].m_nIndex].m_sSpeaker != "") ||
