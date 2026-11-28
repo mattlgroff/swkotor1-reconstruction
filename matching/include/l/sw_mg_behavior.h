@@ -56,14 +56,7 @@ public:
     GobRef& operator=(CAurObject* p);               // 0x00447FA0
 };
 
-class CSWMGTargettingInfo {
-public:
-    CSWMGTargettingInfo();                          // 0x00673A30
-    float m_fHorizSpread;                           // 0x00
-    float m_fVertSpread;                            // 0x04
-    float m_fSensingRadius;                         // 0x08
-    float m_fInaccuracy;                            // 0x0c
-};
+#include "shared/swmg_targetting_info.h"
 
 
 #include "shared/vector_ops.h"

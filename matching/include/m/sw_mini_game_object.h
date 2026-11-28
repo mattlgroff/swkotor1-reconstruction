@@ -685,16 +685,7 @@ public:
 };
 
 // The four targetting limits read by CSWMiniEnemy::LoadGunBank.
-class CSWMGTargettingInfo {
-public:
-    // Defined in m/sw_mg_gun_bank.cpp, whose constructors inline it.
-    CSWMGTargettingInfo();
-
-    float m_fHorizSpread;                           // 0x00
-    float m_fSensingRadius;                         // 0x04
-    float m_fVertSpread;                            // 0x08
-    float m_fInaccuracy;                            // 0x0c
-};
+#include "shared/swmg_targetting_info.h"
 
 // What CAurObject slot 0x108 (GetUserData) returns for a gun: its emitter
 // behaviour (type 0xAAAD plain, 0xAAAA targetting).
