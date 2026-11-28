@@ -3,12 +3,7 @@
 
 #include "shared/exo_string.h"
 
-struct ExoLocString_st {
-    int m_nLanguage;                                // 0x00
-    CExoString m_sString;                           // 0x04
-
-    ~ExoLocString_st();                             // 0x0059EA20
-};
+#include "shared/exo_loc_string_st.h"
 
 class CExoLinkedListInternal {
 public:

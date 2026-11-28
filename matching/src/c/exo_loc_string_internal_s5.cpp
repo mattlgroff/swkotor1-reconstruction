@@ -2,10 +2,7 @@
 
 #include "shared/exo_string.h"
 
-struct ExoLocString_st {
-    int m_nLanguage;                                // 0x00
-    CExoString m_sString;                           // 0x04
-};
+#include "shared/exo_loc_string_st.h"
 
 struct CExoLinkedListNode {
     CExoLinkedListNode* pPrev;                      // 0x00
