@@ -10,10 +10,7 @@ public:
 
 #include "shared/swc_item_property.h"
 
-struct CSWBaseItemData {
-    char pad_0x0[0xac];
-    unsigned char m_nEquipType;                     // 0xac (descriptive)
-};
+#include "shared/sw_base_item_data.h"
 
 class CSWCItem {
 public:
@@ -69,7 +66,7 @@ int CSWCMessage::HandleServerToPlayerActiveItemProperties(unsigned long nId)
 {
     CExoString sName;
     CSWCItem* pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(nId);
-    if (pItem && pItem->GetBaseItem()->m_nEquipType >= 0x1f && pItem->GetBaseItem()->m_nEquipType <= 0x26) {
+    if (pItem && pItem->GetBaseItem()->m_nCategory >= 0x1f && pItem->GetBaseItem()->m_nCategory <= 0x26) {
         short nCharges = ReadWORD(16);
         if (MessageReadOverflow(1)) {
             return 0;

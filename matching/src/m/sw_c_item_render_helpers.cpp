@@ -30,9 +30,7 @@ class CAurObject { public: virtual ~CAurObject();
 CAurObject* NewCAurObject(const char*,const char*,int,int);
 class CAurAnimationBase { public: char pad_000[0xdc]; unsigned long m_nItemFlags; };
 class CSWCCreature { public: unsigned long GetEquippedItemID(unsigned long); CAurAnimationBase* GetAnimationBase(); };
-struct CSWBaseItemData { char pad_000[0x78]; unsigned char m_nDropSound;
- char pad_079[0xac-0x79]; unsigned char m_nItemClass;
-};
+#include "shared/sw_base_item_data.h"
 class CSWBaseItem : public CSWBaseItemData {};
 class CSWBaseItemArray { public: CSWBaseItem* GetBaseItem(int); };
 class CSWRules { public: char pad_000[0x34]; CSWBaseItemArray* m_pBaseItemArray;
@@ -107,7 +105,7 @@ class CSWCItem : public CSWCObject,public CSWItem { public:
 int CSWCItem::PlayDropSound()
 {
  CResRef sound;
- if (GetBaseItem()->m_nItemClass>=0x1f && GetBaseItem()->m_nItemClass<=0x26) {
+ if (GetBaseItem()->m_nCategory>=0x1f && GetBaseItem()->m_nCategory<=0x26) {
   switch(m_nArmorType) {
   case 3: sound="it_materialcloth"; break;
   case 0: sound="it_armorleather"; break;
@@ -161,7 +159,7 @@ void CSWCItem::SetEquippedModelFlags(int enabled)
   if (GetModelOverride()) flags=(unsigned char)owner->GetAnimationBase()->m_nItemFlags & ~flags;
   else flags &= 0xfc;
  }
- if (GetBaseItem()->m_nItemClass!=0x27 && GetBaseItem()->m_nItemClass!=0x28 && GetBaseItem()->m_nItemClass!=0x29) flags|=4;
+ if (GetBaseItem()->m_nCategory!=0x27 && GetBaseItem()->m_nCategory!=0x28 && GetBaseItem()->m_nCategory!=0x29) flags|=4;
  else flags&=0xfb;
  owner->GetAnimationBase()->m_nItemFlags=flags;
 }

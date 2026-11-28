@@ -60,10 +60,7 @@ public:
     virtual CAurObject* GetPartModel(unsigned char nPart, int bCreate);  // 0x98
 };
 
-struct CSWBaseItemData {
-    char pad_0x0[0xac];
-    unsigned char m_nWeaponWield;                   // 0xac (0x1d: lightsaber)
-};
+#include "shared/sw_base_item_data.h"
 
 class CSWCItem : public CSWCItemObjectBase, public CSWCItemModelIf {
 public:

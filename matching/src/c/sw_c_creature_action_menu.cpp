@@ -70,11 +70,7 @@ public:
     int GetString(unsigned long nLanguage, CExoString* pString, unsigned char nGender) const;  // 0x005EA130
 };
 
-class CSWBaseItemData {
-public:
-    char pad_0x0[0xac];
-    unsigned char m_nCategory;                      // 0xac (6: usable on hostiles)
-};
+#include "shared/sw_base_item_data.h"
 
 struct CSWItemProperty {
     char pad_0x0[0x2];

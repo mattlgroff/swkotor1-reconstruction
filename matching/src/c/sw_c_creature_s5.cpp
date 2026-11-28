@@ -21,10 +21,7 @@ public:
 
 extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
-struct CSWBaseItemData {
-    char pad_0x0[0x8c];
-    unsigned char m_nWeaponSoundRow;                // 0x8c (descriptive)
-};
+#include "shared/sw_base_item_data.h"
 
 class CSWSItem {
 public:

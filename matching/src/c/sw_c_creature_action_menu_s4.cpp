@@ -4,10 +4,7 @@
 // which already names them).
 
 struct CSWFeat;
-struct CSWBaseItemData {
-    char pad_0x0[0xac];
-    unsigned char m_nItemClass;                     // 0xac
-};
+#include "shared/sw_base_item_data.h"
 
 class CSWRules {
 public:
@@ -80,7 +77,7 @@ void CSWCCreature::ActionMenuFeat(unsigned long nFeat, CSWCCreature* pCreature)
 void CSWCCreature::ActionMenuUseItem(unsigned long oidItem, CSWCCreature* pCreature)
 {
     CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem);
-    if (pItem && pItem->GetBaseItem()->m_nItemClass == 6) {
+    if (pItem && pItem->GetBaseItem()->m_nCategory == 6) {
         if (g_pAppManager->GetClientExoApp()->ShowTutorialWindow(1, GetId(), pCreature->GetId(), oidItem)) {
             return;
         }
