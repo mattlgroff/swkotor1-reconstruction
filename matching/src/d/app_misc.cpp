@@ -178,15 +178,7 @@ void _glBlendFunc(int nSrc, int nDst)
 extern "C" __declspec(dllimport) unsigned long __stdcall GetTickCount();
 extern "C" __declspec(dllimport) int __stdcall SetWindowTextA(void* hWnd, const char* lpString);
 
-struct tagMSG {
-    void* hwnd;
-    unsigned int message;
-    unsigned int wParam;
-    long lParam;
-    unsigned long time;
-    long pt_x;
-    long pt_y;
-};
+#include "shared/tag_msg.h"
 
 extern "C" __declspec(dllimport) int __stdcall PeekMessageA(tagMSG* lpMsg, void* hWnd, unsigned int wMsgFilterMin,
                                                             unsigned int wMsgFilterMax, unsigned int wRemoveMsg);

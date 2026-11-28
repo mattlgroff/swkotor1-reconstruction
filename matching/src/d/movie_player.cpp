@@ -52,15 +52,7 @@ extern "C" __declspec(dllimport) int __stdcall BinkBufferUnlock(BINKBUFFER* hBuf
 extern "C" __declspec(dllimport) void __stdcall BinkBufferBlit(BINKBUFFER* hBuffer, void* pRects, unsigned long nRects);
 extern "C" __declspec(dllimport) int __stdcall BinkBufferSetOffset(BINKBUFFER* hBuffer, int nX, int nY);
 
-struct tagMSG {
-    void* hwnd;
-    unsigned int message;
-    unsigned int wParam;
-    long lParam;
-    unsigned long time;
-    long pt_x;
-    long pt_y;
-};
+#include "shared/tag_msg.h"
 
 #include "shared/tag_rect.h"
 

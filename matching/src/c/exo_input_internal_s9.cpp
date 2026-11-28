@@ -2,12 +2,7 @@
 
 #include "c/exo_input.h"
 
-struct tagMSG {
-    void* hwnd;                                     // 0x00
-    unsigned int message;                           // 0x04
-    unsigned int wParam;                            // 0x08
-    long lParam;                                    // 0x0c
-};
+#include "shared/tag_msg.h"
 
 #define LOWORD(l) ((unsigned short)((unsigned long)(l) & 0xffff))
 #define HIWORD(l) ((unsigned short)((unsigned long)(l) >> 16))
