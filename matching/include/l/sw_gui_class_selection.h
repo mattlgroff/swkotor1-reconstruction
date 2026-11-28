@@ -103,10 +103,7 @@ public:
 };
 
 
-class CExoInput {
-public:
-    void CoolDownEvent(unsigned long nEvent, unsigned long nMilliseconds);  // 0x005DF4B0
-};
+#include "shared/exo_input.h"
 
 
 class CTlkTable {

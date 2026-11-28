@@ -152,12 +152,7 @@ public:
     unsigned long m_nKey;                           // 0x1c
 };
 
-class CExoInput {
-public:
-    void StartTextInput();                          // 0x005df520
-    void StopTextInput();                           // 0x005df530
-    CExoInputEvent* GetEvent(unsigned long nId, int nClass); // 0x005df4c0
-};
+#include "shared/exo_input.h"
 
 
 class CClientExoApp {

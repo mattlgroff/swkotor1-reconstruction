@@ -7,10 +7,7 @@
 #include "shared/globals.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
-class CExoInput {
-public:
-    void UnpauseRumble();                                           // 0x005DF580
-};
+#include "shared/exo_input.h"
 
 
 // FUNCTION: SWKOTOR 0x004B51A0

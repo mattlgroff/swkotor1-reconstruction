@@ -1,5 +1,5 @@
 // Controller pause, tutorial gating and fade visibility share the GUI state.
-class CExoInput { public: int GetMainDeviceLost(); int GetActive(); void SetActive(int); };
+#include "shared/exo_input.h"
 #include "shared/globals.h"
 class CWorldTimer { public: void GetWorldTime(unsigned long*,unsigned long*); };
 class CClientOptions { public: char pad_0x0[0x14]; unsigned long m_nFlags; };

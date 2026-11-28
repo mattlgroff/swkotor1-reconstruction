@@ -33,13 +33,7 @@ public:
 
 #include "shared/app_manager.h"
 
-class CExoInput {
-public:
-    void ClearEvents();                             // 0x005df4e0
-    void KeyboardModeOn();                          // 0x005df520
-    void KeyboardModeOff();                         // 0x005df530
-    int GetKeyboardMode();                          // 0x005ed700 (folded getter)
-};
+#include "shared/exo_input.h"
 
 class CSWGuiManager {
 public:

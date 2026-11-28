@@ -2,7 +2,7 @@
 // +0x18 module, +0x40 in-game GUI, +0x9C input class, +0x28C pending player
 // id, +0x2A0 player control.
 #include "shared/vector.h"
-class CExoInput { public: void ClearEvents(); /* 0x005DF4E0 */ };
+#include "shared/exo_input.h"
 #include "shared/globals.h"
 class CGameObject { public: virtual ~CGameObject(); unsigned long m_idSelf; };
 class CSWSCreature : public CGameObject {};

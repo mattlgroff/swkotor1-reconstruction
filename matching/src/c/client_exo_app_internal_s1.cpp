@@ -7,15 +7,7 @@
 
 #include "shared/vector.h"
 
-class CExoInput {
-public:
-    void UpdateJoysticks();                         // 0x005ED310 (shared empty body)
-    void SetActive(int b);                          // 0x005DF540
-    void PauseRumble();                             // 0x005DF570
-    int GetActive();                                // 0x005DF510
-    void ClearEvents();                             // 0x005DF4E0
-    int SetRumble(int nMotor, float fLeft, float fRight, unsigned long nDuration);   // 0x005DF550
-};
+#include "shared/exo_input.h"
 
 class CSWSCreature {
 public:

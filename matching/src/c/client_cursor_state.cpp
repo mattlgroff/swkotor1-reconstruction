@@ -1,10 +1,4 @@
-class CExoInput {
-public:
-    int SetMouseCursor(int nCursor, int nOption, int bAlternate);
-    void HideMouse();
-    void ShowMouse();
-    void RefreshMouseCursor(int b);                 // 0x005DF5B0
-};
+#include "shared/exo_input.h"
 
 #include "shared/globals.h"
 

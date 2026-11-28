@@ -76,12 +76,7 @@ public:
     unsigned long m_nAltKey;                        // 0x30
 };
 
-class CExoInput {
-public:
-    CExoInputEvent* GetEvent(unsigned long nId, int nClass);    // 0x005DF4C0
-    int GetLastCapturedKeyboardKey();               // 0x005DF630
-    void SetCaptureKeyboardKeys(int bCapture);      // 0x005DF720
-};
+#include "shared/exo_input.h"
 
 #include "shared/globals.h"
 

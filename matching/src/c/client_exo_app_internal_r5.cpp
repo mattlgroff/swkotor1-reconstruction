@@ -217,14 +217,7 @@ public:
     void HideMouse();                               // 0x0040A230
 };
 
-class CExoInput {
-public:
-    void SetMouseMode(unsigned char nMode);         // 0x005DF5A0
-    CExoString GetDisplayCharacterForKey(int nKey); // 0x005DF640
-    void SetActive(int b);                          // 0x005DF540
-    void RefreshMouseCursor(int b);                 // 0x005DF5B0
-
-};
+#include "shared/exo_input.h"
 
 class CSWGuiRefreshable {
 public:

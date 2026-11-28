@@ -368,10 +368,7 @@ public:
     void SetMousePosition(int x, int y);            // 0x005f4ea0
 };
 
-class CExoInput {
-public:
-    void SetMousePosition(int x, int y);            // 0x005df5d0
-};
+#include "shared/exo_input.h"
 
 class CClientExoApp {
 public:

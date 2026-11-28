@@ -411,10 +411,7 @@ int CSWVirtualMachineCommands::ExecuteCommandQueueMovie(int nCommandId, int nPar
     return 0;
 }
 
-class CExoInput {
-public:
-    void ClearEvents();                                     // 0x005DF4E0
-};
+#include "shared/exo_input.h"
 
 class CExoSound {
 public:

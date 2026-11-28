@@ -38,10 +38,7 @@ struct CFrameInfoLine {
 
 #include "shared/globals.h"
 
-class CExoInput {
-public:
-    void StopTextInput();               // 0x005df530
-};
+#include "shared/exo_input.h"
 
 
 char* __cdecl ConsoleComplete(char* sLine, CExoArrayList<char*>* pMatches); // 0x0044c040

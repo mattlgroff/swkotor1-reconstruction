@@ -16,10 +16,7 @@ public:
     void SendServerToPlayerModule_StartStartNewModule();                           // 0x0056CBF0
 };
 
-class CExoInput {
-public:
-    void ClearEvents();                             // 0x005DF4E0
-};
+#include "shared/exo_input.h"
 #include "shared/globals.h"
 
 class CClientExoApp {

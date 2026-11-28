@@ -58,13 +58,7 @@ public:
     void StopLipSync();                             // 0x0060F540
 };
 
-class CExoInput {
-public:
-    void PauseRumble();                             // 0x005DF570
-    void UnpauseRumble();                           // 0x005DF580
-    void SetActive(int b);                          // 0x005DF540
-    void ClearEvents();                             // 0x005DF4E0
-};
+#include "shared/exo_input.h"
 
 class CSWSCreature {
 public:

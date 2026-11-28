@@ -203,10 +203,7 @@ public:
     ~CSWGuiManager();                               // 0x0040AAA0
 };
 
-class CExoInput {
-public:
-    virtual ~CExoInput();
-};
+#include "shared/exo_input.h"
 
 class CExoSound {
 public:

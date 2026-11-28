@@ -277,10 +277,7 @@ public:
 };
 
 
-class CExoInput {
-public:
-    void CoolDownEvent(unsigned long nEvent, unsigned long nTime);  // 0x005DF4B0
-};
+#include "shared/exo_input.h"
 
 
 class CExoStreamingSoundSource {
