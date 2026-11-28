@@ -136,7 +136,26 @@ both resolutions lose matches is a unit-boundary case.
    (`v00`, `v04`).
 4. **The large game classes**: `CSWCCreature` (89 copies), `CGuiInGame`
    (76), `CClientExoApp` (parked: `wip_CClientExoApp.patch`), `CSWSCreature`,
-   `CServerExoApp`.
+   `CServerExoApp`. They are where R1 blocks most: counting the byte-identical
+   functions that a single type blocks on its own, `CClientExoApp` blocks 194,
+   `CSWSCreature` 143, `CServerExoApp` 95, `CSWGuiControl` 93, `CGuiInGame`
+   85. None merges automatically, because the copies disagree on the class
+   hierarchy, not only on members:
+
+   | type | copies | bases the copies give |
+   | --- | --- | --- |
+   | `CGameObject` | 107 | none; 41 copies are 12 bytes (vtable, `m_idSelf` +0x04, `m_nObjectType` +0x08), six are views up to 244 bytes that carry `CSWSObject`'s members (`m_oidArea` +0x8C, `m_vPosition` +0x90) |
+   | `CSWSObject` | 65 | `CGameObject` (40), none (25) |
+   | `CSWSCreature` | 103 | none (72), `CSWSObject` (21), `CGameObject` (10) |
+   | `CSWCCreature` | 93 | none (58), `CSWCObject` (32), `CGameObject` (2), `CClientObject` (1) |
+   | `CSWSArea` | 53 | five different lists, some with several bases (`CResHelperArea`, `CSWSAreaGameObject`, `CSWArea`, `CGameObject`) |
+
+   So each family needs its real bases settled from evidence (vtables,
+   constructors, the Mac tables) and merged from the root down:
+   `CGameObject`, then `CSWSObject` and `CSWCObject`, then their subclasses.
+   The flattened copies keep their layout when the intermediate class is put
+   back (`class CSWSCreature : public CSWSObject` with `CSWSObject`'s members
+   moved there), so the bytes and the mangled names stay the same.
 
 Smaller cases that need evidence rather than a script:
 
