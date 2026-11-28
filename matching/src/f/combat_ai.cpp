@@ -89,11 +89,7 @@ extern "C" double __cdecl log10(double x);
 float Magnitude(const Vector &v);                           // 0x004AB100 (cdecl)
 Vector NormalizeVector(const Vector &v);                    // 0x004AB180 (cdecl)
 
-class CSWSCreatureListEntry {
-public:
-    unsigned long m_oid;                // 0x0
-    unsigned char m_nFlags;             // 0x4
-};
+#include "shared/sws_creature_list_entry.h"
 
 #include "shared/exo_string.h"
 

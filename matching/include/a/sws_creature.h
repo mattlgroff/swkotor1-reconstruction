@@ -991,26 +991,7 @@ public:
     unsigned long m_n34;                            // 0x34 (placeholder name)
 };
 
-struct CSWSCreatureListEntry {
-    CSWSCreatureListEntry()
-    {
-        m_oid = 0x7f000000;
-        m_b0 = 0;
-        m_b1 = 0;
-        m_n2 = 0;
-        m_b4 = 0;
-    }
-    unsigned long m_oid;                            // 0x00
-    union {
-        unsigned long m_nFlags;                     // 0x04
-        struct {
-            unsigned char m_b0 : 1;                 // placeholder names
-            unsigned char m_b1 : 1;
-            unsigned char m_n2 : 2;
-            unsigned char m_b4 : 1;
-        };
-    };
-};
+#include "shared/sws_creature_list_entry.h"
 
 struct CSWSCreature93C {
     unsigned long m_n0;

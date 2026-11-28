@@ -81,10 +81,7 @@ public:
     int m_bUnescapable;                             // 0x2ac
 };
 
-struct CSWSCreatureListEntry {
-    char pad_0x0[0x4];
-    unsigned char m_nFlags;                         // 0x04 (bit 0: seen)
-};
+#include "shared/sws_creature_list_entry.h"
 
 class CSWSCreature {
 public:
