@@ -21,12 +21,7 @@ inline float MagnitudeSquared(const Vector &v)
 
 #include "shared/globals.h"
 
-class CSWFollowPath {
-public:
-    Vector *GetFollowPoint(int n);              // 0x00634CC0
-    char pad_0x0[0xfa4];
-    int m_nCurrent;                             // 0xfa4
-};
+#include "shared/sw_follow_path.h"
 
 #include "shared/follow_node.h"
 
