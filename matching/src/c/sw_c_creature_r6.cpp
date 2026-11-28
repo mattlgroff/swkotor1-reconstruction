@@ -193,11 +193,7 @@ public:
     unsigned char GetGameObject(unsigned long id, CGameObject** ppObject);  // 0x004D8230
 };
 
-class CSWCModuleX {
-public:
-    char pad_0x0[0x48];
-    void* m_p48;                                    // 0x48
-};
+#include "shared/swc_module_x.h"
 
 struct CClientOptionsX {
     char pad_0x0[0x6c];
@@ -823,7 +819,7 @@ void CSWCCreature::UpdateShadowBlob()
         oidSelf = m_idSelf;
         if (oidSelf == g_pAppManager->m_pClientExoApp->GetPlayerCreatureId()) {
             RemoveShadow();
-            if (g_pAppManager->m_pClientExoApp->GetModule() && g_pAppManager->m_pClientExoApp->GetModule()->m_p48) {
+            if (g_pAppManager->m_pClientExoApp->GetModule() && g_pAppManager->m_pClientExoApp->GetModule()->m_pArea) {
                 g_pAppManager->m_pClientExoApp->GetModule();
             }
         } else {

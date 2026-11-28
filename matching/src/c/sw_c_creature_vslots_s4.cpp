@@ -38,11 +38,7 @@ public:
 
 #include "shared/swc_area_x.h"
 
-class CSWCModuleX {
-public:
-    char pad_0x0[0x48];
-    CSWCAreaX* m_pArea;                             // 0x48
-};
+#include "shared/swc_module_x.h"
 
 class CClientExoApp {
 public:
