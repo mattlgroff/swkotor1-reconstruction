@@ -126,17 +126,7 @@ public:
     Gob* m_pGob;                                    // 0x10
 };
 
-class CSWMiniHitInfo {
-public:
-    CSWMiniHitInfo();                               // 0x00673A10
-    int m_nDamage;                                  // 0x00
-    float m_fSpeed;                                 // 0x04
-    float m_fRateOfFire;                            // 0x08
-    float m_fLifespan;                              // 0x0c
-    int m_nTargetMask;                              // 0x10
-    int m_n14;                                      // 0x14
-    CResRef m_cSound;                               // 0x18
-};
+#include "shared/sw_mini_hit_info.h"
 
 class CSWTrackFollower;
 
