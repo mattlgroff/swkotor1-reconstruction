@@ -109,15 +109,7 @@ public:
     T& operator[](int i) { return element[i]; }
 };
 
-class CExoCriticalSection {
-public:
-    CExoCriticalSection();          // 0x005e9290
-    ~CExoCriticalSection();
-    void EnterCriticalSection();    // 0x005e9300
-    void LeaveCriticalSection();    // 0x005e9310
-
-    void* m_pcExoCriticalSectionInternal;
-};
+#include "shared/exo_critical_section.h"
 
 #include "shared/exo_debug.h"
 

@@ -216,13 +216,7 @@ unsigned long CExoTimers::GetHighResolutionTimer()
 
 #include "shared/exo_critical_section_internal.h"
 
-class CExoCriticalSection {
-public:
-    CExoCriticalSectionInternal* m_pcExoCriticalSectionInternal;   // 0x00
-
-    void EnterCriticalSection();
-    void LeaveCriticalSection();
-};
+#include "shared/exo_critical_section.h"
 
 // FUNCTION: SWKOTOR 0x005E9300
 void CExoCriticalSection::EnterCriticalSection()

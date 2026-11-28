@@ -2,13 +2,7 @@
 
 #include "shared/exo_critical_section_internal.h"
 
-class CExoCriticalSection {
-public:
-    CExoCriticalSectionInternal* m_pcExoCriticalSectionInternal;   // 0x00
-
-    CExoCriticalSection();
-    ~CExoCriticalSection();
-};
+#include "shared/exo_critical_section.h"
 
 // FUNCTION: SWKOTOR 0x005E9290
 CExoCriticalSection::CExoCriticalSection()

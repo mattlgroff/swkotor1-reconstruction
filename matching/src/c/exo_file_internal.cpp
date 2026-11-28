@@ -8,13 +8,7 @@ extern "C" __declspec(dllimport) unsigned long __stdcall ResumeThread(HANDLE hTh
 
 class CExoCriticalSectionInternal;
 
-class CExoCriticalSection {
-public:
-    CExoCriticalSectionInternal* m_pcExoCriticalSectionInternal;   // 0x00
-
-    void EnterCriticalSection();                    // 0x005E9300
-    void LeaveCriticalSection();                    // 0x005E9310
-};
+#include "shared/exo_critical_section.h"
 
 class CExoFileThread {
 public:

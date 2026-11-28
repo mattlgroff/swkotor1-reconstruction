@@ -463,14 +463,7 @@ public:
     unsigned long GetEntryCount(int bAll);                          // 0x0040d1a0
 };
 
-class CExoCriticalSection {
-public:
-    CExoCriticalSection();                          // 0x005e9290
-    ~CExoCriticalSection();                         // 0x005e9320
-    void EnterCriticalSection();                    // 0x005e9300
-    void LeaveCriticalSection();                    // 0x005e9310
-    void* m_pInternal;
-};
+#include "shared/exo_critical_section.h"
 
 class CExoResMan {
 public:

@@ -59,12 +59,7 @@ public:
     }
 };
 
-class CExoCriticalSection {
-public:
-    void* m_pcExoCriticalSectionInternal;           // 0x00
-
-    ~CExoCriticalSection();                         // 0x005E9320
-};
+#include "shared/exo_critical_section.h"
 
 class CExoInputClass {
 public:
