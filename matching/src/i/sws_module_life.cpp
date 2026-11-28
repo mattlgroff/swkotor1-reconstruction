@@ -224,7 +224,7 @@ public:
 #include "shared/globals.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
-extern const unsigned long OBJECT_INVALID;          // 0x00746644
+#include "shared/object_id.h"
 
 #include "shared/vector.h"
 

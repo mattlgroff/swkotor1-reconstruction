@@ -21,7 +21,6 @@ public:
     CExoTimers* m_pcExoTimers;                      // 0x04
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 class CExoLinkedListInternal {
 public:
@@ -238,7 +237,6 @@ public:
     int Exists(const CResRefName& cRes, unsigned short nType, int b);   // 0x00408BC0
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 class CSWParty {
 public:
     int IsPartyMember(unsigned long oid);           // 0x006349C0 (returns the NPC index)

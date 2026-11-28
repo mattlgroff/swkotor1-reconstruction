@@ -93,7 +93,7 @@ address,name,status,diff_insns,file
 0x00406990,CExoResMan::FileCopy,MATCH,0,matching/src/d/exo_res_man.cpp
 0x00406B20,CExoResMan::RemoveFile,NONMATCH,29,matching/src/d/exo_res_man.cpp
 0x00406C60,CExoResMan::CreateSignatureFile,MATCH,0,matching/src/d/exo_res_man.cpp
-0x00406C70,?CopyString@@YGPAVCExoString@@PAV1@0GPAG@Z,MATCH,0,matching/src/d/exo_string_copy.cpp
+0x00406C70,?CacheResource@CExoResMan@@QAE?AVCExoString@@ABV2@GAAH@Z,MATCH,0,matching/src/d/resman_cache_resource.cpp
 0x00406CF0,??0?$CExoLinkedList@VCExoKeyTable@@@@QAE@XZ,MATCH,0,matching/src/d/exo_linked_list.cpp
 0x00406D60,??0CResRef@@QAE@ABVCExoString@@@Z,MATCH,0,matching/src/d/res_ref.cpp
 0x00406D80,??0CResRef@@QAE@PBD@Z,MATCH,0,matching/src/d/res_ref.cpp
@@ -123,7 +123,7 @@ address,name,status,diff_insns,file
 0x00408390,CExoResMan::ServiceFromImageRaw,MATCH,0,matching/src/d/exo_res_man.cpp
 0x00408450,CExoResMan::ServiceFromResFileRaw,MATCH,0,matching/src/d/exo_res_man.cpp
 0x00408530,CExoResMan::ServiceCurrentAsyncRes,MATCH,0,matching/src/d/exo_res_man.cpp
-0x004085F0,?CacheResource@CExoResMan@@QAEPAVCExoString@@PAV2@0G@Z,MATCH,0,matching/src/d/resman_cache_resource.cpp
+0x004085F0,?CacheResource@CExoResMan@@QAE?AVCExoString@@ABV2@G@Z,MATCH,0,matching/src/d/resman_cache_resource.cpp
 0x00408620,CRes::Request,MATCH,0,matching/src/d/res.cpp
 0x00408670,CExoResMan::~CExoResMan,MATCH,0,matching/src/d/exo_res_man.cpp
 0x004087A0,CExoResMan::AddEncapsulatedResourceFile,MATCH,0,matching/src/d/exo_res_man.cpp
@@ -511,7 +511,7 @@ address,name,status,diff_insns,file
 0x004184B0,CSWGuiEditbox::SetEnabled,MATCH,0,matching/src/d/gui_control_draw.cpp
 0x004184F0,CSWGuiEditbox::HandleChar,MATCH,0,matching/src/d/gui_control_style.cpp
 0x00418660,CSWGuiEditbox::SetFocus,MATCH,0,matching/src/d/gui_control.cpp
-0x00418670,CSWGuiEditbox::IsSelectable,MATCH,0,matching/src/d/gui_control.cpp
+0x00418670,CSWGuiEditbox::IsSelectable,NONMATCH,2,matching/src/d/gui_control.cpp
 0x00418680,CSWGuiRadioButton::HandleLMouseDown,MATCH,0,matching/src/d/gui_control.cpp
 0x004186B0,CSWGuiEditbox::HandleLMouseUp,MATCH,0,matching/src/d/gui_control.cpp
 0x004186D0,CSWGuiEditbox::UpdateFont,MATCH,0,matching/src/d/gui_control.cpp
@@ -1222,7 +1222,7 @@ address,name,status,diff_insns,file
 0x0044C5C0,??0ConsoleFunc@@QAE@PADP6AX0@Z@Z,MATCH,0,matching/src/g/console_reg.cpp
 0x0044C620,??0ConsoleFunc@@QAE@PADP6AXH@Z@Z,MATCH,0,matching/src/g/console_reg.cpp
 0x0044C680,AurResGetResource,MATCH,0,matching/src/g/console_reg.cpp
-0x0044C740,AurResGet,NONMATCH,30,matching/src/g/console_reg.cpp
+0x0044C740,AurResGet,NONMATCH,27,matching/src/g/console_reg.cpp
 0x0044C870,AurResPushFile,MATCH,0,matching/src/g/console_reg.cpp
 0x0044C8F0,AurResClose,MATCH,0,matching/src/g/console_reg.cpp
 0x0044C980,AurResDoFile,MATCH,0,matching/src/pilot4/a/aurres_dofile.cpp
@@ -3558,7 +3558,7 @@ address,name,status,diff_insns,file
 0x005298A0,CSWGlobalVariableTable::SetValueString,MATCH,0,matching/src/b/global_variable_table.cpp
 0x005299B0,CSWGlobalVariableTable::WriteTable,NONMATCH,86,matching/src/b/global_variable_table.cpp
 0x00529EF0,CSWGlobalVariableTable::ReadTableWithoutCatalogue,NONMATCH,32,matching/src/b/global_variable_table.cpp
-0x0052A280,CSWGlobalVariableTable::ReadTableWithCatalogue,NONMATCH,194,matching/src/b/global_variable_table.cpp
+0x0052A280,CSWGlobalVariableTable::ReadTableWithCatalogue,NONMATCH,195,matching/src/b/global_variable_table.cpp
 0x0052ABE0,CSWGlobalVariableTable::ReadTable,MATCH,0,matching/src/b/global_variable_table.cpp
 0x0052AD10,CSWGlobalVariableTable::Save,MATCH,0,matching/src/b/global_variable_table.cpp
 0x0052ADE0,CSWGlobalVariableTable::Load,MATCH,0,matching/src/b/global_variable_table.cpp
@@ -4421,7 +4421,7 @@ address,name,status,diff_insns,file
 0x00571EC0,CSWSMessage::SendServerToPlayerQuickChatMessage,NONMATCH,24,matching/src/b/sws_message_quick_chat.cpp
 0x00572990,CSWSMessage::WriteGameObjUpdate_MinorGUIPanels,MATCH,0,matching/src/b/sws_message_object_update.cpp
 0x00576FC0,CSWSMessage::StoreValuesInLastUpdateObject,MATCH,0,matching/src/b/sws_message_object_update.cpp
-0x00577670,CSWSMessage::WriteGameObjUpdate_MajorGUIPanels,NONMATCH,65,matching/src/b/sws_message_major_gui.cpp
+0x00577670,CSWSMessage::WriteGameObjUpdate_MajorGUIPanels,NONMATCH,35,matching/src/b/sws_message_major_gui.cpp
 0x005779F0,CSWSMessage::WriteGameObjUpdate_PartyAIState,NONMATCH,31,matching/src/b/sws_message_party_ai.cpp
 0x00577B60,CSWSMessage::SendServerToPlayerJournalFullUpdate,MATCH,0,matching/src/b/sws_message_journal_full.cpp
 0x00577FA0,CSWSMessage::TestObjectUpdateDifferences,MATCH,0,matching/src/b/sws_message_object_update.cpp
@@ -7563,8 +7563,8 @@ address,name,status,diff_insns,file
 0x00673990,CSWMGTargettingGunBank::SetVertSpread,MATCH,0,matching/src/m/sw_mg_gun_bank.cpp
 0x006739C0,CSWMGTargettingGunBank::SetHorizSpread,MATCH,0,matching/src/m/sw_mg_gun_bank.cpp
 0x006739F0,CSWMGTargettingGunBank::SetInaccuracy,MATCH,0,matching/src/m/sw_mg_gun_bank.cpp
-0x00673A10,CSWMiniHitInfo::CSWMiniHitInfo,MATCH,0,matching/src/m/sw_mini_game_object.cpp
-0x00673A30,CSWMGTargettingInfo::CSWMGTargettingInfo,MATCH,0,matching/src/m/sw_mini_enemy.cpp
+0x00673A10,CSWMiniHitInfo::CSWMiniHitInfo,MATCH,0,matching/src/m/sw_mg_gun_bank.cpp
+0x00673A30,CSWMGTargettingInfo::CSWMGTargettingInfo,MATCH,0,matching/src/m/sw_mg_gun_bank.cpp
 0x00673F50,CSWMGGunBank::SetRateOfFire,MATCH,0,matching/src/m/sw_mg_gun_bank.cpp
 0x00673FD0,CSWMGGunBank::Reset,MATCH,0,matching/src/m/sw_mg_gun_bank.cpp
 0x00674020,CSWMGGunBank::RemoveGun,MATCH,0,matching/src/m/sw_mg_gun_bank.cpp

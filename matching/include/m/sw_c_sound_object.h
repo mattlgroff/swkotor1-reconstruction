@@ -53,7 +53,6 @@ public:
     CExoRand* m_pRand;                              // 0x10
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 class CWorldTimer {
 public:

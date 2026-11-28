@@ -33,11 +33,13 @@ class CAurTextureBasic;
 class CAuroraInterface;
 class CDeletable;
 class CEncounterPointsTable;
+class CExoBase;
 class CExoFileThread;
 class CExoInput;
 class CExoLinkedListInternal;
 class CExoMoviePlayerInternal;
 class CExoResMan;
+class CExoSound;
 class CExoString;
 struct CFrameInfoLine;
 class CHitInfo;
@@ -56,6 +58,7 @@ class CServerExoAppInternal;
 class CTlkTable;
 struct CToolTipGlobals;
 class CVirtualMachine;
+class Camera;
 class CapPart;
 struct CombinerCaps;
 class ConsoleFunc;
@@ -69,10 +72,12 @@ class MdlNodeTriMesh;
 class Model;
 class NvFaceInfo;
 class Part;
+class PartEmitter;
 class RequestPoolManager;
 class Scene;
 struct SceneTileSlot;
 struct ShadowEdge;
+class TriangleBin;
 class VertexProgram;
 struct VertexProgramArray;
 struct VertexProgramData;
@@ -238,12 +243,15 @@ extern const unsigned char OBJECT_TYPE_LAST_NON_GAME;  // 0x00746633 (4)
 extern const unsigned char g_nObjectTypeArea;  // 0x00746633 (placeholder name)
 extern const unsigned char g_nObjectTypeA;  // 0x00746634
 extern const unsigned char g_nObjectTypeCreature;  // 0x00746634 (placeholder name)
+extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634
 extern const unsigned char OBJECT_TYPE_ITEM;  // 0x00746635
 extern const unsigned char OBJECT_TYPE_TRIGGER;  // 0x00746636
 extern const unsigned char g_nObjectTypeTrigger;  // 0x00746636 (placeholder name)
 extern const unsigned char OBJECT_TYPE_PROJECTILE;  // 0x00746637
 extern const unsigned char g_nObjectTypeB;  // 0x00746638
+extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
 extern const unsigned char g_nObjectTypeC;  // 0x00746639  // 0x007473B8
+extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
 extern const unsigned char OBJECT_TYPE_AREAOFEFFECT;  // 0x0074663A
 extern const unsigned char OBJECT_TYPE_AREA_OF_EFFECT;  // 0x0074663A
 extern unsigned char g_nObjectTypeAreaOfEffect;  // 0x0074663A
@@ -843,6 +851,7 @@ extern short g_nHeadLight;  // 0x0078E388 (placeholder name)
 extern float g_fMaterialAlpha;  // 0x0078E390
 extern unsigned long g_nClearColor;  // 0x0078e394
 extern unsigned char g_bVBOWriteOnly;  // 0x0078e398
+extern void (*g_pfnBlurSetup)();  // 0x0078E39C
 extern int g_nGeomFadeMode;  // 0x0078e3a0
 extern int g_bShadows;  // 0x0078e3a8
 extern int g_bStencilDynamic;  // 0x0078E3A8, descriptive
@@ -1221,12 +1230,16 @@ extern CSWGuiClassChoice g_aClassChoices[6];  // 0x007A2684 (descriptive)
 extern int g_nPazaakCardValues[28];  // 0x007A26B8
 extern int g_nMaxTextureMemory;  // 0x007A399C
 extern int g_bQuitRequested;  // 0x007a39b8
+extern void* g_hInstance;                       // 0x007A39C0
 extern void* g_hWindow;  // 0x007a39d4
 extern void* g_hMainWindow;  // 0x007a39d8
 extern void* g_hRenderWindow;  // 0x007a39d8
+extern void* g_hWnd;                                // 0x007A39D8
 extern unsigned char g_nAppMode;  // 0x007A39DC (1: client)
+extern CExoBase* g_pExoBase;                        // 0x007A39E0
 extern CExoInput* g_pExoInput;  // 0x007a39e4
 extern CExoResMan* g_pExoResMan;  // 0x007A39E8
+extern CExoSound* g_pExoSound;                      // 0x007A39EC
 extern CAuroraInterface* g_pAuroraInterface;  // 0x007A39F0 (descriptive)
 extern CSWGuiManager* g_pGuiManager;  // 0x007A39F4
 extern CToolTipGlobals* g_pToolTipGlobals;  // 0x007A39F4
@@ -1237,6 +1250,7 @@ extern CAppManagerT* g_pAppManagerT;  // 0x007A39FC (g_pAppManager)
 extern CVirtualMachine* g_pVirtualMachine;  // 0x007A3A00
 extern CScriptCompiler* g_pScriptCompiler;  // 0x007A3A04 (placeholder name)
 extern CTlkTable* g_pTlkTable;  // 0x007a3a08
+extern CTlkTable* g_pTlkTableAlt;                   // 0x007A3A0C
 extern unsigned __int64 g_nSessionStartTime;  // 0x007A3A20
 extern CSWRules* g_pRules;  // 0x007A3A28
 extern CDeletable* g_pUnknown7A3A28;  // 0x007A3A28
@@ -1287,6 +1301,7 @@ extern unsigned char* g_pLayerTable;  // 0x007a4704
 extern unsigned char* g_pLayerAlpha;  // 0x007a4708
 extern int g_nBindLimit;  // 0x007a470c
 extern int g_nBindCount;  // 0x007a4710
+extern int g_n7A4710;  // 0x007A4710
 extern int g_bTexturesLocked;  // 0x007a4714
 extern int g_nTextureCount;  // 0x007a4718
 extern int g_nStat724;  // 0x007a4724
@@ -1324,6 +1339,9 @@ extern void* g_hGLContext;  // 0x007a6854
 extern float g_fMaxAnisotropy;  // 0x007a6858
 extern int g_nAnisotropyRequested;  // 0x007a685c
 extern char g_bFrameBufferActive;  // 0x007a6860
+extern unsigned int g_nBloomRamp0;                   // 0x007a6864
+extern unsigned int g_nBloomRamp1;                   // 0x007a6868
+extern unsigned int g_nBloomRamp2;                   // 0x007a686c
 extern unsigned int g_nColorRamp0;  // 0x007a6870
 extern unsigned int g_nColorRamp1;  // 0x007a6874
 extern unsigned int g_nColorRamp2;  // 0x007a6878
@@ -1336,6 +1354,8 @@ extern float g_fFogDistance;  // 0x007a6884
 extern float g_fSaturation;  // 0x007a6884
 extern int g_nAntiAliasingMode;  // 0x007a6888
 extern const char* g_szWGLExtensions;  // 0x007a688c
+extern unsigned int g_nPowerWidth;          // 0x007a6890
+extern unsigned int g_nPowerHeight;         // 0x007a6894
 extern int g_nActiveTextureStage;  // 0x007a6898
 extern unsigned int g_nActiveTextureUnit;  // 0x007A6898
 extern int g_nCurrentStage;  // 0x007a6898
@@ -1351,6 +1371,7 @@ extern void* g_hBloomContext;  // 0x007a68cc
 extern int g_nFilmNoiseTexture;  // 0x007a68d0
 extern CAurTexture* g_pFilmNoiseTexture;  // 0x007a68d0
 extern unsigned int g_nDistortionProgram;  // 0x007a68d4
+extern CAurTexture* g_pDistortionTexture;   // 0x007a68d8
 extern int g_bShadowTwoSidedStencil;  // 0x007a68dc
 extern int g_bShadowNoClip;  // 0x007a68e0
 extern unsigned int g_nSaturationProgram;  // 0x007a68e4
@@ -1440,6 +1461,8 @@ extern Scene* g_pActiveScene;  // 0x007B92A0 (placeholder name)
 extern Scene* g_pAnimatingScene;  // 0x007B92A0
 extern CApp* g_pApp;  // 0x007B92A0
 extern CombinerCaps* g_pCombinerCaps;  // 0x007B92A0
+extern Scene* g_pScene;                         // 0x007B92A0
+extern int g_n7B92A8;  // 0x007B92A8
 extern int g_bPauseFlag;  // 0x007B92AC
 extern float g_fMeshBucketSeconds;  // 0x007B92B0, descriptive
 extern float g_fBinBucketSeconds;  // 0x007B92B4, descriptive
@@ -1494,12 +1517,12 @@ extern int g_nGUIBatchTexture;  // 0x007BB4D8
 extern CAurGUIImageData* g_pGUIBatchData;  // 0x007BB4DC
 extern unsigned char g_bGUIBatchTriangles;  // 0x007BB4E0
 extern EnvMapSource* g_pEnvMapSource;  // 0x007BB4E8
+extern Camera* g_pRenderCamera;                   // 0x007BB4E8
 extern int g_bImageDecodeDisabled;  // 0x007BB510
 extern void* glGetVariantPointervEXT;  // 0x007bb524
 extern void* glGenProgramsARB;  // 0x007bb528
 extern void* glVertexAttrib4NsvARB;  // 0x007bb52c
 extern void* glBindVertexShaderEXT;  // 0x007bb534
-extern void* wglSwapIntervalEXT;  // 0x007bb538
 extern void* glGetCombinerInputParameterfvNV;  // 0x007bb53c
 extern void* glVertexAttrib4ubvARB;  // 0x007bb540
 extern void* glVertexAttrib4svARB;  // 0x007bb548
@@ -1513,7 +1536,6 @@ extern void* glGetProgramEnvParameterfvARB;  // 0x007bb56c
 extern void* wglGetSwapIntervalEXT;  // 0x007bb570
 extern void* glVertexAttrib2fvARB;  // 0x007bb574
 extern void* glGenFencesNV;  // 0x007bb57c
-extern void* glProgramStringARB;  // 0x007bb580
 extern void* glFinishFenceNV;  // 0x007bb584
 extern void* glProgramLocalParameter4dvARB;  // 0x007bb588
 extern void* glVertexAttrib3sARB;  // 0x007bb58c
@@ -1521,9 +1543,7 @@ extern void* glVariantsvEXT;  // 0x007bb590
 extern void* wglSaveBufferRegionARB;  // 0x007bb594
 extern void* glCombinerOutputNV;  // 0x007bb59c
 extern void* glVertexAttrib1dARB;  // 0x007bb5a8
-extern void* glIsProgramNV;  // 0x007bb5ac
 extern void* glGetInvariantFloatvEXT;  // 0x007bb5b0
-extern void* glIsProgramARB;  // 0x007bb5b8
 extern void* glUnlockArraysEXT;  // 0x007bb5bc
 extern void* glGetLocalConstantFloatvEXT;  // 0x007bb5c0
 extern void* glVertexAttrib4dvARB;  // 0x007bb5c4
@@ -1533,7 +1553,6 @@ extern void* glVariantfvEXT;  // 0x007bb5d0
 extern void* glVertexAttrib3fvARB;  // 0x007bb5d4
 extern void* glBindTextureUnitParameterEXT;  // 0x007bb5dc
 extern void* wglFreeMemoryNV;  // 0x007bb5e0
-extern void* glLoadProgramNV;  // 0x007bb5e4
 extern void* glTestFenceNV;  // 0x007bb5ec
 extern void* glGetCompressedTexImageARB;  // 0x007bb5f0
 extern void* glGetInvariantIntegervEXT;  // 0x007bb5f4
@@ -1551,7 +1570,6 @@ extern void* glShaderOp1EXT;  // 0x007bb628
 extern void* glGetVariantBooleanvEXT;  // 0x007bb62c
 extern void* glWriteMaskEXT;  // 0x007bb630
 extern void* glDeleteFencesNV;  // 0x007bb638
-extern void* wglGetPixelFormatAttribivARB;  // 0x007bb63c
 extern void* glGetFinalCombinerInputParameterfvNV;  // 0x007bb640
 extern void* glPNTrianglesiATI;  // 0x007bb644
 extern void* glFogCoordPointerEXT;  // 0x007bb648
@@ -1588,7 +1606,6 @@ extern void* glGenSymbolsEXT;  // 0x007bb6dc
 extern void* glGetProgramLocalParameterfvARB;  // 0x007bb6e4
 extern void* glDisableVariantClientStateEXT;  // 0x007bb6ec
 extern void* glVertexAttrib2sARB;  // 0x007bb6f0
-extern void* glDeleteProgramsNV;  // 0x007bb6f4
 extern void* glBindLightParameterEXT;  // 0x007bb6fc
 extern void* glGetLocalConstantBooleanvEXT;  // 0x007bb700
 extern void* glGetInvariantBooleanvEXT;  // 0x007bb704
@@ -1612,21 +1629,16 @@ extern void* glVertexAttrib4NubARB;  // 0x007bb760
 extern void* glGetVertexAttribPointervARB;  // 0x007bb764
 extern void* glVertexAttrib3fvNV;  // 0x007bb768
 extern void* glProgramLocalParameter4dARB;  // 0x007bb76c
-extern void* glDisableVertexAttribArrayARB;  // 0x007bb770
-extern void* glCompressedTexImage2DARB;  // 0x007bb774
 extern void* glGetBufferPointervARB;  // 0x007bb778
 extern void* glGetVertexAttribdvARB;  // 0x007bb77c
 extern void* glVertexAttrib3dvARB;  // 0x007bb780
 extern void* glProgramLocalParameter4fvARB;  // 0x007bb784
-extern void* glBindProgramARB;  // 0x007bb788
 extern void* wglDeleteBufferRegionARB;  // 0x007bb78c
 extern void* glShaderOp3EXT;  // 0x007bb790
 extern void* glVertexAttrib4fvARB;  // 0x007bb794
 extern void* glVertexAttrib2fARB;  // 0x007bb798
-extern void* glEnableVertexAttribArrayARB;  // 0x007bb79c
 extern void* wglQueryPbufferARB;  // 0x007bb7a0
 extern void* glVertexAttrib3dARB;  // 0x007bb7a4
-extern void* glProgramParameter4fNV;  // 0x007bb7ac
 extern void* glGenProgramsNV;  // 0x007bb7b0
 extern void* glVertexArrayRangeNV;  // 0x007bb7c0
 extern void* glGenVertexShadersEXT;  // 0x007bb7c4
@@ -1634,7 +1646,6 @@ extern void* glBeginVertexShaderEXT;  // 0x007bb7c8
 extern void* glVertexAttrib3svARB;  // 0x007bb7cc
 extern void* glVertexAttrib1svARB;  // 0x007bb7d0
 extern void* glVertexAttrib4dARB;  // 0x007bb7d4
-extern void* glVertexAttribPointerARB;  // 0x007bb7d8
 extern void* glVariantdvEXT;  // 0x007bb7dc
 extern void* glFogCoordfEXT;  // 0x007bb7e0
 extern void* glSetLocalConstantEXT;  // 0x007bb7e4
@@ -1651,14 +1662,11 @@ extern void* wglRestoreBufferRegionARB;  // 0x007bb824
 extern void* glGetBufferSubDataARB;  // 0x007bb828
 extern void* glVertexAttrib4bvARB;  // 0x007bb82c
 extern void* glEndVertexShaderEXT;  // 0x007bb830
-extern void* glBindProgramNV;  // 0x007bb834
 extern void* glEnableVariantClientStateEXT;  // 0x007bb838
 extern void* glIsVariantEnabledEXT;  // 0x007bb83c
 extern void* glVertexAttrib1dvARB;  // 0x007bb844
 extern void* glVertexAttrib4NivARB;  // 0x007bb848
 extern void* glGetCombinerOutputParameterivNV;  // 0x007bb84c
-extern void* glProgramEnvParameter4fARB;  // 0x007bb850
-extern void* glVertexAttribPointerNV;  // 0x007bb854
 extern unsigned int g_nCapabilities;  // 0x007bb85c
 extern unsigned int g_nGLCaps;  // 0x007bb85c
 extern int g_nGLExtensions;  // 0x007BB85C
@@ -1667,8 +1675,12 @@ extern int g_bGLExtension860;  // 0x007BB860
 extern unsigned int g_nLookUpTexture;  // 0x007bb868
 extern unsigned char g_aDistortImage[];  // 0x007BB870
 extern MaxTree* g_pCurrentTree;  // 0x007FBAE4
+extern Model* g_pLoadingModel;   // 0x007FBAE4
 extern int g_nControllers;  // 0x007FBAE8
 extern int g_bNoGobCulling;  // 0x007FBF20
+extern int g_n7FBF28;  // 0x007FBF28
+extern int g_n7FBF2C;  // 0x007FBF2C
+extern int g_n7FBF30;  // 0x007FBF30
 extern int g_nHitMask;  // 0x007FBF48
 extern CHitInfo* g_pBSPHitInfo;  // 0x007FBF48, descriptive
 extern int g_bHitStatic;  // 0x007FBF4C
@@ -1677,15 +1689,28 @@ extern int g_bHitGroundPlane;  // 0x007FBF54
 extern int g_nHitTests;  // 0x007FBF58
 extern int g_bShowWalkMesh;  // 0x007FBF5C, descriptive
 extern int g_nLastObjectRoom;  // 0x007FBF68
+extern CExoArrayList<Part*> g_l7FBF6C; // 0x007FBF6C
 extern CExoArrayList<void*> g_lSceneLights;  // 0x007FBF78
+extern CExoArrayList<PartEmitter*> g_l7FBF78;   // 0x007FBF78 emitter bucket
 extern CExoArrayList<CapPart*> g_lStaticMeshes;  // 0x007FBF84
+extern CExoArrayList<Part*> g_l7FBF84;  // 0x007FBF84
+extern CExoArrayList<Gob*> g_l7FBF90;           // 0x007FBF90 blur bucket
+extern CExoArrayList<Bin*> g_lActiveBins;       // 0x007FBF9C
+extern CExoArrayList<Part*> g_l7FBFA8;  // 0x007FBFA8
 extern CExoArrayList<Part*> g_lAllMeshParts;  // 0x007FBFB4
+extern CExoArrayList<Gob*> g_l7FBFC0;           // 0x007FBFC0 distortion bucket
 extern CExoArrayList<void*> g_lSceneObjects;  // 0x007FBFCC
+extern CExoArrayList<Gob*> g_l7FBFCC;           // 0x007FBFCC gob bucket
+extern CExoArrayList<Part*> g_l7FBFD8;  // 0x007FBFD8
 extern CExoArrayList<BSPNode*> g_lLightTiles;  // 0x007FBFE4
+extern CExoArrayList<Part*> g_l7FBFE4;  // 0x007FBFE4
+extern CExoArrayList<Gob*> g_l7FBFF0;           // 0x007FBFF0 light saber bucket
 extern CExoArrayList<Bin*> g_lPrevActiveBins;  // 0x007FBFFC
 extern CExoArrayList<Part*> g_aBucketsA[];  // 0x007FC008
 extern CExoArrayList<CapPart*> g_aCapBuckets[];  // 0x007FC008
+extern CExoArrayList<TriangleBin*> g_l80AA68;   // 0x0080AA68 triangle bins
 extern CExoArrayList<void*> g_lSceneEmitters;  // 0x0080AA74
+extern CExoArrayList<Part*> g_l80AA74;          // 0x0080AA74 trigger parts           // 0x007BB4E8
 extern CExoArrayList<Part*> g_aBucketsC[];  // 0x0080AA80
 extern CExoArrayList<Part*> g_aFadeBuckets[];  // 0x0080AA80
 extern CExoArrayList<Part*> g_aMeshBuckets[];  // 0x008194E0
@@ -1700,10 +1725,16 @@ extern int g_bFSTexture1On;  // 0x00827FA4, descriptive
 extern int g_n827fa4;  // 0x00827fa4
 extern int g_nPartsProjected;  // 0x00827FA8, descriptive
 extern int g_nTransformCount;  // 0x00827FA8
+extern int g_n827FA8;  // 0x00827FA8
 extern int g_nGobsRendered;  // 0x00827FAC, descriptive
+extern int g_n827FAC;  // 0x00827FAC
 extern int g_nFlatTriangles;  // 0x00827FB0
 extern int g_nShadowTriangles;  // 0x00827fb0
+extern int g_n827FB0;  // 0x00827FB0
 extern int g_nFlatParts;  // 0x00827FB4
+extern int g_n827FB4;  // 0x00827FB4
+extern int g_n827FB8;  // 0x00827FB8
+extern int g_n827FBC;  // 0x00827FBC
 extern int g_bSkipA4;  // 0x00827FCC
 extern int g_bEnvMapBlendAdd;  // 0x00827FD4
 extern int g_bEMBMAdditive;  // 0x00827FE8

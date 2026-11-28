@@ -131,7 +131,6 @@ public:
     Material* m_pMaterial;          // +0x44
 };
 
-extern CExoArrayList<Bin*> g_lActiveBins;       // 0x007FBF9C
 #include "shared/globals.h"
 
 class TileLink {
@@ -159,10 +158,8 @@ static inline TileData* GetTileData(Scene* pScene, void* pKey)
 }
 
 BSPNode* FindTileIf(void* pTiles, Vector vPos, int (*pfn)(BSPNode*, Gob*), Gob* pKey);  // 0x004AD1A0
-extern CExoArrayList<Part*> g_l7FBFCC, g_l7FBFC0, g_l7FBFF0, g_l7FBF90, g_l7FBF78;
-extern CExoArrayList<Part*> g_l7FBF84, g_l7FBF6C, g_l80AA74, g_l7FBFE4, g_l80AA68,
-    g_l7FBFA8, g_l7FBFD8;
-extern int g_n7FBF28, g_n7FBF2C, g_n7FBF30;
+class PartEmitter;
+class TriangleBin;
 int GetNumBuckets();                                // 0x0041FEB0
 
 // FUNCTION: SWKOTOR 0x0046A610
@@ -575,11 +572,7 @@ void AddLightToRooms(Scene* pScene, Light* pLight)
         pScene->m_lRooms[i]->m_pData->m_lList80.AddCopy(pLight);
 }
 
-class LightNode {
-public:
-    char pad_0x0[0x68];
-    Scene* m_pScene;                // +0x68
-};
+#include "shared/light_node.h"
 
 void UpdateStaticLighting(Scene* pScene, Part* pPart);     // 0x0046CA30
 
@@ -608,11 +601,7 @@ public:
     ModelHolder* m_pHolder;         // +0x04
 };
 
-class TileParts {
-public:
-    char pad_0x0[0x18];
-    CExoArrayList<TilePart*> m_lParts;  // +0x18
-};
+#include "shared/tile_parts.h"
 
 int SceneBSPAddPart(Scene* pScene, TilePart* pPart, Model* pModel);    // 0x0046E290
 

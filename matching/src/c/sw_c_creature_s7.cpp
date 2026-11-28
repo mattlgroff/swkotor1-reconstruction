@@ -64,7 +64,6 @@ public:
     void GetPriorityGroupInfo(unsigned long nGroup, float* pMinDistance, float* pMaxDistance);   // 0x005D64B0
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class C2DA {
 public:
@@ -268,10 +267,7 @@ public:
 };
 
 
-struct CClientOptionsX {
-    char pad_0x0[0x6d];
-    unsigned char m_nCameraMode;                    // 0x6d
-};
+#include "shared/client_options_x.h"
 
 class CClientExoApp {
 public:

@@ -20,7 +20,7 @@ public:
     CExoAliasList* m_pcExoAliasList;                // 0x0c
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
+#include "shared/globals.h"
 
 struct FILETIME {
     unsigned long dwLowDateTime;

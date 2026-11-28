@@ -8,17 +8,8 @@ __declspec(dllimport) int __stdcall wglDeleteContext(void* hglrc);
 __declspec(dllimport) int __stdcall ReleaseDC(void* hWnd, void* hDC);
 }
 
-typedef int(__stdcall* PFNWGLMAKECONTEXTCURRENTARB)(void* hDrawDC, void* hReadDC, void* hglrc);
-typedef int(__stdcall* PFNWGLRELEASEPBUFFERDCARB)(void* hPbuffer, void* hDC);
-typedef int(__stdcall* PFNWGLDESTROYPBUFFERARB)(void* hPbuffer);
-typedef void(__stdcall* PFNGLDELETEPROGRAMSARB)(int n, const unsigned int* programs);
-typedef void(__stdcall* PFNGLDELETEFRAGMENTSHADERATI)(unsigned int id);
 
-extern PFNWGLMAKECONTEXTCURRENTARB wglMakeContextCurrentARB;      // 0x007bb818
-extern PFNWGLRELEASEPBUFFERDCARB wglReleasePbufferDCARB;          // 0x007bb578
-extern PFNWGLDESTROYPBUFFERARB wglDestroyPbufferARB;              // 0x007bb598
-extern PFNGLDELETEPROGRAMSARB glDeleteProgramsARB;                // 0x007bb724
-extern PFNGLDELETEFRAGMENTSHADERATI glDeleteFragmentShaderATI;    // 0x007bb550
+#include "shared/gl_ext.h"
 
 class RequestPoolManager {
 public:
@@ -30,12 +21,8 @@ public:
 };
 
 #include "shared/globals.h"
-extern void* g_hWnd;                        // 0x007a39d8
 
 
-extern unsigned int g_nBloomRamp0;          // 0x007a6864
-extern unsigned int g_nBloomRamp1;          // 0x007a6868
-extern unsigned int g_nBloomRamp2;          // 0x007a686c
 
 
 

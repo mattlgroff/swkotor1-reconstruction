@@ -89,7 +89,6 @@ public:
     void SetSoundMode(int nMode);                   // 0x005D5E80
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class CSWPartyTable {
 public:
@@ -277,7 +276,6 @@ public:
     void ParseTokens(CExoString* pString);          // 0x0041DD30
 };
 
-extern CTlkTable* g_pTlkTableAlt;                   // 0x007A3A0C
 
 class CExoInput {
 public:

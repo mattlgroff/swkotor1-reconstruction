@@ -62,7 +62,6 @@ void GLRender::Transform(const Vector* pPos, const Quaternion* pOri, int bForce)
     glRotatef(acos(s_qOri.w) * 2.0 * g_fRadToDeg, vAxis.x, vAxis.y, vAxis.z);
 }
 
-
 // FUNCTION: SWKOTOR 0x0046F200
 unsigned long* GetWalkMeshColors()
 {
@@ -93,17 +92,15 @@ unsigned long* GetInverseWalkMeshColors()
     return s_pColors;
 }
 
-typedef void (__stdcall* PFNPROGRAM)(unsigned int, unsigned int);
-extern PFNPROGRAM g_pfnBindProgramARB;  // 0x007BB788
-extern PFNPROGRAM g_pfnBindProgramNV;   // 0x007BB834
+#include "shared/gl_ext.h"
 
 // FUNCTION: SWKOTOR 0x0046F550
 void BindVertexProgram(unsigned int id)
 {
     if (g_bARBVertexProgram)
-        g_pfnBindProgramARB(0x8620, id);
+        glBindProgramARB(0x8620, id);
     else
-        g_pfnBindProgramNV(0x8620, id);
+        glBindProgramNV(0x8620, id);
 }
 
 // FUNCTION: SWKOTOR 0x0046F580

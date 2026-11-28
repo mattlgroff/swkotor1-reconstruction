@@ -13,11 +13,7 @@ public:
 };
 
 // Client party member entry (0x88 bytes).
-struct CSWPartyMemberEntry {
-    char pad_0x0[0x20];
-    unsigned long m_oidCreature;                            // 0x20 (client id)
-    char pad_0x24[0x88 - 0x24];
-};
+#include "shared/sw_party_member_entry.h"
 
 class CSWParty {
 public:

@@ -39,11 +39,11 @@ is deliberately narrow so that genuine original code passes.
 
 | rule | what it requires | how `rulecheck.py` tests it |
 | --- | --- | --- |
-| R1 | Declare each type once, in a shared header every user includes. | a class or struct defined in two files with different bodies; a name declared both `class` and `struct` (MSVC mangles the two differently) |
+| R1 | Declare each type once, in a shared header every user includes. | a class or struct defined in two files with different bodies; a name declared both `class` and `struct` (MSVC mangles the two differently); a body that tests a macro some `.cpp` defines (`#ifdef H_ADD_OUT_OF_LINE`), so that unit sees a different type |
 | R2 | Declare each global once, as `extern` in a header, with one type. | an `extern` data declaration in a `.cpp`; a global declared with different types in different files; a global read through a cast of its image address (`*(int*)0x007A2370`) |
 | R4 | Use typed members, never fixed offsets. | `(T*)((char*)p + N)`; `this` in byte-pointer arithmetic |
 | R13 | Vtables come from evidence: every declared virtual is a slot. | virtuals named `pad` or `dummy` (slot placeholders such as `v40()` are open naming work, not violations) |
-| R17 | No fake code. | `volatile` on locals, or on globals and members without a `// volatile: <evidence>` note; scalar locals never used again, unless labelled R36; empty `if`/`else` blocks, unless labelled R36; bare `;` statements; `do { } while (0)` in a body; self-assignment; `+ 0`, `* 1`; members named `pad` or `_pad` |
+| R17 | No fake code. | `volatile` on locals, or on globals and members without a `// volatile: <evidence>` note; scalar locals never used again, unless labelled R36; empty `if`/`else` blocks, unless labelled R36; bare `;` statements; `do { } while (0)` in a body; self-assignment, unless labelled R36; `+ 0`, `* 1`; members named `pad` or `_pad` |
 | R18 | Assembly is not source. | `__asm`, `_asm`, `__emit` in a function body. Calls to a listed helper are allowed (below). |
 
 An R36 label is a `// NOTE:` or `// BUG:` comment on the line, or inside the
@@ -86,11 +86,11 @@ branch does nothing.
 | `FloatToInt(int* pOut, float f)` | `shared/float_to_int.h` | the same `fld` / `frndint` / `fistp [ptr]` sequence is inlined in functions across the engine (combat, effects, emitters, images, renderer, texture controllers) |
 
 Add a helper here only with evidence that the original had it, and give it
-one shared header. A function whose whole body is assembly is never a match:
-the `__declspec(naked)` bodies in `d/exo_string_copy.cpp`,
-`d/resman_cache_resource.cpp`, `d/res_gff_misc.cpp`, `g/console.cpp`,
-`g/console_reg.cpp` reproduce compiler output (one pushes the EH handler
-address `0x71428f` by hand) and stay `MATCH-PENDING` until rewritten as C++.
+one shared header. A function whose whole body is assembly is never a match.
+The `__declspec(naked)` bodies this project once had all turned out to be
+ordinary C++ (`research/r18-asm-bodies.md`): by-value returns, a CRC loop, and
+`static` helpers to which MSVC gives a register argument (`eax`, or
+`ecx`/`edx` with a caller-cleaned stack).
 
 ### Naming style
 

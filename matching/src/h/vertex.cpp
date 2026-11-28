@@ -141,18 +141,18 @@ static inline void VertexAttribPointer(unsigned int nIndex, int nSize,
                                        unsigned int eType, const void* p)
 {
     if (g_bARBVertexProgram)
-        g_pglVertexAttribPointerARB(nIndex, nSize, eType, 0, 0, p);
+        glVertexAttribPointerARB(nIndex, nSize, eType, 0, 0, p);
     else if (g_bNVVertexProgram && AurVertexProgramsAvailable())
-        g_pglVertexAttribPointerNV(nIndex, nSize, eType, 0, p);
+        glVertexAttribPointerNV(nIndex, nSize, eType, 0, p);
 }
 
 static __forceinline void VertexAttribPointer(unsigned int nIndex, int nSize,
                                               unsigned int eType, int nStride, const void* p)
 {
     if (g_bARBVertexProgram)
-        g_pglVertexAttribPointerARB(nIndex, nSize, eType, 0, nStride, p);
+        glVertexAttribPointerARB(nIndex, nSize, eType, 0, nStride, p);
     else if (g_bNVVertexProgram && AurVertexProgramsAvailable())
-        g_pglVertexAttribPointerNV(nIndex, nSize, eType, nStride, p);
+        glVertexAttribPointerNV(nIndex, nSize, eType, nStride, p);
 }
 
 // NONMATCH: two `lea` encodings only: the original forms the second and

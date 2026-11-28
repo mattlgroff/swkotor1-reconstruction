@@ -417,8 +417,6 @@ public:
 #include "shared/app_manager.h"
 
 #include "shared/globals.h"
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 struct CClientResRefSlot {
     char m_resRef[16];

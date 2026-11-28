@@ -3,10 +3,8 @@
 
 #define OBJECT_INVALID 0x7f000000
 
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
 #include "shared/globals.h"
-extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
-extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
+#include "shared/globals.h"
 
 
 #include "shared/vector.h"

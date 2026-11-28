@@ -64,7 +64,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern CTlkTable* g_pTlkTableAlt;                   // 0x007A3A0C
 
 class CWorldTimer {
 public:

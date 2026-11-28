@@ -50,9 +50,7 @@ public:
         }
         num = n;
     }
-#ifndef H_ADD_OUT_OF_LINE
     __forceinline
-#endif
     void Add(T value)
     {
         if (num == array_size)

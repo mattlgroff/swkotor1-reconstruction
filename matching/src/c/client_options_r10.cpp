@@ -44,7 +44,6 @@ public:
     int GetMaxSoundQuality();                       // 0x005D6460
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class CSWGuiManager {
 public:

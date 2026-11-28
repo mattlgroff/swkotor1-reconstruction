@@ -511,17 +511,13 @@ public:
     char pad_0x0[0x4];
     CExoTimers* m_pcExoTimers;                      // 0x4
 };
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 struct CSWFeat {
     char pad_0x0[0x4];
     unsigned short m_nSpellId;                      // 0x04 (placeholder name)
 };
 
-struct CSWS2DArrays {
-    char pad_0x0[0x38];
-    C2DA* m_pPortraits;                             // 0x38 (placeholder name)
-};
+#include "shared/sws2_d_arrays.h"
 
 class CSWSpell;
 
@@ -583,7 +579,6 @@ public:
     char pad_0x0[0x14];
 };
 
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
 
 // vtable 0x00745F18
 class CSWSObject : public CGameObject {

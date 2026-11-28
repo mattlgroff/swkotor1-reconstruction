@@ -46,7 +46,7 @@ long __stdcall WndProc(void* hWnd, unsigned int nMsg, unsigned int wParam, long 
 void __cdecl LoadVersionInfo();                     // 0x005e6b10
 char* __cdecl AurGetVersionString();                // 0x0044eec0
 
-extern void* g_hInstance;                           // 0x007a39c0
+#include "shared/globals.h"
 #include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004036f0

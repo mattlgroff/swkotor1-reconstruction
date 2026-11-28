@@ -4,7 +4,6 @@
 #include "b/sws_creature.h"
 
 #include "shared/globals.h"
-extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634
 
 // Event bookkeeping on every server object (CSWSObject keeps its members
 // out of the shared header, see worker-b notes).

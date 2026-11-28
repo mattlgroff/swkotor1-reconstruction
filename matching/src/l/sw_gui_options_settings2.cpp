@@ -9,7 +9,7 @@ class CExoSound {
 public:
     int GetMaxSoundQuality(); // 0x005D6460
 };
-extern CExoSound* g_pExoSound; // 0x007A39EC
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x006DDD70
 void CSWGuiOptionsSoundAdvanced::SetEAXText()

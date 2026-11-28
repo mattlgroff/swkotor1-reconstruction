@@ -116,15 +116,7 @@ public:
     char pad_0x98[0x8];
 };
 
-class CNWMessage {
-public:
-    void WriteBOOL(int bValue);
-    void WriteBYTE(unsigned char nValue, int nBits);
-    void WriteWORD(unsigned short nValue, int nBits);
-    void WriteDWORD(unsigned long nValue, int nBits);
-    void WriteFLOAT(float fValue, float fScale, int nBits);
-    void WriteCResRef(CResRef cResRef, int nSize);
-};
+#include "shared/nw_message.h"
 
 class CSWSPlayer;
 

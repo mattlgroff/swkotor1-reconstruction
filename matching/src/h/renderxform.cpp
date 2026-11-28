@@ -90,8 +90,7 @@ struct EnvMapSource {
     Quaternion m_qOrientation;      // +0x88
 };
 
-typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int);
-extern PFNCLIENTACTIVETEXTURE glActiveTextureARB;    // 0x007BB80C
+#include "shared/gl_ext.h"
 
 // FUNCTION: SWKOTOR 0x0046F780
 void DoEnvMapTransform(CAurTexture* pTexture, unsigned int nUnit)

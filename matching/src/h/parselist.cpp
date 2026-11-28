@@ -3,7 +3,6 @@
 // with SkipWhitespace expanded.
 
 #define H_ALLOCATE_OUT_OF_LINE
-#define H_ADD_OUT_OF_LINE
 #include "h/texctl.h"
 
 extern "C" int __cdecl strncmp(const char*, const char*, unsigned int);

@@ -40,7 +40,7 @@ public:
     char* GetResRef() const;                        // 0x00641DB0 (returns this)
 };
 
-extern const unsigned long OBJECT_INVALID;          // 0x00746644
+#include "shared/object_id.h"
 #include "shared/globals.h"
 
 // Linked list ---------------------------------------------------------------

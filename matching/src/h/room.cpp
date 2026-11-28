@@ -77,11 +77,7 @@ public:
     TileRoom* m_pRoom;                          // +0x80
 };
 
-class TileLight {
-public:
-    char pad_0x0[0x1ec];
-    TileRoom* m_pRoom;                          // +0x1ec
-};
+#include "shared/tile_light.h"
 
 class TilePart {
 public:

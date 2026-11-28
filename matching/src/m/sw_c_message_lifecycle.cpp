@@ -1,10 +1,6 @@
 // CSWCMessage lifecycle over the shared CNWMessage implementation.
 
-class CNWMessage {
-public:
-    CNWMessage();                                  // 0x004D60F0
-    virtual ~CNWMessage();                         // 0x004D6130
-};
+#include "shared/nw_message.h"
 
 class CSWCMessage : public CNWMessage {
 public:

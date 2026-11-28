@@ -421,7 +421,6 @@ public:
     void SetSoundMode(int nMode);                           // 0x005D5E80
 };
 
-extern CExoSound* g_pExoSound;                              // 0x007A39EC
 
 // FUNCTION: SWKOTOR 0x00540ED0
 int CSWVirtualMachineCommands::ExecuteCommandPlayMovie(int nCommandId, int nParameters)

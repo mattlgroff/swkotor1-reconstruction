@@ -140,13 +140,13 @@ public:
     CExoArrayList<LmRoom*> m_lVisible;  // +0x5c
 };
 
-class LmScene {
+class Scene {
 public:
     char pad_0x0[0xc8];
     CExoArrayList<LmRoom*> m_lRooms;    // +0xc8
 };
 
-extern LmScene* g_pScene;               // 0x007B92A0
+#include "shared/globals.h"
 
 class LightManager {
 public:

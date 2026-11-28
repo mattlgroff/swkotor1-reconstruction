@@ -47,10 +47,7 @@ unsigned char* ImageScale(unsigned char* pImage, int nWidth, int nHeight, int nB
 unsigned char* ImageRotate(unsigned char* pImage, int w, int h, int nBpp,
                            int nRotation);                               // 0x0041fbd0
 
-typedef void (__stdcall* PFNCOMPRESSEDTEXIMAGE2D)(unsigned int target, int level,
-    unsigned int internalformat, int width, int height, int border, int imageSize,
-    const void* data);
-extern PFNCOMPRESSEDTEXIMAGE2D g_pglCompressedTexImage2DARB;   // 0x007bb774
+#include "shared/gl_ext.h"
 
 int AurBumpMappingAvailable();                                           // 0x0045fb10
 int AurSGIMipmapAvailable();                                             // 0x0045f910
@@ -122,7 +119,7 @@ void CreateProcessedCubeTexture(CAurTextureBasic* t, int bUpdate, int nIndex)
         if (t->GetCompressedSize() > 0) {
             int nLevel = 0;
             int nBlock = (nBpp == 4) ? 16 : 8;
-            g_pglCompressedTexImage2DARB(nTarget, 0,
+            glCompressedTexImage2DARB(nTarget, 0,
                 g_aGLCompressedFormats[t->GetCompressionFormat()], nWidth, nHeight, 0,
                 t->GetCompressedSize(), pData);
             if (bMipMap) {
@@ -142,7 +139,7 @@ void CreateProcessedCubeTexture(CAurTextureBasic* t, int bUpdate, int nIndex)
                     nLevel++;
                     pData += nSize;
                     nSize = ((h + 3) / 4) * ((w + 3) / 4) * nBlock;
-                    g_pglCompressedTexImage2DARB(nTarget, nLevel,
+                    glCompressedTexImage2DARB(nTarget, nLevel,
                         g_aGLCompressedFormats[t->GetCompressionFormat()], w, h, 0, nSize, pData);
                 }
                 pData += nSize;
@@ -299,7 +296,7 @@ void CreateTexture(CAurTextureBasic* t, int bUpdate, int nIndex)
         int nLevel = 0;
         int nBlock = (nBpp == 4) ? 16 : 8;
         unsigned char* pData = (unsigned char*)t->GetImage();
-        g_pglCompressedTexImage2DARB(GL_TEXTURE_2D, 0,
+        glCompressedTexImage2DARB(GL_TEXTURE_2D, 0,
             g_aGLCompressedFormats[t->GetCompressionFormat()], nWidth, nHeight, 0,
             t->GetCompressedSize(), t->GetImage());
         if (t->GetMipMap()) {
@@ -317,7 +314,7 @@ void CreateTexture(CAurTextureBasic* t, int bUpdate, int nIndex)
                 nLevel++;
                 pData += nSize;
                 nSize = ((nHeight + 3) / 4) * ((nWidth + 3) / 4) * nBlock;
-                g_pglCompressedTexImage2DARB(GL_TEXTURE_2D, nLevel,
+                glCompressedTexImage2DARB(GL_TEXTURE_2D, nLevel,
                     g_aGLCompressedFormats[t->GetCompressionFormat()], nWidth, nHeight, 0,
                     nSize, pData);
             }
@@ -398,7 +395,7 @@ void CreateProcessedTexture(CAurTextureBasic* t, int bUpdate, int nIndex)
         unsigned char* pCursor = pData;
         int nBlock = (nBpp == 4) ? 16 : 8;
         int nSize = ((h + 3) / 4) * ((w + 3) / 4) * nBlock;
-        g_pglCompressedTexImage2DARB(GL_TEXTURE_2D, 0,
+        glCompressedTexImage2DARB(GL_TEXTURE_2D, 0,
             g_aGLCompressedFormats[t->GetCompressionFormat()], w, h, 0, nSize, pData);
         if (t->GetMipMap()) {
             int lw = w;
@@ -416,7 +413,7 @@ void CreateProcessedTexture(CAurTextureBasic* t, int bUpdate, int nIndex)
                 nLevel++;
                 pCursor += nSize;
                 nSize = ((lh + 3) / 4) * ((lw + 3) / 4) * nBlock;
-                g_pglCompressedTexImage2DARB(GL_TEXTURE_2D, nLevel,
+                glCompressedTexImage2DARB(GL_TEXTURE_2D, nLevel,
                     g_aGLCompressedFormats[t->GetCompressionFormat()], lw, lh, 0, nSize, pCursor);
             }
         }

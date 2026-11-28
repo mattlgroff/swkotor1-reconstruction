@@ -26,8 +26,8 @@ extern unsigned char(__stdcall* g_pfnIsProgramARB)(unsigned int);          // 0x
 extern unsigned char(__stdcall* g_pfnIsProgramNV)(unsigned int);           // 0x007BB5AC
 extern void(__stdcall* g_pfnGenProgramsARB)(int, unsigned int*);           // 0x007BB528 (placeholder name)
 extern void(__stdcall* g_pfnGenProgramsNV)(int, unsigned int*);            // 0x007BB7B0 (placeholder name)
-extern void(__stdcall* g_pfnBindProgramARB)(unsigned int, unsigned int);   // 0x007BB788
-extern void(__stdcall* g_pfnBindProgramNV)(unsigned int, unsigned int);    // 0x007BB834
+extern void(__stdcall* glBindProgramARB)(unsigned int, unsigned int);   // 0x007BB788
+extern void(__stdcall* glBindProgramNV)(unsigned int, unsigned int);    // 0x007BB834
 
 bool AurGLCaps5E0();                                    // 0x0045F5E0
 void BindVertexProgram(unsigned int nId);               // 0x0046F550
@@ -89,7 +89,7 @@ void VertexProgram::Enable(VertexProgramLighting* pLighting, unsigned char bLigh
             if (!program_id) {
                 (g_bUseARBVertexProgram ? g_pfnGenProgramsARB : g_pfnGenProgramsNV)(1, &program_id);
             }
-            (g_bUseARBVertexProgram ? g_pfnBindProgramARB : g_pfnBindProgramNV)(0x8620, program_id);
+            (g_bUseARBVertexProgram ? glBindProgramARB : glBindProgramNV)(0x8620, program_id);
             LoadVertexProgram_004a23c0(program_id, strlen(program_text), program_text,
                                        parameter_words);
             if (g_bUseARBVertexProgram) {
@@ -103,5 +103,5 @@ void VertexProgram::Enable(VertexProgramLighting* pLighting, unsigned char bLigh
             return;
         }
     }
-    (g_bUseARBVertexProgram ? g_pfnBindProgramARB : g_pfnBindProgramNV)(0x8620, program_id);
+    (g_bUseARBVertexProgram ? glBindProgramARB : glBindProgramNV)(0x8620, program_id);
 }

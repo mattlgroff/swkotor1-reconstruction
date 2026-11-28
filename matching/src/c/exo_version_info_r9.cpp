@@ -10,7 +10,7 @@ int __stdcall GetFileVersionInfoA(const char* sFileName, unsigned long nHandle, 
 int __stdcall VerQueryValueA(const void* pBlock, const char* sSubBlock, void** ppBuffer, unsigned int* pLen);   // 0x0070C132
 }
 
-extern void* g_hInstance;                           // 0x007A39C0
+#include "shared/globals.h"
 #include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x005E6B10

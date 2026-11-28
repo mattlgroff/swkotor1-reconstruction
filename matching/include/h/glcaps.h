@@ -13,15 +13,47 @@ extern "C" __declspec(dllimport) void __stdcall glGetIntegerv(unsigned int, int*
 #include "shared/globals.h"
 
 // Extension masks.
-extern int g_nExt480, g_nExt484, g_nExt48C, g_nExt490, g_nExt49C, g_nExt4A0,
-    g_nExt4A8, g_nExt4B8, g_nExt4BC, g_nExt4C8, g_nExt4CC, g_nExt4D0,
-    g_nExt4D4, g_nExt4D8, g_nExt4DC, g_nExt4E0, g_nExt4E4, g_nExt4F0,
-    g_nExt4F4;
+extern int g_nExt480;
+extern int g_nExt484;
+extern int g_nExt48C;
+extern int g_nExt490;
+extern int g_nExt49C;
+extern int g_nExt4A0;
+extern int g_nExt4A8;
+extern int g_nExt4B8;
+extern int g_nExt4BC;
+extern int g_nExt4C8;
+extern int g_nExt4CC;
+extern int g_nExt4D0;
+extern int g_nExt4D4;
+extern int g_nExt4D8;
+extern int g_nExt4DC;
+extern int g_nExt4E0;
+extern int g_nExt4E4;
+extern int g_nExt4F0;
+extern int g_nExt4F4;
 
 // Cached answers (-1 until first asked).
-extern int g_n504, g_n508, g_n50C, g_n510, g_n514, g_n518, g_n51C, g_n520,
-    g_n524, g_n528, g_n52C, g_n530, g_n534, g_n538, g_n53C, g_n540,
-    g_n544, g_n548, g_nStencilBits, g_nStencilClear;
+extern int g_n504;
+extern int g_n508;
+extern int g_n50C;
+extern int g_n510;
+extern int g_n514;
+extern int g_n518;
+extern int g_n51C;
+extern int g_n520;
+extern int g_n524;
+extern int g_n528;
+extern int g_n52C;
+extern int g_n530;
+extern int g_n534;
+extern int g_n538;
+extern int g_n53C;
+extern int g_n540;
+extern int g_n544;
+extern int g_n548;
+extern int g_nStencilBits;
+extern int g_nStencilClear;
 
 inline int HAS_EXT(int m) { return (g_nGLExtensions & m) == m; }
 

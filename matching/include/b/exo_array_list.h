@@ -51,7 +51,6 @@ public:
 
     void AddUnique(T t);            // out of line (<unsigned long>: 0x006449D0)
 
-#ifndef B_EXO_ARRAY_LIST_OPAQUE_ADD
     void Add(T t)
     {
         if (num == array_size) {
@@ -59,9 +58,6 @@ public:
         }
         element[num++] = t;
     }
-#else
-    void Add(T t);                  // out of line (<unsigned long>: 0x00671C00)
-#endif
 
     void DelIndex(int i)
     {

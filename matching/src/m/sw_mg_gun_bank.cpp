@@ -3,8 +3,6 @@
 // callbacks (0x00673840-0x00674A10). The CSWMiniHitInfo constructor is
 // inlined into CSWMGGunBank's constructor here.
 
-#define M_INLINE_MINI_HIT_INFO
-#define M_INLINE_TARGETTING_INFO
 #include "m/sw_mini_game_object.h"
 
 // FUNCTION: SWKOTOR 0x00673840
@@ -84,6 +82,25 @@ float CSWMGTargettingGunBank::SetInaccuracy(float f)
         m_cInfo.m_fInaccuracy = f;
     }
     return m_cInfo.m_fInaccuracy;
+}
+
+// FUNCTION: SWKOTOR 0x00673A10
+CSWMiniHitInfo::CSWMiniHitInfo()
+{
+    m_nDamage = 0;
+    m_nTargetMask = 0;
+    m_fSpeed = 0.0f;
+    m_fRateOfFire = 0.0f;
+    m_fLifespan = 0.0f;
+}
+
+// FUNCTION: SWKOTOR 0x00673A30
+CSWMGTargettingInfo::CSWMGTargettingInfo()
+{
+    m_fHorizSpread = 0.0f;
+    m_fVertSpread = 0.0f;
+    m_fSensingRadius = 0.0f;
+    m_fInaccuracy = 0.0f;
 }
 
 // FUNCTION: SWKOTOR 0x00673F50

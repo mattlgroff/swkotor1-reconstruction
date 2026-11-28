@@ -27,11 +27,10 @@ public:
     Quaternion m_qOrientation;                      // +0x88
 };
 
-extern Camera* g_pRenderCamera;                     // 0x007BB4E8
 #include "shared/globals.h"
-extern void(__stdcall* g_pfnProgramEnvParameter4fARB)(unsigned int, unsigned int, float, float, float,
+extern void(__stdcall* glProgramEnvParameter4fARB)(unsigned int, unsigned int, float, float, float,
                                                       float);  // 0x007BB850
-extern void(__stdcall* g_pfnProgramParameter4fNV)(unsigned int, unsigned int, float, float, float,
+extern void(__stdcall* glProgramParameter4fNV)(unsigned int, unsigned int, float, float, float,
                                                   float);      // 0x007BB7AC
 
 void AurSetVertexProgramParameter(unsigned int nIndex, float a, float b, float c, float d);  // 0x0044F820
@@ -39,9 +38,9 @@ void AurSetVertexProgramParameter(unsigned int nIndex, float a, float b, float c
 static inline void SetVertexProgramParameter(unsigned int nIndex, float x, float y, float z, float w)
 {
     if (g_bUseARBVertexProgram)
-        g_pfnProgramEnvParameter4fARB(0x8620, nIndex, x, y, z, w);
+        glProgramEnvParameter4fARB(0x8620, nIndex, x, y, z, w);
     else
-        g_pfnProgramParameter4fNV(0x8620, nIndex, x, y, z, w);
+        glProgramParameter4fNV(0x8620, nIndex, x, y, z, w);
 }
 
 // FUNCTION: SWKOTOR 0x004A30E0

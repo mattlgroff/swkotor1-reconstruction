@@ -19,7 +19,6 @@ typedef void* (*PFN_LOADIMAGEDDS)(char* szName, int* pWidth, int* pHeight, int* 
                                   float* pTXI);
 typedef void* (*PFN_LOADIMAGETGA)(char* szName, int* pWidth, int* pHeight, float* pTXI, int* pFormat);
 typedef void* (*PFN_LOADIMAGE)(char* szName, int* pWidth, int* pHeight, int* pBpp);
-typedef void (__stdcall *PFN_GLACTIVETEXTURE)(unsigned int nTexture);
 
 extern PFN_LOADIMAGES3TC g_pfnLoadImageS3TC;    // 0x0078d420
 extern PFN_LOADIMAGEDDS g_pfnLoadImageDDS;      // 0x0078d40c
@@ -29,7 +28,7 @@ extern PFN_LOADIMAGE g_pfnLoadImageRaw;         // 0x0078d404
 extern PFN_LOADIMAGEPLT g_pfnLoadImagePLT;      // 0x0078d41c
 extern PFN_IMAGEHOOK g_pfnImageHook;            // 0x007a46f8
 extern PFN_RELEASEHOOK g_pfnReleaseHook;        // 0x007a46fc
-extern PFN_GLACTIVETEXTURE g_pfnglActiveTextureARB; // 0x007bb80c
+#include "shared/gl_ext.h"
 
 void ImageGamma(int nWidth, int nHeight, int nBpp, void* pData, float fGamma);  // 0x0045dd90
 void* ImageMakeLayered(void* pData, int nWidth, int nHeight, unsigned char* pTable,
@@ -328,7 +327,6 @@ void* CAurTexture::GetTXIData()
     }
     return 0;
 }
-
 
 // FUNCTION: SWKOTOR 0x0041ecb0
 void CAurTexture::SetTXIData(void* pData, int nSize)
@@ -883,7 +881,7 @@ void GLRender::ActivateTextureStage(int nStage)
 {
     g_nActiveTextureStage = nStage;
     if (AurHasMultiTexture()) {
-        g_pfnglActiveTextureARB(g_nActiveTextureStage + 0x84c0);
+        glActiveTextureARB(g_nActiveTextureStage + 0x84c0);
     }
 }
 

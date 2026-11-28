@@ -58,7 +58,7 @@ public:
     Vector m_vFadeTarget;                       // +0xa8, descriptive
 };
 
-class RenderCamera {
+class Camera {
 public:
     char m_pad00[0x7c];
     Vector m_vPosition;                         // +0x7c
@@ -148,9 +148,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern Scene* g_pScene;                         // 0x007B92A0
-extern RenderCamera* g_pRenderCamera;           // 0x007BB4E8
-extern CExoArrayList<Gob*> g_l7FBF90;           // 0x007FBF90 blur bucket
 
 static inline float ReadFloat(const float& f)
 {

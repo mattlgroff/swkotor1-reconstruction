@@ -29,7 +29,7 @@ class Quaternion {
 public:
     float x, y, z, w;
 
-    Vector ToDirection();
+    Vector ToDirection() const;
 };
 
 // One face of the MDL post-process face list (0x14 bytes).

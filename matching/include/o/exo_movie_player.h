@@ -29,20 +29,6 @@ public:
     char pad_0x0[0xa0];
 };
 
-class CExoMoviePlayer {
-public:
-    CExoMoviePlayer();
-    ~CExoMoviePlayer();
-    void CancelMovie(int nSkip, int bForce);
-    int IsMoviePlaying();
-    void PlayMoviesAsync(const CExoArrayList<CExoString>& lstMovies, int nFlags,
-                         const CExoArrayList<int>* pSkippable);
-    void ShowFadePanel();
-    void HideFadePanel();
-    int GetNumberOfMoviesToPlay();
-    void RestartMoviesAsync();
-
-    CExoMoviePlayerInternal* m_pInternal;           // 0x00
-};
+#include "shared/exo_movie_player.h"
 
 #endif

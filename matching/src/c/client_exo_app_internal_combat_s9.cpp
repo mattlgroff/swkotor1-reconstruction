@@ -111,13 +111,8 @@ public:
 };
 
 #include "shared/globals.h"
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
 
-struct CSWPartyMemberEntry {
-    char pad_0x0[0x80];
-    unsigned long m_oidTarget;                      // 0x80 (descriptive)
-    unsigned long m_nCombatMessage;                 // 0x84 (descriptive)
-};
+#include "shared/sw_party_member_entry.h"
 
 class CSWParty {
 public:

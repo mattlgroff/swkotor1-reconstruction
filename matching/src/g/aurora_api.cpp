@@ -35,12 +35,7 @@ public:
 // --- globals ----------------------------------------------------------------
 #include "shared/globals.h"
 
-typedef void (__stdcall *PFNSWAPINTERVAL)(int);
-typedef void (__stdcall *PFNPROGRAMPARAM4F)(unsigned int, unsigned int,
-                                            float, float, float, float);
-extern PFNSWAPINTERVAL g_pfnSwapInterval;            // 0x007bb538
-extern PFNPROGRAMPARAM4F g_pfnProgramEnvParameter4f; // 0x007bb850
-extern PFNPROGRAMPARAM4F g_pfnProgramParameter4fNV;  // 0x007bb7ac
+#include "shared/gl_ext.h"
 
 bool AurHasVSyncControl();               // 0x0045f580
 int AurHasAnisotropy();                  // 0x0045f8e0
@@ -58,8 +53,6 @@ class CAurProgram {
 public:
     ~CAurProgram();                      // 0x004a2830
 };
-
-extern void* g_hWnd;                     // 0x007a39d8
 
 void ResetVertexPrograms_004a2470();     // 0x004a2470
 void AurReleaseNoOp();                   // 0x004015a0 (empty)
@@ -232,7 +225,6 @@ CAurInternalGL::~CAurInternalGL()
     Shutdown(1, 1);
 }
 
-
 // FUNCTION: SWKOTOR 0x0044e9e0
 void CAurInternalGL::Reshape(int nWidth, int nHeight)
 {
@@ -393,7 +385,7 @@ void AurDisableFrameBufferEffects()
 void AurSetVSyncState(char bEnabled)
 {
     if (AurHasVSyncControl()) {
-        g_pfnSwapInterval(bEnabled != 0);
+        wglSwapIntervalEXT(bEnabled != 0);
         g_bVSync = bEnabled;
     }
 }
@@ -576,11 +568,10 @@ void AurSetVertexProgramParameter(unsigned int nIndex, float x, float y,
                                   float z, float w)
 {
     if (g_bUseARBVertexProgram)
-        g_pfnProgramEnvParameter4f(0x8620, nIndex, x, y, z, w);
+        glProgramEnvParameter4fARB(0x8620, nIndex, x, y, z, w);
     else
-        g_pfnProgramParameter4fNV(0x8620, nIndex, x, y, z, w);
+        glProgramParameter4fNV(0x8620, nIndex, x, y, z, w);
 }
-
 
 // FUNCTION: SWKOTOR 0x0044f880
 void AurMaterialfv(int nFace, int nParam, const float* pValues)
@@ -588,19 +579,6 @@ void AurMaterialfv(int nFace, int nParam, const float* pValues)
     glMaterialfv(g_aMaterialFaces[nFace], g_aMaterialParams[nParam], pValues);
 }
 
-typedef int (__stdcall *PFNCHOOSEPIXELFORMATARB)(void* hdc, const int* piAttribs,
-                                                 const float* pfAttribs,
-                                                 unsigned int nMaxFormats,
-                                                 int* piFormats,
-                                                 unsigned int* pnNumFormats);
-typedef int (__stdcall *PFNGETPIXELFORMATATTRIBIVARB)(void* hdc, int iPixelFormat,
-                                                      int iLayerPlane,
-                                                      unsigned int nAttributes,
-                                                      const int* piAttributes,
-                                                      int* piValues);
-extern PFNCHOOSEPIXELFORMATARB g_pfnChoosePixelFormatARB;           // 0x007bb730
-extern PFNGETPIXELFORMATATTRIBIVARB g_pfnGetPixelFormatAttribivARB; // 0x007bb63c
-extern void* g_hWnd;                                                // 0x007a39d8
 int AurHasMultisample();                                            // 0x0046ed70
 
 // FUNCTION: SWKOTOR 0x0044f140
@@ -639,11 +617,11 @@ int AurTestAntiAliasingMode(int nSamples)
             iAttribs[19] = 0;
             fAttribs[0] = 0.0f;
             fAttribs[1] = 0.0f;
-            if (g_pfnChoosePixelFormatARB(hDC, iAttribs, fAttribs, 1, &nFormat,
+            if (wglChoosePixelFormatARB(hDC, iAttribs, fAttribs, 1, &nFormat,
                                           &nFormats)
                 && nFormats > 0) {
                 nAttrib = 0x2042;
-                g_pfnGetPixelFormatAttribivARB(hDC, nFormat, 0, 1, &nAttrib,
+                wglGetPixelFormatAttribivARB(hDC, nFormat, 0, 1, &nAttrib,
                                                &nValue);
                 ReleaseDC(g_hWnd, hDC);
                 return nValue == nSamples;

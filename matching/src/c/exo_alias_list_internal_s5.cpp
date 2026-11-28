@@ -16,7 +16,7 @@ public:
     CExoString* GetResourceExtension(unsigned short nType);             // 0x005E6660
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
+#include "shared/globals.h"
 
 #include "shared/exo_alias.h"
 

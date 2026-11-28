@@ -162,7 +162,6 @@ public:
     CExoTimers* m_pcExoTimers;                      // 0x04
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 __declspec(dllimport) void __stdcall AIL_close_3D_provider(HPROVIDER hProvider);
 typedef unsigned long HPROENUM;
 __declspec(dllimport) int __stdcall AIL_enumerate_3D_providers(HPROENUM* next, HPROVIDER* dest, char** name);

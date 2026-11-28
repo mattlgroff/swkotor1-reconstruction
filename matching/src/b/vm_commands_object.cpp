@@ -17,7 +17,6 @@ public:
     CExoDebug* m_pcExoDebug;                                // 0x08
 };
 
-extern CExoBase* g_pExoBase;                                // 0x007A39E0
 #include "shared/globals.h"
 
 // Stripped debug output: the arguments are still evaluated.
@@ -548,7 +547,6 @@ public:
     char pad_0x0[0x34];
 };
 
-extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634 (5)
 
 // FUNCTION: SWKOTOR 0x00535DB0
 int CSWVirtualMachineCommands::ExecuteCommandFloatingText(int nCommandId, int nParameters)

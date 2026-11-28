@@ -50,7 +50,7 @@ public:
     CGameObjectArray* GetObjectArray();              // 0x004AED70
     CSWSAreaOfEffectObject* GetAreaOfEffectByGameObjectID(unsigned long oid); // 0x004AE7D0
 };
-extern const unsigned long OBJECT_INVALID;          // 0x00746644
+#include "shared/object_id.h"
 #include "shared/globals.h"
 #include "shared/app_manager.h"
 class CSWSArea {

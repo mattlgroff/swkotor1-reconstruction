@@ -8,18 +8,7 @@ int operator==(const Vector& a, const Vector& b);   // 0x004aa980
 class CAurObject;
 
 // A static light placed on a tile.
-class TileLight {
-public:
-    char pad00[0x4c];
-    Vector m_vPosition;                 // +0x4c
-    char pad58[0x5c - 0x58];
-    int m_bDirty;                       // +0x5c
-    float m_fRadius;                    // +0x60
-    char pad64[0x6c - 0x64];
-    int m_bActive;                      // +0x6c
-    char pad70[0x74 - 0x70];
-    int m_nType;                        // +0x74
-};
+#include "shared/tile_light.h"
 
 class TileData {
 public:

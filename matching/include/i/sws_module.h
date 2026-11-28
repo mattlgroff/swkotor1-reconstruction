@@ -377,7 +377,6 @@ class CSWSArea;
 class CSWSPlayer;
 class CSWSWaypoint;
 
-extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
 
 class CGameObjectArray {
 public:
@@ -663,7 +662,6 @@ public:
     char m_pad0[0xc];
     CExoAliasList* m_pcExoAliasList;                // +0x0c
 };
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 extern "C" __declspec(dllimport) int __stdcall DeleteFileA(const char* lpFileName);
 

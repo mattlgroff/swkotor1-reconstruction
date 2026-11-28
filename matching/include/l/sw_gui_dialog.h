@@ -94,13 +94,7 @@ public:
     void SetHighlighted(int b) { m_bHighlighted = b; }
     void UpdateFont();                              // 0x00415DF0
     char m_szFont[0x10];                            // 0x3c (the base font CResRef)
-#ifdef L_GUI_TEXT_PARAMS_EXACT
-    // The real object is 0x54 bytes (stack temporaries); embedding labels
-    // keep their 0x140 size with the trailing dword declared in CSWGuiLabel.
-    char pad_0x4c[0x8];
-#else
     char pad_0x4c[0xc];
-#endif
 };
 
 class CSWGuiControl;
@@ -240,9 +234,6 @@ public:
     char pad_0xc4[0xc];
     CSWGuiLabelText m_cTextBox;                     // 0xd0
     CSWGuiTextParams m_cText;                       // 0xe8
-#ifdef L_GUI_TEXT_PARAMS_EXACT
-    int m_n13c;                                     // 0x13c
-#endif
 
     void Draw(float fDelta);                        // 0x00417750
 };

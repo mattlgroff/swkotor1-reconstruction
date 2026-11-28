@@ -27,8 +27,7 @@ __declspec(dllimport) void __stdcall glFrontFace(unsigned int mode);
 #define GL_ARRAY_BUFFER_ARB 0x8892
 #define GL_ELEMENT_ARRAY_BUFFER_ARB 0x8893
 
-typedef void(__stdcall* PFNGLACTIVESTENCILFACEEXT)(unsigned int face);
-extern PFNGLACTIVESTENCILFACEEXT glActiveStencilFaceEXT;   // 0x007bb624
+#include "shared/gl_ext.h"
 
 // One silhouette edge: the two vertex indices.
 struct ShadowEdge {

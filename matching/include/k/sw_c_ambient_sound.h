@@ -42,7 +42,6 @@ public:
     int GetProperty0x144();                         // 0x005D64E0
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 #include "shared/globals.h"
 
 class CWorldTimer {
@@ -94,12 +93,7 @@ public:
 };
 
 
-class CNWMessage {
-public:
-    int ReadBOOL();                                 // 0x004D66F0
-    unsigned char ReadBYTE(int nBits);              // 0x004D6720
-    unsigned long ReadDWORD(int nBits);             // 0x004D6780
-};
+#include "shared/nw_message.h"
 
 // One 2DA row of AmbientMusic / AmbientSound: the looping resource plus
 // up to three stingers. Size 0x20.

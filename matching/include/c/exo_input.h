@@ -21,7 +21,7 @@ struct tagCURSORINFO {
 };
 extern "C" __declspec(dllimport) int __stdcall GetCursorInfo(tagCURSORINFO* pci);
 
-extern HINSTANCE g_hInstance;                       // 0x007A39C0
+#include "shared/globals.h"
 
 typedef void* CExoLinkedListPosition;
 
@@ -136,7 +136,6 @@ public:
 };
 
 #include "shared/globals.h"
-extern void* g_hWnd;                                // 0x007A39D8
 
 extern "C" {
 __declspec(dllimport) int __stdcall ClientToScreen(void* hWnd, struct tagPOINT* p);  // IAT 0x0073D3C4
@@ -263,7 +262,7 @@ public:
     unsigned __int64 GetHighResolutionTimer();      // 0x005E9260
 };
 
-class CExoBaseTimers {
+class CExoBase {
 public:
     void* m_p0;                                     // 0x00
     CExoTimers* m_pcExoTimers;                      // 0x04
@@ -278,7 +277,6 @@ struct DIPROPSTRING {
 
 #define DIPROP_KEYNAME (*(const _GUID*)20)
 
-extern CExoBaseTimers* g_pExoBase;                  // 0x007A39E0
 
 class CExoRawInputInternal {
 public:

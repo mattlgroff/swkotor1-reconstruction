@@ -35,7 +35,6 @@ public:
     void* m_pcExoSoundInternal;                     // 0x00
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 // Sound-related members of CClientOptions (0x49 is written from the sound
 // system's reported EAX level; client_options_r10.cpp calls it m_nSoundQuality).

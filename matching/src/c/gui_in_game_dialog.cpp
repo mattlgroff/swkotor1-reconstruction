@@ -131,11 +131,7 @@ public:
     unsigned long m_nDialogDepth;                       // 0xd8
 };
 
-class CClientOptionsX {
-public:
-    char pad_0x0[0x14];
-    unsigned char m_nFlags;                             // 0x14
-};
+#include "shared/client_options_x.h"
 
 class CSWSObjectX {
 public:

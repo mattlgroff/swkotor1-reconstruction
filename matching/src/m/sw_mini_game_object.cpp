@@ -5,16 +5,6 @@
 
 #pragma auto_inline(off)
 
-// FUNCTION: SWKOTOR 0x00673A10
-CSWMiniHitInfo::CSWMiniHitInfo()
-{
-    m_nDamage = 0;
-    m_nTargetMask = 0;
-    m_fSpeed = 0.0f;
-    m_fRateOfFire = 0.0f;
-    m_fLifespan = 0.0f;
-}
-
 // FUNCTION: SWKOTOR 0x0066BF10
 CSWMiniGameObjectArray::CSWMiniGameObjectArray()
 {

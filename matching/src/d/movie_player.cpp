@@ -125,7 +125,6 @@ public:
     CExoAliasList* m_pcExoAliasList; // 0x0c
 };
 
-extern CExoBase* g_pExoBase;        // 0x007a39e0
 
 class CSWGuiFadePanel;
 
@@ -662,7 +661,6 @@ extern "C" __declspec(dllimport) int __stdcall BinkBufferSetScale(BINKBUFFER* hB
                                                                   unsigned long nHeight);
 extern "C" char* __cdecl strchr(const char* s, int c);
 
-extern void* g_hInstance;           // 0x007a39c0
 int g_bMovieClassRegistered;        // 0x007a3cfc
 
 // NONMATCH: 65 insns, body and calls line up; the original keeps the

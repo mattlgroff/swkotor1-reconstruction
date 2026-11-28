@@ -6,9 +6,7 @@
 
 #define INVALID_OBJECT_ID 0x7f000000
 
-extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634 (5)
-extern const unsigned char OBJECT_TYPE_PLACEABLE;           // 0x00746638 (9)
-extern const unsigned char OBJECT_TYPE_DOOR;                // 0x00746639 (10)
+#include "shared/globals.h"
 
 class CSWSDoor : public CSWSObject {
 public:

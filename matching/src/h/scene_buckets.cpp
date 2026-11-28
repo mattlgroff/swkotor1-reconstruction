@@ -79,7 +79,6 @@ void CExoArrayList<T>::Allocate(int n)
 
 #include "shared/vector.h"
 
-
 inline Vector operator-(const Vector& a, const Vector& b)
 {
     return Vector(a.x - b.x, a.y - b.y, a.z - b.z);
@@ -203,7 +202,7 @@ public:
     void RenderGrassPolys(unsigned int material, Vector* eye, void* wind); // 0x004A6D30
 };
 
-class RenderCamera {
+class Camera {
 public:
     char pad_0x0[0x7c];
     Vector m_vPosition;                         // +0x7c
@@ -250,7 +249,6 @@ struct VertexPC {
 
 void DrawVerticesPC(int nMode, VertexPC* pVertices, int nCount);   // 0x00431F70
 unsigned char AurGrassMaterialInUse(unsigned int material); // 0x004A6840
-
 
 struct GobModel {
     char pad_0x0[0x50];
@@ -340,29 +338,12 @@ public:
 };
 
 // Scene light manager interface (Scene +0x80).
-class SceneLights {
-public:
-    virtual void PrioritizeLights(Vector* pos, int n);          // +0x00
-    virtual void V04();
-    virtual void ResetLights();                                 // +0x08, descriptive
-    virtual void V0C();
-    virtual void V10(); virtual void V14(); virtual void V18(); virtual void V1C();
-    // MSVC places overloaded virtuals in reverse declaration order.
-    virtual void EnableHighestPriorityLights(int n, int mask);  // +0x24
-    virtual void EnableHighestPriorityLights(int n);            // +0x20
-    virtual void AddFocusLight(int n, Vector pos);             // +0x28, descriptive
-    virtual void V2C(); virtual void V30(); virtual void V34();
-    virtual void SetupLightsForThisGob(Vector* pos, float radius); // +0x38
-    CExoArrayList<Light*>* GetLights(int nType);                // 0x004A4B10
-    char pad_0x4[0xdc];
-    int m_nE0;                                  // +0xe0
-    char pad_0xe4[8];
-    int m_nEC;                                  // +0xec
-};
+#include "shared/scene_lights.h"
 
 class Scene;
 class Gob;
 class Light;
+class CAurTexture;
 
 class WindManager {
 public:
@@ -472,7 +453,7 @@ public:
     int m_bFrameBufferEffects;                  // +0xd4, descriptive
     char pad_0xd8[0xc];
     void* m_pFilmNoiseTexture;                  // +0xe4
-    void* m_pDistortionTexture;                 // +0xe8
+    CAurTexture* m_pDistortionTexture;               // +0xe8
     char pad_0xec[0xc];
     SceneView m_View;                           // +0xf8, descriptive
     char pad_0xfc[0x270 - 0xfc];
@@ -486,32 +467,17 @@ public:
 };
 
 #include "shared/globals.h"
-extern void (*g_pfnBlurSetup)();                // 0x0078E39C, descriptive
-extern CExoArrayList<Gob*> g_l7FBFC0;           // 0x007FBFC0 distortion bucket
-extern CExoArrayList<Gob*> g_l7FBFF0;           // 0x007FBFF0 light saber bucket
-extern CExoArrayList<Gob*> g_l7FBF90;           // 0x007FBF90 blur bucket
 
-typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int texture);
-
-extern PFNCLIENTACTIVETEXTURE glClientActiveTextureARB; // 0x007BB6B0
-extern CExoArrayList<TriangleBin*> g_l80AA68;   // 0x0080AA68 triangle bins
-extern RenderCamera* g_pRenderCamera;
+#include "shared/gl_ext.h"
 // File-scope in the original scene unit: MSVC knows no pointer aliases
 // them, so it delays the high-dword stores past member loads.
 static __int64 g_nAnimStartTime;               // 0x007B9298
 static __int64 g_nAnimEndTime;                  // 0x007B9288
-extern CExoArrayList<PartEmitter*> g_l7FBF78;   // 0x007FBF78 emitter bucket
 static __int64 g_nRenderStartTime;              // 0x007B9280, descriptive
 static __int64 g_nRenderEndTime;                // 0x007B9290, descriptive
-typedef void (__stdcall* PFNPROGRAMPARAMETER)(unsigned int target, unsigned int index,
-                                              float x, float y, float z, float w);
-extern PFNPROGRAMPARAMETER g_pfnProgramEnvParameter4fARB;  // 0x007BB850
-extern PFNPROGRAMPARAMETER g_pfnProgramParameter4fNV;      // 0x007BB7AC
-extern void* g_pDistortionTexture;              // 0x007A68D8
-extern CExoArrayList<Gob*> g_l7FBFCC;           // 0x007FBFCC gob bucket
+
 
 CExoArrayList<int>* AurTextureGetOrdering();     // 0x00421970
-extern CExoArrayList<Part*> g_l80AA74;          // 0x0080AA74 trigger parts           // 0x007BB4E8
 
 // FUNCTION: SWKOTOR 0x00450150
 void Scene::DoBinBucket()
@@ -566,9 +532,9 @@ void Scene::RenderSinglePass()
         AurSetVertexProgramParameter(0x5b, m[1], m[4], m[7], pos.y);
         AurSetVertexProgramParameter(0x5a, m[2], m[5], m[8], pos.z);
         if (g_bARBVertexProgram)
-            g_pfnProgramEnvParameter4fARB(0x8620, 0x59, 0.0f, 0.0f, 0.0f, 1.0f);
+            glProgramEnvParameter4fARB(0x8620, 0x59, 0.0f, 0.0f, 0.0f, 1.0f);
         else
-            g_pfnProgramParameter4fNV(0x8620, 0x59, 0.0f, 0.0f, 0.0f, 1.0f);
+            glProgramParameter4fNV(0x8620, 0x59, 0.0f, 0.0f, 0.0f, 1.0f);
     }
     DoFog();
     glEnable(g_nGLBlend);

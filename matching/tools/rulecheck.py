@@ -150,6 +150,33 @@ def collect_types(units):
     return bodies, keywords
 
 
+UNIT_DEFINE = re.compile(r"(?m)^[ \t]*#[ \t]*define[ \t]+([A-Za-z_]\w*)")
+BODY_TEST = re.compile(r"(?m)^[ \t]*#[ \t]*(?:ifn?def[ \t]+|(?:el)?if[ \t]+!?[ \t]*defined[ \t]*\(?[ \t]*)([A-Za-z_]\w*)")
+
+
+def toggled_types(units):
+    """{type: {macro}}: types whose body tests a macro some .cpp defines.
+
+    A unit that defines the macro before including the header sees a different
+    body from every other unit, which is two definitions of one type (R1).
+    """
+    unit_macros = set()
+    for u in units:
+        if u.path.suffix == ".cpp":
+            unit_macros |= set(UNIT_DEFINE.findall(u.raw))
+    out = defaultdict(set)
+    for u in units:
+        t = u.raw
+        for m in TYPE_DEF.finditer(t):
+            close = match_close(t, m.end() - 1, "{", "}")
+            if close < 0:
+                continue
+            for x in BODY_TEST.findall(t[m.end():close]):
+                if x in unit_macros:
+                    out[m.group(2)].add(x)
+    return out
+
+
 # -------------------------------------------------------------- globals (R2)
 
 def extern_data(text):
@@ -271,9 +298,24 @@ def body_findings(body, head, raw_body):
         f.append(("R18", "inline assembly in the function body"))
     if re.search(r"\}\s*while\s*\(\s*0\s*\)", b):
         f.append(("R17", "do { } while (0) in a function body"))
-    m = SELF_ASSIGN.search(b)
-    if m:
-        f.append(("R17", f"self-assignment of {m.group(1)}"))
+    raw_all = raw_body.split("\n")
+
+    def line_labelled(pos):
+        """an R36 label on the line at pos or in the comment block just above it"""
+        ln = b.count("\n", 0, pos)
+        if re.search(r"//\s*(NOTE|BUG|R36)\b", raw_all[ln]):
+            return True
+        k = ln - 1
+        while k >= 0 and raw_all[k].strip().startswith("//"):
+            if re.search(r"//\s*(NOTE|BUG|R36)\b", raw_all[k]):
+                return True
+            k -= 1
+        return False
+
+    for m in SELF_ASSIGN.finditer(b):
+        if not line_labelled(m.start(1)):
+            f.append(("R17", f"self-assignment of {m.group(1)}"))
+            break
     if PLUS_ZERO.search(b):
         f.append(("R17", "`+ 0`"))
     if TIMES_ONE.search(b):
@@ -364,6 +406,7 @@ def main():
     bodies, keywords = collect_types(units.values())
     dup_types = {n for n, v in bodies.items() if len(v) > 1}
     kw_types = {n for n, v in keywords.items() if len(v) > 1}
+    toggles = toggled_types(units.values())
 
     # R2: every extern data declaration, by name
     decls = defaultdict(list)  # name -> [(type, path)]
@@ -441,6 +484,9 @@ def main():
                 f.append(("R1", f"{n} defined differently in {len(bodies[n])} places"))
             for n in sorted(words & kw_types):
                 f.append(("R1", f"{n} declared both class and struct"))
+            for n in sorted(words & set(toggles)):
+                if re.search(r"\b" + n + r"\b", seen_text):
+                    f.append(("R1", f"{n} changes with the unit macro {sorted(toggles[n])[0]}"))
             for n in sorted(words & pad_types):
                 if re.search(r"\b" + n + r"\b", seen_text):
                     f.append(("R17", f"{n} has a pad/dummy member"))
@@ -483,7 +529,8 @@ def main():
         print(f"  {rule}: {per_rule[rule]} byte-identical functions blocked")
     copies = sum(len(ps) for n in dup_types for ps in bodies[n].values())
     print(f"R1 backlog: {len(dup_types)} types defined differently in {copies} places; "
-          f"{len(kw_types)} declared both class and struct")
+          f"{len(kw_types)} declared both class and struct; "
+          f"{len(toggles)} whose body changes with a unit's #define")
     if args.list is not None and "R1" in args.list:
         for n in sorted(dup_types, key=lambda n: -sum(len(p) for p in bodies[n].values())):
             print(f"  {n}: {sum(len(p) for p in bodies[n].values())} definitions, "

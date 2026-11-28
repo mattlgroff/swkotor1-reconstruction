@@ -676,7 +676,6 @@ public:
     CExoAliasList* m_pcExoAliasList;                        // 0x0c
 };
 
-extern CExoBase* g_pExoBase;                                // 0x007A39E0
 
 // FUNCTION: SWKOTOR 0x00542C60
 int CSWVirtualMachineCommands::ExecuteCommandSetGlobalString(int nCommandId, int nParameters)

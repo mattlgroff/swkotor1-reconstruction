@@ -360,7 +360,6 @@ public:
 
 #include "shared/render_window.h"
 
-extern CExoSound* g_pExoSound;      // 0x007a39ec
 
 // FUNCTION: SWKOTOR 0x00401d90
 void __cdecl AppDeactivate()

@@ -306,15 +306,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetRacialType(int nCommandId, int n
 
 
 // Last-spell state shared by creatures, placeables and doors (CSWSObject).
-struct CSWSObjectSpellView {
-    char pad_0x0[0x1bc];
-    unsigned long m_oidSpellTarget;                         // 0x1bc
-    int m_nSpellId;                                         // 0x1c0
-    char pad_0x1c4[0x1d8 - 0x1c4];
-    unsigned long m_oidLastSpellCaster;                     // 0x1d8
-    int m_nLastSpellId;                                     // 0x1dc
-    int m_bLastSpellHarmful;                                // 0x1e0
-};
+#include "shared/sws_object_spell_view.h"
 
 struct CSWSCreatureSpellItemView {
     char pad_0x0[0x95c];

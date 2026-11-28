@@ -3,7 +3,6 @@
 class CVirtualMachine { public: int RunScript(CExoString* sScript,unsigned long oid,int bArg); /* 0x005D0FC0 */ };
 #include "shared/globals.h"
 class CExoSound { public: void SetSoundMode(int nMode); /* 0x005D5E80 */ };
-extern CExoSound* g_pExoSound; // 0x007A39EC
 class CSWSCreatureStats { public: int CanLevelUp(); /* 0x005A6810 */ };
 class CSWSCreature { public: char pad_0x0[0xa74]; CSWSCreatureStats* m_pStats; };
 class CSWCCreature { public: CSWSCreature* GetServerCreature(); /* 0x0060FB20 */ };

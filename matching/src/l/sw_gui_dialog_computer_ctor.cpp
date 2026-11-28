@@ -1,7 +1,6 @@
 // CSWGuiDialogComputer constructor (swguidialog.o, vtable 0x00755888): the
 // computer terminal panel with its looping hum, reply list and the skill /
 // spike / repair-unit counters.
-#define L_GUI_TEXT_PARAMS_EXACT
 #include "l/sw_gui_tutorial_box.h"
 
 class CSWSkill {

@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "a/sws_creature.h"
-extern const unsigned long OBJECT_INVALID; // 0x00746644
+#include "shared/object_id.h"
 
 // NONMATCH: 4 diff: escaped local stack-slot allocation.
 // FUNCTION: SWKOTOR 0x005136B0

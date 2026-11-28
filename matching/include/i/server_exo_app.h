@@ -127,9 +127,6 @@ class CSWSArea;
 class CSWSCreature;
 class CSWSObject;
 
-extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634
-extern const unsigned char OBJECT_TYPE_PLACEABLE;           // 0x00746638
-extern const unsigned char OBJECT_TYPE_DOOR;                // 0x00746639
 
 template <class T>
 class CExoArrayList {
@@ -358,11 +355,7 @@ public:
     char m_pad10c[0x42c - 0x10c];
 };
 
-class CSWS2DArrays {
-public:
-    char m_pad0[0xc];
-    C2DA* m_pAppearanceTable;                       // +0x0c (placeholder name)
-};
+#include "shared/sws2_d_arrays.h"
 
 class CSWRules {
 public:
@@ -397,7 +390,6 @@ public:
     CExoDebug* m_pcExoDebug;                        // +0x08
     CExoAliasList* m_pcExoAliasList;                // +0x0c
 };
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 class CSWSCreatureStats {
 public:

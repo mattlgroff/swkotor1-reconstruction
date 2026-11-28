@@ -839,12 +839,26 @@ int CSWSCreatureStats::GetUseMonkAttackTables(int bRanged)
     return 0;
 }
 
+// NOTE: the same size and droid tests as GetUnarmedDamageDie below, but every
+// branch gives one die; the retail build still stores the size.
 // FUNCTION: SWKOTOR 0x005A4D40
 unsigned char CSWSCreatureStats::GetUnarmedDamageDice()
 {
-    volatile int nSize = m_pBaseCreature->m_nCreatureSize;
-    m_pBaseCreature->GetIsDroid();
-    return 1;
+    unsigned char nDice;
+    int nSize = m_pBaseCreature->m_nCreatureSize;
+    if (m_pBaseCreature->GetIsDroid() == 1) {
+        if (nSize > 2)
+            nDice = 1;
+        else
+            nDice = 1;
+    }
+    else {
+        if (nSize <= 2)
+            nDice = 1;
+        else
+            nDice = 1;
+    }
+    return nDice;
 }
 
 // FUNCTION: SWKOTOR 0x005A4D60

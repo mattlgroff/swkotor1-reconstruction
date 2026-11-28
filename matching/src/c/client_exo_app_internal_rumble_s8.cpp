@@ -55,7 +55,6 @@ public:
     void GetListenerPosition(Vector* pPosition);    // 0x005D63C0
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class CClientExoAppInternal {
 public:

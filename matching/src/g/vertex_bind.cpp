@@ -14,17 +14,8 @@ __declspec(dllimport) void __stdcall glTexCoordPointer(int size, unsigned int ty
 #define GL_UNSIGNED_BYTE 0x1401
 #define GL_TEXTURE0_ARB 0x84c0
 
-typedef void(__stdcall* PFNGLACTIVETEXTUREARB)(unsigned int tex);
-extern PFNGLACTIVETEXTUREARB glClientActiveTextureARB;     // 0x007bb6b0
-typedef void(__stdcall* PFNVERTEXATTRIBPTR)(unsigned int index, int size,
-    unsigned int type, unsigned char normalized, int stride, const void* p);
-typedef void(__stdcall* PFNVERTEXATTRIBPTRNV)(unsigned int index, int size,
-    unsigned int type, int stride, const void* p);
-typedef void(__stdcall* PFNVERTEXATTRIBARRAY)(unsigned int index);
-extern PFNVERTEXATTRIBPTR g_pglVertexAttribPointerARB;      // 0x007bb7d8
-extern PFNVERTEXATTRIBPTRNV g_pglVertexAttribPointerNV;     // 0x007bb854
-extern PFNVERTEXATTRIBARRAY g_pfnEnableVertexAttribArray;   // 0x007bb79c
-extern PFNVERTEXATTRIBARRAY g_pfnDisableVertexAttribArray;  // 0x007bb770
+#include "shared/gl_ext.h"
+
 #include "shared/globals.h"
 
 int HasMultiTexture();              // 0x0045f710
@@ -68,9 +59,9 @@ static inline void VertexAttribPointer(unsigned int nIndex, int nSize, unsigned 
                                        int nStride, const void* p)
 {
     if (g_bARBVertexProgram)
-        g_pglVertexAttribPointerARB(nIndex, nSize, eType, 0, nStride, p);
+        glVertexAttribPointerARB(nIndex, nSize, eType, 0, nStride, p);
     else if (g_bNVVertexProgram && AurVertexProgramsAvailable())
-        g_pglVertexAttribPointerNV(nIndex, nSize, eType, nStride, p);
+        glVertexAttribPointerNV(nIndex, nSize, eType, nStride, p);
 }
 
 // FUNCTION: SWKOTOR 0x00425520
@@ -113,23 +104,23 @@ void AurVARBindVertices(int a, int nFlags, int nId, int nCount, MdlNodeTriMesh* 
         VertexAttribPointer(0xc, 3, GL_FLOAT, pNode->m_nVertexStride, pBase + pNode->m_nTangentOffset);
         VertexAttribPointer(0xd, 3, GL_FLOAT, pNode->m_nVertexStride, pBase + pNode->m_nTangentOffset + 0xc);
         VertexAttribPointer(0xe, 3, GL_FLOAT, pNode->m_nVertexStride, pBase + pNode->m_nTangentOffset + 0x18);
-        g_pfnEnableVertexAttribArray(0xc);
-        g_pfnEnableVertexAttribArray(0xd);
-        g_pfnEnableVertexAttribArray(0xe);
+        glEnableVertexAttribArrayARB(0xc);
+        glEnableVertexAttribArrayARB(0xd);
+        glEnableVertexAttribArrayARB(0xe);
     } else {
-        g_pfnDisableVertexAttribArray(0xc);
-        g_pfnDisableVertexAttribArray(0xd);
-        g_pfnDisableVertexAttribArray(0xe);
+        glDisableVertexAttribArrayARB(0xc);
+        glDisableVertexAttribArrayARB(0xd);
+        glDisableVertexAttribArrayARB(0xe);
     }
     if (pNode->AsMdlNodeSkin()) {
         VertexAttribPointer(1, 4, GL_FLOAT, pNode->m_nVertexStride,
                             pBase + pNode->AsMdlNodeSkin()->m_nWeightOffset);
         VertexAttribPointer(4, 4, GL_FLOAT, pNode->m_nVertexStride,
                             pBase + pNode->AsMdlNodeSkin()->m_nBoneOffset);
-        g_pfnEnableVertexAttribArray(1);
-        g_pfnEnableVertexAttribArray(4);
+        glEnableVertexAttribArrayARB(1);
+        glEnableVertexAttribArrayARB(4);
     } else {
-        g_pfnDisableVertexAttribArray(1);
-        g_pfnDisableVertexAttribArray(4);
+        glDisableVertexAttribArrayARB(1);
+        glDisableVertexAttribArrayARB(4);
     }
 }

@@ -116,7 +116,6 @@ public:
     CExoTimers* m_pTimers;                          // 0x04
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 void SetClearColorFromString(const char* sColor);   // 0x00401690
 void RunFrame(float fDelta, int a, int b);          // 0x00401C10

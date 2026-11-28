@@ -121,7 +121,6 @@ public:
     void PlaySoundEffect(const CResRef& cRes, Vector vPos, int a, unsigned char nGroup,
                          int b, int c, int d, int e);   // 0x005D5E10
 };
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class CSWBaseItem {
 public:

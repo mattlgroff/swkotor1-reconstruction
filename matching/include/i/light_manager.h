@@ -156,15 +156,7 @@ public:
 };
 
 // The light's model node; only the shadow priority is read here.
-class LightNode {
-public:
-    char pad_0x0[0x90];
-    int m_nShadowPriority;                              // +0x90 (placeholder name)
-    char pad_0x94[0xa8 - 0x94];
-    int m_bNoFade;                                      // +0xa8 (placeholder name)
-
-    LightNode* AsMdlNodeLight();                        // 0x0043E3D0
-};
+#include "shared/light_node.h"
 
 // PartLight (a model Part).
 class Light {
@@ -278,12 +270,11 @@ public:
 #include "shared/globals.h"
 void AurEnableHeadLight();                              // 0x0044DA60
 float* AurMakeColor(const Vector& vColor, const float& fAlpha);     // 0x004AAAB0
-class RenderCamera {
+class Camera {
 public:
     char pad_0x0[0x7c];
     Vector m_vPosition;                                 // +0x7c
 };
-extern RenderCamera* g_pRenderCamera;                   // 0x007BB4E8
 void AurDisableHeadLight();                             // 0x0044DA80
 
 int __cdecl LightCompare(const void* a, const void* b); // 0x004A28C0 (placeholder name)

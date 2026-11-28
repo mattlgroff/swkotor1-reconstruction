@@ -1,6 +1,7 @@
 // environment-mapped render paths (0x0046FF70-0x00470750).
 
 #include "h/render.h"
+#include "shared/combiners.h"
 
 static __forceinline void SetupEnvTexGen(CAurTexture* pTex)
 {
@@ -45,14 +46,14 @@ void RenderEnvironmentMapped(PartTriMesh* pPart, int, unsigned char bDecal)
     if (g_bOnePassEnvMap && AurOnePassEnvMapAvailable()) {
         glDisable(g_eGLTexture2D);
         if (bDecal && AurGLCaps640())
-            g_pfnCombiner(0x14, pMesh->m_pMaterial->m_pTexture0, pTex, 0, 0);
+            g_pfnEnableCombiners(0x14, pMesh->m_pMaterial->m_pTexture0, pTex, 0, 0);
         else
-            g_pfnCombiner(0x13, pMesh->m_pMaterial->m_pTexture0, pTex, 0, 0);
+            g_pfnEnableCombiners(0x13, pMesh->m_pMaterial->m_pTexture0, pTex, 0, 0);
         DoEnvMapTransform(pTex, 1);
         Vector vColor(1.0f, 1.0f, 1.0f);
-        g_pfnCombinerConst(&vColor, fAlpha);
+        g_pfnSetCombinerConstant0(vColor, fAlpha);
         RenderFlat(pPart);
-        g_pfnCombiner(0x20, 0, 0, 0, 0);
+        g_pfnEnableCombiners(0x20, 0, 0, 0, 0);
         UndoEnvMapTransform(pTex, 1);
         GLRender::ActivateTextureUnit(1);
         if (AurGLCaps8B0())
@@ -133,13 +134,13 @@ void RenderEMLM(PartTriMesh* pPart)
     GLRender::ActivateTextureStage(1);
     glEnableClientState(g_eTexCoordArray);
     GLRender::ActivateTextureStage(0);
-    g_pfnCombiner(0x16, pMesh->m_pMaterial->m_pTexture0, pTex, pMesh->m_pMaterial->m_pTexture1, 0);
+    g_pfnEnableCombiners(0x16, pMesh->m_pMaterial->m_pTexture0, pTex, pMesh->m_pMaterial->m_pTexture1, 0);
     DoEnvMapTransform(pTex, 2);
     Vector vColor(1.0f, 1.0f, 1.0f);
-    g_pfnCombinerConst(&vColor, fAlpha);
+    g_pfnSetCombinerConstant0(vColor, fAlpha);
     RenderFlat(pPart);
     UndoEnvMapTransform(pTex, 2);
-    g_pfnCombiner(0x25, 0, 0, 0, 0);
+    g_pfnEnableCombiners(0x25, 0, 0, 0, 0);
     GLRender::ActivateTextureStage(1);
     glDisableClientState(g_eTexCoordArray);
     GLRender::ActivateTextureStage(0);
@@ -170,19 +171,19 @@ void RenderNV1xEMLM(PartTriMesh* pPart)
     GLRender::ActivateTextureStage(1);
     glEnableClientState(g_eTexCoordArray);
     GLRender::ActivateTextureStage(0);
-    g_pfnCombiner(0x1a, pMesh->m_pMaterial->m_pTexture0, pMesh->m_pMaterial->m_pTexture1, 0, 0);
+    g_pfnEnableCombiners(0x1a, pMesh->m_pMaterial->m_pTexture0, pMesh->m_pMaterial->m_pTexture1, 0, 0);
     RenderFlat(pPart);
-    g_pfnCombiner(0x20, 0, 0, 0, 0);
+    g_pfnEnableCombiners(0x20, 0, 0, 0, 0);
     GLRender::ActivateTextureStage(1);
     glDisableClientState(g_eTexCoordArray);
     GLRender::ActivateTextureStage(0);
     _glBlendFunc(2, 2);
-    g_pfnCombiner(0x15, pMesh->m_pMaterial->m_pTexture0, pMesh->m_pMaterial->m_pEnvMap, 0, 0);
+    g_pfnEnableCombiners(0x15, pMesh->m_pMaterial->m_pTexture0, pMesh->m_pMaterial->m_pEnvMap, 0, 0);
     DoEnvMapTransform(pMesh->m_pMaterial->m_pEnvMap, 1);
     Vector vColor(1.0f, 1.0f, 1.0f);
-    g_pfnCombinerConst(&vColor, 1.0f);
+    g_pfnSetCombinerConstant0(vColor, 1.0f);
     RenderFlat(pPart);
-    g_pfnCombiner(0x20, 0, 0, 0, 0);
+    g_pfnEnableCombiners(0x20, 0, 0, 0, 0);
     glDisable(g_eGLTexGenS);
     glDisable(g_eGLTexGenT);
     glDisable(g_eGLTexGenR);

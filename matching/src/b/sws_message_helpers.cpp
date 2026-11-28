@@ -30,7 +30,7 @@ public:
 };
 
 // Object type of creatures (.rdata 0x00746634).
-extern const unsigned char OBJECT_TYPE_CREATURE;
+#include "shared/globals.h"
 
 // Classes that use spells per day (cdecl).
 int IsSpellCasterClass(int nClass);                 // 0x005BE4A0

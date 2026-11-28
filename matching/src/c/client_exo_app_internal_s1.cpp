@@ -218,13 +218,7 @@ public:
     int array_size;                                 // 0x08
 };
 
-class CExoMoviePlayer {
-public:
-    int GetState();                                 // 0x0070C1F0
-    void ShowFadePanel();                           // 0x0070C210
-    void PlayMoviesAsync(const CExoStringMovieList& lstMovies, int a, int b);  // 0x0070C200
-    void PlayMoviesAsync(CExoArrayList<CExoString>& lstMovies, unsigned long nFlags, CExoArrayList<int>* pMovieFlags);  // 0x0070C200
-};
+#include "shared/exo_movie_player.h"
 
 // FUNCTION: SWKOTOR 0x00602C90
 void CClientExoAppInternal::UpdateConnectionStall()

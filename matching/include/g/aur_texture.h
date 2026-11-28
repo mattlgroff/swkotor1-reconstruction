@@ -120,9 +120,6 @@ public:
         m_p = 0;
     }
 #else
-#ifdef G_SAFE_POINTER_ASSIGN_FORCEINLINE
-    __forceinline
-#endif
     SafePointer<T>& operator=(T* p)
     {
         if (m_p)

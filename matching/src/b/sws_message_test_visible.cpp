@@ -6,7 +6,7 @@
 #include "b/server_exo_app.h"
 #include <stdlib.h>
 
-extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634 (5)
+#include "shared/globals.h"
 #include "shared/globals.h"
 
 // Trap trigger (vtable slot 0x40, AsSWSTrigger).
