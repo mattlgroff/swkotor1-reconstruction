@@ -8,20 +8,7 @@ class CResRef { public: CResRef(); char m_ref[16]; };
 #include "shared/swc_area_object.h"
 
 #include "shared/vector.h"
-class CSWCAmbientSound {
-public:
-    virtual void PlayMusic(int);
-    virtual void SetMusicDelay(int);
-    virtual void SetMusicDayTrack(int);
-    virtual void SetMusicNightTrack(int);
-    virtual void PlayBattleMusic(int);
-    virtual void SetBattleMusicTrack(int);
-    virtual void PlayAmbientSound(int);
-    virtual void SetAmbientDayTrack(int);
-    virtual void SetAmbientNightTrack(int);
-    void SetAmbientDayVolume(int);
-    void SetAmbientNightVolume(int);
-};
+#include "shared/swc_ambient_sound.h"
 class CSWCArea {
 public:
     char pad_000[0x1dc];

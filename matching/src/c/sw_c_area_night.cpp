@@ -19,10 +19,7 @@ public:
 
 extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
-class CSWCAmbientSound {
-public:
-    void Activate();                                // 0x0068D4A0
-};
+#include "shared/swc_ambient_sound.h"
 
 class CLightningObject {
 public:

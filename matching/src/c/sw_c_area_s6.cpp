@@ -141,13 +141,7 @@ void AurGrassClearInfo();                           // 0x004A67A0
 
 class CSWCArea;
 
-class CSWCAmbientSound {
-public:
-    CSWCAmbientSound(CSWCArea* pArea);              // 0x0068DF40
-    ~CSWCAmbientSound();                            // 0x0068E0D0
-    void StopAll(int bFade);                        // 0x0068E1B0
-    char pad_0x0[0x10c];
-};
+#include "shared/swc_ambient_sound.h"
 
 class CSWSArea {
 public:

@@ -149,10 +149,7 @@ public:
     char pad_0x5c[0x5f8 - 0x5c];
 };
 
-class CSWCAmbientSound {
-public:
-    void StopAll(int b);                            // 0x0068E1B0
-};
+#include "shared/swc_ambient_sound.h"
 
 class CServerExoAppS1 {
 public:

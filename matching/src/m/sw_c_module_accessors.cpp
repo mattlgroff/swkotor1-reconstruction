@@ -2,10 +2,7 @@
 
 class CSWCMiniGame;
 
-class CSWCAmbientSound {
-public:
-    void UpdateTimeOfDay();                           // 0x0068D690
-};
+#include "shared/swc_ambient_sound.h"
 
 class CSWCArea {
 public:
