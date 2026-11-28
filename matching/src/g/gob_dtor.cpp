@@ -21,10 +21,7 @@ class Gob;
 class Part;
 class Scene;
 class AnimRun;
-class GobEventHandler {
-public:
-    char szEvent[0x20];
-};
+#include "shared/gob_event_handler.h"
 
 class Scene {
 public:

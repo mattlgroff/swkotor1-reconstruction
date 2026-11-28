@@ -126,7 +126,7 @@ class Part;
 class Scene;
 class AnimRun;
 class GobAttachment;
-class GobEventHandler;
+struct GobEventHandler;
 
 class Gob;
 
