@@ -251,19 +251,7 @@ public:
 // Projectile -----------------------------------------------------------------
 
 // One leg of the projectile's flight path (operator new 0x34).
-struct CSWCProjectileBehavior {
-    Vector m_vStart;                                // 0x00
-    Vector m_vEnd;                                  // 0x0c
-    unsigned long m_oidTarget;                      // 0x18
-    int m_nFlags;                                // 0x1c
-    unsigned long m_nDuration;                      // 0x20
-    unsigned long m_nDelay;                         // 0x24
-    float m_fSpeed;                                 // 0x28
-    unsigned char m_nState;                         // 0x2c
-    unsigned char m_nType;                          // 0x2d
-    char pad_0x2e[2];
-    unsigned long m_n30;                            // 0x30
-};
+#include "shared/swc_projectile_behavior.h"
 
 // vtable 0x00757CC8, size 0x1C8.
 class CSWCProjectile : public CSWCObject {
