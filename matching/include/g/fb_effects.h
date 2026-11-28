@@ -209,10 +209,7 @@ void RenderOverlayConvolution(unsigned int nTexture);        // 0x0042cc60
 
 void FrameBufferModificationsATI(unsigned char nMask);       // 0x00435bd0
 
-class GLRender {
-public:
-    static void ActivateTextureStage(int nStage);            // 0x0041fe80
-};
+#include "shared/gl_render.h"
 
 void CopySoftShadowsATI();                  // 0x0042d140
 void SetUpSoftShadows();                    // 0x0042d1c0

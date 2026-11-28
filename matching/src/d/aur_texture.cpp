@@ -876,10 +876,7 @@ void CAurTextureBasic::SetScheme(int* pScheme, int nScheme)
     m_nScheme = (short)nScheme;
 }
 
-class GLRender {
-public:
-    static void ActivateTextureStage(int nStage);
-};
+#include "shared/gl_render.h"
 
 // FUNCTION: SWKOTOR 0x0041fe80
 void GLRender::ActivateTextureStage(int nStage)

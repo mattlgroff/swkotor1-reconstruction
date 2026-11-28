@@ -28,10 +28,7 @@ inline void _glScalef(float x, float y, float z)
     glScalef(x, y, z);
 }
 
-class GLRender {
-public:
-    static void Transform(const Vector* pPos, const Quaternion* pOri, int bForce);  // 0x0046F060
-};
+#include "shared/gl_render.h"
 
 #include "shared/globals.h"
 

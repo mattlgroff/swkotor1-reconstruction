@@ -201,10 +201,7 @@ public:
     virtual void Bind();                        // +0xb4
 };
 
-class GLRender {
-public:
-    static void ActivateTextureStage(int nStage);   // 0x0041FE80
-};
+#include "shared/gl_render.h"
 void SetCurrentStageTID(int nStage, int nTID);      // 0x00426550
 void MakeLookUpTexture(float fPower);               // 0x00423D80
 CAurTexture* AurTextureGetNormalizationCubeMap();   // 0x004233E0
