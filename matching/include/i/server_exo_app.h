@@ -355,11 +355,7 @@ public:
     char m_pad10c[0x42c - 0x10c];
 };
 
-class CSWS2DArrays {
-public:
-    char m_pad0[0xc];
-    C2DA* m_pAppearanceTable;                       // +0x0c (placeholder name)
-};
+#include "shared/sws2_d_arrays.h"
 
 class CSWRules {
 public:

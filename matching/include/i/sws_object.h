@@ -517,10 +517,7 @@ struct CSWFeat {
     unsigned short m_nSpellId;                      // 0x04 (placeholder name)
 };
 
-struct CSWS2DArrays {
-    char pad_0x0[0x38];
-    C2DA* m_pPortraits;                             // 0x38 (placeholder name)
-};
+#include "shared/sws2_d_arrays.h"
 
 class CSWSpell;
 
