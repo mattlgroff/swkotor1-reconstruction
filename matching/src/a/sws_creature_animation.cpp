@@ -11,7 +11,9 @@ public:
     int AnimationFireAndForget(unsigned short nAnimation); // 0x0063C380
 };
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
     void SetUpdateFlag(unsigned long nFlag);        // 0x004CC1F0
 };

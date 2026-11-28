@@ -215,12 +215,8 @@ public:
     int m_bA8C;                                     // 0xa8c (descriptive)
 };
 
-class CSWSObject {
+class CSWSObject : public CGameObject {
 public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
 };
 
 struct CSWPartyMember {

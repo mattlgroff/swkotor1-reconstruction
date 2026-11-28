@@ -233,10 +233,12 @@ int CSWSCreature::AIActionChangeFacingPoint(CSWSObjectActionNode* pNode)
 }
 
 // Partial CSWSObject layout used by the object's AsSWSObject virtual return.
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
     CSWSArea* GetArea();                            // 0x004CB120
-    char pad_0[0x90];
+    char pad_0xc[0x84];
     Vector m_vPosition;
 };
 

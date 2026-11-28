@@ -34,7 +34,7 @@ void __cdecl DoorAnimationEvent(void*,const char* event,CSWCDoor* self)
   if(_strnicmp(event,"opening",7) && _strnicmp(event,"closing",7)) return;
  }
  CSWSDoor* door=0;
- if(self->GetServerObject()) door=self->GetServerObject()->AsSWCDoor();
+ if(self->GetServerObject()) door=self->GetServerObject()->AsSWSDoor();
  if(door) door->MoveToNextOpenState();
 }
 #define UPDATE_AI_BODY(extra) \

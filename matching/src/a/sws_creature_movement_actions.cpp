@@ -111,7 +111,9 @@ int CSWSCreature::AIActionCheckMoveToFollowRadius(CSWSObjectActionNode* pNode)
     return AI_ACTION_RESULT_005140E0;
 }
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
     CSWSArea* GetArea(); // 0x004CB120
 };

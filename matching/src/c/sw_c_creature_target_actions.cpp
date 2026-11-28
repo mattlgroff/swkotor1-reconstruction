@@ -18,7 +18,9 @@ class CSWCPlaceable;
 
 typedef CExoArrayList<CSWGuiInterfaceAction> CSWGuiActionList;
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
     int GetReputation(unsigned long oidSource, int bUnknown);  // 0x0057CB80
 };

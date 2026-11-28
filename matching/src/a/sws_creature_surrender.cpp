@@ -13,7 +13,9 @@ public:
     CSWSFaction* m_pFactions;                       // 0x00
 };
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
     void ClearAllEffects(int bArg);                 // 0x004D0940
 };

@@ -98,11 +98,11 @@ public:
     CExoLinkedListInternal* m_pList;
 };
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
-    char m_pad0[4];
-    unsigned long m_idSelf;                         // +0x04
-    char m_pad8[0x78 - 8];
+    char pad_0xc[0x6c];
     int m_nAILevel;                                 // +0x78
 };
 

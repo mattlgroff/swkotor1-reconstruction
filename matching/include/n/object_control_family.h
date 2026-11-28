@@ -151,7 +151,9 @@ public:
     int AddWorldTimes(unsigned long,unsigned long,unsigned long,unsigned long,unsigned long*,unsigned long*);
 };
 class CClientExoApp { public: CSWCModule* GetModule(); CWorldTimer* GetWorldTimer(); CGuiInGame* GetInGameGui(); unsigned char GetActivePauseState(); };
-class CSWSObject { public: void AttachmentFromClientObject(CSWCObject*); };
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject { public: void AttachmentFromClientObject(CSWCObject*); };
 #include "shared/game_object.h"
 class CServerExoApp { public: unsigned long ClientToServerObjectID(unsigned long); CGameObject* GetGameObject(unsigned long); };
 #include "shared/app_manager.h"

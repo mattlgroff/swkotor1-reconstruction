@@ -198,7 +198,9 @@ public:
 
 #include "shared/swc_visual_effect_on_object.h"
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
     void DetachFromClientObject();                  // 0x004CC320
 };

@@ -4,12 +4,14 @@
 
 #include "shared/vector_ops.h"
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
     void ClearAllActions(int bClearCombat);         // 0x004CCD80
     void SetOrientation(const Vector& vOrientation);    // 0x004CD170
 
-    char pad_0x0[0xe8];
+    char pad_0xc[0xdc];
     int m_bCommandable;                             // 0xe8
     char pad_0xec[0x21c - 0xec];
     int m_n21C;                                     // 0x21c (placeholder name)

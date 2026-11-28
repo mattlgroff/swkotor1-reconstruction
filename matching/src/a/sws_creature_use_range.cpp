@@ -1,10 +1,12 @@
 // Worker A round s7: CSWSCreature::GetIsInUseRange (nwscreature.cpp).
 #include "a/sws_creature.h"
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
     CSWSArea* GetArea();                            // 0x004CB120
-    char pad_0x0[0x8c];
+    char pad_0xc[0x80];
     unsigned long m_oidArea;                        // 0x8c
 };
 

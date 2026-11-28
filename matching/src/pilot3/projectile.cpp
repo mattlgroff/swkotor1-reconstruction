@@ -66,14 +66,14 @@ public:
 
 #include "shared/globals.h"
 
-class CSWSObject {
+class CSWSObject : public CGameObject {
 public:
     void BroadcastSafeProjectile(unsigned long oidOriginator, unsigned long oidTarget,
                                  const Vector &vOrigin, const Vector &vTarget,
                                  unsigned long a4, unsigned long a5, unsigned long a6,
                                  unsigned long a7, unsigned long a8, unsigned long a9,
                                  unsigned long a10);
-    char pad_0x0[0x8c];
+    char pad_0xc[0x80];
     unsigned long m_oidArea; // +0x8c
 };
 

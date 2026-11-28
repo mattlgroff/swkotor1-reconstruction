@@ -414,19 +414,19 @@ public:
     CExoLinkedListInternal* m_pList;
 };
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
-    virtual ~CSWSObject();
     CSWSArea* GetArea();                            // 0x004CB120
     void SetOrientation(const Vector& vOrientation);    // 0x004CD170
-    unsigned long m_idSelf;                         // +0x04
 };
 
 class CSWSTrigger : public CSWSObject {
 public:
     unsigned long GetTargetArea();                  // 0x0058C830
     int FUN_0058d8c0(Vector* pIn, Vector* pOut);    // 0x0058D8C0
-    char m_pad8[0x2b4 - 8];
+    char pad_0xc[0x2b4 - 0xc];
     int m_bAreaTransition;                          // +0x2b4
 };
 
@@ -459,7 +459,7 @@ public:
     CSWSCreatureStats* GetCreatureStats() { return m_pStats; }
     void DumpToLog();                               // 0x004EF640
     void RemoveFromArea(int bArg);                  // 0x004F0FD0
-    char m_pad8[0x124 - 8];
+    char pad_0xc[0x124 - 0xc];
     CExoArrayList<CGameEffect*> m_appliedEffects;   // +0x124
     char m_pad130[0x34c - 0x130];
     int m_bLoadedFromSave;                          // +0x34c (placeholder name)

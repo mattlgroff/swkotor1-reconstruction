@@ -129,7 +129,7 @@ class CSWCPlaceable;
 
 #include "shared/game_object.h"
 
-class CSWSObject {
+class CSWSObject : public CGameObject {
 public:
     int ReplyDialog(unsigned long nPlayerId, int nReply, int bEnded, int nArg4, int bArg5);  // 0x004CB480
 };

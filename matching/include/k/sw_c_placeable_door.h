@@ -121,27 +121,10 @@ public:
 };
 class CSWSPlaceable { public: char pad0[0x230]; unsigned char m_nAppearance; char pad231[0x340-0x231]; int m_bHostile; char pad344[0x440-0x344]; int m_n440; int m_n444; char pad448[4]; void* m_pCreature; unsigned char GetAppearance() { return m_nAppearance; } };
 class CSWSDoor { public: void MoveToNextOpenState(); };
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
- virtual void v00();
- virtual void v04();
- virtual void v08();
- virtual void v0C();
- virtual void v10();
- virtual void v14();
- virtual CSWSDoor* AsSWCDoor();
- virtual void v1C();
- virtual void v20();
- virtual void v24();
- virtual void v28();
- virtual void v2C();
- virtual void v30();
- virtual void v34();
- virtual void v38();
- virtual void v3C();
- virtual void v40();
- virtual void v44();
- virtual CSWSPlaceable* AsSWCPlaceable();
 };
 #include "shared/swc_object_server_link.h"
 class CSWCObject : public CSWCObjectServerLink {
@@ -248,7 +231,7 @@ public:
  CExoString GetName(); void ActionMenuLock(int,CSWCCreature*);
  void UnloadLight(); int LoadLight(); /* 006826E0, descriptive */ int GetIsHostile(); int PlayAnimation(unsigned short,float,int);
  CSWSPlaceable* GetServerPlaceable();
- CSWSPlaceable* ServerInline() { if(GetServerObject()) return GetServerObject()->AsSWCPlaceable(); return 0; }
+ CSWSPlaceable* ServerInline() { if(GetServerObject()) return GetServerObject()->AsSWSPlaceable(); return 0; }
  void UpdateAI(); void UpdateAnimation();
  int SetShadow(); void SetAppearance(unsigned char); float GetCanSeeHeight();
  unsigned char GetReticlePoint(Vector&); // 00682FF0
