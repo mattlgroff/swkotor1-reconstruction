@@ -267,10 +267,7 @@ public:
 };
 
 
-struct CClientOptionsX {
-    char pad_0x0[0x6d];
-    unsigned char m_nCameraMode;                    // 0x6d
-};
+#include "shared/client_options_x.h"
 
 class CClientExoApp {
 public:

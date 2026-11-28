@@ -202,11 +202,7 @@ public:
     void* m_p48;                                    // 0x48
 };
 
-struct CClientOptionsX {
-    char pad_0x0[0x6c];
-    unsigned char m_nShadows;                       // 0x6c
-    unsigned char m_nCameraMode;                    // 0x6d
-};
+#include "shared/client_options_x.h"
 
 class CClientExoApp {
 public:
