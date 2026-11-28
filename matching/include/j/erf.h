@@ -84,23 +84,7 @@ public:
 #include "shared/erf_string.h"
 
 // Key list entry (0x18 bytes).
-class CERFKey {
-public:
-    CERFKey()
-    {
-        memset(m_cResRef, 0, 16);
-        memset(&m_nUnused, 0, 2);
-        m_nResID = 0;
-        m_nResType = 0xFFFF;
-    }
-    ~CERFKey();
-    int Write(CExoFile* pFile);
-
-    char m_cResRef[16];                             // 0x00
-    unsigned long m_nResID;                         // 0x10
-    unsigned short m_nResType;                      // 0x14
-    unsigned short m_nUnused;                       // 0x16
-};
+#include "shared/erf_key.h"
 
 // Resource list entry (0x0C bytes).
 class CERFRes {
