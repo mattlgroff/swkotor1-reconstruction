@@ -103,16 +103,7 @@ public:
 
 // One 2DA row of AmbientMusic / AmbientSound: the looping resource plus
 // up to three stingers. Size 0x20.
-class CSWCAmbientSoundList {
-public:
-    CSWCAmbientSoundList();                         // 0x0068D3D0
-    ~CSWCAmbientSoundList();                        // 0x0068D430
-
-    CExoString m_sResource;                         // 0x00
-    CExoString m_sStinger1;                         // 0x08
-    CExoString m_sStinger2;                         // 0x10
-    CExoString m_sStinger3;                         // 0x18
-};
+#include "shared/swc_ambient_sound_list.h"
 
 // Shared with the server side (CSWSAmbientSound uses the same fields).
 class CSWAmbientSound {
