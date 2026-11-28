@@ -1,7 +1,4 @@
-class CResHelperMiniGame {
-public:
-    virtual ~CResHelperMiniGame();
-};
+#include "shared/res_helper_mini_game.h"
 
 // FUNCTION: SWKOTOR 0x00506E00
 void* __fastcall mini_game_helper_scalar_delete_00506e00(void* pThis, void*, unsigned int flags)

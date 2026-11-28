@@ -386,21 +386,7 @@ public:
 };
 
 // CResHelper base (vtable 0x0074767C, destructor 0x00506BD0), 0x1c bytes.
-class CResHelperMiniGame {
-public:
-    CResHelperMiniGame()
-    {
-        m_pRes = 0;
-        m_cResRef = "";
-        m_bAutoRequest = 0;
-    }
-    virtual ~CResHelperMiniGame();                  // 0x00506BD0
-    void SetResRef(const CResRef& cResRef, int bAutoRequest);   // 0x00506C30 (shared template)
-
-    int m_bAutoRequest;                             // 0x04
-    void* m_pRes;                                   // 0x08
-    CResRef m_cResRef;                              // 0x0c
-};
+#include "shared/res_helper_mini_game.h"
 
 // An id list with BioWare's inline DelIndex.
 class CExoIdList : public CExoArrayList<unsigned long> {
