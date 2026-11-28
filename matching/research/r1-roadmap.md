@@ -88,11 +88,41 @@ both resolutions lose matches is a unit-boundary case.
    the pattern or mark an object boundary: `CExoArrayList<Quaternion>::Add`
    (0x00438AF0) and `CExoArrayList<MdlNodeTriMesh*>::Add` (0x00438B40) grow
    to 16 inside `aurlightmanager.o`'s range, next to `UpdateAnimFootprint`
-   (0x00437DB0), which has no object recorded. Reconstructing this honestly
-   takes two headers, one per side, which R1 as written does not allow: the
-   project has to decide whether R1 counts per library before the template
-   can be merged. The inlining variants go once the units are joined.
-   `CExoLinkedList` and `SafePointer` follow.
+   (0x00437DB0), which has no object recorded. R1 now counts per library
+   (CODE_RULES.md): `matching/libraries.csv` marks the renderer's units and
+   the build defines `AURORA_LIBRARY` for them.
+
+   The copies show more than the growth constant. Per library, the
+   destructor is `if (element) delete[] element;` in the renderer (seen by
+   116 renderer units and 2 game units) and `delete[] element; element = 0;`
+   in the game; `SetSize(0)` clears `array_size` outside the null test in
+   the renderer and inside it in the game. The game's constructor
+   (`CExoArrayList<CExoString>::CExoArrayList(int)`, 0x004058F0) calls
+   `Allocate`. Every original `Add` instance calls `Allocate` out of line.
+
+   A merged header built on that (branch `al-merge-wip`) compiles in every
+   unit but does not hold the byte gate, because whether a caller expands a
+   member differs by unit:
+
+   | game members | lost | won |
+   | --- | --- | --- |
+   | defined in the class | 88 | 17 |
+   | defined after the class, not `inline` | 80 | 16 |
+   | declared only, bodies in a header for the 48 units that emit instances | 242 | 6 |
+
+   `CSWGuiManager::PushModalPanel` (0x0040BD90) calls the pointer `Add` at
+   0x00671C00, which is in `swminigame.o`, so `swguimanager.o` neither
+   expanded it nor emitted its own; other game units do expand `Add`. The
+   old copies reproduced this with a declarations-only view in some units
+   and inline bodies in others. `#pragma auto_inline(off)` cannot stand in
+   for that: MSVC compiles template members where they are instantiated, at
+   the end of the unit, so the pragma there takes every member out of line,
+   `operator[]` included (`gui_manager.cpp` went from 38 matches to 34).
+   Which members a unit expands is a property of the original object, so
+   the template waits on joining the split units (step 1). (The game was
+   built with automatic inlining too: compiling the game's units at `-Ob1`
+   loses 152 matches and gains none.) `CExoLinkedList`
+   and `SafePointer` follow.
    `Quaternion` (90 copies) has the same problem in small: 36 copies have no
    constructor, 13 an empty one, and 37 an identity constructor that stores
    its members in one of three orders (z, y, x, w; x, y, z, w; w, x, y, z),
