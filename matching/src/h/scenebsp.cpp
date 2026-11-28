@@ -572,11 +572,7 @@ void AddLightToRooms(Scene* pScene, Light* pLight)
         pScene->m_lRooms[i]->m_pData->m_lList80.AddCopy(pLight);
 }
 
-class LightNode {
-public:
-    char pad_0x0[0x68];
-    Scene* m_pScene;                // +0x68
-};
+#include "shared/light_node.h"
 
 void UpdateStaticLighting(Scene* pScene, Part* pPart);     // 0x0046CA30
 

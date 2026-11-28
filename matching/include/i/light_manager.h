@@ -156,15 +156,7 @@ public:
 };
 
 // The light's model node; only the shadow priority is read here.
-class LightNode {
-public:
-    char pad_0x0[0x90];
-    int m_nShadowPriority;                              // +0x90 (placeholder name)
-    char pad_0x94[0xa8 - 0x94];
-    int m_bNoFade;                                      // +0xa8 (placeholder name)
-
-    LightNode* AsMdlNodeLight();                        // 0x0043E3D0
-};
+#include "shared/light_node.h"
 
 // PartLight (a model Part).
 class Light {
