@@ -1,10 +1,7 @@
 // CServerExoAppInternal construction and destruction.
 #include "i/server_exo_app.h"
 
-class CObjectTableManager {
-public:
-    void ClearAll();                                                // 0x004AE5F0
-};
+#include "shared/object_table_manager.h"
 
 #include "shared/app_manager.h"
 #include "shared/globals.h"

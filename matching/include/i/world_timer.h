@@ -90,15 +90,6 @@ struct CObjectTableEntry {
     char* m_pData;                                  // +0x00
 };
 
-class CObjectTableManager {
-public:
-    CObjectTableManager();                          // 0x004AE5D0
-    ~CObjectTableManager();                         // 0x004AE640
-    void ClearAll();                                // 0x004AE5F0
-    int RemovePlayer(unsigned long nPlayer);        // 0x004AE650
-
-    CObjectTableEntry* m_pTables[0x60];             // +0x000
-    unsigned long m_nTables;                        // +0x180
-};
+#include "shared/object_table_manager.h"
 
 #endif

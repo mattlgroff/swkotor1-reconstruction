@@ -76,13 +76,7 @@ public:
     char pad_0x0[8];
 };
 
-class CObjectTableManager {
-public:
-    CObjectTableManager();          // 0x004ae5d0
-    ~CObjectTableManager();         // 0x004ae640
-
-    char pad_0x0[0x184];
-};
+#include "shared/object_table_manager.h"
 
 #include "shared/app_manager.h"
 

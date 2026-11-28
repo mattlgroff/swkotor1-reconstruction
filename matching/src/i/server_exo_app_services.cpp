@@ -50,10 +50,7 @@ public:
     CSWSRules();                                                    // 0x0057A1F0
 };
 
-class CObjectTableManager {
-public:
-    int RemovePlayer(unsigned long nPlayerId);                      // 0x004AE650
-};
+#include "shared/object_table_manager.h"
 
 class CSWParty {
 public:

@@ -412,10 +412,7 @@ public:
 
 #include "shared/reentrant_server_stats.h"
 
-class CObjectTableManager {
-public:
-    int RemovePlayer(unsigned long nPlayerId);      // 0x004AE650
-};
+#include "shared/object_table_manager.h"
 
 #include "shared/app_manager.h"
 

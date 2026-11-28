@@ -2,10 +2,7 @@
 // administrator lists in step with net-layer connections.
 #include "i/server_exo_app.h"
 
-class CObjectTableManager {
-public:
-    int RemovePlayer(unsigned long nPlayerId);                      // 0x004AE650
-};
+#include "shared/object_table_manager.h"
 
 #include "shared/app_manager.h"
 #include "shared/globals.h"
