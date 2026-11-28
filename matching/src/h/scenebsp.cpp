@@ -601,11 +601,7 @@ public:
     ModelHolder* m_pHolder;         // +0x04
 };
 
-class TileParts {
-public:
-    char pad_0x0[0x18];
-    CExoArrayList<TilePart*> m_lParts;  // +0x18
-};
+#include "shared/tile_parts.h"
 
 int SceneBSPAddPart(Scene* pScene, TilePart* pPart, Model* pModel);    // 0x0046E290
 
