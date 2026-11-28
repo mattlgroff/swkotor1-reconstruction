@@ -10,11 +10,7 @@
 
 struct CExoLinkedListNode;
 
-struct CSWSPlayerLUOItem {
-    unsigned long m_oidItem;                                // 0x0
-    unsigned long m_nStackSize;                             // 0x4
-    unsigned long m_nCost;                                  // 0x8
-};
+#include "shared/sws_player_luo_item.h"
 
 class CSWSPlayerLUOInventory {
 public:

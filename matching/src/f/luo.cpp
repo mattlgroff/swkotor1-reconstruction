@@ -161,11 +161,7 @@ CLastUpdateObject::~CLastUpdateObject()
 
 // ---------------------------------------------------------------------------
 
-struct CSWSPlayerLUOItem {
-    unsigned long m_oidItem;
-    unsigned long m_n4;
-    unsigned long m_n8;
-};
+#include "shared/sws_player_luo_item.h"
 
 class CSWSPlayerLUOInventory {
 public:
@@ -266,8 +262,8 @@ void CSWSPlayerLUOInventory::ItemListAddHead(unsigned long oidItem, unsigned cha
 {
     CSWSPlayerLUOItem *pItem = new CSWSPlayerLUOItem;
     pItem->m_oidItem = oidItem;
-    pItem->m_n4 = n4;
-    pItem->m_n8 = n8;
+    pItem->m_nStackSize = n4;
+    pItem->m_nCost = n8;
     if (nList == 0)
         m_lContainer.AddHead(pItem);
     else if (nList == 1)

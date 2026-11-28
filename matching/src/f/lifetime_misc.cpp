@@ -63,9 +63,7 @@ public:
     CExoLinkedListInternal *m_pcExoLinkedListInternal;
 };
 
-struct CSWSPlayerLUOItem {
-    unsigned long m_oidItem;
-};
+#include "shared/sws_player_luo_item.h"
 
 class CSWSPlayerLUOInventory {
 public:
