@@ -27,15 +27,7 @@ struct STR_RES {
     float fSoundLength;                                 // 0x18
 };
 
-class CNWMessage {
-public:
-    virtual ~CNWMessage();
-
-    int ReadBOOL();                                     // 0x004D66F0
-    int MessageReadOverflow(int bFlag);                 // 0x004D6230
-    int MessageReadUnderflow(int bFlag);                // 0x004D6240
-    unsigned long ReadDWORD(int nBits);                 // 0x004D6780
-};
+#include "shared/nw_message.h"
 
 class CSWMessage : public CNWMessage {
 };
