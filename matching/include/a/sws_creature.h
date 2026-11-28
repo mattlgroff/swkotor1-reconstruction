@@ -476,15 +476,7 @@ public:
     char pad_0x298[0x29c - 0x298];
 };
 
-class CSWSInventory {
-public:
-    CSWSItem* GetItemInSlot(unsigned long nSlot);   // 0x005A4C20
-    unsigned long GetSlotFromItem(CSWSItem* pItem); // 0x005A4980
-    int RemoveItem(CSWSItem* pItem);                // 0x005A4BA0
-    int Fn5A4950(CSWSItem* pItem);                  // 0x005A4950 (placeholder name)
-    int GetItemInInventory(CSWSItem* pItem);        // 0x005A4950
-    void PutItemInSlot(unsigned long nSlot, CSWSItem* pItem); // 0x005A4BE0
-};
+#include "shared/sws_inventory.h"
 
 class CItemRepository {
 public:

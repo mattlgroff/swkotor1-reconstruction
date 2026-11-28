@@ -20,10 +20,7 @@ public:
     unsigned char m_nWeaponType; // +0xc
 };
 
-class CSWSInventory {
-public:
-    CSWSItem *GetItemInSlot(unsigned long nSlot);
-};
+#include "shared/sws_inventory.h"
 
 class CSWSCreature {
 public:
