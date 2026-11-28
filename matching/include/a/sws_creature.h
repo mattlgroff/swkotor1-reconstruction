@@ -763,11 +763,7 @@ public:
     unsigned long m_nFlags104;                      // 0x104 (placeholder name)
 };
 
-class CSWSAttackData {
-public:
-    char pad_0x0[0x3a];
-    unsigned char m_nWeaponAttackType;              // 0x3a
-};
+#include "shared/sws_attack_data.h"
 
 struct CSWCCreature21C {
     char pad_0x0[0x60];

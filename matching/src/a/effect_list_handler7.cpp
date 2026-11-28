@@ -713,12 +713,7 @@ int CSWSEffectListHandler::OnApplyNegativeLevel(CSWSObject* pObject, CGameEffect
     return 0;
 }
 
-struct CSWSAttackData {
-    char pad_0x0[0x12d];
-    unsigned char m_nAttackResult;              // 0x12d (placeholder name)
-    char pad_0x12e[0x13c - 0x12e];
-    int m_bEffectFeedback;                      // 0x13c (placeholder name)
-};
+#include "shared/sws_attack_data.h"
 
 class CSWSCreatureState : public CSWSCreature {
 public:
