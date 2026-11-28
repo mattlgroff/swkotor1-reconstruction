@@ -539,11 +539,7 @@ extern "C" __declspec(dllimport) unsigned long __stdcall WaitForSingleObject(voi
 extern "C" __declspec(dllimport) int __stdcall PostMessageA(void* hWnd, unsigned int nMsg, unsigned int wParam,
                                                             long lParam);
 
-class CRenderWindow {
-public:
-    virtual void Slot00();
-    virtual int IsFullScreen();     // 0x04
-};
+#include "shared/render_window.h"
 
 
 // FUNCTION: SWKOTOR 0x00405a50

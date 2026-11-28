@@ -33,11 +33,7 @@ public:
 
 #include "shared/app_manager.h"
 
-class CRenderWindow {
-public:
-    virtual void Slot00();
-    virtual int IsFullScreen();                     // 0x04
-};
+#include "shared/render_window.h"
 
 #include "shared/globals.h"
 

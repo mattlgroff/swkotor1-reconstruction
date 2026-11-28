@@ -13,13 +13,7 @@ public:
 };
 extern CExoSound* g_pExoSound; // 0x007A39EC
 
-class CRenderWindow {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20();
-    virtual void SetGamma(float fGamma, int bApply); // 0x24
-};
+#include "shared/render_window.h"
 #include "shared/globals.h"
 
 

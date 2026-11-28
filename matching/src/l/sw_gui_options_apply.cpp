@@ -22,11 +22,7 @@ public:
 };
 extern CExoSound* g_pExoSound; // 0x007A39EC
 
-class CRenderWindow {
-public:
-    virtual void v00();
-    virtual int IsFullScreen(); // 0x04
-};
+#include "shared/render_window.h"
 
 // FUNCTION: SWKOTOR 0x006DFD10
 void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)
