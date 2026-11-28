@@ -75,11 +75,7 @@ public:
 // vtable 0x007465A4
 #include "shared/nw_message.h"
 
-class CSWMessage : public CNWMessage {
-public:
-    CResRef ReadCResRef(int nSize);
-    void CreateWriteMessage(unsigned long nSize, unsigned long nPlayerId, unsigned long nFlags);
-};
+#include "shared/sw_message.h"
 
 class CSWCCMessageData {
 public:

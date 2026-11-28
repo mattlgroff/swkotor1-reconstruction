@@ -29,8 +29,7 @@ struct STR_RES {
 
 #include "shared/nw_message.h"
 
-class CSWMessage : public CNWMessage {
-};
+#include "shared/sw_message.h"
 
 class CSWCMessage : public CSWMessage {
 public:

@@ -62,11 +62,7 @@ public:
 
 #include "shared/nw_message.h"
 
-class CSWMessage : public CNWMessage {
-public:
-    void CreateWriteMessage(unsigned long nSize, unsigned long nPlayerId,
-                            unsigned long nFlags);  // 0x004D68A0
-};
+#include "shared/sw_message.h"
 
 class CSWCMessage : public CSWMessage {
 public:

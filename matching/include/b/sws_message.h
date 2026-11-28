@@ -38,13 +38,7 @@ public:
 // vtable 0x007465A4 (CNWMessage)
 #include "shared/nw_message.h"
 
-class CSWMessage : public CNWMessage {
-public:
-    unsigned long PeekAtWriteMessageSize();                             // 0x00405040
-    void CreateWriteMessage(unsigned long nSize, unsigned long nPlayerId,
-                            int bArg);                                  // 0x004D68A0
-    CResRef ReadCResRef(int nBits);                                     // 0x004D6180
-};
+#include "shared/sw_message.h"
 
 class CSWSMessage : public CSWMessage {
 public:
