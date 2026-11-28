@@ -111,10 +111,7 @@ public:
 };
 #include "shared/globals.h"
 
-struct CSWClassFeat {
-    unsigned short m_nFeat;
-    char pad_0x2[6];
-};
+#include "shared/sw_class_feat.h"
 
 class CSWClass {
 public:

@@ -27,12 +27,7 @@ public:
     int IsFeatValid(unsigned short nFeat);   // 0x00550C00
 };
 
-struct CSWClassFeat {
-    unsigned short m_nFeat;          // +0x0
-    unsigned char m_nGranted;        // +0x2
-    unsigned char m_nList;           // +0x3
-    unsigned long m_nRecommended;    // +0x4
-};
+#include "shared/sw_class_feat.h"
 
 #include "shared/sw_class_skill.h"
 
@@ -149,35 +144,35 @@ void CSWClass::LoadFeatsTable(const CExoString &sPrefix, CSWFeatList *pFeats)
     int nCount = 0;
     for (int i = 0; i < m_nNumFeats; i++) {
         m_pFeats[i].m_nFeat = 0;
-        m_pFeats[i].m_nGranted = 0;
-        m_pFeats[i].m_nList = 0;
+        m_pFeats[i].m_nLevel = 0;
+        m_pFeats[i].m_nFlags = 0;
         m_pFeats[nCount].m_nFeat = 0;
-        m_pFeats[nCount].m_nGranted = 0;
-        m_pFeats[nCount].m_nList = 0;
+        m_pFeats[nCount].m_nLevel = 0;
+        m_pFeats[nCount].m_nFlags = 0;
         m_pFeats[nCount].m_nFeat = (unsigned short)i;
         if (!pFeats->IsFeatValid(m_pFeats[nCount].m_nFeat))
             continue;
         pTable->GetINTEntry(i, sPrefix + "_List", &nValue);
         switch ((unsigned char)nValue) {
         case 0:
-            m_pFeats[nCount].m_nList = 1;
+            m_pFeats[nCount].m_nFlags = 1;
             break;
         case 1:
-            m_pFeats[nCount].m_nList = 3;
+            m_pFeats[nCount].m_nFlags = 3;
             break;
         case 2:
-            m_pFeats[nCount].m_nList = 2;
+            m_pFeats[nCount].m_nFlags = 2;
             break;
         case 3:
-            m_pFeats[nCount].m_nList = 0;
+            m_pFeats[nCount].m_nFlags = 0;
             break;
         case 4:
             continue;
         }
         pTable->GetINTEntry(i, sPrefix + "_Granted", &nValue);
-        m_pFeats[nCount].m_nGranted = (unsigned char)nValue;
+        m_pFeats[nCount].m_nLevel = (unsigned char)nValue;
         pTable->GetINTEntry(i, sPrefix + "_Recom", &nValue);
-        m_pFeats[nCount].m_nRecommended = nValue;
+        m_pFeats[nCount].m_nGrantedLevel = nValue;
         nCount++;
     }
     delete pTable;

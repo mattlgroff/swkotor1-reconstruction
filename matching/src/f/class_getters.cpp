@@ -20,12 +20,7 @@ public:
 
 #include "shared/sw_class_skill.h"
 
-struct CSWClassFeat {
-    unsigned short m_nFeat;          // +0x0
-    unsigned char m_nLevel;          // +0x2
-    unsigned char m_nFlags;          // +0x3
-    int m_nGrantedLevel;             // +0x4
-};
+#include "shared/sw_class_feat.h"
 
 #pragma pack(push, 1)
 class CSWClass {
