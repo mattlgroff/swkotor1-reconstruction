@@ -31,21 +31,7 @@ public:
     void* m_pcExoIniInternal;                       // 0x00
 };
 
-struct DEVMODEA {
-    char dmDeviceName[32];                          // 0x00
-    unsigned short dmSpecVersion;                   // 0x20
-    unsigned short dmDriverVersion;                 // 0x22
-    unsigned short dmSize;                          // 0x24
-    unsigned short dmDriverExtra;                   // 0x26
-    unsigned long dmFields;                         // 0x28
-    char pad_0x2c[0x68 - 0x2c];
-    unsigned long dmBitsPerPel;                     // 0x68
-    unsigned long dmPelsWidth;                      // 0x6c
-    unsigned long dmPelsHeight;                     // 0x70
-    unsigned long dmDisplayFlags;                   // 0x74
-    unsigned long dmDisplayFrequency;               // 0x78
-    char pad_0x7c[0x9c - 0x7c];
-};
+#include "shared/devmodea.h"
 
 extern "C" __declspec(dllimport) int __stdcall EnumDisplaySettingsA(const char* sDevice, unsigned long nMode,
                                                                     void* pDevMode);   // IAT 0x0073D3E4

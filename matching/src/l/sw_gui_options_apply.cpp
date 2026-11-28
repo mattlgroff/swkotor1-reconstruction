@@ -9,16 +9,7 @@ extern int ReInitAurora(int nWidth, int nHeight, unsigned char nDepth, int bFull
 #include "shared/globals.h"
 
 // Win32 DEVMODEA (0x9C bytes); only the fields used here are named.
-struct DEVMODEA {
-    char dmDeviceName[0x20];
-    unsigned short dmSpecVersion;
-    unsigned short dmDriverVersion;
-    unsigned short dmSize;                          // 0x24
-    unsigned short dmDriverExtra;
-    char pad_0x28[0x78 - 0x28];
-    unsigned long dmDisplayFrequency;               // 0x78
-    char pad_0x7c[0x9c - 0x7c];
-};
+#include "shared/devmodea.h"
 extern "C" __declspec(dllimport) int __stdcall EnumDisplaySettingsA(const char* lpszDeviceName,
                                                                    unsigned long iModeNum, DEVMODEA* lpDevMode);
 extern "C" void* __cdecl memset(void* pDest, int nValue, unsigned int nCount);
