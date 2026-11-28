@@ -9,14 +9,7 @@
 
 #include "shared/globals.h"
 
-class CSWSPlayerLUOSortedObjectList {
-public:
-    CSWSPlayerLUOSortedObjectList();                        // 0x00566D80
-
-    unsigned long m_oidObject;                              // 0x0
-    float m_fDistance;                                      // 0x4
-    unsigned long m_nCategory;                              // 0x8
-};
+#include "shared/sws_player_luo_sorted_object_list.h"
 
 // FUNCTION: SWKOTOR 0x00567850
 CSWSPlayerLUOSortedObjectList* CSWSMessage::SortObjectsForGameObjectUpdate(

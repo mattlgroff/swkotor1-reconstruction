@@ -28,12 +28,7 @@ public:
     CSWSArea* GetArea();                                      // 0x004C30F0
 };
 
-class CSWSPlayerLUOSortedObjectList {
-public:
-    unsigned long m_oidObject;
-    unsigned long m_nUnused;
-    unsigned long m_nCategory;
-};
+#include "shared/sws_player_luo_sorted_object_list.h"
 
 // FUNCTION: SWKOTOR 0x00578060
 // NONMATCH: stack-slot reuse and flag-register allocation differ (14 instructions).
