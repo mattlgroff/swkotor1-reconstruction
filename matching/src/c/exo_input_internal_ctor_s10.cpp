@@ -12,23 +12,9 @@ typedef void* HWND;
 
 #include "shared/exo_string.h"
 
-class CExoLinkedListInternal {
-public:
-    void* pHead;                                    // 0x00
-    void* pTail;                                    // 0x04
-    unsigned long nCount;                           // 0x08
+#include "shared/exo_linked_list.h"
 
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
-
-    CExoLinkedList();                               // 0x005E0350
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-};
 
 template <class T>
 class CExoArrayList {

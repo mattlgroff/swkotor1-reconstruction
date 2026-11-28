@@ -42,24 +42,9 @@ class CSWSModule;
 
 #include "shared/game_object.h"
 
-class CExoLinkedListInternal {
-public:
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* RemoveHead();                             // 0x005E9C80
-    void* m_pHead;
-    void* m_pTail;
-    unsigned long m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();                               // 0x004C4E20
-    ~CExoLinkedList() { delete m_pList; }
-    int IsEmpty() { return m_pList->m_pHead == NULL; }
-    T* RemoveHead() { return (T*)m_pList->RemoveHead(); }
-    CExoLinkedListInternal* m_pList;
-};
+
 
 template <class T>
 class CExoArrayList {

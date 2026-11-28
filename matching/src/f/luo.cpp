@@ -4,42 +4,12 @@
 
 extern "C" void *memset(void *pDest, int nValue, unsigned int nCount);
 
-struct CExoLinkedListNode;
+class CExoLinkedListNode;
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();
-    ~CExoLinkedListInternal();
-    void *GetAtPos(CExoLinkedListNode *pos);
-    void *GetPrev(CExoLinkedListNode *&pos);
-    void *Remove(CExoLinkedListNode *pos);
-    void *RemoveHead();
-    CExoLinkedListNode *AddHead(void *pData);
-    CExoLinkedListNode *pHead;
-    CExoLinkedListNode *pTail;
-    unsigned long nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-    CExoLinkedListNode *GetTailPos() { return m_pcExoLinkedListInternal->pTail; }
-    T *GetAtPos(CExoLinkedListNode *pos) { return (T *)m_pcExoLinkedListInternal->GetAtPos(pos); }
-    T *GetPrev(CExoLinkedListNode *&pos) { return (T *)m_pcExoLinkedListInternal->GetPrev(pos); }
-    T *Remove(CExoLinkedListNode *pos) { return (T *)m_pcExoLinkedListInternal->Remove(pos); }
-    T *RemoveHead() { return (T *)m_pcExoLinkedListInternal->RemoveHead(); }
-    CExoLinkedListNode *AddHead(T *pData) { return m_pcExoLinkedListInternal->AddHead(pData); }
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-};
 
-template <class T>
-CExoLinkedList<T>::CExoLinkedList()
-{
-    m_pcExoLinkedListInternal = new CExoLinkedListInternal();
-}
+
 
 template <class T>
 class CExoArrayList {

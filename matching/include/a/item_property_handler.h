@@ -150,64 +150,13 @@ public:
     int array_size;
 };
 
-typedef void* CExoLinkedListPosition;
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListPosition pHead;   // 0x0
-    CExoLinkedListPosition pTail;   // 0x4
-    unsigned long m_nCount;         // 0x8
-    CExoLinkedListInternal();                                   // 0x005E9AA0
-    ~CExoLinkedListInternal();                                  // 0x005E9AB0
-    void* GetAtPos(CExoLinkedListPosition pos);                 // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);                 // 0x005E9B90
-    void* Remove(CExoLinkedListPosition pos);                   // 0x005E9C10
-    void* RemoveHead();                                         // 0x005E9C80
-    void* RemoveTail();                                         // 0x005E9CE0
-    CExoLinkedListPosition AddBefore(void* pObject, CExoLinkedListPosition pos); // 0x005E9AD0
-    CExoLinkedListPosition AddTail(void* pObject);             // 0x005E9DC0
-};
+#include "shared/exo_linked_list.h"
 
 // List node: pPrev, pNext, pObject.
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;      // 0x0
-    CExoLinkedListNode* pNext;      // 0x4
-    void* pObject;                  // 0x8
-};
+#include "shared/exo_linked_list.h"
 
-template <class T> class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-    CExoLinkedList();
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetHead()
-    {
-        void* p = m_pcExoLinkedListInternal->pHead;
-        if (p) {
-            p = ((CExoLinkedListNode*)p)->pObject;
-        }
-        return (T*)p;
-    }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-    unsigned long Count() { return m_pcExoLinkedListInternal->m_nCount; }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-    T* Remove(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->Remove(pos); }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-    T* RemoveTail() { return (T*)m_pcExoLinkedListInternal->RemoveTail(); }
-    CExoLinkedListPosition AddBefore(T* pObject, CExoLinkedListPosition pos) {
-        return m_pcExoLinkedListInternal->AddBefore(pObject, pos);
-    }
-    CExoLinkedListPosition AddTail(T* pObject) { return m_pcExoLinkedListInternal->AddTail(pObject); }
-    CExoLinkedListPosition AddHead(T* pObject) {
-        CExoLinkedListInternal* pList = m_pcExoLinkedListInternal;
-        if (pList->pHead) {
-            return pList->AddBefore(pObject, pList->pHead);
-        }
-        return pList->AddTail(pObject);
-    }
-};
+
 
 class CSWInventory {
 public:

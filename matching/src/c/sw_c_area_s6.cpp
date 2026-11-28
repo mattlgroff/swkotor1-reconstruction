@@ -51,28 +51,9 @@ public:
     }
 };
 
-class CExoLinkedListInternal {
-public:
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* RemoveHead();                             // 0x005E9C80
-    void* pHead;
-    void* pTail;
-    unsigned long nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();                               // 0x00605800
-    ~CExoLinkedList()
-    {
-        if (m_pcExoLinkedListInternal) {
-            delete m_pcExoLinkedListInternal;
-        }
-    }
-    void* RemoveHead() { return m_pcExoLinkedListInternal->RemoveHead(); }
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-};
+
 
 class CWorldTimer {
 public:

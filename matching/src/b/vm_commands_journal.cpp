@@ -24,7 +24,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddJournalWorldEntry(int nCommandId
     }
     CExoLinkedList<CSWSClient>* pList = g_pAppManager->GetServerExoApp()->GetPlayerList();
     if (pList) {
-        void* pos = pList->GetHeadPos();
+        CExoLinkedListPosition pos = pList->GetHeadPos();
         while (pos) {
             CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pos);
             if (pPlayer && pPlayer->GetGameObject() && pMessage) {
@@ -57,7 +57,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddJournalWorldEntryStrref(int nCom
     }
     CExoLinkedList<CSWSClient>* pList = g_pAppManager->GetServerExoApp()->GetPlayerList();
     if (pList) {
-        void* pos = pList->GetHeadPos();
+        CExoLinkedListPosition pos = pList->GetHeadPos();
         while (pos) {
             CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pos);
             if (pPlayer && pPlayer->GetGameObject() && pMessage) {
@@ -79,7 +79,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDeleteJournalWorldAllEntries(int nC
     }
     CExoLinkedList<CSWSClient>* pList = g_pAppManager->GetServerExoApp()->GetPlayerList();
     if (pList) {
-        void* pos = pList->GetHeadPos();
+        CExoLinkedListPosition pos = pList->GetHeadPos();
         while (pos) {
             CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pos);
             if (pPlayer && pPlayer->GetGameObject() && pMessage) {
@@ -105,7 +105,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDeleteJournalWorldEntry(int nComman
     }
     CExoLinkedList<CSWSClient>* pList = g_pAppManager->GetServerExoApp()->GetPlayerList();
     if (pList) {
-        void* pos = pList->GetHeadPos();
+        CExoLinkedListPosition pos = pList->GetHeadPos();
         while (pos) {
             CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pos);
             if (pPlayer && pPlayer->GetGameObject() && pMessage) {
@@ -131,7 +131,7 @@ int CSWVirtualMachineCommands::ExecuteCommandDeleteJournalWorldEntryStrref(int n
     }
     CExoLinkedList<CSWSClient>* pList = g_pAppManager->GetServerExoApp()->GetPlayerList();
     if (pList) {
-        void* pos = pList->GetHeadPos();
+        CExoLinkedListPosition pos = pList->GetHeadPos();
         while (pos) {
             CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pos);
             if (pPlayer && pPlayer->GetGameObject() && pMessage) {
@@ -168,7 +168,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetMapPinEnabled(int nCommandId, in
         CSWSMessage* pMessage = g_pAppManager->GetServerExoApp()->GetSWSMessage();
         CExoLinkedList<CSWSClient>* pList = g_pAppManager->GetServerExoApp()->GetPlayerList();
         if (pList) {
-            void* pos = pList->GetHeadPos();
+            CExoLinkedListPosition pos = pList->GetHeadPos();
             while (pos) {
                 CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pos);
                 if (pPlayer && pPlayer->GetGameObject() && pMessage) {

@@ -32,7 +32,7 @@ void CSWSMessage::TestPartyUpdateDifferences(CSWSPlayer* pPlayer, CSWSCreature* 
 {
     CSWSCreature* pPlayerCreature = pPlayer->GetGameObject()->AsSWSCreature();
     *pFlags = 0;
-    void* pos = GetPartyUpdateList(pPlayer)->GetHeadPos();
+    CExoLinkedListPosition pos = GetPartyUpdateList(pPlayer)->GetHeadPos();
     while (pos) {
         *ppLast = GetPartyUpdateList(pPlayer)->GetAtPos(pos);
         if ((*ppLast)->m_oidCreature == pCreature->GetId()) {
@@ -91,7 +91,7 @@ void CSWSMessage::TestPartyUpdateDifferences(CSWSPlayer* pPlayer, CSWSCreature* 
             }
             return;
         }
-        pPlayer->m_pLastUpdateObjects->m_pList->GetNext(pos);
+        pPlayer->m_pLastUpdateObjects->m_pcExoLinkedListInternal->GetNext(pos);
     }
     *ppLast = new CLastUpdatePartyObject;
     (*ppLast)->m_bUpdated = 1;

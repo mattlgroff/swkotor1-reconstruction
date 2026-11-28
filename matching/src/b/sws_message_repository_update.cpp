@@ -8,7 +8,7 @@
 
 #include "shared/globals.h"
 
-struct CExoLinkedListNode;
+class CExoLinkedListNode;
 
 #include "shared/sws_player_luo_item.h"
 

@@ -33,70 +33,13 @@ public:
 
 // Linked list -----------------------------------------------------------
 
-typedef void* CExoLinkedListPosition;
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListNode* pHead;
-    CExoLinkedListNode* pTail;
-    unsigned long nCount;
+#include "shared/exo_linked_list.h"
 
-    void* GetHead()
-    {
-        CExoLinkedListNode* pNode = pHead;
-        if (!pNode) {
-            return 0;
-        }
-        return pNode->pObject;
-    }
-    void* GetHeadInline() { void* p = pHead; if (pHead) p = pHead->pObject; return p; }
-    void* GetTail() { void* p = pTail; if (pTail) p = pTail->pObject; return p; }
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    void* GetPrev(CExoLinkedListPosition& pos);     // 0x005E9BD0
-    void* Remove(CExoLinkedListPosition pos);       // 0x005E9C10
-    void* RemoveHead();                             // 0x005E9C80
-    CExoLinkedListPosition AddTail(void* p);        // 0x005E9DC0
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
 
-    CExoLinkedList();
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    CExoLinkedListPosition GetTailPos() { return m_pcExoLinkedListInternal->pTail; }
-    T* GetHead()
-    {
-        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
-        return (T*)pInternal->GetHead();
-    }
-    T* GetTail() { return (T*)m_pcExoLinkedListInternal->GetTail(); }
-    // Head object through the internal list's conditional-assign accessor;
-    // the loops that fetch the object before the position use this shape.
-    T* GetHeadInline() { return (T*)m_pcExoLinkedListInternal->GetHeadInline(); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-    T* GetPrev(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetPrev(pos); }
-    T* Remove(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->Remove(pos); }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-    CExoLinkedListPosition AddTail(T* p) { return m_pcExoLinkedListInternal->AddTail(p); }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-};
-
-template <class T>
-CExoLinkedList<T>::CExoLinkedList()
-{
-    m_pcExoLinkedListInternal = new CExoLinkedListInternal;
-}
 
 template <class T>
 class CExoArrayList {

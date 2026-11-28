@@ -183,7 +183,7 @@ int CSWSMessage::HandlePlayerToServerPlayModuleCharacterList_Start(CSWSPlayer* p
 {
     if (!MessageReadOverflow(1) && !MessageReadUnderflow(1)) {
         CExoLinkedList<CSWSClient>* pPlayers = g_pAppManager->GetServerExoApp()->GetPlayerList();
-        void* pPos = pPlayers->GetHeadPos();
+        CExoLinkedListPosition pPos = pPlayers->GetHeadPos();
         while (pPos) {
             CSWSPlayer* pOther = (CSWSPlayer*)pPlayers->GetAtPos(pPos);
             if (pOther && pOther->GetGameObject()) {

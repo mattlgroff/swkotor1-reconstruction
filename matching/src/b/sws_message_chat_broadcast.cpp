@@ -32,7 +32,7 @@ int CSWSMessage::ChatStrRefMessage(unsigned long nTalkVolume, unsigned long oidS
         break;
     case 8:
     case 10: {
-        void* pos = 0;
+        CExoLinkedListPosition pos = 0;
         Vector vPosition(0.0f, 0.0f, 0.0f);
         float fRange;
         if (nVolume == 8) {
@@ -99,7 +99,7 @@ int CSWSMessage::SendServerToPlayerChatMultiLangMessage(unsigned char nChatType,
     } else {
         bResult = 0;
     }
-    void* pos = pPlayers->GetHeadPos();
+    CExoLinkedListPosition pos = pPlayers->GetHeadPos();
     while (pos && bResult == 1) {
         CSWSPlayer* pPlayer = (CSWSPlayer*)pPlayers->GetAtPos(pos);
         if (pPlayer->GetGameObject()) {

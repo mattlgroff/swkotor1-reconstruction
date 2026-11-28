@@ -43,25 +43,11 @@ CSWBaseItemArray::~CSWBaseItemArray()
 
 // ---------------------------------------------------------------------------
 
-struct CExoLinkedListNode;
+class CExoLinkedListNode;
 
-class CExoLinkedListInternal {
-public:
-    ~CExoLinkedListInternal();
-    void *RemoveHead();
-    CExoLinkedListNode *pHead;
-    CExoLinkedListNode *pTail;
-    unsigned long nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-    T *RemoveHead() { return (T *)m_pcExoLinkedListInternal->RemoveHead(); }
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-};
+
 
 #include "shared/sws_player_luo_item.h"
 

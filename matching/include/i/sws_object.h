@@ -132,74 +132,13 @@ public:
     unsigned char m_nBodyPart;                      // 0x08 (placeholder name)
 };
 
-typedef void* CExoLinkedListPosition;
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    void* Remove(CExoLinkedListPosition pos);       // 0x005E9C10
-    void* RemoveHead();                             // 0x005E9C80
-    CExoLinkedListPosition AddHead(void* p);        // 0x005E9D70
-    CExoLinkedListPosition AddTail(void* p);        // 0x005E9DC0
-    void* GetHeadObject()
-    {
-        CExoLinkedListNode* pNode = m_pHead;
-        if (!pNode) {
-            return 0;
-        }
-        return pNode->pObject;
-    }
-    CExoLinkedListNode* m_pHead;
-    CExoLinkedListNode* m_pTail;
-    unsigned long m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();
-    CExoLinkedListPosition GetHeadPos() { return m_pList->m_pHead; }
-    T* GetHead()
-    {
-        CExoLinkedListInternal* pInternal = m_pList;
-        return (T*)pInternal->GetHeadObject();
-    }
-    T* GetHeadInline()
-    {
-        void* p = m_pList->m_pHead;
-        if (p) {
-            p = ((CExoLinkedListNode*)p)->pObject;
-        }
-        return (T*)p;
-    }
-    T* GetAtPosInline(CExoLinkedListPosition pos)
-    {
-        CExoLinkedListNode* p = (CExoLinkedListNode*)pos;
-        return p ? (T*)p->pObject : NULL;
-    }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pList->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pList->GetNext(pos); }
-    T* Remove(CExoLinkedListPosition pos) { return (T*)m_pList->Remove(pos); }
-    T* RemoveHead() { return (T*)m_pList->RemoveHead(); }
-    CExoLinkedListPosition AddHead(T* p) { return m_pList->AddHead(p); }
-    CExoLinkedListPosition AddTail(T* p) { return m_pList->AddTail(p); }
-    int IsEmpty() { return m_pList->m_pHead == NULL; }
-    CExoLinkedListInternal* m_pList;
-};
 
-template <class T>
-CExoLinkedList<T>::CExoLinkedList()
-{
-    m_pList = new CExoLinkedListInternal();
-}
+
 
 template <class T> class CExoArrayList {
 public:
@@ -309,7 +248,7 @@ public:
     unsigned long FUN_004cc4b0();                   // 0x004CC4B0
     unsigned long GetOwnerInline()
     {
-        if (m_lstPlayers.m_pList->m_pHead) {
+        if (m_lstPlayers.m_pcExoLinkedListInternal->pHead) {
             return m_oidOwner;
         }
         return 0x7f000000;

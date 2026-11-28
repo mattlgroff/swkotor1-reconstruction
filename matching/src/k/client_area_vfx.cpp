@@ -1,10 +1,6 @@
 // 0x00690940 (CSWCVisualEffect::Announce) lives in sw_c_visual_effect.cpp.
 
-class CExoLinkedListInternal {
-public:
-    int m_nCount;                     // +0x0
-    void* RemoveHead();               // 0x005E9C80
-};
+#include "shared/exo_linked_list.h"
 
 class CClientVFX {
 public:
@@ -16,7 +12,7 @@ public:
 // FUNCTION: SWKOTOR 0x00690910
 void UnloadCachedVFX()
 {
-    while (g_lCachedVFX->m_nCount != 0) {
+    while (g_lCachedVFX->pHead) {
         CClientVFX* pVFX = (CClientVFX*)g_lCachedVFX->RemoveHead();
         if (pVFX)
             delete pVFX;

@@ -27,13 +27,7 @@ int operator==(const Vector& a, const Vector& b);  // 0x004AA980
 
 class CExoLinkedListInternal;
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();                               // 0x004CC3D0
-    ~CExoLinkedList();
-    CExoLinkedListInternal* m_pList;
-};
+#include "shared/exo_linked_list.h"
 
 template <class T>
 class CExoArrayList {

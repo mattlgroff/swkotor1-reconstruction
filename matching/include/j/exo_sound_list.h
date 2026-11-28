@@ -5,60 +5,13 @@
 #ifndef J_EXO_SOUND_LIST_H
 #define J_EXO_SOUND_LIST_H
 
-typedef void* CExoLinkedListPosition;
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    void* Remove(CExoLinkedListPosition pos);       // 0x005E9C10
-    int Contains(void* p);                          // 0x005E9D40
-    CExoLinkedListPosition AddHead(void* p);        // 0x005E9D70
-    void* GetHead();
+#include "shared/exo_linked_list.h"
 
-    void* m_pHead;                                  // 0x00
-    void* m_pTail;                                  // 0x04
-    unsigned long m_nCount;                         // 0x08
-};
+#include "shared/exo_linked_list.h"
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;                      // 0x00
-    CExoLinkedListNode* pNext;                      // 0x04
-    void* pObject;                                  // 0x08
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList() { m_pcExoLinkedListInternal = new CExoLinkedListInternal(); }
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
 
-    CExoLinkedListPosition AddHead(T* p) { return m_pcExoLinkedListInternal->AddHead(p); }
-    int Contains(T* p) { return m_pcExoLinkedListInternal->Contains(p); }
-    T* GetHead()
-    {
-        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
-        return (T*)pInternal->GetHead();
-    }
-    CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->m_pHead; }
-    T* Remove(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->Remove(pos); }
-    unsigned long GetCount() { return m_pcExoLinkedListInternal->m_nCount; }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-};
-
-inline void* CExoLinkedListInternal::GetHead()
-{
-    CExoLinkedListNode* pNode = (CExoLinkedListNode*)m_pHead;
-    if (!pNode) {
-        return 0;
-    }
-    return pNode->pObject;
-}
 
 // Size 0x18.
 class CPriorityGroup {

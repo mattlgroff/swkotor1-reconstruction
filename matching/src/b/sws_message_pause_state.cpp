@@ -11,11 +11,11 @@ int CSWSMessage::SendServerToPlayerModule_SetPauseState(unsigned char nType, int
         g_pAppManager->GetServerExoApp()->GetActiveExclusionList();
     if (pExcluded && pExcluded->GetHeadPos()) {
         pClientExcluded = new CExoLinkedList<unsigned long>;
-        void* pPos = pExcluded->GetHeadPos();
+        CExoLinkedListPosition pPos = pExcluded->GetHeadPos();
         while (pPos) {
             unsigned long oidObject = (unsigned long)pExcluded->GetAtPos(pPos);
             unsigned long oidClientObject = pClient->ServerToClientObjectId(oidObject);
-            pClientExcluded->m_pList->AddTail((void*)oidClientObject);
+            pClientExcluded->m_pcExoLinkedListInternal->AddTail((void*)oidClientObject);
             pExcluded->GetNext(pPos);
         }
     }

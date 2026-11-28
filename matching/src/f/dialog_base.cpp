@@ -9,21 +9,9 @@
 
 #include "shared/vector.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();
-    ~CExoLinkedListInternal();
-    void *m_pHead;
-    void *m_pTail;
-    int m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList() { m_pcExoLinkedListInternal = new CExoLinkedListInternal(); }
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-};
+
 
 class CSWSDialogPlayer;
 

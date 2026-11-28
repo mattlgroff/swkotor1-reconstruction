@@ -38,7 +38,7 @@ void CSWSItem::CloseContainerForAll()
     CSWBaseItem* pBase = g_pRules->m_pBaseItemArray->GetBaseItem(nBaseItem);
     if (pBase && pBase->m_bContainer) {
         CExoLinkedList<CSWSClient>* pList = g_pAppManager->GetServerExoApp()->GetPlayerList();
-        void* pPos = pList->GetHeadPos();
+        CExoLinkedListPosition pPos = pList->GetHeadPos();
         while (pPos) {
             CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pPos);
             CGameObject* pObject;

@@ -19,20 +19,9 @@ public:
     int WriteFieldCExoString(CResStruct* pStruct, const CExoString& sValue, char* szLabel); // 0x00412970
 };
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    void* m_pHead;
-    void* m_pTail;
-    unsigned long m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList() { m_pList = new CExoLinkedListInternal; }
-    CExoLinkedListInternal* m_pList;
-};
+
 
 class CSWSClient;
 

@@ -79,24 +79,9 @@ template <class T> void CExoArrayList<T>::SetSize(int nSize)
     num = nSize;
 }
 
-class CExoLinkedListInternal {
-public:
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* RemoveHead();                             // 0x005E9C80
+#include "shared/exo_linked_list.h"
 
-    void* pHead;
-    void* pTail;
-    unsigned long m_nCount;
-};
 
-template <class T> class CExoLinkedList {
-public:
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == NULL; }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-};
 
 #pragma pack(push, 4)
 class CGameEffect {

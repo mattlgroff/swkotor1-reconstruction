@@ -4,23 +4,9 @@
 
 #include "shared/exo_string.h"
 
-class CExoLinkedListInternal {
-public:
-    void* m_pHead;                                  // 0x00
-    void* m_pTail;                                  // 0x04
-    unsigned long m_nCount;                         // 0x08
+#include "shared/exo_linked_list.h"
 
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
-
-    CExoLinkedList();                               // 0x004B25D0 (folded)
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-};
 
 template <class T>
 class CExoArrayList {

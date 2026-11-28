@@ -140,15 +140,7 @@ public:
 
 #include "shared/res_ref.h"
 
-class CExoLinkedListInternal {
-public:
-    void* GetAtPos(void* pos);                      // 0x005E9B60
-    void* GetNext(void*& pos);                      // 0x005E9B90
-    void* Remove(void* pos);                        // 0x005E9C10
-    void* GetPrev(void*& pos);                      // 0x005E9BD0
-    void* m_pHead;
-    void* m_pTail;
-};
+#include "shared/exo_linked_list.h"
 
 class CVirtualMachine {
 public:
@@ -612,13 +604,6 @@ public:
     float m_f19C;                                   // 0x19c (placeholder name)
 };
 
-struct CExoLinkedListWrap {
-    CExoLinkedListInternal* m_pInternal;
-    void* GetHeadPos() { return m_pInternal->m_pHead; }
-    void* GetAtPos(void* pos) { return m_pInternal->GetAtPos(pos); }
-    void* GetNext(void*& pos) { return m_pInternal->GetNext(pos); }
-};
-
 struct CSWSCombatRoundPending {
     ~CSWSCombatRoundPending();                      // 0x004015A0
     char pad_0x0[0x10];
@@ -657,7 +642,7 @@ public:
     char pad_0x95c[0x96c - 0x95c];
     unsigned char m_nCurrentAttack;                 // 0x96c
     char pad_0x96d[0x9b0 - 0x96d];
-    CExoLinkedListWrap* m_pPending;                 // 0x9b0 (placeholder name)
+    CExoLinkedList<struct CSWSCombatRoundPending>* m_pPending; // 0x9b0 (placeholder name)
     char pad_0x9b4[0x9b8 - 0x9b4];
     int m_n9B8;                                     // 0x9b8 (placeholder names 0x9b8-0x9cc)
     int m_n9BC;
@@ -1113,7 +1098,7 @@ public:
     void ClearActionsForType4F8770(int nType);      // 0x004F8770 (placeholder name)
     int AddAction38(unsigned long a1, unsigned long a2, unsigned long a3);  // 0x004F0900 (placeholder name)
     int GetNumActionGroups();                       // 0x004CC690
-    void* GetPositionByGroupIndex(int nIndex);      // 0x004CC5C0
+    CExoLinkedListPosition GetPositionByGroupIndex(int nIndex); // 0x004CC5C0
     unsigned short GetActionByGroupId(unsigned short nGroupId, CSWSObjectActionNode** ppNode);  // 0x004CC530
     void RemoveGroup(unsigned short nGroupId);      // 0x004CC6F0
     void RemoveTargetActions4F61D0(CGameObject* pTarget);  // 0x004F61D0 (placeholder name)

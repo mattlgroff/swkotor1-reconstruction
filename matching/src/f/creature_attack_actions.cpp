@@ -6,17 +6,11 @@ struct CSWSCombatRoundAction {
     unsigned long m_oidTarget; // +0x38
 };
 
-struct CExoLinkedListNode;
+class CExoLinkedListNode;
 
-struct CExoLinkedListInternal {
-    CExoLinkedListNode *pHead;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-    CExoLinkedListNode *GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-};
+struct CSWSCombatRoundPending;
 
 class CSWSCombatRound {
 public:
@@ -26,7 +20,7 @@ public:
                          int nDuration, int bAttack);
 
     char pad_0x0[0x9b0];
-    CExoLinkedList *m_pScheduledActions;      // +0x9b0
+    CExoLinkedList<CSWSCombatRoundPending> *m_pScheduledActions; // +0x9b0
     char pad_0x9b4[0x9cc - 0x9b4];
     unsigned long m_oidNewAttackTarget;       // +0x9cc
 };

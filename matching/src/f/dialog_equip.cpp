@@ -4,31 +4,11 @@
 
 #include "shared/res_ref.h"
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode *pPrev;
-    CExoLinkedListNode *pNext;
-    void *pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    void *GetAtPos(CExoLinkedListNode *pPos);
-    void *GetNext(CExoLinkedListNode *&pPos);
-    CExoLinkedListNode *AddHead(void *pObject);
-    CExoLinkedListNode *m_pHead;
-    CExoLinkedListNode *m_pTail;
-    int m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListNode *GetHeadPos() { return m_pcExoLinkedListInternal->m_pHead; }
-    T *GetAtPos(CExoLinkedListNode *pPos) { return (T *)m_pcExoLinkedListInternal->GetAtPos(pPos); }
-    T *GetNext(CExoLinkedListNode *&pPos) { return (T *)m_pcExoLinkedListInternal->GetNext(pPos); }
-    CExoLinkedListNode *AddHead(T *pObject) { return m_pcExoLinkedListInternal->AddHead(pObject); }
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-};
+
 
 class CSWCCreature;
 

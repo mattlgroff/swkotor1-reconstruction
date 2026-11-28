@@ -73,25 +73,13 @@ void CExoStringList::Add(CExoString* pString)
     Introduce(pString, nCount);
 }
 
-typedef void* CExoLinkedListPosition;
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;                      // 0x00
-    CExoLinkedListNode* pNext;                      // 0x04
-    void* pObject;                                  // 0x08
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListNode* pHead;                      // 0x00
-    CExoLinkedListNode* pTail;                      // 0x04
-    unsigned long nCount;                           // 0x08
-
-    void* GetPrev(CExoLinkedListPosition& pos);
-};
+#include "shared/exo_linked_list.h"
 
 // FUNCTION: SWKOTOR 0x005E9BD0
-void* CExoLinkedListInternal::GetPrev(CExoLinkedListPosition& pos)
+void* CExoLinkedListInternal::GetPrev(CExoLinkedListPosition& pos) const
 {
     if (pos == 0) {
         g_pExoBase->m_pcExoDebug->Warning(0x119, "exolinkedlistinternal.cpp",

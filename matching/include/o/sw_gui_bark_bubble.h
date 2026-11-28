@@ -107,41 +107,10 @@ class CSWSPlayer : public CSWSClient {
 };
 
 // Node: prev, next, object (+8).
-struct CExoLinkedListNode {
-    CExoLinkedListNode* m_pPrev;
-    CExoLinkedListNode* m_pNext;
-    void* m_pObject;
-};
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* RemoveHead();                             // 0x005E9C80
-    void* AddTail(void* pObject);                   // 0x005E9DC0
-    CExoLinkedListNode* m_pHead;
-    CExoLinkedListNode* m_pTail;
-    unsigned long m_nCount;
-};
-template <class T> class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pList;
-    CExoLinkedList();
-    ~CExoLinkedList() { delete m_pList; }
-    int IsEmpty() { return m_pList->m_pHead == 0; }
-    T* RemoveHead() { return (T*)m_pList->RemoveHead(); }
-    void* AddTail(T* pObject) { return m_pList->AddTail(pObject); }
-    T* GetHead()
-    {
-        CExoLinkedListNode* pNode = m_pList->m_pHead;
-        return !pNode ? 0 : (T*)pNode->m_pObject;
-    }
-};
+#include "shared/exo_linked_list.h"
+#include "shared/exo_linked_list.h"
 
-template <class T>
-CExoLinkedList<T>::CExoLinkedList()
-{
-    m_pList = new CExoLinkedListInternal;
-}
+
 
 Vector operator-(const Vector& a, const Vector& b);  // 0x00423BC0
 

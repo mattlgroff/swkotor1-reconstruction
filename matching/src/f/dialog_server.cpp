@@ -218,27 +218,9 @@ public:
 #include "shared/app_manager.h"
 
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode *pPrev;
-    CExoLinkedListNode *pNext;
-    void *pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    void *RemoveHead();
-    void *GetNext(CExoLinkedListNode *&pPos);
-    void *GetHead()
-    {
-        CExoLinkedListNode *pNode = m_pHead;
-        if (!pNode)
-            return 0;
-        return pNode->pObject;
-    }
-    CExoLinkedListNode *m_pHead;
-    CExoLinkedListNode *m_pTail;
-    int m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
 class CSWSDialogPlayer {
 public:
@@ -332,29 +314,7 @@ public:
     int m_nB0;                       // +0xb0
 };
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();
-    ~CExoLinkedList();
-    int IsEmpty() { return m_pcExoLinkedListInternal->m_pHead == 0; }
-    T *RemoveHead() { return (T *)m_pcExoLinkedListInternal->RemoveHead(); }
-    CExoLinkedListNode *GetHeadPos() { return m_pcExoLinkedListInternal->m_pHead; }
-    T *GetHeadObject()
-    {
-        void *pObject = m_pcExoLinkedListInternal->m_pHead;
-        if (pObject)
-            pObject = ((CExoLinkedListNode *)pObject)->pObject;
-        return (T *)pObject;
-    }
-    T *GetNext(CExoLinkedListNode *&pPos) { return (T *)m_pcExoLinkedListInternal->GetNext(pPos); }
-    T *GetFirst()
-    {
-        CExoLinkedListInternal *pInternal = m_pcExoLinkedListInternal;
-        return (T *)pInternal->GetHead();
-    }
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-};
+
 
 
 
@@ -999,7 +959,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject *pObject, unsign
     if (!bForce && (m_n74 != -1 || nEntry != (unsigned long)m_n70))
         return 1;
     pPos = m_lPlayers.GetHeadPos();
-    CSWSDialogPlayer *pPlayer = m_lPlayers.GetFirst();
+    CSWSDialogPlayer *pPlayer = m_lPlayers.GetHead();
     while (pPlayer) {
         if (pPlayer->m_nPlayerId == nPlayerId)
             break;
@@ -1032,7 +992,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject *pObject, unsign
     unsigned long nReplyIndex = m_pEntries[m_n70].m_pReplies[nReply].m_nIndex;
     if (m_lPlayers.GetHeadPos()) {
         pPos = m_lPlayers.GetHeadPos();
-        CSWSDialogPlayer *pOther = m_lPlayers.GetFirst();
+        CSWSDialogPlayer *pOther = m_lPlayers.GetHead();
         while (pOther) {
             if (pOther->m_nPlayerId != nPlayerId) {
                 CExoString sListener(

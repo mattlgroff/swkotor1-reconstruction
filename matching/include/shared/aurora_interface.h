@@ -15,7 +15,7 @@ class CAuroraProcessedTexture;
 class CAuroraTXI;
 class CAuroraTexture;
 class CAuroraVisibility;
-struct CExoLinkedListNode;
+class CExoLinkedListNode;
 class CExoString;
 
 class CAuroraInterface {

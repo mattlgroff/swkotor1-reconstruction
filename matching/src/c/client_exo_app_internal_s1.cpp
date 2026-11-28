@@ -915,7 +915,6 @@ void CClientExoAppInternal::SetPauseState(unsigned char nState, int bPause, CExo
             AddToPauseExclusionList((unsigned long)pList->m_pcExoLinkedListInternal->GetAtPos(pos));
             pList->GetNext(pos);
         }
-        delete pList->m_pcExoLinkedListInternal;
         delete pList;
     }
 }

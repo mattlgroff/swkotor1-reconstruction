@@ -259,9 +259,9 @@ int CSWSCreature::ReplaceEquipItemActions(CSWSItem* pItem, unsigned long nSlot, 
 {
     unsigned long oidItem = pItem->m_n14;
     int bResult;
-    void* pos;
+    CExoLinkedListPosition pos;
     if (!bSkipPending && m_pCombatRound->m_pPending) {
-        pos = m_pCombatRound->m_pPending->m_pInternal->m_pHead;
+        pos = m_pCombatRound->m_pPending->m_pcExoLinkedListInternal->pHead;
         while (pos) {
             CSWSCombatRoundPending* pPending =
                 (CSWSCombatRoundPending*)m_pCombatRound->m_pPending->GetAtPos(pos);
@@ -274,7 +274,7 @@ int CSWSCreature::ReplaceEquipItemActions(CSWSItem* pItem, unsigned long nSlot, 
             m_pCombatRound->m_pPending->GetNext(pos);
         }
     }
-    pos = m_pActions->m_pHead;
+    pos = m_pActions->pHead;
     while (pos) {
         CSWSObjectActionNode* pNode = (CSWSObjectActionNode*)m_pActions->GetAtPos(pos);
         if (pNode && pNode->m_nActionId == 8 && (pNode->m_n3C == nSlot || pNode->m_n38 == oidItem)) {
@@ -330,17 +330,17 @@ void CSWSCreature::ProcessPendingCombatActions()
     if (!m_pCombatRound->GetActionPending()) {
         return;
     }
-    CExoLinkedListWrap* pList = m_pCombatRound->m_pPending;
+    CExoLinkedList<CSWSCombatRoundPending>* pList = m_pCombatRound->m_pPending;
     if (!pList) {
         return;
     }
-    void* pos = pList->m_pInternal->m_pTail;
+    CExoLinkedListPosition pos = pList->m_pcExoLinkedListInternal->pTail;
     if (!pos) {
         return;
     }
-    CSWSCombatRoundPending* pAction = (CSWSCombatRoundPending*)pList->m_pInternal->GetAtPos(pos);
+    CSWSCombatRoundPending* pAction = (CSWSCombatRoundPending*)pList->m_pcExoLinkedListInternal->GetAtPos(pos);
     while (pos) {
-        void* pRemovePos = NULL;
+        CExoLinkedListPosition pRemovePos = NULL;
         CSWSCombatRoundPending* pRemove = NULL;
         if (pAction->m_nType == 6) {
             CSWSItem* pItem = GetServerExoApp()->GetItemByGameObjectID(pAction->m_oid);
@@ -357,9 +357,9 @@ void CSWSCreature::ProcessPendingCombatActions()
                 pRemove = pAction;
             }
         }
-        pAction = (CSWSCombatRoundPending*)pList->m_pInternal->GetPrev(pos);
+        pAction = (CSWSCombatRoundPending*)pList->m_pcExoLinkedListInternal->GetPrev(pos);
         if (pRemovePos) {
-            pList->m_pInternal->Remove(pRemovePos);
+            pList->m_pcExoLinkedListInternal->Remove(pRemovePos);
             if (pRemove) {
                 delete pRemove;
             }
@@ -370,7 +370,7 @@ void CSWSCreature::ProcessPendingCombatActions()
 // FUNCTION: SWKOTOR 0x00518B30
 int CSWSCreature::GetHasValidPendingAction()
 {
-    void* pos = m_pCombatRound->m_pPending->m_pInternal->m_pHead;
+    CExoLinkedListPosition pos = m_pCombatRound->m_pPending->m_pcExoLinkedListInternal->pHead;
     if (!pos) {
         return 0;
     }

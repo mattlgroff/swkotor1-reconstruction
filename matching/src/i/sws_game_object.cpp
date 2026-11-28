@@ -43,24 +43,10 @@ NWPlayerCharacterList_st::NWPlayerCharacterList_st()
     m_n22 = 0xffff;
 }
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    void* m_pHead;
-    void* m_pTail;
-    unsigned long m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T> class CExoLinkedList {
-public:
-    CExoLinkedList();
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-};
 
-template <class T> CExoLinkedList<T>::CExoLinkedList()
-{
-    m_pcExoLinkedListInternal = new CExoLinkedListInternal;
-}
+
 
 struct CSWSModulePlayerEntry;
 

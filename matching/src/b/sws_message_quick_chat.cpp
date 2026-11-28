@@ -31,7 +31,7 @@ int CSWSMessage::SendServerToPlayerQuickChatMessage(unsigned long oidSpeaker, un
     } else {
         bResult = 0;
     }
-    void* pos = pPlayers->GetHeadPos();
+    CExoLinkedListPosition pos = pPlayers->GetHeadPos();
     while (pos && bResult == 1) {
         CSWSPlayer* pPlayer = (CSWSPlayer*)pPlayers->GetAtPos(pos);
         if (pPlayer->GetGameObject()) {

@@ -4,39 +4,11 @@
 
 #include "shared/exo_loc_string_st.h"
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;                      // 0x00
-    CExoLinkedListNode* pNext;                      // 0x04
-    void* pObject;                                  // 0x08
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListNode* pHead;                      // 0x00
-    CExoLinkedListNode* pTail;                      // 0x04
-    unsigned long nCount;                           // 0x08
+#include "shared/exo_linked_list.h"
 
-    void* GetNext(void*& pos);                      // 0x005E9B90
-    void* AddTail(void* p);                         // 0x005E9DC0
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
-
-    void* GetHeadPos() const { return m_pcExoLinkedListInternal->pHead; }
-    T* GetHead() const
-    {
-        void* p = m_pcExoLinkedListInternal->pHead;
-        if (p) {
-            p = ((CExoLinkedListNode*)p)->pObject;
-        }
-        return (T*)p;
-    }
-    T* GetNext(void*& pos) const { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-    void* AddTail(T* p) { return m_pcExoLinkedListInternal->AddTail(p); }
-};
 
 #include "shared/exo_loc_string.h"
 
@@ -62,7 +34,7 @@ int CExoLocStringInternal::Compare(CExoLocString& other)
     CExoString* pMine = new CExoString;
     CExoString* pTheirs = new CExoString;
     ExoLocString_st* p = m_lstLocStrings.GetHead();
-    void* pos = m_lstLocStrings.GetHeadPos();
+    CExoLinkedListPosition pos = m_lstLocStrings.GetHeadPos();
     while (p) {
         *pMine = p->m_sString;
         other.GetString(p->m_nLanguage, pTheirs, 0);

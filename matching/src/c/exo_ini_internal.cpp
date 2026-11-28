@@ -3,31 +3,9 @@
 
 #include "shared/exo_string.h"
 
-class CExoLinkedListInternal {
-public:
-    void* pHead;                                    // 0x00
-    void* pTail;                                    // 0x04
-    unsigned long nCount;                           // 0x08
+#include "shared/exo_linked_list.h"
 
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* RemoveHead();                             // 0x005E9C80
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
-
-    CExoLinkedList();                               // 0x005EA4D0 for CFileSection
-    ~CExoLinkedList()
-    {
-        if (m_pcExoLinkedListInternal) {
-            delete m_pcExoLinkedListInternal;
-        }
-    }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-};
 
 class CFileKey {
 public:

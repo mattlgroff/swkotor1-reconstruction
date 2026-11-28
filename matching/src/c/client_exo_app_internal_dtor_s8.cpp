@@ -22,44 +22,9 @@ public:
 };
 
 
-class CExoLinkedListInternal {
-public:
-    struct CNode {
-        CNode* pPrev;
-        CNode* pNext;
-        void* pObject;
-    };
-    CNode* pHead;                                   // 0x00
-    void* pTail;                                    // 0x04
-    unsigned long nCount;                           // 0x08
+#include "shared/exo_linked_list.h"
 
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* RemoveHead();                             // 0x005E9C80
-    void* GetHead()
-    {
-        CNode* pNode = pHead;
-        if (!pNode) {
-            return 0;
-        }
-        return pNode->pObject;
-    }
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
-
-    CExoLinkedList();                               // out of line per instantiation
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-    T* GetHead()
-    {
-        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
-        return (T*)pInternal->GetHead();
-    }
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-};
 
 template <class T>
 class CExoArrayList {

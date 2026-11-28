@@ -8,57 +8,11 @@ extern "C" int __cdecl _stricmp(const char* a, const char* b);
 extern "C" int __cdecl strcmp(const char* a, const char* b);
 #pragma intrinsic(strcmp)
 
-class CExoLinkedListNode {
-public:
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    void* GetHead()
-    {
-        CExoLinkedListNode* pNode = pHead;
-        if (!pNode) {
-            return 0;
-        }
-        return pNode->pObject;
-    }
-    void* GetNext(CExoLinkedListNode*& pPosition);  // 0x005E9B90
-    void* Remove(CExoLinkedListNode* pPosition);    // 0x005E9C10
-    void* RemoveHead();                             // 0x005E9C80
-    void* AddBefore(void* pObject, void* pPosition); // 0x005E9AD0
-    void* AddTail(void* pObject);                   // 0x005E9DC0
+#include "shared/exo_linked_list.h"
 
-    CExoLinkedListNode* pHead;
-    CExoLinkedListNode* pTail;
-    unsigned long nCount;
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList() { m_pcExoLinkedListInternal = new CExoLinkedListInternal; }
-    CExoLinkedListNode* GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetHead()
-    {
-        CExoLinkedListInternal* pList = m_pcExoLinkedListInternal;
-        return (T*)pList->GetHead();
-    }
-    T* GetNext(CExoLinkedListNode*& pPosition) { return (T*)m_pcExoLinkedListInternal->GetNext(pPosition); }
-    T* Remove(CExoLinkedListNode* pPosition) { return (T*)m_pcExoLinkedListInternal->Remove(pPosition); }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-    void* AddBefore(T* pObject, CExoLinkedListNode* pPosition)
-    {
-        return m_pcExoLinkedListInternal->AddBefore(pObject, pPosition);
-    }
-    void* AddTail(T* pObject) { return m_pcExoLinkedListInternal->AddTail(pObject); }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-};
 
 class Model;
 Model* BinaryFindModel(char* szName);               // 0x004640F0

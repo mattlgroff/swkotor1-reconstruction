@@ -460,7 +460,7 @@ unsigned long CSWSObject::AIActionPlaySound(CSWSObjectActionNode* pNode)
     sSound = *(CExoString*)pNode->m_pParameter[0];
     CSWSMessage* pMessage = g_pAppManager->GetServerExoApp()->GetSWSMessage();
     CExoLinkedList<CSWSClient>* pPlayers = g_pAppManager->GetServerExoApp()->GetPlayerList();
-    void* pPos = pPlayers->GetHeadPos();
+    CExoLinkedListPosition pPos = pPlayers->GetHeadPos();
     while (pPos) {
         CSWSPlayer* pPlayer = (CSWSPlayer*)pPlayers->GetAtPos(pPos);
         if (pPlayer->GetGameObject()) {

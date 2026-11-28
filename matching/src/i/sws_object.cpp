@@ -246,7 +246,7 @@ void CSWSDialog::FUN_004cc490(void* p)
 // FUNCTION: SWKOTOR 0x004CC4B0
 unsigned long CSWSDialog::FUN_004cc4b0()
 {
-    if (m_lstPlayers.m_pList->m_pHead) {
+    if (m_lstPlayers.m_pcExoLinkedListInternal->pHead) {
         return m_oidOwner;
     }
     return 0x7f000000;

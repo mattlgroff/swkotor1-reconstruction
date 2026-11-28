@@ -106,27 +106,10 @@ public:
     unsigned short m_n14;                           // 0x14
 };
 
-typedef void* CExoLinkedListPosition;
 
-class CExoLinkedListInternal {
-public:
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
+#include "shared/exo_linked_list.h"
 
-    void* m_pHead;                                  // 0x00
-    void* m_pTail;                                  // 0x04
-    unsigned long m_nCount;                         // 0x08
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->m_pHead; }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-};
 
 // Miles 3D sample / room API used by the voice binders (IAT 0x0073D4A0-0x0073D4F8).
 typedef void* HPROVIDER;

@@ -14,7 +14,7 @@ void CSWSMessage::DeleteLastUpdateObjectsForObject(CSWSPlayer* pPlayer, unsigned
     if (!pObjectArray) {
         return;
     }
-    void* pos = pPlayer->m_pLastUpdateObjects->GetHeadPos();
+    CExoLinkedListPosition pos = pPlayer->m_pLastUpdateObjects->GetHeadPos();
     while (pos) {
         CLastUpdateObject* pLastUpdate = pPlayer->m_pLastUpdateObjects->GetAtPos(pos);
         if (pLastUpdate->m_nId == oidObject && pLastUpdate->m_nId != pPlayerObject->m_idSelf) {
@@ -42,7 +42,7 @@ void CSWSMessage::DeleteLastUpdateObjectsForObject(CSWSPlayer* pPlayer, unsigned
             } else if (pLastUpdate->m_nObjectType == OBJECT_TYPE_TRIGGER) {
                 WriteBYTE(3, 8);
             }
-            void* posRemove = pos;
+            CExoLinkedListPosition posRemove = pos;
             pPlayer->m_pLastUpdateObjects->GetNext(pos);
             pPlayer->m_pLastUpdateObjects->Remove(posRemove);
             delete pLastUpdate;
@@ -66,7 +66,7 @@ void CSWSMessage::DeleteLastUpdateObjectsInOtherAreas(CSWSPlayer* pPlayer)
     if (!pObjectArray) {
         return;
     }
-    void* pos = pPlayer->m_pLastUpdateObjects->GetHeadPos();
+    CExoLinkedListPosition pos = pPlayer->m_pLastUpdateObjects->GetHeadPos();
     while (pos) {
         CLastUpdateObject* pLastUpdate = pPlayer->m_pLastUpdateObjects->GetAtPos(pos);
         if (pPlayerObject && pLastUpdate->m_nId == pPlayerObject->m_idSelf) {
@@ -99,7 +99,7 @@ void CSWSMessage::DeleteLastUpdateObjectsInOtherAreas(CSWSPlayer* pPlayer)
         } else if (pLastUpdate->m_nObjectType == OBJECT_TYPE_TRIGGER) {
             WriteBYTE((unsigned char)pLastUpdate->m_n150, 8);
         }
-        void* posRemove = pos;
+        CExoLinkedListPosition posRemove = pos;
         pPlayer->m_pLastUpdateObjects->GetNext(pos);
         pPlayer->m_pLastUpdateObjects->Remove(posRemove);
         delete pLastUpdate;

@@ -10,61 +10,12 @@ extern "C" int __cdecl tolower(int c);
 
 #include "shared/res_ref.h"
 
-typedef void* CExoLinkedListPosition;
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListNode* pHead;
-    CExoLinkedListNode* pTail;
-    unsigned long m_nCount;
+#include "shared/exo_linked_list.h"
 
-    CExoLinkedListInternal();                       // 0x005e9aa0
-    void* GetHead()
-    {
-        CExoLinkedListNode* pNode = pHead;
-        if (!pNode) {
-            return 0;
-        }
-        return pNode->pObject;
-    }
-    ~CExoLinkedListInternal();
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    CExoLinkedListPosition AddTail(void* pObject);  // 0x005e9dc0
-    CExoLinkedListPosition AddHead(void* pObject);
-    void* Remove(CExoLinkedListPosition pos);       // 0x005e9c10
-    void* RemoveHead();
-    CExoLinkedListPosition GetTailPos();
-    void RemoveAll();
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-
-    CExoLinkedList();
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetHead()
-    {
-        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
-        return (T*)pInternal->GetHead();
-    }
-    CExoLinkedListPosition AddTail(T* pObject) { return m_pcExoLinkedListInternal->AddTail(pObject); }
-    CExoLinkedListPosition AddHead(T* pObject) { return m_pcExoLinkedListInternal->AddHead(pObject); }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-    T* Remove(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->Remove(pos); }
-    unsigned long Count() { return m_pcExoLinkedListInternal->m_nCount; }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-};
 
 class CExoFile {
 public:
@@ -515,10 +466,5 @@ public:
 #include "shared/globals.h"
 
 // Defined out of line (not inlined at /Ob1): one COMDAT for every T.
-template <class T>
-CExoLinkedList<T>::CExoLinkedList()
-{
-    m_pcExoLinkedListInternal = new CExoLinkedListInternal();
-}
 
 #endif

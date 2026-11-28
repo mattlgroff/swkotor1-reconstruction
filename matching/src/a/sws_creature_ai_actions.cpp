@@ -33,8 +33,8 @@ int CSWSCreature::AIActionPartyFollowLeader(CSWSObjectActionNode*)
 // FUNCTION: SWKOTOR 0x005188E0
 int CSWSCreature::HasAction(unsigned long nType)
 {
-    if (m_pActions->m_pHead) {
-        void* pos = m_pActions->m_pHead;
+    if (m_pActions->pHead) {
+        CExoLinkedListPosition pos = m_pActions->pHead;
         while (pos) {
             CSWSObjectActionNode* pNode = (CSWSObjectActionNode*)m_pActions->GetAtPos(pos);
             if (pNode->m_nActionId == nType) return 1;
@@ -47,8 +47,8 @@ int CSWSCreature::HasAction(unsigned long nType)
 // FUNCTION: SWKOTOR 0x00518940
 CSWSObjectActionNode* CSWSCreature::GetAction(unsigned long nType)
 {
-    if (m_pActions->m_pHead) {
-        void* pos = m_pActions->m_pHead;
+    if (m_pActions->pHead) {
+        CExoLinkedListPosition pos = m_pActions->pHead;
         while (pos) {
             CSWSObjectActionNode* pNode = (CSWSObjectActionNode*)m_pActions->GetAtPos(pos);
             if (pNode->m_nActionId == nType) return pNode;

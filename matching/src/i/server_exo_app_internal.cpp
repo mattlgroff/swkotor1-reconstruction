@@ -501,7 +501,7 @@ int CServerExoAppInternal::IsActionsPending(unsigned long oid)
 {
     CSWSCreature* pCreature = GetCreatureByGameObjectID(ClientToServerObjectID(oid));
     if (pCreature) {
-        return pCreature->m_lActions.m_pList->m_pHead != 0;
+        return pCreature->m_lActions.m_pcExoLinkedListInternal->pHead != 0;
     }
     return 0;
 }

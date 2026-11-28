@@ -7,39 +7,9 @@ public:
     char pad_4[0x6c - 4];
     unsigned short m_nGroupId;
 };
-struct CExoLinkedListNode {
-    CExoLinkedListNode* next;
-    CExoLinkedListNode* previous;
-    void* data;
-};
-class CExoLinkedListInternal {
-public:
-    void* GetAtPos(void* pos);                      // 0x005E9B60
-    void* GetNext(void*& pos);                      // 0x005E9B90
-    void* Remove(void* pos);                        // 0x005E9C10
-    void* GetHead()
-    {
-        CExoLinkedListNode* pNode = head;
-        if (!pNode) {
-            return 0;
-        }
-        return pNode->data;
-    }
-    CExoLinkedListNode* head;
-};
-template <class T> class CExoLinkedList {
-public:
-    T* GetHead()
-    {
-        CExoLinkedListInternal* pInternal = m_pInternal;
-        return (T*)pInternal->GetHead();
-    }
-    void* GetHeadPosition() { return m_pInternal->head; }
-    T* GetAtPos(void* pos) { return (T*)m_pInternal->GetAtPos(pos); }
-    T* GetNext(void*& pos) { return (T*)m_pInternal->GetNext(pos); }
-    T* Remove(void* pos) { return (T*)m_pInternal->Remove(pos); }
-    CExoLinkedListInternal* m_pInternal;
-};
+#include "shared/exo_linked_list.h"
+#include "shared/exo_linked_list.h"
+
 class CSWSCreature {
 public:
     virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
@@ -61,15 +31,15 @@ int CSWSCreature::CancelAction(unsigned long, unsigned short nGroupId)
 {
     CExoLinkedList<CSWSObjectActionNode>* pList = &m_actions;
     CSWSObjectActionNode* pAction;
-    void* pos;
+    CExoLinkedListPosition pos;
     if (pList) {
         pAction = pList->GetHead();
-        pos = pList->GetHeadPosition();
+        pos = pList->GetHeadPos();
     }
     int bResult = 0;
     while (pAction) {
         if (pAction->m_nGroupId == nGroupId) {
-            void* current = pos;
+            CExoLinkedListPosition current = pos;
             pAction = pList->GetNext(pos);
             CSWSObjectActionNode* pNode = pList->GetAtPos(current);
             if (RunAction(pNode, pNode == pList->GetHead()) == 1) {

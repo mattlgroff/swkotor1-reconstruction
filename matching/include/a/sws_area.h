@@ -444,56 +444,12 @@ public:
     void DistributeExperience(unsigned long nXP, int bShow);    // 0x005653A0
 };
 
-typedef void* CExoLinkedListPosition;
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    void* RemoveHead();                             // 0x005E9C80
-    void* GetHeadObject()
-    {
-        CExoLinkedListNode* pNode = m_pHead;
-        if (!pNode) {
-            return 0;
-        }
-        return pNode->pObject;
-    }
-    CExoLinkedListNode* m_pHead;
-    CExoLinkedListNode* m_pTail;
-    unsigned long m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();
-    CExoLinkedListPosition GetHeadPos() { return m_pList->m_pHead; }
-    T* GetHead()
-    {
-        CExoLinkedListInternal* pInternal = m_pList;
-        return (T*)pInternal->GetHeadObject();
-    }
-    T* GetAtPosInline(CExoLinkedListPosition pos)
-    {
-        if (pos) {
-            pos = ((CExoLinkedListNode*)pos)->pObject;
-        }
-        return (T*)pos;
-    }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pList->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pList->GetNext(pos); }
-    T* RemoveHead() { return (T*)m_pList->RemoveHead(); }
-    int IsEmpty() { return m_pList->m_pHead == NULL; }
-    CExoLinkedListInternal* m_pList;
-};
+
 
 class CSWSPlayer {
 public:

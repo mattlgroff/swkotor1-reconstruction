@@ -45,14 +45,14 @@ int CSWSMessage::WriteGameObjUpdate_PartyAIState(CSWSPlayer* pPlayer)
             }
         }
     }
-    void* pos = GetPartyUpdateList(pPlayer)->GetHeadPos();
+    CExoLinkedListPosition pos = GetPartyUpdateList(pPlayer)->GetHeadPos();
     while (pos) {
         CLastUpdatePartyObject* pLast = GetPartyUpdateList(pPlayer)->GetAtPos(pos);
         if (pLast->m_bUpdated) {
             pLast->m_bUpdated = 0;
             GetPartyUpdateList(pPlayer)->GetNext(pos);
         } else {
-            void* posRemove = pos;
+            CExoLinkedListPosition posRemove = pos;
             GetPartyUpdateList(pPlayer)->GetNext(pos);
             GetPartyUpdateList(pPlayer)->Remove(posRemove);
             delete pLast;

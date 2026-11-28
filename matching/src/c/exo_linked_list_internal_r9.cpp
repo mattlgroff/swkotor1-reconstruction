@@ -1,20 +1,8 @@
 // CExoLinkedListInternal constructor and IsInList (b005e9, r9).
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;                      // 0x00
-    CExoLinkedListNode* pNext;                      // 0x04
-    void* pObject;                                  // 0x08
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListNode* pHead;                      // 0x00
-    CExoLinkedListNode* pTail;                      // 0x04
-    unsigned long nCount;                           // 0x08
-
-    CExoLinkedListInternal();
-    int IsInList(void* pObject);
-};
+#include "shared/exo_linked_list.h"
 
 // FUNCTION: SWKOTOR 0x005E9AA0 SYMBOL: ??0CExoLinkedListInternal@@QAE@XZ
 CExoLinkedListInternal::CExoLinkedListInternal()
@@ -25,7 +13,7 @@ CExoLinkedListInternal::CExoLinkedListInternal()
 }
 
 // FUNCTION: SWKOTOR 0x005E9D40
-int CExoLinkedListInternal::IsInList(void* pObject)
+int CExoLinkedListInternal::Contains(void* pObject) const
 {
     for (CExoLinkedListNode* pNode = pHead; pNode; pNode = pNode->pNext) {
         if (pNode->pObject == pObject) {

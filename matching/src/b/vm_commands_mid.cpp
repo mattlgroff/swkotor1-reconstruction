@@ -56,7 +56,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCurrentAction(int nCommandId, in
         CExoLinkedList<CSWSObjectActionNode>* pList = &((CSWSObjectActionView*)pSWSObject)->m_lQueuedActions;
         if (pList) {
             CSWSObjectActionNode* pNode = pList->GetHead();
-            void* pPos = pList->GetHeadPos();
+            CExoLinkedListPosition pPos = pList->GetHeadPos();
             if (pNode) {
                 unsigned short nGroup = pNode->m_n6C;
                 do {

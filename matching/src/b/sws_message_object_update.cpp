@@ -38,7 +38,7 @@ void CSWSMessage::TestObjectUpdateDifferences(CSWSPlayer* pPlayer, CSWSObject* p
     CLastUpdateObject** ppLast, unsigned long* pFlags, unsigned long* pAppearanceFlags)
 {
     CGameObject* pPlayerObject = pPlayer->GetGameObject();
-    void* pPos = pPlayer->m_pLastUpdateObjects->GetHeadPos();
+    CExoLinkedListPosition pPos = pPlayer->m_pLastUpdateObjects->GetHeadPos();
     while (pPos) {
         *ppLast = pPlayer->m_pLastUpdateObjects->GetAtPos(pPos);
         if ((*ppLast)->m_nId == pObject->GetId()) {

@@ -158,44 +158,12 @@ public:
     int array_size;
 };
 
-typedef void* CExoLinkedListPosition;
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* RemoveHead();                             // 0x005E9C80
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    void* Remove(CExoLinkedListPosition pos);       // 0x005E9C10
-    CExoLinkedListPosition AddTail(void* p);        // 0x005E9DC0
-    CExoLinkedListPosition AddHead(void* p);        // 0x005E9D70
-    CExoLinkedListNode* m_pHead;
-    CExoLinkedListNode* m_pTail;
-    unsigned long m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();                               // 0x004B25D0 (out of line)
-    ~CExoLinkedList() { delete m_pList; }
-    CExoLinkedListPosition GetHeadPos() { return m_pList->m_pHead; }
-    int IsEmpty() { return m_pList->m_pHead == NULL; }
-    unsigned long GetCount() { return m_pList->m_nCount; }
-    T* RemoveHead() { return (T*)m_pList->RemoveHead(); }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pList->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pList->GetNext(pos); }
-    T* Remove(CExoLinkedListPosition pos) { return (T*)m_pList->Remove(pos); }
-    CExoLinkedListPosition AddTail(T* p) { return m_pList->AddTail(p); }
-    CExoLinkedListPosition AddHead(T* p) { return m_pList->AddHead(p); }
-    CExoLinkedListInternal* m_pList;
-};
+
 
 #include "shared/game_object.h"
 

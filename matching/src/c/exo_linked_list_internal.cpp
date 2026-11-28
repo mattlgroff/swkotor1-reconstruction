@@ -11,37 +11,10 @@ public:
 
 #include "shared/globals.h"
 
-typedef void* CExoLinkedListPosition;
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;                      // 0x00
-    CExoLinkedListNode* pNext;                      // 0x04
-    void* pObject;                                  // 0x08
+#include "shared/exo_linked_list.h"
 
-    CExoLinkedListNode()
-    {
-        pObject = 0;
-        pNext = 0;
-        pPrev = 0;
-    }
-};
-
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListNode* pHead;                      // 0x00
-    CExoLinkedListNode* pTail;                      // 0x04
-    unsigned long nCount;                           // 0x08
-
-    ~CExoLinkedListInternal();
-    CExoLinkedListPosition AddBefore(void* pObject, CExoLinkedListPosition pos);
-    void* GetAtPos(CExoLinkedListPosition pos);
-    void* GetNext(CExoLinkedListPosition& pos);
-    void* Remove(CExoLinkedListPosition pos);
-    void* RemoveHead();
-    void* RemoveTail();
-    CExoLinkedListPosition AddHead(void* pObject);
-    CExoLinkedListPosition AddTail(void* pObject);
-};
+#include "shared/exo_linked_list.h"
 
 // FUNCTION: SWKOTOR 0x005E9AD0
 CExoLinkedListPosition CExoLinkedListInternal::AddBefore(void* pObject, CExoLinkedListPosition pos)
@@ -71,7 +44,7 @@ CExoLinkedListPosition CExoLinkedListInternal::AddBefore(void* pObject, CExoLink
 }
 
 // FUNCTION: SWKOTOR 0x005E9B60
-void* CExoLinkedListInternal::GetAtPos(CExoLinkedListPosition pos)
+void* CExoLinkedListInternal::GetAtPos(CExoLinkedListPosition pos) const
 {
     if (pos == 0) {
         g_pExoBase->m_pcExoDebug->Warning(0xec, "exolinkedlistinternal.cpp",
@@ -82,7 +55,7 @@ void* CExoLinkedListInternal::GetAtPos(CExoLinkedListPosition pos)
 }
 
 // FUNCTION: SWKOTOR 0x005E9B90
-void* CExoLinkedListInternal::GetNext(CExoLinkedListPosition& pos)
+void* CExoLinkedListInternal::GetNext(CExoLinkedListPosition& pos) const
 {
     if (pos == 0) {
         g_pExoBase->m_pcExoDebug->Warning(0xff, "exolinkedlistinternal.cpp",

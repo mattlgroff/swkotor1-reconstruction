@@ -146,51 +146,11 @@ public:
     unsigned long m_nIndex;          // +0x10
 };
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode *pPrev;
-    CExoLinkedListNode *pNext;
-    void *pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    ~CExoLinkedListInternal();
-    void *RemoveHead();
-    void *GetNext(CExoLinkedListNode *&pPos);
-    void *Remove(CExoLinkedListNode *pPos);
-    void *GetHeadObject()
-    {
-        CExoLinkedListNode *pNode = (CExoLinkedListNode *)m_pHead;
-        if (!pNode)
-            return 0;
-        return pNode->pObject;
-    }
-    void *m_pHead;
-    void *m_pTail;
-    int m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    void *GetHeadPos() { return m_pcExoLinkedListInternal->m_pHead; }
-    int IsEmpty() { return m_pcExoLinkedListInternal->m_pHead == 0; }
-    T *RemoveHead() { return (T *)m_pcExoLinkedListInternal->RemoveHead(); }
-    CExoLinkedListNode *GetHead()
-    {
-        return (CExoLinkedListNode *)m_pcExoLinkedListInternal->m_pHead;
-    }
-    T *GetHeadObject()
-    {
-        CExoLinkedListInternal *pInternal = m_pcExoLinkedListInternal;
-        return (T *)pInternal->GetHeadObject();
-    }
-    T *GetNext(CExoLinkedListNode *&pPos) { return (T *)m_pcExoLinkedListInternal->GetNext(pPos); }
-    void Remove(CExoLinkedListNode *pPos) { m_pcExoLinkedListInternal->Remove(pPos); }
-    int Count() { return m_pcExoLinkedListInternal->m_nCount; }
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-};
+
 
 class CDialogEntry {
 public:
@@ -566,16 +526,16 @@ unsigned long CSWSDialog::GetStartEntry(CSWSObject *pObject)
 // FUNCTION: SWKOTOR 0x0059FB60
 int CSWSDialog::RemovePlayer(unsigned long oidPlayer)
 {
-    CExoLinkedListNode *pPos = m_lPlayers.GetHead();
+    CExoLinkedListNode *pPos = m_lPlayers.GetHeadPos();
     int bFirst = 1;
-    for (CPlayerEntry *pPlayer = m_lPlayers.GetHeadObject(); pPlayer;
+    for (CPlayerEntry *pPlayer = m_lPlayers.GetHead(); pPlayer;
          pPlayer = m_lPlayers.GetNext(pPos)) {
         if (pPlayer->m_oidPlayer == oidPlayer) {
-            if (m_lPlayers.Count() != 1 && (!m_bLockFirstPlayer || !bFirst)) {
+            if (m_lPlayers.GetCount() != 1 && (!m_bLockFirstPlayer || !bFirst)) {
                 m_lPlayers.Remove(pPos);
                 if (pPlayer->m_oidPlayer == m_oidPlayer) {
                     delete pPlayer;
-                    CPlayerEntry *pNew = m_lPlayers.GetHeadObject();
+                    CPlayerEntry *pNew = m_lPlayers.GetHead();
                     if (pNew) {
                         m_oidPlayer = pNew->m_oidPlayer;
                         m_nPlayerType = pNew->m_nPlayerType;

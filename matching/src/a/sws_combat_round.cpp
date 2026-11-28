@@ -419,7 +419,7 @@ CSWSCombatRoundAction* CSWSCombatRound::GetAction()
 void CSWSCombatRound::AddAction(CSWSCombatRoundAction* pAction, int nIndex)
 {
     CExoLinkedListPosition pos;
-    if (m_pScheduledActions && m_pScheduledActions->Count() < 4) {
+    if (m_pScheduledActions && m_pScheduledActions->GetCount() < 4) {
         int nInsertAt = nIndex;
         pos = m_pScheduledActions->GetHeadPos();
         if (nInsertAt == -1) {
@@ -647,7 +647,11 @@ void CSWSCombatRound::AddEquipAction(unsigned long oidItem, int nInventorySlot, 
     pAction->m_oidTarget = oidItem;
     pAction->m_nInventorySlot = nInventorySlot;
     pAction->m_nParam54 = nParam54;
-    m_pScheduledActions->AddHead(pAction);
+    if (m_pScheduledActions->GetHeadPos()) {
+        m_pScheduledActions->AddBefore(pAction, m_pScheduledActions->GetHeadPos());
+    } else {
+        m_pScheduledActions->AddTail(pAction);
+    }
 }
 
 // NONMATCH: ECX kept across Clear() in the original (see 0x004D3810).
@@ -667,7 +671,11 @@ void CSWSCombatRound::AddUnequipAction(unsigned long oidItem, unsigned long oidR
     pAction->m_oidTarget = oidItem;
     pAction->m_oidItem = oidRepository;
     pAction->m_nParam54 = nParam54;
-    m_pScheduledActions->AddHead(pAction);
+    if (m_pScheduledActions->GetHeadPos()) {
+        m_pScheduledActions->AddBefore(pAction, m_pScheduledActions->GetHeadPos());
+    } else {
+        m_pScheduledActions->AddTail(pAction);
+    }
 }
 
 // FUNCTION: SWKOTOR 0x004D3DA0

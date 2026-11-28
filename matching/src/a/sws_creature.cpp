@@ -259,7 +259,7 @@ int CSWSCreature::GetPauseReadyAnimation()
 int CSWSCreature::GetCurrentlyFollowingLeader()
 {
     CExoLinkedListInternal* pList = m_pActions;
-    void* pos = pList->m_pHead;
+    CExoLinkedListPosition pos = pList->pHead;
     if (pos) {
         CSWSAction* pAction = (CSWSAction*)pList->GetAtPos(pos);
         if (pAction && pAction->m_nType == 0x3d) {

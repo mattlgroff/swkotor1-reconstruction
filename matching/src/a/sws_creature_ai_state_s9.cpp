@@ -7,7 +7,7 @@ void CSWSCreature::Fn4F1460()
 {
     m_n9F2 = 0;
     m_oid9F4 = 0x7f000000;
-    void* pos = m_pActions->m_pHead;
+    CExoLinkedListPosition pos = m_pActions->pHead;
     while (pos) {
         CSWSObjectActionNode* pNode = (CSWSObjectActionNode*)m_pActions->GetAtPos(pos);
         unsigned long oidTarget = 0x7f000000;

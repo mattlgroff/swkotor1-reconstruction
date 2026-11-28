@@ -139,7 +139,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRemoveJournalQuestEntry(int nComman
     if (!pList) {
         return 1;
     }
-    void* pos = pList->GetHeadPos();
+    CExoLinkedListPosition pos = pList->GetHeadPos();
     while (pos) {
         CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pos);
         if (pPlayer && pPlayer->GetGameObject()) {
@@ -191,7 +191,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCustomToken(int nCommandId, int 
         CSWSMessage* pMessage = g_pAppManager->GetServerExoApp()->GetSWSMessage();
         CExoLinkedList<CSWSClient>* pList = g_pAppManager->GetServerExoApp()->GetPlayerList();
         if (pMessage && pList) {
-            void* pos = pList->GetHeadPos();
+            CExoLinkedListPosition pos = pList->GetHeadPos();
             while (pos) {
                 CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pos);
                 if (pPlayer && pPlayer->GetGameObject()) {
@@ -622,7 +622,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddJournalQuestEntry(int nCommandId
         return 1;
     }
     int nXP = 0;
-    void* pos = pList->GetHeadPos();
+    CExoLinkedListPosition pos = pList->GetHeadPos();
     while (pos) {
         CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pos);
         if (pPlayer && pPlayer->GetGameObject()) {
@@ -656,7 +656,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetJournalEntry(int nCommandId, int
     if (!pList) {
         return 1;
     }
-    void* pos = pList->GetHeadPos();
+    CExoLinkedListPosition pos = pList->GetHeadPos();
     while (pos) {
         CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pos);
         if (pPlayer && pPlayer->GetGameObject()) {

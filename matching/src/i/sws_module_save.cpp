@@ -8,7 +8,7 @@ inline void* operator new(size_t, void* p) { return p; }
 int CSWSModule::GetPlayerIndexInPlayerList(CSWSPlayer* pPlayer)
 {
     int nIndex = 0;
-    CExoLinkedListPosition pos = m_lPlayers.m_pList->m_pHead;
+    CExoLinkedListPosition pos = m_lPlayers.m_pcExoLinkedListInternal->pHead;
     while (pos) {
         CSWSModulePlayerEntry* pEntry = m_lPlayers.GetAtPos(pos);
         if (pEntry->m_sPlayerName == pPlayer->GetPlayerName()) {
@@ -19,7 +19,7 @@ int CSWSModule::GetPlayerIndexInPlayerList(CSWSPlayer* pPlayer)
                 return nIndex;
             }
         }
-        m_lPlayers.m_pList->GetNext(pos);
+        m_lPlayers.m_pcExoLinkedListInternal->GetNext(pos);
         nIndex++;
     }
     return -1;
@@ -419,7 +419,7 @@ int CSWSModule::SavePlayers(CResGFF* pRes, CResStruct* pStruct, const CExoString
         g_pExoResMan->ReleaseResObject(pIFO);
         return 0;
     }
-    for (unsigned long j = 0; j < m_lPlayers.m_pList->m_nCount; j++) {
+    for (unsigned long j = 0; j < m_lPlayers.m_pcExoLinkedListInternal->nCount; j++) {
         if (FindIndex(aFound, j)) {
             continue;
         }

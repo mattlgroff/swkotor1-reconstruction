@@ -1,27 +1,9 @@
 // CExoLinkedList<T> constructors (b005f2_exo_linked_list_ctors, b005e4_exo_pimpl_ctors).
 
-class CExoLinkedListInternal {
-public:
-    void* pHead;                                    // 0x00
-    void* pTail;                                    // 0x04
-    unsigned long nCount;                           // 0x08
+#include "shared/exo_linked_list.h"
 
-    CExoLinkedListInternal();                       // 0x005E9AA0
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
 
-    CExoLinkedList();
-};
-
-template <class T>
-CExoLinkedList<T>::CExoLinkedList()
-{
-    m_pcExoLinkedListInternal = new CExoLinkedListInternal();
-}
 
 class CSWCPlayer;
 class CSWBehaviorAttachSound;

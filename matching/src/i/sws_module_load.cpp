@@ -59,9 +59,9 @@ void CSWSModule::PackPlayerCharacterListIntoMessage(CSWSPlayer* pPlayer,
     int nCount = 0;
     CResRef cResRef;
     CExoString sNumber;
-    CExoLinkedListPosition pos = m_lPlayers.m_pList->m_pHead;
+    CExoLinkedListPosition pos = m_lPlayers.m_pcExoLinkedListInternal->pHead;
     while (pos) {
-        CSWSModulePlayerEntry* pEntry = (CSWSModulePlayerEntry*)m_lPlayers.m_pList->GetAtPos(pos);
+        CSWSModulePlayerEntry* pEntry = (CSWSModulePlayerEntry*)m_lPlayers.m_pcExoLinkedListInternal->GetAtPos(pos);
         NWPlayerCharacterList_st* p = new NWPlayerCharacterList_st;
         p->m_sFirstName = pEntry->m_sFirstName;
         p->m_sLastName = pEntry->m_sLastName;
@@ -74,7 +74,7 @@ void CSWSModule::PackPlayerCharacterListIntoMessage(CSWSPlayer* pPlayer,
         } else {
             delete p;
         }
-        m_lPlayers.m_pList->GetNext(pos);
+        m_lPlayers.m_pcExoLinkedListInternal->GetNext(pos);
         nCount++;
     }
 }

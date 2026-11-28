@@ -91,7 +91,7 @@ template class CExoLinkedList<CLastUpdateObject>;
 // FUNCTION: SWKOTOR 0x00561820
 CLastUpdateObject* CSWSPlayer::GetLastUpdateObject(unsigned long nId)
 {
-    void* pPos = m_pLastUpdateObjects->GetHeadPos();
+    CExoLinkedListPosition pPos = m_pLastUpdateObjects->GetHeadPos();
     while (pPos) {
         CLastUpdateObject* pObject = m_pLastUpdateObjects->GetAtPos(pPos);
         if (pObject->m_nId == nId) {

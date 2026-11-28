@@ -2728,7 +2728,7 @@ address,name,status,diff_insns,file
 0x004CCA50,CSWSObject::SaveListenData,MATCH,0,matching/src/i/sws_object_save.cpp
 0x004CCB00,CSWSObject::AddActionToFront,MATCH,0,matching/src/i/sws_object_actions.cpp
 0x004CCD30,CSWSObject::DeleteCurrentAIAction,NONMATCH,9,matching/src/i/sws_object_actions.cpp
-0x004CCD80,CSWSObject::ClearAllActions,NONMATCH,8,matching/src/i/sws_object_actions.cpp
+0x004CCD80,CSWSObject::ClearAllActions,NONMATCH,6,matching/src/i/sws_object_actions.cpp
 0x004CCF60,CSWSObject::SetAnimation,MATCH,0,matching/src/i/sws_object.cpp
 0x004CCF80,CSWSObject::DamageHitPoints,MATCH,0,matching/src/i/sws_object.cpp
 0x004CCFC0,CSWSObject::DoSpellImmunity,MATCH,0,matching/src/i/sws_object_spell.cpp
@@ -4097,7 +4097,7 @@ address,name,status,diff_insns,file
 0x00548B20,CSWVirtualMachineCommands::ExecuteCommandDeleteJournalWorldEntry,MATCH,0,matching/src/b/vm_commands_journal.cpp
 0x00548BE0,CSWVirtualMachineCommands::ExecuteCommandDeleteJournalWorldEntryStrref,MATCH,0,matching/src/b/vm_commands_journal.cpp
 0x00548CA0,CSWVirtualMachineCommands::ExecuteCommandTouchAttackMelee,NONMATCH,65,matching/src/b/vm_commands_touch_attack.cpp
-0x00549040,CSWVirtualMachineCommands::ExecuteCommandGetCurrentAction,NONMATCH,10,matching/src/b/vm_commands_mid.cpp
+0x00549040,CSWVirtualMachineCommands::ExecuteCommandGetCurrentAction,NONMATCH,16,matching/src/b/vm_commands_mid.cpp
 0x00549180,CSWVirtualMachineCommands::ExecuteCommandGetFirstEffect,NONMATCH,41,matching/src/b/vm_commands_effect_iter.cpp
 0x00549B50,CSWVirtualMachineCommands::ExecuteCommandGetFirstItemInInventory,NONMATCH,109,matching/src/b/vm_commands_inventory_iter.cpp
 0x00549F30,CSWVirtualMachineCommands::ExecuteCommandGetJournalEntry,MATCH,0,matching/src/b/vm_commands_object.cpp
@@ -5545,14 +5545,14 @@ address,name,status,diff_insns,file
 0x005D6BC0,CExoSoundInternal::IsStreamAudible,MATCH,0,matching/src/j/exo_sound_internal.cpp
 0x005D6C10,CPriorityGroup::CPriorityGroup,MATCH,0,matching/src/j/exo_sound_list.cpp
 0x005D6C40,??0?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAE@XZ,MATCH,0,matching/src/j/exo_sound_list.cpp
-0x005D6CB0,?AddHead@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAXPAVCExoSoundSourceInternal@@@Z,MATCH,0,matching/src/j/exo_sound_list.cpp
-0x005D6CC0,?Contains@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEHPAVCExoSoundSourceInternal@@@Z,MATCH,0,matching/src/j/exo_sound_list.cpp
-0x005D6CD0,?GetHead@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAVCExoSoundSourceInternal@@XZ,NONMATCH,1,matching/src/j/exo_sound_list.cpp
-0x005D6CE0,?GetHeadPos@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAXXZ,MATCH,0,matching/src/j/exo_sound_list.cpp
-0x005D6CF0,?Remove@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAVCExoSoundSourceInternal@@PAX@Z,MATCH,0,matching/src/j/exo_sound_list.cpp
-0x005D6D00,?GetCount@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEKXZ,MATCH,0,matching/src/j/exo_sound_list.cpp
-0x005D6D10,?GetAtPos@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAVCExoSoundSourceInternal@@PAX@Z,MATCH,0,matching/src/j/exo_sound_list.cpp
-0x005D6D20,?GetNext@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAVCExoSoundSourceInternal@@AAPAX@Z,MATCH,0,matching/src/j/exo_sound_list.cpp
+0x005D6CB0,?AddHead@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAVCExoLinkedListNode@@PAVCExoSoundSourceInternal@@@Z,MATCH,0,matching/src/j/exo_sound_list.cpp
+0x005D6CC0,?Contains@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QBEHPAVCExoSoundSourceInternal@@@Z,MATCH,0,matching/src/j/exo_sound_list.cpp
+0x005D6CD0,?GetHead@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QBEPAVCExoSoundSourceInternal@@XZ,NONMATCH,1,matching/src/j/exo_sound_list.cpp
+0x005D6CE0,?GetHeadPos@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QBEPAVCExoLinkedListNode@@XZ,MATCH,0,matching/src/j/exo_sound_list.cpp
+0x005D6CF0,?Remove@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAVCExoSoundSourceInternal@@PAVCExoLinkedListNode@@@Z,MATCH,0,matching/src/j/exo_sound_list.cpp
+0x005D6D00,?GetCount@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QBEKXZ,MATCH,0,matching/src/j/exo_sound_list.cpp
+0x005D6D10,?GetAtPos@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QBEPAVCExoSoundSourceInternal@@PAVCExoLinkedListNode@@@Z,MATCH,0,matching/src/j/exo_sound_list.cpp
+0x005D6D20,?GetNext@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QBEPAVCExoSoundSourceInternal@@AAPAVCExoLinkedListNode@@@Z,MATCH,0,matching/src/j/exo_sound_list.cpp
 0x005D6D30,CExoSoundInternal::ShutDown,MATCH,0,matching/src/j/exo_sound_shutdown.cpp
 0x005D6EF0,CExoSoundInternal::FindCachedObstruction,NONMATCH,8,matching/src/j/exo_sound_voice.cpp
 0x005D71C0,CExoSoundInternal::Resume3DSource,MATCH,0,matching/src/j/exo_sound_voice.cpp
@@ -5891,7 +5891,7 @@ address,name,status,diff_insns,file
 0x005E9C10,CExoLinkedListInternal::Remove,MATCH,0,matching/src/c/exo_linked_list_internal.cpp
 0x005E9C80,CExoLinkedListInternal::RemoveHead,MATCH,0,matching/src/c/exo_linked_list_internal.cpp
 0x005E9CE0,CExoLinkedListInternal::RemoveTail,MATCH,0,matching/src/c/exo_linked_list_internal.cpp
-0x005E9D40,CExoLinkedListInternal::IsInList,MATCH,0,matching/src/c/exo_linked_list_internal_r9.cpp
+0x005E9D40,CExoLinkedListInternal::Contains,MATCH,0,matching/src/c/exo_linked_list_internal_r9.cpp
 0x005E9D70,CExoLinkedListInternal::AddHead,MATCH,0,matching/src/c/exo_linked_list_internal.cpp
 0x005E9DC0,CExoLinkedListInternal::AddTail,MATCH,0,matching/src/c/exo_linked_list_internal.cpp
 0x005E9E10,??0CExoLocString@@QAE@XZ,MATCH,0,matching/src/c/exo_loc_string.cpp
@@ -5955,7 +5955,7 @@ address,name,status,diff_insns,file
 0x005EC680,CExoDebugInternal::~CExoDebugInternal,MATCH,0,matching/src/c/exo_debug_internal.cpp
 0x005EC690,??0?$CExoLinkedList@UExoLocString_st@@@@QAE@XZ,MATCH,0,matching/src/c/exo_linked_list.cpp
 0x005EC700,CExoLocStringInternal::AddString,MATCH,0,matching/src/c/exo_loc_string_internal_r9.cpp
-0x005EC7F0,CExoLocStringInternal::Compare,NONMATCH,16,matching/src/c/exo_loc_string_internal_s5.cpp
+0x005EC7F0,CExoLocStringInternal::Compare,NONMATCH,18,matching/src/c/exo_loc_string_internal_s5.cpp
 0x005EC950,CExoLocStringInternal::GetString,MATCH,0,matching/src/c/exo_loc_string_internal_r9.cpp
 0x005EC9C0,CExoLocStringInternal::GetString,MATCH,0,matching/src/c/exo_loc_string_internal.cpp
 0x005ECA20,CExoLocStringInternal::GetStringLength,MATCH,0,matching/src/c/exo_loc_string_internal.cpp
@@ -8680,7 +8680,7 @@ address,name,status,diff_insns,file
 0x006C5AD0,CSWUpgradeItemEntry::~CSWUpgradeItemEntry,MATCH,0,matching/src/l/sw_gui_upgrade_entry_dtor.cpp
 0x006C5B50,??_GCSWGuiUpgradeSelection@@UAEPAXI@Z,MATCH,0,matching/src/l/sw_gui_upgrade_panels.cpp
 0x006C5B70,??_GCSWGuiUpgradeItemSelect@@UAEPAXI@Z,MATCH,0,matching/src/l/sw_gui_upgrade_panels.cpp
-0x006C5B90,CSWGuiUpgradeItemSelect::BuildUpgradeList,NONMATCH,14,matching/src/l/sw_gui_upgrade_items.cpp
+0x006C5B90,CSWGuiUpgradeItemSelect::BuildUpgradeList,NONMATCH,21,matching/src/l/sw_gui_upgrade_items.cpp
 0x006C5E90,CSWGuiUpgradeItemSelect::FinishUpgrading,MATCH,0,matching/src/l/sw_gui_upgrade_items.cpp
 0x006C6100,??_GCSWGuiUpgrade@@UAEPAXI@Z,MATCH,0,matching/src/l/sw_gui_upgrade_panel.cpp
 0x006C6120,CSWGuiUpgrade::VerifyUpgrade,MATCH,0,matching/src/l/sw_gui_upgrade_items.cpp

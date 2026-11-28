@@ -95,7 +95,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetJournalQuestEntryPicture(int nCo
 {
     CExoString sPlotID;
     CExoString sVarName;
-    void* pPos;
+    CExoLinkedListPosition pPos;
     unsigned long oidCreature;
     int nPicture;
     int bAllPartyMembers;

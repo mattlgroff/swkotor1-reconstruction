@@ -2,42 +2,12 @@
 // list and mouse hit test. Names from the Mac debug map where present,
 // otherwise descriptive.
 
-typedef void* CExoLinkedListPosition;
 
-class CExoLinkedListNode {
-public:
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    void* RemoveHead();                             // 0x005E9C80
-    CExoLinkedListNode* m_pHead;
-    CExoLinkedListNode* m_pTail;
-    unsigned long m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListPosition GetHeadPos() { return m_pList->m_pHead; }
-    T* GetHead()
-    {
-        void* p = m_pList->m_pHead;
-        if (p) {
-            p = ((CExoLinkedListNode*)p)->pObject;
-        }
-        return (T*)p;
-    }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pList->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pList->GetNext(pos); }
-    T* RemoveHead() { return (T*)m_pList->RemoveHead(); }
-    CExoLinkedListInternal* m_pList;
-};
+
 
 template <class T>
 class CExoArrayList {

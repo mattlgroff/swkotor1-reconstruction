@@ -1,45 +1,11 @@
 // CClientExoAppInternal::SetHitcheckIgnoreList, worker C s8
 // (clientexoappinternal.o; translation-unit-local layout).
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;                      // 0x00
-    CExoLinkedListNode* pNext;                      // 0x04
-    void* pObject;                                  // 0x08
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListNode* pHead;                      // 0x00
-    CExoLinkedListNode* pTail;                      // 0x04
-    unsigned long nCount;                           // 0x08
+#include "shared/exo_linked_list.h"
 
-    void* GetNext(CExoLinkedListNode*& pos);        // 0x005E9B90
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
-
-    CExoLinkedListNode* GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetAtPos(CExoLinkedListNode* pos)
-    {
-        void* p = pos;
-        if (p) {
-            p = pos->pObject;
-        }
-        return (T*)p;
-    }
-    T* GetHead()
-    {
-        void* p = m_pcExoLinkedListInternal->pHead;
-        if (p) {
-            p = ((CExoLinkedListNode*)p)->pObject;
-        }
-        return (T*)p;
-    }
-    T* GetNext(CExoLinkedListNode*& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-};
 
 template <class T>
 class CExoArrayList {
