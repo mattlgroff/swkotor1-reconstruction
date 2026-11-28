@@ -87,30 +87,7 @@ public:
 #include "shared/erf_key.h"
 
 // Resource list entry (0x0C bytes).
-class CERFRes {
-public:
-    CERFRes()
-    {
-        m_nOffset = 0;
-        m_nSize = 0;
-        m_pData = 0;
-    }
-    ~CERFRes()
-    {
-        if (m_pData) {
-            delete[] m_pData;
-            m_pData = 0;
-        }
-        m_nOffset = 0;
-        m_nSize = 0;
-    }
-    int CopyToFile(CExoFile* pSrc, CExoFile* pDst, int nUnused);
-    int Write(CExoFile* pFile, unsigned long nEntryOffset);
-
-    unsigned long m_nOffset;                        // 0x00
-    unsigned long m_nSize;                          // 0x04
-    char* m_pData;                                  // 0x08
-};
+#include "shared/erf_res.h"
 
 class CERFFile {
 public:
