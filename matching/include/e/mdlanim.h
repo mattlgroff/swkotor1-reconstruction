@@ -160,13 +160,7 @@ class CAurBehavior;
 class CAurBehaviorAttach;
 
 // Attachment record behind Gob +0x188.
-class GobAttachment {
-public:
-    virtual void v00(); virtual void v04();
-    virtual void Render(int nFlags);                    // +0x08
-    virtual void v0c(); virtual void v10();
-    virtual CAurBehaviorAttach* GetAttachBehavior();   // +0x14
-};
+#include "shared/gob_attachment.h"
 
 class Gob {
 public:

@@ -30,14 +30,7 @@ class Model;
 class MdlNode;
 
 // Attachment record behind Gob +0x188.
-class GobAttachment {
-public:
-    virtual ~GobAttachment();
-    virtual void v04();
-    virtual void Render(int nFlags);                    // +0x08
-    virtual void SetLight(int n);                       // +0x0c
-    virtual int GetId();                                // +0x10
-};
+#include "shared/gob_attachment.h"
 
 class Gob;
 
