@@ -269,26 +269,7 @@ public:
 #include "shared/pazaak_player.h"
 
 // 0x230 bytes, no vtable (ctor 0x006E4C00).
-class CSWPazaak {
-public:
-    CSWPazaak();                                    // 0x006E4C00
-    void ClearGameBoard();                          // 0x006E4640
-    CPazaakCard DrawCard();                         // 0x006E4800
-    int CanUsePlayerSidedeckCard(int nIndex);       // 0x006E4840
-    int UsePlayerSidedeckCard(int nIndex);          // 0x006E4860
-    int PlayAITurn(CPazaakPlayer* pAI, CPazaakPlayer* pPlayer, int nState);   // 0x006E4C60
-    CPazaakPlayer* GetPlayer() { return &m_cPlayer; }
-    void DrawPlayerCard();                          // 0x0067CAE0
-    int DoAITurn();                                 // 0x0067CB10
-
-    int m_nWager;                                   // 0x000
-    unsigned long m_oidOpponent;                    // 0x004
-    CPazaakPlayer m_cPlayer;                        // 0x008
-    CPazaakPlayer m_cAI;                            // 0x078
-    CPazaakCard m_aDeck[40];                        // 0x0e8
-    int m_nDeckIndex;                               // 0x228
-    int m_nAIState;                                 // 0x22c
-};
+#include "shared/sw_pazaak.h"
 
 
 
