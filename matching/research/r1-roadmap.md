@@ -78,6 +78,12 @@ both resolutions lose matches is a unit-boundary case.
    had separate array classes, or some copies are wrong. The inlining
    variants go once the units are joined. `CExoLinkedList` and
    `SafePointer` follow.
+   `Quaternion` (90 copies) has the same problem in small: 36 copies have no
+   constructor, 13 an empty one, and 37 an identity constructor that stores
+   its members in one of three orders (z, y, x, w; x, y, z, w; w, x, y, z),
+   each tuned to its units. Merging the fullest copy compiles everywhere but
+   loses 88 matches (`CResGFF::ReadFieldQuaternion` among them), so
+   which units used which class (or whether there were two) needs evidence.
 3. **The GUI hierarchy** (`CSWGuiControl`, `CSWGuiLabel`, `CSWGuiButton`,
    `CSWGuiListBox`, `CSWGuiPanel`, `CSWGuiManager`): 20 to 40 copies each,
    including views that reach members through padding
