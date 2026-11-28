@@ -49,8 +49,8 @@ public:
     short GetServerMode();                                              // 0x004AEDD0
     void AddCharListRequest(unsigned long nPlayerId);                   // 0x004AEA00
     class CGameObjectArray* GetObjectArray();                           // 0x004AED70
-    int ComputeSafeLocation(const struct Vector& vPosition, float fRadius, unsigned long oid,
-                            int bArg, struct Vector* pResult);          // 0x004AEB60
+    int ComputeSafeLocation(const class Vector& vPosition, float fRadius, unsigned long oid,
+                            int bArg, class Vector* pResult);          // 0x004AEB60
     int GetLoadFromSaveGame();                                          // 0x004AF050
     class CSWSMessage* GetSWSMessage();                                 // 0x004AEDB0
     class CWorldTimer* GetWorldTimer();                                 // 0x004AEDE0
@@ -164,7 +164,7 @@ public:
     void DisableVideoEffect();                                          // 0x005EDF20
     void ShowTutorialWindow(int nWindow, unsigned long oid1, unsigned long oid2, int nArg); // 0x005EDF40
     int GetCreditSequenceInProgress();                                  // 0x005EE1E0
-    void StartCreditSequence(const struct Vector& vColor,
+    void StartCreditSequence(const class Vector& vColor,
                              const CExoString& sMovie);                 // 0x005EE1C0
     CGameObjectArray* GetObjectArray();                                 // 0x005ED570
     CGameObject* GetGameObject(unsigned long nId);                     // 0x005ED580
@@ -184,17 +184,9 @@ public:
                     const class CResRef& cSound, int bArg);             // 0x005EDBB0
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;     // 0x4
-    CServerExoApp* m_pServerExoApp;     // 0x8
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
-
-extern CAppManager* g_pAppManager;      // 0x007A39FC
+#include "shared/globals.h"
 
 #define INVALID_OBJECT_ID 0x7f000000
 

@@ -10,27 +10,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator*(float f) const
-    {
-        return Vector(f * x, f * y, f * z);
-    }
-    Vector& operator-=(const Vector& v);            // 0x004A9770
-};
+#include "shared/vector_ops.h"
 
 Vector operator/(const Vector& v, float f);         // 0x00437A90
-extern float g_fMiniInertiaScale;                   // 0x007A2488 (descriptive)
-inline Vector operator+(const Vector& a, const Vector& b)
-{
-    return Vector(a.x + b.x, a.y + b.y, a.z + b.z);
-}
-inline Vector operator-(const Vector& a, const Vector& b)
-{
-    return Vector(a.x - b.x, a.y - b.y, a.z - b.z);
-}
+#include "shared/globals.h"
 
 // Position / velocity pair integrated by the mini game (0x18 bytes).
 struct CSWMiniState {
@@ -177,33 +160,9 @@ public:
     }
 };
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
+#include "shared/exo_string.h"
 
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    int operator==(const CExoString& s) const;       // 0x005E5200
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-};
-
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    CResRef operator=(const char* s);               // 0x00406290
-    int IsValid() const;                            // 0x00406030
-    int operator==(const char* s) const;            // 0x004060D0
-    int operator==(const CResRef& r) const;         // 0x004060B0
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    void CopyToString(char* sz) const;              // 0x00405FB0
-    char* GetResRef();                              // 0x00641DB0 (identity, folded)
-};
+#include "shared/res_ref.h"
 
 class CResStruct {
 public:
@@ -236,7 +195,6 @@ public:
     int RunScript(CExoString* psFile, unsigned long oidSelf, int bOid);   // 0x005D0FC0
 };
 
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 
 inline CVirtualMachine* GetVirtualMachine() { return g_pVirtualMachine; }
 
@@ -268,13 +226,7 @@ public:
                          int b, int c);             // 0x005D5E00
 };
 
-extern unsigned char g_nMiniGameAccelVolume;        // 0x0074C5E8
-extern Vector g_vMiniHitPoint;                      // 0x007B93A8
-extern Vector g_vMiniHitPos;                        // 0x007B93C4
-extern Vector g_vMiniHitNormal;                     // 0x007B93E8
-extern char* g_szMiniHitPart;                       // 0x007B93F4
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class CSWMiniBulletInfo;
 
@@ -386,16 +338,7 @@ public:
     unsigned char m_bActive;                        // 0x1a0
 };
 
-class CSWMiniGameObjectArray {
-public:
-    CSWMiniGameObjectArray();                       // 0x0066BF10
-    CSWMiniGameObject* GetObject(unsigned long nId, unsigned char nType);   // 0x0066BF30
-    CSWMiniGameObject* GetObjectByTag(const CExoString& sTag);             // 0x0066BFB0
-    int GetFreeSlot();                              // 0x0066C060
-
-    int m_nNext;                                    // 0x00
-    CSWMiniGameObject* m_pObjects[0xff];            // 0x04
-};
+#include "shared/sw_mini_game_object_array.h"
 
 // One track point of the mini game (+0x38 list): a name and a position.
 struct CSWMiniTrackPoint {
@@ -443,23 +386,7 @@ public:
 };
 
 // CResHelper base (vtable 0x0074767C, destructor 0x00506BD0), 0x1c bytes.
-class CResHelperMiniGame {
-public:
-#ifdef M_INLINE_RES_HELPER_CTOR
-    CResHelperMiniGame()
-    {
-        m_pRes = 0;
-        m_cResRef = "";
-        m_bAutoRequest = 0;
-    }
-#endif
-    virtual ~CResHelperMiniGame();                  // 0x00506BD0
-    void SetResRef(const CResRef& cResRef, int bAutoRequest);   // 0x00506C30 (shared template)
-
-    int m_bAutoRequest;                             // 0x04
-    void* m_pRes;                                   // 0x08
-    CResRef m_cResRef;                              // 0x0c
-};
+#include "shared/res_helper_mini_game.h"
 
 // An id list with BioWare's inline DelIndex.
 class CExoIdList : public CExoArrayList<unsigned long> {
@@ -645,43 +572,11 @@ public:
     CSWCMiniGame* GetMiniGame();                    // 0x005EDB00
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 // The 0x28-byte block at CSWMiniGameObject + 0x1c.
-class CSWMiniHitInfo {
-public:
-    // 0x00673A10 out of line; the units that define
-    // M_INLINE_MINI_HIT_INFO (CSWMGGunBank's constructor) see the same body
-    // as an inline constructor.
-#ifdef M_INLINE_MINI_HIT_INFO
-    CSWMiniHitInfo()
-    {
-        m_nDamage = 0;
-        m_nTargetMask = 0;
-        m_fSpeed = 0.0f;
-        m_fRateOfFire = 0.0f;
-        m_fLifespan = 0.0f;
-    }
-#else
-    CSWMiniHitInfo();
-#endif
-
-    int m_nDamage;                                  // 0x00
-    float m_fSpeed;                                 // 0x04
-    float m_fRateOfFire;                            // 0x08
-    float m_fLifespan;                              // 0x0c
-    int m_nTargetMask;                              // 0x10
-    int m_n14;                                      // 0x14
-    CResRef m_cSound;                               // 0x18
-};
+#include "shared/sw_mini_hit_info.h"
 
 // The bullet user data (CAurObject slot 0x108 with 0xAAAB).
 class CSWMiniBulletInfo {
@@ -751,26 +646,7 @@ public:
 };
 
 // The four targetting limits read by CSWMiniEnemy::LoadGunBank.
-class CSWMGTargettingInfo {
-public:
-    // 0x00673A30 out of line; inlined where M_INLINE_TARGETTING_INFO is set.
-#ifdef M_INLINE_TARGETTING_INFO
-    CSWMGTargettingInfo()
-    {
-        m_fHorizSpread = 0.0f;
-        m_fVertSpread = 0.0f;
-        m_fSensingRadius = 0.0f;
-        m_fInaccuracy = 0.0f;
-    }
-#else
-    CSWMGTargettingInfo();
-#endif
-
-    float m_fHorizSpread;                           // 0x00
-    float m_fSensingRadius;                         // 0x04
-    float m_fVertSpread;                            // 0x08
-    float m_fInaccuracy;                            // 0x0c
-};
+#include "shared/swmg_targetting_info.h"
 
 // What CAurObject slot 0x108 (GetUserData) returns for a gun: its emitter
 // behaviour (type 0xAAAD plain, 0xAAAA targetting).

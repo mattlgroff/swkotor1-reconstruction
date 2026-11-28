@@ -4,13 +4,7 @@
 extern "C" void* __cdecl memcpy(void* dst, const void* src, unsigned int n);
 #pragma intrinsic(memcpy)
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() { x = 0; y = 0; z = 0; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 inline Vector operator+(const Vector& a, const Vector& b)
 {
@@ -38,10 +32,7 @@ Vector Normalize(const Vector& v);                                   // 0x004ab1
 void ClipProjection(Vector* pPoint, Vector* pLight, Plane* pFrustum);  // 0x0046f650
 void* AllocateShadowMemory(int nSize);                               // 0x00426940
 
-extern unsigned short g_aShadowVertexMarks[];  // 0x007a4820
-extern void* g_pShadowVertices;                // 0x007a47e8
-extern int g_bShadowNoClip;                    // 0x007a68e0
-extern int g_bShadowClampFar;                  // 0x0078d994
+#include "shared/globals.h"
 
 // Renumbers the marked vertices 1..n and writes, for each, the vertex and its
 // projection away from the light; the scaled direction and a point follow

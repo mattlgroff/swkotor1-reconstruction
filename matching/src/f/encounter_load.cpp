@@ -4,43 +4,13 @@
 #include <math.h>
 #include <stdlib.h>
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    char *CStr() const;
-    void Format(const char *szFormat, ...);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    ~CExoLocString();
-    void *m_pList;
-    void *m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef(const CExoString &s);
-    CResRef operator=(const char *s);
-    CResRef operator=(const CResRef &r);
-    void CopyToString(CExoString &s) const;
-    char *GetResRef();
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 template <class T>
 class CExoArrayList {
@@ -117,15 +87,9 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CSWSArea;
 
@@ -221,7 +185,6 @@ public:
     CExoTimers *m_pcExoTimers;       // +0x4
 };
 
-extern CExoBase *g_pExoBase;
 
 class CScriptEvent {
 public:
@@ -239,17 +202,9 @@ public:
     int RunScript(CExoString *psFileName, unsigned long oid, int bOid);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
-extern unsigned long EVENT_SIGNAL_EVENT;
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
 
 // Points table indexed by whole challenge ratings 0..50; every encounter
 // constructor appends another 51 entries (original behaviour).
@@ -277,35 +232,10 @@ public:
     }
 };
 
-extern CEncounterPointsTable g_lstEncounterCRPoints;
 
-class CEncounterSpawnPoint {
-public:
-    CEncounterSpawnPoint();
-    Vector m_vPosition;              // +0x0
-    float m_fOrientation;            // +0xc
-};
+#include "shared/encounter_spawn_point.h"
 
-class CEncounterListEntry {
-public:
-    CEncounterListEntry()
-    {
-        m_cResRef = "";
-        m_fCR = 0.0f;
-        m_fPoints = 0.0f;
-        m_bSingleSpawn = 0;
-        m_bAlreadyUsed = 0;
-        m_bTried = 0;
-    }
-    CEncounterListEntry &operator=(const CEncounterListEntry &o);
-    ~CEncounterListEntry() {}
-    CResRef m_cResRef;               // +0x0
-    float m_fCR;                     // +0x10
-    float m_fPoints;                 // +0x14
-    int m_bAlreadyUsed;              // +0x18
-    int m_bTried;                    // +0x1c
-    int m_bSingleSpawn;              // +0x20
-};
+#include "shared/encounter_list_entry.h"
 
 class CSWSEncounter : public CSWSObject {
 public:
@@ -475,11 +405,28 @@ int CSWSEncounter::LoadEncounterGeometry(CResGFF *pRes, CResList &cList)
 void CSWSEncounter::ReadEncounterScriptsFromGff(CResGFF *pRes, CResStruct *pStruct)
 {
     int bSuccess;
-    m_sScripts[0] = pRes->ReadFieldCResRef(pStruct, "OnEntered", bSuccess, m_sScripts[0]).GetResRef();
-    m_sScripts[1] = pRes->ReadFieldCResRef(pStruct, "OnExit", bSuccess, m_sScripts[1]).GetResRef();
-    m_sScripts[2] = pRes->ReadFieldCResRef(pStruct, "OnHeartbeat", bSuccess, m_sScripts[2]).GetResRef();
-    m_sScripts[3] = pRes->ReadFieldCResRef(pStruct, "OnExhausted", bSuccess, m_sScripts[3]).GetResRef();
-    m_sScripts[4] = pRes->ReadFieldCResRef(pStruct, "OnUserDefined", bSuccess, m_sScripts[4]).GetResRef();
+    // NOTE: the original assigns each script name through a temporary
+    // CExoString, destroyed at once, although operator=(const char*) exists.
+    {
+        CExoString sScript(pRes->ReadFieldCResRef(pStruct, "OnEntered", bSuccess, m_sScripts[0]).GetResRef());
+        m_sScripts[0] = sScript;
+    }
+    {
+        CExoString sScript(pRes->ReadFieldCResRef(pStruct, "OnExit", bSuccess, m_sScripts[1]).GetResRef());
+        m_sScripts[1] = sScript;
+    }
+    {
+        CExoString sScript(pRes->ReadFieldCResRef(pStruct, "OnHeartbeat", bSuccess, m_sScripts[2]).GetResRef());
+        m_sScripts[2] = sScript;
+    }
+    {
+        CExoString sScript(pRes->ReadFieldCResRef(pStruct, "OnExhausted", bSuccess, m_sScripts[3]).GetResRef());
+        m_sScripts[3] = sScript;
+    }
+    {
+        CExoString sScript(pRes->ReadFieldCResRef(pStruct, "OnUserDefined", bSuccess, m_sScripts[4]).GetResRef());
+        m_sScripts[4] = sScript;
+    }
 }
 
 // FUNCTION: SWKOTOR 0x00593270

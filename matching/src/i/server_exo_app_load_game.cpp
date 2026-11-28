@@ -7,13 +7,8 @@ public:
     void SetTutorialFlag(int nFlag, int nValue);                    // 0x005EDFD0
 };
 
-class CAppManager {
-public:
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                                 // +0x04
-    CServerExoApp* m_pServerExoApp;                                 // +0x08
-};
-extern CAppManager* g_pAppManager;                                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004BA640
 int CServerExoAppInternal::LoadGame(unsigned long nSlot, CExoString& sName, CExoString& sModule,

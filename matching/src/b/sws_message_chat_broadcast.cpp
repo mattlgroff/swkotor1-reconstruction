@@ -3,9 +3,7 @@
 #include "b/sws_creature.h"
 #include "b/sws_player.h"
 
-extern const unsigned char GAME_OBJECT_VALID;               // 0x0074666C
-extern const float AI_SOUND_RANGE;                           // 0x00747444, 1000.0f
-extern const float AI_WHISPER_RANGE;                         // 0x00747448 (name guessed)
+#include "shared/globals.h"
 
 static inline Vector VectorDelta(const Vector& a, const Vector& b)
 {
@@ -34,7 +32,7 @@ int CSWSMessage::ChatStrRefMessage(unsigned long nTalkVolume, unsigned long oidS
         break;
     case 8:
     case 10: {
-        void* pos = 0;
+        CExoLinkedListPosition pos = 0;
         Vector vPosition(0.0f, 0.0f, 0.0f);
         float fRange;
         if (nVolume == 8) {
@@ -53,7 +51,7 @@ int CSWSMessage::ChatStrRefMessage(unsigned long nTalkVolume, unsigned long oidS
         while (pos) {
             CSWSPlayer* pPlayer = (CSWSPlayer*)pPlayers->GetAtPos(pos);
             if (pPlayer->GetGameObject()) {
-                Vector vDelta = VectorDelta(pPlayer->GetGameObject()->m_vPosition, vPosition);
+                Vector vDelta = VectorDelta(((CSWSObject*)pPlayer->GetGameObject())->m_vPosition, vPosition);
                 if (pArea == ((CSWSObject*)pPlayer->GetGameObject())->GetArea()) {
                     if (vDelta.z * vDelta.z + vDelta.y * vDelta.y + vDelta.x * vDelta.x <= fRange * fRange) {
                         bResult &= SendServerToPlayerChat_StrRef(pPlayer->m_nPlayerID, oidSpeaker, nVolume, nStrRef);
@@ -101,7 +99,7 @@ int CSWSMessage::SendServerToPlayerChatMultiLangMessage(unsigned char nChatType,
     } else {
         bResult = 0;
     }
-    void* pos = pPlayers->GetHeadPos();
+    CExoLinkedListPosition pos = pPlayers->GetHeadPos();
     while (pos && bResult == 1) {
         CSWSPlayer* pPlayer = (CSWSPlayer*)pPlayers->GetAtPos(pos);
         if (pPlayer->GetGameObject()) {
@@ -114,7 +112,7 @@ int CSWSMessage::SendServerToPlayerChatMultiLangMessage(unsigned char nChatType,
                     break;
                 }
             }
-            Vector vDelta = VectorDelta(pPlayer->GetGameObject()->m_vPosition, vPosition);
+            Vector vDelta = VectorDelta(((CSWSObject*)pPlayer->GetGameObject())->m_vPosition, vPosition);
             if (!bSkip && pArea == ((CSWSObject*)pPlayer->GetGameObject())->GetArea()) {
                 if (vDelta.z * vDelta.z + vDelta.y * vDelta.y + vDelta.x * vDelta.x <= AI_SOUND_RANGE * AI_SOUND_RANGE) {
                     bResult = SendServerToPlayerChatMultiLang_Helper(pPlayer->m_nPlayerID, 8, oidSpeaker, sMessage,

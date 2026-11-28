@@ -26,12 +26,7 @@ public:
 };
 #pragma pack(pop)
 
-extern const unsigned short EFFECT_TYPE_DAMAGE;         // 0x00746714
-extern const unsigned short DURATION_TYPE_INSTANT;      // 0x007473B8
-extern const unsigned long EVENT_ATTACK;                // 0x007441F0
-extern const unsigned long EVENT_APPLY_EFFECT;          // 0x007441C8
-extern const unsigned long EVENT_ON_HIT;                // 0x0074420C
-extern const unsigned long EVENT_SELF;                  // 0x00744200
+#include "shared/globals.h"
 
 class CSWSCombatAttackData {
 public:
@@ -75,17 +70,8 @@ public:
     void AddFloatyText(unsigned long oid, int nType, int nArg); // 0x005EDEA0 (placeholder name)
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;                                 // 0x00
-    CClientExoApp* m_pClientExoApp;                     // 0x04
-    CServerExoApp* m_pServerExoApp;                     // 0x08
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                      // 0x007A39FC
 
 class CSWSCreature {
 public:

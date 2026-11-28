@@ -7,10 +7,7 @@ __declspec(dllimport) void __stdcall glPopMatrix();
 __declspec(dllimport) void __stdcall glScalef(float x, float y, float z);
 }
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:
@@ -31,14 +28,9 @@ inline void _glScalef(float x, float y, float z)
     glScalef(x, y, z);
 }
 
-class GLRender {
-public:
-    static void Transform(const Vector* pPos, const Quaternion* pOri, int bForce);  // 0x0046F060
-};
+#include "shared/gl_render.h"
 
-extern int g_bPartTransform;                // 0x0078E5F0
-extern int g_nPartDrawDepth;                // 0x0078E5E0
-extern Vector g_vPartDraw;                  // 0x0078E8AC
+#include "shared/globals.h"
 
 class MdlNodeTriMesh {
 public:

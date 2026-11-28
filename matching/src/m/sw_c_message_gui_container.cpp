@@ -6,8 +6,8 @@ class CSWCItem { public:
  void SetStackSize(int);
 };
 class CClientExoApp { public: CSWCItem* GetItemByGameObjectID(unsigned long); };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager;
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 class CSWCMessage { public:
  unsigned char ReadBYTE(int); unsigned long ReadDWORD(int);
  unsigned long ReadOBJECTIDClient(); int MessageReadOverflow(int);

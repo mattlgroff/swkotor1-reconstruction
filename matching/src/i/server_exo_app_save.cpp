@@ -1,13 +1,12 @@
 // CServerExoAppInternal members that pass a CResRef temporary by
 // value (built in place, so CResRef's copy constructor is declared here).
-#define I_CRESREF_DECLARED_COPY
 #include "i/server_exo_app.h"
 
 // FUNCTION: SWKOTOR 0x004B20E0
 int CServerExoAppInternal::IncludeModuleInSave(const CExoString& sModule)
 {
     int nInclude;
-    C2DA* p2DA = new C2DA(CResRef("modulesave"), 0);
+    C2DA* p2DA = new C2DA("modulesave", 0);
     if (p2DA == NULL) {
         return 1;
     }
@@ -48,15 +47,9 @@ class CExoSound {
 public:
     void StopAllOneShots();                                         // 0x005D5E70
 };
-extern CExoSound* g_pExoSound;                                      // 0x007A39EC
 
-class CAppManager {
-public:
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                                 // +0x04
-    CServerExoApp* m_pServerExoApp;                                 // +0x08
-};
-extern CAppManager* g_pAppManager;                                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004BA920
 int CServerExoAppInternal::StartNewModule(CExoString& sModule)
@@ -86,7 +79,7 @@ int CServerExoAppInternal::StartNewModule(CExoString& sModule)
     m_bDoingStartNewModule = 1;
     ForceRunAreaOnExitScripts();
     if (StorePlayerCharacters() && StoreCurrentModule()) {
-        p2DA = new C2DA(CResRef("modulesave"), 0);
+        p2DA = new C2DA("modulesave", 0);
         if (p2DA && !p2DA->Load2DArray()) {
             delete p2DA;
             p2DA = NULL;

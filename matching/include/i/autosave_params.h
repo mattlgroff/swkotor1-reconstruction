@@ -3,19 +3,7 @@
 #ifndef I_AUTOSAVE_PARAMS_H
 #define I_AUTOSAVE_PARAMS_H
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    int operator==(const CExoString& s) const;      // 0x005E5200
-    char* CStr() const;                             // 0x005E5670
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;
@@ -31,20 +19,9 @@ public:
     int WriteFieldCExoString(CResStruct* pStruct, const CExoString& sValue, char* szLabel); // 0x00412970
 };
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    void* m_pHead;
-    void* m_pTail;
-    unsigned long m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList() { m_pList = new CExoLinkedListInternal; }
-    CExoLinkedListInternal* m_pList;
-};
+
 
 class CSWSClient;
 
@@ -109,26 +86,12 @@ struct KOTOR_AUTOSAVE_PARAMS {
     CStatusSummary m_cStatusSummary;                // +0x58
 };
 
-class CVirtualMachineCmdImplementer {
-public:
-    virtual ~CVirtualMachineCmdImplementer();       // 0x004B1330
-};
+#include "shared/sw_virtual_machine_commands.h"
 
-class CSWVirtualMachineCommands : public CVirtualMachineCmdImplementer {
-public:
-    virtual ~CSWVirtualMachineCommands();           // 0x0052C070
-};
+#include "shared/sw_virtual_machine_commands.h"
 
 // Unnamed 0x3c-byte record; FUN_004b13e0 seeds dwords 0, 1, 4 and 14.
-struct CUnknown004b13e0 {
-    void FUN_004b13e0(unsigned long nValue);        // 0x004B13E0
-    unsigned long m_n00;
-    unsigned long m_n04;
-    unsigned long m_pad08[2];
-    unsigned long m_n10;
-    unsigned long m_pad14[9];
-    unsigned long m_n38;
-};
+#include "shared/reentrant_server_stats.h"
 
 // Unnamed 0x48-byte record built before CSWSArea::TestDirectLine in the
 // area path helpers (0x004BCxxx); the ctor zeroes it and sets +0x40 to

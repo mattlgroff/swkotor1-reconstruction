@@ -6,19 +6,9 @@
 
 #include <stdlib.h>
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-};
+#include "shared/vector.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ED0
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    CResRef operator=(const char* s);               // 0x00406290
-    int operator==(const char* s) const;            // 0x004060D0
-};
+#include "shared/res_ref.h"
 
 template <class T>
 class CExoArrayList {
@@ -48,10 +38,7 @@ public:
     void DelIndex(int i);                           // <CResRef>: 0x00648100
 };
 
-class CExoRand {
-public:
-    unsigned long Rand();                           // 0x005EA490
-};
+#include "shared/exo_rand.h"
 
 class CExoBase {
 public:
@@ -59,7 +46,6 @@ public:
     CExoRand* m_pRand;                              // 0x10
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 class CWorldTimer {
 public:
@@ -97,18 +83,10 @@ public:
     CClientAIMaster* GetClientAIMaster();           // 0x005ED6B0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/globals.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-
-extern const unsigned char OBJECT_TYPE_SOUND;       // 0x0074663E
-extern const unsigned char GAME_OBJECT_ADD_OK;      // 0x0074666C
 
 class CSWCMessage {
 public:
@@ -162,13 +140,7 @@ public:
 };
 
 // CExoArrayList<unsigned long> with its out-of-line Add.
-class CExoArrayListObjectId {
-public:
-    unsigned long* element;
-    int num;
-    int array_size;
-    void Add(unsigned long t);                      // 0x006449D0
-};
+#include "shared/exo_array_list_object_id.h"
 
 class CSWCArea {
 public:
@@ -178,27 +150,12 @@ public:
 
 class CSWCSoundObject;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();                         // 0x00
-    virtual void SetId(unsigned long id);           // 0x04
-    virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-
-    unsigned long m_idSelf;                         // 0x04
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:
     CSWCObject(unsigned char nObjectType);          // 0x0063E530
     virtual ~CSWCObject();                          // 0x0063E800
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68();
-    virtual CSWCSoundObject* AsSWCSoundObject();    // 0x6c
     virtual void v70();
     virtual void AIUpdate() = 0;                    // 0x74
     virtual int Unknown78(int a, int b, int c) = 0; // 0x78
@@ -208,7 +165,7 @@ public:
     virtual void v88();
     virtual void SetPosition(const Vector& v);      // 0x8c (base 0x0063F340)
 
-    char pad_0x8[0xfc - 0x8];
+    char pad_0xc[0xf0];
 };
 
 class CSWCSoundObject : public CSWCObject {

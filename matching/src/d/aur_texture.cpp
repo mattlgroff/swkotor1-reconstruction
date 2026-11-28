@@ -19,24 +19,16 @@ typedef void* (*PFN_LOADIMAGEDDS)(char* szName, int* pWidth, int* pHeight, int* 
                                   float* pTXI);
 typedef void* (*PFN_LOADIMAGETGA)(char* szName, int* pWidth, int* pHeight, float* pTXI, int* pFormat);
 typedef void* (*PFN_LOADIMAGE)(char* szName, int* pWidth, int* pHeight, int* pBpp);
-typedef void (__stdcall *PFN_GLACTIVETEXTURE)(unsigned int nTexture);
 
 extern PFN_LOADIMAGES3TC g_pfnLoadImageS3TC;    // 0x0078d420
 extern PFN_LOADIMAGEDDS g_pfnLoadImageDDS;      // 0x0078d40c
 extern PFN_LOADIMAGETGA g_pfnLoadImageTGA;      // 0x0078d414
 extern PFN_LOADIMAGE g_pfnLoadImageRaw;         // 0x0078d404
-extern int g_bAurTextureDisableDDS;             // 0x007a4700
-extern float g_fAurTextureDynamicMemoryRatio;   // 0x0078d3f0
+#include "shared/globals.h"
 extern PFN_LOADIMAGEPLT g_pfnLoadImagePLT;      // 0x0078d41c
 extern PFN_IMAGEHOOK g_pfnImageHook;            // 0x007a46f8
 extern PFN_RELEASEHOOK g_pfnReleaseHook;        // 0x007a46fc
-extern unsigned char* g_pLayerTable;            // 0x007a4704
-extern unsigned char* g_pLayerAlpha;            // 0x007a4708
-extern unsigned char g_bBumpMaps;               // 0x007a46d4
-extern unsigned char g_aBumpTable[];            // 0x007a4764
-extern int g_nAurTextureMaxTexID;               // 0x007a46bc
-extern int g_nActiveTextureStage;               // 0x007a6898
-extern PFN_GLACTIVETEXTURE g_pfnglActiveTextureARB; // 0x007bb80c
+#include "shared/gl_ext.h"
 
 void ImageGamma(int nWidth, int nHeight, int nBpp, void* pData, float fGamma);  // 0x0045dd90
 void* ImageMakeLayered(void* pData, int nWidth, int nHeight, unsigned char* pTable,
@@ -45,9 +37,7 @@ void ImageBumpMap(void* pData, int nWidth, int nHeight, int nBpp, unsigned char*
 int AurHasMultiTexture();                       // 0x0045f710
 int AurHasDDS();                                // 0x0045f950
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CAurTextureBasic;
 
@@ -337,7 +327,6 @@ void* CAurTexture::GetTXIData()
     }
     return 0;
 }
-
 
 // FUNCTION: SWKOTOR 0x0041ecb0
 void CAurTexture::SetTXIData(void* pData, int nSize)
@@ -885,17 +874,14 @@ void CAurTextureBasic::SetScheme(int* pScheme, int nScheme)
     m_nScheme = (short)nScheme;
 }
 
-class GLRender {
-public:
-    static void ActivateTextureStage(int nStage);
-};
+#include "shared/gl_render.h"
 
 // FUNCTION: SWKOTOR 0x0041fe80
 void GLRender::ActivateTextureStage(int nStage)
 {
     g_nActiveTextureStage = nStage;
     if (AurHasMultiTexture()) {
-        g_pfnglActiveTextureARB(g_nActiveTextureStage + 0x84c0);
+        glActiveTextureARB(g_nActiveTextureStage + 0x84c0);
     }
 }
 

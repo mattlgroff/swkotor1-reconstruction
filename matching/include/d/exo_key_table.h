@@ -6,116 +6,16 @@
 
 extern "C" int __cdecl tolower(int c);
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005b3190
-    CExoString(const char* sString);
-    CExoString(const char* sString, int nLength);   // 0x005e5b70
-    CExoString(int nValue);                         // 0x005e5bc0
-    CExoString(const CExoString& sString);
-    ~CExoString();
-    CExoString& operator=(const CExoString& sString);
-    CExoString& operator=(const char* sString);     // 0x005e5140
-    int operator==(const char* sString) const;      // 0x005e5290
-    int operator==(const CExoString& sString) const; // 0x005e5200
-    int Find(char c, int nStart) const;             // 0x005e5f20
-    void Format(const char* sFormat, ...);          // 0x005e5680
-    CExoString SubString(int nStart, int nCount) const; // 0x005e6270
-    int operator!=(const char* sString) const;      // 0x005e5390
-    char* CStr() const;                             // 0x005e5670
-    int GetLength() const;                          // 0x005e5790
-    int IsEmpty() const;                            // 0x005e58a0
-    CExoString operator+(const CExoString& sString) const; // 0x005e5d10
-    CExoString LowerCase() const;                   // 0x005e6080
-    char operator[](int nIndex) const;              // 0x005e5600
-    int AsINT() const;                              // 0x005e5630
-    float AsFLOAT() const;                          // 0x005e5650
-    int CompareNoCase(const CExoString& sString) const; // 0x005e6450
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ed0
-    CResRef(const CResRef& cResRef);
-    CResRef(const char* szResRef);
-    CResRef(const char* pResRef, unsigned char nLength); // 0x00405ef0
-    int operator==(const CResRef& cResRef) const;   // 0x004060b0
-    int operator==(const char* szResRef) const;     // 0x004060d0
-    int operator!=(const CResRef& cResRef) const;   // 0x00406dc0
-    int IsValid() const;                            // 0x00406030
-    CResRef operator=(const char* szResRef);        // 0x00406290
-    CResRef operator=(const CResRef& cResRef);      // 0x00406120
-    CResRef operator=(const char (&pResRef)[16]);   // 0x00406170
-    CResRef operator=(const CExoString& sResRef);   // 0x004061f0
-    CResRef operator+=(const CExoString& sString);  // 0x00406300
-    CResRef(const CExoString& sResRef);             // 0x00406d60
-    int operator!=(const CExoString& sResRef) const; // 0x00406de0
-    int operator!=(const char* szResRef) const;     // 0x00406060
-    void CopyToString(char* pStr) const;            // 0x00405fb0
-    void CopyToString(CExoString& sStr) const;      // 0x00405f70
-    char* GetResRefStr() const;                     // 0x00405fe0
-    unsigned char GetLength() const;                // 0x00406040
-    char* GetResRef() const;                        // 0x00641db0
-};
+#include "shared/res_ref.h"
 
-typedef void* CExoLinkedListPosition;
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListNode* pHead;
-    CExoLinkedListNode* pTail;
-    unsigned long m_nCount;
+#include "shared/exo_linked_list.h"
 
-    CExoLinkedListInternal();                       // 0x005e9aa0
-    void* GetHead()
-    {
-        CExoLinkedListNode* pNode = pHead;
-        if (!pNode) {
-            return 0;
-        }
-        return pNode->pObject;
-    }
-    ~CExoLinkedListInternal();
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    CExoLinkedListPosition AddTail(void* pObject);  // 0x005e9dc0
-    CExoLinkedListPosition AddHead(void* pObject);
-    void* Remove(CExoLinkedListPosition pos);       // 0x005e9c10
-    void* RemoveHead();
-    CExoLinkedListPosition GetTailPos();
-    void RemoveAll();
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-
-    CExoLinkedList();
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetHead()
-    {
-        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
-        return (T*)pInternal->GetHead();
-    }
-    CExoLinkedListPosition AddTail(T* pObject) { return m_pcExoLinkedListInternal->AddTail(pObject); }
-    CExoLinkedListPosition AddHead(T* pObject) { return m_pcExoLinkedListInternal->AddHead(pObject); }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-    T* Remove(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->Remove(pos); }
-    unsigned long Count() { return m_pcExoLinkedListInternal->m_nCount; }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-};
 
 class CExoFile {
 public:
@@ -181,7 +81,6 @@ public:
     CExoString& GetResourceExtension(unsigned short nType);  // 0x005e6660
 };
 
-extern CExoBase* g_pExoBase;                // 0x007a39e0
 
 class CExoStringList {
 public:
@@ -191,7 +90,7 @@ public:
     CExoStringList* Merge(CExoStringList* pList, int a, int b);     // 0x005e9980
     int GetCount();                                                 // 0x00675dd0
 
-    char pad[0x14];
+    char pad_0x0[0x14];
 };
 
 // vtable 0x0073d86c
@@ -241,21 +140,7 @@ public:
     unsigned short m_nType;         // 0x1a
 };
 
-class CExoLocString {
-public:
-    CExoLocString();                                                // 0x005e9e10
-    CExoLocString(const CExoLocString& lsString);                   // 0x005e9f80
-    ~CExoLocString();
-    void AddString(int nLanguage, const CExoString& sString, unsigned char nGender); // 0x005ea340
-    int GetString(int nIndex, int* nLanguage, CExoString* sString, unsigned char* nGender); // 0x005e9eb0
-    unsigned long GetStringCount() const;                           // 0x005e9ef0
-    unsigned long GetStringLength(int nIndex);                      // 0x005e9f00
-    CExoLocString& operator=(const CExoLocString& lsString);        // 0x005e9f80
-    void ClearLocString();                                          // 0x005e9ea0
-
-    void* m_pList;
-    unsigned long m_nStrRef;
-};
+#include "shared/exo_loc_string.h"
 
 // vtable 0x0073e128
 class CExoBaseResFile {
@@ -490,14 +375,7 @@ public:
     unsigned long GetEntryCount(int bAll);                          // 0x0040d1a0
 };
 
-class CExoCriticalSection {
-public:
-    CExoCriticalSection();                          // 0x005e9290
-    ~CExoCriticalSection();                         // 0x005e9320
-    void EnterCriticalSection();                    // 0x005e9300
-    void LeaveCriticalSection();                    // 0x005e9310
-    void* m_pInternal;
-};
+#include "shared/exo_critical_section.h"
 
 class CExoResMan {
 public:
@@ -585,14 +463,8 @@ public:
     void GetResRefFromFile(CResRef& cResRef, const CExoString& sFile); // 0x004065a0
 };
 
-extern CExoResMan* g_pExoResMan;            // 0x007a39e8
-extern unsigned long g_aCRCTable[256];      // 0x007a3d78
+#include "shared/globals.h"
 
 // Defined out of line (not inlined at /Ob1): one COMDAT for every T.
-template <class T>
-CExoLinkedList<T>::CExoLinkedList()
-{
-    m_pcExoLinkedListInternal = new CExoLinkedListInternal();
-}
 
 #endif

@@ -67,7 +67,7 @@ int CSWSMessage::SendServerToPlayerPlayerList_All(CSWSPlayer* pPlayer)
         return 0;
     }
     unsigned char nPlayers = 0;
-    void* pos = pPlayerList->GetHeadPos();
+    CExoLinkedListPosition pos = pPlayerList->GetHeadPos();
     while (pos) {
         CSWSPlayer* pOther = (CSWSPlayer*)pPlayerList->GetAtPos(pos);
         if (pOther->GetGameObject()) {

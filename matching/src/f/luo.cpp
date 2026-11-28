@@ -4,42 +4,12 @@
 
 extern "C" void *memset(void *pDest, int nValue, unsigned int nCount);
 
-struct CExoLinkedListNode;
+class CExoLinkedListNode;
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();
-    ~CExoLinkedListInternal();
-    void *GetAtPos(CExoLinkedListNode *pos);
-    void *GetPrev(CExoLinkedListNode *&pos);
-    void *Remove(CExoLinkedListNode *pos);
-    void *RemoveHead();
-    CExoLinkedListNode *AddHead(void *pData);
-    CExoLinkedListNode *pHead;
-    CExoLinkedListNode *pTail;
-    unsigned long nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-    CExoLinkedListNode *GetTailPos() { return m_pcExoLinkedListInternal->pTail; }
-    T *GetAtPos(CExoLinkedListNode *pos) { return (T *)m_pcExoLinkedListInternal->GetAtPos(pos); }
-    T *GetPrev(CExoLinkedListNode *&pos) { return (T *)m_pcExoLinkedListInternal->GetPrev(pos); }
-    T *Remove(CExoLinkedListNode *pos) { return (T *)m_pcExoLinkedListInternal->Remove(pos); }
-    T *RemoveHead() { return (T *)m_pcExoLinkedListInternal->RemoveHead(); }
-    CExoLinkedListNode *AddHead(T *pData) { return m_pcExoLinkedListInternal->AddHead(pData); }
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-};
 
-template <class T>
-CExoLinkedList<T>::CExoLinkedList()
-{
-    m_pcExoLinkedListInternal = new CExoLinkedListInternal();
-}
+
 
 template <class T>
 class CExoArrayList {
@@ -87,30 +57,15 @@ public:
     }
 };
 
-extern const unsigned long g_oidInvalid;   // 0x00746644
+#include "shared/globals.h"
 
 // ---------------------------------------------------------------------------
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct CLastUpdateEffect;
 struct CLastUpdateAction;
@@ -172,11 +127,7 @@ CLastUpdateObject::~CLastUpdateObject()
 
 // ---------------------------------------------------------------------------
 
-struct CSWSPlayerLUOItem {
-    unsigned long m_oidItem;
-    unsigned long m_n4;
-    unsigned long m_n8;
-};
+#include "shared/sws_player_luo_item.h"
 
 class CSWSPlayerLUOInventory {
 public:
@@ -277,8 +228,8 @@ void CSWSPlayerLUOInventory::ItemListAddHead(unsigned long oidItem, unsigned cha
 {
     CSWSPlayerLUOItem *pItem = new CSWSPlayerLUOItem;
     pItem->m_oidItem = oidItem;
-    pItem->m_n4 = n4;
-    pItem->m_n8 = n8;
+    pItem->m_nStackSize = n4;
+    pItem->m_nCost = n8;
     if (nList == 0)
         m_lContainer.AddHead(pItem);
     else if (nList == 1)
@@ -311,27 +262,7 @@ CSWSPlayerLUOInventory::~CSWSPlayerLUOInventory()
 
 // ---------------------------------------------------------------------------
 
-class CSWSActionRecord {
-public:
-    CSWSActionRecord();
-    ~CSWSActionRecord();
-    void Reset()
-    {
-        m_nAction = 0xffff;
-        m_nParam2 = 0xffff;
-        m_nParam4 = 0xffff;
-        m_vTarget = Vector(0.0f, 0.0f, 0.0f);
-        m_oidTarget = 0x7f000000;
-        m_nGroup = -1;
-    }
-    unsigned short m_nAction;        // +0x0
-    unsigned short m_nParam2;        // +0x2
-    unsigned short m_nParam4;        // +0x4
-    char pad_0x6[0x2];
-    int m_nGroup;                    // +0x8
-    Vector m_vTarget;                // +0xc
-    unsigned long m_oidTarget;       // +0x18
-};
+#include "shared/sws_action_record.h"
 
 struct CSWSLUOBuffer {
     ~CSWSLUOBuffer() { delete[] m_pData; m_pData = 0; }
@@ -486,15 +417,8 @@ public:
     unsigned char m_nNumSkills;                         // +0xab
 };
 
-extern CSWRules *g_pRules;
 
-class CSWCombatInformation {
-public:
-    CSWCombatInformation();
-    ~CSWCombatInformation();
-    void SetCombatInformation(CSWCombatInformation *pInfo);
-    char pad_0x0[0x48];
-};
+#include "shared/sw_combat_information.h"
 
 class CSWCreatureStatsUpdate {
 public:

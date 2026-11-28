@@ -2,11 +2,7 @@
 
 class CAuroraInstance;
 
-class CAurInternal {
-public:
-    CAuroraInstance* CreateInstance();
-    CAuroraInstance* NewCAuroraInstance();
-};
+#include "shared/aur_internal.h"
 
 // FUNCTION: SWKOTOR 0x0044ED60
 CAuroraInstance* CAurInternal::NewCAuroraInstance()

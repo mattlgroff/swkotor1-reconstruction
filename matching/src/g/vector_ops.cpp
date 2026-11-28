@@ -1,13 +1,7 @@
 // Vector scalar operators, the 3x3 Matrix constructors, the
 // emitter post-process hook and the CAurMeshBuffer constructor.
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() { x = 0; y = 0; z = 0; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 // FUNCTION: SWKOTOR 0x00437a60 SYMBOL: ??D@YA?AVVector@@MABV0@@Z
 Vector operator*(float f, const Vector& v)

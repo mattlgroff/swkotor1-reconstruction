@@ -149,8 +149,8 @@ void RenderForceDistortionATI(unsigned int nTexture)
     glLoadIdentity();
     glViewport(0, 0, g_nScreenWidth, g_nScreenHeight);
     glEnable(GL_VERTEX_PROGRAM_ARB);
-    g_pfnProgramEnvParameter4fARB(GL_VERTEX_PROGRAM_ARB, 0x0f, 0.0f, 1.0f, 0.0f, 0.0f);
-    g_pfnBindProgramARB(GL_VERTEX_PROGRAM_ARB, g_nDistortionProgram);
+    glProgramEnvParameter4fARB(GL_VERTEX_PROGRAM_ARB, 0x0f, 0.0f, 1.0f, 0.0f, 0.0f);
+    glBindProgramARB(GL_VERTEX_PROGRAM_ARB, g_nDistortionProgram);
     g_pDistortionTexture->Activate();
     glEnable(GL_BLEND);
     glBlendFunc(1, 0);
@@ -202,7 +202,7 @@ void RenderForceDistortionATI(unsigned int nTexture)
     glDisable(g_nGLStencilTest);
     FrameBufferModificationPixelShadersATI(2, 0, 0, 0, 0);
     glDisable(GL_VERTEX_PROGRAM_ARB);
-    g_pfnBindProgramARB(GL_VERTEX_PROGRAM_ARB, 0);
+    glBindProgramARB(GL_VERTEX_PROGRAM_ARB, 0);
     g_nCurrentStage = 0;
     if (HasMultiTexture())
         glActiveTextureARB(g_nCurrentStage + GL_TEXTURE0_ARB);
@@ -217,8 +217,8 @@ void RenderForceDistortionATI(unsigned int nTexture)
 void RenderForceDistortion(unsigned int nTexture)
 {
     glEnable(GL_VERTEX_PROGRAM_ARB);
-    g_pfnProgramEnvParameter4fARB(GL_VERTEX_PROGRAM_ARB, 0x0f, 0.0f, 1.0f, 0.0f, 0.0f);
-    g_pfnBindProgramARB(GL_VERTEX_PROGRAM_ARB, g_nDistortionProgram);
+    glProgramEnvParameter4fARB(GL_VERTEX_PROGRAM_ARB, 0x0f, 0.0f, 1.0f, 0.0f, 0.0f);
+    glBindProgramARB(GL_VERTEX_PROGRAM_ARB, g_nDistortionProgram);
     g_pDistortionTexture->Activate();
     glBlendFunc(1, 0);
     g_nCurrentStage = 0;
@@ -267,7 +267,7 @@ void RenderForceDistortion(unsigned int nTexture)
     glDisable(g_nGLStencilTest);
     FrameBufferModificationPixelShaders(2, 0, 0, 0, 0);
     glDisable(GL_VERTEX_PROGRAM_ARB);
-    g_pfnBindProgramARB(GL_VERTEX_PROGRAM_ARB, 0);
+    glBindProgramARB(GL_VERTEX_PROGRAM_ARB, 0);
     g_nCurrentStage = 0;
     if (HasMultiTexture())
         glActiveTextureARB(g_nCurrentStage + GL_TEXTURE0_ARB);

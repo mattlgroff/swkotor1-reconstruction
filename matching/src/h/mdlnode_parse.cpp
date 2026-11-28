@@ -5,7 +5,7 @@
 
 extern "C" int __cdecl strncmp(const char*, const char*, unsigned int);
 
-extern unsigned char g_bBinaryModel;        // 0x007B927C
+#include "shared/globals.h"
 
 #define MDL_FIELD(name, stmt) \
     if (!_stricmp(name, GetWord(s))) \
@@ -358,9 +358,6 @@ public:
 };
 
 // Texture index lists of the mesh being read (0x007A8A88 / 7C / 70).
-extern CExoArrayList<Vector> g_lTexIndices1;
-extern CExoArrayList<Vector> g_lTexIndices2;
-extern CExoArrayList<Vector> g_lTexIndices3;
 
 class MdlNodeTriMesh : public MdlNode {
 public:

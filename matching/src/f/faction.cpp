@@ -2,21 +2,9 @@
 
 #include <math.h>
 
-class Vector {
-public:
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 template <class T>
 class CExoArrayList {
@@ -144,14 +132,9 @@ public:
     CServerExoAppInternal *m_pInternal; // +0x4
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CSWSFaction {
 public:

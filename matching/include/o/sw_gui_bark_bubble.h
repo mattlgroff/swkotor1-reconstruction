@@ -6,20 +6,7 @@
 
 #include "o/sw_gui_dialog.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CExoString& s);                   // 0x00406D60
-    CResRef();                                      // 0x00405ED0
-#ifndef O_RESREF_IMPLICIT_COPY
-    CResRef(const CResRef& cResRef);
-#endif
-    CResRef operator=(const CResRef& cResRef);      // 0x00406120
-    CResRef operator=(const CExoString& sResRef);   // 0x004061F0
-    CResRef operator=(const char* sResRef);         // 0x00406290
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CExoStreamingSoundSource {
 public:
@@ -63,10 +50,7 @@ public:
     unsigned long m_bTokenFlag : 1;                 // 0x5c bit 0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
-extern CTlkTable* g_pTlkTableAlt;                   // 0x007A3A0C
-extern unsigned char g_nGender;                     // 0x0073ECD0
-extern unsigned char g_nBarkVolume;                 // 0x0074C5E8
+#include "shared/globals.h"
 
 class CWorldTimer {
 public:
@@ -92,17 +76,7 @@ public:
     unsigned long GetId() { return m_oid; }
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-    virtual void v10();
-    virtual class CSWCDoor* AsSWCDoor();            // 0x14
-    virtual void v18(); virtual void v1C(); virtual void v20(); virtual void v24();
-    virtual void v28(); virtual void v2C(); virtual void v30(); virtual void v34();
-    virtual class CSWSItem* AsSWSItem();            // 0x38
-    virtual class CSWCTrigger* AsSWCTrigger();      // 0x3c
-};
+#include "shared/game_object.h"
 class CGameObjectArray {
 public:
     unsigned char GetGameObject(unsigned long oid, CGameObject** ppObject);   // 0x004D8230
@@ -133,41 +107,10 @@ class CSWSPlayer : public CSWSClient {
 };
 
 // Node: prev, next, object (+8).
-struct CExoLinkedListNode {
-    CExoLinkedListNode* m_pPrev;
-    CExoLinkedListNode* m_pNext;
-    void* m_pObject;
-};
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* RemoveHead();                             // 0x005E9C80
-    void* AddTail(void* pObject);                   // 0x005E9DC0
-    CExoLinkedListNode* m_pHead;
-    CExoLinkedListNode* m_pTail;
-    unsigned long m_nCount;
-};
-template <class T> class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pList;
-    CExoLinkedList();
-    ~CExoLinkedList() { delete m_pList; }
-    int IsEmpty() { return m_pList->m_pHead == 0; }
-    T* RemoveHead() { return (T*)m_pList->RemoveHead(); }
-    void* AddTail(T* pObject) { return m_pList->AddTail(pObject); }
-    T* GetHead()
-    {
-        CExoLinkedListNode* pNode = m_pList->m_pHead;
-        return !pNode ? 0 : (T*)pNode->m_pObject;
-    }
-};
+#include "shared/exo_linked_list.h"
+#include "shared/exo_linked_list.h"
 
-template <class T>
-CExoLinkedList<T>::CExoLinkedList()
-{
-    m_pList = new CExoLinkedListInternal;
-}
+
 
 Vector operator-(const Vector& a, const Vector& b);  // 0x00423BC0
 

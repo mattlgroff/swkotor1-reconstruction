@@ -1,6 +1,6 @@
 // Item sound/model helpers used by inventory lifecycle messages.
-class CExoString { public: char* CStr() const; };
-class CResRef { public: char m_ref[16]; CResRef(); CResRef operator=(const char*); CResRef operator=(const CResRef&); };
+#include "shared/exo_string.h"
+#include "shared/res_ref.h"
 class CAurObject { public: virtual ~CAurObject();
  virtual void v04();
  virtual void v08();
@@ -30,23 +30,19 @@ class CAurObject { public: virtual ~CAurObject();
 CAurObject* NewCAurObject(const char*,const char*,int,int);
 class CAurAnimationBase { public: char pad_000[0xdc]; unsigned long m_nItemFlags; };
 class CSWCCreature { public: unsigned long GetEquippedItemID(unsigned long); CAurAnimationBase* GetAnimationBase(); };
-struct CSWBaseItemData { char pad_000[0x78]; unsigned char m_nDropSound;
- char pad_079[0xac-0x79]; unsigned char m_nItemClass;
-};
+#include "shared/sw_base_item_data.h"
 class CSWBaseItem : public CSWBaseItemData {};
 class CSWBaseItemArray { public: CSWBaseItem* GetBaseItem(int); };
 class CSWRules { public: char pad_000[0x34]; CSWBaseItemArray* m_pBaseItemArray;
  CSWBaseItemArray* GetBaseItemArray() { return m_pBaseItemArray; }
 };
-extern CSWRules* g_pRules;
+#include "shared/globals.h"
 class CClientAIMaster;
 class CClientExoApp { public: CResRef GetItemDropSound(unsigned char);
  CSWCCreature* GetCreatureByGameObjectID(unsigned long); CClientAIMaster* GetClientAIMaster();
 };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager;
+#include "shared/app_manager.h"
 class CExoSound { public: int PlayOneShotSound(const CResRef&,unsigned char,unsigned long,unsigned char,float,float); };
-extern CExoSound* g_pExoSound;
 class CSWCObject { public: virtual ~CSWCObject(); char pad_004[8]; int m_nBaseItem; };
 class CSWItem { public:
  virtual void v00();
@@ -108,7 +104,7 @@ class CSWCItem : public CSWCObject,public CSWItem { public:
 int CSWCItem::PlayDropSound()
 {
  CResRef sound;
- if (GetBaseItem()->m_nItemClass>=0x1f && GetBaseItem()->m_nItemClass<=0x26) {
+ if (GetBaseItem()->m_nCategory>=0x1f && GetBaseItem()->m_nCategory<=0x26) {
   switch(m_nArmorType) {
   case 3: sound="it_materialcloth"; break;
   case 0: sound="it_armorleather"; break;
@@ -162,7 +158,7 @@ void CSWCItem::SetEquippedModelFlags(int enabled)
   if (GetModelOverride()) flags=(unsigned char)owner->GetAnimationBase()->m_nItemFlags & ~flags;
   else flags &= 0xfc;
  }
- if (GetBaseItem()->m_nItemClass!=0x27 && GetBaseItem()->m_nItemClass!=0x28 && GetBaseItem()->m_nItemClass!=0x29) flags|=4;
+ if (GetBaseItem()->m_nCategory!=0x27 && GetBaseItem()->m_nCategory!=0x28 && GetBaseItem()->m_nCategory!=0x29) flags|=4;
  else flags&=0xfb;
  owner->GetAnimationBase()->m_nItemFlags=flags;
 }

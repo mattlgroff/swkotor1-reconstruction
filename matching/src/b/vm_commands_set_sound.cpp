@@ -5,8 +5,7 @@
 #include "b/sws_message.h"
 #include "b/party_table.h"
 
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633
-extern int g_bShipBuild;                                    // 0x00832834 (name guessed)
+#include "shared/globals.h"
 
 void AurEnableSpeedBlur();                                  // 0x0044F0A0
 void AurDisableSpeedBlur();                                 // 0x0044F0B0
@@ -51,10 +50,7 @@ struct CSWSObjectListeningView {
     int m_bListening;                                       // 0x19c
 };
 
-struct CSWSObjectPlotView {
-    char pad_0x0[0xf8];
-    int m_bPlotFlag;                                        // 0xf8
-};
+#include "shared/sws_object_plot_view.h"
 
 // FUNCTION: SWKOTOR 0x005424E0
 int CSWVirtualMachineCommands::ExecuteCommandSetAreaUnescapable(int nCommandId, int nParameters)
@@ -108,7 +104,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCommandable(int nCommandId, int 
     }
     if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidTarget, &pObject) == GAME_OBJECT_VALID) {
         if (pObject->m_nObjectType > OBJECT_TYPE_AREA) {
-            pObject->m_bCommandable = bCommandable != 0;
+            ((CSWSObject*)pObject)->m_bCommandable = bCommandable != 0;
         }
     }
     return 0;
@@ -187,7 +183,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetPlotFlag(int nCommandId, int nPa
     }
     CGameObject* pObject = g_pAppManager->GetServerExoApp()->GetGameObject(oidTarget);
     if (pObject && pObject->AsSWSObject()) {
-        ((CSWSObjectPlotView*)pObject->AsSWSObject())->m_bPlotFlag = bPlotFlag;
+        ((CSWSObjectPlotView*)pObject->AsSWSObject())->m_bPlotObject = bPlotFlag;
     }
     return 0;
 }

@@ -6,13 +6,7 @@
 
 #include <stddef.h>
 
-struct Vector {
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 template <class T> class CExoArrayList {
 public:
@@ -28,14 +22,7 @@ public:
     char pad_0x0[0x34];
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject() {}
-    unsigned long m_idSelf;                         // 0x04
-    char pad_0x8[0x8c - 0x8];
-    unsigned long m_oidArea;                        // 0x8c
-    Vector m_vPosition;                             // 0x90
-};
+#include "shared/game_object.h"
 
 class CSWSPlayer {
 public:
@@ -69,12 +56,8 @@ public:
     CSWPartyTable* GetPartyTable();                                 // 0x004AEE70
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp* m_pServerExoApp;                 // 0x8
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
 class CSWSFaction {
@@ -107,7 +90,6 @@ public:
     char pad_0x0[0x34];
     CSWBaseItemArray* m_pBaseItemArray;             // 0x34
 };
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWSItem {
 public:
@@ -133,13 +115,7 @@ public:
     void GetWorldTime(unsigned long* pDay, unsigned long* pTime);   // 0x004ADE40
 };
 
-class CGameObjectClient {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual class CSWCCreature* AsSWCCreature();    // 0x2c
-};
+#include "shared/game_object_client.h"
 
 class CSWSCombatRound {
 public:
@@ -147,9 +123,16 @@ public:
     void RemoveSpellAction();                       // 0x004D3BA0 (placeholder name)
 };
 
-class CSWSCreature : public CGameObject {
+class CSWSObject : public CGameObject {
 public:
     CSWSArea* GetArea();                            // 0x004CB120
+    char pad_0xc[0x80];
+    unsigned long m_oidArea;                        // 0x8c
+    Vector m_vPosition;                             // 0x90
+};
+
+class CSWSCreature : public CSWSObject {
+public:
     CGameObjectClient* GetClientObject();           // 0x004CC2B0
     void UpdateObjectId(unsigned long nId, int a, int b, int c, int d);   // 0x0051B370 (placeholder name)
     void OnIdChanged(unsigned long nOldId);         // 0x00517960 (placeholder name)

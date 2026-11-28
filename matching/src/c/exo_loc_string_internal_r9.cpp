@@ -1,59 +1,15 @@
 // CExoLocStringInternal::AddString / GetString(index) / operator=
 // (b005e9 foundations leftovers, r9).
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
+#include "shared/exo_string.h"
 
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-};
+#include "shared/exo_loc_string_st.h"
 
-struct ExoLocString_st {
-    int m_nLanguage;                                // 0x00
-    CExoString m_sString;                           // 0x04
-};
+#include "shared/exo_linked_list.h"
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;                      // 0x00
-    CExoLinkedListNode* pNext;                      // 0x04
-    void* pObject;                                  // 0x08
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListNode* pHead;                      // 0x00
-    CExoLinkedListNode* pTail;                      // 0x04
-    unsigned long nCount;                           // 0x08
 
-    void* GetNext(void*& pos);                      // 0x005E9B90
-    void* AddTail(void* p);                         // 0x005E9DC0
-    void* GetHead()
-    {
-        CExoLinkedListNode* pNode = (CExoLinkedListNode*)pHead;
-        if (!pNode) {
-            return 0;
-        }
-        return pNode->pObject;
-    }
-};
-
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
-
-    void* GetHeadPos() const { return m_pcExoLinkedListInternal->pHead; }
-    T* GetHead() const
-    {
-        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
-        return (T*)pInternal->GetHead();
-    }
-    T* GetNext(void*& pos) const { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-    void* AddTail(T* p) { return m_pcExoLinkedListInternal->AddTail(p); }
-};
 
 class CExoLocStringInternal {
 public:
@@ -70,7 +26,7 @@ public:
 // FUNCTION: SWKOTOR 0x005EC700
 int CExoLocStringInternal::AddString(int nId, const CExoString& s)
 {
-    void* pos = m_lstLocStrings.GetHeadPos();
+    CExoLinkedListPosition pos = m_lstLocStrings.GetHeadPos();
     ExoLocString_st* p = m_lstLocStrings.GetHead();
     while (p) {
         if (p->m_nLanguage == nId) {
@@ -96,7 +52,7 @@ int CExoLocStringInternal::GetString(unsigned long nIndex, int* pId, CExoString&
     if (nIndex >= m_nCount) {
         return 0;
     }
-    void* pos = m_lstLocStrings.GetHeadPos();
+    CExoLinkedListPosition pos = m_lstLocStrings.GetHeadPos();
     ExoLocString_st* p = m_lstLocStrings.GetHead();
     unsigned long i = 0;
     while (p) {
@@ -115,7 +71,7 @@ int CExoLocStringInternal::GetString(unsigned long nIndex, int* pId, CExoString&
 int CExoLocStringInternal::operator=(const CExoLocStringInternal& o)
 {
     ClearLocString();
-    void* pos = o.m_lstLocStrings.GetHeadPos();
+    CExoLinkedListPosition pos = o.m_lstLocStrings.GetHeadPos();
     ExoLocString_st* p = o.m_lstLocStrings.GetHead();
     while (p) {
         ExoLocString_st* pNew = new ExoLocString_st;

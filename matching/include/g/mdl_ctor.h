@@ -99,13 +99,7 @@ public:
 extern "C" void* __cdecl memset(void* p, int c, size_t n);
 #pragma intrinsic(memset)
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() { x = 0; y = 0; z = 0; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:
@@ -138,8 +132,7 @@ class MdlNodeTrigger;
 class MdlNodeLightsaber;
 typedef void (*MdlNodeFn)(MdlNode*);
 
-extern int g_nMdlNodesAlive;    // 0x007a8a08
-extern int g_nMdlNodesTotal;    // 0x007a8a0c
+#include "shared/globals.h"
 
 class MdlNode {
 public:
@@ -291,20 +284,7 @@ public:
 
 // Axis-aligned bounding box tree node; deleting a child goes through the
 // out-of-line scalar deleting destructor (0x0043e2a0).
-class AABB {
-public:
-    char pad00[0x18];
-    AABB* m_pLeft;              // +0x18
-    AABB* m_pRight;             // +0x1c
-
-    ~AABB()
-    {
-        if (m_pLeft)
-            delete m_pLeft;
-        if (m_pRight)
-            delete m_pRight;
-    }
-};
+#include "shared/aabb.h"
 
 class MdlNodeAABB : public MdlNodeTriMesh {
 public:

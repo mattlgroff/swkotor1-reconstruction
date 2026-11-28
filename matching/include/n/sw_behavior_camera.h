@@ -22,20 +22,7 @@ public:
     void Remove(T value) throw();   // 0x00445080
 };
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator-() const { return Vector(-x, -y, -z); }
-    void Normalize();                               // 0x004AB130
-    Vector& operator+=(const Vector& v);            // 0x004A9740
-    Vector& operator-=(const Vector& v);            // 0x004A9770
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:
@@ -119,11 +106,7 @@ public:
 
 // Object returned by CAurBehavior slot +0x1C; only its accumulated tilt
 // at +0x48 is used here (descriptive names).
-class CSWCameraTiltTarget {
-public:
-    char pad_0x00[0x48];
-    float m_fTilt;                              // +0x48
-};
+#include "shared/sw_camera_tilt_target.h"
 
 class CAurBehavior {
 public:
@@ -163,12 +146,8 @@ public:
     CSWCModule* GetModule();                    // 0x005ED530
     CClientOptions* GetClientOptions();         // 0x005ED700
 };
-class CAppManager {
-public:
-    void* pad;
-    CClientExoApp* m_pClientExoApp;
-};
-extern CAppManager* g_pAppManager;
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 
 // Camera state captured by SaveCameraSettings for a later restore.
 class CSWCameraSettings {
@@ -252,8 +231,6 @@ public:
     float m_fFarClip3;                          // +0x48
 };
 
-extern const int g_nCameraSettingsTypeOnAStick;     // 0x0075182C
-extern int g_nPendingCameraStyle;                   // 0x007A242C
 
 // Client object: only its id and position are used by the cameras.
 class CSWCObject {
@@ -265,10 +242,6 @@ public:
     Vector m_vPosition;                         // +0x24
 };
 
-extern int g_bSwapMouseButtons;                     // 0x008338F0
-extern float g_fCameraTiltUpLimit;                  // 0x007A2420
-extern float g_fCameraTiltDownLimit;                // 0x007A2424
-extern float g_fCameraRotation;                     // 0x007A2428
 
 // vtable 0x0075165C
 class CSWCameraOnAStick : public CSWCameraBehaviorBase {
@@ -340,14 +313,7 @@ public:
     void SaveCameraSettings(CSWCameraSettings* pSettings);
 };
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-
-    CExoString(const char* szSource);           // 0x005E5A90
-    ~CExoString();                              // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:
@@ -366,7 +332,6 @@ public:
     char pad_0x00[0xb8];
     CTwoDimArrays* m_p2DArrays;                 // +0xb8
 };
-extern CSWRules* g_pRules;                      // 0x007A3A28
 
 class CSWCArea {
 public:

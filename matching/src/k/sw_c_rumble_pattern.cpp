@@ -3,30 +3,9 @@
 // 0x0068FCB0 / 0x0068FDD0 accesses (CRumblePattern +0x20 is m_bExclusive in
 // include/c/client_exo_app.h, used here as the looping flag).
 
-class CRumbleChannel {
-public:
-    float* m_pfMagnitudes;                          // 0x00
-    float* m_pfTimes;                               // 0x04
-    int m_nCount;                                   // 0x08
-    int m_nCursor;                                  // 0x0C
+#include "shared/rumble_channel.h"
 
-    float GetMagnitude(float fTime, int bLoop);     // 0x0068FCB0
-    float GetTime(int nIndex)
-    {
-        if (nIndex >= 0 && nIndex < m_nCount)
-            return m_pfTimes[nIndex];
-        return 0.0f;
-    }
-};
-
-class CRumblePattern {
-public:
-    CRumbleChannel m_cLeft;                         // 0x00
-    CRumbleChannel m_cRight;                        // 0x10
-    int m_bExclusive;                               // 0x20
-
-    int GetIntensity(float fTime, float* pfLeft, float* pfRight); // 0x0068FDD0
-};
+#include "shared/rumble_pattern.h"
 
 // FUNCTION: SWKOTOR 0x0068FCB0
 float CRumbleChannel::GetMagnitude(float fTime, int bLoop)

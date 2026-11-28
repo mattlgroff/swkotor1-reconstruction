@@ -328,7 +328,7 @@ void CSWGuiMainInterface::DoPersonalAction(int nSlot, int a2)
             if (pPC && pAction) {
                 CGameObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(pAction->m_oidTarget);
                 if (pObject) {
-                    CSWCActionTarget* pTarget = pObject->AsActionTarget();
+                    CSWCActionTarget* pTarget = (CSWCActionTarget*)pObject->AsSWCObject();
                     if (pTarget) {
                         if (pAction->m_bEnabled && pAction->m_pfnAction) {
                             if (!(pPC->m_nCombatFlags & 1)) {

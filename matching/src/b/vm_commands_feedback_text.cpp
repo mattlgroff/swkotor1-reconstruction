@@ -18,7 +18,7 @@ struct FeedbackTablesView {
     char pad_0x0[0x108];
     C2DA* m_pFeedbackText;
 };
-extern CTlkTable* g_pTlkTable;                              // 0x007A3A08
+#include "shared/globals.h"
 
 // NONMATCH (18): table and return-value register ordering.
 // FUNCTION: SWKOTOR 0x00530170

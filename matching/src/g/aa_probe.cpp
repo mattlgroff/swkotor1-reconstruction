@@ -79,13 +79,9 @@ typedef int(__stdcall* PFNWGLCHOOSEPIXELFORMATARB)(HDC hdc, const int* piAttribs
                                                    const float* pfAttribs, unsigned int nMax,
                                                    int* piFormats, unsigned int* pnFormats);
 
-extern HINSTANCE g_hInstance;                                   // 0x007a39c0
-extern char g_szWindowClass[];                                  // 0x0078e310 "Test GL Window"
-extern PFNWGLGETEXTENSIONSSTRINGARB wglGetExtensionsStringARB;  // 0x007bb7ec
-extern PFNWGLCHOOSEPIXELFORMATARB wglChoosePixelFormatARB;      // 0x007bb730
-extern const char* g_szWGLExtensions;                           // 0x007a688c
-extern unsigned int g_nCapabilities;                            // 0x007bb85c
-extern unsigned int g_nMultisampleCapability;                   // 0x0078e4ec
+#include "shared/globals.h"
+#include "shared/globals.h"
+#include "shared/gl_ext.h"
 
 bool __cdecl CheckExtension(const char* szName, const char* szList);   // 0x0045f980
 
@@ -125,10 +121,8 @@ void InitializeAntiAliasing()
     DescribePixelFormat(hDC, nFormat, sizeof(pfd), &pfd);
     HGLRC hRC = wglCreateContext(hDC);
     wglMakeCurrent(hDC, hRC);
-    wglGetExtensionsStringARB =
-        (PFNWGLGETEXTENSIONSSTRINGARB)wglGetProcAddress("wglGetExtensionsStringARB");
-    wglChoosePixelFormatARB =
-        (PFNWGLCHOOSEPIXELFORMATARB)wglGetProcAddress("wglChoosePixelFormatARB");
+    wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
+    wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
     const char* szGL = (const char*)glGetString(0x1f03);
     int bATI = 0;
     if (CheckExtension("GL_ATI_fragment_shader", szGL))

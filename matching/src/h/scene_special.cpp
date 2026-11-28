@@ -33,14 +33,7 @@ public:
     CExoArrayList<Part*> m_lChildren;       // +0x30
 };
 
-class SceneLights {
-public:
-    virtual void V00();
-    virtual void V04();
-    virtual void V08();
-    virtual void AddLight(Part* pLight);                // +0x0c
-    virtual void RemoveLight(Part* pLight, int n);      // +0x10
-};
+#include "shared/scene_lights.h"
 
 class Model;
 class Scene;

@@ -1,26 +1,9 @@
 // SJournalEntry, CSWSJournal and their CExoArrayList instances
 // (b005c_f2_journal_store, 0x005C53E0-0x005C5A30).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const CExoString &s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    int CompareNoCase(const CExoString &s) const;   // 0x005e6450
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    CExoLocString(const CExoLocString &s);
-    ~CExoLocString();
-    CExoLocString &operator=(const CExoLocString &s);
-    void *m_pList;
-    void *m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
 template <class T>
 class CExoArrayList {

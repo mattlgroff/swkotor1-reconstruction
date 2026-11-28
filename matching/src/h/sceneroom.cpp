@@ -101,12 +101,7 @@ public:
     TileNode* m_pNode;                      // +0x04
 };
 
-struct TileParts {
-    void* m_pMainLight1;                    // +0x00
-    void* m_pMainLight2;                    // +0x04
-    TilePart* m_pSecondLight1;              // +0x08
-    TilePart* m_pSecondLight2;              // +0x0c
-};
+#include "shared/tile_parts.h"
 
 // FUNCTION: SWKOTOR 0x004528B0
 bool ProcessTilePart(TileParts* pOut, TilePart* pPart, char* szBase)

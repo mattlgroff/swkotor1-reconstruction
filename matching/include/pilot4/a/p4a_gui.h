@@ -19,15 +19,9 @@ public:
     int SetPausedByCombat(int bPaused, unsigned char nFlag, int bForce);   // 0x005EDC20
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;                                 // 0x00
-    CClientExoApp* m_pClientExoApp;                     // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                      // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWGuiPanel {
 public:

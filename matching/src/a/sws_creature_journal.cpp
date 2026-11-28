@@ -19,7 +19,7 @@ public:
     int m_bLoaded;                                  // 0x04 (placeholder name)
 };
 
-extern int g_nJournalSortOrder;                     // 0x00833A90
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004F17D0
 void CSWSCreature::LoadJournal(CResGFF* pRes, CResStruct* pStruct)

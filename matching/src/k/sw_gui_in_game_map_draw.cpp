@@ -2,10 +2,7 @@
 // and party buttons, draws the panel, then the map image and the map hider
 // inside a viewport at the map label's extent.
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct CSWGuiExtent {
     int left;
@@ -18,9 +15,7 @@ void AurGUIStartLayer();                            // 0x004591B0
 int AurGUISetupViewport(int x, int y, int w, int h, Vector* pColor, int n, float fAlpha); // 0x004592F0
 void AurGUIStopLayer();                             // 0x004592B0
 void AurGUICloseViewport();                         // 0x00459580
-extern Vector g_vGuiViewportColor;                  // 0x0078D3D8
-extern Vector g_vGuiDisabledTextColor;              // 0x007A2408 (descriptive)
-extern Vector g_vGuiDisabledBorderColor;            // 0x007A2384 (descriptive)
+#include "shared/globals.h"
 
 class CSWGuiManager {
 public:

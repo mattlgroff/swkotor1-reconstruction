@@ -1,5 +1,5 @@
-struct Vector { float x,y,z; };
-class CResRef { public: char m_ref[16]; CResRef(); CResRef operator=(const CResRef&); };
+#include "shared/vector.h"
+#include "shared/res_ref.h"
 class CSWCDoor { public: void SetState(int); }; // descriptive 0x00683D40
 class CSWCObject { public:
  virtual void v00();
@@ -67,11 +67,10 @@ class CSWCObject { public:
  char pad_004[4]; unsigned char m_nObjectType;
  char pad_009[0x4c-9]; float m_fAnimationSpeed;
 };
-class CGameObject { public: virtual void v00(); virtual void v04(); virtual void v08(); virtual CSWCObject* AsSWCObject(); };
+#include "shared/game_object.h"
 class CClientExoApp { public: CGameObject* GetGameObject(unsigned long); };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager;
-extern const unsigned char OBJECT_TYPE_DOOR;
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 class CSWCMessage { public:
  float ReadFLOAT(float,int); unsigned short ReadWORD(int); CResRef ReadCResRef(int);
  int MessageReadOverflow(int); int HandleServerToPlayerUpdateVisualEffects(CSWCObject*);
@@ -81,7 +80,7 @@ class CSWCMessage { public:
 int CSWCMessage::HandleServerToPlayerGenericObjectUpdate_Update(unsigned long id,unsigned long mask)
 {
  CResRef portraitRef;
- Vector position = {0,0,0}, orientation = {0,0,0};
+ Vector position(0.0f, 0.0f, 0.0f), orientation(0.0f, 0.0f, 0.0f);
  CSWCObject* target = 0;
  CClientExoApp* client = g_pAppManager->m_pClientExoApp;
  CGameObject* object = client->GetGameObject(id);

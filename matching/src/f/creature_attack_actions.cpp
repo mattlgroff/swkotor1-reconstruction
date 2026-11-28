@@ -6,17 +6,11 @@ struct CSWSCombatRoundAction {
     unsigned long m_oidTarget; // +0x38
 };
 
-struct CExoLinkedListNode;
+class CExoLinkedListNode;
 
-struct CExoLinkedListInternal {
-    CExoLinkedListNode *pHead;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-    CExoLinkedListNode *GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-};
+struct CSWSCombatRoundPending;
 
 class CSWSCombatRound {
 public:
@@ -26,27 +20,17 @@ public:
                          int nDuration, int bAttack);
 
     char pad_0x0[0x9b0];
-    CExoLinkedList *m_pScheduledActions;      // +0x9b0
+    CExoLinkedList<CSWSCombatRoundPending> *m_pScheduledActions; // +0x9b0
     char pad_0x9b4[0x9cc - 0x9b4];
     unsigned long m_oidNewAttackTarget;       // +0x9cc
 };
 
-class Vector {
-public:
-    Vector() {}
-    float x, y, z;
-};
+#include "shared/vector.h"
 Vector operator-(const Vector &a, const Vector &b);
 
 class CSWSCreature;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();   // +0x30
-};
+#include "shared/game_object.h"
 
 class CServerExoApp {
 public:
@@ -60,15 +44,8 @@ public:
     void SetLastTarget(unsigned long oid, int bForce);
 };
 
-class CAppManager {
-public:
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-
-    char pad_0x0[4];
-    CClientExoApp *m_pClientExoApp;           // +0x4
-    CServerExoApp *m_pServerExoApp;           // +0x8
-};
-extern CAppManager *g_pAppManager;
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 
 class CSWSCreature {
 public:

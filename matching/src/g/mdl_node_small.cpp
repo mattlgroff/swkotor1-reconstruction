@@ -2,8 +2,7 @@
 // type queries, checked downcasts, ref counting and parse thunks.
 #include "g/mdl_node.h"
 
-extern int g_nTriFaceCount;         // 0x007a8a00
-extern int g_bModelNoDelete;        // 0x007a8a04
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0043e0f0
 MaxFace_PostProcess::~MaxFace_PostProcess()
@@ -262,7 +261,7 @@ void DeleteAurPart(CAurPart* p) { delete p; }
 void DeleteAurMeshBuffer(CAurMeshBuffer* p) { delete p; }
 
 // FUNCTION: SWKOTOR 0x0043e250
-Vector Quaternion::ToDirection()
+Vector Quaternion::ToDirection() const
 {
     return Vector((x * z + w * y) * 2.0f, (w * z - x * y) * 2.0f,
                   1.0f - (y * y + z * z) * 2.0f);

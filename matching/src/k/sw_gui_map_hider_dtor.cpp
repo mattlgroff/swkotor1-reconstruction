@@ -1,29 +1,12 @@
 // CSWGuiMapHider destructor (map control, 0x248 bytes, vtable 0x00754738),
 // declared with sized member classes.
 
-typedef void* CExoLinkedListPosition;
 
-class CExoLinkedListNode {
-public:
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    CExoLinkedListNode* m_pHead;
-    CExoLinkedListNode* m_pTail;
-    unsigned long m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    ~CExoLinkedList() { delete m_pList; }
-    CExoLinkedListInternal* m_pList;
-};
+
 
 template <class T>
 class CExoArrayList {

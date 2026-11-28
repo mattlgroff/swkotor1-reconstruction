@@ -4,68 +4,14 @@
 #include <stdio.h>
 #include <string.h>
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
+#include "shared/exo_string.h"
 
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    int operator==(const char* s) const;            // 0x005E5290
-    char* CStr() const;                             // 0x005E5670
-    int GetLength() const;                          // 0x005E5790
-    int CompareNoCase(const char* s) const;         // 0x005E58C0
-    CExoString Left(int nCount) const;              // 0x005E5F70
-    CExoString Right(int nCount) const;             // 0x005E6170
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    void __cdecl Format(const char* sFormat, ...);  // 0x005E5680
-};
 
-typedef void* CExoLinkedListPosition;
+#include "shared/exo_linked_list.h"
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;                      // 0x00
-    CExoLinkedListNode* pNext;                      // 0x04
-    void* pObject;                                  // 0x08
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListNode* pHead;                      // 0x00
-    CExoLinkedListNode* pTail;                      // 0x04
-    unsigned long nCount;                           // 0x08
 
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    CExoLinkedListPosition AddTail(void* p);        // 0x005E9DC0
-    CExoLinkedListPosition AddHead(void* p);        // 0x005E9D70
-    void* GetHead()
-    {
-        CExoLinkedListNode* pNode = (CExoLinkedListNode*)pHead;
-        if (!pNode) {
-            return 0;
-        }
-        return pNode->pObject;
-    }
-};
-
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
-
-    CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetHead()
-    {
-        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
-        return (T*)pInternal->GetHead();
-    }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-    CExoLinkedListPosition AddTail(T* p) { return m_pcExoLinkedListInternal->AddTail(p); }
-    CExoLinkedListPosition AddHead(T* p) { return m_pcExoLinkedListInternal->AddHead(p); }
-};
 
 class CFileSection {
 public:

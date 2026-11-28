@@ -1,13 +1,12 @@
 // grass bin grid setup (0x00456E00).
 
+#include "shared/float_to_int.h"
+
 extern "C" double __cdecl ceil(double);
 
 class CAurTriangleBin;
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 template <class T>
 class CExoArrayList {
@@ -35,17 +34,7 @@ public:
 
 typedef CExoArrayList<CAurTriangleBin*> TriangleBinList;
 
-static inline void FloatToInt(int* pOut, float f)
-{
-    __asm {
-        fld f
-        mov edx, pOut
-        frndint
-        fistp dword ptr [edx]
-    }
-}
-
-extern float g_fGrassBinSize;       // 0x0078E428
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00456E00
 void InitGrassBins(Vector vMin, Vector vMax, CExoArrayList<TriangleBinList>* pBins)

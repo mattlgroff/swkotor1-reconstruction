@@ -1,28 +1,15 @@
 // Compact combat/hostility utilities adjacent to the creature action family.
-struct Vector { float x, y, z; };
+#include "shared/vector.h"
 class CGameEffect;
-class CExoString {
-public:
-    CExoString(); // 0x005B3190
-    ~CExoString(); // 0x005E5C20
-    char* m_pString; unsigned long m_nLength;
-};
+#include "shared/exo_string.h"
 class CServerAIMaster { public: void AddEventDeltaTime(unsigned long, unsigned long, unsigned long,
     unsigned long, unsigned long, void*); }; // 0x004B08D0
-extern const int EVENT_AI_LATER; // 0x007441E0
-extern const unsigned short EFFECT_TYPE_VISUALEFFECT; // 0x007466F4
-extern const unsigned short DURATION_TYPE_7473B8; // 0x007473B8
+#include "shared/globals.h"
 class CSWSObject;
 class CGameObject;
 class CSWSCreature;
 class CSWCCreature { public: void SetAttackTarget(int nTarget); }; // 0x00610A10
-class CGameObjectClient {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();
-};
+#include "shared/game_object_client.h"
 class CSWSCombatRound {
 public:
     void EndCombatRound(int bCancel); // 0x004D4620
@@ -47,8 +34,7 @@ public:
     CServerAIMaster* GetServerAIMaster(); // 0x004AED80
     CSWSCreature* GetCreatureByGameObjectID(unsigned long oid); // 0x004AE770
 };
-class CAppManager { public: char pad_0[8]; CServerExoApp* m_pServer; };
-extern CAppManager* g_pAppManager; // 0x007A39FC
+#include "shared/app_manager.h"
 const unsigned long OBJECT_INVALID = 0x7f000000;
 #pragma pack(push, 4)
 class CGameEffect {
@@ -63,9 +49,6 @@ public:
     char pad_20[0x8c-0x20];
 };
 #pragma pack(pop)
-extern const int EFFECT_TYPE_0746828; // 0x00746828
-extern const int EFFECT_TYPE_074682C; // 0x0074682C
-extern const unsigned short DURATION_TYPE_7473C8; // 0x007473C8
 class CSWSCreature {
 public:
     int CalculateDamagePower(CSWSObject* pTarget);
@@ -104,7 +87,7 @@ public:
     char pad_9cc[0xa74-0x9cc];
     CSWSCreatureStats* m_pStats;
 };
-static inline CServerExoApp* GetServer() { return g_pAppManager->m_pServer; }
+static inline CServerExoApp* GetServer() { return g_pAppManager->m_pServerExoApp; }
 static inline void AddEventNow(unsigned long oidCaller, unsigned long oidObject, unsigned long nEvent,
                                void* pData)
 {
@@ -207,7 +190,7 @@ void CSWSCreature::AddPureEvilPowers()
 void CSWSCreature::UnsummonMyself()
 {
     CExoString sUnused;
-    g_pAppManager->m_pServer->GetSWSMessage();
+    g_pAppManager->m_pServerExoApp->GetSWSMessage();
     ClearAllActions(1);
     CSWSArea* pArea = GetArea();
     if (pArea) {

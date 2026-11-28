@@ -76,6 +76,6 @@ public:
     int m_bConnectAccepted;                         // 0x20078
 };
 
-extern CNetLayer* g_pNetLayerList;                  // 0x0083288C
+#include "shared/globals.h"
 
 #endif

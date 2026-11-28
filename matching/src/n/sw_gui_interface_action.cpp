@@ -1,20 +1,11 @@
 // CSWGuiInterfaceAction::Reset, emitted in nwcobject.o's range (0x0063C000).
 // Layout follows include/a/sws_creature.h; Reset is a placeholder name.
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    CExoString& operator=(const char* s);           // 0x005E5140
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef operator=(const char* s);               // 0x00406290
-};
+#include "shared/res_ref.h"
 
-extern const char g_sEmpty[];                       // 0x0073D71C
+#include "shared/globals.h"
 
 struct CSWGuiActionData {
     unsigned long m_n0, m_n4, m_n8, m_nC;

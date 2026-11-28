@@ -1,7 +1,7 @@
 // ATI fragment shader constant setup.
-struct Vector { float x, y, z; };
+#include "shared/vector.h"
 float* AurMakeColor(const Vector& vColor, const float& fAlpha); // 0x004AAAB0
-extern void (__stdcall *glSetFragmentShaderConstantATI)(unsigned int, const float*); // 0x007BB5D8
+#include "shared/gl_ext.h"
 
 // FUNCTION: SWKOTOR 0x0047A280
 void SetFragmentShaderConstant0(const Vector& color, float alpha)

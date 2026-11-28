@@ -1,5 +1,5 @@
 // Part range query, using the part's position.
-struct Vector { float x, y, z; };
+#include "shared/vector.h"
 float VectorMagnitude(Vector* pVector); // 0x004AB100
 class PartTriMesh {
 public:

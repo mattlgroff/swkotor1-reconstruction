@@ -5,26 +5,11 @@ class CSWSCreature;
 class CSWSCreatureStats;
 class CSWSItem;
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    char *CStr() const;
-    void Format(const char *szFormat, ...);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    int GetString(int nLanguage, CExoString *psOut, unsigned char nGender);
-    char pad_0x0[0x8];
-};
+#include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;
@@ -211,14 +196,9 @@ public:
     CSWPartyTable *GetPartyTable();
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CSWClass {
 public:
@@ -299,7 +279,6 @@ public:
     unsigned char GetNumSkills() { return m_nNumSkills; }
 };
 
-extern CSWRules *g_pRules;
 
 class CSWSCreatureStats {
 public:

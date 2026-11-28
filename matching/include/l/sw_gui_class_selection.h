@@ -14,28 +14,9 @@
 #define L_CLASSSEL_VTABLE
 #endif
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* sString);                // 0x005E5A90
-    CExoString(const CExoString& sString);          // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    char* CStr() const;                             // 0x005E5670
-    void __cdecl Format(char* sFormat, ...);        // 0x005E5680
-    int GetLength() const;                          // 0x005E5790
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CExoString& s);                   // 0x00406D60
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 void* operator new(unsigned int nSize);
 void operator delete(void* p);
@@ -88,17 +69,7 @@ struct CSWGuiZeroExtent : public CSWGuiExtent {
     CSWGuiZeroExtent() { left = top = width = height = 0; }
 };
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:
@@ -112,8 +83,7 @@ public:
     float x, y, z, w;
 };
 
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
+#include "shared/globals.h"
 
 // Engine frame step (descriptive name of 0x00401C10).
 void __cdecl RunFrame(float fDelta, int bRunServer, int bKeepFrame);  // 0x00401C10
@@ -127,21 +97,15 @@ public:
     unsigned char m_bFlag0 : 1;                     // 0x34 bit 0 (descriptive)
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
 
-class CExoInput {
-public:
-    void CoolDownEvent(unsigned long nEvent, unsigned long nMilliseconds);  // 0x005DF4B0
-};
+#include "shared/exo_input.h"
 
-extern CExoInput* g_pExoInput;                      // 0x007A39E4
 
 class CTlkTable {
 public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 
 class C2DA {
 public:
@@ -167,8 +131,6 @@ public:
                             unsigned long nFlags);  // 0x005D4CB0
 };
 
-extern unsigned long PLAYERID_SERVER;               // 0x0074C528 (0xFFFFFFFD)
-extern unsigned char g_nConnectionType;             // 0x0074C540 (descriptive)
 
 class CSWCMessage {
 public:
@@ -197,14 +159,8 @@ public:
     void DisplayMainMenu(int bShow);                // 0x005ED420
 };
 
-class CAppManager {
-public:
-    void CreateServer(int bLoad);                   // 0x00401380
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CAurObject {
 public:
@@ -450,7 +406,6 @@ public:
     CSWGuiText m_cText;                             // 0x154
 };
 
-extern int g_bDo3DGui;                              // 0x0078D1E4 (descriptive)
 
 class CSWGuiScene {
 public:
@@ -521,9 +476,6 @@ struct CSWGuiClassChoice {
     unsigned long m_nDescription;                   // 0x4 strref
 };
 
-extern CSWGuiClassChoice g_aClassChoices[6];        // 0x007A2684 (descriptive)
-extern const unsigned char g_nClassScout;           // 0x0074B31A (1, descriptive)
-extern const unsigned char g_nClassScoundrel;       // 0x0074B31B (2, descriptive)
 
 class CSWGuiClassSelection;
 

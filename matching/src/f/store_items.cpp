@@ -2,34 +2,12 @@
 // and taking an item into the store inventory. Own CSWSItem / CSWSStore
 // layout subset (store_waypoint.cpp keeps the lifetime members).
 
-class CExoString {
-public:
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CSWSItem;
 class CSWSCreature;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04();
-    virtual void v08();
-    virtual void v0c();
-    virtual void v10();
-    virtual void v14();
-    virtual void v18();
-    virtual void v1c();
-    virtual void v20();
-    virtual void v24();
-    virtual void v28();
-    virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();   // +0x30
-    virtual void v34();
-    virtual CSWSItem *AsSWSItem();           // +0x38
-    unsigned long m_idSelf;          // +0x4
-};
+#include "shared/game_object.h"
 
 class CSWSItem : public CGameObject {
 public:
@@ -40,7 +18,7 @@ public:
     int CompareItem(CSWSItem *pItem);
     void SetPossessor(unsigned long oidPossessor, int a, int b, unsigned long oidPrevious);
 
-    char pad_0x8[0x20];
+    char pad_0xc[0x1c];
     CExoString m_sTag;               // +0x28 (placeholder name)
     char pad_0x30[0xd8];
     int m_n108;                      // +0x108
@@ -72,14 +50,9 @@ public:
     CSWSCreature *GetCreatureByGameObjectID(unsigned long oid);
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CSWSStore : public CGameObject {
 public:
@@ -87,7 +60,7 @@ public:
     int AcquireItem(CSWSItem *pItem);
     int AddItemToInventory(CSWSItem **ppItem);
 
-    char pad_0x8[0x228];
+    char pad_0xc[0x224];
     CItemRepository *m_pItemRepository; // +0x230
 };
 

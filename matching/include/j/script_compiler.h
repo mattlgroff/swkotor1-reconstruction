@@ -93,11 +93,6 @@ public:
     CExoString m_as8a8[32];                         // 0x8a8
 };
 
-class CScriptCompiler {
-public:
-    ~CScriptCompiler();
-
-    CScriptCompilerInternal* m_pInternal;           // 0x00
-};
+#include "shared/script_compiler.h"
 
 #endif

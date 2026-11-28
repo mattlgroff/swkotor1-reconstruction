@@ -13,10 +13,7 @@ void RenderSkinnedOutShell(void* pData, int nPass);     // 0x0048A0D0 (cdecl)
 void RenderSkinVP(void* pData);                 // 0x0048A520 (cdecl)
 void RenderSkinBumpedVP(void* pData);           // 0x0048C650 (cdecl)
 
-extern int g_bRenderSkins;                      // 0x00798B68
-extern int g_bUseVertexPrograms;                // 0x0078E8C0
-extern void* g_pApp;                            // 0x007B92A0
-extern const unsigned int g_nColorArray;        // 0x0073F3A0
+#include "shared/globals.h"
 extern "C" __declspec(dllimport) void __stdcall glDisableClientState(unsigned int array);
 
 class SkinGob {

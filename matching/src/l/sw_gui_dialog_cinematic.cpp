@@ -1,10 +1,9 @@
 // CSWGuiDialogCinematic (swguidialog.o, vtable 0x00755800): the
 // letterboxed conversation panel with its reply list and message label,
 // plus the CSWGuiDialogTop panel that shows the spoken line.
-#define L_GUI_TEXT_PARAMS_EXACT
 #include "l/sw_gui_tutorial_box.h"
 
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x006A8B40
 CSWGuiDialogCinematic::CSWGuiDialogCinematic(CSWGuiManager* pManager)

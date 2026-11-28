@@ -3,8 +3,7 @@
 #include "b/sws_creature.h"
 #include "b/sws_player.h"
 
-extern const unsigned char GAME_OBJECT_VALID;               // 0x0074666C
-extern const float AI_SOUND_RANGE;                           // 0x00747444, 1000.0f
+#include "shared/globals.h"
 
 static inline Vector VectorDelta(const Vector& a, const Vector& b)
 {
@@ -32,12 +31,12 @@ int CSWSMessage::SendServerToPlayerQuickChatMessage(unsigned long oidSpeaker, un
     } else {
         bResult = 0;
     }
-    void* pos = pPlayers->GetHeadPos();
+    CExoLinkedListPosition pos = pPlayers->GetHeadPos();
     while (pos && bResult == 1) {
         CSWSPlayer* pPlayer = (CSWSPlayer*)pPlayers->GetAtPos(pos);
         if (pPlayer->GetGameObject()) {
             CGameObject* pPlayerObject = pPlayer->GetGameObject();
-            Vector vDelta = VectorDelta(pPlayerObject->m_vPosition, vPosition);
+            Vector vDelta = VectorDelta(((CSWSObject*)pPlayerObject)->m_vPosition, vPosition);
             if (pArea == ((CSWSObject*)pPlayer->GetGameObject())->GetArea()) {
                 if (vDelta.z*vDelta.z + vDelta.y*vDelta.y + vDelta.x*vDelta.x <= AI_SOUND_RANGE * AI_SOUND_RANGE) {
                     bResult = SendServerToPlayerQuickChat(pPlayer->m_nPlayerID, oidSpeaker, nQuickChat) & 1;

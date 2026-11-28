@@ -25,14 +25,7 @@ extern "C" __declspec(dllimport) void __stdcall glDepthMask(unsigned char);
 extern "C" double __cdecl acos(double);
 #pragma intrinsic(acos)
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator+(const Vector& o) const { return Vector(x + o.x, y + o.y, z + o.z); }
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:
@@ -49,11 +42,11 @@ struct Plane {
 };
 
 int operator==(const Vector& a, const Vector& b);           // 0x004AA980
-Vector operator*(const Vector& a, const Vector& b);         // 0x004AB1E0
+Vector cmul(const Vector& a, const Vector& b);                 // 0x004AB1E0
 Vector PlaneIntersect(const Vector& n, float d, const Vector& a,
                       const Vector& b);                     // 0x004AB250
 void BuildMatrix(float* pOut, const Vector* pPos, const Quaternion* pOri);  // 0x004AA9C0
 
-extern float g_fZeroEpsilon;                // 0x0073D700
+#include "shared/globals.h"
 
 #endif

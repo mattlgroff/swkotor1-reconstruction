@@ -1,36 +1,13 @@
 // CSWArea ctor / static bounding boxes, CSWSEncounter lifetime and
 // activate list, CSWSAreaOfEffectObject duration (0x0058F6B0..0x00595560).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    ~CExoLocString();
-    void *m_pList;
-    void *m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef operator=(const CResRef &r);
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Vector0 {
 public:
@@ -90,16 +67,9 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-    unsigned long GetID() { return m_idSelf; }
-};
+#include "shared/game_object.h"
 
 class CServerAIMaster {
 public:
@@ -117,14 +87,8 @@ public:
     CServerAIMaster *GetServerAIMaster();
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
 
 // ---------------------------------------------------------------------------
 
@@ -298,22 +262,9 @@ public:
     char pad_0x20[0x208];
 };
 
-class CEncounterListEntry {
-public:
-    CEncounterListEntry &operator=(const CEncounterListEntry &o);
-    ~CEncounterListEntry() {}
-    CResRef m_cResRef;               // +0x0
-    float m_fCR;                     // +0x10
-    unsigned long m_n14;             // +0x14
-    unsigned long m_n18;             // +0x18
-    unsigned long m_n1C;             // +0x1c
-    unsigned long m_n20;             // +0x20
-};
+#include "shared/encounter_list_entry.h"
 
-class CEncounterSpawnPoint {
-public:
-    char pad_0x0[0x10];
-};
+#include "shared/encounter_spawn_point.h"
 
 class CEncounterBuffer {
 public:

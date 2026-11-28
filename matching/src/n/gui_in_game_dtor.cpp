@@ -1,24 +1,8 @@
 // CGuiInGame::~CGuiInGame (guiingame.o). Standalone layout: only the
 // members with destructors (+0xB18 .. +0xB58) and the owned pointers.
-class CExoString {
-public:
-    char* m_sString; unsigned long m_nLength;
-    ~CExoString(); // 0x005E5C20
-};
-class CExoLinkedListInternal {
-public:
-    void* m_pcExoLinkedListNode;
-    ~CExoLinkedListInternal(); // 0x005E9AB0
-    void* RemoveHead(); // 0x005E9C80
-};
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedList;
-    ~CExoLinkedList() { delete m_pcExoLinkedList; }
-    void* GetHead() { return m_pcExoLinkedList->m_pcExoLinkedListNode; }
-    T* RemoveHead() { return (T*)m_pcExoLinkedList->RemoveHead(); }
-};
+#include "shared/exo_string.h"
+#include "shared/exo_linked_list.h"
+
 class CExoStreamingSoundSource {
 public:
     ~CExoStreamingSoundSource(); // 0x005D6200
@@ -54,7 +38,7 @@ CGuiInGame::~CGuiInGame()
     ShutDownGlobal();
     delete[] m_pDialogMessages;
     delete[] m_pLiveContent;
-    while (m_lstLockedOrientation.GetHead())
+    while (!m_lstLockedOrientation.IsEmpty())
         delete m_lstLockedOrientation.RemoveHead();
     if (m_pSoundBBC) {
         delete m_pSoundBBC;

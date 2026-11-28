@@ -1,32 +1,11 @@
 // CSWSDoor / CSWSTrigger lifetime, open-state and mine helpers
 // (b0058_f2_door_trigger, 0x005890D0..0x0058F690).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    CExoString &operator=(const char *s);
-    int operator==(const CExoString &s) const;
-    int CompareNoCase(const char *s) const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    ~CExoLocString();
-    void *m_pList;
-    void *m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 template <class T>
 class CExoArrayList {
@@ -61,21 +40,14 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 class CVirtualMachine {
 public:
     int RunScript(CExoString *psFileName, unsigned long oid, int bFlag);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
 
-extern unsigned short g_nEffectTypeVisual;
-extern unsigned short g_nEffectSubTypeMagical;
-extern int g_nEffectVisualParam;
-extern int g_nDoorStateFirst;
-extern int g_nDoorStateLast;
-extern unsigned long EVENT_DESTROY_OBJECT;
 
 class CGameEffect {
 public:
@@ -90,24 +62,7 @@ public:
     char pad_0x24[0x68];
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3c();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4c();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5c();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
-    virtual void v70(); virtual void v74(); virtual void v78();
-    virtual void SetAnimation(int nAnimation); // +0x7c
-
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-    unsigned long GetID() { return m_idSelf; }
-};
+#include "shared/game_object.h"
 
 class CServerAIMaster {
 public:
@@ -132,17 +87,15 @@ public:
     CSWSItem *GetItemByGameObjectID(unsigned long id);
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
 
 class CSWSObject : public CGameObject {
 public:
+    virtual void v70();
+    virtual void v74();
+    virtual void v78();
+    virtual void SetAnimation(int nAnimation);  // +0x7c
     virtual ~CSWSObject();
     void *GetArea();
     void ApplyEffect(CGameEffect *pEffect, int a, int b);

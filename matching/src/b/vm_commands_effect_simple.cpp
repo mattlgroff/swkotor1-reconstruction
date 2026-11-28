@@ -6,20 +6,7 @@
 #include "b/vm_effect.h"
 #include "b/server_exo_app.h"
 
-extern const unsigned char GAME_OBJECT_VALID;               // 0x0074666C
-extern const unsigned short EFFECT_TYPE_HASTE;              // 0x00746680 (1)
-extern const unsigned short EFFECT_TYPE_REGENERATE;         // 0x00746698 (7)
-extern const unsigned short EFFECT_TYPE_ENTANGLE;           // 0x007466C4 (18)
-extern const unsigned short EFFECT_TYPE_DEATH;              // 0x007466C8 (19)
-extern const unsigned short EFFECT_TYPE_KNOCKDOWN;          // 0x007466CC (20)
-extern const unsigned short EFFECT_TYPE_DISPELMAGICALL;     // 0x00746748 (51)
-extern const unsigned short EFFECT_TYPE_DISPELMAGICBEST;    // 0x0074674C (52)
-extern const unsigned short EFFECT_TYPE_DISGUISE;           // 0x00746774 (62)
-extern const unsigned short EFFECT_TYPE_TIMESTOP;           // 0x0074677C (64)
-extern const unsigned short EFFECT_TYPE_ASSUREDHIT;         // 0x0074680C (100)
-extern const unsigned short EFFECT_TYPE_ASSUREDDEFLECTION;  // 0x00746818 (103)
-extern const unsigned short EFFECT_TYPE_FORCE_RESISTED;     // 0x0074681C (104)
-extern const unsigned short EFFECT_TYPE_FORCE_FIZZLE;       // 0x00746820 (105)
+#include "shared/globals.h"
 
 // NONMATCH (100): case-local stack packing. The original packs every case
 // local into the dead argument and new-temporary slots (8-byte frame) and

@@ -2,29 +2,9 @@
 #ifndef M_SW_C_JOURNAL_H
 #define M_SW_C_JOURNAL_H
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
+#include "shared/exo_string.h"
 
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    int operator==(const CExoString& s) const;      // 0x005E5200
-    int operator<(const CExoString& s) const;       // 0x005E5410
-    int operator>(const CExoString& s) const;       // 0x005E5490
-    char* CStr() const;                             // 0x005E5670
-    void Format(const char* fmt, ...);              // 0x005E5680
-};
-
-class CResRef {
-public:
-    CResRef();
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct STR_RES {
     CExoString m_sText;                             // 0x00
@@ -37,18 +17,9 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& res, unsigned char nGender); // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
-extern unsigned char g_nGender;                     // 0x0073ECD0
+#include "shared/globals.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    CExoLocString(const CExoLocString&);
-    ~CExoLocString();
-    int GetString(unsigned long nLanguage, CExoString* pString, unsigned char nGender) const; // 0x005EA130
-    void* m_pList;
-    void* m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
 template <class T>
 class CExoArrayList {
@@ -147,15 +118,8 @@ public:
     CGuiInGame* GetInGameGui();                     // 0x005ED690
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWCWorldJournal {
 public:
@@ -238,6 +202,5 @@ public:
     void ClearQuests();
 };
 
-extern int g_bJournalUpdated;                       // 0x00833A94
 
 #endif

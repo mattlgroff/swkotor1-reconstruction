@@ -6,25 +6,9 @@
 #ifndef M_SW_GUI_IN_GAME_JOURNAL_H
 #define M_SW_GUI_IN_GAME_JOURNAL_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* sString);                // 0x005E5A90
-    CExoString(const CExoString& sString);          // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int GetLength() const;                          // 0x005E5790
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 void* operator new(unsigned int nSize);
 void operator delete(void* p);
@@ -76,27 +60,17 @@ struct CSWGuiExtent {
     int height;
 };
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
+#include "shared/globals.h"
 
 class CTlkTable {
 public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 
-class CExoLocString {
-public:
-    int GetString(unsigned long nLanguage, CExoString* pString, unsigned char nGender) const; // 0x005EA130
-    void* m_pList;
-    void* m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
 class C2DA {
 public:
@@ -117,7 +91,6 @@ public:
     C2DAs* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 // A quest journal entry as returned by CSWGuiInGameJournal::GetQuestEntryAt.
 struct SJournalEntry {
@@ -157,17 +130,9 @@ public:
     int SetInputClass(int nClass, int bForce);      // 0x005EDA60
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
-extern int g_nJournalSortOrder;                     // 0x00833A90
-extern int g_bJournalUpdated;                       // 0x00833A94
-extern unsigned long g_anJournalSortStrRefs[4];     // 0x007A2474 (descriptive)
 
 class CSWGuiControl;
 class CSWGuiPanel;

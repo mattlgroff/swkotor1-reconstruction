@@ -1,13 +1,13 @@
-class CExoString { public: char* m_sString; unsigned long m_nBufferLength; CExoString(); ~CExoString(); };
-class CResRef { public: char m_ref[16]; void CopyToString(CExoString&) const; };
+#include "shared/exo_string.h"
+#include "shared/res_ref.h"
 class CSWCModule { public: char pad_000[0x28]; CResRef m_resArea; };
 class CClientExoAppInternal { public: char pad_000[0x3e4]; unsigned char m_nLoadSteps[5]; };
 class CClientExoApp { public: void* m_pVTable; CClientExoAppInternal* m_pcInternal;
  CSWCModule* GetModule(); void SetLoadBarProgress(int,int);
  unsigned char GetTutorialFlag(int); // established 0x005EDFF0 symbol
 };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager;
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 void RunFrame(float,int,int);
 class CSWCMessage { public: unsigned char ReadBYTE(int); int MessageReadOverflow(int);
  int SendPlayerToServer_04_03(); int HandleServerToPlayerUpdate_LoadProgress(); };

@@ -11,19 +11,27 @@ public:
 class CSWGuiSaveNamePanel : public CSWGuiPanel {
 public:
     void HandleOkButton(CSWGuiControl* pControl);
+
+    // d/gui_control.h's CSWGuiPanel stops at +0x1c; its flags word is at +0x44.
+    char pad_0x1c[0x44 - 0x1c];
+    unsigned long m_nFlags;                         // +0x44
+    char pad_0x48[0x64 - 0x48];
+    CSWGuiSaveLoad* m_pSaveLoad;                    // +0x64
+    char pad_0x68[0x548 - 0x68];
+    CExoString m_sSaveName;                         // +0x548, the editbox value
 };
 
 // FUNCTION: SWKOTOR 0x006C9D50
 void CSWGuiSaveNamePanel::HandleOkButton(CSWGuiControl*)
 {
     {
-        CExoString name(*(CExoString*)((char*)this + 0x548));
-        CSWGuiSaveLoad* saveLoad = (CSWGuiSaveLoad*)*(void**)((char*)this + 0x64);
+        CExoString name(m_sSaveName);
+        CSWGuiSaveLoad* saveLoad = m_pSaveLoad;
         saveLoad->WriteGame(name);
     }
-    unsigned long flags = *(unsigned long*)((char*)this + 0x44);
+    unsigned long flags = m_nFlags;
     CSWGuiManager* manager = m_pManager;
-    *(unsigned long*)((char*)this + 0x44) = (flags & 0xfffffcffu) | 0x400u;
+    m_nFlags = (flags & 0xfffffcffu) | 0x400u;
     manager->PopModalPanel();
 }
 

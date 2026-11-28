@@ -467,7 +467,8 @@ int HighestBit(unsigned int x)
 }
 
 // FUNCTION: SWKOTOR 0x00427450
-void FindSmallestPowerOf2WidthHeight(int nWidth, int nHeight, int* pWidth, int* pHeight)
+void FindSmallestPowerOf2WidthHeight(int nWidth, int nHeight, unsigned int* pWidth,
+                                     unsigned int* pHeight)
 {
     *pWidth = 1 << (HighestBit(nWidth) + 1);
     *pHeight = 1 << (HighestBit(nHeight) + 1);

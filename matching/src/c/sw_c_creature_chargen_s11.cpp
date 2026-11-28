@@ -3,37 +3,11 @@
 // V2.0 file. The CSWCCreatureStats members below are the ones the fields
 // written here name; the GFF labels give each member's meaning.
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
+#include "shared/exo_string.h"
 
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString operator+(const CExoString& s) const; // 0x005E5D10
-    char* CStr() const;                             // 0x005E5670
-    void Format(const char* format, ...);           // 0x005E5680
-};
+#include "shared/exo_loc_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();                                // 0x005E9E10
-    ~CExoLocString();                               // 0x005EA000
-    int AddString(int nLanguage, const CExoString& sString, unsigned char nGender); // 0x005EA340
-
-    void* m_pList;                                  // 0x00
-    unsigned long m_dwStringRef;                    // 0x04
-};
-
-class CResRef {
-public:
-    CResRef(const CExoString& sName);               // 0x00406D60
-
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;
@@ -101,7 +75,7 @@ public:
     CSWClass* GetClassObject(unsigned char nClass) { return &m_lstClasses[nClass]; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 template <class T> class CExoArrayList {
 public:

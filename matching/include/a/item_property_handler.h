@@ -5,96 +5,11 @@
 #define A_ITEM_PROPERTY_HANDLER_H
 
 // .rdata constants (extern const ints in the original, not folded).
-extern int EFFECT_TYPE_DAMAGE_RESISTANCE;   // 0x00746684 (2)
-extern int EFFECT_TYPE_REGENERATE;          // 0x00746698 (7)
-extern int EFFECT_TYPE_DAMAGE_REDUCTION;    // 0x007466AC (0xc)
-extern int EFFECT_TYPE_DAMAGE_INCREASE;     // 0x007466B0
-extern int EFFECT_TYPE_DAMAGE_VULNERABILITY;// 0x007466C0 (0x11)
-extern int EFFECT_TYPE_TRUESEEING;          // 0x0074679C (0x48)
-extern int EFFECT_TYPE_BONUS_FEAT;          // 0x007467C8 (0x53)
-extern int EFFECT_TYPE_ABILITY_INCREASE;    // 0x0074670C (36)
-extern int EFFECT_TYPE_ABILITY_DECREASE;    // 0x00746710 (37)
-extern int EFFECT_TYPE_AC_INCREASE;         // 0x0074673C (48)
-extern int EFFECT_TYPE_AC_DECREASE;         // 0x00746740 (49)
-extern int EFFECT_TYPE_SKILL_DECREASE;      // 0x0074675C (56)
-extern int EFFECT_TYPE_SAVING_THROW_INCREASE;   // 0x007466E4 (26)
-extern int EFFECT_TYPE_SAVING_THROW_DECREASE;   // 0x007466E8 (27)
-extern int EFFECT_TYPE_FORCE_RESISTANCE_INCREASE; // 0x00746700 (33)
-extern int EFFECT_TYPE_ATTACK_DECREASE;     // 0x007466A8 (11)
-extern int EFFECT_TYPE_DAMAGE_DECREASE;     // 0x007466B4 (14)
-extern unsigned short SUBTYPE_EQUIPPED;     // 0x007473BC (3)
-extern int ITEM_SLOT_ATTACK_TYPE_RIGHT_WEAPON;  // 0x007468C8 (1)
-extern int ITEM_SLOT_ATTACK_TYPE_LEFT_WEAPON;   // 0x007468CC (2)
-extern int ITEM_SLOT_ATTACK_TYPE_CLAW1;         // 0x007468D0 (3)
-extern int ITEM_SLOT_ATTACK_TYPE_CLAW2;         // 0x007468D4 (4)
-extern int ITEM_SLOT_ATTACK_TYPE_CLAW3;         // 0x007468D8 (5)
-extern int ITEM_SLOT_ATTACK_TYPE_ONHAND;        // 0x007468DC (7)
-extern int ITEM_SLOT_DAMAGE_TYPE_RIGHT_WEAPON;  // 0x007468E4 (1)
-extern int ITEM_SLOT_DAMAGE_TYPE_LEFT_WEAPON;   // 0x007468E8 (2)
-extern int ITEM_SLOT_DAMAGE_TYPE_CLAW1;         // 0x007468EC
-extern int ITEM_SLOT_DAMAGE_TYPE_CLAW2;         // 0x007468F0
-extern int ITEM_SLOT_DAMAGE_TYPE_CLAW3;         // 0x007468F4
-extern int ITEM_SLOT_DAMAGE_TYPE_ONHAND;        // 0x007468F8
-extern int EFFECT_TYPE_ATTACK_INCREASE;     // 0x007466A4 (10)
-extern int EFFECT_TYPE_SPECIALWALK;         // 0x00746764 (0x3a)
-extern int EFFECT_TYPE_SPECIALWALK_END;     // 0x00746768 (0x3b)
-extern int EFFECT_TYPE_IMMUNITY;            // 0x007466D4 (0x16)
-extern int EFFECT_TYPE_DAMAGE_IMMUNITY;     // 0x007466BC (0x10)
-extern int IMMUNITY_TYPE_PARALYSIS;         // 0x00746914 (6)
-extern int IMMUNITY_TYPE_ENTANGLE;          // 0x00746920 (9)
-extern int IMMUNITY_TYPE_SLOW;              // 0x00746924 (0xa)
-extern int IMMUNITY_TYPE_MOVEMENT_SPEED_DECREASE; // 0x00746954 (0x18)
+#include "shared/globals.h"
 // ApplyImmunity table (.rdata, named by decimal value, as f/combat_resolve.cpp).
-extern int IMMUNITY_TYPE_01;                // 0x00746900
-extern int IMMUNITY_TYPE_02;                // 0x00746904
-extern int IMMUNITY_TYPE_03;                // 0x00746908
-extern int IMMUNITY_TYPE_04;                // 0x0074690C
-extern int IMMUNITY_TYPE_19;                // 0x00746940
-extern int IMMUNITY_TYPE_28;                // 0x00746964
-extern int IMMUNITY_TYPE_29;                // 0x00746968
-extern int IMMUNITY_TYPE_30;                // 0x0074696C
-extern int IMMUNITY_TYPE_31;                // 0x00746970
-extern int IMMUNITY_TYPE_32;                // 0x00746974
-extern int EFFECT_TYPE_PROPERTY29;          // 0x00746754 (item property 29 effect)
-extern int EFFECT_TYPE_PROPERTY36;          // 0x00746758
-extern int EFFECT_TYPE_PROPERTY55;          // 0x007467E8
-extern int EFFECT_TYPE_PROPERTY56;          // 0x007467EC
-extern int EFFECT_TYPE_PROPERTY59;          // 0x00746774
 // Damage-type flags 0x00746850..0x00746884 (RemoveDamageImmunity switch).
-extern int DAMAGE_FLAG_00;              // 0x00746850
-extern int DAMAGE_FLAG_01;              // 0x00746854
-extern int DAMAGE_FLAG_02;              // 0x00746858
-extern int DAMAGE_FLAG_03;              // 0x0074685C
-extern int DAMAGE_FLAG_04;              // 0x00746860
-extern int DAMAGE_FLAG_05;              // 0x00746864
-extern int DAMAGE_FLAG_06;              // 0x00746868
-extern int DAMAGE_FLAG_07;              // 0x0074686C
-extern int DAMAGE_FLAG_08;              // 0x00746870
-extern int DAMAGE_FLAG_09;              // 0x00746874
-extern int DAMAGE_FLAG_10;              // 0x00746878
-extern int DAMAGE_FLAG_11;              // 0x0074687C
-extern int DAMAGE_FLAG_12;              // 0x00746880
-extern int DAMAGE_FLAG_13;              // 0x00746884
-extern int ABILITY_STRENGTH;                // 0x00746838
-extern int ABILITY_DEXTERITY;               // 0x0074683C
-extern int ABILITY_CONSTITUTION;            // 0x00746840
-extern int ABILITY_INTELLIGENCE;            // 0x00746844
-extern int ABILITY_WISDOM;                  // 0x00746848
-extern int ABILITY_CHARISMA;                // 0x0074684C
-extern int AC_DEFLECTION_BONUS_VS_DAMAGE;   // 0x0074688C (16391): AC modifier damage type
 
-class CExoString {
-public:
-    CExoString();                           // 0x005B3190
-    CExoString(const char* source);
-    ~CExoString();
-    CExoString& operator=(const char* s);   // 0x005E5140
-    CExoString& operator=(const CExoString& s); // 0x005E5C50
-    char* CStr();                          // 0x005E5670
-    void Format(const char* format, ...);   // 0x005E5680 (cdecl)
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:
@@ -136,7 +51,6 @@ public:
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
     CSWBaseItem* GetBaseItem(int nBaseItem) { return m_pBaseItemArray->GetBaseItem(nBaseItem); }
 };
-extern CSWRules* g_pRules;
 
 #pragma pack(push, 4)
 class CGameEffect {
@@ -236,64 +150,13 @@ public:
     int array_size;
 };
 
-typedef void* CExoLinkedListPosition;
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListPosition pHead;   // 0x0
-    CExoLinkedListPosition pTail;   // 0x4
-    unsigned long m_nCount;         // 0x8
-    CExoLinkedListInternal();                                   // 0x005E9AA0
-    ~CExoLinkedListInternal();                                  // 0x005E9AB0
-    void* GetAtPos(CExoLinkedListPosition pos);                 // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);                 // 0x005E9B90
-    void* Remove(CExoLinkedListPosition pos);                   // 0x005E9C10
-    void* RemoveHead();                                         // 0x005E9C80
-    void* RemoveTail();                                         // 0x005E9CE0
-    CExoLinkedListPosition AddBefore(void* pObject, CExoLinkedListPosition pos); // 0x005E9AD0
-    CExoLinkedListPosition AddTail(void* pObject);             // 0x005E9DC0
-};
+#include "shared/exo_linked_list.h"
 
 // List node: pPrev, pNext, pObject.
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;      // 0x0
-    CExoLinkedListNode* pNext;      // 0x4
-    void* pObject;                  // 0x8
-};
+#include "shared/exo_linked_list.h"
 
-template <class T> class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-    CExoLinkedList();
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetHead()
-    {
-        void* p = m_pcExoLinkedListInternal->pHead;
-        if (p) {
-            p = ((CExoLinkedListNode*)p)->pObject;
-        }
-        return (T*)p;
-    }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-    unsigned long Count() { return m_pcExoLinkedListInternal->m_nCount; }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-    T* Remove(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->Remove(pos); }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-    T* RemoveTail() { return (T*)m_pcExoLinkedListInternal->RemoveTail(); }
-    CExoLinkedListPosition AddBefore(T* pObject, CExoLinkedListPosition pos) {
-        return m_pcExoLinkedListInternal->AddBefore(pObject, pos);
-    }
-    CExoLinkedListPosition AddTail(T* pObject) { return m_pcExoLinkedListInternal->AddTail(pObject); }
-    CExoLinkedListPosition AddHead(T* pObject) {
-        CExoLinkedListInternal* pList = m_pcExoLinkedListInternal;
-        if (pList->pHead) {
-            return pList->AddBefore(pObject, pList->pHead);
-        }
-        return pList->AddTail(pObject);
-    }
-};
+
 
 class CSWInventory {
 public:

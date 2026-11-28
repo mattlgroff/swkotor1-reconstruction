@@ -1,27 +1,10 @@
 // CSWSPlaceable::AddToArea (round s8, 0x00587170).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef(const CExoString &s);
-    CResRef operator=(const CResRef &r);
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:
@@ -51,8 +34,7 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;
-extern int g_bShowPlaceableBoxes;
+#include "shared/globals.h"
 
 class CSWSArea {
 public:
@@ -60,14 +42,7 @@ public:
     void AddObjectToArea(unsigned long oid, int bRunScripts);
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-    unsigned long GetID() { return m_idSelf; }
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
@@ -151,7 +126,7 @@ void CSWSPlaceable::AddToArea(CSWSArea *pArea, const Vector &vPosition, int bRun
         m_cWalkMesh.GetMeshBoundingBox(vMin, vMax);
         if (g_bShowPlaceableBoxes)
             m_cWalkMesh.RenderDebug(0, 0xffff0000, 0xff00ff00);
-        m_nBoundingBoxIndex = pArea->AddStaticBoundingBox(GetID(), &vMin, &vMax);
+        m_nBoundingBoxIndex = pArea->AddStaticBoundingBox(GetId(), &vMin, &vMax);
     }
     GetArea()->AddObjectToArea(m_idSelf, 1);
 }

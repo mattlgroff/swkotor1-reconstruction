@@ -104,9 +104,7 @@ public:
     unsigned long m_oidPC;                      // 0x38 (placeholder name)
 };
 
-extern const unsigned char CLASS_TYPE_JEDI_GUARDIAN;    // 0x0074B31C
-extern const unsigned char CLASS_TYPE_JEDI_CONSULAR;    // 0x0074B31D
-extern const unsigned char CLASS_TYPE_JEDI_SENTINEL;    // 0x0074B31E
+#include "shared/globals.h"
 
 class CResRef6 {
 public:

@@ -3,23 +3,14 @@
 // (0x0063D560): the reticle sits on the "head_g" node of the body or head
 // model, else on "rootdummy".
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-() const { return Vector(-x, -y, -z); }
-};
+#include "shared/vector_ops.h"
 
-inline float operator*(const Vector& a, const Vector& b)
-{
-    return a.x * b.x + a.y * b.y + a.z * b.z;
-}
 
 class Quaternion {
 public:
     float w, x, y, z;
     Quaternion() { z = 0.0f; y = 0.0f; x = 0.0f; w = 1.0f; }
-    Vector ToDirection();                           // 0x0043E250
+    Vector ToDirection() const;                     // 0x0043E250
 };
 
 class CAurPart {
@@ -72,13 +63,9 @@ public:
     CSWGuiManager* GetGuiManager();                 // 0x005EDA40
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWCAnimBase {
 public:

@@ -128,28 +128,7 @@ void CExoArrayList<T>::Allocate(int nSize)
 class Vector;
 int VectorEqual(const Vector& a, const Vector& b);      // 0x004AA980 (placeholder name)
 
-class Vector {
-public:
-    int IsEqual(const Vector& v) const { return VectorEqual(*this, v); }
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    Vector& operator-=(const Vector& v)
-    {
-        x -= v.x;
-        y -= v.y;
-        z -= v.z;
-        return *this;
-    }
-
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector.h"
 
 inline Vector operator-(const Vector& a, const Vector& b)
 {
@@ -177,15 +156,7 @@ public:
 };
 
 // The light's model node; only the shadow priority is read here.
-class LightNode {
-public:
-    char pad_0x0[0x90];
-    int m_nShadowPriority;                              // +0x90 (placeholder name)
-    char pad_0x94[0xa8 - 0x94];
-    int m_bNoFade;                                      // +0xa8 (placeholder name)
-
-    LightNode* AsMdlNodeLight();                        // 0x0043E3D0
-};
+#include "shared/light_node.h"
 
 // PartLight (a model Part).
 class Light {
@@ -296,24 +267,14 @@ public:
     unsigned char m_bBumpMapLightsDisabled;             // +0xf4
 };
 
-extern int g_bVertexProgramRefresh;                     // 0x007A193C
-extern int g_bDynamicLights;                            // 0x007B92DC
-extern int g_nActiveLights;                             // 0x008305E8 (placeholder name)
-extern int g_nMaxShadowLights;                          // 0x007A1938 (placeholder name)
-extern float g_fShadowLightFadeTime;                    // 0x007A1948 (placeholder name)
-extern int g_nDynamicActiveLights;                      // 0x008305EC (placeholder name)
-extern short g_nHeadLight;                              // 0x0078E388 (placeholder name)
+#include "shared/globals.h"
 void AurEnableHeadLight();                              // 0x0044DA60
 float* AurMakeColor(const Vector& vColor, const float& fAlpha);     // 0x004AAAB0
-extern const unsigned int g_aGLLightParams[];           // 0x0073F320 (placeholder name)
-extern Vector g_vHeadLightAmbient;                      // 0x007A1958 (placeholder name)
-extern Vector g_vHeadLightDiffuse;                      // 0x007A194C (placeholder name)
-class RenderCamera {
+class Camera {
 public:
     char pad_0x0[0x7c];
     Vector m_vPosition;                                 // +0x7c
 };
-extern RenderCamera* g_pRenderCamera;                   // 0x007BB4E8
 void AurDisableHeadLight();                             // 0x0044DA80
 
 int __cdecl LightCompare(const void* a, const void* b); // 0x004A28C0 (placeholder name)

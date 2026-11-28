@@ -1,22 +1,7 @@
 // CExoBaseInternal leftovers (b005e7, r9): AddAlias, GetResourceExtension,
 // CExoArrayList<CExoString>::Insert.
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    char* CStr() const;                             // 0x005E5670
-    int GetLength() const;                          // 0x005E5790
-    char operator[](int n) const;                   // 0x005E5600
-    void Format(const char* format, ...);           // 0x005E5680
-};
+#include "shared/exo_string.h"
 
 class CExoIni {
 public:
@@ -38,7 +23,7 @@ public:
     CExoAliasList* m_pcExoAliasList;                // 0x0c
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
+#include "shared/globals.h"
 
 class CExoBaseInternal {
 public:

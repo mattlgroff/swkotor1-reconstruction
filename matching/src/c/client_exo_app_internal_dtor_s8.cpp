@@ -6,18 +6,9 @@
 
 #define OBJECT_INVALID 0x7f000000
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
+#include "shared/exo_string.h"
 
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-};
-
-extern const unsigned long OBJECT_INVALID_ID;      // 0x00746644
+#include "shared/globals.h"
 
 class CExoTimers {
 public:
@@ -30,46 +21,10 @@ public:
     CExoTimers* m_pcExoTimers;                      // 0x04
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
-class CExoLinkedListInternal {
-public:
-    struct CNode {
-        CNode* pPrev;
-        CNode* pNext;
-        void* pObject;
-    };
-    CNode* pHead;                                   // 0x00
-    void* pTail;                                    // 0x04
-    unsigned long nCount;                           // 0x08
+#include "shared/exo_linked_list.h"
 
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* RemoveHead();                             // 0x005E9C80
-    void* GetHead()
-    {
-        CNode* pNode = pHead;
-        if (!pNode) {
-            return 0;
-        }
-        return pNode->pObject;
-    }
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
-
-    CExoLinkedList();                               // out of line per instantiation
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-    T* GetHead()
-    {
-        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
-        return (T*)pInternal->GetHead();
-    }
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-};
 
 template <class T>
 class CExoArrayList {
@@ -125,17 +80,20 @@ public:
     }
 };
 
-class CResRef {
-public:
-    ~CResRef();                                     // 0x004015A0 (empty)
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
+
+// The 16 bytes at CClientPlayer +0x14: StopServices destroys them through the
+// shared empty function 0x004015A0, so their type has an out-of-line
+// destructor. CResRef's destructor is trivial everywhere else, so this is
+// left as a placeholder until the element type is known (CSWCPlayer keeps
+// its portrait CResRef at +0x14).
+#include "shared/client_player_field14.h"
 
 class CClientPlayer {
 public:
     char pad_0x0[0xc];
     CExoString m_sPlayerName;                       // 0x0c
-    CResRef m_cResRef;                              // 0x14 (descriptive)
+    CClientPlayerField14 m_field14;                 // 0x14
     char pad_0x24[0x30 - 0x24];
     CExoString m_sCommunityName;                    // 0x30 (descriptive)
 };
@@ -192,19 +150,11 @@ public:
     ~CExoImeUI();                                   // 0x005F1020
 };
 
-class CSWCSaveLoad {
-public:
-    virtual ~CSWCSaveLoad();
-};
+#include "shared/swc_save_load.h"
 
-struct CClientMessageHandler1c0 {
-    int m_n00;
-};
+#include "shared/client_message_handler1c0.h"
 
-class CSoundSetList {
-public:
-    ~CSoundSetList();                               // 0x00678880
-};
+#include "shared/sound_set_list.h"
 
 struct CItemDropSounds {
     char m_resRef[16];
@@ -221,10 +171,7 @@ public:
     ~CSWGuiManager();                               // 0x0040AAA0
 };
 
-class CExoInput {
-public:
-    virtual ~CExoInput();
-};
+#include "shared/exo_input.h"
 
 class CExoSound {
 public:
@@ -236,15 +183,9 @@ public:
     ~CTlkTable();                                   // 0x0041E100
 };
 
-class CAuroraInterface {
-public:
-    ~CAuroraInterface();                            // 0x0070D340 (descriptive)
-};
+#include "shared/aurora_interface.h"
 
-class CAurInternal {
-public:
-    static void DestroyCAuroraInstance();           // 0x0044ED80
-};
+#include "shared/aur_internal.h"
 
 class CResRefName {
 public:
@@ -261,13 +202,6 @@ public:
     int Exists(const CResRefName& cRes, unsigned short nType, int b);   // 0x00408BC0
 };
 
-extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
-extern CExoInput* g_pExoInput;                      // 0x007A39E4
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
-extern CAuroraInterface* g_pAuroraInterface;        // 0x007A39F0 (descriptive)
-extern void* g_pRender;                             // 0x007A39F8
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
 class CSWParty {
 public:
     int IsPartyMember(unsigned long oid);           // 0x006349C0 (returns the NPC index)
@@ -310,14 +244,8 @@ public:
     CExoLinkedList<CSWSPlayer>* GetPlayerList();    // 0x004AED90
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    void* m_pClientExoApp;                          // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWPlayerControl {
 public:
@@ -325,11 +253,7 @@ public:
     void SetCreature(unsigned long oid);            // 0x00679340
 };
 
-class CSWMiniGameObjectArray {
-public:
-    CSWMiniGameObjectArray();                       // 0x0066BF10
-    char pad_0x0[0x400];
-};
+#include "shared/sw_mini_game_object_array.h"
 
 // Three zero-initialised words (descriptive).
 struct CClientZeroTriple {
@@ -359,18 +283,11 @@ struct CClientPazaakState {
     }
 };
 
-struct CHostileHilite {
-    unsigned long m_oidTarget;
-    int m_nType;
-};
+#include "shared/hostile_hilite.h"
 
-struct CRumblePattern {
-    int m_nPattern;
-};
+#include "shared/rumble_pattern.h"
 
-struct CActiveRumble {
-    int m_nPattern;
-};
+#include "shared/active_rumble.h"
 
 struct CGuiStringStruct {
     unsigned long m_nStrRef;                        // 0x00

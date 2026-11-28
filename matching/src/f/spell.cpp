@@ -1,27 +1,9 @@
 // CSWSpell construction and the prerequisite/master-spell id
 // parser (b0059_f2_scriptvar_dialog).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const CExoString &s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    CExoString &operator=(const char *s);
-    char operator[](int n) const;
-    int GetLength() const;
+#include "shared/exo_string.h"
 
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
-
-class CResRef {
-public:
-    CResRef();
-    CResRef(const CResRef &r);
-    CResRef operator=(const char *s);
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct STR_RES {
     CExoString szString;
@@ -34,8 +16,7 @@ public:
     int GetSimpleString(unsigned long strref, STR_RES *pRes, unsigned char nGender);
 };
 
-extern CTlkTable *g_pTlkTable;
-extern const unsigned char g_nGender;
+#include "shared/globals.h"
 
 class C2DA {
 public:
@@ -55,9 +36,6 @@ public:
     CTwoDimArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;
-extern int g_nForceAdjustGoodCostColumn;     // 0x007A2184
-extern int g_nForceAdjustEvilCostColumn;     // 0x007A2188
 
 class CSWSpell {
 public:

@@ -4,18 +4,7 @@
 
 void* __cdecl operator new(unsigned int n);         // 0x006FA7E6
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    int AsINT() const;                              // 0x005E5630
-    float AsFLOAT() const;                          // 0x005E5650
-    void Format(const char* format, ...);           // 0x005E5680
-};
+#include "shared/exo_string.h"
 
 class CExoIni {
 public:
@@ -46,7 +35,6 @@ public:
     void* m_pcExoSoundInternal;                     // 0x00
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 // Sound-related members of CClientOptions (0x49 is written from the sound
 // system's reported EAX level; client_options_r10.cpp calls it m_nSoundQuality).
@@ -64,15 +52,9 @@ public:
     void SetEAXLevel(unsigned char n) { GetClientOptions()->m_nEAX = n; }   // inline, descriptive
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CClientExoAppInternal {
 public:

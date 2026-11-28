@@ -8,21 +8,10 @@ class CGameEffect;
 class CExoString;
 class CSWSCreature;
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
-    virtual void v00();
-    virtual void v04();
-    virtual void v08();
-    virtual void v0c();
-    virtual void v10();
-    virtual void v14();
-    virtual void v18();
-    virtual void v1c();
-    virtual void v20();
-    virtual void v24();
-    virtual void v28();
-    virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();  // +0x30
 };
 
 double floor(double);
@@ -172,22 +161,9 @@ class CSWSCreatureStats;
 class CSWSStats;
 class CSWSItem;
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    CExoString(const CExoString &s);
-    ~CExoString();
-    char *CStr() const;
-    void Format(const char *szFormat, ...);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    char pad_0x0[0x8];
-};
+#include "shared/exo_loc_string.h"
 
 class CSWSMessage {
 public:
@@ -236,15 +212,10 @@ public:
     int GetDifficultyOption(int nOption);
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-};
+#include "shared/app_manager.h"
 
-extern unsigned long EVENT_SIGNAL_EVENT;
+#include "shared/globals.h"
 
-extern CAppManager *g_pAppManager;
 
 class CSWSCombatAttackData {
 public:
@@ -672,11 +643,7 @@ public:
     CSWSkill *m_pSkills;             // +0xb4
 };
 
-extern CSWRules *g_pRules;
 
-extern const unsigned char CLASS_TYPE_JEDI_GUARDIAN;
-extern const unsigned char CLASS_TYPE_JEDI_CONSULAR;
-extern const unsigned char CLASS_TYPE_JEDI_SENTINEL;
 
 
 // FUNCTION: SWKOTOR 0x005AFB00

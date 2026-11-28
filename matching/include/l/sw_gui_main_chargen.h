@@ -137,7 +137,7 @@ public:
     CExoString m_sName;                             // 0x22D4
 };
 
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
+#include "shared/globals.h"
 
 // Portrait and name pickers opened by the quick/custom panels; the second
 // SetParentPanel argument is 1 for the quick panel, 2 for the custom panel.

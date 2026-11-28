@@ -8,14 +8,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-class CExoDebug {
-public:
-    void GetCurrentTimestamp(CExoString& sTimestamp);       // 0x005E9410
-    void WriteToScriptLogFile(CExoString& sText);           // 0x005E9420
-    void FlushScriptLogFile();                              // 0x005E93E0
-
-    CExoString m_sScriptLog;                                // 0x00 (name guessed)
-};
+#include "shared/exo_debug.h"
 
 class CExoBase {
 public:
@@ -24,8 +17,7 @@ public:
     CExoDebug* m_pcExoDebug;                                // 0x08
 };
 
-extern CExoBase* g_pExoBase;                                // 0x007A39E0
-extern int g_bExoDebugDisabled;                             // 0x0083282C (.data)
+#include "shared/globals.h"
 
 // Stripped debug output: the arguments are still evaluated.
 inline void ExoDebugLog(const char* sText, const char* sTimestamp) {}
@@ -36,8 +28,6 @@ public:
     void SetCustomToken(int nToken, const CExoString& sValue); // 0x0041DB50
 };
 
-extern CTlkTable* g_pTlkTable;                              // 0x007A3A08
-extern const int MIN_CUSTOM_TOKEN;                          // 0x0073ECCC (.rdata)
 
 // The listen-pattern matches kept on the object (+0x1a0).
 struct CSWSListenObject {
@@ -149,7 +139,7 @@ int CSWVirtualMachineCommands::ExecuteCommandRemoveJournalQuestEntry(int nComman
     if (!pList) {
         return 1;
     }
-    void* pos = pList->GetHeadPos();
+    CExoLinkedListPosition pos = pList->GetHeadPos();
     while (pos) {
         CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pos);
         if (pPlayer && pPlayer->GetGameObject()) {
@@ -201,7 +191,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCustomToken(int nCommandId, int 
         CSWSMessage* pMessage = g_pAppManager->GetServerExoApp()->GetSWSMessage();
         CExoLinkedList<CSWSClient>* pList = g_pAppManager->GetServerExoApp()->GetPlayerList();
         if (pMessage && pList) {
-            void* pos = pList->GetHeadPos();
+            CExoLinkedListPosition pos = pList->GetHeadPos();
             while (pos) {
                 CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pos);
                 if (pPlayer && pPlayer->GetGameObject()) {
@@ -220,13 +210,11 @@ public:
     void DoorAction(int a1, int a2);                        // 0x00589600 (name guessed)
 };
 
-extern const unsigned char OBJECT_TYPE_MODULE;              // 0x00746632 (3)
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633 (4)
 
 // The generic object's local variable table (+0x110).
 class CSWSObjectVarTableView : public CGameObject {
 public:
-    char pad_0xf4[0x110 - 0xf4];
+    char pad_0xc[0x110 - 0xc];
     CSWVarTable m_VarTable;                                 // 0x110
 };
 
@@ -411,7 +399,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetLocal(int nCommandId, int nParam
                 if (nValue >= -128 && nValue <= 127) {
                     pVarTable->SetLocalNumber(nIndex, nValue);
                 } else {
-                    ExoDebugLog(pObject->m_sTag.CStr(), pObject->m_sTag.CStr());
+                    ExoDebugLog(((CSWSObject*)pObject)->m_sTag.CStr(), ((CSWSObject*)pObject)->m_sTag.CStr());
                 }
                 break;
             }
@@ -444,7 +432,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPlaySound(int nCommandId, int nPara
     CGameObject* pObject;
     if (m_bValidObjectRunScript == 1 &&
         g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
-        pObject->m_bCommandable) {
+        ((CSWSObject*)pObject)->m_bCommandable) {
         ((CSWSObject*)pObject)->AddAction(0x17, 0xffff, 4, &sSoundName);
     }
     return 0;
@@ -458,7 +446,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetModuleName(int nCommandId, int n
     case 0x231: {
         CExoLocString lsName(g_pAppManager->GetServerExoApp()->GetModule()->m_lsModuleName);
         int nLanguage = g_pAppManager->GetServerExoApp()->GetModuleLanguage();
-        lsName.GetStringLoc(nLanguage, sName, 0);
+        lsName.GetStringLoc(nLanguage, &sName, 0);
         break;
     }
     case 0xd2: {
@@ -534,15 +522,15 @@ int CSWVirtualMachineCommands::ExecuteCommandPrintString(int nCommandId, int nPa
         if (!g_bExoDebugDisabled) {
             ExoDebugLog(sString.CStr());
         }
-        g_pExoBase->m_pcExoDebug->m_sScriptLog.Format("PRINTSTRING: %s\n", sString.CStr());
+        g_pExoBase->m_pcExoDebug->m_sUnknown0.Format("PRINTSTRING: %s\n", sString.CStr());
     } else {
         if (!g_bExoDebugDisabled) {
             ExoDebugLog(sString.CStr());
         }
-        g_pExoBase->m_pcExoDebug->m_sScriptLog.Format("%s\n", sString.CStr());
+        g_pExoBase->m_pcExoDebug->m_sUnknown0.Format("%s\n", sString.CStr());
     }
     if (!g_bExoDebugDisabled) {
-        g_pExoBase->m_pcExoDebug->WriteToScriptLogFile(g_pExoBase->m_pcExoDebug->m_sScriptLog);
+        g_pExoBase->m_pcExoDebug->WriteToScriptLogFile(g_pExoBase->m_pcExoDebug->m_sUnknown0);
         g_pExoBase->m_pcExoDebug->FlushScriptLogFile();
     }
     return 0;
@@ -559,7 +547,6 @@ public:
     char pad_0x0[0x34];
 };
 
-extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634 (5)
 
 // FUNCTION: SWKOTOR 0x00535DB0
 int CSWVirtualMachineCommands::ExecuteCommandFloatingText(int nCommandId, int nParameters)
@@ -635,7 +622,7 @@ int CSWVirtualMachineCommands::ExecuteCommandAddJournalQuestEntry(int nCommandId
         return 1;
     }
     int nXP = 0;
-    void* pos = pList->GetHeadPos();
+    CExoLinkedListPosition pos = pList->GetHeadPos();
     while (pos) {
         CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pos);
         if (pPlayer && pPlayer->GetGameObject()) {
@@ -669,7 +656,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetJournalEntry(int nCommandId, int
     if (!pList) {
         return 1;
     }
-    void* pos = pList->GetHeadPos();
+    CExoLinkedListPosition pos = pList->GetHeadPos();
     while (pos) {
         CSWSPlayer* pPlayer = (CSWSPlayer*)pList->GetAtPos(pos);
         if (pPlayer && pPlayer->GetGameObject()) {

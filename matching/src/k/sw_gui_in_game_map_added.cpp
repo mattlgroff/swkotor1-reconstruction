@@ -2,34 +2,13 @@
 // map notes and the party-select / return-to-Ebon-Hawk button states.
 // Panel offsets as sw_gui_in_game_map.cpp; server classes trimmed.
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    char* CStr() const;                             // 0x005E5670
-    void Format(const char* szFormat, ...);         // 0x005E5680
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CExoString& s);                   // 0x00406D60
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
-extern Vector g_vGuiDisabledTextColor;              // 0x007A2408
-extern Vector g_vUpgradeAvailableColor;             // 0x007A2378
-extern Vector g_vGuiDisabledBorderColor;            // 0x007A2384
+#include "shared/globals.h"
 
 class CSWGuiTextParams {
 public:
@@ -96,10 +75,7 @@ public:
     int m_bUnescapable;                             // 0x2ac
 };
 
-struct CSWSCreatureListEntry {
-    char pad_0x0[0x4];
-    unsigned char m_nFlags;                         // 0x04 (bit 0: seen)
-};
+#include "shared/sws_creature_list_entry.h"
 
 class CSWSCreature {
 public:
@@ -143,16 +119,8 @@ public:
     CSWPartyTable* GetPartyTable();                 // 0x004AEE70
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWGuiMapHider {
 public:

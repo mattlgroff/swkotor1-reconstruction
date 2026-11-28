@@ -221,7 +221,7 @@ int CSWPazaak::FindPotentialSidecardTotal(CPazaakPlayer* pPlayer, int* pIndex, i
 // FUNCTION: SWKOTOR 0x006E4A40
 void CSWPazaak::LoadInitialSideDeck(int nDeck, CPazaakCard* pCards)
 {
-    C2DA c2da(CResRef("PazaakDecks"), 0);
+    C2DA c2da("PazaakDecks", 0);
     if (!c2da.Load2DArray()) {
         return;
     }

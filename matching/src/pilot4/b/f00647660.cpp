@@ -13,7 +13,7 @@ public:
     CSWRace *m_lstRaces;                        // 0xb0
 };
 
-extern CSWRules *g_pRules;                      // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWCCreatureStats {
 public:

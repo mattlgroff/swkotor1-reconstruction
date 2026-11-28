@@ -13,18 +13,10 @@ public:
     CWorldTimer* GetWorldTimer();
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp* m_pServerExoApp;  // 0x8
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;
+#include "shared/globals.h"
 
-extern unsigned long ACTION_IN_PROGRESS;
-extern unsigned long ACTION_COMPLETE;
-extern unsigned long ACTION_FAILED;
 
 class CSWSCreature {
 public:
@@ -36,16 +28,10 @@ struct CSWSObjectActionNode {
     float m_fWaitTime;  // 0x38 (first action parameter)
 };
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
-    virtual void v00(); virtual void v01(); virtual void v02(); virtual void v03();
-    virtual void v04(); virtual void v05(); virtual void v06(); virtual void v07();
-    virtual void v08(); virtual void v09(); virtual void v10(); virtual void v11();
-    virtual CSWSCreature* AsSWSCreature();      // 0x30
-    virtual void v13(); virtual void v14(); virtual void v15();
-    virtual void v16(); virtual void v17(); virtual void v18(); virtual void v19();
-    virtual void v20(); virtual void v21(); virtual void v22(); virtual void v23();
-    virtual void v24(); virtual void v25(); virtual void v26(); virtual void v27();
     virtual void v28(); virtual void v29(); virtual void v30(); virtual void v31();
     virtual void v32(); virtual void v33(); virtual void v34(); virtual void v35();
     virtual void v36();
@@ -54,7 +40,7 @@ public:
     int GetIsPaused();                           // 0x0063E7F0
     unsigned long AIActionWait(CSWSObjectActionNode* pNode);
 
-    char pad_0x4[0xb8];
+    char pad_0xc[0xb0];
     unsigned long m_nActionStartDay;    // 0xbc
     unsigned long m_nActionStartTime;   // 0xc0
 };

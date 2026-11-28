@@ -1,11 +1,6 @@
 // CResGFF field lookup, typed readers and builders.
 #include "d/res_gff.h"
 
-inline CResRef::CResRef(const CResRef& cResRef)
-{
-    memcpy(m_resRef, cResRef.m_resRef, 16);
-}
-
 inline int LabelsEqual(const CResGFFLabel& a, const CResGFFLabel& b)
 {
     const unsigned long* pA = (const unsigned long*)a.m_pLabel;
@@ -1361,7 +1356,7 @@ CExoLocString CResGFF::ReadFieldCExoLocString(CResStruct* pStruct, char* szLabel
             if (pData && nSize >= 4 && nSize >= *(unsigned long*)pData + 4) {
                 unsigned long nRemaining = *(unsigned long*)pData;
                 pData += 4;
-                lsValue.m_nStrRef = *(unsigned long*)pData;
+                lsValue.m_dwStringRef = *(unsigned long*)pData;
                 pData += 4;
                 unsigned long nCount = *(unsigned long*)pData;
                 pData += 4;
@@ -1422,13 +1417,13 @@ int CResGFF::WriteFieldCExoLocString(CResStruct* pStruct, CExoLocString& lsValue
     pField->m_nDataOrDataOffset = (unsigned char*)pData - m_pFieldDataBuffer;
     *pData = nSize;
     pData++;
-    *pData = lsValue.m_nStrRef;
+    *pData = lsValue.m_dwStringRef;
     pData++;
     *pData = lsValue.GetStringCount();
     pData++;
     for (i = 0; i < lsValue.GetStringCount(); i++) {
         unsigned long nLength;
-        if (!lsValue.GetString(i, &nLanguage, &sString, &nGender)) {
+        if (!lsValue.GetString(i, &nLanguage, sString, &nGender)) {
             bResult = 0;
             nLength = 0;
             nLanguage = -1;

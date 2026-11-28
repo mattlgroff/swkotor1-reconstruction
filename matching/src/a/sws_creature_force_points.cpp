@@ -1,7 +1,7 @@
 // CSWSCreature::GetMaxForcePoints (nwscreature.cpp).
 #include "a/sws_creature.h"
 
-extern const unsigned char CLASS_TYPE_JEDI_CONSULAR;    // 0x0074B31D
+#include "shared/globals.h"
 
 // NONMATCH: 43 diff: eax/ecx/edx naming in the level loop and stat-reload scheduling in the NPC branch.
 // FUNCTION: SWKOTOR 0x004FD490

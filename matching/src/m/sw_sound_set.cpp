@@ -1,27 +1,9 @@
 // CSoundSet / CSoundSetList (soundset.o) and their
 // CResHelper<CResSSF, 2060> base.
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* szResRef);                  // 0x00406D80
-    int operator==(const CResRef& cResRef) const;   // 0x004060B0
-    int operator==(const char* szResRef) const;     // 0x004060D0
-    int operator!=(const char* szResRef) const;     // 0x00406060
-    CResRef operator=(const char* szResRef);        // 0x00406290
-    CResRef operator=(const CResRef& cResRef);      // 0x00406120
-    CResRef operator=(const CExoString& sResRef);   // 0x004061F0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CRes {
 public:
@@ -51,7 +33,7 @@ public:
     unsigned long ReleaseResObject(CRes* pRes);     // 0x00409CF0
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
+#include "shared/globals.h"
 
 template <class T, int nType>
 class CResHelper {
@@ -136,8 +118,6 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender); // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
-extern unsigned char g_nGender;                     // 0x0073ECD0
 
 struct CSSFHeader {
     char m_sFileType[4];
@@ -167,17 +147,7 @@ public:
     char pad_0x28[0x2c];
 };
 
-class CSoundSetList {
-public:
-    CSoundSetList();
-    ~CSoundSetList();
-    CResRef GetSoundSetResRef(unsigned short nId);
-
-    unsigned short m_nNumSoundSets;                 // 0x00
-    CResRef* m_pResRefs;                            // 0x04
-    unsigned char* m_pGenders;                      // 0x08
-    unsigned long* m_pStrRefs;                      // 0x0c
-};
+#include "shared/sound_set_list.h"
 
 // FUNCTION: SWKOTOR 0x00678940 SYMBOL: ??1?$CResHelper@VCResSSF@@$0IAM@@@UAE@XZ
 // FUNCTION: SWKOTOR 0x006789A0 SYMBOL: ?SetResRef@?$CResHelper@VCResSSF@@$0IAM@@@QAEXABVCResRef@@H@Z

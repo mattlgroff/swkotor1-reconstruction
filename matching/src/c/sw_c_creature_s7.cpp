@@ -4,23 +4,9 @@
 
 #include <stdlib.h>
 
-struct Vector {
-    Vector() {}
-    Vector(float a, float b, float c) : x(a), y(b), z(c) {}
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    float MagnitudeSquared() const { return x * x + y * y + z * z; }
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
-class CResRef {
-public:
-    char* GetResRefStr() const;                     // 0x00405FE0
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef operator=(const char* s);               // 0x00406290
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWSpell {
 public:
@@ -70,7 +56,6 @@ public:
     void GetPriorityGroupInfo(unsigned long nGroup, float* pMinDistance, float* pMaxDistance);   // 0x005D64B0
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class C2DA {
 public:
@@ -110,16 +95,7 @@ public:
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern int g_nAppearanceCol_SoundAppType;           // 0x007A2128
-extern int g_nAppearanceCol_FootstepType;           // 0x007A20EC
-extern int g_nAppearanceCol_SIZECATEGORY;           // 0x007A2124
-extern int g_nFootstepRollingColumn;                // 0x007A219C
-extern int g_nFootstepPitchOffsetColumn;            // 0x007A21A0
-extern int g_nSurfaceMaterialCol_Name;              // 0x007A21B0
-extern int g_nAppearanceCol_HEADTRACK;              // 0x007A2100
-extern int g_nAppearanceCol_HEADBONE;               // 0x007A20FC
-extern CExoString g_sLookAtBoneOverride;            // 0x008338D0 (descriptive)
+#include "shared/globals.h"
 
 float VectorMagnitude(const Vector& v);             // 0x004AB100
 Vector VectorSubtract(const Vector& a, const Vector& b);   // 0x00423BC0 (cdecl)
@@ -181,11 +157,7 @@ public:
 
 class CSWCObject;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-};
+#include "shared/game_object.h"
 
 const unsigned long OBJECT_INVALID = 0x7f000000;
 
@@ -212,24 +184,7 @@ struct Quaternion {
     float w, x, y, z;
 };
 
-class CAurModel {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
-    virtual void v40();
-    virtual void PlayOverlayAnimation(unsigned short nAnim, int bLoop);   // 0x44 (descriptive)
-    virtual void v48(); virtual void v4C(); virtual void v50();
-    virtual void PlayAnimation(unsigned short nAnim, float fSpeed, int nFlags, int b);   // 0x54 (descriptive)
-    virtual void v58();
-    virtual int SetLipSyncData(float* pTimes, float* pShapes, int nKeys, float fLength);   // 0x5c (descriptive)
-    virtual void SetOrientation(Vector* pOrientation);      // 0x64 (descriptive)
-    virtual void SetOrientation(Quaternion* pOrientation);  // 0x60 (descriptive)
-    virtual void SetPosition(Vector* pPosition);    // 0x68 (descriptive)
-    virtual void SetLocalPosition(int b);           // 0x6c (descriptive)
-    virtual void SetLocalOrientation(int b);        // 0x70 (descriptive)
-};
+#include "shared/aur_model.h"
 
 class CSWSCreature {
 public:
@@ -252,12 +207,8 @@ public:
     int m_bA8C;                                     // 0xa8c (descriptive)
 };
 
-class CSWSObject {
+class CSWSObject : public CGameObject {
 public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
 };
 
 struct CSWPartyMember {
@@ -282,12 +233,8 @@ public:
     int m_bB4;                                      // 0xb4 (descriptive)
 };
 
-extern const float g_fRunRatio;                        // 0x007A22F4 (descriptive)
 
-struct CClientOptionsX {
-    char pad_0x0[0x6d];
-    unsigned char m_nCameraMode;                    // 0x6d
-};
+#include "shared/client_options_x.h"
 
 class CClientExoApp {
 public:
@@ -306,18 +253,8 @@ public:
     int IsInjured(unsigned long oid);               // 0x004AEE40
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
 
 class CSWCObject {
 public:

@@ -2,10 +2,7 @@
 
 class CSWCMiniGame;
 
-class CSWCAmbientSound {
-public:
-    void UpdateTimeOfDay();                           // 0x0068D690
-};
+#include "shared/swc_ambient_sound.h"
 
 class CSWCArea {
 public:
@@ -77,6 +74,6 @@ void CSWCModule::SetTimeOfDayState(unsigned char nState, unsigned long nMillisec
         }
     }
 
-    m_fWorldTime = (float)nMilliseconds * *((float*)0x0073d708);
-    m_fMinutesPerHour = (float)m_nMinutesPerHour * *((float*)0x00748734);
+    m_fWorldTime = (float)nMilliseconds * 0.001f;
+    m_fMinutesPerHour = (float)m_nMinutesPerHour * 60.0f;
 }

@@ -25,28 +25,15 @@ public:
     void SetPowered(int bPowered, int a2, int a3, int a4); // 0x00647130
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual CSWSCreature* AsSWSCreature();          // +0x30
-    virtual CSWCItem* AsSWCItem();                  // +0x34
-};
+#include "shared/game_object.h"
 
 class CClientExoApp {
 public:
     CGameObject* GetGameObject(unsigned long oid);  // 0x005ED580
 };
 
-class CAppManager {
-public:
-    void* m_pServerExoApp;                          // 0x00
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 
 class CAnimationBase;
 

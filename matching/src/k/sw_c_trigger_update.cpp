@@ -26,7 +26,7 @@ void CSWCTrigger::AIUpdate()
         if (m_n13C <= elapsedTick) {
             CGameObject* removed;
             CGameObjectArray* objects = g_pAppManager->GetClientExoApp()->GetGameObjectArray();
-            if (objects->Delete(m_oid, &removed) == g_nObjectArraySuccess && removed) {
+            if (objects->Delete(m_idSelf, &removed) == g_nObjectArraySuccess && removed) {
                 delete this;
                 return;
             }

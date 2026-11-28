@@ -3,12 +3,7 @@
 
 #include <string.h>
 
-class Vector {
-public:
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:
@@ -37,79 +32,15 @@ public:
     }
 };
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWSCreature;
 class CSWSArea;
 class CGameObject;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04();
-    virtual void v08();
-    virtual void v0c();
-    virtual void v10();
-    virtual void v14();
-    virtual void v18();
-    virtual void v1c();
-    virtual void v20();
-    virtual void v24();
-    virtual void v28();
-    virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();     // +0x30
-    virtual void v34();
-    virtual void v38();
-    virtual void v3c();
-    virtual void v40();
-    virtual void v44();
-    virtual void v48();
-    virtual void v4c();
-    virtual void v50();
-    virtual void v54();
-    virtual void v58();
-    virtual void v5c();
-    virtual void v60();
-    virtual void v64();
-    virtual void v68();
-    virtual void v6c();
-    virtual void v70();
-    virtual void v74();
-    virtual void EventHandler(unsigned long nEvent, unsigned long oidCaller, void *pData,
-                              unsigned long a, unsigned long b); // +0x78
-    virtual void SetAnimation(int nAnimation); // +0x7c
-    virtual void v80();
-    virtual void v84();
-    virtual void v88();
-    virtual void v8c();
-    virtual void v90();
-    virtual void v94();
-    virtual void v98();
-    virtual void v9c();
-    virtual void va0();
-    virtual void va4();
-    virtual void va8();
-    virtual void vac();
-    virtual void vb0();
-    virtual void vb4();
-    virtual int GetLastSpellId();              // +0xb8
-
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CGameObjectArray {
 public:
@@ -143,17 +74,9 @@ public:
     CWorldTimer *GetWorldTimer();
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
-extern char g_cObjectArraySuccess;
-extern unsigned long g_oidInvalid;
-extern unsigned long EVENT_SIGNAL_EVENT;
+#include "shared/globals.h"
 
 class CScriptEvent {
 public:
@@ -221,6 +144,26 @@ public:
 
 class CSWSObject : public CGameObject {
 public:
+    virtual void v70();
+    virtual void v74();
+    virtual void EventHandler(unsigned long nEvent, unsigned long oidCaller, void *pData,
+                              unsigned long a, unsigned long b);  // +0x78
+    virtual void SetAnimation(int nAnimation);  // +0x7c
+    virtual void v80();
+    virtual void v84();
+    virtual void v88();
+    virtual void v8c();
+    virtual void v90();
+    virtual void v94();
+    virtual void v98();
+    virtual void v9c();
+    virtual void va0();
+    virtual void va4();
+    virtual void va8();
+    virtual void vac();
+    virtual void vb0();
+    virtual void vb4();
+    virtual int GetLastSpellId();  // +0xb8
     CSWSObject(char nType, unsigned long oid, int bFlag);
     virtual ~CSWSObject();
     CSWSArea *GetArea();
@@ -349,7 +292,6 @@ public:
     CSWSpellArray *m_pSpellArray;    // +0x8c
 };
 
-extern CSWRules *g_pRules;
 
 class CSWSAreaOfEffectObject : public CSWSObject {
 public:
@@ -546,7 +488,6 @@ public:
     int ReleaseResObject(CRes *pRes);
 };
 
-extern CExoResMan *g_pExoResMan;
 
 struct CSWCollisionFace {
     int m_anVertex[3];

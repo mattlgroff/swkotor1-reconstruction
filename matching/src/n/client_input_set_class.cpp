@@ -1,20 +1,14 @@
 // CClientExoAppInternal::SetInputClass (clientinput.o). Standalone layout:
 // +0x18 module, +0x40 in-game GUI, +0x9C input class, +0x28C pending player
 // id, +0x2A0 player control.
-struct Vector {
-    float x,y,z;
-    Vector() {}
-    Vector(float fx,float fy,float fz) { x = fx; y = fy; z = fz; }
-};
-class CExoInput { public: void ClearEvents(); /* 0x005DF4E0 */ };
-extern CExoInput* g_pExoInput; // 0x007A39E4
-class CGameObject { public: virtual ~CGameObject(); unsigned long m_idSelf; };
+#include "shared/vector.h"
+#include "shared/exo_input.h"
+#include "shared/globals.h"
+#include "shared/game_object.h"
 class CSWSCreature : public CGameObject {};
 class CServerExoApp { public: CSWSCreature* GetPlayerCreature(); /* 0x004B2820 */ };
 class CClientExoApp { public: unsigned long ServerToClientObjectId(unsigned long oid); /* 0x005EDA50 */ };
-class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CServerExoApp* m_pServerExoApp; };
-extern CAppManager* g_pAppManager; // 0x007A39FC
-extern int g_nDefaultCombatMode; // 0x0074F224
+#include "shared/app_manager.h"
 class CSWCCreature { public: char pad_0x0[0x30]; Vector m_vPosition; void SetCombatMode(int nMode); /* 0x0060F090 */ };
 class CSWMiniCamera {
 public:

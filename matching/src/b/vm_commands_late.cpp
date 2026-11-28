@@ -5,13 +5,13 @@
 #include "b/sws_creature.h"
 #include "b/party_table.h"
 
-extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634
+#include "shared/globals.h"
 
 class CExoSound {
 public:
     void SetMusicVolume(float fVolume, int bArg);           // 0x005D5C50
 };
-extern CExoSound* g_pExoSound;                              // 0x007A39EC
+#include "shared/globals.h"
 
 class CSWGuiInGame {
 public:

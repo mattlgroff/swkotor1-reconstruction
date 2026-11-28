@@ -4,61 +4,14 @@
 #ifndef MATCHING_N_GUI_IN_GAME_DIALOG_H
 #define MATCHING_N_GUI_IN_GAME_DIALOG_H
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
+#include "shared/exo_string.h"
 
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    int CompareNoCase(const char* s) const;         // 0x005E58C0
-    int IsEmpty() const;                            // 0x005E58A0
-    char* CStr() const;                             // 0x005E5670
-    int operator==(const char* s) const;            // 0x005E5290
-    int operator!=(const char* s) const;            // 0x005E5390
-};
 
-typedef void* CExoLinkedListPosition;
+#include "shared/exo_linked_list.h"
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;                      // 0x00
-    CExoLinkedListNode* pNext;                      // 0x04
-    void* pObject;                                  // 0x08
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListNode* pHead;                      // 0x00
-    CExoLinkedListNode* pTail;                      // 0x04
-    unsigned long nCount;                           // 0x08
 
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    void* Remove(CExoLinkedListPosition pos);       // 0x005E9C10
-    CExoLinkedListPosition AddHead(void* p);        // 0x005E9D70
-};
-
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
-
-    CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetHead()
-    {
-        void* p = m_pcExoLinkedListInternal->pHead;
-        if (p) {
-            p = ((CExoLinkedListNode*)p)->pObject;
-        }
-        return (T*)p;
-    }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-    T* Remove(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->Remove(pos); }
-    CExoLinkedListPosition AddHead(T* p) { return m_pcExoLinkedListInternal->AddHead(p); }
-};
 
 class C2DA {
 public:
@@ -81,49 +34,23 @@ public:
     CTwoDimArrays* m_p2DArrays;                     // +0xB8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern int g_nAnimFireForgetColumn;                 // 0x007A214C
-extern int g_nAnimLoopingColumn;                    // 0x007A2154
-extern int g_nAnimDialogColumn;                     // 0x007A2170
-extern int g_nDialogAnimFireForgetColumn;           // 0x007A218C
-extern int g_nDialogAnimDialogColumn;               // 0x007A2190
-extern int g_nDialogAnimLoopingColumn;              // 0x007A2194
-extern int g_nDialogAnimOverlayColumn;              // 0x007A2198
-extern int g_bGuiFlag;                              // 0x007A2370
+#include "shared/globals.h"
 
 class CVirtualMachine {
 public:
     int RunScript(CExoString* psFileName, unsigned long oid, int bOid); // 0x005D0FC0
 };
 
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 
-class Vector {
-public:
-    float x, y, z;
+#include "shared/vector.h"
 
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
-
-class CResRef {
-public:
-    char m_resRef[16];
-
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    int IsValid() const;                            // 0x00406030
-};
+#include "shared/res_ref.h"
 
 class CExoSound {
 public:
     void SetSoundMode(int nMode);                   // 0x005D5E80
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern int g_n74C5FC;                               // 0x0074C5FC, sound mode for modal panels
-extern const int SOUND_MODE_NORMAL;                 // 0x0074C5EC
-extern int g_bLetterbox;                            // 0x0083390C
 
 class CSWPartyTable {
 public:
@@ -162,33 +89,9 @@ class CSWCObject;
 class CSWCCreature;
 class CSWCPlaceable;
 
-class CGameObject {
-public:
-    virtual void v00();
-    virtual void v04();
-    virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // +0x0C
-    virtual CSWSObject* AsSWSObject();              // +0x10
-    virtual void v14();
-    virtual void v18();
-    virtual void v1C();
-    virtual void v20();
-    virtual void v24();
-    virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // +0x2C
-    virtual void v30();
-    virtual void v34();
-    virtual void v38();
-    virtual void v3C();
-    virtual void v40();
-    virtual void v44();
-    virtual void v48();
-    virtual CSWCPlaceable* AsSWCPlaceable();        // +0x4C
+#include "shared/game_object.h"
 
-    unsigned long m_idSelf;                         // +0x04
-};
-
-class CSWSObject {
+class CSWSObject : public CGameObject {
 public:
     int ReplyDialog(unsigned long nPlayerId, int nReply, int bEnded, int nArg4, int bArg5);  // 0x004CB480
 };
@@ -218,8 +121,6 @@ public:
 
 class CSWCObject : public CGameObject {
 public:
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
     virtual void v90(); virtual void v94();
@@ -237,7 +138,7 @@ public:
     // Descriptive: the speaker's own sound/lip-sync fallback.
     virtual void PlayDialogSound(const CResRef& rSound);    // +0x128
 
-    char pad_0x8[0x54 - 0x8];
+    char pad_0xc[0x48];
     int m_n54;                                      // +0x54
     char pad_0x58[0x68 - 0x58];
     CSWCAnimBase* m_pAnimationBase;                 // +0x68
@@ -311,14 +212,9 @@ public:
     void ParseTokens(CExoString* pString);          // 0x0041DD30
 };
 
-extern CTlkTable* g_pTlkTableAlt;                   // 0x007A3A0C
 
-class CExoInput {
-public:
-    void CoolDownEvent(unsigned long nEvent, unsigned long nTime);  // 0x005DF4B0
-};
+#include "shared/exo_input.h"
 
-extern CExoInput* g_pExoInput;                      // 0x007A39E4
 
 class CExoStreamingSoundSource {
 public:
@@ -383,17 +279,8 @@ public:
     int GetCharacterChangeInProgress();             // 0x005EE190
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;                             // +0x00
-    CClientExoApp* m_pClientExoApp;                 // +0x04
-    CServerExoApp* m_pServerExoApp;                 // +0x08
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWGuiPanel {
 public:

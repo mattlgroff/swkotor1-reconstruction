@@ -3,12 +3,7 @@
 
 void __cdecl operator delete(void* p);              // 0x006FA390
 
-class CExoString {
-public:
-    ~CExoString();                                  // 0x005E5C20
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 template <class T>
 class CExoArrayList {
@@ -62,7 +57,7 @@ public:
 };
 
 struct CSWCCombatAttackData;
-struct Vector;
+class Vector;
 struct CPerceptionRecord;
 
 struct CSWCCreatureNameRecord {
@@ -77,26 +72,18 @@ public:
     void ClearCachedCreatures(CSWCCreature* pCreature);   // 0x005EDF50
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern const unsigned long g_oidInvalid;            // 0x00746644
+#include "shared/globals.h"
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    void UnloadModel();                             // 0x004015A0 (empty)
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:
+    void UnloadModel();                             // 0x004015A0 (empty)
     virtual ~CSWCObject();                          // 0x0063E800
 
-    char pad_0x4[0x68 - 0x4];
+    char pad_0xc[0x5c];
     CModel* m_pModel;                               // 0x68
 };
 
@@ -169,7 +156,7 @@ CSWCCreature::~CSWCCreature()
     }
     // The empty base version, as CSWCCreature::UnloadModel (0x0060C8E0)
     // itself starts with; the dtor does not call the creature override.
-    CGameObject::UnloadModel();
+    CSWCObject::UnloadModel();
     if (m_pModel) {
         m_pModel->DetachFromScene();
         delete m_pModel;

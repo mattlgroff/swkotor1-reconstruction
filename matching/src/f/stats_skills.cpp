@@ -13,14 +13,9 @@ public:
     CSWSArea *GetAreaByGameObjectID(unsigned long id);
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CSWSkill {
 public:
@@ -38,14 +33,7 @@ public:
     CSWSkill *m_pSkills;             // +0xb4
 };
 
-extern CSWRules *g_pRules;
 
-extern const int ABILITY_STRENGTH;
-extern const int ABILITY_DEXTERITY;
-extern const int ABILITY_CONSTITUTION;
-extern const int ABILITY_INTELLIGENCE;
-extern const int ABILITY_WISDOM;
-extern const int ABILITY_CHARISMA;
 
 class CSWSCreature {
 public:

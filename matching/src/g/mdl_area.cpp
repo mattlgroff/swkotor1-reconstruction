@@ -11,13 +11,7 @@ public:
     T& operator[](int i) { return element[i]; }
 };
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 inline Vector operator-(const Vector& a, const Vector& b)
 {

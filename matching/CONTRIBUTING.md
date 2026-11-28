@@ -134,15 +134,29 @@ together), since they share headers.
    **Headers:**
    - Include paths are relative to `matching/include`:
      `#include "n/gui_in_game_n.h"`.
-   - Each bucket may declare its own minimal copy of a class with just the
-     members its functions use. Copy from other buckets' headers; don't
-     include across buckets when working in parallel.
+   - Declare each class once (rule R1 in [CODE_RULES.md](CODE_RULES.md)).
+     Before declaring a class, look for an existing header and include it,
+     from any bucket. If it lacks a member you need, add the member there,
+     at its offset, instead of declaring a second copy. Never redeclare a
+     class locally in a `.cpp` file to read a member through an offset.
+   - Older buckets each carry their own partial copies of common classes.
+     Functions that use them are reported `MATCH-PENDING` until the copies
+     are merged; don't add new ones. When working in parallel, ask the
+     coordinator before editing a header that other buckets include.
+   - Declare globals once too (R2): `extern` in a header, with the name and
+     type `symbols.csv` already proves. Never read a global through its
+     address (`*(int*)0x007A2370`).
    - Use a classic `#ifndef` include guard named after the bucket and file.
 5. **Annotate** each definition with `// FUNCTION: SWKOTOR 0x...` on the line
    above. Add `SYMBOL: <decorated name>` when the name alone is ambiguous
    (templates, overloads, compiler-generated functions).
 6. **Iterate** until the tool prints `OK`. Judge progress by the "diff
    insns" count, and see the source-shape notes in [README.md](README.md).
+   `OK` proves the bytes, not the source: a function that reaches `OK`
+   through `volatile`, an offset cast, a pasted `__asm` body or a padding
+   member is a fakematch, reported `MATCH-PENDING` by
+   `tools/rulecheck.py`. Keep looking for what the original programmer
+   wrote (CODE_RULES.md, "Fakematch patterns").
 7. **Timebox** each function to about 20 minutes or 15 compiles. If it still
    doesn't match, keep the best attempt annotated (it counts as NONMATCH) and
    move on. Most remaining misses are register-allocation or stack-slot ties
@@ -162,10 +176,19 @@ together), since they share headers.
 2. Run `python matching/tools/symbolmap.py`. It refreshes `symbols.csv` and
    prints every symbol that maps to more than one address. A new entry
    there usually means a naming slip in your change.
-3. Commit the sources, headers, `matching/status.csv` and
-   `matching/symbols.csv` together. Don't commit
+3. Run the rule checker and refresh its report:
+   ```bash
+   python matching/tools/rulecheck.py --report matching/rules.csv
+   python matching/tools/rulecheck.py --list R1 R2 R4 R13 R17 R18 | grep -i <your file>
+   ```
+   - The "matched under the rules" count must not go down.
+   - A function you add or touch should not be `MATCH-PENDING` for R4,
+     R13, R17 or R18. R1 and R2 findings caused by an older bucket's copies
+     are known; don't add new ones.
+4. Commit the sources, headers, `matching/status.csv`,
+   `matching/symbols.csv` and `matching/rules.csv` together. Don't commit
    `matching/assets/progress.svg`: CI redraws it after the merge.
-4. Never commit `swkotor.exe`, compiler files, object files or anything
+5. Never commit `swkotor.exe`, compiler files, object files or anything
    extracted from the game. Don't edit `src/` in a matching change.
 
 ## Reviewing a matching change
@@ -181,8 +204,12 @@ check its counting and rendering with Python; recompiling game functions
 and regenerating `status.csv` or `symbols.csv` are unnecessary.
 
 - The diff touches only `matching/`. Source changes also regenerate
-  `status.csv` and `symbols.csv`.
+  `status.csv`, `symbols.csv` and `rules.csv`.
 - For source changes, re-run `matchcmp.py -q` on the changed folders. Every function the change
   claims as matched must print `OK` with your own exe and compiler.
 - No address is annotated twice, the MATCH count did not drop, and
   `symbolmap.py` reports no new multi-address symbols.
+- `rulecheck.py` reports no new `MATCH-PENDING` function, and the
+  "matched under the rules" count did not drop. Read each new match once
+  against the reader test in [CODE_RULES.md](CODE_RULES.md): identical bytes
+  reached through a trick are not a match.

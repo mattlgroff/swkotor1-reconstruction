@@ -783,7 +783,7 @@ void CSWGuiScrollBar::SetExtent(const CSWGuiExtent& extent)
 // ---------------------------------------------------------------------------
 // CSWGuiListBox
 
-extern float g_fGuiPulseAlpha;                  // 0x0078d3e4
+#include "shared/globals.h"
 int GuiBeginClip(int nLeft, int nTop, int nWidth, int nHeight, CSWGuiListBoxScroll* pScroll, int nArg,
                  float fScale);                 // 0x004592f0
 void GuiEndClip();                              // 0x00459580

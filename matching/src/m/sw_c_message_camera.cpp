@@ -11,8 +11,8 @@ class CAurCamera { public:
 class CSWCModule { public: char pad_000[0x40]; CAurCamera* m_pCamera; };
 class CClientOptions { public: void SetCameraMode(unsigned char); };
 class CClientExoApp { public: CSWCModule* GetModule(); CClientOptions* GetOptions(); };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager;
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 class CSWCMessage { public:
  unsigned char ReadBYTE(int); float ReadFLOAT(float,int); int MessageReadOverflow(int);
  int HandleServerToPlayerCamera(unsigned char);

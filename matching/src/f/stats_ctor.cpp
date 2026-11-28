@@ -5,29 +5,11 @@
 
 class CSWSCreature;
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    CExoString &operator=(const char *s);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    ~CExoLocString();
-    void *m_pList;
-    void *m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef operator=(const char *s);
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 template <class T>
 class CExoArrayList {
@@ -92,8 +74,7 @@ public:
     unsigned char m_nNumSkills;      // +0xab
 };
 
-extern CSWRules *g_pRules;
-extern const unsigned short RACIAL_TYPE_HUMAN;
+#include "shared/globals.h"
 
 class CSWSCreatureStats {
 public:

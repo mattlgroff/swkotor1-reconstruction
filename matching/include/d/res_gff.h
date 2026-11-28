@@ -13,12 +13,9 @@ extern "C" void* __cdecl memcpy(void* dst, const void* src, unsigned int n);
 extern "C" void* __cdecl memset(void* dst, int c, unsigned int n);
 #pragma intrinsic(memcpy, memset)
 
-extern char* g_sGFFVersion;                 // 0x0078d3cc -> "V3.2"
+#include "shared/globals.h"
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

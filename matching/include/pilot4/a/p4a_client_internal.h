@@ -2,19 +2,7 @@
 #ifndef P4A_CLIENT_INTERNAL_H
 #define P4A_CLIENT_INTERNAL_H
 
-class CExoString {
-public:
-    CExoString();                                       // 0x005E5A90
-    CExoString(const char* s);                          // 0x005E5AC0
-    ~CExoString();                                      // 0x005E5C20
-
-    int operator==(const char* s) const;                // 0x005E5290
-    char* CStr() const;                                 // 0x005E5670
-    void Format(const char* szFormat, ...);             // 0x005E5680
-
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoFile {
 public:
@@ -37,7 +25,7 @@ public:
     CExoTimers* m_pcExoTimers;                          // 0x04
 };
 
-extern CExoBase* g_pExoBase;                            // 0x007A39E0
+#include "shared/globals.h"
 
 class CClientExoAppInternal {
 public:

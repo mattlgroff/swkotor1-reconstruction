@@ -5,7 +5,7 @@
 
 extern "C" int __cdecl strncmp(const char*, const char*, unsigned int);
 
-extern unsigned char g_bBinaryModel;        // 0x007B927C
+#include "shared/globals.h"
 
 #define MDL_FIELD(name, stmt) \
     if (!_stricmp(name, GetWord(s))) \

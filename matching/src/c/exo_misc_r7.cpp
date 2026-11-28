@@ -14,10 +14,7 @@ __declspec(dllimport) unsigned long __stdcall GetTickCount();                   
 __declspec(dllimport) int __stdcall MessageBoxA(void* hWnd, const char* sText, const char* sCaption, unsigned int nType);  // IAT 0x0073D418
 }
 
-class CExoDebug {
-public:
-    void Warning(int nLine, char* sFile, char* sMessage);   // 0x005E9400
-};
+#include "shared/exo_debug.h"
 
 class CExoBase {
 public:
@@ -26,15 +23,9 @@ public:
     CExoDebug* m_pcExoDebug;                        // 0x08
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
+#include "shared/globals.h"
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    char* CStr() const;                             // 0x005E5670
-};
+#include "shared/exo_string.h"
 
 class CExoStringList {
 public:
@@ -82,25 +73,13 @@ void CExoStringList::Add(CExoString* pString)
     Introduce(pString, nCount);
 }
 
-typedef void* CExoLinkedListPosition;
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;                      // 0x00
-    CExoLinkedListNode* pNext;                      // 0x04
-    void* pObject;                                  // 0x08
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListNode* pHead;                      // 0x00
-    CExoLinkedListNode* pTail;                      // 0x04
-    unsigned long nCount;                           // 0x08
-
-    void* GetPrev(CExoLinkedListPosition& pos);
-};
+#include "shared/exo_linked_list.h"
 
 // FUNCTION: SWKOTOR 0x005E9BD0
-void* CExoLinkedListInternal::GetPrev(CExoLinkedListPosition& pos)
+void* CExoLinkedListInternal::GetPrev(CExoLinkedListPosition& pos) const
 {
     if (pos == 0) {
         g_pExoBase->m_pcExoDebug->Warning(0x119, "exolinkedlistinternal.cpp",
@@ -128,17 +107,10 @@ public:
     int GetString(int nIndex, CExoString& s);       // 0x005EC9C0 RET 8
 };
 
-class CExoLocString {
-public:
-    CExoLocStringInternal* m_pcExoLocStringInternal;   // 0x00
-    unsigned long m_dwStringRef;                    // 0x04
-
-    int Compare(const CExoLocString& o);
-    int GetStringLoc(int nLanguage, CExoString& s, unsigned char nGender);
-};
+#include "shared/exo_loc_string.h"
 
 // FUNCTION: SWKOTOR 0x005E9F10
-int CExoLocString::Compare(const CExoLocString& o)
+int CExoLocString::Compare(const CExoLocString& o) const
 {
     // NONMATCH (4 diff insns): the original tests each branch's count in its
     // own register (ecx / eax) and joins at one `jne`; ours loads both into
@@ -165,14 +137,14 @@ int CExoLocString::Compare(const CExoLocString& o)
 }
 
 // FUNCTION: SWKOTOR 0x005EA240
-int CExoLocString::GetStringLoc(int nLanguage, CExoString& s, unsigned char nGender)
+int CExoLocString::GetStringLoc(int nLanguage, CExoString* pString, unsigned char nGender) const
 {
     CExoLocStringInternal* p = m_pcExoLocStringInternal;
     unsigned char nIndex = nLanguage ? nGender : 0;
-    return p->GetString(nLanguage * 2 + nIndex, s);
+    return p->GetString(nLanguage * 2 + nIndex, *pString);
 }
 
-extern int g_bAsyncReadComplete;                    // 0x008328BC
+#include "shared/globals.h"
 
 class CExoFileInternal {
 public:

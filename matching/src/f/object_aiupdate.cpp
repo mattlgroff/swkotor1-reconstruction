@@ -3,18 +3,9 @@
 // these function starts is in functions.csv: each follows the previous
 // function's padding.
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 template <class T>
 class CExoArrayList {
@@ -36,7 +27,6 @@ public:
     CExoTimers *m_pcExoTimers;       // +0x4
 };
 
-extern CExoBase *g_pExoBase;
 
 class CWorldTimer {
 public:
@@ -52,7 +42,7 @@ public:
     int RunScriptSituation(void *pScript, unsigned long oid, int bFlag);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
+#include "shared/globals.h"
 
 class CGameObject;
 class CSWSArea;
@@ -78,19 +68,9 @@ public:
     CServerAIMaster *GetServerAIMaster();
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
-extern const unsigned long OBJECT_INVALID;         // 0x00746644
-extern char g_cObjectArraySuccess;                 // 0x0074666C
-extern const int EVENT_AI_LATER;                   // 0x007441E0
-extern const unsigned long EVENT_SIGNAL_EVENT;     // 0x007441DC
-extern const unsigned long EVENT_TIMED_EVENT;      // 0x007441B8
+#include "shared/object_id.h"
 
 class CScriptEvent {
 public:
@@ -99,33 +79,21 @@ public:
     unsigned short m_nType;
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3c();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4c();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5c();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
-    virtual void AIUpdate();                   // +0x70
-    virtual void v74(); virtual void v78();
-    virtual void SetAnimation(int nAnimation); // +0x7c
-    virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8c();
-    virtual void v90();
-    virtual int GetDead();                     // +0x94
-
-    unsigned long GetID() { return m_idSelf; }
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
+    virtual void AIUpdate();  // +0x70
+    virtual void v74();
+    virtual void v78();
+    virtual void SetAnimation(int nAnimation);  // +0x7c
+    virtual void v80();
+    virtual void v84();
+    virtual void v88();
+    virtual void v8c();
+    virtual void v90();
+    virtual int GetDead();  // +0x94
     CSWSArea *GetArea();
-    int GetDead();
     void DamageHitPoints(int nDamage);
     void SetPosition(const Vector &v, int a, int b, int c);
     int GetReputation(unsigned long oid, int bFlag);
@@ -251,7 +219,7 @@ void CSWSTrigger::AIUpdate()
         CSWSCreature *pPC = pServer->GetCreatureByGameObjectID(pServer->GetPlayerCreatureId());
         if (!m_bTrapFlag &&
             (!pPC || (m_nFactionId != pPC->m_pStats->m_nFactionId &&
-                      GetReputation(pPC->GetID(), 0) < 90 &&
+                      GetReputation(pPC->GetId(), 0) < 90 &&
                       !m_aObjectsInside.count(pPC->m_idSelf)))) {
             if (m_nAnimation != 10143)
                 SetAnimation(10143);

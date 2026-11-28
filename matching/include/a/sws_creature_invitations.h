@@ -62,11 +62,7 @@ public:
     CWorldTimer* GetWorldTimer();                   // 0x004AEDE0
     CSWSCreature* GetCreatureByGameObjectID(unsigned long oid); // 0x004AE770
 };
-class CAppManager {
-public:
-    char pad_0[8];
-    CServerExoApp* m_pServerExoApp;
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 #endif

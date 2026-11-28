@@ -6,21 +6,14 @@
 
 #include "c/exo_base.h"
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
 struct Quaternion {
     float w, x, y, z;
     Quaternion() {}
 };
 
-extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
-extern const int EFFECT_FORCE_SHIELD;               // 0x00746824
-extern int g_bUpdateCreatureOnMove;                 // 0x0083395C
+#include "shared/globals.h"
 
 class CSWCCreature;
 class CSWSCreature;
@@ -51,41 +44,7 @@ public:
     CRes* m_pRes;                                   // 0x08
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CSWCCreature* AsClientCreature();       // 0x0c
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
-    virtual CSWCItem* AsSWCItem();                  // 0x34
-    virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
-    virtual CSWCCreature* AsCreatureForCallback();  // 0x70
-    virtual void v74(); virtual void v78(); virtual void v7C();
-    virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
-    virtual void UpdatePosition();                  // 0x90
-    virtual void SetVisible(int b);                 // 0x94
-    virtual CGob* FindPart(unsigned long nPart, int bRecurse);  // 0x98
-    virtual void v9C();
-    virtual void vA0(); virtual void vA4(); virtual void vA8(); virtual void vAC();
-    virtual void vB0(); virtual void vB4(); virtual void vB8(); virtual void vBC();
-    virtual void vC0(); virtual void vC4(); virtual void vC8(); virtual void vCC();
-    virtual void vD0(); virtual void vD4(); virtual void vD8(); virtual void vDC();
-    virtual void vE0(); virtual void vE4(); virtual void vE8(); virtual void vEC();
-    virtual void vF0(); virtual void vF4(); virtual void vF8();
-    virtual void UpdateShadow();                    // 0xfc
-    virtual void RemoveShadow();                    // 0x100
-    virtual void v104();
-    virtual void RefreshShadow();                   // 0x108 (descriptive)
-
-    void UnloadModel();                             // 0x004015A0
-
-    unsigned long m_idSelf;                         // 0x04
-};
+#include "shared/game_object.h"
 
 class CSWCArea;
 
@@ -149,16 +108,52 @@ struct CSWCAttackData {
     int m_bRanged;                                  // 0x20
 };
 
-extern int g_nDebugAttackAnimation;                 // 0x008338BC
 
-class CSWCAreaX {
-public:
-    void UpdatePosition(const Vector& v);           // 0x006054E0
-};
+#include "shared/swc_area_x.h"
 
 class CSWCObject : public CGameObject {
 public:
-    char pad_0x8[0x18];
+    void UnloadModel();                             // 0x004015A0 (empty)
+    virtual CSWCCreature* AsCreatureForCallback();  // 0x70
+    virtual void v74();
+    virtual void v78();
+    virtual void v7C();
+    virtual void v80();
+    virtual void v84();
+    virtual void v88();
+    virtual void v8C();
+    virtual void UpdatePosition();  // 0x90
+    virtual void SetVisible(int b);  // 0x94
+    virtual CGob* FindPart(unsigned long nPart, int bRecurse);  // 0x98
+    virtual void v9C();
+    virtual void vA0();
+    virtual void vA4();
+    virtual void vA8();
+    virtual void vAC();
+    virtual void vB0();
+    virtual void vB4();
+    virtual void vB8();
+    virtual void vBC();
+    virtual void vC0();
+    virtual void vC4();
+    virtual void vC8();
+    virtual void vCC();
+    virtual void vD0();
+    virtual void vD4();
+    virtual void vD8();
+    virtual void vDC();
+    virtual void vE0();
+    virtual void vE4();
+    virtual void vE8();
+    virtual void vEC();
+    virtual void vF0();
+    virtual void vF4();
+    virtual void vF8();
+    virtual void UpdateShadow();  // 0xfc
+    virtual void RemoveShadow();  // 0x100
+    virtual void v104();
+    virtual void RefreshShadow();  // 0x108 (descriptive)
+    char pad_0xc[0x14];
     CSWCAreaX* m_pArea;                             // 0x20
     Vector m_vPosition;                             // 0x24
     Vector m_vOrientation;                          // 0x30
@@ -204,17 +199,9 @@ public:
     unsigned char GetGameObject(unsigned long id, CGameObject** ppObject);  // 0x004D8230
 };
 
-class CSWCModuleX {
-public:
-    char pad_0x0[0x48];
-    void* m_p48;                                    // 0x48
-};
+#include "shared/swc_module_x.h"
 
-struct CClientOptionsX {
-    char pad_0x0[0x6c];
-    unsigned char m_nShadows;                       // 0x6c
-    unsigned char m_nCameraMode;                    // 0x6d
-};
+#include "shared/client_options_x.h"
 
 class CClientExoApp {
 public:
@@ -243,17 +230,8 @@ public:
     int IsActionsPending(unsigned long oid);        // 0x004AEAE0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CGameEffectX {
 public:
@@ -333,14 +311,6 @@ public:
     C2DAs* m_p2DArrays;                             // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern int g_nHeadTurnRateColumn;                   // 0x007A2118
-extern int g_nAppearanceCol_SIZECATEGORY;           // 0x007A2124
-extern int g_nHeadBoneColumn;                       // 0x007A20D0
-extern int g_nHeadTurnHColumn;                      // 0x007A20F4
-extern int g_nHeadTurnVColumn;                      // 0x007A20F8
-extern const float g_fDefaultHeadTurnH;             // 0x00740A0C
-extern const float g_fDefaultHeadTurnV;             // 0x007455DC
 
 Vector __cdecl NormalizeVector(const Vector& v);    // 0x004AB180
 
@@ -521,12 +491,7 @@ extern "C" void* __cdecl memcpy(void* dst, const void* src, unsigned int n);
 
 Quaternion __cdecl RotationArc(Vector a, Vector b);     // 0x004AB630
 
-class CResRef {
-public:
-    CResRef(const CExoString& s);                   // 0x00406D60
-
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CExoSoundSource {
 public:
@@ -540,13 +505,12 @@ public:
     void SetLooping(int b);                         // 0x005D59D0
 };
 
-class CExoSoundInternal {
+class CExoSound {
 public:
-    void PlaySoundAt(const CResRef& r, Vector v, int a, int b, int c, int d, int e, int f);  // 0x005D5E10
+    int Play3DOneShotSound(const CResRef&, Vector, float, unsigned char, unsigned long, unsigned char,
+                           float, float);   // 0x005D5E10
 };
 
-extern CExoSoundInternal* g_pExoSound;              // 0x007A39EC
-extern char g_sFootstepPrefix[];                    // 0x0074F378
 
 
 // FUNCTION: SWKOTOR 0x0060B8A0
@@ -585,7 +549,7 @@ void CSWCCreature::SetPosition(const Vector& v)
 // FUNCTION: SWKOTOR 0x0060C8E0
 void CSWCCreature::UnloadModel()
 {
-    CGameObject::UnloadModel();
+    CSWCObject::UnloadModel();
     if (m_pModel) {
         m_pModel->Unload();
         if (m_pModel) {
@@ -743,7 +707,7 @@ void CSWCCreature::ShowEquippedItems()
         if (m_oidProjectile != OBJECT_INVALID_ID) {
             CGameObject* pProjectile = g_pAppManager->m_pClientExoApp->GetProjectileByGameObjectID(m_oidProjectile);
             if (pProjectile) {
-                pProjectile->SetVisible(0);
+                ((CSWCObject*)pProjectile)->SetVisible(0);
             }
             m_oidProjectile = OBJECT_INVALID_ID;
         }
@@ -824,7 +788,6 @@ void CSWCCreature::SetAnimationState(int a, int b)
 // The extent ends at 0x0060F612: 0x0060F620 (ActionMenuTalk) is a separate start.
 void CSWCCreature::PartyMenuUseItem(unsigned long oidItem, CGameObject* pTarget)
 {
-    Vector v;
     unsigned long idSelf = m_idSelf;
     oidItem &= 0xbfffffff;
     if (pTarget->m_idSelf != idSelf) {
@@ -833,9 +796,7 @@ void CSWCCreature::PartyMenuUseItem(unsigned long oidItem, CGameObject* pTarget)
             pMessage->SendPlayerToServerInput_UseItem(oidItem, 0, 0, 0x7f000000, &m_vPosition);
         }
     } else {
-        v.x = 0.0f;
-        v.y = 0.0f;
-        v.z = 0.0f;
+        Vector v;
         CSWCMessage* pMessage = g_pAppManager->m_pClientExoApp->GetSWCMessage();
         if (pMessage) {
             pMessage->SendPlayerToServerInput_UseItem(oidItem, 0, 0, idSelf, &v);
@@ -855,7 +816,7 @@ void CSWCCreature::UpdateShadowBlob()
         oidSelf = m_idSelf;
         if (oidSelf == g_pAppManager->m_pClientExoApp->GetPlayerCreatureId()) {
             RemoveShadow();
-            if (g_pAppManager->m_pClientExoApp->GetModule() && g_pAppManager->m_pClientExoApp->GetModule()->m_p48) {
+            if (g_pAppManager->m_pClientExoApp->GetModule() && g_pAppManager->m_pClientExoApp->GetModule()->m_pArea) {
                 g_pAppManager->m_pClientExoApp->GetModule();
             }
         } else {
@@ -941,7 +902,7 @@ void CSWCCreature::DoFootstepAudio(unsigned char bSkip)
         sName = g_sFootstepPrefix;
         sName = sName + CExoString(rand() % 3 + 1);
         CResRef cResRef(sName);
-        g_pExoSound->PlaySoundAt(cResRef, m_vPosition, 0, 0x13, 0, 0, 0, 0);
+        g_pExoSound->Play3DOneShotSound(cResRef, m_vPosition, 0, 0x13, 0, 0, 0, 0);
     }
 }
 
@@ -980,7 +941,7 @@ int CSWCCreature::UpdateAttackData(unsigned short* pAnimation, CSWCAttackData* p
         return 0;
     }
     unsigned char nStance = GetAnimationBase()->m_nStance;
-    CSWCCreature* pTarget = pObject->AsClientCreature();
+    CSWCCreature* pTarget = (CSWCCreature*)pObject->AsSWCObject();
     int nAnimation = m_nForcedAttackAnimation;
     if (nAnimation) {
         m_nForcedAttackAnimation = 0;
@@ -1107,7 +1068,7 @@ void CSWCCreature::StopLoopingCreatureSound()
 void __cdecl CSWCCreature::GetHeadTurnRateCallback(CGameObject* pObject, void* pUnused, float* pResult)
 {
     float f = 0.0f;
-    CSWCCreature* pCreature = pObject->AsCreatureForCallback();
+    CSWCCreature* pCreature = ((CSWCObject*)pObject)->AsCreatureForCallback();
     if (pCreature) {
         g_pRules->m_p2DArrays->m_pAppearanceTable->GetFLOATEntry(pCreature->m_pAppearance->m_nAppearanceType, g_nHeadTurnRateColumn, &f);
         *pResult = f;
@@ -1118,7 +1079,7 @@ void __cdecl CSWCCreature::GetHeadTurnRateCallback(CGameObject* pObject, void* p
 void __cdecl CSWCCreature::GetHeadBoneCallback(CGameObject* pObject, void* pUnused, float* pResult)
 {
     float f = 0.0f;
-    CSWCCreature* pCreature = pObject->AsCreatureForCallback();
+    CSWCCreature* pCreature = ((CSWCObject*)pObject)->AsCreatureForCallback();
     if (pCreature) {
         g_pRules->m_p2DArrays->m_pAppearanceTable->GetFLOATEntry(pCreature->m_pAppearance->m_nAppearanceType, g_nHeadBoneColumn, &f);
         *pResult = f;

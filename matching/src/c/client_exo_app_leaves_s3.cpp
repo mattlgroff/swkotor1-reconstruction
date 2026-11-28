@@ -2,13 +2,7 @@
 // an unnamed record destructor, the 12-byte nearest-object list search and
 // the camera-on-a-stick target head position.
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    ~CExoString();                                  // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 // Member at +0x14 whose destructor is the shared empty out-of-line body.
 class CClientRecordPayload {
@@ -33,11 +27,7 @@ CClientStringRecord::~CClientStringRecord()
 {
 }
 
-struct CNearestStruct {
-    unsigned long m_oidObject;                      // 0x00
-    float m_fDistance;                              // 0x04
-    unsigned long m_nType;                          // 0x08
-};
+#include "shared/nearest_struct.h"
 
 typedef int (*NearestCompareFn)(unsigned long nKey, CNearestStruct cEntry);
 
@@ -64,9 +54,7 @@ int CNearestStructList::Find(unsigned long nKey, NearestCompareFn pCompare)
     return -1;
 }
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWCameraTarget {
 public:

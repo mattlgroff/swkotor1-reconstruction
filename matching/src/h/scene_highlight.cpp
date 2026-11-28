@@ -44,9 +44,7 @@ public:
     }
 };
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Plane {
 public:
@@ -63,7 +61,7 @@ struct TriggerColor {
 };
 
 // Trigger part (the scene trigger list at 0x0080AA74).
-class TriggerPart {
+class Part {
 public:
     virtual void V00(); virtual void V04(); virtual void V08(); virtual void V0C();
     virtual void V10(); virtual void V14(); virtual void V18(); virtual void V1C();
@@ -86,7 +84,7 @@ public:
     float m_fPulseRate;                         // +0xc8, descriptive
 };
 
-class RenderCamera {
+class Camera {
 public:
     char pad_0x0[0x7c];
     Vector m_vPosition;                         // +0x7c
@@ -102,24 +100,7 @@ public:
     void DoHighlightTriggers(unsigned char bFlag);  // Scene vtable +0x118
 };
 
-extern RenderCamera* g_pRenderCamera;           // 0x007BB4E8
-extern float g_fFrameTime;                      // 0x0078E574
-extern int g_bHighlightTriggers;                // 0x0078E614, descriptive
-extern CExoArrayList<TriggerPart*> g_l80AA74;   // 0x0080AA74 trigger parts
-extern unsigned int g_nGLBlend;                 // 0x0078D448
-extern unsigned int g_nGLAlphaTest;             // 0x0078D44C
-extern unsigned int g_nGLTexture2D;             // 0x0078D458
-extern unsigned int g_nGLDepthTest;             // 0x0078D45C
-extern unsigned int g_nGLStencilTest;           // 0x0078D470
-extern unsigned int g_aBlendFactors[];          // 0x0073F270
-extern unsigned int g_eGLLequal;                // 0x0073F2AC
-extern unsigned int g_nGLAlways;                // 0x0073F2BC
-extern unsigned int g_eGLCW;                    // 0x0073F2C0
-extern unsigned int g_eGLCCW;                   // 0x0073F2C4
-extern unsigned int g_nGLKeep;                  // 0x0073F2C8
-extern unsigned int g_eGLIncr;                  // 0x0073F2D4
-extern unsigned int g_eGLDecr;                  // 0x0073F2D8
-extern unsigned int g_aPrimitiveModes[];        // 0x0073F334
+#include "shared/globals.h"
 
 static __forceinline void ClearStencil()
 {
@@ -136,7 +117,7 @@ static __forceinline void ClearStencil()
 // FUNCTION: SWKOTOR 0x00456300
 void Scene::DoHighlightTriggers(unsigned char bFlag)
 {
-    CExoArrayList<TriggerPart*> lTriggers;
+    CExoArrayList<Part*> lTriggers;
     int nBits = AurGetAvailableStencilBits();
     if (!nBits)
         return;
@@ -147,7 +128,7 @@ void Scene::DoHighlightTriggers(unsigned char bFlag)
         glDisable(g_nGLDepthTest);
         glDisable(g_nGLAlphaTest);
         for (int i = 0; i < g_l80AA74.num; i++) {
-            TriggerPart* pTrigger = g_l80AA74.element[i];
+            Part* pTrigger = g_l80AA74.element[i];
             if (pTrigger->m_bA8 && bFlag == pTrigger->m_bHighlightGroup) {
                 if (lTriggers.num == lTriggers.array_size)
                     lTriggers.Allocate(lTriggers.array_size ? lTriggers.array_size * 2 : 8);
@@ -186,7 +167,7 @@ void Scene::DoHighlightTriggers(unsigned char bFlag)
             glBlendFunc(g_aBlendFactors[0], g_aBlendFactors[1]);
             glStencilFunc(g_eGLLequal, nRef, 0xffffffff);
             glStencilOp(g_nGLKeep, g_nGLKeep, g_nGLKeep);
-            TriggerPart* pTrigger = lTriggers.element[k];
+            Part* pTrigger = lTriggers.element[k];
             if (pTrigger->m_bPulse) {
                 float fPulse = ((float)sin(pTrigger->m_fPulseRate * m_fHighlightTime) + 1.0f)
                     * pTrigger->m_fPulseAmplitude * 0.5f;

@@ -56,28 +56,10 @@ public:
     GobRef& operator=(CAurObject* p);               // 0x00447FA0
 };
 
-class CSWMGTargettingInfo {
-public:
-    CSWMGTargettingInfo();                          // 0x00673A30
-    float m_fHorizSpread;                           // 0x00
-    float m_fVertSpread;                            // 0x04
-    float m_fSensingRadius;                         // 0x08
-    float m_fInaccuracy;                            // 0x0c
-};
+#include "shared/swmg_targetting_info.h"
 
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 inline Vector operator*(float f, const Vector& v)
 {
@@ -90,15 +72,7 @@ public:
     float w, x, y, z;
 };
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    int IsValid() const;                            // 0x00406030
-    char* GetResRef() const;                        // 0x00641DB0 (returns this)
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CAurObject {
 public:
@@ -122,7 +96,7 @@ public:
                            float fVariance);        // 0x005D5E10
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
+#include "shared/globals.h"
 
 class CAurBehaviorAttach {
 public:
@@ -152,17 +126,7 @@ public:
     Gob* m_pGob;                                    // 0x10
 };
 
-class CSWMiniHitInfo {
-public:
-    CSWMiniHitInfo();                               // 0x00673A10
-    int m_nDamage;                                  // 0x00
-    float m_fSpeed;                                 // 0x04
-    float m_fRateOfFire;                            // 0x08
-    float m_fLifespan;                              // 0x0c
-    int m_nTargetMask;                              // 0x10
-    int m_n14;                                      // 0x14
-    CResRef m_cSound;                               // 0x18
-};
+#include "shared/sw_mini_hit_info.h"
 
 class CSWTrackFollower;
 

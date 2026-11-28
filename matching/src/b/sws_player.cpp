@@ -34,8 +34,7 @@ public:
     char pad_0x0[0x4];
 };
 
-extern const int EFFECT_TYPE_DISGUISE;                          // 0x00746774 (0x3E)
-extern const unsigned char OBJECT_TYPE_LAST_NON_GAME;           // 0x00746633 (4)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00561080
 CGameObject* CSWSPlayer::GetGameObject()
@@ -92,7 +91,7 @@ template class CExoLinkedList<CLastUpdateObject>;
 // FUNCTION: SWKOTOR 0x00561820
 CLastUpdateObject* CSWSPlayer::GetLastUpdateObject(unsigned long nId)
 {
-    void* pPos = m_pLastUpdateObjects->GetHeadPos();
+    CExoLinkedListPosition pPos = m_pLastUpdateObjects->GetHeadPos();
     while (pPos) {
         CLastUpdateObject* pObject = m_pLastUpdateObjects->GetAtPos(pPos);
         if (pObject->m_nId == nId) {

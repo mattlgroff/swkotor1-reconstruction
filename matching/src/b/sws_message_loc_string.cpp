@@ -36,7 +36,7 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender); // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                              // 0x007A3A08
+#include "shared/globals.h"
 
 // The player's language, then the default and module languages, then the
 // first stored entry; a bare StrRef is fetched from the talk table and its
@@ -56,12 +56,12 @@ int CSWSMessage::GetLocStringServerTime(unsigned long nPlayerId, CExoLocString& 
     int nLanguage = g_pAppManager->GetServerExoApp()->GetPlayerLanguage(nPlayerId);
     int nModuleLanguage = g_pAppManager->GetServerExoApp()->GetModuleLanguage();
     unsigned char nFoundGender;
-    if (!sString.GetStringLoc(nLanguage, sOut, nGender) &&
-        !(nLanguage != 0 && sString.GetStringLoc(0, sOut, nGender)) &&
-        !(nModuleLanguage != nLanguage && nModuleLanguage != 0 && sString.GetStringLoc(nModuleLanguage, sOut, nGender)) &&
+    if (!sString.GetStringLoc(nLanguage, &sOut, nGender) &&
+        !(nLanguage != 0 && sString.GetStringLoc(0, &sOut, nGender)) &&
+        !(nModuleLanguage != nLanguage && nModuleLanguage != 0 && sString.GetStringLoc(nModuleLanguage, &sOut, nGender)) &&
         !sString.GetString(0, &nLanguage, sOut, &nFoundGender) &&
-        sString.m_nStrRef != 0xffffffff) {
-        g_pTlkTable->Fetch(sString.m_nStrRef, strRes, nFoundGender);
+        sString.m_dwStringRef != 0xffffffff) {
+        g_pTlkTable->Fetch(sString.m_dwStringRef, strRes, nFoundGender);
         sOut = strRes.sString;
         fSeconds = strRes.fSoundLength + fSeconds;
     }

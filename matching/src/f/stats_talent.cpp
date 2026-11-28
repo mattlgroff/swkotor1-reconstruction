@@ -15,13 +15,7 @@ public:
     char pad_0x1d[0x3];
 };
 
-class CExoString {
-public:
-    CExoString(const char *s);
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:
@@ -47,7 +41,7 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 int GetIsSpellCasterClass(int nClass);
 

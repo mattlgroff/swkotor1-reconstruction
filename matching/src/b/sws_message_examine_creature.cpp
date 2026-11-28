@@ -3,7 +3,7 @@
 #include "b/sws_creature.h"
 #include "b/sws_player.h"
 
-extern const unsigned char GAME_OBJECT_VALID;               // 0x0074666C
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0056EBE0
 int CSWSMessage::SendServerToPlayerExamineGui_CreatureData(CSWSPlayer* pPlayer, unsigned long oid)

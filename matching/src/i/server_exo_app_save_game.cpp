@@ -40,38 +40,16 @@ public:
 };
 
 // Save/load progress block hung off the app manager (placeholder name).
-struct CSaveLoadStatus {
-    int m_n0;                                                       // +0x00
-    int m_n4;                                                       // +0x04
-    unsigned long m_n8;                                             // +0x08
-    unsigned long m_nC;                                             // +0x0c
-    int m_n10;                                                      // +0x10
-    int m_n14;
-    CExoString m_sDirectory;                                        // +0x18
-    CExoString m_sSaveGame;                                         // +0x20
-    char m_pad28[0x38 - 0x28];
-    int m_n38;                                                      // +0x38
-};
+#include "shared/reentrant_server_stats.h"
 
-class CAppManager {
-public:
-    void DoSaveGameScreenShot(CExoString& sFile);                   // 0x00401080
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                                 // +0x04
-    CServerExoApp* m_pServerExoApp;                                 // +0x08
-    char m_pad0c[0x14 - 0x0c];
-    CSaveLoadStatus* m_pSaveLoadStatus;                             // +0x14
-    CSaveLoadStatus* GetSaveLoadStatus() { return m_pSaveLoadStatus; }
-};
-extern CAppManager* g_pAppManager;                                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
 class CExoSound {
 public:
     void SetMusicState(int nState);                                 // 0x005D5E80
 };
-extern CExoSound* g_pExoSound;                                      // 0x007A39EC
-extern const int SOUND_MODE_MOVIE;                                  // 0x0074C5F8
 
 void PlayDelayedSound(float fDelay, int a, int b);                  // 0x00401C10
 
@@ -101,15 +79,15 @@ int CServerExoAppInternal::SaveGame(unsigned long nSlot, CExoString& sName, CSWS
     }
     sScreenShot = sPath + "\\" + "SAVEGAME";
 
-    CSaveLoadStatus* pStatus = g_pAppManager->GetSaveLoadStatus();
-    pStatus->m_n0 = 1;
-    pStatus->m_n4 = 2;
+    CSWReentrantServerStats* pStatus = g_pAppManager->GetReentrantServerStats();
+    pStatus->m_bActive = 1;
+    pStatus->m_nKind = 2;
     pStatus->m_n10 = 1;
-    pStatus->m_n38 = 0;
-    g_pAppManager->GetSaveLoadStatus()->m_sDirectory = sPath;
-    g_pAppManager->GetSaveLoadStatus()->m_sSaveGame = sScreenShot;
-    g_pAppManager->GetSaveLoadStatus()->m_n8 = 0;
-    g_pAppManager->GetSaveLoadStatus()->m_nC = 0;
+    pStatus->m_nLoadError = 0;
+    g_pAppManager->GetReentrantServerStats()->m_sDirectory = sPath;
+    g_pAppManager->GetReentrantServerStats()->m_sSaveGame = sScreenShot;
+    g_pAppManager->GetReentrantServerStats()->m_nStep = 0;
+    g_pAppManager->GetReentrantServerStats()->m_nProgress = 0;
     CSWSMessage* pMessage = GetServerExoApp()->FUN_004aedb0();
     pMessage->SendServerToPlayerLoadBar_StartStallEvent(2);
 

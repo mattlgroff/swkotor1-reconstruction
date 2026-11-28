@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "c/exo_base.h"
 
-extern char g_sExoEmptyString[];                    // 0x008328A4 "" (.data)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x005E57B0
 void CExoString::Insert(const CExoString& s, int nPosition)

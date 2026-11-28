@@ -1,9 +1,7 @@
 // CSWCCreature line-of-sight test, worker C s8 (nwccreature.o;
 // translation-unit-local layout).
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CGob;
 
@@ -39,7 +37,7 @@ public:
     unsigned char m_bIgnoreList;                    // 0x5c (descriptive)
 };
 
-extern CHitInfo g_cHitInfo;                         // 0x007B93A8
+#include "shared/globals.h"
 
 class Scene;
 int SceneHitCheck(Scene* pScene, Vector vFrom, Vector vTo, int b, void* pHit);   // 0x0060F1E0
@@ -60,23 +58,11 @@ class CSWCObject;
 class CSWCDoor;
 class CSWCPlaceable;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10();
-    virtual CSWCDoor* AsSWCDoor();                  // 0x14
-    virtual void v18(); virtual void v1C(); virtual void v20(); virtual void v24();
-    virtual void v28(); virtual void v2C(); virtual void v30(); virtual void v34();
-    virtual void v38(); virtual void v3C(); virtual void v40(); virtual void v44();
-    virtual void v48();
-    virtual CSWCPlaceable* AsSWCPlaceable();        // 0x4c
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
-    virtual CGameObject* GetGameObject();           // 0x70 (descriptive)
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:
+    virtual CGameObject* GetGameObject();  // 0x70 (descriptive)
     virtual void v74(); virtual void v78(); virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
     virtual void v90(); virtual void v94();
@@ -94,7 +80,7 @@ public:
     virtual void v130(); virtual void v134(); virtual void v138(); virtual void v13C();
     virtual float GetEyeHeight();                   // 0x140 (descriptive)
 
-    char pad_0x4[0x20 - 0x4];
+    char pad_0xc[0x14];
     CSWCArea* m_pArea;                              // 0x20
     Vector m_vPosition;                             // 0x24
 };
@@ -150,7 +136,7 @@ int CSWCCreature::CanSeeObject(CSWCObject* pTarget)
         if (nResult != 2) {
             break;
         }
-        CGameObject* pObject = g_cHitInfo.m_pHitObject->GetGameObject();
+        CGameObject* pObject = ((CSWCObject*)g_cHitInfo.m_pHitObject)->GetGameObject();
         if (!pObject) {
             nResult = 1;
             break;

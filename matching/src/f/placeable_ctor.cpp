@@ -1,27 +1,10 @@
 // CSWSPlaceable constructor (round s8, 0x005877E0).
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    ~CExoLocString();
-    void *m_pList;
-    void *m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef operator=(const char *s);
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 template <class T>
 class CExoArrayList {
@@ -43,8 +26,7 @@ public:
     float w, x, y, z;
 };
 
-extern const unsigned char g_nObjectTypePlaceable; // 0x00746638
-extern const unsigned long g_oidInvalid;           // 0x00746644
+#include "shared/globals.h"
 
 class CSWSObject;
 
@@ -58,14 +40,8 @@ public:
     CServerAIMaster *GetServerAIMaster();
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
 
 class CItemRepository {
 public:
@@ -74,13 +50,7 @@ public:
     char pad_0x0[0x18];
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:

@@ -3,13 +3,7 @@
 
 #include <string.h>
 
-class Vector {
-public:
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-(const Vector &v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:
@@ -63,22 +57,9 @@ public:
     char pad_0x24[0x4];
 };
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    char *CStr() const;
-    void Format(const char *szFormat, ...);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef operator=(const CExoString &s);
-    void CopyToString(CExoString &s) const;
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CResBWM;
 

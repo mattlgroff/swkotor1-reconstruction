@@ -45,7 +45,7 @@ public:
     CSWBaseItemArray *GetBaseItemArray() { return m_pBaseItemArray; }
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 class CItemRepository {
 public:
@@ -54,10 +54,7 @@ public:
     unsigned long m_nItemCount;      // +0x10
 };
 
-class CSWSInventory {
-public:
-    CSWSItem *GetItemInSlot(unsigned long nSlot);
-};
+#include "shared/sws_inventory.h"
 
 class CSWSCreature {
 public:

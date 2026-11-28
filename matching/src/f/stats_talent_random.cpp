@@ -33,14 +33,7 @@ public:
     }
 };
 
-class CExoString {
-public:
-    CExoString(const char *s);
-    ~CExoString();
-    char *CStr() const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:
@@ -88,7 +81,7 @@ public:
     CSWFeat *GetFeat(unsigned short nFeat);
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 class CSWSArea;
 

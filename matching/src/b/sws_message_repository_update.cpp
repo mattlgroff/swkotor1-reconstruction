@@ -6,15 +6,11 @@
 #include "b/sws_player.h"
 #include "b/sws_item.h"
 
-extern const unsigned char OBJECT_TYPE_ITEM;                // 0x00746635
+#include "shared/globals.h"
 
-struct CExoLinkedListNode;
+class CExoLinkedListNode;
 
-struct CSWSPlayerLUOItem {
-    unsigned long m_oidItem;                                // 0x0
-    unsigned long m_nStackSize;                             // 0x4
-    unsigned long m_nCost;                                  // 0x8
-};
+#include "shared/sws_player_luo_item.h"
 
 class CSWSPlayerLUOInventory {
 public:

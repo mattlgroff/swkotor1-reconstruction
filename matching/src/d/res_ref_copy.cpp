@@ -1,12 +1,9 @@
-// the out-of-line CResRef copy constructor. It normalises through
-// operator=(const char (&)[16]); res_ref.cpp keeps an inline memcpy copy
-// constructor for the by-value operator= returns, so this lives in its own TU.
-#include "d/exo_key_table.h"
+// CResRef::CResRef(unsigned char*), as the Mac debug map names 0x00406DA0:
+// it normalises through operator=(unsigned char*) (0x00406170).
+#include "shared/res_ref.h"
 
-typedef CResRef (CResRef::*PFN_ASSIGN_ARRAY)(const char (&)[16]);
-
-// FUNCTION: SWKOTOR 0x00406da0 SYMBOL: ??0CResRef@@QAE@ABV0@@Z
-CResRef::CResRef(const CResRef& cResRef)
+// FUNCTION: SWKOTOR 0x00406da0 SYMBOL: ??0CResRef@@QAE@PAE@Z
+CResRef::CResRef(unsigned char* pResRef)
 {
-    (this->*(PFN_ASSIGN_ARRAY)&CResRef::operator=)(cResRef.m_resRef);
+    *this = pResRef;
 }

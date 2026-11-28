@@ -6,40 +6,11 @@
 #ifndef K_SW_GUI_MAIN_INTERFACE_H
 #define K_SW_GUI_MAIN_INTERFACE_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* sString);                // 0x005E5A90
-    CExoString(const CExoString& sString);          // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    char* CStr() const;                             // 0x005E5670
-    void Format(const char* szFormat, ...);         // 0x005E5680
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CExoString& s);                   // 0x00406D60
-    int IsValid() const;                            // 0x00406030
-    int operator!=(const char* s) const;            // 0x00406060
-    int operator!=(const CResRef& r) const;         // 0x00406DC0
-    int operator==(const char* s) const;            // 0x004060D0
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    CResRef operator=(const char* s);               // 0x00406290
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class Vector {
-public:
-    Vector() {}
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct CSWGuiExtent {
     int left;
@@ -53,13 +24,7 @@ void AurGUIStartLayer();                            // 0x004591B0
 int AurGUISetupViewport(int x, int y, int w, int h, Vector* pColor, int n, float fAlpha); // 0x004592F0
 void AurGUIStopLayer();                             // 0x004592B0
 void AurGUICloseViewport();                         // 0x00459580
-extern Vector g_vGuiViewportColor;                  // 0x0078D3D8
-extern Vector g_vBlack;                             // 0x00833910
-extern Vector g_vGuiColor23B4;                      // 0x007A23B4 (descriptive)
-extern Vector g_vGuiColor23D8;                      // 0x007A23D8 (descriptive)
-extern Vector g_vGuiColor23E4;                      // 0x007A23E4 (descriptive)
-extern Vector g_vGuiColor23F0;                      // 0x007A23F0 (descriptive)
-extern Vector g_vGuiColor23FC;                      // 0x007A23FC (descriptive)
+#include "shared/globals.h"
 
 class CSWGuiControl;
 
@@ -76,33 +41,13 @@ public:
     void UpdateToolTip(CExoString* pText);          // 0x0040A340
 };
 
-extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
 
-typedef void* CExoLinkedListPosition;
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    CExoLinkedListNode* m_pHead;
-    CExoLinkedListNode* m_pTail;
-    unsigned long m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListPosition GetHeadPos() { return m_pList->m_pHead; }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pList->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pList->GetNext(pos); }
-    CExoLinkedListInternal* m_pList;
-};
+
 
 // Queued creature action (CSWSObject action list entry).
 struct CSWSObjectActionNode {
@@ -155,7 +100,6 @@ public:
     CSWSpellArray* m_pSpellArray;                   // 0x8c
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWSCombatRound {
 public:
@@ -305,16 +249,8 @@ public:
     class CSWCModuleCamera* GetModuleCamera();      // 0x005ED560
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWGuiTextParams {
 public:
@@ -517,13 +453,7 @@ struct CSWGuiTargetAction {
 };
 #pragma pack(pop)
 
-struct CSWGuiTargetActionList {
-    CSWGuiTargetActionList();                       // 0x005A76D0 (CExoArrayList)
-    ~CSWGuiTargetActionList();                      // 0x005FBFB0
-    CSWGuiTargetAction* m_pData;                    // 0x00
-    int m_nCount;                                   // 0x04
-    int m_nAlloc;                                   // 0x08
-};
+#include "shared/sw_gui_target_action_list.h"
 
 class CSWCObject;
 
@@ -585,11 +515,7 @@ public:
     };
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CSWCActionTarget* AsActionTarget();     // 0x0c
-};
+#include "shared/game_object.h"
 
 class CGuiInGame {
 public:
@@ -687,7 +613,6 @@ public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 
 class CSWGuiPanel {
 public:
@@ -833,8 +758,6 @@ public:
     int m_bDirty;                                   // 0xea4
 };
 
-extern int g_bClearTargetOnAction;                 // 0x008338F8
-extern int g_bDrawGui;                              // 0x007A2288
 
 // 0x1b4 bytes (matching/src/d: dtor 0x0041B610).
 class CSWGuiLabelHilight : public CSWGuiLabel {

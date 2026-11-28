@@ -13,93 +13,21 @@ class CLoopingVisualEffect;
 class CSWSExpression;
 class CSWSObjectActionNode;
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();                                // 0x005E9E10
-    ~CExoLocString();                               // 0x005EA000
-    void* m_pInternal;
-    unsigned long m_n4;
-};
+#include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class Vector {
-public:
-    Vector()
-    {
-        x = 0.0f;
-        y = 0.0f;
-        z = 0.0f;
-    }
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 int operator==(const Vector& a, const Vector& b);  // 0x004AA980
 
-class CGameObject {
-public:
-    CGameObject(unsigned char nType, unsigned long oid);    // 0x004D7D60
-    virtual ~CGameObject();                         // 0x004C3030
-    virtual void SetId(unsigned long oid);          // +0x04 (placeholder name)
-    virtual void ResetUpdateTimes(unsigned long nDay, unsigned long nTime);    // +0x08 (placeholder name)
-    virtual void* As0c();
-    virtual CSWSObject* AsSWSObject();              // +0x10
-    virtual void* As14();
-    virtual void* As18();
-    virtual void* As1c();
-    virtual void* As20();
-    virtual void* As24();
-    virtual CSWSArea* AsSWSArea();                  // +0x28
-    virtual void* As2c();
-    virtual CSWSCreature* AsSWSCreature();          // +0x30
-    virtual void* As34();
-    virtual void* As38();
-    virtual void* As3c();
-    virtual void* As40();
-    virtual void* As44();
-    virtual void* As48();
-    virtual void* As4c();
-    virtual void* As50();
-    virtual void* As54();
-    virtual void* As58();
-    virtual void* As5c();
-    virtual void* As60();
-    virtual void* As64();
-    virtual void* As68();
-    virtual void* As6c();
-
-    unsigned long m_idSelf;                         // +0x04
-    unsigned char m_nObjectType;                    // +0x08
-};
+#include "shared/game_object.h"
 
 class CExoLinkedListInternal;
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();                               // 0x004CC3D0
-    ~CExoLinkedList();
-    CExoLinkedListInternal* m_pList;
-};
+#include "shared/exo_linked_list.h"
 
 template <class T>
 class CExoArrayList {
@@ -156,16 +84,11 @@ public:
     CWorldTimer* GetWorldTimer();                   // 0x004AEDE0
 };
 
-class CAppManager {
-public:
-    void* m_p0;
-    void* m_pClientExoApp;                          // +0x04
-    CServerExoApp* m_pServerExoApp;                 // +0x08
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
-extern const unsigned long OBJECT_INVALID;          // 0x00746644
+#include "shared/object_id.h"
 
 // vtable 0x00745F18
 class CSWSObject : public CGameObject {

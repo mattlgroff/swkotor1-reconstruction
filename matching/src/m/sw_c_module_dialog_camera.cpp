@@ -1,32 +1,13 @@
 // CSWCModule dialogue-camera queries and transitions.
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    char* CStr() const;                             // 0x005E5670
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    int operator!=(const char* szName) const;       // 0x00406060
-    void CopyToString(CExoString& sOut) const;      // 0x00405F70
-
-    char m_pResRef[16];
-};
+#include "shared/res_ref.h"
 
 class CAurObject;
 CAurObject* NewCAurObject(const char* szModel, const char* szParent, int nFlags, int nUnused); // 0x00449CC0
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:
@@ -93,11 +74,7 @@ public:
 };
 
 class CSWCObject;
-class CGameObject {
-public:
-    virtual void g00(); virtual void g04(); virtual void g08();
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-};
+#include "shared/game_object.h"
 
 class CGuiInGame {
 public:
@@ -118,12 +95,8 @@ public:
     CClientOptions* GetClientOptions();             // 0x005ED700
 };
 
-class CAppManager {
-public:
-    void* pad;
-    CClientExoApp* m_pClientExoApp;
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 
 class CSWCameraSettings {
 public:

@@ -2,18 +2,9 @@
 
 class CSWCArea;
 
-class Vector {
-public:
-    float x, y, z;
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CAurObject {
 public:
@@ -37,16 +28,7 @@ public:
 
 CAurObject* NewCAurObject(const char* szModel, const char* szName, int a, int b);   // 0x00449CC0
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    char* CStr() const;                             // 0x005E5670
-
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 struct CSWMiniTrackPoint {
     CResRef m_cName;                                // 0x00
@@ -115,11 +97,7 @@ public:
     unsigned char m_bHilitable;                     // 0x90 (descriptive)
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-};
+#include "shared/game_object.h"
 
 class CClientExoApp {
 public:
@@ -127,15 +105,9 @@ public:
     CSWCCreature* GetPlayerCreature();              // 0x005ED540
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 template <class T>
 class CExoArrayList {

@@ -244,92 +244,7 @@ public:
 
 // Virtual interface of the client creature (vtable slot 0x148 only); the
 // shared CSWCCreature declaration carries no vtable.
-class CSWCCreatureVirtuals {
-public:
-    virtual void v000();
-    virtual void v004();
-    virtual void v008();
-    virtual void v00C();
-    virtual void v010();
-    virtual void v014();
-    virtual void v018();
-    virtual void v01C();
-    virtual void v020();
-    virtual void v024();
-    virtual void v028();
-    virtual void v02C();
-    virtual void v030();
-    virtual void v034();
-    virtual void v038();
-    virtual void v03C();
-    virtual void v040();
-    virtual void v044();
-    virtual void v048();
-    virtual void v04C();
-    virtual void v050();
-    virtual void v054();
-    virtual void v058();
-    virtual void v05C();
-    virtual void v060();
-    virtual void v064();
-    virtual void v068();
-    virtual void v06C();
-    virtual CExoString GetDisplayName();           // 0x70 (descriptive)
-    virtual void v074();
-    virtual void v078();
-    virtual void v07C();
-    virtual void v080();
-    virtual void v084();
-    virtual void SetOrientation(const Vector& vOrientation);  // 0x88 (CSWCObject)
-    virtual void SetGuiPosition(const Vector& vPosition);  // 0x8c (descriptive)
-    virtual void v090();
-    virtual void SetGuiScene(class CAurScene* pScene);   // 0x94 (descriptive)
-    virtual void v098();
-    virtual void v09C();
-    virtual void v0A0();
-    virtual void v0A4();
-    virtual void v0A8();
-    virtual void v0AC();
-    virtual void v0B0();
-    virtual void v0B4();
-    virtual void v0B8();
-    virtual void v0BC();
-    virtual void v0C0();
-    virtual void v0C4();
-    virtual void v0C8();
-    virtual void v0CC();
-    virtual void v0D0();
-    virtual void v0D4();
-    virtual float GetModelHeight();                // 0xd8 (descriptive)
-    virtual void v0DC();
-    virtual void v0E0();
-    virtual void v0E4();
-    virtual void v0E8();
-    virtual void v0EC();
-    virtual void v0F0();
-    virtual void v0F4();
-    virtual void v0F8();
-    virtual void v0FC();
-    virtual void v100();
-    virtual void v104();
-    virtual void v108();
-    virtual void v10C();
-    virtual void v110();
-    virtual void v114();
-    virtual void v118();
-    virtual void v11C();
-    virtual void v120();
-    virtual void v124();
-    virtual void v128();
-    virtual void v12C();
-    virtual void v130();
-    virtual void v134();
-    virtual void v138();
-    virtual void v13C();
-    virtual void v140();
-    virtual void v144();
-    virtual CResRef GetPortrait(int bLarge);        // 0x148
-};
+#include "shared/swc_creature_virtuals.h"
 
 inline CResRef GetCreaturePortrait(CSWCCreature* pCreature, int bLarge)
 {
@@ -469,10 +384,7 @@ public:
     unsigned long m_bSelected : 1;                  // 0x124
 };
 
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
-extern Vector g_vAbilityColorAvailable;             // 0x007A23D8
-extern Vector g_vAbilityColorLocked;                // 0x007A23E4
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
+#include "shared/globals.h"
 
 // A row of up to three chained abilities with arrows between them;
 // vtable 0x007578A8, 0x47c bytes, ctor 0x006CCCC0, ??_G 0x006CD420,

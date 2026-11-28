@@ -5,13 +5,7 @@
 
 #include <stddef.h>
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;
@@ -72,43 +66,16 @@ public:
     int array_size;
 };
 
-typedef void* CExoLinkedListPosition;
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    CExoLinkedListPosition AddBefore(void* p, CExoLinkedListPosition pos);  // 0x005E9AD0
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    void* RemoveHead();                             // 0x005E9C80
-    CExoLinkedListPosition AddTail(void* p);        // 0x005E9DC0
-    CExoLinkedListPosition m_pHead;
-    CExoLinkedListPosition m_pTail;
-    unsigned long m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList() { m_pList = new CExoLinkedListInternal; }
-    ~CExoLinkedList() { delete m_pList; }
-    CExoLinkedListPosition GetHeadPos() { return m_pList->m_pHead; }
-    unsigned long GetCount() { return m_pList->m_nCount; }
-    int IsEmpty() { return m_pList->m_pHead == NULL; }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pList->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pList->GetNext(pos); }
-    T* RemoveHead() { return (T*)m_pList->RemoveHead(); }
-    CExoLinkedListPosition AddTail(T* p) { return m_pList->AddTail(p); }
-    CExoLinkedListPosition AddBefore(T* p, CExoLinkedListPosition pos) { return m_pList->AddBefore(p, pos); }
-    CExoLinkedListInternal* m_pList;
-};
 
-class CSWSObject {
+
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
-    char m_pad0[4];
-    unsigned long m_idSelf;                         // +0x04
-    char m_pad8[0x78 - 8];
+    char pad_0xc[0x6c];
     int m_nAILevel;                                 // +0x78
 };
 
@@ -225,13 +192,8 @@ public:
     unsigned char GetActivePauseState();            // 0x004AE990
 };
 
-class CAppManager {
-public:
-    void* m_p0;
-    void* m_p4;
-    CServerExoApp* m_pServerExoApp;                 // +0x08
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 
 class CVirtualMachine {
 public:
@@ -239,9 +201,7 @@ public:
     int SaveScriptSituation(void* pScript, CResGFF* pGFF, CResStruct* pStruct);  // 0x005D10F0
     int LoadScriptSituation(void** ppScript, CResGFF* pGFF, CResStruct* pStruct); // 0x005D1100
 };
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 
-extern int g_bLogEvents;                            // 0x00831FD8 (unnamed)
 void LogEventAdd(unsigned long nCaller, unsigned long nObject, void* pEventData);  // 0x004AF630 (unnamed)
 
 struct CSWSCombatAttackData {
@@ -260,9 +220,7 @@ struct CSWCCMessageData {
     int LoadData(CResGFF* pGFF, CResStruct* pStruct);   // 0x004D6B10
     char m_pad0[0x34];
 };
-struct CSWSActionTarget {
-    int SaveData(CResGFF* pGFF, CResStruct* pStruct);   // 0x005034F0 (placeholder class)
-};
+#include "shared/sws_action_target.h"
 class CGameEffect {
 public:
     CGameEffect(int bCreateNewID);                  // 0x00503E40

@@ -4,23 +4,9 @@
 // (CSWGuiControl*, RET 4) belongs to 0x00692B00, which is missing from the
 // table. Other names are descriptive.
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString operator+(const CExoString& s) const;  // 0x005E5D10
-    int GetLength() const;                          // 0x005E5790
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    int GetString(unsigned long nLanguage, CExoString* pString, unsigned char nGender) const;  // 0x005EA130
-    char pad_0x0[0x8];
-};
+#include "shared/exo_loc_string.h"
 
 class CSWSWaypoint {
 public:
@@ -28,30 +14,20 @@ public:
     CExoLocString m_sMapNote;                       // 0x230
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
-    virtual void v50(); virtual void v54();
-    virtual CSWSWaypoint* AsSWSWaypoint();          // 0x58
-};
+#include "shared/game_object.h"
 
 class CTlkTable {
 public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
+#include "shared/globals.h"
 
 class CVirtualMachine {
 public:
     int RunScript(CExoString* psScript, unsigned long oidSelf, int bOid);  // 0x005D0FC0
 };
 
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 
 class CSWGuiTextParams {
 public:
@@ -153,16 +129,8 @@ public:
     CGameObject* GetGameObject(unsigned long oid);  // 0x004AE750
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWGuiInGameMap : public CSWGuiPanel {
 public:

@@ -57,18 +57,12 @@ struct VertexPC {
     unsigned char c[4];     // +0x0c
 };
 
-extern int g_bFontInitialised;                        // 0x007b90f0
-extern unsigned int g_nFontListBase;                  // 0x007a47c0
+#include "shared/globals.h"
 void AurInitFont();                                   // 0x0044cc40
 void RenderSquares(int nId);                          // 0x00426000
-extern CExoArrayList<unsigned int> g_aRenderSquares;  // 0x007a693c
 void AurDrawString(char* sz);                         // 0x00432040
 
 void _glOrtho(double l, double r, double b, double t, double n, double f); // 0x00404b60
-extern unsigned int g_aGLBlendFactors[];              // 0x0073f270
-extern unsigned int g_aGLMatrixModes[];               // 0x0073f290
-extern unsigned int g_nGLCap1;                        // 0x0078d474
-extern unsigned int g_nGLCap4;                        // 0x0078d448
 
 class CAurFontTexture {
 public:
@@ -128,7 +122,5 @@ public:
     void Draw(char* sz, int nLength);                 // 0x004a1770
 };
 
-extern CExoArrayList<CAurFontRender*> g_aFonts;       // 0x0083052c
-extern int g_nCurrentFont;                            // 0x0078e358
 
 #endif

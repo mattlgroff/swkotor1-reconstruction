@@ -8,18 +8,7 @@
 
 class CSWSObject;
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;
@@ -61,23 +50,11 @@ public:
     int WriteFieldCExoString(CResStruct* pStruct, const CExoString& sValue, char* szLabel); // 0x00412970
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject() {}                       // 0x00
-    virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual CSWSObject* AsSWSObject();              // 0x10
-    virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3c();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4c();
-    virtual class CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject();  // 0x50 (placeholder name)
-};
+#include "shared/game_object.h"
 
 // vtable 0x00745F18 (only the slot used here)
 class CSWSObject : public CGameObject {
 public:
-    virtual void v54(); virtual void v58(); virtual void v5c();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7c();
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8c();
     virtual void v90(); virtual void v94(); virtual void v98(); virtual void v9c();
@@ -91,12 +68,8 @@ public:
     CGameObject* GetGameObject(unsigned long oid);  // 0x004AE750
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp* m_pServerExoApp;                 // 0x8
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
 class CSWSAreaOfEffectObject {
@@ -105,26 +78,11 @@ public:
     unsigned long m_oidCreator;                     // 0x248
 };
 
-extern const int g_nEffectTrueType746708;          // 0x00746708
-extern const int g_nEffectTrueType746714;          // 0x00746714
 
-extern unsigned __int64 g_nNextEffectID;            // 0x007A1B40 (placeholder name)
 
 // Action target record, 0x1c bytes (placeholder name; saved as ActionId,
 // GroupId, Target_Area, Target_Object, Target_LocX/Y/Z).
-class CSWSActionTarget {
-public:
-    CSWSActionTarget();                             // 0x005034D0
-    int SaveData(CResGFF* pRes, CResStruct* pStruct);   // 0x005034F0
-
-    unsigned long m_nActionId;                      // 0x00
-    unsigned short m_nGroupId;                      // 0x04
-    unsigned long m_oidArea;                        // 0x08
-    float m_fX;                                     // 0x0c
-    float m_fY;                                     // 0x10
-    float m_fZ;                                     // 0x14
-    unsigned long m_oidTarget;                      // 0x18
-};
+#include "shared/sws_action_target.h"
 
 #pragma pack(push, 4)
 class CGameEffect {

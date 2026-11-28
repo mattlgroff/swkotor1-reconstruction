@@ -9,33 +9,9 @@
 #ifndef M_SW_GUI_MAIN_MENU_H
 #define M_SW_GUI_MAIN_MENU_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* sString);                // 0x005E5A90
-    CExoString(const CExoString& sString);          // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int operator<=(const CExoString& s) const;      // 0x005E5500
-    int operator==(const CExoString& s) const;      // 0x005E5200
-    char* CStr() const;                             // 0x005E5670
-    void __cdecl Format(char* sFormat, ...);        // 0x005E5680
-    int GetLength() const;                          // 0x005E5790
-    CExoString LowerCase() const;                   // 0x005E6080
-    CExoString SubString(int nStart, int nCount) const; // 0x005E6270
-    int Find(const CExoString& s, int nStart) const;    // 0x005E5EB0
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CExoString& s);                   // 0x00406D60
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 void* operator new(unsigned int nSize);
 void operator delete(void* p);
@@ -60,8 +36,7 @@ public:
     CExoAliasList* m_pAliasList;                    // 0x0c
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
-extern unsigned char g_nLiveFolderCount;            // 0x0073ECD2 (descriptive)
+#include "shared/globals.h"
 
 template <class T>
 class CExoArrayList {
@@ -130,17 +105,7 @@ struct CSWGuiExtent {
     int height;
 };
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:
@@ -154,11 +119,6 @@ public:
     float x, y, z, w;
 };
 
-extern Vector g_vBlack;                             // 0x00833910
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
-extern Vector g_vPazaakButtonHilight;               // 0x007A23B4
-extern int g_nScreenWidth;                          // 0x0078D1D4
-extern int g_nScreenHeight;                         // 0x0078D1D8
 
 void AurGUIStartLayer();                            // 0x004591B0
 int AurGUISetupViewport(int nX, int nY, int nWidth, int nHeight, Vector* pColor, int bClear,
@@ -181,7 +141,6 @@ public:
     unsigned char m_nFlags;                         // 0x34
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
 
 class CTlkTable {
 public:
@@ -190,15 +149,12 @@ public:
     void SetCustomToken(int nToken, const CExoString& sValue);  // 0x0041DB50
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 
 class CExoSound {
 public:
     void SetSoundMode(int nMode);                   // 0x005D5E80
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern int g_nSoundModeBack;                        // 0x0074C5EC
 
 class CExoIni {
 public:
@@ -224,8 +180,6 @@ public:
                             unsigned long nFlags);  // 0x005D4CB0
 };
 
-extern unsigned long PLAYERID_SERVER;               // 0x0074C528 (0xFFFFFFFD)
-extern unsigned char g_nConnectionType;             // 0x0074C540 (descriptive)
 
 class CSWCMessage {
 public:
@@ -264,15 +218,8 @@ public:
     CWorldTimer* GetWorldTimer();                   // 0x004AEDE0
 };
 
-class CAppManager {
-public:
-    void CreateServer(int bLoad);                   // 0x00401380
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CGuiInGame {
 public:
@@ -417,11 +364,7 @@ public:
 // vtable 0x0073e658.
 class CSWGuiButton : public CSWGuiNavigable {
 public:
-#ifdef M_GUI_BUTTON_INLINE_CTOR
     CSWGuiButton() {}
-#else
-    CSWGuiButton();                                 // 0x0041C0F0
-#endif
     virtual ~CSWGuiButton();                        // 0x00419DA0
     virtual void CopyStyle(const CSWGuiExtent& extent, CSWGuiButton* pFrom); // 0x98
     CSWGuiBorder m_cBorder;                         // 0x6c
@@ -483,7 +426,6 @@ public:
     virtual void AttachToHook(CAurObject* pObject, const char* sHook, int a);   // 0x74 (descriptive)
 };
 
-extern int g_bDo3DGui;                              // 0x0078D1E4 (descriptive)
 
 class CSWGuiScene {
 public:

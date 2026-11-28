@@ -10,18 +10,7 @@ public:
     T& operator[](int i) { return element[i]; }
 };
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector& operator=(const Vector& v)
-    {
-        x = v.x;
-        y = v.y;
-        z = v.z;
-        return *this;
-    }
-};
+#include "shared/vector.h"
 
 inline float operator*(const Vector& a, const Vector& b)
 {
@@ -41,11 +30,7 @@ public:
 };
 
 // Corner indices of a post-process face (0x14 bytes).
-class MdlFaceIndices {
-public:
-    int* m_pIndices;                        // +0x00
-    char pad04[0x14 - 0x04];
-};
+#include "shared/mdl_face_indices.h"
 
 class MdlNodeTriMesh_PostProcess {
 public:
@@ -68,13 +53,13 @@ public:
 void MdlNodeTriMesh::BuildNeighborLists()
 {
     for (int f = 0; f < m_lFaces.num; f++) {
-        int* pIdx = m_pPostProcess->m_pFaces[f].m_pIndices;
+        int* pIdx = m_pPostProcess->m_pFaces[f].pPos;
         Vector* pVerts = m_pPostProcess->m_pVertices;
         m_lFaces[f].m_vNormal = NormalOf(pVerts[pIdx[0]], pVerts[pIdx[1]], pVerts[pIdx[2]]);
-        Vector& v0 = m_pPostProcess->m_pVertices[m_pPostProcess->m_pFaces[f].m_pIndices[0]];
+        Vector& v0 = m_pPostProcess->m_pVertices[m_pPostProcess->m_pFaces[f].pPos[0]];
         m_lFaces[f].m_fDistance = -(v0 * m_lFaces[f].m_vNormal);
         for (int e = 0; e < 3; e++) {
-            int* pFace = m_pPostProcess->m_pFaces[f].m_pIndices;
+            int* pFace = m_pPostProcess->m_pFaces[f].pPos;
             int a = pFace[e];
             int b = pFace[(e + 1) % 3];
             m_lFaces[f].m_anAdjacent[e] = -1;
@@ -82,9 +67,9 @@ void MdlNodeTriMesh::BuildNeighborLists()
                 if (f != g) {
                     for (int j = 0; j < 3; j++) {
                         m_lFaces[f].m_anAdjacent[e] = -1;
-                        if (m_pPostProcess->m_pFaces[g].m_pIndices[j] == a &&
-                            (m_pPostProcess->m_pFaces[g].m_pIndices[(j + 1) % 3] == b ||
-                             m_pPostProcess->m_pFaces[g].m_pIndices[(j + 2) % 3] == b)) {
+                        if (m_pPostProcess->m_pFaces[g].pPos[j] == a &&
+                            (m_pPostProcess->m_pFaces[g].pPos[(j + 1) % 3] == b ||
+                             m_pPostProcess->m_pFaces[g].pPos[(j + 2) % 3] == b)) {
                             m_lFaces[f].m_anAdjacent[e] = g;
                             break;
                         }

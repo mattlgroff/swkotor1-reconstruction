@@ -7,22 +7,7 @@ extern "C" __declspec(dllimport) int __stdcall SystemParametersInfoA(unsigned in
                                                                     void* pvParam, unsigned int fWinIni);
 extern "C" __declspec(dllimport) void __stdcall glBlendFunc(unsigned int sfactor, unsigned int dfactor);
 
-class CSWReentrantServerStats {
-public:
-    CSWReentrantServerStats();
-    ~CSWReentrantServerStats();
-
-    int m_n00;                      // 0x00
-    int m_n04;                      // 0x04
-    int m_n08;                      // 0x08
-    int m_n0c;                      // 0x0c
-    int m_n10;                      // 0x10
-    int m_n14;                      // 0x14
-    CExoString m_s18;               // 0x18
-    CExoString m_s20;               // 0x20
-    CExoString m_s28;               // 0x28
-    char pad_0x30[0x0c];
-};
+#include "shared/reentrant_server_stats.h"
 
 // FUNCTION: SWKOTOR 0x00401000
 CSWReentrantServerStats::~CSWReentrantServerStats()
@@ -32,10 +17,10 @@ CSWReentrantServerStats::~CSWReentrantServerStats()
 // FUNCTION: SWKOTOR 0x004010c0
 CSWReentrantServerStats::CSWReentrantServerStats()
 {
-    m_n00 = 0;
-    m_n04 = 0;
-    m_n0c = 0;
-    m_n08 = 0;
+    m_bActive = 0;
+    m_nKind = 0;
+    m_nProgress = 0;
+    m_nStep = 0;
     m_n10 = 0;
     m_n14 = 0;
 }
@@ -71,13 +56,10 @@ public:
     void SetInputActive(int bActive, int bClear);      // 0x005eda10
     class CClientUnknown700* GetUnknown700();          // 0x005ed700
 
-    char pad[4];
+    char pad_0x4[4];
 };
 
-class CClientUnknown700 {
-public:
-    float GetValue();               // 0x0061d590
-};
+#include "shared/client_unknown700.h"
 
 class CServerExoApp {
 public:
@@ -91,38 +73,14 @@ public:
     int GetPauseState(unsigned char nMask);             // 0x004ae980
     void SetPauseState(unsigned char nState, int bPause); // 0x004ae9a0
 
-    char pad[8];
+    char pad_0x0[8];
 };
 
-class CObjectTableManager {
-public:
-    CObjectTableManager();          // 0x004ae5d0
-    ~CObjectTableManager();         // 0x004ae640
+#include "shared/object_table_manager.h"
 
-    char pad[0x184];
-};
+#include "shared/app_manager.h"
 
-class CAppManager {
-public:
-    void* m_pLargeTempBuffer;       // 0x00
-    CClientExoApp* m_pClientExoApp; // 0x04
-    CServerExoApp* m_pServerExoApp; // 0x08
-    CObjectTableManager* m_pObjectTableManagerServer; // 0x0c
-    CObjectTableManager* m_pObjectTableManagerClient; // 0x10
-    CSWReentrantServerStats* m_pReentrantServerStats; // 0x14
-    unsigned long m_nStartTime;     // 0x18
-    int m_bPaused;                  // 0x1c
-
-    CAppManager();
-    ~CAppManager();
-    CObjectTableManager* GetObjectTableManager(int nWhich);
-    void DoSaveGameScreenShot(CExoString& sName);
-    void AllocLargeTempBuffer();
-    void DestroyServer();
-    void CreateServer(int nMode);
-};
-
-extern CAppManager* g_pAppManager;  // 0x007a39fc
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00401060
 CObjectTableManager* CAppManager::GetObjectTableManager(int nWhich)
@@ -201,7 +159,6 @@ void handleScreenSaver()
     }
 }
 
-extern unsigned int g_aGLBlendFactors[]; // 0x0073f270
 
 // FUNCTION: SWKOTOR 0x00401670
 void _glBlendFunc(int nSrc, int nDst)
@@ -215,15 +172,7 @@ void _glBlendFunc(int nSrc, int nDst)
 extern "C" __declspec(dllimport) unsigned long __stdcall GetTickCount();
 extern "C" __declspec(dllimport) int __stdcall SetWindowTextA(void* hWnd, const char* lpString);
 
-struct tagMSG {
-    void* hwnd;
-    unsigned int message;
-    unsigned int wParam;
-    long lParam;
-    unsigned long time;
-    long pt_x;
-    long pt_y;
-};
+#include "shared/tag_msg.h"
 
 extern "C" __declspec(dllimport) int __stdcall PeekMessageA(tagMSG* lpMsg, void* hWnd, unsigned int wMsgFilterMin,
                                                             unsigned int wMsgFilterMax, unsigned int wRemoveMsg);
@@ -232,11 +181,7 @@ extern "C" __declspec(dllimport) int __stdcall GetMessageA(tagMSG* lpMsg, void* 
 extern "C" __declspec(dllimport) int __stdcall TranslateMessage(const tagMSG* lpMsg);
 extern "C" __declspec(dllimport) long __stdcall DispatchMessageA(const tagMSG* lpMsg);
 
-class Vector {
-public:
-    float x, y, z;
-    Vector();                       // 0x00409e70
-};
+#include "shared/vector.h"
 
 void UseVectors(Vector* p);
 
@@ -247,6 +192,10 @@ void NewVectors()
 }
 
 // FUNCTION: SWKOTOR 0x00401130 SYMBOL: ??_H@YGXPAXIHP6EPAX0@Z@Z
+
+// The out-of-line copy of Vector's inline default constructor, whose address
+// the vector constructor iterator takes for `new Vector[n]`.
+// FUNCTION: SWKOTOR 0x00409e70 SYMBOL: ??0Vector@@QAE@XZ
 
 // FUNCTION: SWKOTOR 0x00401160
 CAppManager::CAppManager()
@@ -311,10 +260,6 @@ void CAppManager::CreateServer(int nMode)
     m_pServerExoApp->Initialize();
 }
 
-extern void* g_hWindow;             // 0x007a39d4
-extern CExoString g_sWindowTitle;   // 0x007a3cdc
-extern CExoString g_sWindowSubTitle; // 0x007a3ccc
-extern int g_bQuitRequested;        // 0x007a39b8
 
 // FUNCTION: SWKOTOR 0x00401440
 void __cdecl UpdateWindowTitle()
@@ -388,16 +333,11 @@ void __cdecl ParseEventCaptureArgs(int argc, char** argv)
             }
             GetClientExoApp()->setCaptureEventRate(nRate);
         } else if (strncmp(argv[i], "-epm", 4) == 0) {
+            // NOTE: the original tests -epm and does nothing
         }
     }
 }
 
-extern unsigned int g_nGLCap0;      // 0x0078d454
-extern unsigned int g_nGLCap1;      // 0x0078d474
-extern unsigned int g_nGLCap2;      // 0x0078d45c
-extern unsigned int g_nGLCap3;      // 0x0078d458
-extern unsigned int g_nGLCap4;      // 0x0078d448
-extern unsigned int g_nGLCap5;      // 0x0078d44c
 
 // FUNCTION: SWKOTOR 0x00401bb0
 void __cdecl InitGLState()
@@ -418,28 +358,8 @@ public:
     void Render();                  // 0x005d5dd0
 };
 
-class CRenderWindow {
-public:
-    virtual void Slot00();
-    virtual int IsFullScreen();     // 0x04
-    virtual void Slot08();
-    virtual void Slot0c();
-    virtual void Slot10();
-    virtual void Slot14();
-    virtual void Slot18();
-    virtual void Slot1c();
-    virtual void Slot20();
-    virtual void SetGamma(float f, int bApply); // 0x24
-};
+#include "shared/render_window.h"
 
-extern int g_bAppActive;            // 0x007a3a38
-extern CExoSound* g_pExoSound;      // 0x007a39ec
-extern int g_nSoundModeInactive;    // 0x0074c600
-extern int g_nSoundModeActive;      // 0x0074c604
-extern CRenderWindow* g_pRenderWindow; // 0x007a39f8
-extern int g_bWindowed;             // 0x007a3a30
-extern int g_nActivateState;        // 0x007a3a2c
-extern void* g_hMainWindow;         // 0x007a39d8
 
 // FUNCTION: SWKOTOR 0x00401d90
 void __cdecl AppDeactivate()
@@ -508,10 +428,6 @@ void __cdecl AurDisableHeadLight(); // 0x0044da80
 void __cdecl AurPostString(const char* s, int x, int y, float fLife); // 0x0044d490
 void __cdecl AurRenderStrings();    // 0x0044d6a0
 
-extern int g_bClientHeadLight;      // 0x007a3c50 (app-side flag; not the Aurora 0x0078e388 one)
-extern int g_bShowFrameInfo;        // 0x007a3a40
-extern char g_szFrameInfo[];        // 0x007a3a4c
-extern int g_nNetStatusTime;        // 0x0074c538
 
 // FUNCTION: SWKOTOR 0x00401c10
 void __cdecl RunFrame(float fDelta, int bRunServer, int bNoRender)

@@ -1,7 +1,9 @@
 // CSWSCreature gold transfer (nwscreature.cpp). Descriptive name: no symbol record.
 #include "a/sws_creature.h"
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
     int AddGiveItemActions(unsigned long oidItem, unsigned long oidTarget, int a3, int a4); // 0x0057C870
 };

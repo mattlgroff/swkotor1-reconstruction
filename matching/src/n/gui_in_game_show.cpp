@@ -1,15 +1,8 @@
 // CGuiInGame::ShowSWInGameGui (guiingame.o). Standalone layout.
-class CExoString {
-public:
-    char* m_sString; unsigned long m_nLength;
-    CExoString(const char* s); // 0x005E5A90
-    ~CExoString(); // 0x005E5C20
-};
+#include "shared/exo_string.h"
 class CVirtualMachine { public: int RunScript(CExoString* sScript,unsigned long oid,int bArg); /* 0x005D0FC0 */ };
-extern CVirtualMachine* g_pVirtualMachine; // 0x007A3A00
+#include "shared/globals.h"
 class CExoSound { public: void SetSoundMode(int nMode); /* 0x005D5E80 */ };
-extern CExoSound* g_pExoSound; // 0x007A39EC
-extern int g_nGuiSoundMode; // 0x0074C5FC
 class CSWSCreatureStats { public: int CanLevelUp(); /* 0x005A6810 */ };
 class CSWSCreature { public: char pad_0x0[0xa74]; CSWSCreatureStats* m_pStats; };
 class CSWCCreature { public: CSWSCreature* GetServerCreature(); /* 0x0060FB20 */ };
@@ -30,8 +23,7 @@ public:
     CSWParty* GetSWParty(); // 0x005ED8B0
     void IndicateObject(CSWCObject* pObject,int bArg); // 0x005EDB70
 };
-class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
-extern CAppManager* g_pAppManager; // 0x007A39FC
+#include "shared/app_manager.h"
 class CSWGuiInGameMenu { public: void SetActivePanel(int nPanel,int bArg); /* 0x00624BD0 */ };
 class CSWGuiBarkBubble { public: void Pause(); /* 0x006A9BB0 */ };
 class CGuiInGame {

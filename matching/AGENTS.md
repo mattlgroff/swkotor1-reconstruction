@@ -35,9 +35,13 @@ for this repository. See research/claude-workflow-audit.md for the evidence.
 - Write ordinary C++98 classes, padding, members and virtual slots. Declare
   external callees and globals. Do not copy instruction sequences, use raw
   absolute-address global loads, or alter public signatures solely for bytes.
-- Preserve shared base sizes when extending partial layouts. Isolate a
-  larger layout in the batch's translation unit if extending the common base
-  would shift existing derived members.
+- Follow CODE_RULES.md. A function counts as matched only when its bytes
+  match and `tools/rulecheck.py` finds no [match] rule violation in it; a
+  byte-identical function that fails is MATCH-PENDING, not a win.
+- Preserve shared base sizes when extending partial layouts. When extending
+  the common base would shift existing derived members, record the conflict
+  in the range notes for the coordinator; do not isolate a second, larger
+  copy of the class in the batch's translation unit (CODE_RULES.md, R1).
 - Use canonical MSVC 7.0 `-O2 -Gy -GX` and the purchased original executable.
   Run verbose comparisons while developing, then check the whole owned
   folder. Keep the best defensible attempt annotated as NONMATCH.
@@ -58,8 +62,8 @@ for this repository. See research/claude-workflow-audit.md for the evidence.
   The coordinator preserves local checkpoints and consolidates only its own
   unpublished work before publishing. Never rewrite published history.
 - Record screened candidates, implemented/attempted addresses, NEW exact
-  matches, retained NONMATCH attempts, and prior NONMATCH promotions
-  separately. Existing exact functions rechecked in a file are not new wins.
+  matches, retained NONMATCH attempts, prior NONMATCH promotions and
+  MATCH-PENDING results separately. Existing exact functions rechecked in a file are not new wins.
 - Update the range notes with addresses, outcomes, reusable compiler lessons,
   real naming/ABI conflicts and the next coherent family. Then freeze code
   and report the worker branch and checkpoint commits to the coordinator.
@@ -71,9 +75,10 @@ for this repository. See research/claude-workflow-audit.md for the evidence.
 - After integration run the full matcher and regenerate `status.csv`. Reject
   duplicate addresses and every prior MATCH regression. Review deterioration
   of old NONMATCH attempts when shared declarations change.
-- Only AFTER the matcher finishes, regenerate `symbols.csv`: symbolmap reads
-  the MATCH set from status.csv. Do not overlap those dependent report runs.
-  Investigate new symbol conflicts or changed mapped addresses.
+- Only AFTER the matcher finishes, regenerate `symbols.csv` and `rules.csv`:
+  both read the MATCH set from status.csv. Do not overlap those dependent
+  report runs. Investigate new symbol conflicts or changed mapped addresses,
+  and reject a batch that lowers the matched-under-the-rules count.
 - Commit sources, headers, notes and both reports together locally. Do not
   edit the CI-generated progress graphic. Matching-only batches need no
   VS2022 build or CTest run; tool changes need their relevant tool tests.

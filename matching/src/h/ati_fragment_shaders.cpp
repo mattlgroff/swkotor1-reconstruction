@@ -6,33 +6,9 @@ extern "C" __declspec(dllimport) unsigned int __stdcall glGetError();
 extern "C" const unsigned char* __stdcall gluErrorString(unsigned int);
 int AurGetGLError(); // 0x0044EEE0
 
-extern unsigned int (__stdcall *glGenFragmentShadersATI)(unsigned int); // 0x007BB754
-extern void (__stdcall *glBindFragmentShaderATI)(unsigned int); // 0x007BB6CC
-extern void (__stdcall *glBeginFragmentShaderATI)(); // 0x007BB7F4
-extern void (__stdcall *glEndFragmentShaderATI)(); // 0x007BB554
-extern void (__stdcall *glSampleMapATI)(unsigned int, unsigned int, unsigned int); // 0x007BB620
-extern void (__stdcall *glPassTexCoordATI)(unsigned int, unsigned int, unsigned int); // 0x007BB804
-extern void (__stdcall *glColorFragmentOp1ATI)(unsigned int, unsigned int, unsigned int, unsigned int,
-    unsigned int, unsigned int, unsigned int); // 0x007BB6D4
-extern void (__stdcall *glColorFragmentOp2ATI)(unsigned int, unsigned int, unsigned int, unsigned int,
-    unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int); // 0x007BB840
-extern void (__stdcall *glColorFragmentOp3ATI)(unsigned int, unsigned int, unsigned int, unsigned int,
-    unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int,
-    unsigned int, unsigned int, unsigned int); // 0x007BB7FC
-extern void (__stdcall *glAlphaFragmentOp1ATI)(unsigned int, unsigned int, unsigned int,
-    unsigned int, unsigned int, unsigned int); // 0x007BB710
-extern void (__stdcall *glAlphaFragmentOp2ATI)(unsigned int, unsigned int, unsigned int,
-    unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int); // 0x007BB5E8
+#include "shared/gl_ext.h"
 
-extern unsigned int g_nATIShader_00830244;
-extern unsigned int g_nATIShader_00830248;
-extern unsigned int g_nATIShader_0083024C;
-extern unsigned int g_nATIShader_00830250;
-extern unsigned int g_nATIShader_00830254;
-extern unsigned int g_nATIShader_00830258;
-extern unsigned int g_nATIShader_0083025C;
-extern unsigned int g_nATIShader_00830260;
-extern unsigned int g_nATIShader_00830264;
+#include "shared/globals.h"
 
 inline void CheckGLError()
 {
@@ -209,18 +185,11 @@ public:
     virtual void Bind();                        // +0xb4
 };
 
-class GLRender {
-public:
-    static void ActivateTextureStage(int nStage);   // 0x0041FE80
-};
+#include "shared/gl_render.h"
 void SetCurrentStageTID(int nStage, int nTID);      // 0x00426550
 void MakeLookUpTexture(float fPower);               // 0x00423D80
 CAurTexture* AurTextureGetNormalizationCubeMap();   // 0x004233E0
 
-extern unsigned int g_nActiveTextureUnit;   // 0x007A6898
-extern int g_aCurrentStageTID[];            // 0x007A683C
-extern int g_bFSEnvMapOn;                   // 0x00827FA0, descriptive
-extern int g_bFSTexture1On;                 // 0x00827FA4, descriptive
 
 // FUNCTION: SWKOTOR 0x0047A2F0
 void EnableFragmentShaders(int mode, CAurTexture* t0, CAurTexture* t1, CAurTexture* t2, CAurTexture* t3)

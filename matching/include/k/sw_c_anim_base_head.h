@@ -60,10 +60,7 @@ public:
     virtual CAurObject* GetPartModel(unsigned char nPart, int bCreate);  // 0x98
 };
 
-struct CSWBaseItemData {
-    char pad_0x0[0xac];
-    unsigned char m_nWeaponWield;                   // 0xac (0x1d: lightsaber)
-};
+#include "shared/sw_base_item_data.h"
 
 class CSWCItem : public CSWCItemObjectBase, public CSWCItemModelIf {
 public:
@@ -76,15 +73,9 @@ public:
     CSWCItem* GetItemByGameObjectID(unsigned long nId);   // 0x005ED5A0
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWCAnimBaseHead : public virtual CSWCAnimBaseTW {
 public:

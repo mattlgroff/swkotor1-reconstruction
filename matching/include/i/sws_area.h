@@ -6,14 +6,7 @@
 
 #include <stddef.h>
 
-struct Vector {
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    float MagnitudeSquared() const { return x * x + y * y + z * z; }
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 Vector NormalizeVector(const Vector& v);                    // 0x004AB180
 int operator==(const Vector& a, const Vector& b);          // 0x004AA980 (cdecl)
@@ -118,30 +111,7 @@ class CSWSArea;
 class CSWSAreaOfEffectObject;
 class CSWSEncounter;
 
-class CGameObject {
-public:
-    virtual ~CGameObject() {}                       // 0x00
-    virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual CSWSObject* AsSWSObject();              // 0x10
-    virtual void v14();
-    virtual CSWSDoor* AsSWSDoor();                  // 0x18
-    virtual void v1c(); virtual void v20(); virtual void v24();
-    virtual CSWSArea* AsSWSArea();                  // 0x28
-    virtual void v2c();
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
-    virtual void v34(); virtual void v38(); virtual void v3c();
-    virtual CSWSTrigger* AsSWSTrigger();            // 0x40
-    virtual void v44();
-    virtual CSWSPlaceable* AsSWSPlaceable();        // 0x48
-    virtual void v4c();
-    virtual CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject();  // 0x50
-    virtual void v54(); virtual void v58();
-    virtual CSWSEncounter* AsSWSEncounter();        // 0x5c
-
-    unsigned long m_idSelf;                         // 0x04
-    unsigned char m_nObjectType;                    // 0x08
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CPathfindInformation {
 public:
@@ -219,11 +189,7 @@ public:
     int m_bAreaTransition;                          // 0x2b4 (placeholder name)
 };
 
-extern const unsigned char g_nGameObjectFound;      // 0x0074666C
-extern const unsigned char g_nObjectTypeTrigger;    // 0x00746636 (placeholder name)
-extern int g_bDebugOverlap;                         // 0x00832838 (placeholder name)
-extern int g_bDebugDirectLine;                      // 0x008327C4 (placeholder name)
-extern int g_bDebugDirectLineHeights;               // 0x008327C8 (placeholder name)
+#include "shared/globals.h"
 int VectorEqual(const Vector& a, const Vector& b);  // 0x004AA980 (placeholder name)
 
 class CGameObjectArray {
@@ -241,12 +207,7 @@ public:
     CGameObjectArray* GetObjectArray();                             // 0x004AED70
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp* m_pServerExoApp;                 // 0x8
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
 // DFS transposition-table entry (0x10 bytes, 0x200 entries).

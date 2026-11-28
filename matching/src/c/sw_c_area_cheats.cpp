@@ -11,17 +11,7 @@
 #define CHEAT_MIN(a, b) (((a) > (b)) ? (b) : (a))
 #define CHEAT_MAX(a, b) (((a) < (b)) ? (b) : (a))
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    int AsINT() const;                              // 0x005E5630
-    char* CStr();                                   // 0x005E5670
-    void Format(const char* sFormat, ...);          // 0x005E5680
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CExoIni {
 public:
@@ -32,11 +22,7 @@ public:
     void* m_pInternal;
 };
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef(const char* s);                         // 0x00406D80
-};
+#include "shared/res_ref.h"
 
 class CSWPartyTable {
 public:
@@ -137,19 +123,10 @@ public:
     int CreatureAcquireItem(unsigned long oidCreature, const CResRef& cResRef);   // 0x005ED7E0
 };
 
-extern int g_bCheatToggle7A267C;                    // 0x007A267C (descriptive)
+#include "shared/globals.h"
 
-class CAppManager {
-public:
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
+#include "shared/app_manager.h"
 
-    void* m_pUnknown00;                             // 0x00
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 int GetCheatsTurnedOn();
 void AurPostString(const char* sText, int nX, int nY, float fDuration);  // 0x0044D490

@@ -82,7 +82,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionSpeakString(int nCommandId, i
                     CExoString sName("");
                     g_pAppManager->GetServerExoApp()->GetSWSMessage()->ChatMessage(nVolume, m_oidObjectRunScript, sString,
                                                                                    0xffffffff, sName);
-                } else if (pObject->m_bCommandable) {
+                } else if (((CSWSObject*)pObject)->m_bCommandable) {
                     ((CSWSObject*)pObject)->AddAction(0xe, 0xffff, 4, &sString, 1, &nVolume);
                 }
             }
@@ -95,7 +95,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetJournalQuestEntryPicture(int nCo
 {
     CExoString sPlotID;
     CExoString sVarName;
-    void* pPos;
+    CExoLinkedListPosition pPos;
     unsigned long oidCreature;
     int nPicture;
     int bAllPartyMembers;

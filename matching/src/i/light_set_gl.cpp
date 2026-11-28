@@ -4,11 +4,7 @@
 
 __declspec(dllimport) void __stdcall glLightfv(unsigned int light, unsigned int pname, const float* params);
 
-extern unsigned int g_nGLAmbient;                       // 0x0073F320 (GL_AMBIENT)
-extern unsigned int g_nGLDiffuse;                       // 0x0073F324 (GL_DIFFUSE)
-extern unsigned int g_nGLSpecular;                      // 0x0073F328 (GL_SPECULAR)
-extern unsigned int g_nGLPosition;                      // 0x0073F32C (GL_POSITION)
-extern unsigned int g_nGLQuadraticAttenuation;          // 0x0073F330
+#include "shared/globals.h"
 
 // NONMATCH: cl hoists GL_LIGHT0 + nIndex above the bAmbient branch; the
 // original computes it in each branch after the first FUN_004aaab0 call.

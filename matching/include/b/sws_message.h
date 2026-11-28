@@ -33,56 +33,12 @@ public:
 };
 
 // .rdata player id used by broadcasts (0x0074C52C).
-extern const unsigned long PLAYER_ID_ALL_PLAYERS;
+#include "shared/globals.h"
 
 // vtable 0x007465A4 (CNWMessage)
-class CNWMessage {
-public:
-    CNWMessage();                                                       // 0x004D60F0
-    virtual ~CNWMessage();                                              // 0x004D6130
+#include "shared/nw_message.h"
 
-    void ExtendWriteBuffer(unsigned long nSize);                        // 0x004D6260
-    int MessageReadOverflow(int bFlag);                                 // 0x004D6230
-    int MessageReadUnderflow(int bFlag);                                // 0x004D6240
-    int ReadBOOL();                                                     // 0x004D66F0
-    unsigned char ReadBYTE(int nBits);                                  // 0x004D6720
-    unsigned short ReadWORD(int nBits);                                 // 0x004D6750
-    unsigned long ReadDWORD(int nBits);                                 // 0x004D6780
-    float ReadFLOAT(float fScale, int nBits);                           // 0x004D67B0
-    CExoString ReadCExoString(int nBits);                               // 0x004D67E0
-    unsigned char* ReadVOIDPtr(unsigned long nSize);                    // 0x004D6200
-
-    void WriteBOOL(int bValue);                                         // 0x004D68E0
-    void WriteBYTE(unsigned char nValue, int nBits);                    // 0x004D62C0
-    void WriteWORD(unsigned short nValue, int nBits);                   // 0x004D6300
-    void WriteINT(int nValue, int nBits);                               // 0x004D6340
-    void WriteDWORD(unsigned long nValue, int nBits);                   // 0x004D6340
-    void WriteFLOAT(float fValue, float fScale, int nBits);             // 0x004D6920
-    void WriteVector(const Vector& vValue);                            // 0x004D71B0
-    void WriteCExoString(const CExoString& sValue, int nBits);          // 0x004D6960
-    void WriteCResRef(CResRef cResRef, int nBits);                      // 0x004D6380
-    int GetWriteMessage(unsigned char** ppMessage, unsigned long* pnSize); // 0x004D6440
-
-    unsigned char* m_pnWriteBuffer;                                     // 0x04
-    unsigned long m_nWriteBufferSize;                                   // 0x08
-    unsigned long m_nWriteBufferPtr;                                    // 0x0c
-    char pad_0x10[0x1c - 0x10];
-    unsigned long m_nWriteBytesTotal;                                   // 0x1c
-    char pad_0x20[0x28 - 0x20];
-    unsigned char* m_pnReadBuffer;                                      // 0x28
-    unsigned long m_nReadBufferSize;                                    // 0x2c
-    unsigned long m_nReadBufferPtr;                                     // 0x30
-    char pad_0x34[0x4c - 0x34];
-    unsigned long m_nPlayerId;                                          // 0x4c
-};
-
-class CSWMessage : public CNWMessage {
-public:
-    unsigned long PeekAtWriteMessageSize();                             // 0x00405040
-    void CreateWriteMessage(unsigned long nSize, unsigned long nPlayerId,
-                            int bArg);                                  // 0x004D68A0
-    CResRef ReadCResRef(int nBits);                                     // 0x004D6180
-};
+#include "shared/sw_message.h"
 
 class CSWSMessage : public CSWMessage {
 public:

@@ -3,27 +3,9 @@
 // Own copy of the SJournalEntry layout (journal.cpp keeps the out-of-line
 // members; here the empty destructor is inline, as in the original callers).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const CExoString &s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    int CompareNoCase(const CExoString &s) const;
-    CExoString LowerCase() const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    CExoLocString(const CExoLocString &s);
-    ~CExoLocString();
-    CExoLocString &operator=(const CExoLocString &s);
-    void *m_pList;
-    void *m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
 template <class T>
 class CExoArrayList {
@@ -89,14 +71,9 @@ public:
     CSWSPlayer *GetClientObjectByObjectID(unsigned long oid);
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // 0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CSWSJournal {
 public:

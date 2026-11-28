@@ -1,12 +1,7 @@
 // small lifetime leaves (b0058_f_lifetime_leaves): strings,
 // item arrays, inventories, pathfinding, VM, sound, input.
 
-class CExoString {
-public:
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 // A class whose only destructible member is a CExoString at +0: its
 // destructor is a single tail jump into ~CExoString.
@@ -48,29 +43,13 @@ CSWBaseItemArray::~CSWBaseItemArray()
 
 // ---------------------------------------------------------------------------
 
-struct CExoLinkedListNode;
+class CExoLinkedListNode;
 
-class CExoLinkedListInternal {
-public:
-    ~CExoLinkedListInternal();
-    void *RemoveHead();
-    CExoLinkedListNode *pHead;
-    CExoLinkedListNode *pTail;
-    unsigned long nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-    T *RemoveHead() { return (T *)m_pcExoLinkedListInternal->RemoveHead(); }
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-};
 
-struct CSWSPlayerLUOItem {
-    unsigned long m_oidItem;
-};
+
+#include "shared/sws_player_luo_item.h"
 
 class CSWSPlayerLUOInventory {
 public:

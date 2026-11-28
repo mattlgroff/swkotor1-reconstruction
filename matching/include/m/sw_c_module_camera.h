@@ -15,16 +15,7 @@ public:
     void Remove(T value);                           // 0x00445080
 };
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector& operator+=(const Vector& v);            // 0x004A9740
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:
@@ -85,27 +76,7 @@ public:
 };
 
 // Object returned by CAurBehavior slot +0x1c (the stick parameters).
-class CSWCameraTiltTarget {
-public:
-    char pad_0x00[0x24];
-    Vector m_vUp;                                   // +0x24
-    float m_f30;                                    // +0x30
-    float m_fZoom;                                  // +0x34
-    char pad_0x38[0x3c - 0x38];
-    float m_f3C;                                    // +0x3c
-    float m_fTurn;                                  // +0x40
-    float m_f44;                                    // +0x44
-    float m_fTilt;                                  // +0x48
-    char pad_0x4c[0x5c - 0x4c];
-    float m_f5C;                                    // +0x5c
-    float m_f60;                                    // +0x60
-    char pad_0x64[0x68 - 0x64];
-    float m_f68;                                    // +0x68
-    float m_f6C;                                    // +0x6c
-    char pad_0x70[0x90 - 0x70];
-    float m_fShakeYaw;                              // +0x90
-    float m_fShakePitch;                            // +0x94
-};
+#include "shared/sw_camera_tilt_target.h"
 
 class CAurBehavior {
 public:
@@ -244,15 +215,7 @@ public:
     virtual Gob* GetModel(int nPart, int bLoad);    // +0x98, descriptive
 };
 
-class CGameObject {
-public:
-    virtual void g00(); virtual void g04(); virtual void g08();
-    virtual CSWCObject* AsSWCObject();              // +0x0c
-    M_CAM_VSLOTS4(g10)
-    virtual void g20(); virtual void g24(); virtual void g28();
-    virtual CSWCCreature* AsSWCCreature();          // +0x2c
-    virtual void g30(); virtual void g34(); virtual void g38(); virtual void g3c();
-};
+#include "shared/game_object.h"
 
 struct CClientOptions {
     void SetCameraMode(unsigned char nMode);        // 0x0061B6F0
@@ -321,19 +284,9 @@ public:
     char pad_0x14[0xc4 - 0x14];
 };
 
-class CAppManager {
-public:
-    void* pad;
-    CClientExoApp* m_pClientExoApp;
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 
-extern float g_fCameraShakePeriod;                  // 0x007A246C
-extern float g_fCameraShakeDegrees;                 // 0x007A2470
-extern float g_fCameraFollowA;                      // 0x007A2450
-extern float g_fCameraFollowB;                      // 0x007A2454
-extern float g_fCameraFollowC;                      // 0x007A2458
-extern float g_fCameraFollowPitch;                  // 0x007A245C
 
 class Scene;
 class CSWCArea {

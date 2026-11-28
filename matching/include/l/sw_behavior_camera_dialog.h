@@ -18,18 +18,7 @@ public:
     void Add(T value);
 };
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    float MagnitudeSquared() const { return x * x + y * y + z * z; }
-    void Normalize();                               // 0x004AB130
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:

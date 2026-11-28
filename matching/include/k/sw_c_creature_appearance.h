@@ -8,56 +8,23 @@
 
 #include <string.h>
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-};
+#include "shared/vector.h"
 
 struct Quaternion {
     float w, x, y, z;
     Quaternion() { z = 0.0f; y = 0.0f; x = 0.0f; w = 1.0f; }
 };
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
+#include "shared/exo_string.h"
 
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(int n);                              // 0x005E5BC0
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;  // 0x005E5D10
-    char operator[](int n) const;                   // 0x005E5600
-    int Find(const CExoString& s, int nStart) const;  // 0x005E5EB0
-    int Find(char c, int nStart) const;             // 0x005E5F20
-    char* CStr();                                   // 0x005E5670
-    int GetLength() const;                          // 0x005E5790
-    int IsEmpty() const;                            // 0x005E58A0
-    void Format(char* szFormat, ...);               // 0x005E5680
-};
-
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ED0
-    CResRef(const CExoString& s);                   // 0x00406D60
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    CResRef operator=(const CExoString& s);         // 0x004061F0
-    CResRef operator=(const char* s);               // 0x00406290
-    int operator!=(const char* s) const;            // 0x00406060
-    char* GetResRefStr() const;                     // 0x00405FE0
-};
+#include "shared/res_ref.h"
 
 class CExoResMan {
 public:
     int Exists(const CResRef& r, unsigned short nType, unsigned long* pSize);  // 0x00408BC0
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
+#include "shared/globals.h"
 
 class C2DA {
 public:
@@ -86,26 +53,9 @@ public:
     C2DArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 // Cached appearance.2da column indices (placeholder names).
-extern int g_nAppearanceColModelType;               // 0x007A2110
-extern int g_nAppearanceColCameraOffset;            // 0x007A20C8
-extern int g_nAppearanceColRunRate;                 // 0x007A2120
-extern int g_nAppearanceColHitRadius;               // 0x007A2118
-extern int g_nAppearanceColHeight;                  // 0x007A2104
-extern int g_nAppearanceColUnknown20D8;             // 0x007A20D8
-extern int g_nAppearanceColUnknown20DC;             // 0x007A20DC
-extern int g_nAppearanceColUnknown20E0;             // 0x007A20E0
-extern int g_nAppearanceColUnknown20E4;             // 0x007A20E4
-extern int g_nAppearanceColUnknown20F0;             // 0x007A20F0
-extern int g_nAppearanceColUnknown20C4;             // 0x007A20C4
-extern int g_nAppearanceColUnknown2114;             // 0x007A2114
-extern int g_nAppearanceColEnvMap;                  // 0x007A20E8
-extern int g_nAppearanceColRace;                    // 0x007A211C
-extern int g_nGenderColGender;                      // 0x007A2148
 
-extern const unsigned long g_oidInvalid;            // 0x00746644 (OBJECT_INVALID)
 
 class CAurObject;
 
@@ -235,11 +185,7 @@ public:
     unsigned long GetEquippedItemID(unsigned long nSlot);  // 0x0060CA80
 };
 
-class CGameObject {
-public:
-    char pad_0x0[0x10];
-    CSWCObject m_cClientObject;                     // 0x10 (placeholder)
-};
+#include "shared/game_object.h"
 
 class CClientExoApp {
 public:
@@ -249,15 +195,8 @@ public:
     int GetPausedByCombat();                        // 0x005EDC10
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    void* m_pServerExoApp;                          // 0x08
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 void SwitchWeaponEvent(unsigned long nEvent, const char* szEvent, CSWCCreature* pCreature);  // 0x00610F40
 

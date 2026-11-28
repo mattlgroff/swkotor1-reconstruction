@@ -2,16 +2,7 @@
 // "default" movement rate 7 through appearance.2da MOVERATE and the
 // creaturespeed.2da 2DAName column, then caches the walk / run rates.
 
-class CExoString {
-public:
-    CExoString();                                           // 0x005B3190
-    CExoString(const char *s);                              // 0x005E5A90
-    ~CExoString();                                          // 0x005E5C20
-    int operator==(const CExoString &s) const;              // 0x005E5200
-    CExoString LowerCase() const;                           // 0x005E6080
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:
@@ -39,9 +30,7 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;              // 0x007A3A28
-extern int g_nCreatureSpeedWalkColumn;  // 0x007A2248 (placeholder name)
-extern int g_nCreatureSpeedRunColumn;   // 0x007A2244 (placeholder name)
+#include "shared/globals.h"
 
 class CSWSCreature {
 public:

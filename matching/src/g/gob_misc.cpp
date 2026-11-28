@@ -252,7 +252,7 @@ int Gob::SetTextureAttributes(char* szName, int nFlags)
 }
 
 // ------------------------------------------------------------------ Model
-extern int g_bKeepModels;                   // 0x007a8a04
+#include "shared/globals.h"
 
 class MaxTree;
 typedef void (*MaxTreeFn)(MaxTree*);
@@ -277,8 +277,6 @@ public:
 
 void __cdecl MdlNodeRemoveAnimation(MdlNode* pRoot, int nIndex);   // 0x00437db0
 
-extern CExoArrayList<Model*> g_lModels;     // 0x007a8a64
-extern int g_nModelMemory;                  // 0x007a6990
 
 class Model : public MaxTree {
 public:

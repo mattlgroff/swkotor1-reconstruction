@@ -17,20 +17,7 @@ __declspec(dllimport) void __stdcall glMatrixMode(unsigned int mode);
 __declspec(dllimport) void __stdcall glMultMatrixf(const float* m);
 }
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() { x = 0; y = 0; z = 0; }
-    operator const float*() const { return &x; }
-    Vector& operator=(const Vector& v)
-    {
-        x = v.x;
-        y = v.y;
-        z = v.z;
-        return *this;
-    }
-};
+#include "shared/vector.h"
 
 template <class T>
 class CExoArrayList {
@@ -58,9 +45,19 @@ void DrawTriangles(CExoArrayList<TriFace>* pFaces, Vector* pVerts, unsigned int*
     Vector v0, v1, v2;
     for (int i = 0; i < pFaces->num; i++) {
         glColor4ubv((unsigned char*)&pColors[pFaces->element[i].m_nColor]);
-        v0 = pVerts[pFaces->element[i].m_anVerts[0]];
-        v1 = pVerts[pFaces->element[i].m_anVerts[1]];
-        v2 = pVerts[pFaces->element[i].m_anVerts[2]];
+        // member-by-member copies: the original's load order is x, y, z per vertex
+        const Vector& vA = pVerts[pFaces->element[i].m_anVerts[0]];
+        v0.x = vA.x;
+        v0.y = vA.y;
+        v0.z = vA.z;
+        const Vector& vB = pVerts[pFaces->element[i].m_anVerts[1]];
+        v1.x = vB.x;
+        v1.y = vB.y;
+        v1.z = vB.z;
+        const Vector& vC = pVerts[pFaces->element[i].m_anVerts[2]];
+        v2.x = vC.x;
+        v2.y = vC.y;
+        v2.z = vC.z;
         glNormal3fv(TriangleNormal(v0, v1, v2));
         glVertex3fv(v0);
         glVertex3fv(v1);
@@ -79,7 +76,9 @@ void DrawSphereBound(float fRadius, Vector* pCenter, float* pColor, float fScale
         float m[16];
         glGetFloatv(0xba6, m);
         float f;
-        *(Vector*)&m[12] = *pCenter;
+        m[12] = pCenter->x;
+        m[13] = pCenter->y;
+        m[14] = pCenter->z;
         f = m[1];
         m[1] = m[4];
         m[4] = f;

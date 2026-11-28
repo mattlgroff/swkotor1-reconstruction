@@ -8,21 +8,11 @@
 
 #define OBJECT_INVALID 0x7f000000
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 int operator==(const Vector& a, const Vector& b);   // 0x004AA980
 
@@ -54,14 +44,9 @@ public:
     void TogglePauseState(unsigned char nState);    // 0x004AE960
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CExoSound {
 public:
@@ -70,27 +55,10 @@ public:
                          float fFixedVariance, float fPitchVariance);  // 0x005D5E00
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern unsigned long PLAYERID_SERVER;               // 0x0074C528 (0xFFFFFFFD)
 
-class CNWMessage {
-public:
-    int GetWriteMessage(unsigned char** ppBuffer, unsigned long* pSize);  // 0x004D6440
-    void WriteBYTE(unsigned char nValue, int nBits);        // 0x004D62C0
-    void WriteWORD(unsigned short nValue, int nBits);       // 0x004D6300
-    void WriteDWORD(unsigned long nValue, int nBits);       // 0x004D6340
-    void WriteVOIDPtr(void* pData, unsigned long nSize);    // 0x004D63E0
-    void WriteOBJECTID(unsigned long nValue);               // 0x004D68E0 (folded)
-    void WriteBOOL(int bValue);                             // 0x004D68E0 (folded)
-    void WriteFLOAT(float fValue, float fScale, int nBits); // 0x004D6920
-    void WriteCExoString(const CExoString& sValue, int nBits);  // 0x004D6960
-};
+#include "shared/nw_message.h"
 
-class CSWMessage : public CNWMessage {
-public:
-    void CreateWriteMessage(unsigned long nSize, unsigned long nPlayerId,
-                            unsigned long nFlags);  // 0x004D68A0
-};
+#include "shared/sw_message.h"
 
 class CSWCMessage : public CSWMessage {
 public:

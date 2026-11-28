@@ -2,19 +2,9 @@
 // offsets as sw_gui_in_game_map.cpp; control classes as
 // include/k/sw_gui_pazaak.h, trimmed to sized members.
 
-class CExoString {
-public:
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CSWGuiExtent {
     CSWGuiExtent(int nLeft, int nTop, int nWidth, int nHeight)

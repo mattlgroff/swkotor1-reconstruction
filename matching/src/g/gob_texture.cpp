@@ -7,7 +7,7 @@ extern "C" char* __cdecl strcpy(char* d, const char* s);
 
 struct _iobuf;
 extern "C" int __cdecl fprintf(_iobuf* f, const char* fmt, ...);  // 0x006faf01
-extern _iobuf* g_pTextureLog;               // 0x007a8a3c
+#include "shared/globals.h"
 
 class CAurTexture {
 public:

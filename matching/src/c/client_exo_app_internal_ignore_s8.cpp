@@ -1,45 +1,11 @@
 // CClientExoAppInternal::SetHitcheckIgnoreList, worker C s8
 // (clientexoappinternal.o; translation-unit-local layout).
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;                      // 0x00
-    CExoLinkedListNode* pNext;                      // 0x04
-    void* pObject;                                  // 0x08
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListNode* pHead;                      // 0x00
-    CExoLinkedListNode* pTail;                      // 0x04
-    unsigned long nCount;                           // 0x08
+#include "shared/exo_linked_list.h"
 
-    void* GetNext(CExoLinkedListNode*& pos);        // 0x005E9B90
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
-
-    CExoLinkedListNode* GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetAtPos(CExoLinkedListNode* pos)
-    {
-        void* p = pos;
-        if (p) {
-            p = pos->pObject;
-        }
-        return (T*)p;
-    }
-    T* GetHead()
-    {
-        void* p = m_pcExoLinkedListInternal->pHead;
-        if (p) {
-            p = ((CExoLinkedListNode*)p)->pObject;
-        }
-        return (T*)p;
-    }
-    T* GetNext(CExoLinkedListNode*& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-};
 
 template <class T>
 class CExoArrayList {
@@ -63,30 +29,17 @@ class CGob;
 class CSWCObject;
 class CSWCCreature;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-};
+#include "shared/game_object.h"
 
 class CGameObjectArray {
 public:
     unsigned char GetGameObject(unsigned long id, CGameObject** ppObject);  // 0x004D8230
 };
 
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
+#include "shared/globals.h"
 
 class CSWCObject : public CGameObject {
 public:
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-    virtual void v30();
-    virtual void* GetItemModel();                   // 0x34
-    virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
     virtual void v90(); virtual void v94();
@@ -102,7 +55,7 @@ class CSWCCreature : public CSWCObject {
 public:
     unsigned long GetEquippedItemID(unsigned long nSlot);   // 0x0060CA80
 
-    char pad_0x4[0x21c - 0x4];
+    char pad_0xc[0x21c - 0xc];
     CSWCCreatureItem21C* m_p21C;                    // 0x21c (descriptive)
 };
 
@@ -121,12 +74,7 @@ public:
     virtual CGob* FindPart(unsigned long nPart, int bRecurse);  // 0x98
 };
 
-class CSWItemBase {
-public:
-    virtual void v00();
-    char pad_0x4[0x8];
-    unsigned long m_nBaseItem;                      // 0x0c
-};
+#include "shared/sw_item_base.h"
 
 class CSWCItem : public CSWItemBase, public CItemGob {
 };
@@ -142,22 +90,14 @@ public:
     CSWBaseItemArray* m_pBaseItemArray;             // 0x34
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CClientExoApp {
 public:
     CSWCItem* GetItemByGameObjectID(unsigned long oid);     // 0x005ED5A0
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWCArea {
 public:
@@ -201,7 +141,7 @@ void CClientExoAppInternal::SetHitcheckIgnoreList(CExoArrayList<CGob*>* pList)
                 CSWCObject* pObject = pFound->AsSWCObject();
                 if (pObject) {
                     CSWCCreature* pCreature = pObject->AsSWCCreature();
-                    pObject->GetItemModel();
+                    pObject->AsSWCItem();
                     if (pObject->FindPart(0xff, 1)) {
                         pList->AddInline(pObject->FindPart(0xff, 1));
                     }

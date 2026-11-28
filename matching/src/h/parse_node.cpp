@@ -20,7 +20,7 @@ public:
     }
 };
 
-struct Vector { float x, y, z; };
+#include "shared/vector.h"
 struct Quaternion { float w, x, y, z; };
 
 extern "C" int __cdecl sscanf(const char*, const char*, ...);
@@ -30,7 +30,7 @@ extern "C" unsigned int __cdecl strlen(const char*);
 extern "C" char* __cdecl strcpy(char*, const char*);
 #pragma intrinsic(strlen, strcpy)
 
-extern unsigned char g_bBinaryModel;        // 0x007B927C
+#include "shared/globals.h"
 char* AurResGetNextLine();                  // 0x0044BFA0
 
 struct NewController;

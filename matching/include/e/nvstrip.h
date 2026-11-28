@@ -70,18 +70,7 @@ public:
     NvEdgeInfo* m_nextV1;
 };
 
-class NvStripStartInfo {
-public:
-    NvStripStartInfo(NvFaceInfo* startFace, NvEdgeInfo* startEdge, bool toV1)
-    {
-        m_startFace = startFace;
-        m_startEdge = startEdge;
-        m_toV1 = toV1;
-    }
-    NvFaceInfo* m_startFace;
-    NvEdgeInfo* m_startEdge;
-    bool m_toV1;
-};
+#include "shared/nv_strip_start_info.h"
 
 typedef std::vector<NvFaceInfo*> NvFaceInfoVec;
 typedef std::vector<NvEdgeInfo*> NvEdgeInfoVec;
@@ -245,8 +234,6 @@ public:
 
 #define SWAP(a, b) { int t = a; a = b; b = t; }
 
-extern bool g_bNvStripBadEdge;                      // 0x008302A4
-extern CExoArrayList<NvFaceInfo*> g_lNvStripFaces;  // 0x008302A8
-extern int g_nNvStripNumSamples;                    // 0x00798A94
+#include "shared/globals.h"
 
 #endif

@@ -23,19 +23,13 @@ enum {
     MDLNODE_SABER = 0x0800
 };
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:
     float x, y, z, w;
 
-    Vector ToDirection();
+    Vector ToDirection() const;
 };
 
 // One face of the MDL post-process face list (0x14 bytes).
@@ -152,19 +146,6 @@ public:
 };
 
 // Axis-aligned bounding box tree node.
-class AABB {
-public:
-    char pad00[0x18];
-    AABB* m_pLeft;              // +0x18
-    AABB* m_pRight;             // +0x1c
-
-    ~AABB()
-    {
-        if (m_pLeft)
-            delete m_pLeft;
-        if (m_pRight)
-            delete m_pRight;
-    }
-};
+#include "shared/aabb.h"
 
 #endif

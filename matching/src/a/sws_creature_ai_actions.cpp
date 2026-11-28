@@ -2,7 +2,7 @@
 // layouts extend only padding in the existing partial creature declaration.
 #include "a/sws_creature.h"
 
-extern const int AI_ACTION_IN_PROGRESS;              // 0x00745DBC
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00513F60
 int CSWSCreature::AIActionWaitForEndOfRound(CSWSObjectActionNode*)
@@ -33,8 +33,8 @@ int CSWSCreature::AIActionPartyFollowLeader(CSWSObjectActionNode*)
 // FUNCTION: SWKOTOR 0x005188E0
 int CSWSCreature::HasAction(unsigned long nType)
 {
-    if (m_pActions->m_pHead) {
-        void* pos = m_pActions->m_pHead;
+    if (m_pActions->pHead) {
+        CExoLinkedListPosition pos = m_pActions->pHead;
         while (pos) {
             CSWSObjectActionNode* pNode = (CSWSObjectActionNode*)m_pActions->GetAtPos(pos);
             if (pNode->m_nActionId == nType) return 1;
@@ -47,8 +47,8 @@ int CSWSCreature::HasAction(unsigned long nType)
 // FUNCTION: SWKOTOR 0x00518940
 CSWSObjectActionNode* CSWSCreature::GetAction(unsigned long nType)
 {
-    if (m_pActions->m_pHead) {
-        void* pos = m_pActions->m_pHead;
+    if (m_pActions->pHead) {
+        CExoLinkedListPosition pos = m_pActions->pHead;
         while (pos) {
             CSWSObjectActionNode* pNode = (CSWSObjectActionNode*)m_pActions->GetAtPos(pos);
             if (pNode->m_nActionId == nType) return pNode;
@@ -213,7 +213,6 @@ unsigned char CSWSCreature::CheckWeaponSlot(CSWSItem* pItem, unsigned long* pSlo
     return 1;
 }
 
-extern const float g_fFacingEpsilon;                 // 0x00747504
 
 // NONMATCH: 4 diff: the Y-input spill and X fsub are scheduled in opposite order.
 // FUNCTION: SWKOTOR 0x0050FC90
@@ -234,10 +233,12 @@ int CSWSCreature::AIActionChangeFacingPoint(CSWSObjectActionNode* pNode)
 }
 
 // Partial CSWSObject layout used by the object's AsSWSObject virtual return.
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
     CSWSArea* GetArea();                            // 0x004CB120
-    char pad_0[0x90];
+    char pad_0xc[0x84];
     Vector m_vPosition;
 };
 

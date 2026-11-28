@@ -11,20 +11,7 @@
 #ifndef K_SW_GUI_PAZAAK_H
 #define K_SW_GUI_PAZAAK_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* sString);                // 0x005E5A90
-    CExoString(int n);                              // 0x005E5BC0
-    CExoString(const CExoString& sString);          // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    char* CStr() const;                             // 0x005E5670
-};
+#include "shared/exo_string.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;
@@ -32,14 +19,7 @@ struct CResStruct {
 
 class CResGFF;
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef operator=(const char* s);               // 0x00406290
-    char* GetResRef() const;                        // 0x00641DB0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 void* operator new(unsigned int nSize);
 void operator delete(void* p);
@@ -94,19 +74,7 @@ struct CSWGuiExtent {
     int height;
 };
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    float x, y, z;
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    Vector operator+(const Vector& o) const { return Vector(x + o.x, y + o.y, z + o.z); }
-};
+#include "shared/vector_ops.h"
 
 class CSWGuiControl;
 class CSWGuiPanel;
@@ -149,7 +117,7 @@ public:
     int RemovePanel(CSWGuiPanel* pPanel);           // 0x0040C830
 };
 
-extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
+#include "shared/globals.h"
 
 class CSWGuiTextParams {
 public:
@@ -292,62 +260,15 @@ public:
 };
 
 // A Pazaak card {value, flag}; the constructor only clears the flag.
-struct CPazaakCard {
-    CPazaakCard() { m_bFlag = 0; }
-    CPazaakCard(int nValue, int bFlag)
-    {
-        m_nValue = nValue;
-        m_bFlag = bFlag;
-    }
-    int operator!=(CPazaakCard cCard) { return m_nValue != cCard.m_nValue || m_bFlag != cCard.m_bFlag; }
-
-    int m_nValue;
-    int m_bFlag;
-};
+#include "shared/pazaak_card.h"
 
 // 0x70 bytes, no vtable (ctor 0x006E4B50).
-class CPazaakPlayer {
-public:
-    CPazaakPlayer();                                // 0x006E4B50
-    int GetTotal();                                 // 0x006E4360
-    void AddGameCard(CPazaakCard cCard);            // 0x006E45F0
-    void ChooseSidedeck(CPazaakCard* pCards);       // 0x006E4580
-    CPazaakCard GetBoardCard(int i) { return m_aBoard[i]; }
-    CPazaakCard GetHandCard(int i) { return m_aHand[i]; }
-    CPazaakCard m_aHand[4];                         // 0x00
-    CPazaakCard m_aBoard[9];                        // 0x20
-    int m_bStanding;                                // 0x68
-    int m_nSetsWon;                                 // 0x6c
-};
+#include "shared/pazaak_player.h"
 
 // 0x230 bytes, no vtable (ctor 0x006E4C00).
-class CSWPazaak {
-public:
-    CSWPazaak();                                    // 0x006E4C00
-    void ClearGameBoard();                          // 0x006E4640
-    CPazaakCard DrawCard();                         // 0x006E4800
-    int CanUsePlayerSidedeckCard(int nIndex);       // 0x006E4840
-    int UsePlayerSidedeckCard(int nIndex);          // 0x006E4860
-    int PlayAITurn(CPazaakPlayer* pAI, CPazaakPlayer* pPlayer, int nState);   // 0x006E4C60
-    int DetermineWinner();                          // 0x006E48A0
-    void LoadInitialSideDeck(int nDeck, CPazaakCard* pCards);  // 0x006E4A40
-    CPazaakPlayer* GetPlayer() { return &m_cPlayer; }
-    void DrawPlayerCard();                          // 0x0067CAE0
-    int DoAITurn();                                 // 0x0067CB10
+#include "shared/sw_pazaak.h"
 
-    int m_nWager;                                   // 0x000
-    unsigned long m_oidOpponent;                    // 0x004
-    CPazaakPlayer m_cPlayer;                        // 0x008
-    CPazaakPlayer m_cAI;                            // 0x078
-    CPazaakCard m_aDeck[40];                        // 0x0e8
-    int m_nDeckIndex;                               // 0x228
-    int m_nAIState;                                 // 0x22c
-};
 
-extern const char* g_szPazaakCardText[28];          // 0x007A2600
-
-extern Vector g_vPazaakButtonColor;                 // 0x007A2408
-extern Vector g_vPazaakButtonHilight;               // 0x007A23B4
 
 // vtable 0x00753120; inline constructor only (the owners expand it).
 class CSWGuiActivatedButton : public CSWGuiButton {
@@ -536,7 +457,6 @@ public:
                          float fFixedVariance, float fPitchVariance);  // 0x005D5E00
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class CSWPartyTable {
 public:
@@ -558,18 +478,9 @@ public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWGuiPazaakStart;
 
@@ -654,9 +565,6 @@ public:
     CSWGuiTutorial m_cTutorial;                     // 0x7f8c
 };
 
-extern Vector g_vPazaakFlashColor;                  // 0x007A23CC
-extern Vector g_vAbilityColorAvailable;             // 0x007A23D8
-extern int g_bPazaakShowOpponentHand;               // 0x00833BB0
 
 // vtable 0x00753358.
 class CSWGuiPazaakGame : public CSWGuiPanel {

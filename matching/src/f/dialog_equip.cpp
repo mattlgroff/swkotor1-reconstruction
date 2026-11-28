@@ -2,48 +2,17 @@
 // creatures whose equipped items are hidden or that head-track the speaker),
 // 0x005A0BA0..0x005A0DD0. Names are descriptive (no debug-map names).
 
-class CResRef {
-public:
-    CResRef();
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode *pPrev;
-    CExoLinkedListNode *pNext;
-    void *pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    void *GetAtPos(CExoLinkedListNode *pPos);
-    void *GetNext(CExoLinkedListNode *&pPos);
-    CExoLinkedListNode *AddHead(void *pObject);
-    CExoLinkedListNode *m_pHead;
-    CExoLinkedListNode *m_pTail;
-    int m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListNode *GetHeadPos() { return m_pcExoLinkedListInternal->m_pHead; }
-    T *GetAtPos(CExoLinkedListNode *pPos) { return (T *)m_pcExoLinkedListInternal->GetAtPos(pPos); }
-    T *GetNext(CExoLinkedListNode *&pPos) { return (T *)m_pcExoLinkedListInternal->GetNext(pPos); }
-    CExoLinkedListNode *AddHead(T *pObject) { return m_pcExoLinkedListInternal->AddHead(pObject); }
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-};
+
 
 class CSWCCreature;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature *AsSWCCreature();   // +0x2c
-    unsigned long m_idSelf;          // +0x4
-};
+#include "shared/game_object.h"
 
 class CSWCCreature : public CGameObject {
 public:
@@ -59,14 +28,9 @@ public:
     CGameObject *GetGameObject(unsigned long oid);
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp *m_pClientExoApp;  // +0x4
-    CClientExoApp *GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CSWSDialog {
 public:

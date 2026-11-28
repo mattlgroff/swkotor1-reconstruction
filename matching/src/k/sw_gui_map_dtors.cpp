@@ -46,11 +46,7 @@ public:
 };
 
 // Planet record: name / description strrefs and model resref (descriptive).
-struct CSWGuiGalaxyPlanet {
-    unsigned long m_nNameStrRef;
-    unsigned long m_nDescriptionStrRef;
-    char m_cModel[16];
-};
+#include "shared/sw_gui_galaxy_planet.h"
 
 class __declspec(novtable) CSWGuiInGameMap : public CSWGuiPanel {
 public:

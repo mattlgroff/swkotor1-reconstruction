@@ -10,11 +10,11 @@ int CSWSMessage::HasValidLocalizedString(CExoLocString* pString, unsigned char n
     if (!pServer) return 0;
     int nLanguage = pServer->GetPlayerLanguage(m_nPlayerId);
     int nModuleLanguage = g_pAppManager->GetServerExoApp()->GetModuleLanguage();
-    if (!pString->GetStringLoc(nLanguage, sText, nGender) &&
-        !(nLanguage != 0 && pString->GetStringLoc(0, sText, nGender)) &&
-        !(nModuleLanguage != nLanguage && nModuleLanguage != 0 && pString->GetStringLoc(nModuleLanguage, sText, nGender))) {
+    if (!pString->GetStringLoc(nLanguage, &sText, nGender) &&
+        !(nLanguage != 0 && pString->GetStringLoc(0, &sText, nGender)) &&
+        !(nModuleLanguage != nLanguage && nModuleLanguage != 0 && pString->GetStringLoc(nModuleLanguage, &sText, nGender))) {
         unsigned char nFoundGender;
-        if (!pString->GetString(0, &nLanguage, sText, &nFoundGender) && pString->m_nStrRef != 0xffffffff) {
+        if (!pString->GetString(0, &nLanguage, sText, &nFoundGender) && pString->m_dwStringRef != 0xffffffff) {
             return 1;
         }
     }

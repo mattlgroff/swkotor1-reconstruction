@@ -29,8 +29,7 @@ public:
     virtual void Draw(int); // +0x64
 };
 template<class T> class CExoArrayList { public: T* element; int num; int array_size; };
-extern int g_bStaticMeshBeams; // 0x0078E3D0, descriptive
-extern CExoArrayList<Part*> g_l7FBF6C; // 0x007FBF6C
+#include "shared/globals.h"
 void SetBeaming(); // 0x00471450
 class Scene { public: void DoStaticMeshBeams(); };
 

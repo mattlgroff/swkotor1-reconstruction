@@ -9,15 +9,7 @@ __declspec(dllimport) void __stdcall glPopMatrix();
 __declspec(dllimport) void __stdcall glScalef(float x, float y, float z);
 }
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    // 0x0046A620
-    inline int IsZero() { return x == 0.0f && y == 0.0f && z == 0.0f; }
-};
+#include "shared/vector.h"
 
 // 0x00423BC0
 inline Vector operator-(const Vector& a, const Vector& b)
@@ -59,16 +51,11 @@ inline void _glScalef(float x, float y, float z)
     glScalef(x, y, z);
 }
 
-class GLRender {
-public:
-    static void Transform(const Vector* pPos, const Quaternion* pOri, int bForce);  // 0x0046F060
-};
+#include "shared/gl_render.h"
 
 void SetBeaming();                          // 0x00471450
 
-extern int g_bPartTransform;                // 0x0078E5F0
-extern int g_bProjectWorldSpace;            // 0x007B9374, descriptive
-extern int g_nPartsProjected;               // 0x00827FA8, descriptive
+#include "shared/globals.h"
 
 class MdlNodeTriMesh {
 public:

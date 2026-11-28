@@ -1,28 +1,14 @@
 // Scene tile slots (vtable 0x741708 +0x28 / +0x2c): per-tile light
 // positions and flame objects. Behavioural reference:
 // src/units/0728/344241bbf2-m46_scene_c1.cpp, src/units/0694/aa8460a1b8-tile_scene.cpp.
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 int operator==(const Vector& a, const Vector& b);   // 0x004aa980
 
 class CAurObject;
 
 // A static light placed on a tile.
-class TileLight {
-public:
-    char pad00[0x4c];
-    Vector m_vPosition;                 // +0x4c
-    char pad58[0x5c - 0x58];
-    int m_bDirty;                       // +0x5c
-    float m_fRadius;                    // +0x60
-    char pad64[0x6c - 0x64];
-    int m_bActive;                      // +0x6c
-    char pad70[0x74 - 0x70];
-    int m_nType;                        // +0x74
-};
+#include "shared/tile_light.h"
 
 class TileData {
 public:

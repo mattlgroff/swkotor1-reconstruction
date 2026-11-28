@@ -1,30 +1,16 @@
 // CSWGuiInGameGalaxyMap planet cycling (swguiingamemap.o). The two cycling
 // methods and the party-table planet queries have descriptive names.
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    void CopyToString(CExoString& sString) const;   // 0x00405F70
-    int IsValid() const;                            // 0x00406030
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CTlkTable {
 public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
-extern int g_bDo3DGui;                              // 0x0078D1E4 (descriptive)
+#include "shared/globals.h"
 
 class CSWGuiTextParams {
 public:
@@ -67,11 +53,7 @@ public:
 };
 
 // One galaxy-map planet entry (descriptive).
-struct CSWGuiGalaxyPlanet {
-    unsigned long m_nNameStrRef;
-    unsigned long m_nDescriptionStrRef;
-    CResRef m_cModel;
-};
+#include "shared/sw_gui_galaxy_planet.h"
 
 class CSWPartyTable {
 public:
@@ -93,7 +75,6 @@ public:
     int RunScript(CExoString* psScript, unsigned long oidSelf, int bOid);  // 0x005D0FC0
 };
 
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 
 class CGuiInGame {
 public:
@@ -107,20 +88,13 @@ public:
     CGuiInGame* GetInGameGui();                     // 0x005ED690
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
 class CSWGuiManager {
 public:
     void PlayGuiSound(char nSound);                 // 0x0040A140
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWGuiButton {
 public:

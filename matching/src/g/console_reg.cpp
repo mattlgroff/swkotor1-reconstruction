@@ -12,32 +12,11 @@ int __cdecl fclose(FILE* f);
 }
 #pragma intrinsic(strcpy, strlen)
 
-// Loader callbacks for in-memory resources.
-extern unsigned char* (__cdecl* g_pfnAurResGet)(const char* szName,
-                                                const char* szExt,
-                                                int* pnSize); // 0x007b8fc4
-extern void (__cdecl* g_pfnAurResFree)(void* pHandle, int nArg);    // 0x007b8fc8
+#include "shared/aurora_callbacks.h"
 
 // No operator new[] / delete[] in scope: the list below allocates with
 // the scalar operator new / delete (0x006fa7e6 / 0x006fa390), as the
 // original's ConsoleComplete does.
-
-extern "C" void* __cdecl AurResResourceOperatorNew(unsigned int n)
-{
-    return operator new(n);
-}
-
-class AurResStackAllocateHelper {
-public:
-    void Allocate(int n);
-};
-
-#pragma auto_inline(off)
-void AurResStackAllocateHelper::Allocate(int n)
-{
-    ((CExoArrayList<AurRes*>*)this)->Allocate(n);
-}
-#pragma auto_inline(on)
 
 inline void CExoArrayList<ConsoleFunc*>::Allocate(int n)
 {
@@ -93,93 +72,26 @@ char* __cdecl ConsoleComplete(char* szLine, CExoArrayList<ConsoleFunc*>* pList)
     return g_szConsoleResult;
 }
 
+// Static: only AurResGet calls it, so MSVC passes szExt and szName in ecx and edx.
 // FUNCTION: SWKOTOR 0x0044c680 SYMBOL: AurResGetResource
-__declspec(naked) AurRes* __fastcall AurResGetResource(const char*, const char*, int*)
+static AurRes* AurResGetResource(const char* szExt, const char* szName, int* pnSize)
 {
-    __asm {
-        push ecx
-        push ebx
-        push ebp
-        mov ebp, dword ptr [esp + 0x10]
-        push edi
-        lea eax, [esp + 0xc]
-        push eax
-        push ecx
-        push edx
-        call dword ptr [g_pfnAurResGet]
-        mov edi, eax
-        xor ebx, ebx
-        add esp, 0xc
-        cmp edi, ebx
-        jne resource_data_ready
-        pop edi
-        pop ebp
-        xor eax, eax
-        pop ebx
-        pop ecx
-        ret
-    resource_data_ready:
-        push esi
-        push 0x1c
-        call AurResResourceOperatorNew
-        add esp, 4
-        cmp eax, ebx
-        je resource_alloc_failed
-        mov dword ptr [eax], ebx
-        mov dword ptr [eax + 4], 0xffffffff
-        mov dword ptr [eax + 0x14], 0x2000
-        mov dword ptr [eax + 8], ebx
-        mov dword ptr [eax + 0xc], ebx
-        mov dword ptr [eax + 0x10], ebx
-        mov dword ptr [eax + 0x18], ebx
-        mov esi, eax
-        jmp resource_initialized
-    resource_alloc_failed:
-        xor esi, esi
-    resource_initialized:
-        mov dword ptr [esi + 0x18], edi
-        mov dword ptr [esi + 0xc], edi
-        mov eax, dword ptr [esp + 0x10]
-        cmp eax, ebx
-        jl resource_negative_size
-        mov dword ptr [esi + 0x10], eax
-        jmp resource_size_ready
-    resource_negative_size:
-        or ecx, 0xffffffff
-        sub ecx, eax
-        mov dword ptr [esi + 0x10], ecx
-    resource_size_ready:
-        cmp ebp, ebx
-        je resource_no_out_size
-        mov edx, dword ptr [esp + 0x10]
-        mov dword ptr [ebp], edx
-    resource_no_out_size:
-        mov eax, dword ptr [g_lAurResStack + 8]
-        cmp dword ptr [g_lAurResStack + 4], eax
-        jne resource_add_slot
-        cmp eax, ebx
-        je resource_initial_capacity
-        add eax, eax
-        jmp resource_capacity_ready
-    resource_initial_capacity:
-        mov eax, 8
-    resource_capacity_ready:
-        push eax
-        mov ecx, offset g_lAurResStack
-        call AurResStackAllocateHelper::Allocate
-    resource_add_slot:
-        mov eax, dword ptr [g_lAurResStack]
-        mov ecx, dword ptr [g_lAurResStack + 4]
-        mov dword ptr [eax + ecx*4], esi
-        inc dword ptr [g_lAurResStack + 4]
-        mov eax, esi
-        pop esi
-        pop edi
-        pop ebp
-        pop ebx
-        pop ecx
-        ret
-    }
+    int nSize;
+    unsigned char* pData = g_pfnAurResGet(szName, szExt, &nSize);
+    if (!pData)
+        return 0;
+    AurRes* pRes = new AurRes(0x2000);
+    pRes->m_pHandle = pData;
+    pRes->m_pData = (char*)pData;
+    // a negative size marks data the loader owns; -1 - n is its length
+    if (nSize >= 0)
+        pRes->m_nRemaining = nSize;
+    else
+        pRes->m_nRemaining = -1 - nSize;
+    if (pnSize)
+        *pnSize = nSize;
+    g_lAurResStack.Add(pRes);
+    return pRes;
 }
 
 // FUNCTION: SWKOTOR 0x0044c740

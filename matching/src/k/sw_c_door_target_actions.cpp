@@ -3,25 +3,11 @@
 // the callback is a pointer to member of a class still incomplete at the
 // record's declaration (general 16-byte representation).
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef operator=(const char* s);               // 0x00406290
-    CResRef operator=(const CExoString& s);         // 0x004061F0
-};
+#include "shared/res_ref.h"
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWCCreature;
 class CSWCObject;
@@ -77,21 +63,15 @@ public:
     CSWSkill* m_lstSkills;                          // 0xb4
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CClientExoApp {
 public:
     CExoString GetGUIString(unsigned long nId);     // 0x005EDEB0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWCCreatureStats {
 public:
@@ -104,21 +84,14 @@ public:
     int m_bKeyRequired;                             // 0x2d8
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14();
-    virtual CSWSDoor* AsSWSDoor();                  // 0x18
-
-    unsigned long m_idSelf;                         // 0x04
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:
     CGameObject* GetServerObject();                 // 0x0063D4B0
     unsigned short GetCurrentAnimation();           // 0x0063C060
 
-    char pad_0x8[0x20 - 0x8];
+    char pad_0xc[0x14];
     CSWCArea* m_pArea;                              // 0x20
     char pad_0x24[0xfc - 0x24];
 };

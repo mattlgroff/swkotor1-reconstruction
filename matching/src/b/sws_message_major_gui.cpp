@@ -1,15 +1,12 @@
 // CSWSMessage::WriteGameObjUpdate_MajorGUIPanels: player sheet, open
 // container and equipped-slot updates for one player.
-#define B_EXO_ARRAY_LIST_OPAQUE_ADD
 #include "b/sws_message.h"
 #include "b/sws_creature.h"
 #include "b/sws_player.h"
 #include "b/sws_item.h"
 #include "b/server_info.h"
 
-extern const unsigned char GAME_OBJECT_VALID;               // 0x0074666C
-extern const unsigned char OBJECT_TYPE_ITEM;                // 0x00746635
-extern const unsigned char OBJECT_TYPE_PLACEABLE;           // 0x00746638
+#include "shared/globals.h"
 
 class CSWSPlayerLUOInventory;
 

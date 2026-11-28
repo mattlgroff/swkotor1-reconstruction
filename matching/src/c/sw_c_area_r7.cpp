@@ -6,23 +6,11 @@
 #include "c/client_exo_app.h"
 #include "c/exo_base.h"
 
-struct Vector {
-    float x, y, z;
+#include "shared/vector.h"
 
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/globals.h"
 
-extern float g_fFogDensity;                         // 0x0078E6A0
-extern float g_fAmbientScale;                       // 0x0078E408
-
-class CSWCAreaObject {
-public:
-    virtual ~CSWCAreaObject();
-    char pad_0x4[0x104];
-    unsigned long m_n108;                           // 0x108
-    unsigned long m_n10c;                           // 0x10c
-};
+#include "shared/swc_area_object.h"
 
 struct CPlaceableLight {
     unsigned long m_oidPlaceable;                   // 0x00
@@ -44,9 +32,6 @@ struct CSWCRoom {
     char pad_0x0[0x48];
 };
 
-extern float g_fAmbientBright;                      // 0x007A22AC
-extern float g_fAmbientDark;                        // 0x007A22B0
-extern const float g_fDarkThreshold;               // 0x00740C84 (3.0f)
 
 class CSWSArea {
 public:
@@ -323,7 +308,7 @@ CSWCAreaObject* CSWCArea::FindObject(unsigned long a, unsigned long b)
 {
     for (int i = 0; i < m_aObjects.num; i++) {
         CSWCAreaObject* p = m_aObjects[i];
-        if (p && p->m_n108 == a && p->m_n10c == b) {
+        if (p && p->m_nReference == a && p->m_bReference == b) {
             return p;
         }
     }

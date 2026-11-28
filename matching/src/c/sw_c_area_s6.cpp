@@ -3,27 +3,11 @@
 
 void __cdecl operator delete(void*);
 
-class Vector {
-public:
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 template <class T>
 class CExoArrayList {
@@ -67,28 +51,9 @@ public:
     }
 };
 
-class CExoLinkedListInternal {
-public:
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* RemoveHead();                             // 0x005E9C80
-    void* pHead;
-    void* pTail;
-    unsigned long nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();                               // 0x00605800
-    ~CExoLinkedList()
-    {
-        if (m_pcExoLinkedListInternal) {
-            delete m_pcExoLinkedListInternal;
-        }
-    }
-    void* RemoveHead() { return m_pcExoLinkedListInternal->RemoveHead(); }
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-};
+
 
 class CWorldTimer {
 public:
@@ -146,27 +111,14 @@ public:
 };
 
 void AurGrassClearInfo();                           // 0x004A67A0
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
+#include "shared/globals.h"
 
-class CAppManager {
-public:
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                 // +0x04
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern const unsigned char OBJECT_TYPE_AREA;        // 0x00746633
 
 class CSWCArea;
 
-class CSWCAmbientSound {
-public:
-    CSWCAmbientSound(CSWCArea* pArea);              // 0x0068DF40
-    ~CSWCAmbientSound();                            // 0x0068E0D0
-    void StopAll(int bFade);                        // 0x0068E1B0
-    char pad[0x10c];
-};
+#include "shared/swc_ambient_sound.h"
 
 class CSWSArea {
 public:
@@ -204,21 +156,7 @@ public:
     char pad_0xa8[0x58];
 };
 
-class CGameObject {
-public:
-    CGameObject(unsigned char nObjectType, unsigned long oid);  // 0x004D7D60
-    virtual ~CGameObject() {}
-    virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();              // +0x2c
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3c();
-    virtual void v40(); virtual void v44(); virtual void v48();
-    virtual CSWCPlaceable* AsSWCPlaceable();            // +0x4c
-
-    unsigned long m_idSelf;                         // +0x04
-    unsigned char m_nObjectType;                    // +0x08
-};
+#include "shared/game_object.h"
 
 class CSWCArea : public CSWArea, public CGameObject {
 public:

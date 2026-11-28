@@ -5,26 +5,11 @@
 #ifndef K_SW_GUI_FLOATY_TEXT_H
 #define K_SW_GUI_FLOATY_TEXT_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-() const { return Vector(-x, -y, -z); }
-    float operator*(const Vector& v) const { return x * v.x + y * v.y + z * v.z; }
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:
@@ -112,23 +97,10 @@ public:
 class CSWCCreature;
 class CSWCObject;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void SetId(unsigned long oid);          // 0x04
-    virtual void ResetUpdateTimes(unsigned long nDay, unsigned long nTime);  // 0x08
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
     virtual void v90(); virtual void v94();
@@ -169,20 +141,14 @@ public:
     CSWGuiManager* GetGuiManager();                 // 0x005EDA40
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWGuiMainInterface {
 public:
     void RemoveControl(CSWGuiControl* pControl);    // 0x00688060
 };
 
-extern CSWGuiMainInterface* g_pMainInterface;       // 0x00833BB4 (descriptive)
 
 #endif

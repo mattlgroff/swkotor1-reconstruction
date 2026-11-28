@@ -6,24 +6,9 @@
 
 extern "C" __declspec(dllimport) void __stdcall PostQuitMessage(int nExitCode);
 
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
-extern const unsigned char OBJECT_TYPE_AREA;        // 0x00746633
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
-extern const unsigned char OBJECT_TYPE_ITEM;        // 0x00746635
-extern const unsigned char OBJECT_TYPE_TRIGGER;     // 0x00746636
-extern const unsigned char OBJECT_TYPE_PROJECTILE;  // 0x00746637
-extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
-extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
-extern const unsigned char OBJECT_TYPE_AREAOFEFFECT;    // 0x0074663A
-extern const unsigned char OBJECT_TYPE_SOUND;       // 0x0074663E
-extern const int KEY_DISPLAY_FIRST;                 // 0x0074D3D8
-extern const int KEY_DISPLAY_LAST;                  // 0x0074D3DC
+#include "shared/globals.h"
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
 class CClientPlayer {
 public:
@@ -73,8 +58,6 @@ struct COptionsFlags {
     unsigned char m_nFlags;                         // 0x08
 };
 
-extern int g_bMouseButtonDown;                      // 0x008338F4
-extern int g_bSwapMouseButtons;                     // 0x008338F0
 
 class CSWGuiModalWarningBox {
 public:
@@ -97,11 +80,7 @@ public:
     void AddGoldMessage(int b, int nDelta);         // 0x0062EEB0
 };
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef(const char* s);                         // 0x00406D80
-};
+#include "shared/res_ref.h"
 
 class CSWGuiDisableable {
 public:
@@ -175,10 +154,7 @@ public:
     int m_nClientAnimation;                         // 0x3e8
 };
 
-struct CSWSCombatData {
-    char pad_0x0[0x34];
-    unsigned long m_oidTarget;                      // 0x34
-};
+#include "shared/sws_combat_data.h"
 
 class CSWSCreature {
 public:
@@ -228,17 +204,8 @@ public:
     int RunScript(CExoString* pScript, unsigned long oid, int b);  // 0x005D0FC0
 };
 
-class CRender {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20();
-    virtual void SetGamma(float f);                 // 0x24
-};
+#include "shared/render.h"
 
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
-extern CRender* g_pRender;                          // 0x007A39F8
-extern const int MUSIC_STATE_NORMAL;                // 0x0074C5EC
 
 class CSWGuiManagerMouse {
 public:
@@ -246,14 +213,7 @@ public:
     void HideMouse();                               // 0x0040A230
 };
 
-class CExoInput {
-public:
-    void SetMouseMode(unsigned char nMode);         // 0x005DF5A0
-    CExoString GetDisplayCharacterForKey(int nKey); // 0x005DF640
-    void SetActive(int b);                          // 0x005DF540
-    void RefreshMouseCursor(int b);                 // 0x005DF5B0
-
-};
+#include "shared/exo_input.h"
 
 class CSWGuiRefreshable {
 public:
@@ -280,14 +240,8 @@ public:
     void PlaySoundSet(int nSound, int b);           // 0x00611470
 };
 
-class CSWPartyClient {
-public:
-    void SetPlayerCreature(unsigned long oid);      // 0x006364C0
-};
+#include "shared/sw_party_client.h"
 
-extern CExoInput* g_pExoInput;                      // 0x007A39E4
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
-extern CToolTipGlobals* g_pToolTipGlobals;          // 0x007A39F4
 
 // FUNCTION: SWKOTOR 0x005EE8F0
 int CClientExoAppInternal::GetPauseState(unsigned char nType)
@@ -323,7 +277,7 @@ CSWCItem* CClientExoAppInternal::GetItemByGameObjectID(unsigned long oid)
     CGameObject* pObject = 0;
     if (m_pGameObjectArray->GetGameObject(oid, &pObject) == GAME_OBJECT_VALID
         && pObject && pObject->m_nObjectType == OBJECT_TYPE_ITEM) {
-        return (CSWCItem*)pObject->GetItemModel();
+        return (CSWCItem*)pObject->AsSWCItem();
     }
     return 0;
 }
@@ -795,7 +749,7 @@ void CClientExoAppInternal::EndPazaakGame(int bWon, int nWager, int bRun, int nE
         StartPazaakGame(m_nPazaakDeck, (int)&m_sPazaakScript, 0, 1, nExtra);
         return;
     }
-    if (g_pVirtualMachine && m_sPazaakScript.IsNotEmpty(0)) {
+    if (g_pVirtualMachine && m_sPazaakScript[0]) {
         g_pVirtualMachine->RunScript(&m_sPazaakScript, OBJECT_INVALID, 0);
     }
     m_pGuiManager->PlayGuiSound(5);

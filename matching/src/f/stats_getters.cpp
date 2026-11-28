@@ -7,21 +7,10 @@ class CGameEffect;
 class CExoString;
 class CSWSCreature;
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
-    virtual void v00();
-    virtual void v04();
-    virtual void v08();
-    virtual void v0c();
-    virtual void v10();
-    virtual void v14();
-    virtual void v18();
-    virtual void v1c();
-    virtual void v20();
-    virtual void v24();
-    virtual void v28();
-    virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();  // +0x30
 };
 
 double floor(double);
@@ -140,20 +129,9 @@ class CSWInventory;
 
 class CSWSCreatureStats;
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    CExoString(const CExoString &s);
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    char pad_0x0[0x8];
-};
+#include "shared/exo_loc_string.h"
 
 class CSWSMessage {
 public:
@@ -167,13 +145,9 @@ public:
     int GetDifficultyOption(int nOption);
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CSWSCombatAttackData {
 public:
@@ -539,11 +513,7 @@ public:
     CSWSkill *m_pSkills;             // +0xb4
 };
 
-extern CSWRules *g_pRules;
 
-extern const unsigned char CLASS_TYPE_JEDI_GUARDIAN;
-extern const unsigned char CLASS_TYPE_JEDI_CONSULAR;
-extern const unsigned char CLASS_TYPE_JEDI_SENTINEL;
 
 // FUNCTION: SWKOTOR 0x005A58B0
 char CSWSCreatureStats::GetTotalSTRBonus()
@@ -855,12 +825,26 @@ int CSWSCreatureStats::GetUseMonkAttackTables(int bRanged)
     return 0;
 }
 
+// NOTE: the same size and droid tests as GetUnarmedDamageDie below, but every
+// branch gives one die; the retail build still stores the size.
 // FUNCTION: SWKOTOR 0x005A4D40
 unsigned char CSWSCreatureStats::GetUnarmedDamageDice()
 {
-    volatile int nSize = m_pBaseCreature->m_nCreatureSize;
-    m_pBaseCreature->GetIsDroid();
-    return 1;
+    unsigned char nDice;
+    int nSize = m_pBaseCreature->m_nCreatureSize;
+    if (m_pBaseCreature->GetIsDroid() == 1) {
+        if (nSize > 2)
+            nDice = 1;
+        else
+            nDice = 1;
+    }
+    else {
+        if (nSize <= 2)
+            nDice = 1;
+        else
+            nDice = 1;
+    }
+    return nDice;
 }
 
 // FUNCTION: SWKOTOR 0x005A4D60

@@ -35,7 +35,7 @@ public:
     Scene* m_pScene;                                                 // +0x184
 };
 
-extern unsigned char g_nObjectTypeTrigger;                           // 0x00746636
+#include "shared/globals.h"
 
 // 0x00670B20 is a folded "delete if non-null" body (also matched as
 // ExplosionDoneCallback); the trigger destructor passes only the part.
@@ -207,7 +207,7 @@ int CSWCTrigger::IntersectSegment(const Vector& vStart, const Vector& vEnd, Vect
 void CSWCTrigger::AddToRenderList(int nColor)
 {
     CSWCArea* area = g_pAppManager->m_pClientExoApp->GetModule()->GetArea();
-    area->m_lTriggerIds.Add(m_oid);
+    area->m_lTriggerIds.Add(m_idSelf);
     Scene* scene = g_pAppManager->m_pClientExoApp->GetModule()->GetArea()->m_pScene;
     TriggerColor color;
     memset(&color, 0, sizeof(color));
@@ -219,7 +219,7 @@ void CSWCTrigger::AddToRenderList(int nColor)
 void CSWCTrigger::RemoveFromRenderList()
 {
     CSWCArea* area = g_pAppManager->m_pClientExoApp->GetModule()->GetArea();
-    unsigned long id = m_oid;
+    unsigned long id = m_idSelf;
     if (area->m_lTriggerIds.Contains(id)) {
         area->m_lTriggerIds.Remove(id);
         AurPartTriggerDelete(g_pAppManager->m_pClientExoApp->GetModule()->GetArea()->m_pScene,

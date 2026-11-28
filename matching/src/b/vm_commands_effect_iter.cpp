@@ -5,7 +5,7 @@
 #include "b/sws_creature.h"
 #include "b/exo_array_list.h"
 
-extern const int EFFECT_TYPE_ICON;                          // 0x00746788 (read as a dword here)
+#include "shared/globals.h"
 
 struct CSWSObjectEffectIteratorView {
     char pad_0x0[0x124];

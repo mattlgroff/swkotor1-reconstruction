@@ -1,7 +1,7 @@
 // GUI panel and camera storage/forwarding family. Larger layout is local,
 // leaving the compact shared CGuiInGame header's size unchanged.
 class CExoString;
-struct Vector { float x,y,z; };
+#include "shared/vector.h"
 struct CSWPlaceableCamera { char m_data[0x30]; };
 struct CSWGuiExtent { int left,top,width,height; };
 class CSWGuiPanel {

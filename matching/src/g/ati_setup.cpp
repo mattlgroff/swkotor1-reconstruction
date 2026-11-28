@@ -32,52 +32,13 @@ __declspec(dllimport) void __stdcall glDisable(unsigned int cap);
 #define GL_SWIZZLE_STR_ATI 0x8976
 #define GL_ALPHA 0x1906
 
-typedef unsigned int(__stdcall* PFNGLGENFRAGMENTSHADERSATI)(unsigned int range);
-typedef void(__stdcall* PFNGLBINDFRAGMENTSHADERATI)(unsigned int id);
-typedef void(__stdcall* PFNGLBEGINFRAGMENTSHADERATI)();
-typedef void(__stdcall* PFNGLENDFRAGMENTSHADERATI)();
 typedef void(__stdcall* PFNGLSAMPLEMAPATI)(unsigned int dst, unsigned int interp,
                                            unsigned int swizzle);
 typedef PFNGLSAMPLEMAPATI PFNGLPASSTEXCOORDATI;
-typedef void(__stdcall* PFNGLCOLORFRAGMENTOP1ATI)(unsigned int op, unsigned int dst,
-                                                  unsigned int dstMask, unsigned int dstMod,
-                                                  unsigned int arg1, unsigned int arg1Rep,
-                                                  unsigned int arg1Mod);
-typedef void(__stdcall* PFNGLCOLORFRAGMENTOP2ATI)(unsigned int op, unsigned int dst,
-                                                  unsigned int dstMask, unsigned int dstMod,
-                                                  unsigned int arg1, unsigned int arg1Rep,
-                                                  unsigned int arg1Mod, unsigned int arg2,
-                                                  unsigned int arg2Rep, unsigned int arg2Mod);
-typedef void(__stdcall* PFNGLCOLORFRAGMENTOP3ATI)(unsigned int op, unsigned int dst,
-                                                  unsigned int dstMask, unsigned int dstMod,
-                                                  unsigned int arg1, unsigned int arg1Rep,
-                                                  unsigned int arg1Mod, unsigned int arg2,
-                                                  unsigned int arg2Rep, unsigned int arg2Mod,
-                                                  unsigned int arg3, unsigned int arg3Rep,
-                                                  unsigned int arg3Mod);
-typedef void(__stdcall* PFNGLALPHAFRAGMENTOP1ATI)(unsigned int op, unsigned int dst,
-                                                  unsigned int dstMod, unsigned int arg1,
-                                                  unsigned int arg1Rep, unsigned int arg1Mod);
 
-extern PFNGLGENFRAGMENTSHADERSATI glGenFragmentShadersATI;      // 0x007bb754
-extern PFNGLBINDFRAGMENTSHADERATI glBindFragmentShaderATI;      // 0x007bb6cc
-extern PFNGLBEGINFRAGMENTSHADERATI glBeginFragmentShaderATI;    // 0x007bb7f4
-extern PFNGLENDFRAGMENTSHADERATI glEndFragmentShaderATI;        // 0x007bb554
-extern PFNGLSAMPLEMAPATI glSampleMapATI;                        // 0x007bb620
-extern PFNGLPASSTEXCOORDATI glPassTexCoordATI;                  // 0x007bb804
-extern PFNGLCOLORFRAGMENTOP1ATI glColorFragmentOp1ATI;          // 0x007bb6d4
-extern PFNGLCOLORFRAGMENTOP2ATI glColorFragmentOp2ATI;          // 0x007bb840
-extern PFNGLCOLORFRAGMENTOP3ATI glColorFragmentOp3ATI;          // 0x007bb7fc
-extern PFNGLALPHAFRAGMENTOP1ATI glAlphaFragmentOp1ATI;          // 0x007bb710
+#include "shared/gl_ext.h"
 
-extern unsigned int g_nColorRampAlphaShaderATI; // 0x007a690c
-extern unsigned int g_nCopyShaderATI;           // 0x007a6910
-extern unsigned int g_nConvolutionShaderATI;    // 0x007a6914
-extern unsigned int g_nColorMatrixShaderATI;    // 0x007a6918
-extern unsigned int g_nAccumBlurShaderATI;      // 0x007a691c
-extern unsigned int g_nFilmNoiseShaderATI;      // 0x007a6920
-extern unsigned int g_nDistortionShaderATI;     // 0x007a6924
-extern unsigned int g_nColorRampShaderATI;      // 0x007a692c
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00427490
 void SetupATIFrameBuffer()

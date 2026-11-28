@@ -5,15 +5,10 @@
 #include "b/sws_player.h"
 #include "b/sw_rules.h"
 
-extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634 (5)
+#include "shared/globals.h"
 
 // Spell fields shared by CSWSObject-derived objects.
-struct CSWSObjectSpellView {
-    char pad_0x0[0x1c0];
-    int m_nLastSpellId;                                     // 0x1c0
-    char pad_0x1c4[0x1d4 - 0x1c4];
-    unsigned char m_nLastSpellCastClass;                    // 0x1d4
-};
+#include "shared/sws_object_spell_view.h"
 
 // Slot 0x50 object (AsSWSAreaOfEffectObject) carries its caster level.
 class CSWSAreaOfEffectObject : public CSWSObject {

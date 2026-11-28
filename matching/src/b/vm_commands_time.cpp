@@ -4,14 +4,13 @@
 #include "b/sws_creature.h"
 #include "b/party_table.h"
 
-extern const unsigned char OBJECT_TYPE_MODULE;              // 0x00746632 (3)
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633 (4)
+#include "shared/globals.h"
 
 // Per-object value read by 0x0053E220 (+0x150 on plain objects, +0x314 on
 // the vtable 0x5c kind).
 class CGameObjectValueView : public CGameObject {
 public:
-    char pad_0xf4[0x150 - 0xf4];
+    char pad_0xc[0x150 - 0xc];
     int m_n150;                                             // 0x150 (name guessed)
 };
 
@@ -35,7 +34,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetTag(int nCommandId, int nParamet
         } else if (pObject->m_nObjectType == OBJECT_TYPE_AREA) {
             sTag = pObject->AsSWSArea()->m_sTag;
         } else {
-            sTag = pObject->m_sTag;
+            sTag = ((CSWSObject*)pObject)->m_sTag;
         }
     }
     if (!g_pVirtualMachine->StackPushString(sTag)) {
@@ -143,7 +142,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsBusy(int nCommandId, int nPara
                 bResult = 0;
             }
         } else {
-            bResult = pObject->GetObjectState94();
+            bResult = ((CSWSObject*)pObject)->GetObjectState94();
         }
     }
     return g_pVirtualMachine->StackPushInteger(bResult) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;

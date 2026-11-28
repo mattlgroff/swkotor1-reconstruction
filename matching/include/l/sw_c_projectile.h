@@ -7,14 +7,7 @@
 #ifndef L_SW_C_PROJECTILE_H
 #define L_SW_C_PROJECTILE_H
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-};
+#include "shared/vector_ops.h"
 
 struct Quaternion {
     float w, x, y, z;
@@ -32,76 +25,21 @@ inline float MagnitudeSquared(const Vector& v)
 
 extern "C" int __cdecl rand(void);
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int operator==(const char* s) const;            // 0x005E5290
-    int IsEmpty() const;                            // 0x005E58A0
-    char* CStr() const;                             // 0x005E5670
-    int GetLength() const;                          // 0x005E5790
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ED0
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    CResRef operator=(const char* s);               // 0x00406290
-    CResRef(const CExoString& s);                   // 0x00406D60
-    void CopyToString(char* pStr) const;            // 0x00405FB0
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    int operator==(const char* s) const;            // 0x004060D0
-    char* GetResRef() const;                        // 0x00641DB0 (returns this)
-};
+#include "shared/res_ref.h"
 
-extern const unsigned long OBJECT_INVALID;          // 0x00746644
-extern const unsigned char OBJECT_TYPE_PROJECTILE;  // 0x00746637
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
+#include "shared/object_id.h"
+#include "shared/globals.h"
 
 // Linked list ---------------------------------------------------------------
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListNode* pHead;
-    CExoLinkedListNode* pTail;
-    unsigned long nCount;
+#include "shared/exo_linked_list.h"
 
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* RemoveHead();                             // 0x005E9C80
-    void* AddTail(void* p);                         // 0x005E9DC0
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
 
-    CExoLinkedList();
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-    void* AddTail(T* p) { return m_pcExoLinkedListInternal->AddTail(p); }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-};
-
-template <class T>
-CExoLinkedList<T>::CExoLinkedList()
-{
-    m_pcExoLinkedListInternal = new CExoLinkedListInternal;
-}
 
 // Collaborators -------------------------------------------------------------
 
@@ -216,7 +154,6 @@ public:
     char pad_0x90[0xb8 - 0x90];
     C2DAs* m_p2DArrays;                             // 0xb8
 };
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CWorldTimer {
 public:
@@ -261,36 +198,12 @@ public:
     CClientAIMaster* GetClientAIMaster();           // 0x005ED6B0
 };
 
-class CAppManager {
-public:
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
 
 class CSWCDoor;
 class CSWCPlaceable;
 
-class CGameObject {
-public:
-    virtual ~CGameObject() {}
-    virtual void SetId(unsigned long oid);          // 0x04
-    virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-    virtual void v10();
-    virtual CSWCDoor* AsSWCDoor();                  // 0x14
-    virtual void v18(); virtual void v1C(); virtual void v20(); virtual void v24();
-    virtual void v28(); virtual void v2C(); virtual void v30(); virtual void v34();
-    virtual void v38(); virtual void v3C(); virtual void v40(); virtual void v44();
-    virtual void v48();
-    virtual CSWCPlaceable* AsSWCPlaceable();        // 0x4c
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
-    virtual CExoString GetName();                   // 0x70
-
-    unsigned long m_idSelf;                         // 0x04
-    unsigned char m_nObjectType;                    // 0x08
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:
@@ -338,19 +251,7 @@ public:
 // Projectile -----------------------------------------------------------------
 
 // One leg of the projectile's flight path (operator new 0x34).
-struct CSWCProjectileBehavior {
-    Vector m_vStart;                                // 0x00
-    Vector m_vEnd;                                  // 0x0c
-    unsigned long m_oidTarget;                      // 0x18
-    int m_nFlags;                                // 0x1c
-    unsigned long m_nDuration;                      // 0x20
-    unsigned long m_nDelay;                         // 0x24
-    float m_fSpeed;                                 // 0x28
-    unsigned char m_nState;                         // 0x2c
-    unsigned char m_nType;                          // 0x2d
-    char pad_0x2e[2];
-    unsigned long m_n30;                            // 0x30
-};
+#include "shared/swc_projectile_behavior.h"
 
 // vtable 0x00757CC8, size 0x1C8.
 class CSWCProjectile : public CSWCObject {

@@ -2,11 +2,7 @@
 // walk test between two points of the avoidance hexagon. Own minimal layouts;
 // several names are placeholders.
 
-class Vector {
-public:
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CWalkHitInfo {
 public:
@@ -26,10 +22,7 @@ public:
     int m_n44;                       // +0x44
 };
 
-class CResRef {
-public:
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWAreaHead {
 public:
@@ -75,15 +68,9 @@ public:
                        CWalkHitInfo *pHit);
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
-extern int g_bPathfindDebug;         // 0x00832880 (placeholder name)
+#include "shared/globals.h"
 
 class CAvoidCreature {
 public:

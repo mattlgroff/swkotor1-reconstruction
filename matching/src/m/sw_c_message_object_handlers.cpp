@@ -1,25 +1,14 @@
 // Object-update message handlers. Partial interfaces preserve original base offsets.
 #define OBJECT_INVALID 0x7f000000
-extern const unsigned char GAME_OBJECT_VALID;
-extern const unsigned char OBJECT_TYPE_CREATURE;
-extern const unsigned char OBJECT_TYPE_ITEM;
-extern const unsigned char OBJECT_TYPE_TRIGGER;
-extern const unsigned char OBJECT_TYPE_DOOR;
-extern const unsigned char OBJECT_TYPE_AREA_OF_EFFECT;
-extern const unsigned char OBJECT_TYPE_PLACEABLE;
+#include "shared/globals.h"
 class CGameObject;
 class CSWCDoor { public: virtual ~CSWCDoor(); };
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04(); virtual void v08(); virtual void v0C(); virtual void v10();
-    virtual CSWCDoor* AsSWCDoor();
-};
+#include "shared/game_object.h"
 class CGameObjectArray {
 public:
     unsigned char Delete(unsigned long, CGameObject**);
 };
-class CResRef { public: CResRef(); char m_ref[16]; };
+#include "shared/res_ref.h"
 class CSWCArea { public: char pad_000[0x184]; int m_nAreaState; };
 class CSWCModule { public: char pad_000[0x48]; CSWCArea* m_pArea; };
 class CSWItem {
@@ -75,8 +64,7 @@ public:
     CGameObjectArray* GetGameObjectArray();
     CClientAIMaster* GetClientAIMaster();
 };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager;
+#include "shared/app_manager.h"
 class CSWCMessage {
 public:
     int ReadBOOL();

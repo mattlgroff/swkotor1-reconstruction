@@ -2,9 +2,7 @@
 #include "l/sw_gui_options_in_game.h"
 extern int AurTestAntiAliasingMode(int nSamples); // 0x0044F140
 class CExoSound { public: int GetMaxSoundQuality(); }; // 0x005D6460
-extern CExoSound* g_pExoSound; // 0x007A39EC
-extern Vector g_vAbilityColorGranted; // 0x007A23C0
-extern Vector g_vDifficultyExitColor; // 0x007A23B4
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x006DED90
 void CSWGuiOptionsGraphics::OnExitSlider(CSWGuiControl* pControl)

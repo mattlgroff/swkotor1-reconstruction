@@ -43,7 +43,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionMoveToObject(int nCommandId, 
             if (!(fRange > fUseRange)) {
                 fRange = fUseRange;
             }
-            Vector vPosition = pTarget->m_vPosition;
+            Vector vPosition = ((CSWSObject*)pTarget)->m_vPosition;
             CSWSArea* pArea = ((CSWSObject*)pTarget)->GetArea();
             CResRef cResRef;
             if (pArea) {

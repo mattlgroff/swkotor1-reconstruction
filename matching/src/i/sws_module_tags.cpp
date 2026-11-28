@@ -189,7 +189,7 @@ int CSWSModule::LoadTemporaryArea()
     CSWSArea* pArea = GetServerExoApp()->GetAreaByGameObjectID(m_oidArea);
     sGitName = sTemp;
     pArea->LoadAreaFromData(m_pTempAreaData, sGitName, m_nTempAreaSize);
-    g_pAppManager->m_p14->m_n8 = 1;
-    SendStallEvent(1, g_pAppManager->m_p14->m_nC);
+    g_pAppManager->m_pReentrantServerStats->m_nStep = 1;
+    SendStallEvent(1, g_pAppManager->m_pReentrantServerStats->m_nProgress);
     return 1;
 }

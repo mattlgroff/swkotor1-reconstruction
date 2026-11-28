@@ -10,12 +10,7 @@ namespace GLRender {
 void Transform(const Vector* pPos, const Quaternion* pOri, int bForce);    // 0x0046F060
 }
 
-extern int g_bTransformParts;       // 0x0078E5F0
-extern unsigned int g_eGLFog;       // 0x0078D450
-extern unsigned int g_eGLFogStart;  // 0x0078D484
-extern unsigned int g_eGLFogEnd;    // 0x0078D488
-extern unsigned int g_eGLFogDensity;    // 0x0078D48C
-extern unsigned int g_eGLFogColor;  // 0x0078D490
+#include "shared/globals.h"
 
 struct FogSettings {
     char m_pad00[0x60];
@@ -35,11 +30,6 @@ struct GobFade {
     char m_pad00[0x94];
     float m_fFade;                  // +0x94
 };
-
-inline Vector operator*(const Vector& v, float f)
-{
-    return Vector(v.x * f, v.y * f, v.z * f);
-}
 
 class Part;
 

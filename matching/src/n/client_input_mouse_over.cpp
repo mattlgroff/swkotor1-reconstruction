@@ -1,24 +1,17 @@
 // CClientExoAppInternal::HandleMouseOver (clientinput.o). SetMouseCursor
 // (0x0061F980, matched in c/client_cursor_state.cpp) is defined here again
 // without an annotation so cl can inline it the way the original TU did.
-struct Vector { float x,y,z; };
-class CExoInput {
-public:
-    int SetMouseCursor(int nCursor,int nOption,int bAlternate); // 0x005DF5C0
-    int GetLastSetMouseDownState(); // 0x005DF730
-};
-extern CExoInput* g_pExoInput; // 0x007A39E4
+#include "shared/vector.h"
+#include "shared/exo_input.h"
+#include "shared/globals.h"
 class CSWGuiControl;
 class CSWGuiManager {
 public:
     char pad_0x0[8]; CSWGuiControl* m_pMouseOverControl;
     void SetSoftwareMouseCursor(int nCursor,int nOption,int bAlternate); // 0x0040A270
 };
-extern CSWGuiManager* g_pGuiManager; // 0x007A39F4
-extern int g_nMouseDownState; // 0x008338F4
 class CClientExoApp { public: unsigned long GetPlayerCreatureId(); /* 0x005ED550 */ };
-class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
-extern CAppManager* g_pAppManager; // 0x007A39FC
+#include "shared/app_manager.h"
 class CClientOptions { public: char pad_0x0[0x6d]; unsigned char m_nCameraMode; };
 class CSWGuiMainInterface { public: char pad_0x0[0x64]; unsigned long m_oidTarget; };
 class CGuiInGame {
@@ -26,7 +19,7 @@ public:
     char pad_0x0[0x30]; int m_bInputActive; char pad_0x34[0x5c]; CSWGuiMainInterface* m_pMainInterface;
     char pad_0x94[0x20]; int m_nGlobalDialogState;
 };
-struct CDefaultAction { char pad_0x0[8]; int m_nAction; };
+#include "shared/default_action.h"
 int CompareObjectIds(const void* a,const void* b); // 0x0061FA90
 class CObjectIdList {
 public:
@@ -84,7 +77,7 @@ void CClientExoAppInternal::HandleMouseOver(unsigned long oid,const Vector& vPos
             SetMouseCursor(0x2d,0,0);
             return;
         }
-        if (pFirst) nCursor = GetDefaultActionCursor(pFirst->m_nAction,bMultiple);
+        if (pFirst) nCursor = GetDefaultActionCursor(pFirst->m_nArgument,bMultiple);
         SetMouseCursor(nCursor,0,nDown);
     }
 }

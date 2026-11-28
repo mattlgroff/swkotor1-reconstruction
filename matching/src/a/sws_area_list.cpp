@@ -4,10 +4,5 @@
 
 struct CSWSAreaListEntry;
 
-#pragma auto_inline(off)
 // FUNCTION: SWKOTOR 0x00506D90 SYMBOL: ??0?$CExoLinkedList@UCSWSAreaListEntry@@@@QAE@XZ
-template <> CExoLinkedList<CSWSAreaListEntry>::CExoLinkedList()
-{
-    m_pList = new CExoLinkedListInternal;
-}
-#pragma auto_inline(on)
+template CExoLinkedList<CSWSAreaListEntry>::CExoLinkedList();

@@ -20,7 +20,7 @@ public:
     virtual void a2c0(); virtual void a2c1();
     virtual unsigned char IsRunning();              // +0xa8
 };
-extern CApp* g_pApp;                                // 0x007B92A0
+#include "shared/globals.h"
 
 // Heap / member safe pointer to a Gob: registers its slot in the Gob's
 // watcher list, the Gob nulls it when it dies.

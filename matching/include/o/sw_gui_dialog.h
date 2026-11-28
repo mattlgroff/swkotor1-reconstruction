@@ -4,44 +4,9 @@
 #ifndef O_SW_GUI_DIALOG_H
 #define O_SW_GUI_DIALOG_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* sString);                // 0x005E5A90
-    CExoString(int n);                              // 0x005E5BC0
-    CExoString(const CExoString& sString);          // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int IsEmpty() const;                          // 0x005E58A0
-    int AsINT() const;                            // 0x005E5630
-    int GetLength() const;                          // 0x005E5790
-    char* CStr() const;                             // 0x005E5670
-    void Format(const char* szFormat, ...);         // 0x005E5680
-    int Find(char c, int nStart) const;             // 0x005E5F20
-    int Find(const CExoString& s, int nStart) const;    // 0x005E5EB0
-    CExoString Left(int nCount) const;              // 0x005E5F70
-    char operator[](int nIndex) const;              // 0x005E5600
-    int operator>(const CExoString& s) const;       // 0x005E5490
-    CExoString Right(int nCount) const;             // 0x005E6170
-};
+#include "shared/exo_string.h"
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    Vector& operator-=(const Vector& v);            // 0x004A9770
-    void Normalize();                               // 0x004AB130
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct CSWGuiExtent {
     int left;
@@ -95,7 +60,7 @@ public:
     void MoveMouseToPosition(int x, int y);         // 0x0040C790
     void RestoreOldMousePosition();                 // 0x0040C7D0
 };
-extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
+#include "shared/globals.h"
 
 // Text parameters embedded in labels/controls.
 class CSWGuiTextParams {
@@ -593,20 +558,8 @@ public:
     class CGameObjectArray* GetObjectArray();       // 0x004AED70
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern int g_nScreenWidth;                          // 0x0078D1D4
-extern int g_nScreenHeight;                         // 0x0078D1D8
-extern CExoString g_sComputerBGPrefix;              // 0x007A3D70
-extern Vector g_vDefaultReplyColor;                 // 0x007A23C0
 
 // Conversation panel; implicit destructor 0x006A6F30.
 class CSWGuiDialog : public CSWGuiPanel {
@@ -701,7 +654,6 @@ public:
     CDialogCamera* m_pCamera;                       // 0x207c
 };
 
-extern Vector g_vBlack;                             // 0x00833910
 
 // Cinematic letterbox bars; vtable 0x00755A78; implicit dtor 0x006A8A10.
 class CSWGuiLetterbox : public CSWGuiPanel {

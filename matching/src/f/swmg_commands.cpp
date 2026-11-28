@@ -2,32 +2,11 @@
 // (0x005CB350-0x005CB730): CSWVirtualMachineCommands::ExecuteCommandSWMG_*,
 // CSWMGGunBank::SetBulletModel and the float test at 0x005CB440.
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    CExoString &operator=(const char *s);
-    char *CStr() const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef(const CExoString &sName);
-    CResRef operator=(const CResRef &cResRef);
-    void CopyToString(CExoString &sStr) const;
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class Vector {
-public:
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWMGGunBank;
 
@@ -45,7 +24,7 @@ public:
     int StackPushObject(unsigned long oidValue);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
+#include "shared/globals.h"
 
 class CAurNamed {
 public:
@@ -156,11 +135,7 @@ public:
     int m_n184;                      // +0x184
 };
 
-class CSWMiniGameObjectArray {
-public:
-    CSWMiniGameObject *GetObject(unsigned long nId, unsigned char nType);
-    CSWMiniGameObject *GetObjectByTag(const CExoString &sTag);
-};
+#include "shared/sw_mini_game_object_array.h"
 
 class CSWCMiniGame {
 public:
@@ -188,14 +163,8 @@ public:
     CSWCMiniGame *GetMiniGame();
 };
 
-class CAppManager {
-public:
-    void *m_pUnknown00;
-    CClientExoApp *m_pClientExoApp;  // +0x04
-    CClientExoApp *GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
 
 class CSWMGGunBank {
 public:
@@ -232,58 +201,7 @@ public:
     float m_f9c;                     // +0x9c
 };
 
-class CSWVirtualMachineCommands {
-public:
-    void *m_pVtable;                 // +0x00
-    int m_bValidObjectRunScript;     // +0x04
-    unsigned long m_oidObjectRunScript; // +0x08
-    struct CVirtualMachineCommandTable *m_pCommands; // +0x0c
-
-    void InitializeSWMGCommands();
-    int ExecuteCommandSWMG_GetPlayerFloat(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetPlayerVector(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_SetPlayerFloat(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_SetPlayerVector(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetFollowerPosition(int nCommandId, int nParameters);
-
-    int ExecuteCommandSWMG_SetLateralAccelerationPerSecond(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetObjectName(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetObjectModelName(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetObjectByName(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetModelName(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetLastEvent(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_SetFollowerPosition(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_SetFarClip(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetFarClip(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetGunBankTargetFloat(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_SetGunBankModel(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_SetGunBankInt(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_SetGunBankFloat(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_SetGunBankTargetFloat(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetGunBankInt(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetGunBankFloat(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetHookPosition(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_SetObjectInt(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_SetObjectFloat(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetGunBankModel(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetGameObject(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetObjectInt(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_ResetSpeed(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetFollowerFloatInfo(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_PlayAnimationOnce(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetLateralLimit(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_SetLateralLimits(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetPlayer(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetGameInt(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_SetFollowerInt(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_RunScript(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetTarget2(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_PlayAnimation(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetFollowerInt(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetTarget(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_IsType(int nCommandId, int nParameters);
-    int ExecuteCommandSWMG_GetEnemyValue(int nCommandId, int nParameters);
-};
+#include "shared/sw_virtual_machine_commands.h"
 
 // FUNCTION: SWKOTOR 0x005CB350
 int CSWVirtualMachineCommands::ExecuteCommandSWMG_SetLateralAccelerationPerSecond(int nCommandId,
@@ -1294,108 +1212,104 @@ int CSWVirtualMachineCommands::ExecuteCommandSWMG_GetEnemyValue(int nCommandId, 
     return 0;
 }
 
-struct CVirtualMachineCommandTable {
-    int (CSWVirtualMachineCommands::*m_pfnCommands[0x300])(int nCommandId, int nParameters);
-};
-
 // FUNCTION: SWKOTOR 0x005CD2C0
 void CSWVirtualMachineCommands::InitializeSWMGCommands()
 {
-    m_pCommands->m_pfnCommands[0x246] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetLateralAccelerationPerSecond;
-    m_pCommands->m_pfnCommands[0x247] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectName;
-    m_pCommands->m_pfnCommands[0x248] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectModelName;
-    m_pCommands->m_pfnCommands[0x249] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectByName;
-    m_pCommands->m_pfnCommands[0x24a] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayAnimation;
-    m_pCommands->m_pfnCommands[0x24b] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerInt;
-    m_pCommands->m_pfnCommands[0x24c] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerInt;
-    m_pCommands->m_pfnCommands[0x24d] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTarget;
-    m_pCommands->m_pfnCommands[0x24e] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerInt;
-    m_pCommands->m_pfnCommands[0x24f] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_RunScript;
-    m_pCommands->m_pfnCommands[0x250] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_RunScript;
-    m_pCommands->m_pfnCommands[0x251] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTarget2;
-    m_pCommands->m_pfnCommands[0x252] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTarget2;
-    m_pCommands->m_pfnCommands[0x253] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerInt;
-    m_pCommands->m_pfnCommands[0x254] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerInt;
-    m_pCommands->m_pfnCommands[0x255] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetModelName;
-    m_pCommands->m_pfnCommands[0x256] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_RunScript;
-    m_pCommands->m_pfnCommands[0x257] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_IsType;
-    m_pCommands->m_pfnCommands[0x258] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_IsType;
-    m_pCommands->m_pfnCommands[0x259] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_IsType;
-    m_pCommands->m_pfnCommands[0x25a] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_IsType;
-    m_pCommands->m_pfnCommands[0x25b] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_IsType;
-    m_pCommands->m_pfnCommands[0x25c] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerInt;
-    m_pCommands->m_pfnCommands[0x25d] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_RunScript;
-    m_pCommands->m_pfnCommands[0x25e] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetEnemyValue;
-    m_pCommands->m_pfnCommands[0x25f] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayAnimationOnce;
-    m_pCommands->m_pfnCommands[0x260] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLateralLimit;
-    m_pCommands->m_pfnCommands[0x261] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLateralLimit;
-    m_pCommands->m_pfnCommands[0x262] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetLateralLimits;
-    m_pCommands->m_pfnCommands[0x263] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayer;
-    m_pCommands->m_pfnCommands[0x264] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGameInt;
-    m_pCommands->m_pfnCommands[0x265] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGameObject;
-    m_pCommands->m_pfnCommands[0x266] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGameInt;
-    m_pCommands->m_pfnCommands[0x267] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGameObject;
-    m_pCommands->m_pfnCommands[0x268] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectInt;
-    m_pCommands->m_pfnCommands[0x269] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectInt;
-    m_pCommands->m_pfnCommands[0x26a] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetObjectInt;
-    m_pCommands->m_pfnCommands[0x26b] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerFloatInfo;
-    m_pCommands->m_pfnCommands[0x26c] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetObjectFloat;
-    m_pCommands->m_pfnCommands[0x26d] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectInt;
-    m_pCommands->m_pfnCommands[0x26e] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetObjectInt;
-    m_pCommands->m_pfnCommands[0x26f] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetHookPosition;
-    m_pCommands->m_pfnCommands[0x270] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectInt;
-    m_pCommands->m_pfnCommands[0x271] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankModel;
-    m_pCommands->m_pfnCommands[0x272] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankModel;
-    m_pCommands->m_pfnCommands[0x273] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankInt;
-    m_pCommands->m_pfnCommands[0x274] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankFloat;
-    m_pCommands->m_pfnCommands[0x275] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankFloat;
-    m_pCommands->m_pfnCommands[0x276] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankFloat;
-    m_pCommands->m_pfnCommands[0x277] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankInt;
-    m_pCommands->m_pfnCommands[0x278] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankModel;
-    m_pCommands->m_pfnCommands[0x279] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankModel;
-    m_pCommands->m_pfnCommands[0x27a] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankInt;
-    m_pCommands->m_pfnCommands[0x27b] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankFloat;
-    m_pCommands->m_pfnCommands[0x27c] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankFloat;
-    m_pCommands->m_pfnCommands[0x27d] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankFloat;
-    m_pCommands->m_pfnCommands[0x27e] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankInt;
-    m_pCommands->m_pfnCommands[0x27f] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEvent;
-    m_pCommands->m_pfnCommands[0x280] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankInt;
-    m_pCommands->m_pfnCommands[0x281] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerVector;
-    m_pCommands->m_pfnCommands[0x282] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerFloatInfo;
-    m_pCommands->m_pfnCommands[0x283] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerFloat;
-    m_pCommands->m_pfnCommands[0x284] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerFloat;
-    m_pCommands->m_pfnCommands[0x29b] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerFloat;
-    m_pCommands->m_pfnCommands[0x285] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerFloat;
-    m_pCommands->m_pfnCommands[0x286] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerVector;
-    m_pCommands->m_pfnCommands[0x287] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerVector;
-    m_pCommands->m_pfnCommands[0x288] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetObjectFloat;
-    m_pCommands->m_pfnCommands[0x289] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerFloat;
-    m_pCommands->m_pfnCommands[0x28a] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerFloat;
-    m_pCommands->m_pfnCommands[0x29c] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerFloat;
-    m_pCommands->m_pfnCommands[0x28b] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerFloat;
-    m_pCommands->m_pfnCommands[0x28c] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerVector;
-    m_pCommands->m_pfnCommands[0x28d] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerVector;
-    m_pCommands->m_pfnCommands[0x28e] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerVector;
-    m_pCommands->m_pfnCommands[0x28f] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerVector;
-    m_pCommands->m_pfnCommands[0x290] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerVector;
-    m_pCommands->m_pfnCommands[0x291] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankTargetFloat;
-    m_pCommands->m_pfnCommands[0x292] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankTargetFloat;
-    m_pCommands->m_pfnCommands[0x293] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankTargetFloat;
-    m_pCommands->m_pfnCommands[0x294] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankTargetFloat;
-    m_pCommands->m_pfnCommands[0x295] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankTargetFloat;
-    m_pCommands->m_pfnCommands[0x296] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankTargetFloat;
-    m_pCommands->m_pfnCommands[0x297] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankTargetFloat;
-    m_pCommands->m_pfnCommands[0x298] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankTargetFloat;
-    m_pCommands->m_pfnCommands[0x299] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectInt;
-    m_pCommands->m_pfnCommands[0x29a] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_ResetSpeed;
-    m_pCommands->m_pfnCommands[0x2ab] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerPosition;
-    m_pCommands->m_pfnCommands[0x2ac] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerPosition;
-    m_pCommands->m_pfnCommands[0x2ad] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerPosition;
-    m_pCommands->m_pfnCommands[0x2ae] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerPosition;
-    m_pCommands->m_pfnCommands[0x2af] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerPosition;
-    m_pCommands->m_pfnCommands[0x2b0] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerPosition;
-    m_pCommands->m_pfnCommands[0x2ce] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerVector;
-    m_pCommands->m_pfnCommands[0x2cd] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerVector;
-    m_pCommands->m_pfnCommands[0x209] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFarClip;
-    m_pCommands->m_pfnCommands[0x208] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFarClip;
+    m_pCommands[0x246] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetLateralAccelerationPerSecond;
+    m_pCommands[0x247] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectName;
+    m_pCommands[0x248] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectModelName;
+    m_pCommands[0x249] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectByName;
+    m_pCommands[0x24a] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayAnimation;
+    m_pCommands[0x24b] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerInt;
+    m_pCommands[0x24c] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerInt;
+    m_pCommands[0x24d] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTarget;
+    m_pCommands[0x24e] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerInt;
+    m_pCommands[0x24f] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_RunScript;
+    m_pCommands[0x250] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_RunScript;
+    m_pCommands[0x251] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTarget2;
+    m_pCommands[0x252] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetTarget2;
+    m_pCommands[0x253] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerInt;
+    m_pCommands[0x254] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerInt;
+    m_pCommands[0x255] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetModelName;
+    m_pCommands[0x256] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_RunScript;
+    m_pCommands[0x257] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_IsType;
+    m_pCommands[0x258] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_IsType;
+    m_pCommands[0x259] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_IsType;
+    m_pCommands[0x25a] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_IsType;
+    m_pCommands[0x25b] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_IsType;
+    m_pCommands[0x25c] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerInt;
+    m_pCommands[0x25d] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_RunScript;
+    m_pCommands[0x25e] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetEnemyValue;
+    m_pCommands[0x25f] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_PlayAnimationOnce;
+    m_pCommands[0x260] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLateralLimit;
+    m_pCommands[0x261] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLateralLimit;
+    m_pCommands[0x262] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetLateralLimits;
+    m_pCommands[0x263] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayer;
+    m_pCommands[0x264] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGameInt;
+    m_pCommands[0x265] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGameObject;
+    m_pCommands[0x266] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGameInt;
+    m_pCommands[0x267] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGameObject;
+    m_pCommands[0x268] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectInt;
+    m_pCommands[0x269] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectInt;
+    m_pCommands[0x26a] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetObjectInt;
+    m_pCommands[0x26b] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerFloatInfo;
+    m_pCommands[0x26c] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetObjectFloat;
+    m_pCommands[0x26d] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectInt;
+    m_pCommands[0x26e] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetObjectInt;
+    m_pCommands[0x26f] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetHookPosition;
+    m_pCommands[0x270] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectInt;
+    m_pCommands[0x271] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankModel;
+    m_pCommands[0x272] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankModel;
+    m_pCommands[0x273] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankInt;
+    m_pCommands[0x274] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankFloat;
+    m_pCommands[0x275] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankFloat;
+    m_pCommands[0x276] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankFloat;
+    m_pCommands[0x277] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankInt;
+    m_pCommands[0x278] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankModel;
+    m_pCommands[0x279] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankModel;
+    m_pCommands[0x27a] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankInt;
+    m_pCommands[0x27b] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankFloat;
+    m_pCommands[0x27c] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankFloat;
+    m_pCommands[0x27d] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankFloat;
+    m_pCommands[0x27e] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankInt;
+    m_pCommands[0x27f] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetLastEvent;
+    m_pCommands[0x280] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankInt;
+    m_pCommands[0x281] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerVector;
+    m_pCommands[0x282] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerFloatInfo;
+    m_pCommands[0x283] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerFloat;
+    m_pCommands[0x284] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerFloat;
+    m_pCommands[0x29b] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerFloat;
+    m_pCommands[0x285] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerFloat;
+    m_pCommands[0x286] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerVector;
+    m_pCommands[0x287] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerVector;
+    m_pCommands[0x288] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetObjectFloat;
+    m_pCommands[0x289] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerFloat;
+    m_pCommands[0x28a] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerFloat;
+    m_pCommands[0x29c] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerFloat;
+    m_pCommands[0x28b] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerFloat;
+    m_pCommands[0x28c] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerVector;
+    m_pCommands[0x28d] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerVector;
+    m_pCommands[0x28e] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerVector;
+    m_pCommands[0x28f] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerVector;
+    m_pCommands[0x290] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerVector;
+    m_pCommands[0x291] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankTargetFloat;
+    m_pCommands[0x292] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankTargetFloat;
+    m_pCommands[0x293] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankTargetFloat;
+    m_pCommands[0x294] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetGunBankTargetFloat;
+    m_pCommands[0x295] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankTargetFloat;
+    m_pCommands[0x296] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankTargetFloat;
+    m_pCommands[0x297] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankTargetFloat;
+    m_pCommands[0x298] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetGunBankTargetFloat;
+    m_pCommands[0x299] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetObjectInt;
+    m_pCommands[0x29a] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_ResetSpeed;
+    m_pCommands[0x2ab] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerPosition;
+    m_pCommands[0x2ac] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerPosition;
+    m_pCommands[0x2ad] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerPosition;
+    m_pCommands[0x2ae] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerPosition;
+    m_pCommands[0x2af] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFollowerPosition;
+    m_pCommands[0x2b0] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFollowerPosition;
+    m_pCommands[0x2ce] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetPlayerVector;
+    m_pCommands[0x2cd] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetPlayerVector;
+    m_pCommands[0x209] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_GetFarClip;
+    m_pCommands[0x208] = &CSWVirtualMachineCommands::ExecuteCommandSWMG_SetFarClip;
 }

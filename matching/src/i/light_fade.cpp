@@ -5,15 +5,8 @@
 #include <stdlib.h>
 #include "i/light_manager.h"
 
-extern volatile float g_fFrameTime;                    // 0x0078E574 (placeholder name)
-extern int g_bLightsFadeLocked;                         // 0x008305F4 (placeholder name)
-extern int g_bBlackFog;                                 // 0x008305E0
-extern int g_nMaxLights;                                // 0x007A1934 (placeholder name)
-extern int g_nEnabledLights;                            // 0x008305E4 (placeholder name)
-extern int g_bNegativeLight;                            // 0x008305F0 (placeholder name)
+#include "shared/globals.h"
 
-extern float g_fLightFadeRate;                          // 0x007A1940 (placeholder name)
-extern float g_fShadowFadeRate;                         // 0x007A1944 (placeholder name)
 
 // NONMATCH (142 insns): register allocation. cl keeps s_lWanted.num in a
 // register across the first loop (the original reloads it), and the fade

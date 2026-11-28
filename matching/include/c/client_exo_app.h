@@ -19,7 +19,7 @@ class CSWCModule;
 class CSWCSaveLoad;
 class CSWGuiManager;
 class CSWGuiLoadScreen;
-struct Vector;
+class Vector;
 class CSWCAmbientSound;
 class CMoviePlayer;
 class CSWCCreature;
@@ -53,16 +53,9 @@ class CSWGuiInterfaceAction;
 class CSWGuiControl;
 class CExoFile;
 
-struct CHostileHilite {
-    unsigned long m_oidTarget;                      // 0x00
-    float m_fTimeLeft;                              // 0x04
-};
+#include "shared/hostile_hilite.h"
 
-struct CRumblePattern {
-    int GetIntensity(float fTime, float* pfLeft, float* pfRight);  // 0x0068FDD0 (descriptive)
-    char pad_0x0[0x20];
-    int m_bExclusive;                               // 0x20
-};
+#include "shared/rumble_pattern.h"
 
 // GUI string cache entry (0xc): strref and its parsed text.
 struct CGuiStringStruct {
@@ -70,14 +63,7 @@ struct CGuiStringStruct {
     CExoString m_sString;                           // 0x04
 };
 
-struct CActiveRumble {
-    int m_nPattern;                                 // 0x00
-    union {
-        int m_nTime;                                // 0x04
-        float m_fTime;                              // 0x04 (elapsed seconds)
-    };
-    int m_bActive;                                  // 0x08
-};
+#include "shared/active_rumble.h"
 
 #pragma pack(push, 4)
 class CWorldTimer {
@@ -198,18 +184,9 @@ public:
     char pad_0x4c[0xec];
 };
 
-class CSWCSaveLoad {
-public:
-    int SendPlayerToServer_06_21();                 // 0x00677E50 (CSWCMessage)
-    int SendSaveGameRequest(int a, int b, int c);   // 0x006774E0
-    int SendLoadGameRequest(int a, int b, int c);   // 0x00677560
-    void HandleMessage(unsigned char* pData, unsigned long nSize);   // 0x0066A640
-};
+#include "shared/swc_save_load.h"
 
-class CClientMessageHandler1c0 {
-public:
-    void HandleMessage(unsigned char* pData, unsigned long nSize);   // 0x00675710
-};
+#include "shared/client_message_handler1c0.h"
 
 class CSWGuiManager {
 public:
@@ -267,33 +244,11 @@ public:
 class CItemModel : public CItemModelBase, public CGob {
 };
 
-class CGameObject {
-public:
-    virtual void v00();
-    virtual void v04();
-    virtual void SetWorldTime(unsigned long nDay, unsigned long nTime);  // 0x08
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-    virtual CSWSObject* AsSWSObject();              // 0x10
-    virtual CSWCDoor* AsSWCDoor(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual CSWCArea* AsSWCArea(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
-    virtual CItemModel* GetItemModel();             // 0x34
-
-    unsigned long m_idSelf;                         // 0x04
-
-    unsigned long GetId() { return m_idSelf; }
-    unsigned char m_nObjectType;                    // 0x08
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:
-    virtual void v38(); virtual CSWCTrigger* AsSWCTrigger(); virtual void v40();
-    virtual CSWCProjectile* AsSWCProjectile();      // 0x44
-    virtual void v48(); virtual CSWCPlaceable* AsSWCPlaceable(); virtual void v50();
-    virtual CSWCAreaOfEffectObject* AsSWCAreaOfEffectObject();   // 0x54
-    virtual void v58(); virtual void v5C(); virtual void v60(); virtual void v64();
-    virtual void v68(); virtual CSWCSoundObject* AsSWCSoundObject(); virtual void v70(); virtual void v74();
+      virtual void v70(); virtual void v74();
     virtual void v78(); virtual void v7C(); virtual void v80(); virtual void v84();
     virtual void v88(); virtual void v8C(); virtual void v90();
     virtual void v94(void* pAreaScene);             // 0x94 (attach to area scene; name unresolved)
@@ -409,17 +364,7 @@ public:
     unsigned char m_nCameraModeCurrent;              // +0x6e
 };
 
-class CClientUnknown700 {
-public:
-    int Unknown61b780();                            // 0x0061B780
-    char pad_0x0[0xc];
-    float m_fToolTipDelay;                          // 0x0c
-    char pad_0x10[0x4];
-    unsigned char m_nFeedbackFlags;                 // 0x14 (descriptive; 0x10 = floaty text)
-
-    float GetToolTipDelay() { return m_fToolTipDelay; }
-    float GetGamma(int b);                          // 0x0061D590
-};
+#include "shared/client_unknown700.h"
 
 void AurDisableSaturation();                        // 0x0044F0D0
 void AurDisableScanNoise();                         // 0x0044F0F0
@@ -443,40 +388,13 @@ public:
     void AutoLevelUpNPCs();                          // 0x00563B90
 };
 
-struct CAppPad {
-    int m_n00;                                      // 0x00
-    int m_n04;                                      // 0x04
-    char pad_0x8[0x8];
-    int m_n10;                                      // 0x10
-    int m_n14;                                      // 0x14
-};
+#include "shared/reentrant_server_stats.h"
 
-class CObjectTableManager {
-public:
-    int RemovePlayer(unsigned long nPlayerId);      // 0x004AE650
-};
+#include "shared/object_table_manager.h"
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-    char pad_0xc[0x8];
-    CAppPad* m_pPad;                                // 0x14
-    unsigned long m_nApplicationId;                 // 0x18
+#include "shared/app_manager.h"
 
-    void Unknown401280();                           // 0x00401280
-    class CObjectTableManager* GetObjectTableManager(int n);    // 0x00401060
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
-extern int g_bSwapMouseButtons;                     // 0x008338F0
-extern unsigned long g_bReinitializeVideoMode;      // 0x007A3A2C
+#include "shared/globals.h"
 
 struct CClientResRefSlot {
     char m_resRef[16];

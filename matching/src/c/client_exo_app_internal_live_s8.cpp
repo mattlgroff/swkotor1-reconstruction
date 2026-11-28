@@ -3,11 +3,7 @@
 
 #include "c/exo_base.h"
 
-class CResRef {
-public:
-    CResRef(const CExoString& s);                   // 0x00406D60
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CExoResMan {
 public:
@@ -33,10 +29,7 @@ public:
     CExoAliasList* m_pcExoAliasList;                // 0x0c
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
-extern unsigned char g_nNumLiveDirectories;         // 0x0073ECD2
+#include "shared/globals.h"
 
 class CClientExoAppInternal {
 public:

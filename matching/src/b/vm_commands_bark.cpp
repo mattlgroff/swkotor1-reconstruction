@@ -20,8 +20,7 @@ public:
     char pad_0x0[0xb4];
     int m_nB4;
 };
-extern CTlkTable* g_pTlkTable;                              // 0x007A3A08
-extern unsigned char g_nGender;                             // 0x0073ECD0
+#include "shared/globals.h"
 
 // NONMATCH (11): GUI state uses a different scratch register.
 // FUNCTION: SWKOTOR 0x00548900

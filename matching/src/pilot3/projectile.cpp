@@ -1,8 +1,6 @@
 // Pilot group 3: CSWSObject::BroadcastSafeProjectile.
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 template <class T>
 class CExoArrayList {
@@ -22,10 +20,7 @@ public:
     unsigned char m_nWeaponType; // +0xc
 };
 
-class CSWSInventory {
-public:
-    CSWSItem *GetItemInSlot(unsigned long nSlot);
-};
+#include "shared/sws_inventory.h"
 
 class CSWSCreature {
 public:
@@ -37,13 +32,7 @@ public:
     CSWSInventory *m_pInventory; // +0xa2c
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24();
-    virtual CSWSArea *AsSWSArea(); // +0x28
-};
+#include "shared/game_object.h"
 
 class CSWSArea {
 public:
@@ -73,23 +62,18 @@ public:
     CSWSMessage *GetSWSMessage();
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp; // +0x8
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
-extern float g_fSafeProjectileRange;
+#include "shared/globals.h"
 
-class CSWSObject {
+class CSWSObject : public CGameObject {
 public:
     void BroadcastSafeProjectile(unsigned long oidOriginator, unsigned long oidTarget,
                                  const Vector &vOrigin, const Vector &vTarget,
                                  unsigned long a4, unsigned long a5, unsigned long a6,
                                  unsigned long a7, unsigned long a8, unsigned long a9,
                                  unsigned long a10);
-    char pad_0x0[0x8c];
+    char pad_0xc[0x80];
     unsigned long m_oidArea; // +0x8c
 };
 

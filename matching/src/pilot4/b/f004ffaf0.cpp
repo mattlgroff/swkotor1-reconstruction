@@ -35,19 +35,10 @@ public:
     CServerAIMaster *GetServerAIMaster();       // 0x004AED80
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;             // 0x8
-};
-extern CAppManager *g_pAppManager;              // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 inline CServerExoApp *GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
-extern const unsigned long EFFECT_TYPE_ABILITY_INCREASE;       // 0x0074670C
-extern const unsigned long EFFECT_TYPE_ABILITY_DECREASE;       // 0x00746710
-extern const unsigned short EFFECT_TYPE_DEATH;  // 0x007466C8
-extern const unsigned short DURATION_TYPE_INSTANT;  // 0x007473B8
-extern const unsigned long EVENT_APPLY_EFFECT;  // 0x007441C8
 
 inline int IsAbilityEffect(unsigned short nType)
 {

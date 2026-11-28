@@ -6,7 +6,7 @@ struct CCollisionActionListNode {
     void* m_pNext;
     CSWSObjectActionNode* m_pAction;
 };
-extern int g_bCollisionDisabled;                    // 0x007A1B34 (descriptive)
+#include "shared/globals.h"
 
 // NONMATCH (15): return-block placement and register allocation differ.
 // FUNCTION: SWKOTOR 0x004F62A0
@@ -22,11 +22,11 @@ int CSWSCreature::GetCollisionFlag(CSWSCreature* pOther)
     CSWSCreature* pSelected = pServer->GetCreatureByGameObjectID(pServer->GetPlayerCreatureID());
     if (pSelected != this) {
         result = 0;
-        if (pSelected != pOther && ppActions && !(*ppActions)->m_pHead &&
+        if (pSelected != pOther && ppActions && !(*ppActions)->pHead &&
             !pOther->m_b4E0 && !pOther->m_pCombatRound->m_n958)
             result = 1;
     } else if (pSelected != pOther) {
-        CCollisionActionListNode* pNode = (CCollisionActionListNode*)(*ppActions)->m_pHead;
+        CCollisionActionListNode* pNode = (CCollisionActionListNode*)(*ppActions)->pHead;
         result = pOther->m_bA88;
         if (pNode && pNode->m_pAction) {
             unsigned long nAction = pNode->m_pAction->m_nActionId;

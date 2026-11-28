@@ -2,32 +2,11 @@
 // Member layout as sw_gui_map_hider_dtor.cpp; image / border parameter
 // layouts as matching/include/d/gui_parts.h.
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct CSWGuiExtent {
     CSWGuiExtent(int nLeft, int nTop, int nWidth, int nHeight)
@@ -43,23 +22,10 @@ struct CSWGuiExtent {
     int height;
 };
 
-typedef void* CExoLinkedListPosition;
 
-class CExoLinkedListInternal {
-public:
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* m_pHead;
-    void* m_pTail;
-    unsigned long m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();                               // 0x004B25D0
-    ~CExoLinkedList() { delete m_pList; }
-    CExoLinkedListInternal* m_pList;
-};
+
 
 template <class T>
 class CExoArrayList {
@@ -172,8 +138,7 @@ struct CSWGuiMapNote {
     unsigned long m_oidNote;
 };
 
-extern Vector g_vGuiColor23F0;                      // 0x007A23F0
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
+#include "shared/globals.h"
 
 class CSWGuiMapHider : public CSWGuiControl {
 public:

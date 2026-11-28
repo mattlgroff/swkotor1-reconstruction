@@ -45,7 +45,7 @@ class CAurPostString {
 public:
     CAurPostString(const char* sz, int nX, int nY, float fLife); // 0x0044d320
     void Render();                                       // 0x0044d010
-    char pad[0x434];
+    char pad_0x0[0x434];
 };
 
 class CAurFont {
@@ -67,16 +67,7 @@ public:
     CExoArrayList<CAurObject*> m_aObjects; // +0x54
 };
 
-extern CExoArrayList<Scene*> g_aScenes;               // 0x007b9398
-extern CExoArrayList<CAurPostString*> g_aPostStrings; // 0x007b90fc
-extern CExoArrayList<AurConsoleVar*> g_aConsoleVars;  // 0x007b9108
-extern char g_szUntraceBuffer[];                       // 0x007b9118
-extern char g_bConsoleEcho;                           // 0x007b8fc0
-extern char g_bFontFlag;                              // 0x0078e35c
-extern int g_bFontInitialised;                        // 0x007b90f0
-extern unsigned int g_nFontListBase;                  // 0x007a47c0
-extern CAurFont* g_pFont;                             // 0x007b90ec
-extern unsigned char g_aFontBitmaps[];                // 0x0078d498
+#include "shared/globals.h"
 
 const char* AurConsoleVarValue(AurConsoleVar* p); // 0x0044c1f0
 void AurFlushPostStrings();                       // 0x0046ee00

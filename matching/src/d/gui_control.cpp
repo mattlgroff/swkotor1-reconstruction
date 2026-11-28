@@ -136,15 +136,14 @@ void CSWGuiEditbox::SetFocus()
     HandleFocusChange(1);
 }
 
+// NONMATCH: the original reads only the flag byte (movzx eax, byte ptr
+// [ecx+0x44]), as an unsigned char bit-field would; every other access to these
+// flags in this unit matches the unsigned long bit-fields, and declaring them
+// unsigned char breaks 16 of them. The real declaration is still unknown.
 // FUNCTION: SWKOTOR 0x00418670
 int CSWGuiEditbox::IsSelectable()
 {
-    // Read the flag byte itself; the bitfield accessor compiles as a dword load.
-    __asm {
-        movzx eax, byte ptr [ecx + 0x44]
-        shr eax, 3
-        and eax, 1
-    }
+    return m_bSelectable;
 }
 
 // FUNCTION: SWKOTOR 0x00418680

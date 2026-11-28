@@ -13,16 +13,9 @@ public:
     CClientOptions* GetOptions();                                   // 0x005ED700
 };
 
-class CAppManager {
-public:
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                                 // +0x04
-    CServerExoApp* m_pServerExoApp;                                 // +0x08
-};
-extern CAppManager* g_pAppManager;                                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 
-extern const unsigned long PLAYER_ID_ALL_PLAYERS;                   // 0x0074C52C
-extern const unsigned long PLAYER_ID_SERVER_ADMIN;                  // 0x0074C534 (placeholder name)
 
 #pragma pack(push, 4)
 class CWorldTimer {
@@ -205,7 +198,7 @@ void CServerExoAppInternal::SetWorldTimeOnList(unsigned char nList)
         CGameObject* pObject;
         m_pGameObjArray->GetGameObject(oid, &pObject);
         if (pObject) {
-            pObject->SetWorldTime(nDay, nTime);
+            pObject->ResetUpdateTimes(nDay, nTime);
         }
         pList->GetNext(pos);
     }

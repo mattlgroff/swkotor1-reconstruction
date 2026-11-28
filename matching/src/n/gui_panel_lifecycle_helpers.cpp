@@ -3,8 +3,7 @@
 class CSWGuiControl {
 };
 
-class CExoString {
-};
+#include "shared/exo_string.h"
 
 class CSWGuiTextParams {
 public:

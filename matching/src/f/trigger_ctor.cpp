@@ -1,22 +1,8 @@
 // CSWSTrigger constructor and name accessor (round s8, 0x0058EAE0, 0x0058ED60).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    CExoString &operator=(const char *s);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    ~CExoLocString();
-    void *m_pList;
-    void *m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
 template <class T>
 class CExoArrayList {
@@ -32,10 +18,7 @@ public:
     }
 };
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class C2DA {
 public:
@@ -56,9 +39,7 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;
-extern float g_fTriggerRadius;
-extern const unsigned char g_nObjectTypeTrigger;   // 0x00746636
+#include "shared/globals.h"
 
 class CSWSObject;
 
@@ -72,22 +53,10 @@ public:
     CServerAIMaster *GetServerAIMaster();
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:

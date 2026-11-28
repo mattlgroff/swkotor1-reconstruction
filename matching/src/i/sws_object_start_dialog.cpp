@@ -18,7 +18,7 @@ public:
     void ExitCombatMode();                          // 0x00641DC0
 };
 
-extern int g_bCameraResetPending;                   // 0x007A2288
+#include "shared/globals.h"
 
 // 0x0c bytes.
 struct CSWSDialogPlayer {

@@ -1,14 +1,13 @@
 // Controller pause, tutorial gating and fade visibility share the GUI state.
-class CExoInput { public: int GetMainDeviceLost(); int GetActive(); void SetActive(int); };
-extern CExoInput* g_pExoInput;
+#include "shared/exo_input.h"
+#include "shared/globals.h"
 class CWorldTimer { public: void GetWorldTime(unsigned long*,unsigned long*); };
 class CClientOptions { public: char pad_0x0[0x14]; unsigned long m_nFlags; };
 class CClientExoApp {
 public: CWorldTimer* GetWorldTimer(); CClientOptions* GetOptions(); void* GetMiniGame();
     int SetPausedByCombat(int,int,int); int GetPazaakIsRunning();
 };
-class CAppManager { public: char pad_0x0[4]; CClientExoApp* m_pClient; void* m_pServer; };
-extern CAppManager* g_pAppManager;
+#include "shared/app_manager.h"
 class CSWGuiTutorialBox { public: int HasTutorial(unsigned char); };
 class CSWGuiPanel { public: char pad_0x0[0x44]; unsigned long m_nFlags; };
 class CSWGuiMainInterface { public: char pad_0x0[0x5d04]; union { unsigned long m_nFlags; struct { unsigned long m_bOther:1,m_bMinimapHidden:1,m_nRest:30; }; }; };
@@ -42,19 +41,19 @@ void CGuiInGame::UpdateControllerPauseState() {
 void CGuiInGame::EndControllerPauseState() {
     m_bControllerPaused=0;
     if(m_bSavedInputActive==1) g_pExoInput->SetActive(1); else g_pExoInput->SetActive(0);
-    if(g_pAppManager && g_pAppManager->m_pServer && !m_bOtherPause) g_pAppManager->m_pClient->SetPausedByCombat(0,0,1);
+    if(g_pAppManager && g_pAppManager->m_pServerExoApp && !m_bOtherPause) g_pAppManager->m_pClientExoApp->SetPausedByCombat(0,0,1);
 }
 // NONMATCH: bounded source-shape attempts retained; see worker-n.md.
 // FUNCTION: SWKOTOR 0x0062F910
 int CGuiInGame::IsMinimapHidden() {
-    if((g_pAppManager->m_pClient->GetOptions()->m_nFlags&8) && !g_pAppManager->m_pClient->GetMiniGame()) {
+    if((g_pAppManager->m_pClientExoApp->GetOptions()->m_nFlags&8) && !g_pAppManager->m_pClientExoApp->GetMiniGame()) {
         if(m_pMainInterface) return m_pMainInterface->m_bMinimapHidden; return 1;
     } return 0;
 }
 // NONMATCH: bounded source-shape attempts retained; see worker-n.md.
 // FUNCTION: SWKOTOR 0x0062F420
 int CGuiInGame::TutorialReasonWillShowWindow(unsigned char reason) {
-    if(g_pAppManager->m_pClient->GetOptions()->m_nFlags&2) {
+    if(g_pAppManager->m_pClientExoApp->GetOptions()->m_nFlags&2) {
         if(reason<43) {
             unsigned char byte=reason/8;
             unsigned char shift=(unsigned char)(reason-(unsigned char)(byte*8));
@@ -67,7 +66,7 @@ int CGuiInGame::TutorialReasonWillShowWindow(unsigned char reason) {
 }
 // FUNCTION: SWKOTOR 0x0062F960
 void CGuiInGame::MarkNoClickEvent(unsigned long duration) {
-    CClientExoApp* app=g_pAppManager->m_pClient; app->GetWorldTimer()->GetWorldTime(&m_nNoClickDay,&m_nNoClickTime); m_nNoClickDuration=duration;
+    CClientExoApp* app=g_pAppManager->m_pClientExoApp; app->GetWorldTimer()->GetWorldTime(&m_nNoClickDay,&m_nNoClickTime); m_nNoClickDuration=duration;
 }
 // NONMATCH: bounded source-shape attempts retained; see worker-n.md.
 // FUNCTION: SWKOTOR 0x0062FAD0
@@ -77,7 +76,7 @@ int CGuiInGame::GetFadeOverridePanelVisible() {
            (m_pOptions && m_pGuiManager->PanelExists(m_pOptions) && (m_pOptions->m_nFlags&4)) ||
            (m_pMessages && m_pGuiManager->PanelExists(m_pMessages) && (m_pMessages->m_nFlags&4)) ||
            (m_pMainMenu && m_pGuiManager->PanelExists(m_pMainMenu) && (m_pMainMenu->m_nFlags&4)) ||
-           g_pAppManager->m_pClient->GetPazaakIsRunning()) return 1;
+           g_pAppManager->m_pClientExoApp->GetPazaakIsRunning()) return 1;
         return 0;
     }
     return 0;

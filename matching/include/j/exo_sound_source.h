@@ -10,11 +10,7 @@
 
 struct _iobuf;
 
-struct Vector {
-    Vector() { x = 0; y = 0; z = 0; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 inline Vector operator-(Vector a, Vector b)
 {
@@ -23,7 +19,7 @@ inline Vector operator-(Vector a, Vector b)
 
 float __cdecl FUN_004ab100(const Vector* v);        // 0x004AB100 (magnitude)
 
-extern unsigned char g_nDefaultSourceVolume;        // 0x0074C5E8
+#include "shared/globals.h"
 
 class CExoTimers {
 public:
@@ -44,20 +40,14 @@ public:
     CExoAliasList* m_pcExoAliasList;                // 0x0c
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 class CClientExoApp {
 public:
     int GetCreditSequenceInProgress();              // 0x005EE1E0
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 // Miles Sound System (IAT 0x0073D4xx-0x0073D5xx).
 typedef void* HSAMPLE;
@@ -116,27 +106,10 @@ public:
     unsigned short m_n14;                           // 0x14
 };
 
-typedef void* CExoLinkedListPosition;
 
-class CExoLinkedListInternal {
-public:
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
+#include "shared/exo_linked_list.h"
 
-    void* m_pHead;                                  // 0x00
-    void* m_pTail;                                  // 0x04
-    unsigned long m_nCount;                         // 0x08
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->m_pHead; }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-};
 
 // Miles 3D sample / room API used by the voice binders (IAT 0x0073D4A0-0x0073D4F8).
 typedef void* HPROVIDER;

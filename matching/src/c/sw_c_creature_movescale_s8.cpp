@@ -3,9 +3,7 @@
 
 #include <math.h>
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 float Magnitude(const Vector& v);                   // 0x004AB100
 

@@ -4,7 +4,7 @@
 #include "b/sws_creature.h"
 #include "b/server_exo_app.h"
 
-extern int g_bDebugActions;                                 // 0x0083281C (descriptive)
+#include "shared/globals.h"
 
 // CSWSObject +0xfc (sws_creature.h keeps CSWSObject data-free).
 struct CSWSObjectActionView {
@@ -56,7 +56,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCurrentAction(int nCommandId, in
         CExoLinkedList<CSWSObjectActionNode>* pList = &((CSWSObjectActionView*)pSWSObject)->m_lQueuedActions;
         if (pList) {
             CSWSObjectActionNode* pNode = pList->GetHead();
-            void* pPos = pList->GetHeadPos();
+            CExoLinkedListPosition pPos = pList->GetHeadPos();
             if (pNode) {
                 unsigned short nGroup = pNode->m_n6C;
                 do {

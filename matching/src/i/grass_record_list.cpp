@@ -1,10 +1,7 @@
 #include <string.h>
 // CExoArrayList of the 0x54-byte aurgrass records (0x004A6C70). The
 // record is unnamed; its fields are placeholders.
-struct Vector {
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct CAurGrassRecord {
     CAurGrassRecord()
@@ -58,7 +55,7 @@ void CExoArrayList<T>::Allocate(int n)
 // FUNCTION: SWKOTOR 0x004A6C70 SYMBOL: ?Allocate@?$CExoArrayList@UCAurGrassRecord@@@@QAEXH@Z
 template void CExoArrayList<CAurGrassRecord>::Allocate(int n);
 
-extern CExoArrayList<CAurGrassRecord> g_aAurGrassInfo;  // 0x00831E44 (placeholder name)
+#include "shared/globals.h"
 
 // Stores grass material nIndex (growing the table with defaults first),
 // normalising its four probabilities to sum to 1 (placeholder name).

@@ -1,10 +1,6 @@
 // CSWCMessage::HandleServerToPlayerCreatureUpdate_Add (nwchandlemessage.o).
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0; y = 0; z = 0; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 void* operator new(unsigned int nSize);
 void operator delete(void* p);
@@ -83,15 +79,9 @@ public:
     CClientAIMaster* GetClientAIMaster();           // 0x005ED6B0
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
+#include "shared/globals.h"
 
 class CSWCMessage {
 public:

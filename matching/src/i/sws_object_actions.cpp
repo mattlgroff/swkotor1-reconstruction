@@ -319,7 +319,7 @@ void CSWSObject::AddAction(int nActionId, unsigned short nGroupId,
     }
 }
 
-extern int g_bLogActions;                           // 0x0083281C (placeholder name)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004CCD80
 void CSWSObject::ClearAllActions(int bClearCombat)

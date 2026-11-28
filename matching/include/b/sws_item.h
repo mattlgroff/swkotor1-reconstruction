@@ -150,8 +150,7 @@ public:
     char pad_0x2[0x34 - 0x2];
 };
 
-extern const unsigned long EVENT_DELAY_INVENTORY;          // 0x007441DC (10)
-extern const unsigned long EVENT_DESTROY_OBJECT;           // 0x007441E0 (11)
+#include "shared/globals.h"
 
 // Minimal stub for the item TUs; b/sws_message.h has the full class.
 #ifndef B_SWS_MESSAGE_H

@@ -11,15 +11,7 @@
 // The original's CSWGuiExtent has a zeroing ctor (returned through a hidden pointer).
 CSWGuiZeroExtent IntersectExtents(const CSWGuiExtent& a, const CSWGuiExtent& b);  // 0x0040A4A0
 
-class CExoLocString {
-public:
-    CExoLocString();                                // 0x005E9E10
-    CExoLocString(const CExoLocString& s);          // 0x005E9F80
-    ~CExoLocString();                               // 0x005EA000
-    int GetString(unsigned long nLanguage, CExoString* pOut, unsigned char nGender) const;  // 0x005EA130
-    void* m_pInternal;
-    unsigned long m_n4;
-};
+#include "shared/exo_loc_string.h"
 
 class CExoResMan {
 public:
@@ -31,13 +23,10 @@ public:
     int CleanDirectory(const CExoString& sAlias, int bDirs, int bRecurse);   // 0x00409460
     int NukeDirectory(const CExoString& sAlias, int bDirs, int bRecurse);    // 0x00409480
 };
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
+#include "shared/globals.h"
 
 class CSWBaseItem;
-class CSWBaseItemArrayL {
-public:
-    CSWBaseItem* GetBaseItem(int nBaseItem);        // 0x005B31A0
-};
+#include "shared/sw_base_item_array_l.h"
 
 // Per upgrade type (1-4) and slot: the empty-slot icon and slot name.
 struct CSWUpgradeSlotInfo {
@@ -45,7 +34,6 @@ struct CSWUpgradeSlotInfo {
     int m_nNameStrRef;
     int m_n8;
 };
-extern CSWUpgradeSlotInfo g_aUpgradeSlots[4][4];    // 0x00756FB4
 
 class CSWSItem;
 class CSWInventory {
@@ -142,11 +130,6 @@ public:
     void HideUpgradeScreen();                       // 0x0062E870
 };
 
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
-extern Vector g_vKeyMapLockedColor;                 // 0x007A2384
-extern Vector g_vKeyMapLockedTextColor;             // 0x007A2408
-extern Vector g_vUpgradeAvailableColor;             // 0x007A2378 (descriptive)
 
 // An upgradable item line in the item-select list box. vtable 0x00757108.
 #ifdef L_UPGRADE_ENTRY_DTOR
@@ -251,7 +234,6 @@ public:
     char pad_0x18[0x34 - 0x18];
 };
 
-extern int g_bDo3DGui;                              // 0x0078D1E4 (descriptive)
 
 // Inline 3D model view control (vtable 0x00752E30); dtor 0x0067AC50, 0x90 bytes.
 class CSWGui3DSceneView : public CSWGuiControl {

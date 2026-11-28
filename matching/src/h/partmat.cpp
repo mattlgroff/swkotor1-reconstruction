@@ -49,8 +49,7 @@ struct PartOwner {
     Vector m_vColor;                // +0x8c
 };
 
-extern Vector g_vWhite;             // 0x0078E894
-extern Vector g_vEnvMapPosition;    // 0x00828074
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0046F410
 bool StaticPartNeedsMat(PartDyn* pPart, PartOwner* pOwner, unsigned char* pbLightmap,
@@ -75,10 +74,10 @@ void DynamicPartCalculateMaterial(PartDyn* pPart, Vector* pColor, Vector* pOffse
 {
     if (pPart->m_bColorAnimated) {
         *pAlpha *= pPart->m_fAnimAlpha;
-        *pColor = *pColor * pPart->m_vColor;
+        *pColor = cmul(*pColor, pPart->m_vColor);
     }
     if (pPart->m_pModel->IsFadeAlpha())
         *pAlpha *= pPart->m_fFadeAlpha;
     if (pPart->m_bOffsetAnimated)
-        *pOffset = pPart->m_vOffset + *pOffset;
+        *pOffset = *pOffset + pPart->m_vOffset;
 }

@@ -1,19 +1,12 @@
-class CExoInput {
-public:
-    int SetMouseCursor(int nCursor, int nOption, int bAlternate);
-    void HideMouse();
-    void ShowMouse();
-    void RefreshMouseCursor(int b);                 // 0x005DF5B0
-};
+#include "shared/exo_input.h"
 
-extern int g_bMouseButtonDown;                      // 0x008338F4
+#include "shared/globals.h"
 
 class CClientOptions {
 public:
     unsigned char m_nFlags;                         // 0x00 (bit 1: software mouse off)
 };
 
-extern CExoInput* g_pExoInput;
 
 class CSWGuiManager {
 public:

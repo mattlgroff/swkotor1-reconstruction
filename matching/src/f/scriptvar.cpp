@@ -1,28 +1,9 @@
 // CSWSScriptVarTable accessors and lifetime
 // (b0059_f2_scriptvar_dialog).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    CExoString(const CExoString &s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    int operator==(const CExoString &s) const;
-    int operator==(const char *s) const;
-    char operator[](int n) const;
-    int GetLength() const;
-    CExoString Left(int n) const;
-    CExoString SubString(int nStart, int nCount) const;
+#include "shared/exo_string.h"
 
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
-
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct CResStruct {
     unsigned long m_nIndex;
@@ -32,7 +13,7 @@ struct CResList {
     unsigned long m_nType;
     unsigned long m_nIndex;
     unsigned long m_nCount;
-    char pad[0x8];
+    char pad_0xc[0x8];
 };
 
 class CResGFF {
@@ -108,7 +89,7 @@ public:
     CSWSJournal *GetJournal();                                                 // 0x004edb00
 };
 
-extern const unsigned long OBJECT_INVALID;   // 0x00746644
+#include "shared/object_id.h"
 
 class CSWSScriptVarTable {
 public:

@@ -2,16 +2,7 @@
 
 #include "c/client_exo_app.h"
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-    Vector operator-() const { return Vector(-x, -y, -z); }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:
@@ -21,7 +12,7 @@ public:
 };
 
 Vector Normalize(const Vector& v);                      // 0x004AB180
-extern float g_fDialogCameraOffset;                     // 0x00743264
+#include "shared/globals.h"
 
 class CCameraX {
 public:
@@ -75,7 +66,6 @@ public:
 
 Vector operator-(const Vector& a, const Vector& b);    // 0x00423BC0
 float Magnitude(const Vector& v);                       // 0x004AB100
-extern float g_fAreaTransitionDistance;                 // 0x00741870
 
 class CSWGuiBarkBubbleX : public CSWGuiPanelX {
 public:
@@ -83,18 +73,7 @@ public:
     void SetDialogActive(int b);                        // 0x006A9C60
 };
 
-class CSWGuiManagerPanels {
-public:
-    void PlayGuiSound(int n);                           // 0x0040A140
-    void AddPanel(CSWGuiPanel* pPanel, int a, int b);   // 0x0040BC70
-    void SendToBack(CSWGuiPanel* pPanel);               // 0x0040BD20
-    int PanelExists(CSWGuiPanel* pPanel);               // 0x0040BD70
-    void PopModalPanel();                               // 0x0040BE00
-    void RemovePanel(CSWGuiPanel* pPanel);              // 0x0040C830
-
-    char pad_0x0[0x98];
-    int m_bLocked;                                      // 0x98
-};
+#include "shared/sw_gui_manager_panels.h"
 
 class CSWCMessageX {
 public:
@@ -107,29 +86,11 @@ public:
     int m_bNoTransitions;                               // 0x2c4
 };
 
-class CSWCAreaX {
-public:
-    CSWSAreaX* GetServerArea();                         // 0x00605640
-};
+#include "shared/swc_area_x.h"
 
 class CResRefX;
 
-class CSWCModuleX {
-public:
-    char pad_0x0[0x40];
-    CCameraX* m_pCamera;                                // 0x40
-    char pad_0x44[0x4];
-    CSWCAreaX* m_pArea;                                 // 0x48
-    void SetCameraModel(CResRefX* p);                   // 0x00640F70
-    float SetAnimatedCamera(unsigned short n, int a, unsigned long oid);  // 0x00641010
-    CSWSAreaX* GetServerArea()
-    {
-        if (m_pArea) {
-            return m_pArea->GetServerArea();
-        }
-        return 0;
-    }
-};
+#include "shared/swc_module_x.h"
 
 class CSWCCreatureX {
 public:
@@ -170,11 +131,7 @@ public:
     unsigned long m_nDialogDepth;                       // 0xd8
 };
 
-class CClientOptionsX {
-public:
-    char pad_0x0[0x14];
-    unsigned char m_nFlags;                             // 0x14
-};
+#include "shared/client_options_x.h"
 
 class CSWSObjectX {
 public:
@@ -226,10 +183,6 @@ public:
     int operator!=(const char* s) const;                // 0x005E5390
 };
 
-extern int g_bGuiFlag;                                  // 0x007A2370
-extern int g_bLetterbox;                                // 0x0083390C
-extern int g_bPauseFlag;                                // 0x007B92AC
-extern int g_nSoundModeZero;                            // 0x0074C5EC
 
 class CGob2 {
 public:
@@ -290,14 +243,14 @@ public:
     void* m_pInternal;
 };
 
-class CSWGuiInGamePanel0 : public CSWGuiPanelX { public: CSWGuiInGamePanel0(CSWGuiManagerPanels* p); char pad[0x42bc - 0x80]; };
-class CSWGuiInGamePanel1 : public CSWGuiPanelX { public: CSWGuiInGamePanel1(CSWGuiManagerPanels* p); char pad[0x1de8 - 0x80]; };
-class CSWGuiInGamePanel2 : public CSWGuiPanelX { public: CSWGuiInGamePanel2(CSWGuiManagerPanels* p); char pad[0x59f8 - 0x80]; };
-class CSWGuiInGamePanel3 : public CSWGuiPanelX { public: CSWGuiInGamePanel3(CSWGuiManagerPanels* p); char pad[0x3f98 - 0x80]; };
-class CSWGuiInGamePanel4 : public CSWGuiPanelX { public: CSWGuiInGamePanel4(CSWGuiManagerPanels* p); char pad[0xaf4 - 0x80]; };
-class CSWGuiInGamePanel5 : public CSWGuiPanelX { public: CSWGuiInGamePanel5(CSWGuiManagerPanels* p); char pad[0xfc8 - 0x80]; };
-class CSWGuiInGamePanel6 : public CSWGuiPanelX { public: CSWGuiInGamePanel6(CSWGuiManagerPanels* p); char pad[0x10dc - 0x80]; };
-class CSWGuiInGamePanel7 : public CSWGuiPanelX { public: CSWGuiInGamePanel7(CSWGuiManagerPanels* p); char pad[0x1dac - 0x80]; };
+class CSWGuiInGamePanel0 : public CSWGuiPanelX { public: CSWGuiInGamePanel0(CSWGuiManagerPanels* p); char pad_0x80[0x42bc - 0x80]; };
+class CSWGuiInGamePanel1 : public CSWGuiPanelX { public: CSWGuiInGamePanel1(CSWGuiManagerPanels* p); char pad_0x80[0x1de8 - 0x80]; };
+class CSWGuiInGamePanel2 : public CSWGuiPanelX { public: CSWGuiInGamePanel2(CSWGuiManagerPanels* p); char pad_0x80[0x59f8 - 0x80]; };
+class CSWGuiInGamePanel3 : public CSWGuiPanelX { public: CSWGuiInGamePanel3(CSWGuiManagerPanels* p); char pad_0x80[0x3f98 - 0x80]; };
+class CSWGuiInGamePanel4 : public CSWGuiPanelX { public: CSWGuiInGamePanel4(CSWGuiManagerPanels* p); char pad_0x80[0xaf4 - 0x80]; };
+class CSWGuiInGamePanel5 : public CSWGuiPanelX { public: CSWGuiInGamePanel5(CSWGuiManagerPanels* p); char pad_0x80[0xfc8 - 0x80]; };
+class CSWGuiInGamePanel6 : public CSWGuiPanelX { public: CSWGuiInGamePanel6(CSWGuiManagerPanels* p); char pad_0x80[0x10dc - 0x80]; };
+class CSWGuiInGamePanel7 : public CSWGuiPanelX { public: CSWGuiInGamePanel7(CSWGuiManagerPanels* p); char pad_0x80[0x1dac - 0x80]; };
 
 class CExoSoundSourceX {
 public:

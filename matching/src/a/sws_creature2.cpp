@@ -201,7 +201,7 @@ int CSWSCreature::GetHasActivePartyMember920()
 int CSWSCreature::RemoveFirstActionOfType(unsigned long nAction)
 {
     int bResult = 0;
-    void* pos = m_pActions->m_pHead;
+    CExoLinkedListPosition pos = m_pActions->pHead;
     while (pos) {
         CSWSObjectActionNode* pNode = (CSWSObjectActionNode*)m_pActions->GetAtPos(pos);
         if (pNode->m_nActionId == nAction && ClearAction(pNode, 1) == 1) {
@@ -322,7 +322,7 @@ void CSWSCreature::RemoveTargetActions4F61D0(CGameObject* pTarget)
     }
     int nGroups = GetNumActionGroups();
     for (i = 0; i < nGroups; i++) {
-        void* pos = GetPositionByGroupIndex(i);
+        CExoLinkedListPosition pos = GetPositionByGroupIndex(i);
         if (pos == NULL) {
             continue;
         }
@@ -504,22 +504,22 @@ int CSWSCreature::UpdateTarget4F05D0(CSWSItem* pItem, int a2, int bSkipPending, 
 {
     int bResult = 0;
     unsigned long oid = pItem->m_n14;
-    void* pos;
+    CExoLinkedListPosition pos;
     if (!bSkipPending && m_pCombatRound->m_pPending) {
-        pos = m_pCombatRound->m_pPending->m_pInternal->m_pHead;
+        pos = m_pCombatRound->m_pPending->m_pcExoLinkedListInternal->pHead;
         while (pos) {
             CSWSCombatRoundPending* pPending =
-                (CSWSCombatRoundPending*)m_pCombatRound->m_pPending->m_pInternal->GetAtPos(pos);
+                (CSWSCombatRoundPending*)m_pCombatRound->m_pPending->m_pcExoLinkedListInternal->GetAtPos(pos);
             if (pPending && pPending->m_nType == 7 && pPending->m_oid == oid) {
                 pPending->m_oid = oid;
                 bResult = 1;
                 break;
             }
-            m_pCombatRound->m_pPending->m_pInternal->GetNext(pos);
+            m_pCombatRound->m_pPending->m_pcExoLinkedListInternal->GetNext(pos);
         }
     }
     if (!bResult) {
-        pos = m_pActions->m_pHead;
+        pos = m_pActions->pHead;
         while (pos) {
             CSWSObjectActionNode* pNode = (CSWSObjectActionNode*)m_pActions->GetAtPos(pos);
             if (pNode && pNode->m_nActionId == 0xb && pNode->m_n38 == oid) {

@@ -3,32 +3,9 @@
 
 extern "C" double __cdecl ceil(double x);
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T> class CExoLinkedList {
-public:
-    struct Internal {
-        void* GetHead()
-        {
-            CExoLinkedListNode* pNode = m_pHead;
-            if (!pNode) {
-                return 0;
-            }
-            return pNode->pObject;
-        }
-        CExoLinkedListNode* m_pHead;
-    };
-    Internal* m_pList;
-    T* GetHead()
-    {
-        Internal* pInternal = m_pList;
-        return (T*)pInternal->GetHead();
-    }
-};
+
 
 // FUNCTION: SWKOTOR 0x004F1310
 float CSWSCreature::DesiredAttackRange(unsigned long oidTarget, int bPersonalSpace)
@@ -288,6 +265,8 @@ void CSWSCreature::SetPortraitId(unsigned short nPortraitId)
             CExoString sColumn("BaseResRef");
             g_pRules->Get2DArrays()->GetPortraits()->GetCExoStringEntry(nPortraitId, sColumn, &sResRef);
         }
+        // NOTE: the original assigns sResRef to itself: CExoString::operator=
+        // is called with this == &other.
         sResRef = sResRef;
         {
             CResRef cPortrait(sResRef.CStr());
@@ -297,7 +276,7 @@ void CSWSCreature::SetPortraitId(unsigned short nPortraitId)
     m_nPortraitId = nPortraitId;
 }
 
-extern const unsigned long ACTION_IN_PROGRESS;      // 0x00745DBC
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004FCE90
 int CSWSCreature::AddCounterSpellActions(unsigned long oidTarget)

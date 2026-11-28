@@ -1,6 +1,6 @@
 // Part::Project (aurmodelrender.o): empty virtual, vtable slot +0x28 of the
 // light-manager/part vtables (ret 0x10).
-struct Vector { float x,y,z; };
+#include "shared/vector.h"
 struct Plane;
 class CAurShadowData;
 class Part {

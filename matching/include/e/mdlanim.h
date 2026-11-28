@@ -62,19 +62,7 @@ CExoArrayList<T>& CExoArrayList<T>::operator=(const CExoArrayList<T>& o)
     return *this;
 }
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector(const Vector& v) { x = v.x; y = v.y; z = v.z; }
-    Vector& operator=(const Vector& v) { x = v.x; y = v.y; z = v.z; return *this; }
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    void operator+=(const Vector& v);           // 0x004A9740
-};
+#include "shared/vector_ops.h"
 
 // Plain RGB triple (implicit copy: the by-value pass is a block copy).
 struct AurColor {
@@ -109,22 +97,10 @@ public:
 class Part;
 class MdlNodeInstance;
 
-class NodeVertex {
-public:
-    NodeVertex(Vector* pPos, Vector* pTV0, Vector* pTV1, Vector* pTV2, Vector* pTV3,
-               Vector* pNormal, int n);     // 0x00478680
-    unsigned char operator==(NodeVertex& o);    // 0x00478820
-    char pad_0x0[0x58];
-};
+#include "shared/node_vertex.h"
 
 // Per-face vertex index record of the trimesh build data (0x14 bytes).
-struct MdlFaceIndices {
-    int* pPos;          // +0x00
-    int* pTex;          // +0x04 [layer * 3 + corner]
-    int* p08;
-    int* p0c;
-    int* pNormal;       // +0x10
-};
+#include "shared/mdl_face_indices.h"
 
 class MdlNodeTriMeshData {
 public:
@@ -167,30 +143,14 @@ class Model;
 class AnimRun;
 class LookAtAnimation;
 
-typedef void (*GobCallback)(Gob* pGob, char* szEvent, void* pData);
-
-struct GobEventHandler {
-    char szEvent[0x20];                                 // +0x00
-    void (*pfnCallback)(Gob* pGob, char* szEvent, void* pData);  // +0x20
-    void* pDefaultData;                                 // +0x24
-    float fTime;                                        // +0x28
-    unsigned char bAlways;                              // +0x2c
-
-    GobEventHandler(GobCallback pfn, char* szName, void* pData, float fTime, unsigned char bAlways) throw();
-};
+#include "shared/gob_event_handler.h"
 
 class Scene;
 class CAurBehavior;
 class CAurBehaviorAttach;
 
 // Attachment record behind Gob +0x188.
-class GobAttachment {
-public:
-    virtual void v00(); virtual void v04();
-    virtual void Render(int nFlags);                    // +0x08
-    virtual void v0c(); virtual void v10();
-    virtual CAurBehaviorAttach* GetAttachBehavior();   // +0x14
-};
+#include "shared/gob_attachment.h"
 
 class Gob {
 public:

@@ -8,10 +8,7 @@
 
 class CSWGuiInGameOptKeyMappings;
 
-extern Vector g_vKeyMapLockedColor;                 // 0x007A2384
-extern Vector g_vKeyMapNormalColor;                 // 0x007A2390
-extern Vector g_vKeyMapChangedColor;                // 0x007A23FC
-extern Vector g_vKeyMapLockedTextColor;             // 0x007A2408
+#include "shared/globals.h"
 
 #ifdef L_KEYMAP_BUTTON_NOVTABLE
 class __declspec(novtable) CSWGuiKeyMapButton : public CSWGuiButton {

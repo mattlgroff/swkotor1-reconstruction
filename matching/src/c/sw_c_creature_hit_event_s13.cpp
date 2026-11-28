@@ -4,11 +4,7 @@
 #include "c/exo_base.h"
 #include <stdlib.h>
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 inline Vector operator-(const Vector& a, const Vector& b)
 {
@@ -37,7 +33,7 @@ public:
     CTwoDimArrays* m_p2DArrays;                     // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWCCombatAttackData {
 public:
@@ -55,20 +51,7 @@ public:
     int m_bAbortTarget;                             // 0x40 (descriptive)
 };
 
-class CAurModel {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
-    virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
-    virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
-    virtual void v90(); virtual void v94();
-    virtual int GetHookTransform(const char* sHook, Vector* pPosition, Quaternion* pOrientation);  // 0x98 (descriptive)
-};
+#include "shared/aur_model.h"
 
 class CAurAnimationBase {
 public:
@@ -95,15 +78,7 @@ public:
 class CSWCCreature;
 class CSWCDoor;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10();
-    virtual CSWCDoor* AsSWCDoor();                  // 0x14
-    virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-};
+#include "shared/game_object.h"
 
 struct CSWCCreatureSoundSet {
     char pad_0x0[0x4c];
@@ -123,8 +98,7 @@ public:
     int AnimationParry(unsigned short nAnim);       // 0x0063C4F0
     void AbortFireForgetAnimation(int b);           // 0x0063CAD0
 
-    unsigned long m_idSelf;                         // 0x04
-    char pad_0x8[0x20 - 0x8];
+    char pad_0xc[0x14];
     CSWCArea* m_pArea;                              // 0x20
     Vector m_vPosition;                             // 0x24
 };
@@ -159,15 +133,8 @@ public:
     CSWParty* GetParty();                           // 0x005ED8B0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 // FUNCTION: SWKOTOR 0x00617EB0
 // NONMATCH (13 diff insns, 1 byte): scheduling only - the appearance-table

@@ -57,9 +57,7 @@ void RenderLightmappedVP(PartRenderer* pRenderer, TriMeshPart* pMesh);      // 0
 void RenderFlatVP(PartRenderer* pRenderer, TriMeshPart* pMesh);             // 0x00470FE0
 void RenderEnvironmentMappedVP(PartRenderer* pRenderer, TriMeshPart* pMesh);    // 0x00471180
 
-extern int g_bDrawAllParts;         // 0x0078E68C
-extern int g_bDrawPreparedParts;    // 0x0078E844
-extern VertexProgram* g_pVPSelfIllum;   // 0x00828014
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00477830
 void TriMeshPart::Draw(int)
@@ -158,10 +156,6 @@ void TriMeshPart::DrawPrepared(int n)
 }
 
 int AurTextureGetTID(CAurTexture* p);       // 0x00420BF0
-extern int g_bEMBMEnabled;          // 0x0078E66C
-extern int g_bUseLightMapTexture;   // 0x0078E5FC
-extern int g_bEMBMLightmaps;        // 0x0078E608
-extern float g_fOne;                // 0x0073D764
 
 // FUNCTION: SWKOTOR 0x00470D30
 int TriMeshPart::GetRenderPath()

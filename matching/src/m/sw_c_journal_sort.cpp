@@ -1,12 +1,6 @@
 // CSWCJournal sorting controls.
 
-class CSWCJournalList {
-public:
-    void SortList();                                  // 0x00676530
-    char pad_0x0[0x18];
-    unsigned long m_nSort;
-    char pad_0x1c[4];
-};
+#include "shared/swc_journal_list.h"
 
 class CSWCJournal {
 public:

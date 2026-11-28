@@ -2,19 +2,16 @@
 // from functions.csv (it sat inside PartyMenuUseItem's extent); the default
 // action table stores it as the "i_dialog" handler. Name descriptive.
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fX, float fY, float fZ) : x(fX), y(fY), z(fZ) {}
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-};
+#include "shared/vector_ops.h"
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
     void ClearAllActions(int bClearCombat);         // 0x004CCD80
     void SetOrientation(const Vector& vOrientation);    // 0x004CD170
 
-    char pad_0x0[0xe8];
+    char pad_0xc[0xdc];
     int m_bCommandable;                             // 0xe8
     char pad_0xec[0x21c - 0xec];
     int m_n21C;                                     // 0x21c (placeholder name)
@@ -48,13 +45,9 @@ public:
     CSWParty* GetParty();                           // 0x005ED8B0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWCObject {
 public:

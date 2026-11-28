@@ -1,6 +1,7 @@
 // PartTriMesh flat / light-mapped render paths (0x0046F900-0x0046FB10).
 
 #include "h/render.h"
+#include "shared/combiners.h"
 
 // FUNCTION: SWKOTOR 0x0046F900
 void RenderFlat(PartTriMesh* pPart)
@@ -52,9 +53,9 @@ void RenderLightMapped(PartTriMesh* pPart)
     GLRender::ActivateTextureStage(1);
     glEnableClientState(g_eTexCoordArray);
     GLRender::ActivateTextureStage(0);
-    g_pfnCombiner(0x1a, pMesh->m_pMaterial->m_pTexture0, pMesh->m_pMaterial->m_pTexture1, 0, 0);
+    g_pfnEnableCombiners(0x1a, pMesh->m_pMaterial->m_pTexture0, pMesh->m_pMaterial->m_pTexture1, 0, 0);
     RenderFlat(pPart);
-    g_pfnCombiner(0x20, 0, 0, 0, 0);
+    g_pfnEnableCombiners(0x20, 0, 0, 0, 0);
     GLRender::ActivateTextureStage(1);
     glDisableClientState(g_eTexCoordArray);
     GLRender::ActivateTextureStage(0);
@@ -82,7 +83,7 @@ void RenderFlatDecal(PartTriMesh* pPart)
         return;
     }
     pPart->m_pObject->m_pMaterial->BindTexture0();
-    g_pfnCombiner(1, pPart->m_pObject->m_pMaterial->m_pTexture0, 0, 0, 0);
+    g_pfnEnableCombiners(1, pPart->m_pObject->m_pMaterial->m_pTexture0, 0, 0, 0);
     if (AurGLCaps710())
         glClientActiveTextureARB(0x84C0);
     g_nActiveTextureUnit = 0;

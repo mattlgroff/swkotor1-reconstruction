@@ -6,31 +6,11 @@
 #include <stddef.h>
 #include <string.h>
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    CExoString(const char* s, int nLength);         // 0x005E5B70
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    char* CStr() const;                             // 0x005E5670
-    int GetLength() const;                          // 0x005E5790
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CResRef& r);                      // 0x00406DA0
-    char* GetResRef();                              // 0x00641DB0 (returns this)
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;
@@ -84,69 +64,12 @@ public:
     int array_size;
 };
 
-extern const float g_fMessageZero;                  // 0x0073D700 (0.0f)
+#include "shared/globals.h"
 
 // vtable 0x007465A4
-class CNWMessage {
-public:
-    CNWMessage();
-    virtual ~CNWMessage();
+#include "shared/nw_message.h"
 
-    void SetReadMessage(unsigned char* pBuffer, unsigned long nSize,
-                        unsigned long nPlayerId, unsigned long nFlags);
-    unsigned char* ReadVOIDPtr(unsigned long nSize);
-    int MessageReadOverflow(int bFlag);
-    int MessageReadUnderflow(int bFlag);
-    int MoreDataToRead();
-    void SetReadPositionToEnd();
-    int ReadBOOL();
-    unsigned char ReadBYTE(int nBits);
-    unsigned short ReadWORD(int nBits);
-    unsigned long ReadDWORD(int nBits);
-    float ReadFLOAT(float fScale, int nBits);
-    CExoString ReadCExoString(int nBits);
-    Vector ReadVector();
-
-    void ExtendWriteBuffer(unsigned long nSize);
-    int GetWriteMessage(unsigned char** ppBuffer, unsigned long* pSize);
-    void WriteBOOL(int bValue);
-    void WriteBYTE(unsigned char nValue, int nBits);
-    void WriteWORD(unsigned short nValue, int nBits);
-    void WriteDWORD(unsigned long nValue, int nBits);
-    void WriteFLOAT(float fValue, float fScale, int nBits);
-    void WriteCExoString(const CExoString& sValue, int nBits);
-    void WriteCResRef(CResRef cResRef, int nSize);
-    void WriteVOIDPtr(void* pData, unsigned long nSize);
-    void WriteVector(const Vector& v);
-
-    unsigned char* m_pnWriteBuffer;         // 0x04
-    unsigned long m_nWriteBufferSize;       // 0x08
-    unsigned long m_nWriteBufferPtr;        // 0x0c
-    unsigned char* m_pnWriteFragments;      // 0x10
-    unsigned long m_n14;                    // 0x14
-    unsigned long m_n18;                    // 0x18
-    unsigned long m_nWriteBytesTotal;       // 0x1c
-    unsigned long m_n20;                    // 0x20
-    int m_bWriting;                         // 0x24
-    unsigned char* m_pnReadBuffer;          // 0x28
-    unsigned long m_nReadBufferSize;        // 0x2c
-    unsigned long m_nReadBufferPtr;         // 0x30
-    unsigned long m_n34;                    // 0x34
-    unsigned long m_n38;                    // 0x38
-    unsigned long m_n3c;                    // 0x3c
-    unsigned long m_n40;                    // 0x40
-    unsigned char m_n44;                    // 0x44
-    unsigned char m_n45;                    // 0x45
-    unsigned char pad_0x46[2];
-    unsigned long m_nFlags;                 // 0x48
-    unsigned long m_nPlayerId;              // 0x4c
-};
-
-class CSWMessage : public CNWMessage {
-public:
-    CResRef ReadCResRef(int nSize);
-    void CreateWriteMessage(unsigned long nSize, unsigned long nPlayerId, unsigned long nFlags);
-};
+#include "shared/sw_message.h"
 
 class CSWCCMessageData {
 public:

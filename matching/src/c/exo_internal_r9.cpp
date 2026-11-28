@@ -10,39 +10,11 @@
 union LARGE_INTEGER { struct { unsigned long LowPart; long HighPart; } u; __int64 QuadPart; };
 extern "C" __declspec(dllimport) int __stdcall QueryPerformanceFrequency(LARGE_INTEGER* p);   // IAT 0x0073D1AC
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
+#include "shared/exo_string.h"
 
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    char* CStr() const;                             // 0x005E5670
-    void Format(const char* format, ...);           // 0x005E5680
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    void* pHead;                                    // 0x00
-    void* pTail;                                    // 0x04
-    unsigned long nCount;                           // 0x08
 
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-};
-
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
-
-    ~CExoLinkedList()
-    {
-        if (m_pcExoLinkedListInternal) {
-            delete m_pcExoLinkedListInternal;
-        }
-    }
-};
 
 class CFileSection;
 
@@ -74,7 +46,7 @@ public:
     CExoAliasList* m_pcExoAliasList;                // 0x0c
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
+#include "shared/globals.h"
 
 class CExoFileInternal {
 public:
@@ -104,12 +76,7 @@ CExoFileInternal::~CExoFileInternal()
     }
 }
 
-class CExoAlias {
-public:
-    CExoString m_sAlias;                            // 0x00
-    CExoString m_sPath;                             // 0x08
-    CExoAlias* m_pNext;                             // 0x10
-};
+#include "shared/exo_alias.h"
 
 class CExoAliasListInternal {
 public:
@@ -164,20 +131,7 @@ public:
     ~CExoFile();                                    // 0x005E69E0
 };
 
-class CExoDebugInternal {
-public:
-    int m_bFilesOpen;                               // 0x00
-    CExoFile* m_pLogFile;                           // 0x04
-    CExoFile* m_pScriptLogFile;                     // 0x08
-    CExoFile* m_pErrorLogFile;                      // 0x0c
-    CExoFile* m_pWarningLogFile;                    // 0x10
-    CExoFile* m_pFile14;                            // 0x14
-    CExoFile* m_pFile18;                            // 0x18
-
-    CExoDebugInternal();
-    void GetCurrentTimestamp(CExoString& s);
-    void CloseLogFiles();
-};
+#include "shared/exo_debug_internal.h"
 
 // FUNCTION: SWKOTOR 0x005EC290
 CExoDebugInternal::CExoDebugInternal()

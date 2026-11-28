@@ -102,14 +102,14 @@ int CSWSModule::GetPrimaryPlayerIndex()
 {
     int nResult = -1;
     int nIndex = 0;
-    CExoLinkedListPosition pos = m_lPlayers.m_pList->m_pHead;
+    CExoLinkedListPosition pos = m_lPlayers.m_pcExoLinkedListInternal->pHead;
     while (pos) {
-        CSWSModulePlayerEntry* pEntry = (CSWSModulePlayerEntry*)m_lPlayers.m_pList->GetAtPos(pos);
+        CSWSModulePlayerEntry* pEntry = (CSWSModulePlayerEntry*)m_lPlayers.m_pcExoLinkedListInternal->GetAtPos(pos);
         if (pEntry->m_bPrimary == 1) {
             nResult = nIndex;
             break;
         }
-        m_lPlayers.m_pList->GetNext(pos);
+        m_lPlayers.m_pcExoLinkedListInternal->GetNext(pos);
         nIndex++;
     }
     return nResult;

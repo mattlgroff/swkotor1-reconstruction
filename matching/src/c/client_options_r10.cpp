@@ -5,14 +5,9 @@
 
 #include "c/exo_base.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
+#include "shared/res_ref.h"
 
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-};
-
-extern CExoString g_sDefaultTexturePack;            // 0x008338D8
+#include "shared/globals.h"
 
 class C2DA {
 public:
@@ -35,7 +30,6 @@ public:
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CExoSound {
 public:
@@ -45,7 +39,6 @@ public:
     int GetMaxSoundQuality();                       // 0x005D6460
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class CSWGuiManager {
 public:
@@ -55,11 +48,8 @@ public:
     void UpdateAllFonts();                          // 0x0040B420
 };
 
-extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWCCreature {
 public:
@@ -107,14 +97,7 @@ public:
     CSWPartyTable* GetPartyTable();                 // 0x004AEE70 (descriptive)
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
 class CExoIni {
 public:
@@ -126,11 +109,7 @@ public:
     void* m_pcExoIniInternal;                       // 0x00
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
-extern float g_fFarClipOverride;                    // 0x007A2320
-extern float g_fFarClipOverride2;                   // 0x007A2324
-extern float g_fFarClipOverride3;                   // 0x007A2328
 
 void AurEnableShadows();                            // 0x0044EE20
 void AurEnableGrass();                              // 0x0044EE30

@@ -1,7 +1,7 @@
 // GUI skill-rank bit updates share the creature statistics layout.
 class CSWRules { public: char pad_000[0xab]; unsigned char m_nNumSkills;
  unsigned char GetNumSkills() { return m_nNumSkills; } };
-extern CSWRules* g_pRules;
+#include "shared/globals.h"
 class CSWCCreatureStats { public: char pad_000[0x88]; char* m_pSkillRanks;
  char GetBaseSkillRank(unsigned short skill) { if (skill >= g_pRules->GetNumSkills()) return 0; return m_pSkillRanks[skill]; }
  void SetBaseSkillRank(unsigned short skill, unsigned char rank) { if (skill < g_pRules->GetNumSkills()) m_pSkillRanks[skill] = rank; }

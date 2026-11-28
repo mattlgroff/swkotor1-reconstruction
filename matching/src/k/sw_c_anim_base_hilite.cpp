@@ -21,13 +21,9 @@ public:
     CSWCModule* GetModule();                        // 0x005ED530
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 // Not in the function table: starts inside 0x0069E8D0's range.
 // FUNCTION: SWKOTOR 0x0069EB20

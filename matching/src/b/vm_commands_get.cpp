@@ -3,14 +3,7 @@
 #include "b/vm_commands.h"
 #include "b/sws_creature.h"
 
-extern const unsigned long OBJECT_INVALID_ID;               // 0x00746644
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633 (4)
-extern int ABILITY_STRENGTH;                                // 0x00746838
-extern int ABILITY_DEXTERITY;                               // 0x0074683C
-extern int ABILITY_CONSTITUTION;                            // 0x00746840
-extern int ABILITY_INTELLIGENCE;                            // 0x00746844
-extern int ABILITY_WISDOM;                                  // 0x00746848
-extern int ABILITY_CHARISMA;                                // 0x0074684C
+#include "shared/globals.h"
 
 // Vtable slot 0x50 (object type 0xb).
 class CSWSAreaOfEffectObject : public CSWSObject {

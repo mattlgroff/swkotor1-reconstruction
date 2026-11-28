@@ -196,7 +196,7 @@ void CSWCollisionMesh::TransformToWorld(const Vector &vPosition)
     m_vPosition = vPosition;
     m_bTransformed = 1;
     for (int i = 0; i < m_nVertices; i++)
-        m_pvVertices[i] = m_vOffset + m_pvVertices[i] + m_vPosition;
+        m_pvVertices[i] = m_pvVertices[i] + m_vOffset + m_vPosition;
 }
 
 // FUNCTION: SWKOTOR 0x0059A040

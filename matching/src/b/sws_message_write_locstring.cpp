@@ -11,20 +11,20 @@ void CSWSMessage::WriteCExoLocStringServer(const CExoLocString& sString, unsigne
         CExoLocString& sLocString = const_cast<CExoLocString&>(sString);
         int nLanguage = g_pAppManager->m_pServerExoApp->GetPlayerLanguage(m_nPlayerId);
         int nModuleLanguage = g_pAppManager->m_pServerExoApp->GetModuleLanguage();
-        if (sLocString.GetStringLoc(nLanguage, sText, nGender)) {
+        if (sLocString.GetStringLoc(nLanguage, &sText, nGender)) {
             if (sText.GetLength() + m_nWriteBufferPtr + 4 > m_nWriteBufferSize) {
                 ExtendWriteBuffer(sText.GetLength() + 4);
             }
             WriteBOOL(0);
             WriteCExoString(sText, 0x20);
-        } else if (nLanguage != 0 && sLocString.GetStringLoc(0, sText, nGender)) {
+        } else if (nLanguage != 0 && sLocString.GetStringLoc(0, &sText, nGender)) {
             if (sText.GetLength() + m_nWriteBufferPtr + 4 > m_nWriteBufferSize) {
                 ExtendWriteBuffer(sText.GetLength() + 4);
             }
             WriteBOOL(0);
             WriteCExoString(sText, 0x20);
         } else if (nModuleLanguage != nLanguage && nModuleLanguage != 0 &&
-                   sLocString.GetStringLoc(nModuleLanguage, sText, nGender)) {
+                   sLocString.GetStringLoc(nModuleLanguage, &sText, nGender)) {
             if (sText.GetLength() + m_nWriteBufferPtr + 4 > m_nWriteBufferSize) {
                 ExtendWriteBuffer(sText.GetLength() + 4);
             }
@@ -38,13 +38,13 @@ void CSWSMessage::WriteCExoLocStringServer(const CExoLocString& sString, unsigne
                 }
                 WriteBOOL(0);
                 WriteCExoString(sText, 0x20);
-            } else if (sLocString.m_nStrRef != 0xffffffff) {
+            } else if (sLocString.m_dwStringRef != 0xffffffff) {
                 if (m_nWriteBufferPtr + 9 > m_nWriteBufferSize) {
                     ExtendWriteBuffer(9);
                 }
                 WriteBOOL(1);
                 WriteBYTE(nGender, 8);
-                WriteDWORD(sLocString.m_nStrRef, 0x20);
+                WriteDWORD(sLocString.m_dwStringRef, 0x20);
             } else {
                 if (sText.GetLength() + m_nWriteBufferPtr > m_nWriteBufferSize) {
                     ExtendWriteBuffer(sText.GetLength());

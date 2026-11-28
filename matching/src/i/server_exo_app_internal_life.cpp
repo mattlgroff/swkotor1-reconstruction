@@ -1,20 +1,12 @@
 // CServerExoAppInternal construction and destruction.
 #include "i/server_exo_app.h"
 
-class CObjectTableManager {
-public:
-    void ClearAll();                                                // 0x004AE5F0
-};
+#include "shared/object_table_manager.h"
 
-class CAppManager {
-public:
-    CObjectTableManager* GetObjectTableManager(int nTable);         // 0x00401060
-};
-extern CAppManager* g_pAppManager;                                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 
 // The live server internals (placeholder name).
-extern CServerExoAppInternal* g_pServerExoAppInternal;              // 0x00831FDC
-extern const unsigned long PLAYER_ID_INVALID;                       // 0x0074C524 (placeholder name)
 
 // FUNCTION: SWKOTOR 0x004B7230
 CServerExoAppInternal::~CServerExoAppInternal()

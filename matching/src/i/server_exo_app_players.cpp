@@ -2,19 +2,11 @@
 // administrator lists in step with net-layer connections.
 #include "i/server_exo_app.h"
 
-class CObjectTableManager {
-public:
-    int RemovePlayer(unsigned long nPlayerId);                      // 0x004AE650
-};
+#include "shared/object_table_manager.h"
 
-class CAppManager {
-public:
-    CObjectTableManager* GetObjectTableManager(int nTable);         // 0x00401060
-};
-extern CAppManager* g_pAppManager;                                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 
-extern const unsigned long PLAYER_ID_ALL_PLAYERS;                   // 0x0074C52C
-extern const unsigned long PLAYER_ID_SERVER_ADMIN;                  // 0x0074C534
 
 // NONMATCH: the original has an aligned (and esp, -8) frame with both
 // player-name copies in separate slots; same calls and flow otherwise.

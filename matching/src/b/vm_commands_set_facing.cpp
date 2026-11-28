@@ -4,7 +4,7 @@
 #include "b/server_exo_app.h"
 #include <math.h>
 
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633 (4)
+#include "shared/globals.h"
 
 class CSWCCreatureFacing {
 public:

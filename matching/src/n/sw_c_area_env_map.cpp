@@ -1,9 +1,6 @@
 // CSWCArea environment-map accessor (descriptive name; no debug-map record).
 
-class CResRef {
-public:
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWCArea {
 public:

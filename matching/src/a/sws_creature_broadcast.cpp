@@ -61,8 +61,8 @@ void CSWSCreature::BroadcastDamageDataToParty(CSWCCMessageData* pData, int bHeal
         if (pPlayer) {
             unsigned long nPlayerID;
             CGameObject* pObject = pPlayer->GetGameObject();
-            if (pObject && m_oidArea == pObject->m_oidArea) {
-                Vector v = pObject->m_vPosition - m_vPosition;
+            if (pObject && m_oidArea == ((CSWSObject*)pObject)->m_oidArea) {
+                Vector v = ((CSWSObject*)pObject)->m_vPosition - m_vPosition;
                 if (v.x * v.x + v.y * v.y + v.z * v.z <= 900.0f) {
                     nPlayerID = pPlayer->m_nPlayerID;
                     if (bHeal == 0) {
@@ -91,8 +91,8 @@ void CSWSCreature::BroadcastDeathDataToParty(CSWCCMessageData* pData)
         CSWSPlayer* pPlayer = GetServerExoApp()->GetClientObjectByObjectId(pMembers[i]);
         if (pPlayer) {
             CGameObject* pObject = pPlayer->GetGameObject();
-            if (pObject && m_oidArea == pObject->m_oidArea) {
-                Vector v = pPlayer->GetGameObject()->m_vPosition - m_vPosition;
+            if (pObject && m_oidArea == ((CSWSObject*)pObject)->m_oidArea) {
+                Vector v = ((CSWSObject*)pPlayer->GetGameObject())->m_vPosition - m_vPosition;
                 if (v.x * v.x + v.y * v.y + v.z * v.z <= 900.0f) {
                     unsigned long nPlayerID = pPlayer->m_nPlayerID;
                     GetServerExoApp()->GetSWSMessage()->SendServerToPlayerCCMessage(
@@ -112,8 +112,8 @@ void CSWSCreature::BroadcastData0B(CSWCCMessageData* pData)
         CSWSPlayer* pPlayer = GetServerExoApp()->GetClientObjectByObjectId(pMembers[i]);
         if (pPlayer) {
             CGameObject* pObject = pPlayer->GetGameObject();
-            if (pObject && m_oidArea == pObject->m_oidArea) {
-                Vector v = pPlayer->GetGameObject()->m_vPosition - m_vPosition;
+            if (pObject && m_oidArea == ((CSWSObject*)pObject)->m_oidArea) {
+                Vector v = ((CSWSObject*)pPlayer->GetGameObject())->m_vPosition - m_vPosition;
                 if (v.x * v.x + v.y * v.y + v.z * v.z <= 900.0f) {
                     unsigned long nPlayerID = pPlayer->m_nPlayerID;
                     GetServerExoApp()->GetSWSMessage()->SendServerToPlayerCCMessage(
@@ -159,7 +159,7 @@ void CSWSCreature::BroadcastStealthDetectionData(CSWCCMessageData* pData)
         CSWSPlayer* pPlayer = GetServerExoApp()->GetClientObjectByObjectId(pMembers[i]);
         if (pPlayer) {
             CGameObject* pObject = pPlayer->GetGameObject();
-            if (pObject && m_oidArea == pObject->m_oidArea) {
+            if (pObject && m_oidArea == ((CSWSObject*)pObject)->m_oidArea) {
                 unsigned long nPlayerID = pPlayer->m_nPlayerID;
                 GetServerExoApp()->GetSWSMessage()->SendServerToPlayerCCMessage(
                     nPlayerID, 0x10, pData, 0);
@@ -177,7 +177,7 @@ void CSWSCreature::BroadcastMineDetectionData(CSWCCMessageData* pData)
         CSWSPlayer* pPlayer = GetServerExoApp()->GetClientObjectByObjectId(pMembers[i]);
         if (pPlayer) {
             CGameObject* pObject = pPlayer->GetGameObject();
-            if (pObject && m_oidArea == pObject->m_oidArea) {
+            if (pObject && m_oidArea == ((CSWSObject*)pObject)->m_oidArea) {
                 unsigned long nPlayerID = pPlayer->m_nPlayerID;
                 GetServerExoApp()->GetSWSMessage()->SendServerToPlayerCCMessage(
                     nPlayerID, 0x13, pData, 0);
@@ -196,8 +196,8 @@ void CSWSCreature::BroadcastBattleCry()
     CSWSPlayer* pPlayer = GetServerExoApp()->GetClientObjectByObjectId(oidPC);
     if (pPlayer) {
         CGameObject* pObject = pPlayer->GetGameObject();
-        if (pObject && m_oidArea == pObject->m_oidArea) {
-            Vector v = pObject->m_vPosition - m_vPosition;
+        if (pObject && m_oidArea == ((CSWSObject*)pObject)->m_oidArea) {
+            Vector v = ((CSWSObject*)pObject)->m_vPosition - m_vPosition;
             if (v.x * v.x + v.y * v.y + v.z * v.z <= 900.0f) {
                 int nRandom = rand() % 5;
                 int nBattleCry;
@@ -237,8 +237,8 @@ void CSWSCreature::BroadcastAttackSummaryToParty(CSWCCMessageData* pData)
         CSWSPlayer* pPlayer = GetServerExoApp()->GetClientObjectByObjectId(pMembers[i]);
         if (pPlayer) {
             CGameObject* pObject = pPlayer->GetGameObject();
-            if (pObject && m_oidArea == pObject->m_oidArea) {
-                Vector v = pObject->m_vPosition - m_vPosition;
+            if (pObject && m_oidArea == ((CSWSObject*)pObject)->m_oidArea) {
+                Vector v = ((CSWSObject*)pObject)->m_vPosition - m_vPosition;
                 if (v.x * v.x + v.y * v.y + v.z * v.z <= 900.0f) {
                     unsigned long nPlayerID = pPlayer->m_nPlayerID;
                     GetServerExoApp()->GetSWSMessage()->SendServerToPlayerCCMessage(
@@ -262,8 +262,8 @@ void CSWSCreature::BroadcastBreakdownMessage(int nType, CSWCCMessageData* pData)
         CSWSPlayer* pPlayer = GetServerExoApp()->GetClientObjectByObjectId(pMembers[i]);
         if (pPlayer) {
             CGameObject* pObject = pPlayer->GetGameObject();
-            if (pObject && m_oidArea == pObject->m_oidArea) {
-                Vector v = pObject->m_vPosition - m_vPosition;
+            if (pObject && m_oidArea == ((CSWSObject*)pObject)->m_oidArea) {
+                Vector v = ((CSWSObject*)pObject)->m_vPosition - m_vPosition;
                 if (v.x * v.x + v.y * v.y + v.z * v.z <= 900.0f) {
                     unsigned long nPlayerID = pPlayer->m_nPlayerID;
                     GetServerExoApp()->GetSWSMessage()->SendServerToPlayerCCMessage(
@@ -348,8 +348,8 @@ void CSWSCreature::BroadcastPoisoned(CSWCCMessageData* pData)
         CSWSPlayer* pPlayer = GetServerExoApp()->GetClientObjectByObjectId(pMembers[i]);
         if (pPlayer) {
             CGameObject* pObject = pPlayer->GetGameObject();
-            if (pObject && m_oidArea == pObject->m_oidArea) {
-                Vector v = pObject->m_vPosition - m_vPosition;
+            if (pObject && m_oidArea == ((CSWSObject*)pObject)->m_oidArea) {
+                Vector v = ((CSWSObject*)pObject)->m_vPosition - m_vPosition;
                 if (v.x * v.x + v.y * v.y + v.z * v.z <= 900.0f) {
                     unsigned long nPlayerID = pPlayer->m_nPlayerID;
                     GetServerExoApp()->GetSWSMessage()->SendServerToPlayerCCMessage(

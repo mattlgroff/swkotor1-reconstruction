@@ -2,11 +2,7 @@
 // (translation-unit-local layout). Creature override of vtable slot 0x12c;
 // missing from functions.csv.
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 class C2DA {
 public:
@@ -24,9 +20,7 @@ public:
     CTwoDimArrays* m_p2DArrays;                     // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern int g_nAppearanceCol_WALKDIST;               // 0x007A212C
-extern int g_nAppearanceCol_RUNDIST;                // 0x007A2120
+#include "shared/globals.h"
 
 class CSWCCreatureAppearance {
 public:

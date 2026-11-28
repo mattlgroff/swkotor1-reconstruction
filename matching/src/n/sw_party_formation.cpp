@@ -2,7 +2,7 @@
 #include "n/sw_party.h"
 
 // Never written by the original; -1 means "use the party table state".
-extern int g_nFollowStateOverride;                  // 0x007A2414, descriptive
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00634760
 void CSWParty::SetFormation(int nFormation)

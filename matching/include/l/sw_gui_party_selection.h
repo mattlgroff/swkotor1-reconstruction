@@ -34,12 +34,7 @@ public:
     int m_nNPC;                                     // 0x450
 };
 
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
-extern Vector g_vAbilityColorLocked;                // 0x007A23E4
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
-extern Vector g_vUpgradeAvailableColor;             // 0x007A2378 (descriptive)
-extern Vector g_vKeyMapLockedColor;                 // 0x007A2384
-extern Vector g_vKeyMapLockedTextColor;             // 0x007A2408
+#include "shared/globals.h"
 
 class L_PARTY_VTABLE CSWGuiPartySelection : public CSWGuiPanel {
 public:

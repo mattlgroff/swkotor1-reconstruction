@@ -16,8 +16,7 @@ struct CAurGrassInfo {
     unsigned char pad_51[3];
 };
 
-extern unsigned int g_aur_grass_info_count;
-extern CAurGrassInfo* g_aur_grass_info_data;
+#include "shared/globals.h"
 
 unsigned char AurGrassMaterialInUse(unsigned int index);
 

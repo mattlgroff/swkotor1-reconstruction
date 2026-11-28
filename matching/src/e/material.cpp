@@ -108,7 +108,7 @@ public:
 };
 
 class Material;
-extern CExoArrayList<Material*> g_lMaterials;   // 0x00830298
+#include "shared/globals.h"
 
 static inline void ReleaseTexture(CAurTextureRef& r)
 {

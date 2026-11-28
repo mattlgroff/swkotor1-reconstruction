@@ -131,11 +131,7 @@ public:
     Material* m_pMaterial;          // +0x44
 };
 
-extern CExoArrayList<Bin*> g_lActiveBins;       // 0x007FBF9C
-extern CExoArrayList<Bin*> g_lPrevActiveBins;   // 0x007FBFFC
-extern int g_nPartPlane;                        // 0x00827F4C
-extern int g_nLightPlane;                       // 0x00827F50
-extern int g_nEmitterPlane;                     // 0x00827F54
+#include "shared/globals.h"
 
 class TileLink {
 public:
@@ -162,19 +158,8 @@ static inline TileData* GetTileData(Scene* pScene, void* pKey)
 }
 
 BSPNode* FindTileIf(void* pTiles, Vector vPos, int (*pfn)(BSPNode*, Gob*), Gob* pKey);  // 0x004AD1A0
-extern int g_bNoGobCulling;                     // 0x007FBF20
-extern int g_nShaderFrame;                      // 0x0078E574
-extern int g_bUseVisibility;                    // 0x0078E5C8
-extern CExoArrayList<Part*> g_lTransparentParts;    // 0x00827F40
-extern CExoArrayList<Part*> g_aMeshBuckets[];       // 0x008194E0
-extern CExoArrayList<Part*> g_aBucketsA[];          // 0x007FC008
-extern CExoArrayList<Part*> g_aBucketsC[];          // 0x0080AA80
-extern CExoArrayList<Part*> g_lAllMeshParts;        // 0x007FBFB4
-extern CExoArrayList<Part*> g_l7FBFCC, g_l7FBFC0, g_l7FBFF0, g_l7FBF90, g_l7FBF78;
-extern CExoArrayList<Part*> g_l7FBF84, g_l7FBF6C, g_l80AA74, g_l7FBFE4, g_l80AA68,
-    g_l7FBFA8, g_l7FBFD8;
-extern int g_n7FBF28, g_n7FBF2C, g_n7FBF30;
-extern CExoArrayList<void*> g_lModels;              // 0x007A8A64
+class PartEmitter;
+class TriangleBin;
 int GetNumBuckets();                                // 0x0041FEB0
 
 // FUNCTION: SWKOTOR 0x0046A610
@@ -349,7 +334,7 @@ int GobOutside(Gob* pGob, CExoArrayList<Plane>* pPlanes)
         return 1;
     for (int i = 0; i < pPlanes->num; i++) {
         if (!g_bNoGobCulling) {
-            Vector vCenter = pGob->m_qOrientation * pGob->m_vCenterOffset + pGob->m_vPosition;
+            Vector vCenter = pGob->m_vPosition + pGob->m_qOrientation * pGob->m_vCenterOffset;
             if (SpherePlaneSide(&vCenter, pGob->m_fRadius, &pPlanes->element[i]) > 0.0f)
                 return 1;
         }
@@ -521,7 +506,7 @@ void SceneAddPartToRooms(Scene* pScene, Part* pPart)
     for (int i = 0; i < pScene->m_lRooms.num; i++) {
         BSPNode* pRoom = pScene->m_lRooms[i];
         if (pBox) {
-            Vector vCenter = (pBox->m_vMax + pBox->m_vMin) * 0.5f;
+            Vector vCenter = (pBox->m_vMin + pBox->m_vMax) * 0.5f;
             if (vCenter.x >= pRoom->m_vMin.x && vCenter.y >= pRoom->m_vMin.y
                 && vCenter.x <= pRoom->m_vMax.x && vCenter.y <= pRoom->m_vMax.y)
                 pRoom->m_pData->m_lEmitterBoxes.AddOutOfLine(pBox);
@@ -587,11 +572,7 @@ void AddLightToRooms(Scene* pScene, Light* pLight)
         pScene->m_lRooms[i]->m_pData->m_lList80.AddCopy(pLight);
 }
 
-class LightNode {
-public:
-    char pad_0x0[0x68];
-    Scene* m_pScene;                // +0x68
-};
+#include "shared/light_node.h"
 
 void UpdateStaticLighting(Scene* pScene, Part* pPart);     // 0x0046CA30
 
@@ -620,11 +601,7 @@ public:
     ModelHolder* m_pHolder;         // +0x04
 };
 
-class TileParts {
-public:
-    char pad_0x0[0x18];
-    CExoArrayList<TilePart*> m_lParts;  // +0x18
-};
+#include "shared/tile_parts.h"
 
 int SceneBSPAddPart(Scene* pScene, TilePart* pPart, Model* pModel);    // 0x0046E290
 
@@ -674,8 +651,6 @@ public:
     float m_fAlpha;                 // +0x84
 };
 
-extern int g_bShadowsOnly;          // 0x0078E60C
-extern int g_bSkipA4;               // 0x00827FCC
 
 // The merged A4/face test with an explicit else keeps the branchy return.
 // FUNCTION: SWKOTOR 0x0046EE40
@@ -714,12 +689,6 @@ int BoxLineIntersect(Vector* pStart, Vector* pEnd, Vector* pMin, Vector* pMax); 
 Vector* LinePlaneIntersect(Vector* pOut, Vector* pNormal, float fDist,
                            Vector* pStart, Vector* pEnd);                       // 0x004AB250
 
-extern int g_nHitTests;             // 0x007FBF58
-extern int g_nHitMask;              // 0x007FBF48
-extern int g_bHitStatic;            // 0x007FBF4C
-extern int g_bHitWalkmesh;          // 0x0078E5A8
-extern int g_bHitGround;            // 0x007FBF50
-extern int g_bHitGroundPlane;       // 0x007FBF54
 
 // NONMATCH: 24 diffs. The original keeps bHit's zero and the null test in
 // ebp, the loop counter (`cmp [edi+0x58], ebp`); we use edx for the zero.

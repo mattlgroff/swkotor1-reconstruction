@@ -6,11 +6,9 @@ public:
     void ClearAllQueuedCombatActions(unsigned long nServerObject);     // 0x004AEFA0
 };
 
-class CAppManager {
-public:
-    char pad_0x0[8];
-    CServerExoApp* m_pServerExoApp;                  // +0x08
-};
+#include "shared/app_manager.h"
+
+#include "shared/globals.h"
 
 class CSWCObject {
 public:
@@ -24,7 +22,7 @@ public:
 // FUNCTION: SWKOTOR 0x0063D470
 void CSWCObject::ClearAllActions()
 {
-    CAppManager* pAppManager = *(CAppManager**)0x007A39FC;
+    CAppManager* pAppManager = g_pAppManager;
     CServerExoApp* pServer = pAppManager->m_pServerExoApp;
     unsigned long nServerObject = pServer->ClientToServerObjectID(m_oidSelf);
     pServer->ClearAllActions(nServerObject);
@@ -33,7 +31,7 @@ void CSWCObject::ClearAllActions()
 // FUNCTION: SWKOTOR 0x0063D490
 void CSWCObject::ClearAllQueuedCombatActions()
 {
-    CAppManager* pAppManager = *(CAppManager**)0x007A39FC;
+    CAppManager* pAppManager = g_pAppManager;
     CServerExoApp* pServer = pAppManager->m_pServerExoApp;
     unsigned long nServerObject = pServer->ClientToServerObjectID(m_oidSelf);
     pServer->ClearAllQueuedCombatActions(nServerObject);

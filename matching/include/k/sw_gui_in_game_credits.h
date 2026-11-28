@@ -4,32 +4,11 @@
 #ifndef K_SW_GUI_IN_GAME_CREDITS_H
 #define K_SW_GUI_IN_GAME_CREDITS_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* sString);                // 0x005E5A90
-    CExoString(const CExoString& sString);          // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    char* CStr() const;                             // 0x005E5670
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef();                                      // 0x00405ED0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class Vector {
-public:
-    Vector() {}
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct CSWGuiExtent {
     int left;
@@ -53,8 +32,7 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender);  // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
-extern unsigned char g_nGender;                     // 0x0073ECD0
+#include "shared/globals.h"
 
 class C2DA {
 public:
@@ -87,7 +65,6 @@ public:
     void SetSize(int nWidth, int nHeight);          // 0x0040BE70
 };
 
-extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
 
 class CSWGuiTextParams {
 public:
@@ -247,25 +224,11 @@ public:
     int GetPauseState(unsigned char nState);        // 0x004AE980
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern int g_nScreenWidth;                          // 0x0078D1D4
-extern int g_nScreenHeight;                         // 0x0078D1D8
 void ResumeTimers();                                // 0x00403DE0
 
 // Screen state saved while the evil-ending credits force 640x480.
-extern int g_nCreditsSavedScreenHeight;             // 0x00833BB8
-extern int g_nCreditsSavedGuiHeight;                // 0x00833BBC
-extern int g_nCreditsSavedGuiWidth;                 // 0x00833BC0
-extern int g_nCreditsSavedScreenWidth;              // 0x00833BC4
-extern float g_fCreditsScrollRate;                  // 0x007A2670 (305.0)
 
 // vtable 0x007541F0; ??_G 0x0068F6D0 (matching/src/c).
 class CSWGuiInGameCredits : public CSWGuiPanel {

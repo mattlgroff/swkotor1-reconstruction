@@ -2,21 +2,12 @@
 // distortion copy by an amount read from a height map.
 
 #include "h/texctl.h"
+#include "shared/float_to_int.h"
 
 float CosLookup(float fAngle);              // 0x004AADF0
 float SinLookup(float fAngle);              // 0x004AAE30
 
-extern unsigned char g_aDistortImage[];     // 0x007BB870
-
-static inline void FloatToInt(int* pOut, float f)
-{
-    __asm {
-        fld f
-        mov edx, pOut
-        frndint
-        fistp dword ptr [edx]
-    }
-}
+#include "shared/globals.h"
 
 // NONMATCH (42 insns): same statements; the original re-initialises the
 // row pointer and index per branch and keeps the column in memory.

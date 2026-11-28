@@ -1,12 +1,6 @@
 // World-space bounding box of a static tile part (0x00451DC0).
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:

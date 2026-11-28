@@ -23,44 +23,11 @@ public:
     void* m_pFileInternal;
 };
 
-typedef void* CExoLinkedListPosition;
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    void* RemoveHead();                             // 0x005E9C80
-    CExoLinkedListPosition AddTail(void* p);        // 0x005E9DC0
+#include "shared/exo_linked_list.h"
 
-    void* m_pHead;                                  // 0x00
-    void* m_pTail;                                  // 0x04
-    unsigned long m_nCount;                         // 0x08
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
 
-    unsigned long GetCount() { return m_pcExoLinkedListInternal->m_nCount; }
-    CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->m_pHead; }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-    CExoLinkedListPosition AddTail(T* p) { return m_pcExoLinkedListInternal->AddTail(p); }
-    int IsEmpty() { return m_pcExoLinkedListInternal->m_pHead == 0; }
-
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-};
-
-template <class T>
-CExoLinkedList<T>::CExoLinkedList()
-{
-    m_pcExoLinkedListInternal = new CExoLinkedListInternal();
-}
 
 template <class T>
 class CExoArrayList {
@@ -92,7 +59,6 @@ public:
     unsigned short GetResTypeFromExtension(const CExoString& sExtension);   // 0x005E6670
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 typedef void (*ERFProgressCallback)(int nCurrent, int nTotal, void* pParam1, void* pParam2);
 
@@ -110,84 +76,18 @@ public:
     int WriteGFFData(CExoFile* pFile, unsigned long& nSize);   // 0x004113D0
 };
 
-class CAppManager {
-public:
-    void AllocLargeTempBuffer();                    // 0x004010A0
-    char* GetLargeTempBuffer()
-    {
-        if (!m_pLargeTempBuffer) {
-            AllocLargeTempBuffer();
-        }
-        return m_pLargeTempBuffer;
-    }
+#include "shared/app_manager.h"
 
-    char* m_pLargeTempBuffer;                       // 0x00
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 // Localized string table entry (0x0C bytes).
-class CERFString {
-public:
-    CERFString()
-    {
-        m_nLanguage = 0;
-        m_nLength = 0;
-        m_sText = 0;
-    }
-    ~CERFString();
-    void SetText(CExoString& sText);
-    int Read(CExoFile* pFile);
-
-    unsigned long m_nLanguage;                      // 0x00
-    unsigned long m_nLength;                        // 0x04
-    char* m_sText;                                  // 0x08
-};
+#include "shared/erf_string.h"
 
 // Key list entry (0x18 bytes).
-class CERFKey {
-public:
-    CERFKey()
-    {
-        memset(m_cResRef, 0, 16);
-        memset(&m_nUnused, 0, 2);
-        m_nResID = 0;
-        m_nResType = 0xFFFF;
-    }
-    ~CERFKey();
-    int Write(CExoFile* pFile);
-
-    char m_cResRef[16];                             // 0x00
-    unsigned long m_nResID;                         // 0x10
-    unsigned short m_nResType;                      // 0x14
-    unsigned short m_nUnused;                       // 0x16
-};
+#include "shared/erf_key.h"
 
 // Resource list entry (0x0C bytes).
-class CERFRes {
-public:
-    CERFRes()
-    {
-        m_nOffset = 0;
-        m_nSize = 0;
-        m_pData = 0;
-    }
-    ~CERFRes()
-    {
-        if (m_pData) {
-            delete[] m_pData;
-            m_pData = 0;
-        }
-        m_nOffset = 0;
-        m_nSize = 0;
-    }
-    int CopyToFile(CExoFile* pSrc, CExoFile* pDst, int nUnused);
-    int Write(CExoFile* pFile, unsigned long nEntryOffset);
-
-    unsigned long m_nOffset;                        // 0x00
-    unsigned long m_nSize;                          // 0x04
-    char* m_pData;                                  // 0x08
-};
+#include "shared/erf_res.h"
 
 class CERFFile {
 public:

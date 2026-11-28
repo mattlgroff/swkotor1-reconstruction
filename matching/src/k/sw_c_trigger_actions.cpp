@@ -4,23 +4,11 @@
 // to member of a class still incomplete at the record's declaration
 // (general 16-byte representation).
 
-class CExoString {
-public:
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef operator=(const char* s);               // 0x00406290
-};
+#include "shared/res_ref.h"
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWCCreature;
 class CSWCObject;
@@ -63,35 +51,19 @@ public:
     CSWCMessage* GetSWCMessage();                   // 0x005ED6F0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWCCreatureStats {
 public:
     int GetCanUseSkill(unsigned short nSkill);      // 0x006477E0
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-
-    unsigned long m_idSelf;                         // 0x04
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
     virtual void v90(); virtual void v94(); virtual void v98(); virtual void v9C();
@@ -111,7 +83,7 @@ public:
 class CSWCCreature : public CSWCObject {
 public:
     void PerformSkill(int nSkill, int nSubSkill, unsigned long oidTarget);   // 0x0060EE00
-    char pad_0x8[0x2f8 - 0x8];
+    char pad_0xc[0x2f8 - 0xc];
     CSWCCreatureStats* m_pStats;                    // 0x2f8
 };
 

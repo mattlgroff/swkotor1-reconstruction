@@ -43,76 +43,16 @@ public:
     int WriteFieldVOID(CResStruct* pStruct, void* pData, unsigned long nSize, char* szLabel); // 0x00412C10
 };
 
-struct Vector {
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector.h"
 
 // Game-side command implementer (CScriptCompiler side, vtable slots used here).
-class CVirtualMachineCmdImplementer {
-public:
-    virtual ~CVirtualMachineCmdImplementer();                       // 0x00
-    virtual void InitializeCommands();                              // 0x04
-    virtual int RunCommand(int nCommandId, int nParameters);        // 0x08
-    virtual void RunScriptStarted(CExoString* sScriptFile);         // 0x0c
-    virtual void ReportError(CExoString* sScriptFile, int nError);  // 0x10
-    virtual void* CreateGameDefinedStructure(int nType);            // 0x14
-    virtual void DestroyGameDefinedStructure(int nType, void* p);   // 0x18
-    virtual int Unknown1C();                                        // 0x1c
-    virtual void* CopyGameDefinedStructure(int nType, void* p);     // 0x20
-    virtual int SaveGameDefinedStructure(int nType, void* p, CResGFF* pGFF, CResStruct* pStruct); // 0x24
-    virtual int LoadGameDefinedStructure(int nType, void** ppValue, CResGFF* pGFF, CResStruct* pStruct); // 0x28
-
-    int m_bValidObjectRunScript;                                    // 0x04
-    unsigned long m_oidObjectRunScript;                             // 0x08
-};
+#include "shared/sw_virtual_machine_commands.h"
 
 class CVirtualMachineInternal;
 
-class CVirtualMachineStack {
-public:
-    CVirtualMachineStack()
-    {
-        m_nStackPointer = 0;
-        m_nBasePointer = 0;
-        m_nTotalSize = 0;
-        m_pStackTypes = 0;
-        m_pStackNodes = 0;
-    }
-    ~CVirtualMachineStack();                                        // 0x005D28E0
-    void AddToTopOfStack(int nType);                                // 0x005D15A0
-    void ModifyIntegerAtLocation(int nLocation, int nValue);        // 0x005D16C0
-    void AssignLocationToLocation(int nSrcLocation, int nDstLocation); // 0x005D1C40
-    int SaveStack(CResGFF* pGFF, CResStruct* pStruct);              // 0x005D1D80
-    int LoadStack(CResGFF* pGFF, CResStruct* pStruct);              // 0x005D1EF0
-    void ClearStack();                                              // 0x005D2140
-    void SetStackPointer(int nStackPointer);                        // 0x005D21F0
-    void CopyFromStack(CVirtualMachineStack* pStack, int nSizeOfStack, int nBasePointer); // 0x005D28F0
+#include "shared/virtual_machine_stack.h"
 
-    int m_nStackPointer;                                            // 0x00
-    int m_nBasePointer;                                             // 0x04
-    int m_nTotalSize;                                               // 0x08
-    char* m_pStackTypes;                                            // 0x0c
-    int* m_pStackNodes;                                             // 0x10
-    CVirtualMachineInternal* m_pVMachine;                           // 0x14
-};
-
-class CVirtualMachineScript {
-public:
-    CVirtualMachineScript();                                        // 0x005D1740
-    ~CVirtualMachineScript();                                       // 0x005D4550
-
-    CVirtualMachineStack* m_pStack;                                 // 0x00
-    int m_nStackSize;                                               // 0x04
-    int m_nInstructPtr;                                             // 0x08
-    int m_nSecondaryInstructPtr;                                    // 0x0c
-    char* m_pCode;                                                  // 0x10
-    int m_nCodeSize;                                                // 0x14
-    CExoString m_sScriptName;                                       // 0x18
-    int m_nLoadedFromSave;                                          // 0x20
-    int m_n24;                                                      // 0x24
-};
+#include "shared/virtual_machine_script.h"
 
 class CVirtualMachineInternal : public CResHelper<CResNCS, 2010> {
 public:

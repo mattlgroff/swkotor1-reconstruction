@@ -4,13 +4,7 @@ extern "C" int __cdecl sscanf(const char*, const char*, ...);
 
 char* AurResGetNextLine();                  // 0x0044BFA0
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 inline Vector operator+(const Vector& a, const Vector& b)
 {

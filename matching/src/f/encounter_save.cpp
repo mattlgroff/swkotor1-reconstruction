@@ -1,32 +1,13 @@
 // CSWSEncounter::SaveEncounter (round s10, 0x00591350). Own minimal layout;
 // member names follow encounter_load.cpp.
 
-class CExoString {
-public:
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    ~CExoLocString();
-    void *m_pList;
-    void *m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    CResRef(const CExoString &s);
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class Vector {
-public:
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector &operator-=(const Vector &v);
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;
@@ -50,21 +31,9 @@ public:
     int WriteFieldFLOAT(CResStruct *pStruct, float fValue, char *szLabel);
 };
 
-class CEncounterSpawnPoint {
-public:
-    Vector m_vPosition;              // +0x0
-    float m_fOrientation;            // +0xc
-};
+#include "shared/encounter_spawn_point.h"
 
-class CEncounterListEntry {
-public:
-    CResRef m_cResRef;               // +0x0
-    float m_fCR;                     // +0x10
-    float m_fPoints;                 // +0x14
-    int m_bAlreadyUsed;              // +0x18
-    int m_bTried;                    // +0x1c
-    int m_bSingleSpawn;              // +0x20
-};
+#include "shared/encounter_list_entry.h"
 
 class CSWSEncounter {
 public:

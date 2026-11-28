@@ -2,11 +2,7 @@
 // portraits, screenshot) for the highlighted save and recolours the buttons.
 #include "l/sw_gui_save_load.h"
 
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
-extern Vector g_vUpgradeAvailableColor;             // 0x007A2378 (descriptive)
-extern Vector g_vKeyMapLockedColor;                 // 0x007A2384
-extern Vector g_vKeyMapLockedTextColor;             // 0x007A2408
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x006C89D0
 void CSWGuiSaveLoad::ShowGame(CSWGuiControl* pControl)

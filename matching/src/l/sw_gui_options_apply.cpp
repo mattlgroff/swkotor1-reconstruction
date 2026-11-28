@@ -6,21 +6,10 @@ extern void AurDisableVertexBufferObjects(); // 0x0044EF60
 extern void AurDisableVertexBufferObjectsWriteOnly(); // 0x0044EF70
 extern void AurEnableVertexBufferObjectsWriteOnly(); // 0x0044EF80
 extern int ReInitAurora(int nWidth, int nHeight, unsigned char nDepth, int bFullScreen, int bReload); // 0x00403800
-extern int g_nScreenDepth; // 0x0078D1E0
-extern int g_nScreenRefreshRate; // 0x0078D1DC
-extern CSWGuiManager* g_pGuiManager; // 0x007A39F4
+#include "shared/globals.h"
 
 // Win32 DEVMODEA (0x9C bytes); only the fields used here are named.
-struct DEVMODEA {
-    char dmDeviceName[0x20];
-    unsigned short dmSpecVersion;
-    unsigned short dmDriverVersion;
-    unsigned short dmSize;                          // 0x24
-    unsigned short dmDriverExtra;
-    char pad_0x28[0x78 - 0x28];
-    unsigned long dmDisplayFrequency;               // 0x78
-    char pad_0x7c[0x9c - 0x7c];
-};
+#include "shared/devmodea.h"
 extern "C" __declspec(dllimport) int __stdcall EnumDisplaySettingsA(const char* lpszDeviceName,
                                                                    unsigned long iModeNum, DEVMODEA* lpDevMode);
 extern "C" void* __cdecl memset(void* pDest, int nValue, unsigned int nCount);
@@ -31,14 +20,8 @@ public:
     void ReInitialize(unsigned long nQuality, unsigned long bHardware); // 0x005D63F0
     unsigned long GetProperty0x100(); // 0x005D6450 (current sound quality)
 };
-extern CExoSound* g_pExoSound; // 0x007A39EC
 
-class CRenderWindow {
-public:
-    virtual void v00();
-    virtual int IsFullScreen(); // 0x04
-};
-extern CRenderWindow* g_pRenderWindow; // 0x007A39F8
+#include "shared/render_window.h"
 
 // FUNCTION: SWKOTOR 0x006DFD10
 void CSWGuiOptionsMouse::OnRevMouseButtons(CSWGuiControl* pControl)

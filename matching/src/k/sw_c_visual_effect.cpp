@@ -23,7 +23,6 @@ public:
                            unsigned char, float, float);             // 0x005D5E10
 };
 
-extern CExoSound* g_pExoSound;                                       // 0x007A39EC
 
 class C2DA {
 public:
@@ -47,24 +46,12 @@ public:
     C2DAs* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                                           // 0x007A3A28
+#include "shared/globals.h"
 
 struct CClientOptions {
     unsigned char m_nGraphicsQuality;                                // +0x0 (bit 7 skips LowQuality)
 };
 
-extern int g_nVisualEffectCol_Imp_HeadCon_Node;                      // 0x007A21B4
-extern int g_nVisualEffectCol_Imp_Impact_Node;                       // 0x007A21B8
-extern int g_nVisualEffectCol_Imp_Root_M_Node;                       // 0x007A21BC
-extern int g_nVisualEffectCol_Imp_Root_S_Node;                       // 0x007A21C0
-extern int g_nVisualEffectCol_Imp_Root_L_Node;                       // 0x007A21C4
-extern int g_nVisualEffectCol_Imp_Root_H_Node;                       // 0x007A21C8
-extern int g_nVisualEffectCol_LowQuality;                            // 0x007A21CC
-extern int g_nVisualEffectCol_OrientWithGround;                      // 0x007A21D0
-extern int g_nVisualEffectCol_ShakeType;                             // 0x007A21D4
-extern int g_nVisualEffectCol_ShakeDuration;                         // 0x007A21D8
-extern int g_nVisualEffectCol_ShakeDelay;                            // 0x007A21DC
-extern float g_fVisualEffectAnimSpeed40;                             // 0x007A2674 (0.8)
 
 class CSWCAnimBaseVisualEffect : public CSWCAnimBase {
 public:
@@ -78,7 +65,6 @@ public:
     void LookUpAndPerformRumbleWithCutOff(int, int, const Vector*);  // 0x005EDF60
 };
 
-extern unsigned char g_nObjectTypeAreaOfEffect;                      // 0x0074663A
 
 class CSWCVisualEffect : public CSWCObject {
 public:
@@ -123,7 +109,7 @@ CSWCVisualEffect::CSWCVisualEffect(int bRegister) : CSWCObject(0x0b)
     m_nDelay = 0;
     m_nAnimation = 0;
     if (bRegister) {
-        g_pAppManager->GetClientExoApp()->GetGameObjectArray()->AddInternalObject(&m_oid, this, 0);
+        g_pAppManager->GetClientExoApp()->GetGameObjectArray()->AddInternalObject(&m_idSelf, this, 0);
         g_pAppManager->GetClientExoApp()->GetClientAIMaster()->AddObject(this);
     }
     m_pSound = 0;
@@ -137,7 +123,7 @@ CSWCVisualEffect::CSWCVisualEffect(int bRegister) : CSWCObject(0x0b)
 // FUNCTION: SWKOTOR 0x0068FF70
 CSWCVisualEffect::~CSWCVisualEffect()
 {
-    g_pAppManager->m_pClientExoApp->GetGameObjectArray()->Delete(m_oid);
+    g_pAppManager->m_pClientExoApp->GetGameObjectArray()->Delete(m_idSelf);
     if (m_pSound)
         delete m_pSound;
     if (m_pModel) {

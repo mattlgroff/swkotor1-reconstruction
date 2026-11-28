@@ -6,7 +6,7 @@
 // PlayVisualEffect is kept.
 #include "a/sws_area.h"
 
-extern const float g_fVisualEffectBroadcastRange;   // 0x00747440 (250.0f)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00507E20
 void CSWSArea::PlayVisualEffect(unsigned short nEffect, Vector* pPosition)

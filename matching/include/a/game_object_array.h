@@ -7,10 +7,7 @@
 
 typedef unsigned long OBJECT_ID;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();                     // slot 0 (scalar deleting dtor)
-};
+#include "shared/game_object.h"
 
 class CGameObjectArrayNode {
 public:

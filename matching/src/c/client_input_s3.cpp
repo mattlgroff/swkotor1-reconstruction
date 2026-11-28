@@ -4,8 +4,7 @@
 
 #include "c/exo_base.h"
 
-extern int g_nScreenWidth;                          // 0x0078D1D4
-extern int g_nScreenHeight;                         // 0x0078D1D8
+#include "shared/globals.h"
 
 // Unnamed 0x2C-byte record zeroed by its constructor (descriptive name).
 struct CClientInputRecord {

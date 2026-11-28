@@ -1,30 +1,9 @@
 // CSWRace / CSWFeat / CSWSkill TLK text getters and ctors, CSWRoom
 // (b005c_f2_journal_store, 0x005C78D0-0x005C7DC0, 0x005CD700-0x005CD970).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    CExoString(const CExoString &s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    CExoString operator+(const CExoString &s) const;
-    char *CStr() const;
-    int CompareNoCase(const char *s) const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef(const CExoString &sName);
-    CResRef(const CResRef &cResRef);
-    CResRef operator=(const CResRef &cResRef);
-    int operator==(const char *s) const;
-    void CopyToString(CExoString &s) const;
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class C2DA {
 public:
@@ -38,12 +17,7 @@ public:
     int GetNumRows() { return m_nNumRows; }
 };
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:
@@ -62,8 +36,7 @@ public:
     int GetSimpleString(unsigned long strref, STR_RES *pRes, unsigned char nGender);
 };
 
-extern CTlkTable *g_pTlkTable;
-extern const unsigned char g_nGender;
+#include "shared/globals.h"
 
 class CSWRace {
 public:

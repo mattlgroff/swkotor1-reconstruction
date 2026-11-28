@@ -3,8 +3,8 @@
 
 #define OBJECT_INVALID 0x7f000000
 
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
+#include "shared/globals.h"
+#include "shared/globals.h"
 
 class CGameObject;
 
@@ -64,15 +64,8 @@ public:
     void SetDebugMode(int b);                       // 0x005ED850
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;                             // 0x00
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWCMessage {
 public:

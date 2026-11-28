@@ -1,25 +1,15 @@
 // CSWTlkTable::Fetch (b005e8_exo_rand_client_misc).
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    ~CExoString();                                  // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 class CClientExoApp {
 public:
     CExoString GetGUIString(unsigned long nStrRef); // 0x005EDEB0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;                             // 0x00
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWSObject;
 

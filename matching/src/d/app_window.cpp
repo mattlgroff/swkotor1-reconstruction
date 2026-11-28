@@ -46,13 +46,8 @@ long __stdcall WndProc(void* hWnd, unsigned int nMsg, unsigned int wParam, long 
 void __cdecl LoadVersionInfo();                     // 0x005e6b10
 char* __cdecl AurGetVersionString();                // 0x0044eec0
 
-extern void* g_hInstance;                           // 0x007a39c0
-extern void* g_hWindow;                             // 0x007a39d4
-extern void* g_hRenderWindow;                       // 0x007a39d8
-extern CExoString g_sBuildNumber;                   // 0x007a3cc4
-extern CExoString g_sWindowSubTitle;                // 0x007a3ccc
-extern CExoString g_sWindowTitle;                   // 0x007a3cdc
-extern char g_szWindowClassName[];                  // 0x0078d200
+#include "shared/globals.h"
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004036f0
 void __cdecl InitRenderWindow(void* hInstance, int nCmdShow)

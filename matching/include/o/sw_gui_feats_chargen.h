@@ -6,9 +6,7 @@
 
 #include "o/sw_gui_main_chargen.h"
 
-extern Vector g_vGuiDisabledTextColor;              // 0x007A2408
-extern Vector g_vGuiDisabledBorderColor;            // 0x007A2384
-extern Vector g_vUpgradeAvailableColor;             // 0x007A2378
+#include "shared/globals.h"
 
 // The level-up stats calls of the feat picker.
 class CSWCLevelUpStatsF : public CSWCLevelUpStats {

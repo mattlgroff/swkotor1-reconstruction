@@ -74,7 +74,7 @@ public:
 };
 
 struct Quaternion { float w, x, y, z; };
-struct Vector { float x, y, z; };
+#include "shared/vector.h"
 class CHitInfo;
 class GobAttachment;
 class Gob;
@@ -219,6 +219,7 @@ int Camera::Animate(float fDeltaT)
             pAnim = m_pAnimation;
             float t = pAnim->m_fTime / pAnim->m_fDuration;
             if (pAnim->m_n10 == 0) {
+                // NOTE: linear, t is used unchanged
             } else if (pAnim->m_n10 == 1) {
                 t = 1.0f - ((float)cos(t * 3.1415927f) + 1.0f) * 0.5f;
             } else if (pAnim->m_n10 == 2) {
@@ -334,7 +335,7 @@ GobAttachment* Camera::GetAttachment(int index) { return Gob::GetAttachment(inde
 void Camera::SetAttachment(GobAttachment* p) { Gob::SetAttachment(p); }
 
 // The camera currently being rendered (0x007BB4E8).
-extern Camera* g_pRenderCamera;
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0045BEA0
 void Camera::Render(int bPropagate)
@@ -445,11 +446,11 @@ CAurCamera* NewCAurCamera(char* szName)
 // FUNCTION: SWKOTOR 0x0045C3C0 SYMBOL: ?AttachToObject@Camera@@W3AEPAVGobAttachment@@PAVGob@@PADH@Z
 // FUNCTION: SWKOTOR 0x0045C3D0 SYMBOL: ?AttachToPart@Camera@@W3AEPAVGobAttachment@@PAVGob@@PAVPart@@H@Z
 // FUNCTION: SWKOTOR 0x0045C3E0 SYMBOL: ?SetAttachment@Camera@@W3AEXPAVGobAttachment@@@Z
-// FUNCTION: SWKOTOR 0x0045C3F0 SYMBOL: ?SetPosition@Camera@@W3AE?AUVector@@U2@@Z
+// FUNCTION: SWKOTOR 0x0045C3F0 SYMBOL: ?SetPosition@Camera@@W3AE?AVVector@@V2@@Z
 // FUNCTION: SWKOTOR 0x0045C400 SYMBOL: ?SetOrientation@Camera@@W3AE?AUQuaternion@@U2@@Z
 // FUNCTION: SWKOTOR 0x0045C410 SYMBOL: ?SetAttachmentLight@Camera@@W3AEXH@Z
 // FUNCTION: SWKOTOR 0x0045C420 SYMBOL: ?GetAttachment@Camera@@W3AEPAVGobAttachment@@H@Z
 // FUNCTION: SWKOTOR 0x0045D7C0 SYMBOL: ?Animate@Camera@@W3AEHM@Z
-// FUNCTION: SWKOTOR 0x0045D7D0 SYMBOL: ?GetPosition@Camera@@W3AE?AUVector@@XZ
+// FUNCTION: SWKOTOR 0x0045D7D0 SYMBOL: ?GetPosition@Camera@@W3AE?AVVector@@XZ
 // FUNCTION: SWKOTOR 0x0045D7E0 SYMBOL: ?GetOrientation@Camera@@W3AE?AUQuaternion@@XZ
 // FUNCTION: SWKOTOR 0x0045D7F0 SYMBOL: ?AsAurObject@Camera@@W3AEPAVGob@@XZ

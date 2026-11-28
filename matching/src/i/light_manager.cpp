@@ -105,10 +105,7 @@ int LightManager::GetNearestLights(Scene* pScene, Vector vPos, float fRadius, in
             continue;
         }
         Vector& vLightPos = pLight->m_vPosition;
-        Vector vDelta;
-        vDelta.x = vLightPos.x - vPos.x;
-        vDelta.y = vLightPos.y - vPos.y;
-        vDelta.z = vLightPos.z - vPos.z;
+        Vector vDelta = vLightPos - vPos;
         if (FUN_004ab100(&vDelta) > fRadius + pLight->m_fRadius) {
             continue;
         }

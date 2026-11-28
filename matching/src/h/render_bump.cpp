@@ -8,13 +8,7 @@ extern "C" __declspec(dllimport) void __stdcall glBlendFunc(unsigned int, unsign
 extern "C" __declspec(dllimport) void __stdcall glEnableClientState(unsigned int);
 extern "C" __declspec(dllimport) void __stdcall glDisableClientState(unsigned int);
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 inline Vector operator-(const Vector& a, const Vector& b)
 {
@@ -160,7 +154,7 @@ public:
     CAurTexture* m_pTexture;        // +0xa4
 };
 
-class RenderCamera {
+class Camera {
 public:
     char m_pad00[0x7c];
     Vector m_vPosition;             // +0x7c
@@ -183,46 +177,17 @@ namespace GLRender {
 void ActivateTextureStage(int nStage);          // 0x00425250
 }
 
-typedef void (__cdecl* PFNCOMBINER)(unsigned int, CAurTexture*, CAurTexture*, CAurTexture*, CAurTexture*);
-extern PFNCOMBINER g_pfnCombiner;               // 0x007A47E0
-typedef void (__cdecl* PFNCOMBINERCOLOR)(Vector*, float);
-extern PFNCOMBINERCOLOR g_pfnCombinerColor;     // 0x007A47DC, descriptive
-extern PFNCOMBINERCOLOR g_pfnCombinerConst;     // 0x007A6820
-typedef void (__stdcall* PFNACTIVETEXTURE)(unsigned int);
-extern PFNACTIVETEXTURE glClientActiveTextureARB;     // 0x007BB6B0
-typedef void (__stdcall* PFNPROGRAMPARAMETER)(unsigned int, unsigned int, float, float, float, float);
-extern PFNPROGRAMPARAMETER g_pfnProgramEnvParameter4fARB;  // 0x007BB850
-extern PFNPROGRAMPARAMETER g_pfnProgramParameter4fNV;      // 0x007BB7AC
+#include "shared/gl_ext.h"
 
-extern Scene* g_pScene;                         // 0x007B92A0
-extern RenderCamera* g_pRenderCamera;           // 0x007BB4E8
-extern int g_bARBVertexProgram;                 // 0x0078E5EC
-extern unsigned int g_aBlendFactors[];          // 0x0073F270
-extern unsigned int g_eGLTexture2D;             // 0x0078D44C
-extern unsigned int g_eGLFog;                   // 0x0078D450
-extern unsigned int g_eGLTexture3D;             // 0x0078D46C
-extern unsigned int g_eTexCoordArray;           // 0x0073F398
-extern unsigned int g_eAttribArray5;            // 0x0073F3B4, descriptive
-extern unsigned int g_eTangentArray;            // 0x0073F3B8
-extern unsigned int g_eBinormalArray;           // 0x0073F3BC
-extern unsigned int g_eTexNormalArray;          // 0x0073F3C0
-extern unsigned int g_nActiveTextureUnit;       // 0x007A6898
-extern float g_fBumpLightScale;                 // 0x0078E648, descriptive
-extern char g_szBumpDiffuseVP[];                // 0x0079A600, descriptive
-extern int g_nBumpDiffuseVPContext;             // 0x00830558, descriptive
-extern char g_szBumpSpecularVP[];               // 0x0079A218, descriptive
-extern int g_nBumpSpecularVPContext;            // 0x00830554, descriptive
-extern int g_bBumpSpecularMagnitude;            // 0x0078E5F4, descriptive
-extern int g_nBumpSpecularMode;                 // 0x0078E634, descriptive
-extern float g_fBumpSpecularScale;              // 0x0078E630, descriptive
-extern const float g_fZero;                     // 0x0073D700
+#include "shared/globals.h"
+#include "shared/combiners.h"
 
 static inline void SetVertexProgramParameter(unsigned int nIndex, float x, float y, float z, float w)
 {
     if (g_bARBVertexProgram)
-        g_pfnProgramEnvParameter4fARB(0x8620, nIndex, x, y, z, w);
+        glProgramEnvParameter4fARB(0x8620, nIndex, x, y, z, w);
     else
-        g_pfnProgramParameter4fNV(0x8620, nIndex, x, y, z, w);
+        glProgramParameter4fNV(0x8620, nIndex, x, y, z, w);
 }
 
 static inline void SetVertexProgramParameter(unsigned int nIndex, const Vector& v, float w)
@@ -233,7 +198,7 @@ static inline void SetVertexProgramParameter(unsigned int nIndex, const Vector& 
 static inline void Combiner(unsigned int nMode, CAurTexture* a, CAurTexture* b, CAurTexture* c,
                             CAurTexture* d)
 {
-    g_pfnCombiner(nMode, a, b, c, d);
+    g_pfnEnableCombiners(nMode, a, b, c, d);
 }
 
 // FUNCTION: SWKOTOR 0x00474EA0
@@ -265,7 +230,7 @@ void RenderLightMappedBumpDiffuse(PartTriMesh* pPart)
         glEnableClientState(g_eTangentArray);
         glEnableClientState(g_eBinormalArray);
         glEnableClientState(g_eTexNormalArray);
-        g_pfnCombiner(8, pMesh->m_pMaterial->m_pBumpMap, g_pScene->m_pTexture,
+        g_pfnEnableCombiners(8, pMesh->m_pMaterial->m_pBumpMap, g_pScene->m_pTexture,
                       pMesh->m_pMaterial->m_pTexture1, pMesh->m_pMaterial->m_pTexture0);
         SetCombinerConstant(0x10, g_pScene->m_fFogStart, g_pScene->m_fFogEnd,
                             g_pScene->m_bFogEnabled ? 1.0f : 0.0f, 0.5f);
@@ -282,7 +247,7 @@ void RenderLightMappedBumpDiffuse(PartTriMesh* pPart)
             vLight = -qOri * (vLightPos - vPos);
             const Vector& vLightColor = lLights.element[i]->m_vColor;
             Vector vColor = vLightColor * (vScale * g_fBumpLightScale);
-            g_pfnCombinerColor(&vColor, 1.0f);
+            g_pfnSetCombinerConstant1(vColor, 1.0f);
             SetVertexProgramParameter(0xc, vLight, 1.0f);
             SetVertexProgramParameter(0xd, vEye, 1.0f);
             float fRadius = lLights.element[i]->m_fRadius;
@@ -303,9 +268,9 @@ void RenderLightMappedBumpDiffuse(PartTriMesh* pPart)
         glDisableClientState(g_eBinormalArray);
         glDisableClientState(g_eTexNormalArray);
         g_pScene->DoFog();
-        g_pfnCombiner(0x20, 0, 0, 0, 0);
-        g_pfnCombiner(0xd, 0, 0, 0, 0);
-        g_pfnCombiner(0, 0, 0, 0, 0);
+        g_pfnEnableCombiners(0x20, 0, 0, 0, 0);
+        g_pfnEnableCombiners(0xd, 0, 0, 0, 0);
+        g_pfnEnableCombiners(0, 0, 0, 0, 0);
         glDisable(g_eGLTexture3D);
         pMesh->m_pMaterial->m_pTexture0->Bind();
     }
@@ -378,7 +343,7 @@ void RenderLightMappedBumpSpecular(PartTriMesh* pPart)
                                pMesh->m_pMaterial->m_pBumpMap->GetSpecularIntensity();
                 const Vector& vLightColor = lLights.element[i]->m_vColor;
                 Vector vColor = vLightColor * vTint;
-                g_pfnCombinerConst(&vColor, 1.0f);
+                g_pfnSetCombinerConstant0(vColor, 1.0f);
                 SetVertexProgramParameter(0xc, vLight, 1.0f);
                 SetVertexProgramParameter(0xd, vEye, 1.0f);
                 float fRadius = lLights.element[i]->m_fRadius;
@@ -399,9 +364,9 @@ void RenderLightMappedBumpSpecular(PartTriMesh* pPart)
                 glClientActiveTextureARB(0x84c0);
             g_nActiveTextureUnit = 0;
             g_pScene->DoFog();
-            g_pfnCombiner(0x20, 0, 0, 0, 0);
-            g_pfnCombiner(0xd, 0, 0, 0, 0);
-            g_pfnCombiner(0, 0, 0, 0, 0);
+            g_pfnEnableCombiners(0x20, 0, 0, 0, 0);
+            g_pfnEnableCombiners(0xd, 0, 0, 0, 0);
+            g_pfnEnableCombiners(0, 0, 0, 0, 0);
             glDisable(g_eGLTexture3D);
         }
     }

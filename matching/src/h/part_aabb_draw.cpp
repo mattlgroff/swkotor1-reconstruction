@@ -5,19 +5,7 @@
 extern "C" __declspec(dllimport) void __stdcall glFrontFace(unsigned int);
 extern "C" __declspec(dllimport) void __stdcall glPolygonMode(unsigned int, unsigned int);
 
-extern int g_nTransformMode;        // 0x0078D494
-extern int g_nTransformCount;       // 0x00827FA8
-extern float g_aTransformMatrix[16];    // 0x008280A0
-extern float g_fRadToDeg;           // 0x00742EF8
-extern int g_bTransformParts;       // 0x0078E5F0
-extern int g_bShowWalkMesh;         // 0x007FBF5C, descriptive
-extern int g_nFlatTriangles;        // 0x00827FB0
-extern unsigned int g_eGLTexture2DB;    // 0x0078D458
-extern unsigned int g_eGLLighting;      // 0x0078D45C
-extern unsigned int g_eGLCW;        // 0x0073F2C0
-extern unsigned int g_eGLCCW;       // 0x0073F2C4
-extern unsigned int g_aPolygonModes[2]; // 0x0073F2E4
-extern unsigned int g_eGLFront;     // 0x0073F2EC
+#include "shared/globals.h"
 
 unsigned long* GetWalkMeshColors();         // 0x0046F200
 unsigned long* GetInverseWalkMeshColors();  // 0x0046F300

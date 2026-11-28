@@ -1,5 +1,5 @@
 // Creature subarea updates during movement; unnamed layout members are descriptive.
-struct Vector { float x, y, z; };
+#include "shared/vector.h"
 template <class T> class CExoArrayList {
 public:
     T* element;
@@ -30,13 +30,7 @@ public:
     }
 };
 class CSWSArea;
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24();
-    virtual CSWSArea* AsSWSArea();                   // 0x28
-};
+#include "shared/game_object.h"
 class CGameObjectArray {
 public:
     unsigned char GetGameObject(unsigned long oid, CGameObject** ppObject); // 0x004D8230
@@ -50,16 +44,9 @@ public:
     CGameObjectArray* GetObjectArray();              // 0x004AED70
     CSWSAreaOfEffectObject* GetAreaOfEffectByGameObjectID(unsigned long oid); // 0x004AE7D0
 };
-extern const unsigned long OBJECT_INVALID;          // 0x00746644
-extern int g_bSubAreaTriggerOverride;               // 0x007A1B54 (descriptive name)
-class CAppManager {
-public:
-    void* vptr;
-    void* m_pClient;
-    CServerExoApp* m_pServer;
-    CServerExoApp* GetServer() { return m_pServer; }
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/object_id.h"
+#include "shared/globals.h"
+#include "shared/app_manager.h"
 class CSWSArea {
 public:
     int IntersectingLineSegment(const Vector& from, const Vector& to,
@@ -86,7 +73,7 @@ int CSWSCreature::UpdateSubareasOnMoveTo(const Vector& from, const Vector& to, i
 {
     CExoArrayList<unsigned long> now;
     int changed = 0;
-    g_pAppManager->m_pServer->GetObjectArray();
+    g_pAppManager->m_pServerExoApp->GetObjectArray();
     CSWSArea* pArea = GetArea();
     if (!pArea)
         return 0;
@@ -114,7 +101,7 @@ int CSWSCreature::UpdateSubareasOnMoveTo(const Vector& from, const Vector& to, i
 int CSWSCreature::UpdateSubareasOnJumpPosition(const Vector& vPosition, unsigned long oidArea, int bTrigger)
 {
     CExoArrayList<unsigned long> now;
-    CGameObjectArray* pArray = g_pAppManager->m_pServer->GetObjectArray();
+    CGameObjectArray* pArray = g_pAppManager->m_pServerExoApp->GetObjectArray();
     if (g_bSubAreaTriggerOverride)
         bTrigger = 1;
     CSWSArea* pArea;
@@ -134,7 +121,7 @@ int CSWSCreature::UpdateSubareasOnJumpPosition(const Vector& vPosition, unsigned
         bInAny = 0;
     for (int i = 0; i < m_lAreaOfEffects.num; i++) {
         CSWSAreaOfEffectObject* pAoe =
-            g_pAppManager->GetServer()->GetAreaOfEffectByGameObjectID(m_lAreaOfEffects[i]);
+            g_pAppManager->GetServerExoApp()->GetAreaOfEffectByGameObjectID(m_lAreaOfEffects[i]);
         if (pAoe) {
             pAoe->JumpToPoint(pArea, vPosition);
             now.AddUnique(m_lAreaOfEffects[i]);

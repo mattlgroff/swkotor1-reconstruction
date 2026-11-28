@@ -28,7 +28,7 @@ int CSWCMessage::HandleServerToPlayerTriggerUpdate_Add()
   CResRef ref(model);
   trigger->LoadModel(ref,255,9);
  } else { CResRef ref("EMPTY"); trigger->LoadModel(ref,255,9); }
- trigger->SetObjectID(id);
+ trigger->SetId(id);
  trigger->SetArea(area);
  if (array->AddExternalObject(&id,trigger,1)!=GAME_OBJECT_VALID) return 0;
  CClientAIMaster* ai=g_pAppManager->m_pClientExoApp->GetClientAIMaster();

@@ -2,21 +2,9 @@
 // translation-unit-local layout: the force powers granted by equipped items,
 // best level per power group, appended to the radial action list.
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    int operator==(const char* s) const;            // 0x004060D0
-    CResRef operator=(const CResRef& r);            // 0x00406120
-};
+#include "shared/res_ref.h"
 
 class CSWCCreature;
 
@@ -125,15 +113,9 @@ public:
     CSWCItem* GetItemByGameObjectID(unsigned long oid);   // 0x005ED5A0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWSpell {
 public:
@@ -161,7 +143,6 @@ public:
     CSWSpellArray* m_pSpellArray;                   // 0x8c
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWCCreature {
 public:

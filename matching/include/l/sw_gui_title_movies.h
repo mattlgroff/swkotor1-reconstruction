@@ -7,27 +7,9 @@
 #ifndef L_SW_GUI_TITLE_MOVIES_H
 #define L_SW_GUI_TITLE_MOVIES_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* sString);                // 0x005E5A90
-    CExoString(const CExoString& sString);          // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    void __cdecl Format(char* sFormat, ...);        // 0x005E5680
-    int GetLength() const;                          // 0x005E5790
-    CExoString SubString(int nStart, int nCount) const; // 0x005E6270
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CExoString& s);                   // 0x00406D60
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 void* operator new(unsigned int nSize);
 void operator delete(void* p);
@@ -122,8 +104,7 @@ public:
     CExoAliasList* m_pAliasList;                    // 0x0c
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
-extern unsigned char g_nLiveFolderCount;            // 0x0073ECD2 (descriptive)
+#include "shared/globals.h"
 
 struct CSWGuiExtent {
     int left;
@@ -132,27 +113,14 @@ struct CSWGuiExtent {
     int height;
 };
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
-extern Vector g_vPazaakButtonHilight;               // 0x007A23B4
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
 
 class CTlkTable {
 public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 
 class C2DA {
 public:
@@ -173,7 +141,6 @@ public:
     CTwoDimArrays* m_p2DArrays;                     // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CClientOptions {
 public:
@@ -190,13 +157,8 @@ public:
     void StartCreditSequence(const Vector& vColor, const CExoString& sMovie);  // 0x005EE1C0
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWGuiControl;
 class CSWGuiPanel;
@@ -316,11 +278,7 @@ public:
 // vtable 0x0073e658.
 class CSWGuiButton : public CSWGuiNavigable {
 public:
-#ifdef L_GUI_BUTTON_INLINE_CTOR
     CSWGuiButton() {}
-#else
-    CSWGuiButton();                                 // 0x0041C0F0
-#endif
     virtual ~CSWGuiButton();                        // 0x00419DA0
     virtual void CopyStyle(const CSWGuiExtent& extent, CSWGuiButton* pFrom); // 0x98
     CSWGuiBorder m_cBorder;                         // 0x6c

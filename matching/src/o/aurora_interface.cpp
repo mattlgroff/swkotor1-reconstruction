@@ -36,7 +36,7 @@ void CAuroraInterface::ReleaseModelInternal(CAuroraModel* pModel)
 // FUNCTION: SWKOTOR 0x0070E130
 CAuroraTexture* CAuroraInterface::GetTextureInternal(const CExoString& sName)
 {
-    CAuroraTexture* pTexture = new CAuroraTexture(CResRef(sName), 0);
+    CAuroraTexture* pTexture = new CAuroraTexture(sName, 0);
     if (pTexture && pTexture->m_pRes && pTexture->m_pRes->GetDemands() > 0) {
         CResHelperInfo* pInfo = pTexture->GetPtrToResHelperInfo();
         if (pInfo && pInfo->m_nResType == 3 && pInfo->m_pResHelper) {
@@ -60,7 +60,7 @@ CAuroraTexture* CAuroraInterface::GetTextureInternal(const CExoString& sName)
 // FUNCTION: SWKOTOR 0x0070E220
 CAurora16BitTexture* CAuroraInterface::Get16BitTextureInternal(const CExoString& sName)
 {
-    CAurora16BitTexture* pTexture = new CAurora16BitTexture(CResRef(sName), 0);
+    CAurora16BitTexture* pTexture = new CAurora16BitTexture(sName, 0);
     if (pTexture && pTexture->m_pRes && pTexture->m_pRes->GetDemands() > 0) {
         CResHelperInfo* pInfo = pTexture->GetPtrToResHelperInfo();
         if (pInfo && pInfo->m_nResType == 2059 && pInfo->m_pResHelper) {
@@ -84,7 +84,7 @@ CAurora16BitTexture* CAuroraInterface::Get16BitTextureInternal(const CExoString&
 // FUNCTION: SWKOTOR 0x0070E310
 CAuroraLayeredTexture* CAuroraInterface::GetLayeredTextureInternal(const CExoString& sName)
 {
-    CAuroraLayeredTexture* pTexture = new CAuroraLayeredTexture(CResRef(sName), 0);
+    CAuroraLayeredTexture* pTexture = new CAuroraLayeredTexture(sName, 0);
     if (pTexture && pTexture->m_pRes && pTexture->m_pRes->GetDemands() > 0) {
         CResHelperInfo* pInfo = pTexture->GetPtrToResHelperInfo();
         if (pInfo && pInfo->m_nResType == 6 && pInfo->m_pResHelper) {
@@ -108,7 +108,7 @@ CAuroraLayeredTexture* CAuroraInterface::GetLayeredTextureInternal(const CExoStr
 // FUNCTION: SWKOTOR 0x0070E400
 CAuroraCompressedTexture* CAuroraInterface::GetCompressedTextureInternal(const CExoString& sName)
 {
-    CAuroraCompressedTexture* pTexture = new CAuroraCompressedTexture(CResRef(sName), 0);
+    CAuroraCompressedTexture* pTexture = new CAuroraCompressedTexture(sName, 0);
     if (pTexture && pTexture->m_pRes && pTexture->m_pRes->GetDemands() > 0) {
         CResHelperInfo* pInfo = pTexture->GetPtrToResHelperInfo();
         if (pInfo && pInfo->m_nResType == 2033 && pInfo->m_pResHelper) {
@@ -132,7 +132,7 @@ CAuroraCompressedTexture* CAuroraInterface::GetCompressedTextureInternal(const C
 // FUNCTION: SWKOTOR 0x0070E4F0
 CAuroraProcessedTexture* CAuroraInterface::GetProcessedTextureInternal(const CExoString& sName)
 {
-    CAuroraProcessedTexture* pTexture = new CAuroraProcessedTexture(CResRef(sName), 0);
+    CAuroraProcessedTexture* pTexture = new CAuroraProcessedTexture(sName, 0);
     if (pTexture && pTexture->m_pRes && pTexture->m_pRes->GetDemands() > 0) {
         CResHelperInfo* pInfo = pTexture->GetPtrToResHelperInfo();
         if (pInfo && pInfo->m_nResType == 3007 && pInfo->m_pResHelper) {
@@ -156,7 +156,7 @@ CAuroraProcessedTexture* CAuroraInterface::GetProcessedTextureInternal(const CEx
 // FUNCTION: SWKOTOR 0x0070E5E0
 CAuroraTXI* CAuroraInterface::GetTXIInternal(const CExoString& sName)
 {
-    CAuroraTXI* pTXI = new CAuroraTXI(CResRef(sName), 0);
+    CAuroraTXI* pTXI = new CAuroraTXI(sName, 0);
     if (pTXI && pTXI->m_pRes && pTXI->m_pRes->GetDemands() > 0) {
         CResHelperInfo* pInfo = pTXI->GetPtrToResHelperInfo();
         if (pInfo && pInfo->m_nResType == 2022 && pInfo->m_pResHelper) {
@@ -180,7 +180,7 @@ CAuroraTXI* CAuroraInterface::GetTXIInternal(const CExoString& sName)
 // FUNCTION: SWKOTOR 0x0070E6D0
 CAuroraVisibility* CAuroraInterface::GetVisibilityInternal(const CExoString& sName)
 {
-    CAuroraVisibility* pVisibility = new CAuroraVisibility(CResRef(sName), 0);
+    CAuroraVisibility* pVisibility = new CAuroraVisibility(sName, 0);
     if (pVisibility && pVisibility->m_pRes && pVisibility->m_pRes->GetDemands() > 0) {
         CResHelperInfo* pInfo = pVisibility->GetPtrToResHelperInfo();
         if (pInfo && pInfo->m_nResType == 3001 && pInfo->m_pResHelper) {
@@ -204,7 +204,7 @@ CAuroraVisibility* CAuroraInterface::GetVisibilityInternal(const CExoString& sNa
 // FUNCTION: SWKOTOR 0x0070E7C0
 CAuroraModelX* CAuroraInterface::GetModelXInternal(const CExoString& sName)
 {
-    CAuroraModelX* pModelX = new CAuroraModelX(CResRef(sName), 0);
+    CAuroraModelX* pModelX = new CAuroraModelX(sName, 0);
     if (pModelX && pModelX->m_pRes && pModelX->m_pRes->GetDemands() > 0) {
         CResHelperInfo* pInfo = pModelX->GetPtrToResHelperInfo();
         if (pInfo && pInfo->m_nResType == 3008 && pInfo->m_pResHelper) {

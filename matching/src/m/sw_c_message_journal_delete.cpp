@@ -12,13 +12,9 @@ public:
     CSWCWorldJournal* GetWorldJournal();                // 0x005ED330
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                     // +0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                     // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWCMessage {
 public:

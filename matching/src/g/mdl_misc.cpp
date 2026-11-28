@@ -11,9 +11,7 @@ char* MdlNode::GetName()
 }
 
 // Scratch lists shared by the skin post-process.
-extern CExoArrayList<int> g_lSkinScratch0;      // 0x007a8a70
-extern CExoArrayList<int> g_lSkinScratch1;      // 0x007a8a7c
-extern CExoArrayList<int> g_lSkinScratch2;      // 0x007a8a88
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0043b350
 void MdlNodeSkin::InternalPostProcess()

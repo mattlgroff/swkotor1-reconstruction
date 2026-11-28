@@ -1,10 +1,6 @@
 // Send a system administration command from the client to the server.
 #include <string.h>
-class CExoString {
-public:
-    int GetLength() const; // 0x005E5790
-    char* CStr() const;    // 0x005E5670
-};
+#include "shared/exo_string.h"
 class CNetLayer {
 public:
     int SendMessageToPlayer(unsigned long player, unsigned char* message,
@@ -18,9 +14,8 @@ public:
     virtual void Slot0C();
     virtual CNetLayer* GetNetLayer(); // vtable +0x10
 };
-class CAppManager { public: char pad_0x00[4]; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager; // 0x007A39FC
-extern unsigned long PLAYERID_SERVER; // 0x0074C528
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 class CClientMsgSysAdmin {
 public:
     void SendSysAdminToServerMessage(const CExoString* text);

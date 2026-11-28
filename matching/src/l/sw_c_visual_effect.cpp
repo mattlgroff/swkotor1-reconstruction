@@ -4,7 +4,7 @@
 
 #include "l/sw_c_visual_effect.h"
 
-extern short g_nSpeedBlurCount;                     // 0x00833BCC
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x006A0480
 int CSWCVisualEffectOnObject::IsReady()
@@ -437,7 +437,7 @@ void CSWCVisualEffectOnObject::ApplyTexture(unsigned short nEffect)
     default:
         return;
     }
-    pObject->ReplaceTexture(CResRef(sTexture), 0.02f);
+    pObject->ReplaceTexture(sTexture, 0.02f);
     CSWCCreature* pCreature = pObject->AsSWCCreature();
     if (!pCreature) {
         return;
@@ -447,7 +447,7 @@ void CSWCVisualEffectOnObject::ApplyTexture(unsigned short nEffect)
     if (!pItem) {
         return;
     }
-    pItem->ReplaceTexture(CResRef(sTexture), 0.02f);
+    pItem->ReplaceTexture(sTexture, 0.02f);
 }
 
 // FUNCTION: SWKOTOR 0x006A1650

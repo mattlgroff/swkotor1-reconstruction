@@ -13,31 +13,11 @@ extern "C" void* __cdecl memset(void* p, int c, unsigned int n);
 
 #define OBJECT_INVALID 0x7f000000
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString operator+(const CExoString& s) const;  // 0x005E5D10
-    int GetLength() const;                          // 0x005E5790
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ED0
-    CResRef(const CExoString& s);                   // 0x00406D60
-};
+#include "shared/res_ref.h"
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 struct Quaternion {
     float w, x, y, z;
@@ -49,12 +29,7 @@ Quaternion EulerToQuaternion(float fYaw, float fPitch, float fRoll);  // 0x004AC
 Quaternion RotationArc(Vector vFrom, Vector vTo);                   // 0x004AB630
 Quaternion operator*(const Quaternion& a, const Quaternion& b);     // 0x004A9AC0
 
-extern const float g_fZero;                         // 0x0073D700
-extern unsigned char g_nGender;                     // 0x0073ECD0
-extern const unsigned char OBJECT_TYPE_ITEM;        // 0x00746635
-extern const unsigned char g_nObjectArraySuccess;   // 0x0074666C
-extern int g_bItemGroundAlign;                      // 0x00833A98 (descriptive)
-extern int g_bHitStatic;                            // 0x007FBF4C
+#include "shared/globals.h"
 
 struct __declspec(align(8)) STR_RES {
     CExoString m_sText;                             // 0x00
@@ -66,19 +41,13 @@ class CTlkTable {
 public:
     int Fetch(unsigned long nStrRef, STR_RES& res, unsigned char nGender);  // 0x0041E550
 };
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
 
 // Collaborators ----------------------------------------------------------
 
 class CSWCObject;
 class CSWItem;
 
-class CSWCItemProperty {
-public:
-    unsigned short m_nPropertyType;
-    unsigned short m_nSubtype;
-    char pad_0x4[0x18];
-};
+#include "shared/swc_item_property.h"
 
 class CAurObject {
 public:
@@ -147,7 +116,6 @@ public:
     void PlaySoundEffect(const CResRef& cRes, Vector vPos, int a, unsigned char nGroup,
                          int b, int c, int d, int e);   // 0x005D5E10
 };
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class CSWBaseItem {
 public:
@@ -171,7 +139,6 @@ public:
     char pad_0x0[0x34];
     CSWBaseItemArray* m_pBaseItemArray;             // 0x34
 };
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWCArea {
 public:
@@ -240,13 +207,7 @@ public:
     float ComputeHeight(void* pSurface, Vector* pPosition, int nFlags);  // 0x004AEA50
 };
 
-class CAppManager {
-public:
-    void* m_pVtable;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
 
 // Item classes -----------------------------------------------------------
 

@@ -76,19 +76,12 @@ public:
     unsigned long m_nAltKey;                        // 0x30
 };
 
-class CExoInput {
-public:
-    CExoInputEvent* GetEvent(unsigned long nId, int nClass);    // 0x005DF4C0
-    int GetLastCapturedKeyboardKey();               // 0x005DF630
-    void SetCaptureKeyboardKeys(int bCapture);      // 0x005DF720
-};
+#include "shared/exo_input.h"
 
-extern CExoInput* g_pExoInput;                      // 0x007A39E4
+#include "shared/globals.h"
 
 // CExoIni is declared in l/sw_gui_options_in_game.h.
 
-extern const unsigned long g_nKeyMapKeyBase;        // 0x0074D3D8
-extern const unsigned long g_nKeyMapEscapeKey;      // 0x0074D45C
 
 class CSWGuiInGameOptKeyMappings : public CSWGuiPanel {
 public:

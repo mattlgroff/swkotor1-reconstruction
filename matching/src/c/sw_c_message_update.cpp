@@ -3,39 +3,16 @@
 
 #define OBJECT_INVALID 0x7f000000
 
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
-extern const unsigned char OBJECT_TYPE_ITEM;        // 0x00746635
-extern const unsigned char OBJECT_TYPE_TRIGGER;     // 0x00746636
-extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
-extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
-extern const unsigned char OBJECT_TYPE_AREA_OF_EFFECT;  // 0x0074663A
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
+#include "shared/globals.h"
+#include "shared/globals.h"
 
-extern int g_bCameraFollowFlag;                     // 0x007A2484
-extern int g_bModuleLoadEnabled;                    // 0x008328FC
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWCItem;
 class CSWCPlaceable;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual void JoinParty();                       // 0x2c
-    virtual void v30();
-    virtual CSWCItem* AsSWCItem();                  // 0x34
-    virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48();
-    virtual CSWCPlaceable* AsSWCPlaceable();        // 0x4c
-
-    char pad_0x4[0x4];
-    unsigned char m_nObjectType;                    // 0x08
-};
+#include "shared/game_object.h"
 
 class CGameObjectArray {
 public:
@@ -173,7 +150,6 @@ public:
     CSWBaseItemArray* GetBaseItemArray() { return m_pBaseItems; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 int GetIsBeam(unsigned short nEffect);              // 0x004CA960
 
@@ -263,17 +239,8 @@ public:
     CSWPartyTable* GetPartyTable();                 // 0x004AEE70
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;                             // 0x00
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWCMessage {
 public:
@@ -687,7 +654,7 @@ int CSWCMessage::HandleServerToPlayerParty(unsigned char nType)
             unsigned long oid = ReadOBJECTIDClient();
             CGameObject* pObject;
             if (pArray->GetGameObject(oid, &pObject) == GAME_OBJECT_VALID) {
-                pObject->JoinParty();
+                pObject->AsSWCCreature();
             }
         }
         break;

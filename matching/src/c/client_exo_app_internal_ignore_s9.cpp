@@ -24,34 +24,17 @@ class CSWCCreature;
 
 class CItemModel;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-    virtual void v30();
-    virtual CItemModel* GetItemModel();             // 0x34
-
-    unsigned long m_idSelf;                         // 0x04
-    unsigned char m_nObjectType;                    // 0x08
-};
+#include "shared/game_object.h"
 
 class CGameObjectArray {
 public:
     unsigned char GetGameObject(unsigned long id, CGameObject** ppObject);  // 0x004D8230
 };
 
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
-extern const unsigned char OBJECT_TYPE_ITEM;        // 0x00746635
+#include "shared/globals.h"
 
 class CSWCObject : public CGameObject {
 public:
-    virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
     virtual void v90(); virtual void v94();
@@ -78,11 +61,7 @@ public:
     virtual CGob* FindPart(unsigned char nPart, int bRecurse);  // 0x98
 };
 
-class CSWItemBase {
-public:
-    virtual void v00();
-    char pad_0x4[0xc];
-};
+#include "shared/sw_item_base.h"
 
 class CSWCItem : public CSWItemBase, public CItemGob {
 };
@@ -101,15 +80,8 @@ public:
     CSWCItem* GetItemByGameObjectID(unsigned long oid);     // 0x005ED5A0
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CClientExoAppInternal {
 public:
@@ -173,7 +145,7 @@ void CClientExoAppInternal::AddItemModelDirectlyToIgnoreList(unsigned long oid, 
     CGameObject* pObject = 0;
     if (m_pGameObjectArray->GetGameObject(oid, &pObject) == GAME_OBJECT_VALID && pObject &&
         pObject->m_nObjectType == OBJECT_TYPE_ITEM) {
-        CItemModel* pModel = pObject->GetItemModel();
+        CItemModel* pModel = (CItemModel*)pObject->AsSWCItem();
         if (pModel) {
             for (unsigned char nPart = 0xff; nPart >= 0xfb; nPart--) {
                 CGob* pGob = pModel->FindPart(nPart, 1);

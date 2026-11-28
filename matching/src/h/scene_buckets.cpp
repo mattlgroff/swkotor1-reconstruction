@@ -77,13 +77,7 @@ void CExoArrayList<T>::Allocate(int n)
         delete[] pOld;
 }
 
-struct Vector {
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
-
+#include "shared/vector.h"
 
 inline Vector operator-(const Vector& a, const Vector& b)
 {
@@ -208,7 +202,7 @@ public:
     void RenderGrassPolys(unsigned int material, Vector* eye, void* wind); // 0x004A6D30
 };
 
-class RenderCamera {
+class Camera {
 public:
     char pad_0x0[0x7c];
     Vector m_vPosition;                         // +0x7c
@@ -255,7 +249,6 @@ struct VertexPC {
 
 void DrawVerticesPC(int nMode, VertexPC* pVertices, int nCount);   // 0x00431F70
 unsigned char AurGrassMaterialInUse(unsigned int material); // 0x004A6840
-
 
 struct GobModel {
     char pad_0x0[0x50];
@@ -345,29 +338,12 @@ public:
 };
 
 // Scene light manager interface (Scene +0x80).
-class SceneLights {
-public:
-    virtual void PrioritizeLights(Vector* pos, int n);          // +0x00
-    virtual void V04();
-    virtual void ResetLights();                                 // +0x08, descriptive
-    virtual void V0C();
-    virtual void V10(); virtual void V14(); virtual void V18(); virtual void V1C();
-    // MSVC places overloaded virtuals in reverse declaration order.
-    virtual void EnableHighestPriorityLights(int n, int mask);  // +0x24
-    virtual void EnableHighestPriorityLights(int n);            // +0x20
-    virtual void AddFocusLight(int n, Vector pos);             // +0x28, descriptive
-    virtual void V2C(); virtual void V30(); virtual void V34();
-    virtual void SetupLightsForThisGob(Vector* pos, float radius); // +0x38
-    CExoArrayList<Light*>* GetLights(int nType);                // 0x004A4B10
-    char pad_0x4[0xdc];
-    int m_nE0;                                  // +0xe0
-    char pad_0xe4[8];
-    int m_nEC;                                  // +0xec
-};
+#include "shared/scene_lights.h"
 
 class Scene;
 class Gob;
 class Light;
+class CAurTexture;
 
 class WindManager {
 public:
@@ -477,7 +453,7 @@ public:
     int m_bFrameBufferEffects;                  // +0xd4, descriptive
     char pad_0xd8[0xc];
     void* m_pFilmNoiseTexture;                  // +0xe4
-    void* m_pDistortionTexture;                 // +0xe8
+    CAurTexture* m_pDistortionTexture;               // +0xe8
     char pad_0xec[0xc];
     SceneView m_View;                           // +0xf8, descriptive
     char pad_0xfc[0x270 - 0xfc];
@@ -490,115 +466,18 @@ public:
     __forceinline void DoFadePart(Part* pPart, CExoArrayList<MeshLightmap*>& lLightmaps, float& fAlpha);
 };
 
-extern unsigned int g_nGLStencilTest;           // 0x0078D470
-extern unsigned int g_nGLBlend;                 // 0x0078D448
-extern unsigned int g_nGLKeep;                  // 0x0073F2C8
-extern unsigned int g_nGLReplace;               // 0x0073F2D0
-extern unsigned int g_nGLAlways;                // 0x0073F2BC
-extern void (*g_pfnBlurSetup)();                // 0x0078E39C, descriptive
-extern int g_nBlurBucketCount;                  // 0x007B92EC, descriptive
-extern CExoArrayList<Gob*> g_l7FBFC0;           // 0x007FBFC0 distortion bucket
-extern CExoArrayList<Gob*> g_l7FBFF0;           // 0x007FBFF0 light saber bucket
-extern CExoArrayList<Gob*> g_l7FBF90;           // 0x007FBF90 blur bucket
+#include "shared/globals.h"
 
-typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int texture);
-
-extern int g_bRenderBins;                       // 0x0078E3AC, descriptive
-extern unsigned int g_nGLCullFace;              // 0x0078D454
-extern unsigned int g_aBlendFactors[];          // 0x0073F270
-extern PFNCLIENTACTIVETEXTURE glClientActiveTextureARB; // 0x007BB6B0
-extern unsigned int g_nActiveTextureUnit;       // 0x007A6898
-extern int g_bBlackFog;                         // 0x008305E0
-extern unsigned int g_eColorArray;              // 0x0073F3A0
-extern unsigned int g_eAlphaFunc;               // 0x0073F2B0
-extern float g_fBinAlphaRef;                    // 0x0078E3B0, descriptive
-extern float g_fSceneAlphaRef;                  // 0x007B92E8 (bss), descriptive; not g_fAlphaRef 0x00798A90
-extern int g_nGrassMaterials;                   // 0x00831E48, descriptive
-extern CExoArrayList<TriangleBin*> g_l80AA68;   // 0x0080AA68 triangle bins
-extern RenderCamera* g_pRenderCamera;
+#include "shared/gl_ext.h"
 // File-scope in the original scene unit: MSVC knows no pointer aliases
 // them, so it delays the high-dword stores past member loads.
 static __int64 g_nAnimStartTime;               // 0x007B9298
 static __int64 g_nAnimEndTime;                  // 0x007B9288
-extern float g_fMeshBucketSeconds;              // 0x007B92B0, descriptive
-extern float g_fBinBucketSeconds;               // 0x007B92B4, descriptive
-extern unsigned int g_eGLFront;                 // 0x0073F2EC
-extern unsigned int g_eGLAmbient;               // 0x0073F2FC
-extern unsigned int g_eGLDiffuse;               // 0x0073F300
-extern unsigned int g_eGLEmission;              // 0x0073F304
-extern int g_bRenderEmitters;                   // 0x0078E3D8, descriptive
-extern CExoArrayList<PartEmitter*> g_l7FBF78;   // 0x007FBF78 emitter bucket
-extern float g_fFrameTime;                      // 0x0078E574, descriptive
-extern Scene* g_pRenderScene;                   // 0x007B935C, descriptive
 static __int64 g_nRenderStartTime;              // 0x007B9280, descriptive
 static __int64 g_nRenderEndTime;                // 0x007B9290, descriptive
-extern float g_fRenderSeconds;                  // 0x007B92D4, descriptive
-extern int g_bAnimCulling;                      // 0x0078E3B8
-extern unsigned char g_bAnimVisibleOnly;        // 0x007B92F4
-extern int g_nRenderFrame3;                     // 0x0078E3F8, descriptive
-extern int g_bRenderScenes;                     // 0x0078E3F4, descriptive
-extern int g_n7B92E0;                           // 0x007B92E0
-extern int g_n7B9310;                           // 0x007B9310
-extern Scene* g_pAnimatingScene;                // 0x007B92A0
-extern unsigned int g_eGLLequal;                // 0x0073F2AC
-extern unsigned int g_nGLAlphaTest;             // 0x0078D44C
-extern int g_nStatA;                            // 0x007B9340, descriptive
-extern int g_nStatB;                            // 0x007B9344, descriptive
-extern int g_nBindCountPeak;                    // 0x007A46B0
-extern int g_nStatTotalPeak;                    // 0x007B9348, descriptive
-extern int g_nStatAPeak;                        // 0x007B9338, descriptive
-extern int g_nStatBPeak;                        // 0x007B933C, descriptive
-typedef void (__stdcall* PFNPROGRAMPARAMETER)(unsigned int target, unsigned int index,
-                                              float x, float y, float z, float w);
-extern int g_bARBVertexProgram;                 // 0x0078E5EC
-extern PFNPROGRAMPARAMETER g_pfnProgramEnvParameter4fARB;  // 0x007BB850
-extern PFNPROGRAMPARAMETER g_pfnProgramParameter4fNV;      // 0x007BB7AC
-extern int g_bRenderStatic;                     // 0x0078E400, descriptive
-extern int g_bRenderDynamic;                    // 0x0078E3FC, descriptive
-extern int g_bStencilTriggers;                  // 0x007B92E4, descriptive
-extern float g_fTriggerSeconds;                 // 0x007B92B8, descriptive
-extern float g_fShadowSeconds;                  // 0x007B92BC, descriptive
-extern float g_fDynamicSeconds;                 // 0x007B92C4, descriptive
-extern float g_fPathSeconds;                    // 0x007B92C0, descriptive
-extern float g_fEmitterSeconds;                 // 0x007B92C8, descriptive
-extern float g_fPostSeconds;                    // 0x007B92CC, descriptive
-extern void* g_pDistortionTexture;              // 0x007A68D8
-extern unsigned int g_nGLFog;                   // 0x0078D450
-extern int g_bSoftShadows;                      // 0x0078E420
-extern unsigned char g_bSoftShadowsAllowed;     // 0x0078DAE9
-extern int g_bGobBucketFlag;                    // 0x007B92FC, descriptive
-extern CExoArrayList<Gob*> g_l7FBFCC;           // 0x007FBFCC gob bucket
-extern int g_bGobDepthToggle;                   // 0x007B92F0, descriptive
-extern int g_bFocusLights;                      // 0x007B9300, descriptive
-extern int g_bRenderGobs;                       // 0x0078E3C4, descriptive
-extern int g_bShadowDistanceCheck;              // 0x0078E3CC, descriptive
-extern float g_fShadowDistance;                 // 0x0078E3C8, descriptive
-extern int g_bStencilDynamic;                   // 0x0078E3A8, descriptive
-extern int g_bRenderFlat;                       // 0x0078E614
-extern unsigned int g_eTexCoordArray;           // 0x0073F398
-extern unsigned int g_eVertexArray;             // 0x0073F3A4
-extern unsigned int g_eNormalArray;             // 0x0073F39C
-extern unsigned int g_nGLLighting;              // 0x0078D474
-extern unsigned int g_nGLTexture2D;             // 0x0078D458
-extern unsigned int g_nGLDepthTest;             // 0x0078D45C
-extern CExoArrayList<Part*> g_lAllMeshParts;     // 0x007FBFB4
-extern CExoArrayList<Part*> g_lTransparentParts; // 0x00827F40
-extern CExoArrayList<Part*> g_aMeshBuckets[];    // 0x008194E0
-extern CExoArrayList<Part*> g_aFadeBuckets[];    // 0x0080AA80
 
-extern unsigned int g_eGLFogStart;              // 0x0078D484
-extern unsigned int g_eGLFogEnd;                // 0x0078D488
-extern unsigned int g_eGLFogDensity;            // 0x0078D48C
-extern unsigned int g_eGLFogColor;              // 0x0078D490
-extern unsigned int g_eGLEmissionMode;          // 0x0073F30C
-extern const int g_nMeshLightmapReset;          // 0x00740A70, descriptive
+
 CExoArrayList<int>* AurTextureGetOrdering();     // 0x00421970
-extern int g_bVisibilityTest;                   // 0x007B92F8, descriptive
-extern float g_fVisibilityRatio;                // 0x0078E3C0, descriptive
-extern float g_fVisibilityInterval;             // 0x0078E3BC, descriptive
-extern float g_fMinProjectionRadius;            // 0x0078E3D4, descriptive
-extern CExoArrayList<Part*> g_l80AA74;          // 0x0080AA74 trigger parts           // 0x007BB4E8
-extern unsigned char g_bTextureStateDirty;      // 0x0078E330, descriptive
 
 // FUNCTION: SWKOTOR 0x00450150
 void Scene::DoBinBucket()
@@ -653,9 +532,9 @@ void Scene::RenderSinglePass()
         AurSetVertexProgramParameter(0x5b, m[1], m[4], m[7], pos.y);
         AurSetVertexProgramParameter(0x5a, m[2], m[5], m[8], pos.z);
         if (g_bARBVertexProgram)
-            g_pfnProgramEnvParameter4fARB(0x8620, 0x59, 0.0f, 0.0f, 0.0f, 1.0f);
+            glProgramEnvParameter4fARB(0x8620, 0x59, 0.0f, 0.0f, 0.0f, 1.0f);
         else
-            g_pfnProgramParameter4fNV(0x8620, 0x59, 0.0f, 0.0f, 0.0f, 1.0f);
+            glProgramParameter4fNV(0x8620, 0x59, 0.0f, 0.0f, 0.0f, 1.0f);
     }
     DoFog();
     glEnable(g_nGLBlend);

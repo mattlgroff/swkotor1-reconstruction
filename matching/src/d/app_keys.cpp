@@ -31,31 +31,16 @@ public:
     void TurnOffKeyboardModal();                    // 0x005eda20
 };
 
-class CAppManager {
-public:
-    void* m_pLargeTempBuffer;                       // 0x00
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-class CExoInput {
-public:
-    void ClearEvents();                             // 0x005df4e0
-    void KeyboardModeOn();                          // 0x005df520
-    void KeyboardModeOff();                         // 0x005df530
-    int GetKeyboardMode();                          // 0x005ed700 (folded getter)
-};
+#include "shared/exo_input.h"
 
 class CSWGuiManager {
 public:
     int SetFocusControl(int nKey);                  // 0x0040b2a0
 };
 
-extern CAppManager* g_pAppManager;                  // 0x007a39fc
-extern CExoInput* g_pExoInput;                      // 0x007a39e4
-extern CSWGuiManager* g_pGuiManager;                // 0x007a39f4
-extern int g_bShowFrameInfo;                        // 0x007a3a40
-extern int g_bFrameInfoTextInput;                   // 0x007a3cb4
-extern int g_bSwapMouseButtons;                     // 0x008338f0
+#include "shared/globals.h"
 
 void __cdecl HandleFrameInfoChar(char cChar);         // 0x00401f00
 

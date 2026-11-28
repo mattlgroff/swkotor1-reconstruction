@@ -1,29 +1,11 @@
 // CSWSStore and CSWSWaypoint lifetime / area glue
 // (b005c_f2_journal_store, 0x005C6AB0-0x005C8630).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const CExoString &s);
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    ~CExoLocString();
-    void *m_pList;
-    void *m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CResStruct;
 
@@ -36,13 +18,7 @@ public:
                                 const char *szField);
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CSWSItem;
 
@@ -85,20 +61,9 @@ public:
     CSWSItem *GetItemByGameObjectID(unsigned long id);
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
-extern const unsigned char g_nObjectTypeStore;     // 0x0074663D
-extern const unsigned char g_nObjectTypeWaypoint;  // 0x0074663B
-extern const unsigned long g_oidInvalid;
-extern const unsigned long EVENT_SIGNAL_EVENT;     // 0x007441DC
-extern const unsigned long EVENT_TIMED_EVENT;      // 0x007441B8
-extern const int EVENT_AI_LATER;                   // 0x007441E0
+#include "shared/globals.h"
 
 class CVirtualMachine {
 public:
@@ -106,7 +71,6 @@ public:
     int RunScriptSituation(void *pScript, unsigned long oid, int bFlag);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
 
 class CScriptEvent {
 public:

@@ -1,18 +1,9 @@
 // CSWCPlayer constructor (client player record, created by
 // CSWCMessage::HandleServerToPlayerUpdate_PlayerInfo).
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWPortrait {
 public:

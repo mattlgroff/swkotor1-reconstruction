@@ -11,19 +11,10 @@ public:
     void SetSoundEffectVolume(float fVolume);       // 0x005D5CD0
     void SetDialogVolume(float fVolume);            // 0x005D5D50
 };
-extern CExoSound* g_pExoSound; // 0x007A39EC
 
-class CRenderWindow {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20();
-    virtual void SetGamma(float fGamma, int bApply); // 0x24
-};
-extern CRenderWindow* g_pRenderWindow; // 0x007A39F8
+#include "shared/render_window.h"
+#include "shared/globals.h"
 
-extern Vector g_vDifficultyExitColor; // 0x007A23B4 (enabled text)
-extern Vector g_vKeyMapLockedTextColor; // 0x007A2408 (disabled text)
 
 // FUNCTION: SWKOTOR 0x006DDC80
 void CSWGuiOptionsSound::SetDescription(unsigned long nStrRef)

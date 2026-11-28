@@ -2,7 +2,7 @@
 // apart from SetActivity, which cl would otherwise inline here; Rest too.
 #include "a/sws_creature.h"
 
-extern const unsigned long EVENT_0x7441DC;      // 0x007441DC (placeholder name)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004F87D0
 void CSWSCreature::ActivityManager(int nAction)

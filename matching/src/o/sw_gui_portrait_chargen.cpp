@@ -192,7 +192,7 @@ void CSWGuiPortraitCharGen::HandleInputEvent(int nEvent, int bDown)
 // FUNCTION: SWKOTOR 0x006F90F0
 void CSWGuiPortraitCharGen::GetPortraitsList(int nGender)
 {
-    C2DA* pTable = new C2DA(CResRef("PORTRAITS"), 0);
+    C2DA* pTable = new C2DA("PORTRAITS", 0);
     pTable->Load2DArray();
     int nRows = pTable->m_nNumRows;
     CExoString sBaseResRef;

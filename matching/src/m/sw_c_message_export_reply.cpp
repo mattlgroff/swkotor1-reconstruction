@@ -1,23 +1,9 @@
 // CSWCMessage::HandleServerToPlayerExportReply (nwchandlemessage.o): writes
 // an exported character to the local vault and reports the result.
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct STR_RES {
     CExoString m_sText;                             // 0x00
@@ -59,14 +45,9 @@ public:
     CClientExoAppInternal* GetInternal() { return m_pInternal; }
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWCMessage {
 public:

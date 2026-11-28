@@ -7,11 +7,7 @@
 #include "b/global_variable_table.h"
 #include <math.h>
 
-extern const unsigned long OBJECT_INVALID_ID;               // 0x00746644
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633
-extern const unsigned char OBJECT_TYPE_TRIGGER;             // 0x00746636
-extern const unsigned char OBJECT_TYPE_PLACEABLE;           // 0x00746638
-extern const unsigned char OBJECT_TYPE_DOOR;                // 0x00746639
+#include "shared/globals.h"
 
 // Trapped flag of triggers (TU-local view).
 struct CSWSTriggerTrapView {

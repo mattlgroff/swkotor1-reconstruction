@@ -2,21 +2,13 @@
 // register allocation (pProperty in edi, reloaded at the latch), frame (sub esp,8)
 // and the reloaded m_nType compare differ. The bitfield m_nSubType:3 is right.
 
-extern int EFFECT_TYPE_DAMAGE_INCREASE;            // 0x007466B0
-extern unsigned short SUBTYPE_EQUIPPED;            // 0x007473BC
-extern int ITEM_SLOT_DAMAGE_TYPE_RIGHT_WEAPON;     // 0x007468E4
-extern int ITEM_SLOT_DAMAGE_TYPE_LEFT_WEAPON;      // 0x007468E8
-extern int ITEM_SLOT_DAMAGE_TYPE_CLAW1;            // 0x007468EC
-extern int ITEM_SLOT_DAMAGE_TYPE_CLAW2;            // 0x007468F0
-extern int ITEM_SLOT_DAMAGE_TYPE_CLAW3;            // 0x007468F4
-extern int ITEM_SLOT_DAMAGE_TYPE_ONHAND;           // 0x007468F8
+#include "shared/globals.h"
 
 class CSWRules {
 public:
     char pad_0x0[0xaa];
     unsigned char m_nDifficultyRacialType;  // 0xaa
 };
-extern CSWRules* g_pRules;
 
 class CGameEffect {
 public:

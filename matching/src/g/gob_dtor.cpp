@@ -21,10 +21,7 @@ class Gob;
 class Part;
 class Scene;
 class AnimRun;
-class GobEventHandler {
-public:
-    char szEvent[0x20];
-};
+#include "shared/gob_event_handler.h"
 
 class Scene {
 public:
@@ -48,8 +45,7 @@ public:
     virtual ~Deletable();
 };
 
-extern int g_bKeepModels;                   // 0x007a8a04
-extern int g_nGobCount;                     // 0x007a8a18
+#include "shared/globals.h"
 
 class MaxTree {
 public:
@@ -143,7 +139,6 @@ public:
     }
 };
 
-extern CExoArrayList<Gob*> g_lGobs;         // 0x007a8a58
 
 static inline void ReleaseModel(Model* pModel)
 {

@@ -7,16 +7,11 @@
 
 #define OBJECT_INVALID 0x7f000000
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
 Vector NormalizeVector(const Vector& v);            // 0x004AB180
 
-extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
+#include "shared/globals.h"
 
 struct Quaternion {
     float w, x, y, z;
@@ -28,53 +23,66 @@ class CSWCPlaceable;
 class CSWCItem;
 class CGob;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10();
-    virtual int AsSWCDoor();                        // 0x14
-    virtual void v18(); virtual void v1C(); virtual void v20(); virtual void v24();
-    virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
-    virtual CSWCItem* AsSWCItem();                  // 0x34
-    virtual void v38();
-    virtual int AsSWCTrigger();                     // 0x3c
-    virtual void v40(); virtual void v44(); virtual void v48();
-    virtual CSWCPlaceable* AsSWCPlaceable();        // 0x4c
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
-    virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
-    virtual void v80(); virtual void v84();
-    virtual void SetOrientation(const Vector& v);   // 0x88
-    virtual void v8C();
-    virtual void v90(); virtual void v94();
-    virtual CGob* FindPart(unsigned long nPart, int bRecurse);  // 0x98
-    virtual void v9C();
-    virtual void PlayAnimation(int nAnim, int b);   // 0xa0
-    virtual void vA4(); virtual void vA8(); virtual void vAC(); virtual void vB0();
-    virtual void ApplyVisualEffect(unsigned short nEffect, int a, unsigned long oidTarget,
-                                   unsigned long oidSource, unsigned char nNode, int b,
-                                   const Vector& vOffset);  // 0xb4
-    virtual void RemoveVisualEffect(unsigned short nEffect);  // 0xb8
-    virtual void vBC(); virtual void vC0(); virtual void vC4(); virtual void vC8();
-    virtual void vCC(); virtual void vD0(); virtual void vD4(); virtual void vD8();
-    virtual void vDC(); virtual void vE0(); virtual void vE4(); virtual void vE8();
-    virtual void vEC(); virtual void vF0(); virtual void vF4(); virtual void vF8();
-    virtual void vFC(); virtual void v100(); virtual void v104(); virtual void v108();
-    virtual void v10C(); virtual void v110(); virtual void v114(); virtual void v118();
-    virtual void v11C(); virtual void v120(); virtual void v124(); virtual void v128();
-    virtual void v12C(); virtual void v130(); virtual void v134();
-    virtual int IsStealthed();                      // 0x138
-
-    unsigned long m_idSelf;                         // 0x04
-};
+#include "shared/game_object.h"
 
 class CSWCArea;
 
 class CSWCObject : public CGameObject {
 public:
-    char pad_0x8[0x18];
+    virtual void v70();
+    virtual void v74();
+    virtual void v78();
+    virtual void v7C();
+    virtual void v80();
+    virtual void v84();
+    virtual void SetOrientation(const Vector& v);  // 0x88
+    virtual void v8C();
+    virtual void v90();
+    virtual void v94();
+    virtual CGob* FindPart(unsigned long nPart, int bRecurse);  // 0x98
+    virtual void v9C();
+    virtual void PlayAnimation(int nAnim, int b);  // 0xa0
+    virtual void vA4();
+    virtual void vA8();
+    virtual void vAC();
+    virtual void vB0();
+    virtual void ApplyVisualEffect(unsigned short nEffect, int a, unsigned long oidTarget,
+                                   unsigned long oidSource, unsigned char nNode, int b,
+                                   const Vector& vOffset);  // 0xb4
+    virtual void RemoveVisualEffect(unsigned short nEffect);  // 0xb8
+    virtual void vBC();
+    virtual void vC0();
+    virtual void vC4();
+    virtual void vC8();
+    virtual void vCC();
+    virtual void vD0();
+    virtual void vD4();
+    virtual void vD8();
+    virtual void vDC();
+    virtual void vE0();
+    virtual void vE4();
+    virtual void vE8();
+    virtual void vEC();
+    virtual void vF0();
+    virtual void vF4();
+    virtual void vF8();
+    virtual void vFC();
+    virtual void v100();
+    virtual void v104();
+    virtual void v108();
+    virtual void v10C();
+    virtual void v110();
+    virtual void v114();
+    virtual void v118();
+    virtual void v11C();
+    virtual void v120();
+    virtual void v124();
+    virtual void v128();
+    virtual void v12C();
+    virtual void v130();
+    virtual void v134();
+    virtual int IsStealthed();  // 0x138
+    char pad_0xc[0x14];
     CSWCArea* m_pArea;                              // 0x20
     Vector m_vPosition;                             // 0x24
     Vector m_vOrientation;                          // 0x30
@@ -126,10 +134,7 @@ public:
     virtual int HasAnimation(unsigned short nAnim); // 0x50
 };
 
-class CSWCCamera {
-public:
-    void SetTargetFollow();                         // 0x006383B0
-};
+#include "shared/swc_camera.h"
 
 class CSceneHolder {
 public:
@@ -182,18 +187,8 @@ public:
     int IsCombatSlowdown();                         // 0x005EE0F0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern int g_bCameraResetPending;                   // 0x007A2288
 
 class CSWBaseItem {
 public:
@@ -212,16 +207,67 @@ public:
     CSWBaseItemArray* m_pBaseItems;                 // 0x34
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWCItem : public CGameObject {
 public:
+    virtual void v70();
+    virtual void v74();
+    virtual void v78();
+    virtual void v7C();
+    virtual void v80();
+    virtual void v84();
+    virtual void SetOrientation(const Vector& v);  // 0x88
+    virtual void v8C();
+    virtual void v90();
+    virtual void v94();
+    virtual CGob* FindPart(unsigned long nPart, int bRecurse);  // 0x98
+    virtual void v9C();
+    virtual void PlayAnimation(int nAnim, int b);  // 0xa0
+    virtual void vA4();
+    virtual void vA8();
+    virtual void vAC();
+    virtual void vB0();
+    virtual void ApplyVisualEffect(unsigned short nEffect, int a, unsigned long oidTarget,
+                                   unsigned long oidSource, unsigned char nNode, int b,
+                                   const Vector& vOffset);  // 0xb4
+    virtual void RemoveVisualEffect(unsigned short nEffect);  // 0xb8
+    virtual void vBC();
+    virtual void vC0();
+    virtual void vC4();
+    virtual void vC8();
+    virtual void vCC();
+    virtual void vD0();
+    virtual void vD4();
+    virtual void vD8();
+    virtual void vDC();
+    virtual void vE0();
+    virtual void vE4();
+    virtual void vE8();
+    virtual void vEC();
+    virtual void vF0();
+    virtual void vF4();
+    virtual void vF8();
+    virtual void vFC();
+    virtual void v100();
+    virtual void v104();
+    virtual void v108();
+    virtual void v10C();
+    virtual void v110();
+    virtual void v114();
+    virtual void v118();
+    virtual void v11C();
+    virtual void v120();
+    virtual void v124();
+    virtual void v128();
+    virtual void v12C();
+    virtual void v130();
+    virtual void v134();
+    virtual int IsStealthed();  // 0x138
     void SetEquippedByMe(int b);                    // 0x00646600
 
     CSWBaseItem* GetBaseItem();                     // 0x005B4790
     void SetPowered(int a, int b, int c, int d);    // 0x00647130
 
-    char pad_0x8[0x4];
     int m_nBaseItem;                                // 0x0c
     char pad_0x10[0x188];
     int m_bPowered;                                 // 0x198
@@ -235,6 +281,59 @@ public:
 
 class CSWCPlaceable : public CGameObject {
 public:
+    virtual void v70();
+    virtual void v74();
+    virtual void v78();
+    virtual void v7C();
+    virtual void v80();
+    virtual void v84();
+    virtual void SetOrientation(const Vector& v);  // 0x88
+    virtual void v8C();
+    virtual void v90();
+    virtual void v94();
+    virtual CGob* FindPart(unsigned long nPart, int bRecurse);  // 0x98
+    virtual void v9C();
+    virtual void PlayAnimation(int nAnim, int b);  // 0xa0
+    virtual void vA4();
+    virtual void vA8();
+    virtual void vAC();
+    virtual void vB0();
+    virtual void ApplyVisualEffect(unsigned short nEffect, int a, unsigned long oidTarget,
+                                   unsigned long oidSource, unsigned char nNode, int b,
+                                   const Vector& vOffset);  // 0xb4
+    virtual void RemoveVisualEffect(unsigned short nEffect);  // 0xb8
+    virtual void vBC();
+    virtual void vC0();
+    virtual void vC4();
+    virtual void vC8();
+    virtual void vCC();
+    virtual void vD0();
+    virtual void vD4();
+    virtual void vD8();
+    virtual void vDC();
+    virtual void vE0();
+    virtual void vE4();
+    virtual void vE8();
+    virtual void vEC();
+    virtual void vF0();
+    virtual void vF4();
+    virtual void vF8();
+    virtual void vFC();
+    virtual void v100();
+    virtual void v104();
+    virtual void v108();
+    virtual void v10C();
+    virtual void v110();
+    virtual void v114();
+    virtual void v118();
+    virtual void v11C();
+    virtual void v120();
+    virtual void v124();
+    virtual void v128();
+    virtual void v12C();
+    virtual void v130();
+    virtual void v134();
+    virtual int IsStealthed();  // 0x138
     CSWSPlaceable* GetServerPlaceable();            // 0x00682E00
 };
 
@@ -344,7 +443,6 @@ public:
     int m_bOverrideLightsaber;                      // 0x3d8
 };
 
-extern char g_sLightsaberContactNode[];             // 0x0074F368
 
 // FUNCTION: SWKOTOR 0x0060B920
 void CSWCCreature::ResetCameraToFollow()

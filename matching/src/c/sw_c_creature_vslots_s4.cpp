@@ -36,16 +36,9 @@ public:
     void ShowBarkBubble(unsigned long oid, const CExoString& text, const CResRef& sound, int b);   // 0x0062AB30
 };
 
-struct CSWCAreaX {
-    char pad_0x0[0x104];
-    unsigned long m_nId104;                         // 0x104
-};
+#include "shared/swc_area_x.h"
 
-class CSWCModuleX {
-public:
-    char pad_0x0[0x48];
-    CSWCAreaX* m_pArea;                             // 0x48
-};
+#include "shared/swc_module_x.h"
 
 class CClientExoApp {
 public:
@@ -53,22 +46,11 @@ public:
     CGuiInGame* GetInGameGui();                     // 0x005ED690
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/globals.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
-
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
 Vector Normalize(const Vector& v);                  // 0x004AB180
 

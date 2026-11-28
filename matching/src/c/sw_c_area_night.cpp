@@ -6,15 +6,9 @@
 #include "c/exo_base.h"
 
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
-extern float g_fFogDensity;                         // 0x0078E6A0
-extern float g_fAmbientScale;                       // 0x0078E408
-extern int g_bLockCamera;                           // 0x007A22B8
-extern float g_fLightningAmbient;                   // 0x00832C70
-extern const int g_nAreaSoundMode;                  // 0x0074C5EC
+#include "shared/globals.h"
 
 extern "C" int __cdecl rand();
 
@@ -23,12 +17,8 @@ public:
     void SetSoundMode(int nMode);                   // 0x005D5E80
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
-class CSWCAmbientSound {
-public:
-    void Activate();                                // 0x0068D4A0
-};
+#include "shared/swc_ambient_sound.h"
 
 class CLightningObject {
 public:
@@ -112,16 +102,8 @@ public:
     void StopLoadMusic();                           // 0x005ED9D0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWCArea {
 public:

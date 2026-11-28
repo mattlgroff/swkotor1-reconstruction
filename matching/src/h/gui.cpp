@@ -26,10 +26,7 @@ __declspec(dllimport) void __stdcall glClear(unsigned int mask);
 
 #define GL_VIEWPORT 0x0ba2
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 template <class T>
 class CExoArrayList {
@@ -39,21 +36,7 @@ public:
     int array_size;
 };
 
-extern unsigned int g_aPrimitiveModes[];        // 0x0073F334
-extern short g_nGUILayer;                       // 0x007B9460
-extern int g_bAurNoGUIDraw;                     // 0x007BB4D0
-extern float g_afGUIAlpha[];                    // 0x007B9248
-extern short g_aGUIRects[][5];                  // 0x007B9468 {x, y, w, h, bClear}
-extern unsigned int g_nGLProjection;            // 0x0073F290
-extern unsigned int g_nGLModelView;             // 0x0073F298
-extern unsigned int g_nGLDepthTest;             // 0x0078D45C
-extern unsigned int g_nGLLighting;              // 0x0078D474
-extern unsigned int g_nGLBlend;                 // 0x0078D448
-extern unsigned int g_nGLSrcAlpha;              // 0x0073F270
-extern unsigned int g_nGLOneMinusSrcAlpha;      // 0x0073F274
-extern unsigned int g_nGLTexture2D;             // 0x0078D458
-extern int g_nScreenWidth;                      // 0x0078D1D4
-extern int g_nScreenHeight;                     // 0x0078D1D8
+#include "shared/globals.h"
 
 int operator!=(const Vector& a, const Vector& b);   // 0x0043E1F0
 

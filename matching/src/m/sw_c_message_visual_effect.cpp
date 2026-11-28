@@ -1,60 +1,28 @@
-struct Vector { float x,y,z; };
-class CResRef { public: char m_ref[16]; CResRef(const char*); };
+#include "shared/vector.h"
+#include "shared/res_ref.h"
 class CSWCArea { public: char pad_000[0x184]; int m_nAreaState; };
 class CSWCModule { public: char pad_000[0x48]; CSWCArea* m_pArea; };
 class CSWCObject;
-class CGameObject { public:
- virtual ~CGameObject();
-
- virtual void SetObjectID(unsigned long);
- virtual void v08();
- virtual CSWCObject* AsSWCObject();
- virtual void v10();
- virtual void v14();
- virtual void v18();
- virtual void v1C();
- virtual void v20();
- virtual void v24();
- virtual void v28();
- virtual void v2C();
- virtual void v30();
- virtual void v34();
- virtual void v38();
- virtual void v3C();
- virtual void v40();
- virtual void v44();
- virtual void v48();
- virtual void v4C();
- virtual void v50();
- virtual void v54();
- virtual void v58();
- virtual void v5C();
- virtual void v60();
- virtual void v64();
- virtual void v68();
- virtual void v6C();
- virtual void v70();
- virtual void v74();
- virtual int LoadModel(const CResRef&,unsigned char,int);
- virtual void v7C();
- virtual void v80();
- virtual void SetArea(CSWCArea*);
- virtual void v88();
- virtual void SetPosition(const Vector&);
- virtual void v90();
- virtual void SetEquipped(int);
- virtual void v98();
- virtual void v9C();
- virtual void vA0();
- virtual void vA4();
- virtual void vA8();
- virtual void vAC();
- virtual void vB0();
- virtual void ApplyVisualEffect(unsigned short,int,unsigned long,unsigned long,unsigned char,unsigned char,const Vector&);
-
- unsigned long m_idSelf; unsigned char m_nObjectType;
-};
+#include "shared/game_object.h"
 class CSWCObject : public CGameObject { public:
+    virtual void v70();
+    virtual void v74();
+    virtual int LoadModel(const CResRef&,unsigned char,int);
+    virtual void v7C();
+    virtual void v80();
+    virtual void SetArea(CSWCArea*);
+    virtual void v88();
+    virtual void SetPosition(const Vector&);
+    virtual void v90();
+    virtual void SetEquipped(int);
+    virtual void v98();
+    virtual void v9C();
+    virtual void vA0();
+    virtual void vA4();
+    virtual void vA8();
+    virtual void vAC();
+    virtual void vB0();
+    virtual void ApplyVisualEffect(unsigned short,int,unsigned long,unsigned long,unsigned char,unsigned char,const Vector&);
  char pad_00c[0xe4-0xc]; int m_bFading;
  char pad_0e8[0x100-0xe8];
 };
@@ -70,10 +38,8 @@ class CSWCCreature : public CSWCObject { public:
 class CGameObjectArray { public: unsigned char AddInternalObject(unsigned long*,CGameObject*,int); };
 class CClientAIMaster { public: int AddObject(CSWCObject*); };
 class CClientExoApp { public: CSWCModule* GetModule(); CGameObjectArray* GetGameObjectArray(); CClientAIMaster* GetClientAIMaster(); CGameObject* GetGameObject(unsigned long); };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager;
-extern const unsigned char GAME_OBJECT_VALID;
-extern const unsigned char OBJECT_TYPE_CREATURE, OBJECT_TYPE_PLACEABLE, OBJECT_TYPE_DOOR;
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 #define OBJECT_INVALID 0x7f000000
 int GetIsBeam(unsigned short);
 class CSWCMessage { public:
@@ -84,8 +50,8 @@ class CSWCMessage { public:
 // FUNCTION: SWKOTOR 0x0064C3C0
 int CSWCMessage::HandleServerToPlayerCreatureUpdate_VisEffect()
 {
- Vector sourcePosition={0,0,0};
- Vector position={0,0,0};
+ Vector sourcePosition(0.0f, 0.0f, 0.0f);
+ Vector position(0.0f, 0.0f, 0.0f);
  float duration=0.0f;
  unsigned long targetID=ReadOBJECTIDClient();
  unsigned short effect=ReadWORD(16);
@@ -113,7 +79,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_VisEffect()
      CGameObjectArray* array=g_pAppManager->m_pClientExoApp->GetGameObjectArray();
      // Preserve the first source-dummy's native inverted status test.
      if (!array->AddInternalObject(&dummyID,dummy,0)) return 0;
-     dummy->SetObjectID(dummyID);
+     dummy->SetId(dummyID);
      dummy->SetArea(area);
      CClientAIMaster* ai=g_pAppManager->m_pClientExoApp->GetClientAIMaster();
      ai->AddObject(dummy);
@@ -143,7 +109,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_VisEffect()
      CGameObjectArray* array=g_pAppManager->m_pClientExoApp->GetGameObjectArray();
      // Preserve the first source-dummy's native inverted status test.
      if (array->AddInternalObject(&dummyID,dummy,0)!=GAME_OBJECT_VALID) return 0;
-     dummy->SetObjectID(dummyID);
+     dummy->SetId(dummyID);
      dummy->SetArea(area);
      CClientAIMaster* ai=g_pAppManager->m_pClientExoApp->GetClientAIMaster();
      ai->AddObject(dummy);
@@ -159,7 +125,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_VisEffect()
    target=dummy;
   }
   int instant=duration==0.0f;
-  Vector zero={0,0,0};
+  Vector zero(0.0f, 0.0f, 0.0f);
   if (targetID==OBJECT_INVALID) {
    target->ApplyVisualEffect(effect,instant,sourceID,beamTarget,a,b,position);
    return 1;
@@ -183,7 +149,7 @@ int CSWCMessage::HandleServerToPlayerCreatureUpdate_VisEffect()
      CGameObjectArray* array=g_pAppManager->m_pClientExoApp->GetGameObjectArray();
      // Preserve the first source-dummy's native inverted status test.
      if (array->AddInternalObject(&dummyID,dummy,0)!=GAME_OBJECT_VALID) return 0;
-     dummy->SetObjectID(dummyID);
+     dummy->SetId(dummyID);
      dummy->SetArea(area);
      CClientAIMaster* ai=g_pAppManager->m_pClientExoApp->GetClientAIMaster();
      ai->AddObject(dummy);

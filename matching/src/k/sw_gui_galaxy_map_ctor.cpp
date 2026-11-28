@@ -2,23 +2,9 @@
 // Member offsets as sw_gui_galaxy_map.cpp; control classes as
 // sw_gui_in_game_map_ctor.cpp.
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CExoString& s);                   // 0x00406D60
-    CResRef operator=(const CExoString& s);         // 0x004061F0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CSWGuiExtent {
     CSWGuiExtent(int nLeft, int nTop, int nWidth, int nHeight)
@@ -38,16 +24,7 @@ class CSWGuiControl;
 class CSWGuiPanel;
 class CSWGuiManager;
 
-class Vector {
-public:
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:
@@ -214,14 +191,9 @@ public:
     C2DAs* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern int g_bDo3DGui;                              // 0x0078D1E4
+#include "shared/globals.h"
 
-struct CSWGuiGalaxyPlanet {
-    int m_nNameStrRef;                              // 0x00
-    int m_nDescriptionStrRef;                       // 0x04
-    CResRef m_cModel;                               // 0x08
-};
+#include "shared/sw_gui_galaxy_planet.h"
 
 class CSWGuiPanel : public CSWGuiObject {
 public:

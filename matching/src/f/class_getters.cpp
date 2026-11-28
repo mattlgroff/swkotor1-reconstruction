@@ -16,21 +16,11 @@ public:
     CSWSkill *m_pSkills;             // +0xb4
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
-struct CSWClassSkill {
-    unsigned short m_nSkill;         // +0x0
-    char pad_0x2[0x2];
-    int m_nValue;                    // +0x4
-    int m_nLevel;                    // +0x8
-};
+#include "shared/sw_class_skill.h"
 
-struct CSWClassFeat {
-    unsigned short m_nFeat;          // +0x0
-    unsigned char m_nLevel;          // +0x2
-    unsigned char m_nFlags;          // +0x3
-    int m_nGrantedLevel;             // +0x4
-};
+#include "shared/sw_class_feat.h"
 
 #pragma pack(push, 1)
 class CSWClass {

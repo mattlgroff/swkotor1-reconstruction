@@ -3,15 +3,7 @@
 
 #include <math.h>
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-(const Vector &v) const { Vector r; r.x = x - v.x; r.y = y - v.y; r.z = z - v.z; return r; }
-    int IsZero() const { return x == 0.0f && y == 0.0f && z == 0.0f; }
-    float MagnitudeSquared() const { return x * x + y * y + z * z; }
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:
@@ -20,49 +12,27 @@ public:
 
 Vector Normalize(const Vector &v);
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CSWSObject;
 class CSWSDoor;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual CSWSObject *AsSWSObject();         // +0x10
-    virtual void v14();
-    virtual CSWSDoor *AsSWSDoor();             // +0x18
-
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CServerExoApp {
 public:
     CGameObject *GetGameObject(unsigned long id);
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CVirtualMachine {
 public:
     int RunScript(CExoString *psFileName, unsigned long oid, int bFlag);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
 
 class CSWSArea {
 public:
@@ -95,10 +65,6 @@ public:
     Vector m_avUse[2];               // +0x70
 };
 
-extern int g_nDoorStateClosed;
-extern int g_nDoorStateOpen1;
-extern int g_nDoorStateOpen2;
-extern int g_nDoorDebugMode;
 
 class CSWSDoor : public CSWSObject {
 public:
@@ -372,7 +338,6 @@ void CSWSTrigger::GetBoundingBox(float *pMinX, float *pMinY, float *pMaxX, float
     *pMaxY = m_fMaxY;
 }
 
-extern float g_fTriggerRadius;
 
 // FUNCTION: SWKOTOR 0x0058CE40
 int CSWSTrigger::InTrigger(Vector *pPoint)

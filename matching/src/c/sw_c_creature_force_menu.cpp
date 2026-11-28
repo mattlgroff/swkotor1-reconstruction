@@ -1,17 +1,9 @@
 // CSWCCreature::ForceMenuAction (nwccreature.o), rewritten by worker C s14
 // with a translation-unit-local layout.
 
-class CExoString {
-public:
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class C2DA {
 public:
@@ -30,7 +22,7 @@ public:
     CTwoDimArrays* m_p2DArrays;                     // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWCMessage {
 public:
@@ -48,15 +40,9 @@ public:
                            unsigned long nSpell);   // 0x005EDF40
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
-extern const unsigned short RACIAL_TYPE_DROID;      // 0x0074BF10
 
 class CSWCCreatureStats {
 public:

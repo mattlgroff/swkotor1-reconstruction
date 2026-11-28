@@ -1,29 +1,11 @@
 // CSWSSoundObject and CSWSAmbientSound
 // (b005c_f2_sound_luo / b005c_sound_object_clears, 0x005C8660-0x005CA02A).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const CExoString &s);
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef(const char *szName);
-    CResRef operator=(const CResRef &cResRef);
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 int operator==(const Vector &a, const Vector &b);
 
@@ -69,25 +51,11 @@ public:
 class CExoArrayListULong {
 };
 
-struct CExoLinkedListNode;
+class CExoLinkedListNode;
 
-class CExoLinkedListInternal {
-public:
-    void *GetAtPos(CExoLinkedListNode *pos);
-    void *GetNext(CExoLinkedListNode *&pos);
-    CExoLinkedListNode *pHead;
-    CExoLinkedListNode *pTail;
-    unsigned long nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListNode *GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T *GetAtPos(CExoLinkedListNode *pos) { return (T *)m_pcExoLinkedListInternal->GetAtPos(pos); }
-    T *GetNext(CExoLinkedListNode *&pos) { return (T *)m_pcExoLinkedListInternal->GetNext(pos); }
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-};
+
 
 struct CResStruct {
     unsigned long m_nIndex;
@@ -97,7 +65,7 @@ struct CResList {
     unsigned long m_nType;
     unsigned long m_nIndex;
     unsigned long m_nCount;
-    char pad[0x8];
+    char pad_0xc[0x8];
 };
 
 class CResGFF {
@@ -128,15 +96,7 @@ public:
     char pad_0x98[0x8];
 };
 
-class CNWMessage {
-public:
-    void WriteBOOL(int bValue);
-    void WriteBYTE(unsigned char nValue, int nBits);
-    void WriteWORD(unsigned short nValue, int nBits);
-    void WriteDWORD(unsigned long nValue, int nBits);
-    void WriteFLOAT(float fValue, float fScale, int nBits);
-    void WriteCResRef(CResRef cResRef, int nSize);
-};
+#include "shared/nw_message.h"
 
 class CSWSPlayer;
 
@@ -158,18 +118,7 @@ public:
 
 class CSWSCreature;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();     // +0x30
-    unsigned long GetID() { return m_idSelf; }
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CSWSPlayer {
 public:
@@ -217,17 +166,9 @@ public:
     CClientSoundObject *GetSoundObjectByGameObjectID(unsigned long oid);
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp *m_pClientExoApp;  // +0x4
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CClientExoApp *GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
-extern const unsigned char g_nObjectTypeSound;     // 0x0074663E
+#include "shared/globals.h"
 
 class CSWSObject : public CGameObject {
 public:
@@ -350,7 +291,7 @@ void CSWSSoundObject::AddToArea(CSWSArea *pArea, int bFlag)
     if (pArea) {
         SetArea(pArea);
         pArea->AddSoundObject(m_idSelf, bFlag);
-        g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(&m_sTag, GetID());
+        g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(&m_sTag, GetId());
     }
 }
 
@@ -425,7 +366,7 @@ void CSWSSoundObject::Stop()
 void CSWSSoundObject::FadeAndStop(float fTime)
 {
     m_bActive = 0;
-    unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetID());
+    unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetId());
     CClientSoundObject *pSound = g_pAppManager->GetClientExoApp()->GetSoundObjectByGameObjectID(oid);
     if (pSound)
         pSound->FadeAndStop(fTime);
@@ -436,7 +377,7 @@ void CSWSSoundObject::ChangePitchVariation(float f)
 {
     if (f != m_fPitchVariation) {
         m_fPitchVariation = f;
-        unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetID());
+        unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetId());
         CClientSoundObject *pSound = g_pAppManager->GetClientExoApp()->GetSoundObjectByGameObjectID(oid);
         if (pSound)
             pSound->SetPitchVariation(f);
@@ -448,7 +389,7 @@ void CSWSSoundObject::ChangeFixedVariance(float f)
 {
     if (f != m_fFixedVariance) {
         m_fFixedVariance = f;
-        unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetID());
+        unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetId());
         CClientSoundObject *pSound = g_pAppManager->GetClientExoApp()->GetSoundObjectByGameObjectID(oid);
         if (pSound)
             pSound->SetFixedVariance(f);
@@ -463,7 +404,7 @@ void CSWSSoundObject::ChangeVolume(int nVolume)
     nVolume = nVolume < 0 ? 0 : nVolume;
     if (nVolume != m_nVolume) {
         m_nVolume = nVolume;
-        unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetID());
+        unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetId());
         CClientSoundObject *pSound = g_pAppManager->GetClientExoApp()->GetSoundObjectByGameObjectID(oid);
         if (pSound)
             pSound->SetVolume(nVolume);
@@ -731,7 +672,7 @@ int CSWSAmbientSound::GetPlayersInArea(CExoArrayList<unsigned long> *pList)
             if (pPlayer && pPlayer->GetGameObject()) {
                 CSWSCreature *pCreature = pPlayer->GetGameObject()->AsSWSCreature();
                 if (pCreature && ((CSWSObject *)pCreature)->GetArea() &&
-                    ((CSWSObject *)pCreature)->GetArea()->GetID() == m_oidArea)
+                    ((CSWSObject *)pCreature)->GetArea()->GetId() == m_oidArea)
                     pList->Add(pPlayer->m_nPlayerID);
             }
             pPlayers->GetNext(pos);

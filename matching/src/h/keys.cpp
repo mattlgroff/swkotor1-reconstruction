@@ -31,7 +31,7 @@ public:
     MaxTree* ReadSync(char* szName, int nFlags);    // 0x004A15D0
 };
 
-extern Model* g_pLoadingModel;              // 0x007FBAE4
+#include "shared/globals.h"
 
 static inline Model* GetLoadedModel(MaxTree* pTree)
 {
@@ -40,8 +40,7 @@ static inline Model* GetLoadedModel(MaxTree* pTree)
     return g_pLoadingModel;
 }
 
-extern CExoArrayList<Model*> g_lModels;     // 0x007A8A64
-extern float g_fKeyEpsilon;                 // 0x0078E58C
+#include "shared/globals.h"
 
 struct NewController {
     int data[4];

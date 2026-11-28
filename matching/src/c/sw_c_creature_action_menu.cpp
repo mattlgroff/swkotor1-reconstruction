@@ -2,25 +2,9 @@
 // callback is a pointer to member of a class whose inheritance is unknown at
 // its declaration, so it uses the general 16-byte representation.
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    char* CStr() const;                             // 0x005E5670
-    void Format(const char* format, ...);           // 0x005E5680
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef operator=(const char* s);               // 0x00406290
-    CResRef operator=(const CResRef& r);            // 0x00406120
-};
+#include "shared/res_ref.h"
 
 class CSWCCreature;
 
@@ -72,26 +56,13 @@ public:
     class CSWCItem* GetItemByGameObjectID(unsigned long oid);   // 0x005ED5A0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/globals.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/exo_loc_string.h"
 
-class CExoLocString {
-public:
-    int GetString(unsigned long nLanguage, CExoString* pString, unsigned char nGender) const;  // 0x005EA130
-};
-
-class CSWBaseItemData {
-public:
-    char pad_0x0[0xac];
-    unsigned char m_nCategory;                      // 0xac (6: usable on hostiles)
-};
+#include "shared/sw_base_item_data.h"
 
 struct CSWItemProperty {
     char pad_0x0[0x2];
@@ -124,9 +95,7 @@ public:
     int m_nRestrictMode;                            // 0x2b0
 };
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWInventory {
 public:
@@ -171,11 +140,6 @@ public:
     int m_bUseCurrentForcePoints;                   // 0xa9c (descriptive)
 };
 
-extern const unsigned short RACIAL_TYPE_DROID;      // 0x0074BF10
-extern const unsigned short RACIAL_TYPE_HUMAN;      // 0x0074BF14
-extern const unsigned short g_nForceTargetHuman;    // 0x0074BF34 (descriptive)
-extern const unsigned short g_nForceTargetDroid;    // 0x0074BF38 (descriptive)
-extern const unsigned short g_nForceTargetOther;    // 0x0074BF3C (descriptive)
 
 class CSWCItem {
 public:
@@ -227,23 +191,12 @@ public:
     CSWBaseItemArray* GetBaseItemArray() { return m_pBaseItemArray; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
-    virtual CSWCItem* AsSWCItem();                  // 0x34
-
-    unsigned long m_idSelf;                         // 0x04
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:
-    char pad_0x8[0x24 - 0x8];
+    char pad_0xc[0x18];
     Vector m_vPosition;                             // 0x24
 };
 

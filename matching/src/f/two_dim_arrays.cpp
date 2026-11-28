@@ -1,22 +1,9 @@
 // CTwoDimArrays 2DA loaders (b005c_f2_2da_loaders).
 // Load2DArrays_DifficultyOptions (0x005C2680) is matched in pilot1.
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef(const char *szName);
-    CResRef(const CResRef &cResRef);
-};
+#include "shared/res_ref.h"
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    char *CStr() const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:
@@ -35,115 +22,7 @@ public:
 };
 
 // Column indices cached by the column-aware loaders.
-extern int g_nFootstepPitchOffsetColumn;     // 0x007A21A0
-extern int g_nFootstepRollingColumn;         // 0x007A219C
-extern int g_nWeaponSoundPitchOffsetColumn;  // 0x007A21A4
-extern int g_nRegenForceRegenColumn;         // 0x007A21AC
-extern int g_nRegenHealthRegenColumn;        // 0x007A21A8
-extern int g_nAnimAttackColumn;              // 0x007A217C
-extern int g_nAnimDamageColumn;              // 0x007A2168
-extern int g_nAnimDialogColumn;              // 0x007A2170
-extern int g_nAnimDodgeColumn;               // 0x007A2178
-extern int g_nAnimFireForgetColumn;          // 0x007A214C
-extern int g_nAnimHideEquippedItemsColumn;   // 0x007A2180
-extern int g_nAnimLoopingColumn;             // 0x007A2154
-extern int g_nAnimNameColumn;                // 0x007A2174
-extern int g_nAnimOverlayColumn;             // 0x007A2150
-extern int g_nAnimParryColumn;               // 0x007A216C
-extern int g_nAnimPauseColumn;               // 0x007A215C
-extern int g_nAnimRunningColumn;             // 0x007A2164
-extern int g_nAnimStationaryColumn;          // 0x007A2158
-extern int g_nAnimWalkingColumn;             // 0x007A2160
-extern int g_nForceAdjustEvilCostColumn;     // 0x007A2188
-extern int g_nForceAdjustGoodCostColumn;     // 0x007A2184
-extern int g_nDialogAnimDialogColumn;        // 0x007A2190
-extern int g_nDialogAnimFireForgetColumn;    // 0x007A218C
-extern int g_nDialogAnimLoopingColumn;       // 0x007A2194
-extern int g_nDialogAnimOverlayColumn;       // 0x007A2198
-extern int g_nAppearanceCol_ABORTONPARRY;  // 0x7A20C0
-extern int g_nAppearanceCol_BACKUPHEAD;  // 0x7A20C4
-extern int g_nAppearanceCol_CameraHeightOffset;  // 0x7A20C8
-extern int g_nAppearanceCol_CAMERASPACE;  // 0x7A20CC
-extern int g_nAppearanceCol_CREPERSPACE;  // 0x7A20D0
-extern int g_nAppearanceCol_DisableInjuredAnim;  // 0x7A20D4
-extern int g_nAppearanceCol_DRIVEACCl;  // 0x7A20D8
-extern int g_nAppearanceCol_DriveAnimRun;  // 0x7A20E4
-extern int g_nAppearanceCol_DriveAnimWalk;  // 0x7A20E0
-extern int g_nAppearanceCol_DriveMaxSpeed;  // 0x7A20DC
-extern int g_nAppearanceCol_ENVMAP;  // 0x7A20E8
-extern int g_nAppearanceCol_FootstepType;  // 0x7A20EC
-extern int g_nAppearanceCol_HEAD_ARC_H;  // 0x7A20F4
-extern int g_nAppearanceCol_HEAD_ARC_V;  // 0x7A20F8
-extern int g_nAppearanceCol_HEADBONE;  // 0x7A20FC
-extern int g_nAppearanceCol_HEADTRACK;  // 0x7A2100
-extern int g_nAppearanceCol_HEIGHT;  // 0x7A2104
-extern int g_nAppearanceCol_HITRADIUS;  // 0x7A210C
-extern int g_nAppearanceCol_hitdist;  // 0x7A2108
-extern int g_nAppearanceCol_GROUNDTILT;  // 0x7A20F0
-extern int g_nAppearanceCol_MODELTYPE;  // 0x7A2110
-extern int g_nAppearanceCol_NORMALHEAD;  // 0x7A2114
-extern int g_nAppearanceCol_PERSPACE;  // 0x7A2118
-extern int g_nAppearanceCol_RACE;  // 0x7A211C
-extern int g_nAppearanceCol_RUNDIST;  // 0x7A2120
-extern int g_nAppearanceCol_SIZECATEGORY;  // 0x7A2124
-extern int g_nAppearanceCol_SoundAppType;  // 0x7A2128
-extern int g_nAppearanceCol_WALKDIST;  // 0x7A212C
-extern int g_nAppearanceSoundsCol_ArmorType;  // 0x7A2144
-extern int g_nAppearanceSoundsCol_FallDirt;  // 0x7A2130
-extern int g_nAppearanceSoundsCol_FallHard;  // 0x7A2138
-extern int g_nAppearanceSoundsCol_FallMetal;  // 0x7A2134
-extern int g_nAppearanceSoundsCol_FallWater;  // 0x7A213C
-extern int g_nAppearanceSoundsCol_Weapon;  // 0x7A2140
-extern int g_nGenderCol_GENDER;  // 0x7A2148
-extern int g_nSurfaceMaterialCol_Name;  // 0x7A21B0
-extern int g_nVisualEffectCol_Imp_HeadCon_Node;  // 0x7A21B4
-extern int g_nVisualEffectCol_Imp_Impact_Node;  // 0x7A21B8
-extern int g_nVisualEffectCol_Imp_Root_H_Node;  // 0x7A21C8
-extern int g_nVisualEffectCol_Imp_Root_L_Node;  // 0x7A21C4
-extern int g_nVisualEffectCol_Imp_Root_M_Node;  // 0x7A21BC
-extern int g_nVisualEffectCol_Imp_Root_S_Node;  // 0x7A21C0
-extern int g_nVisualEffectCol_LowQuality;  // 0x7A21CC
-extern int g_nVisualEffectCol_OrientWithGround;  // 0x7A21D0
-extern int g_nVisualEffectCol_ShakeDelay;  // 0x7A21DC
-extern int g_nVisualEffectCol_ShakeDuration;  // 0x7A21D8
-extern int g_nVisualEffectCol_ShakeType;  // 0x7A21D4
-extern int g_nVisualEffectCol_SoundDuration;  // 0x7A21E4
-extern int g_nVisualEffectCol_SoundImpact;  // 0x7A21E0
-extern int g_nPersistentVisualEffectCol_DurationVFX;  // 0x7A21E8
-extern int g_nPersistentVisualEffectCol_OrientWithGround;  // 0x7A21EC
-extern int g_nPersistentVisualEffectCol_SHAPE;  // 0x7A21F0
-extern int g_nPersistentVisualEffectCol_RADIUS;  // 0x7A21F4
-extern int g_nPersistentVisualEffectCol_WIDTH;  // 0x7A21F8
-extern int g_nPersistentVisualEffectCol_LENGTH;  // 0x7A21FC
-extern int g_nPersistentVisualEffectCol_MODELMIN01;  // 0x7A2200
-extern int g_nPersistentVisualEffectCol_MODEL01;  // 0x7A2204
-extern int g_nPersistentVisualEffectCol_MODELMIN02;  // 0x7A2208
-extern int g_nPersistentVisualEffectCol_MODEL02;  // 0x7A220C
-extern int g_nPersistentVisualEffectCol_MODELMIN03;  // 0x7A2210
-extern int g_nPersistentVisualEffectCol_MODEL03;  // 0x7A2214
-extern int g_nPersistentVisualEffectCol_NUMACT01;  // 0x7A2218
-extern int g_nPersistentVisualEffectCol_NUMACT02;  // 0x7A221C
-extern int g_nPersistentVisualEffectCol_NUMACT03;  // 0x7A2220
-extern int g_nPersistentVisualEffectCol_DURATION01;  // 0x7A2224
-extern int g_nPersistentVisualEffectCol_DURATION02;  // 0x7A2228
-extern int g_nPersistentVisualEffectCol_DURATION03;  // 0x7A222C
-extern int g_nPersistentVisualEffectCol_EDGEWGHT01;  // 0x7A2230
-extern int g_nPersistentVisualEffectCol_EDGEWGHT02;  // 0x7A2234
-extern int g_nPersistentVisualEffectCol_EDGEWGHT03;  // 0x7A2238
-extern int g_nPersistentVisualEffectCol_SoundOneShot;  // 0x7A223C
-extern int g_nPersistentVisualEffectCol_SoundOneShotPercentage;  // 0x7A2240
-extern int g_nCreatureSpeedCol_RUNRATE;  // 0x7A2244
-extern int g_nCreatureSpeedCol_WALKRATE;  // 0x7A2248
-extern int g_nDoorTypesCol_SoundAppType;  // 0x7A224C
-extern int g_nGenericDoorsCol_SoundAppType;  // 0x7A2250
-extern int g_nPlaceablesCol_SoundAppType;  // 0x7A2254
-extern int g_nPlaceablesCol_StrRef;  // 0x7A2258
-extern int g_nPlaceablesCol_IgnoreStaticHitcheck;  // 0x7A225C
-extern int g_nPlaceableSoundsCol_ArmorType;  // 0x7A2260
-extern int g_nPlaceableSoundsCol_Locked;  // 0x7A2264
-extern int g_nPlaceableSoundsCol_Opened;  // 0x7A2268
-extern int g_nPlaceableSoundsCol_Closed;  // 0x7A226C
-extern int g_nPlaceableSoundsCol_Destroyed;  // 0x7A2270
+#include "shared/globals.h"
 
 class CTwoDimArrays {
 public:
@@ -307,7 +186,7 @@ public:
 // FUNCTION: SWKOTOR 0x005C1B40
 int CTwoDimArrays::Load2DArrays_AreaTransition()
 {
-    m_pAreaTransition = new C2DA(CResRef("Loadscreens"), 0);
+    m_pAreaTransition = new C2DA("Loadscreens", 0);
     if (m_pAreaTransition && m_pAreaTransition->Load2DArray()) {
         return 1;
     }
@@ -317,7 +196,7 @@ int CTwoDimArrays::Load2DArrays_AreaTransition()
 // FUNCTION: SWKOTOR 0x005C1BE0
 int CTwoDimArrays::Load2DArrays_IPRPMelee()
 {
-    m_pIPRPMelee = new C2DA(CResRef("IPRP_MeleeCost"), 0);
+    m_pIPRPMelee = new C2DA("IPRP_MeleeCost", 0);
     if (m_pIPRPMelee && m_pIPRPMelee->Load2DArray()) {
         return 1;
     }
@@ -327,7 +206,7 @@ int CTwoDimArrays::Load2DArrays_IPRPMelee()
 // FUNCTION: SWKOTOR 0x005C1C80
 int CTwoDimArrays::Load2DArrays_ItemPropDef()
 {
-    m_pItemPropDef = new C2DA(CResRef("ItemPropDef"), 0);
+    m_pItemPropDef = new C2DA("ItemPropDef", 0);
     if (m_pItemPropDef && m_pItemPropDef->Load2DArray()) {
         return 1;
     }
@@ -337,7 +216,7 @@ int CTwoDimArrays::Load2DArrays_ItemPropDef()
 // FUNCTION: SWKOTOR 0x005C1D20
 int CTwoDimArrays::Load2DArrays_Portrait()
 {
-    m_pPortrait = new C2DA(CResRef("Portraits"), 0);
+    m_pPortrait = new C2DA("Portraits", 0);
     if (m_pPortrait && m_pPortrait->Load2DArray()) {
         return 1;
     }
@@ -347,7 +226,7 @@ int CTwoDimArrays::Load2DArrays_Portrait()
 // FUNCTION: SWKOTOR 0x005C1DC0
 int CTwoDimArrays::Load2DArrays_IPRPDamage()
 {
-    m_pIPRPDamage = new C2DA(CResRef("IPRP_DAMAGECOST"), 0);
+    m_pIPRPDamage = new C2DA("IPRP_DAMAGECOST", 0);
     if (m_pIPRPDamage && m_pIPRPDamage->Load2DArray()) {
         return 1;
     }
@@ -357,7 +236,7 @@ int CTwoDimArrays::Load2DArrays_IPRPDamage()
 // FUNCTION: SWKOTOR 0x005C1E60
 int CTwoDimArrays::Load2DArrays_Traps()
 {
-    m_pTraps = new C2DA(CResRef("Traps"), 0);
+    m_pTraps = new C2DA("Traps", 0);
     if (m_pTraps && m_pTraps->Load2DArray()) {
         return 1;
     }
@@ -367,7 +246,7 @@ int CTwoDimArrays::Load2DArrays_Traps()
 // FUNCTION: SWKOTOR 0x005C1F00
 int CTwoDimArrays::Load2DArrays_LightColor()
 {
-    m_pLightColor = new C2DA(CResRef("LightColor"), 0);
+    m_pLightColor = new C2DA("LightColor", 0);
     if (m_pLightColor && m_pLightColor->Load2DArray()) {
         return 1;
     }
@@ -377,7 +256,7 @@ int CTwoDimArrays::Load2DArrays_LightColor()
 // FUNCTION: SWKOTOR 0x005C1FA0
 int CTwoDimArrays::Load2DArrays_Cursor()
 {
-    m_pCursor = new C2DA(CResRef("cursors"), 0);
+    m_pCursor = new C2DA("cursors", 0);
     if (m_pCursor && m_pCursor->Load2DArray()) {
         return 1;
     }
@@ -387,7 +266,7 @@ int CTwoDimArrays::Load2DArrays_Cursor()
 // FUNCTION: SWKOTOR 0x005C2040
 int CTwoDimArrays::Load2DArrays_AmbientMusic()
 {
-    m_pAmbientMusic = new C2DA(CResRef("AmbientMusic"), 0);
+    m_pAmbientMusic = new C2DA("AmbientMusic", 0);
     if (m_pAmbientMusic && m_pAmbientMusic->Load2DArray()) {
         return 1;
     }
@@ -397,7 +276,7 @@ int CTwoDimArrays::Load2DArrays_AmbientMusic()
 // FUNCTION: SWKOTOR 0x005C20E0
 int CTwoDimArrays::Load2DArrays_AmbientSound()
 {
-    m_pAmbientSound = new C2DA(CResRef("AmbientSound"), 0);
+    m_pAmbientSound = new C2DA("AmbientSound", 0);
     if (m_pAmbientSound && m_pAmbientSound->Load2DArray()) {
         return 1;
     }
@@ -407,7 +286,7 @@ int CTwoDimArrays::Load2DArrays_AmbientSound()
 // FUNCTION: SWKOTOR 0x005C2360
 int CTwoDimArrays::Load2DArrays_AmmunitionTypes()
 {
-    m_pAmmunitionTypes = new C2DA(CResRef("AmmunitionTypes"), 0);
+    m_pAmmunitionTypes = new C2DA("AmmunitionTypes", 0);
     if (m_pAmmunitionTypes && m_pAmmunitionTypes->Load2DArray()) {
         return 1;
     }
@@ -417,7 +296,7 @@ int CTwoDimArrays::Load2DArrays_AmmunitionTypes()
 // FUNCTION: SWKOTOR 0x005C2400
 int CTwoDimArrays::Load2DArrays_Keymap()
 {
-    m_pKeymap = new C2DA(CResRef("keymap"), 0);
+    m_pKeymap = new C2DA("keymap", 0);
     if (m_pKeymap && m_pKeymap->Load2DArray()) {
         return 1;
     }
@@ -427,7 +306,7 @@ int CTwoDimArrays::Load2DArrays_Keymap()
 // FUNCTION: SWKOTOR 0x005C24A0
 int CTwoDimArrays::Load2DArrays_BindableKey()
 {
-    m_pBindableKey = new C2DA(CResRef("BindableKeys"), 0);
+    m_pBindableKey = new C2DA("BindableKeys", 0);
     if (m_pBindableKey && m_pBindableKey->Load2DArray()) {
         return 1;
     }
@@ -437,7 +316,7 @@ int CTwoDimArrays::Load2DArrays_BindableKey()
 // FUNCTION: SWKOTOR 0x005C2540
 int CTwoDimArrays::Load2DArrays_CameraStyle()
 {
-    m_pCameraStyle = new C2DA(CResRef("CameraStyle"), 0);
+    m_pCameraStyle = new C2DA("CameraStyle", 0);
     if (m_pCameraStyle && m_pCameraStyle->Load2DArray()) {
         return 1;
     }
@@ -447,7 +326,7 @@ int CTwoDimArrays::Load2DArrays_CameraStyle()
 // FUNCTION: SWKOTOR 0x005C25E0
 int CTwoDimArrays::Load2DArrays_Tutorial()
 {
-    m_pTutorial = new C2DA(CResRef("tutorial"), 0);
+    m_pTutorial = new C2DA("tutorial", 0);
     if (m_pTutorial && m_pTutorial->Load2DArray()) {
         return 1;
     }
@@ -457,7 +336,7 @@ int CTwoDimArrays::Load2DArrays_Tutorial()
 // FUNCTION: SWKOTOR 0x005C2720
 int CTwoDimArrays::Load2DArrays_Gamma()
 {
-    m_pGamma = new C2DA(CResRef("gamma"), 0);
+    m_pGamma = new C2DA("gamma", 0);
     if (m_pGamma && m_pGamma->Load2DArray()) {
         return 1;
     }
@@ -467,7 +346,7 @@ int CTwoDimArrays::Load2DArrays_Gamma()
 // FUNCTION: SWKOTOR 0x005C27C0
 int CTwoDimArrays::Load2DArrays_StateScripts()
 {
-    m_pStateScripts = new C2DA(CResRef("StateScripts"), 0);
+    m_pStateScripts = new C2DA("StateScripts", 0);
     if (m_pStateScripts && m_pStateScripts->Load2DArray()) {
         return 1;
     }
@@ -477,7 +356,7 @@ int CTwoDimArrays::Load2DArrays_StateScripts()
 // FUNCTION: SWKOTOR 0x005C2860
 int CTwoDimArrays::Load2DArrays_Poison()
 {
-    m_pPoison = new C2DA(CResRef("poison"), 0);
+    m_pPoison = new C2DA("poison", 0);
     if (m_pPoison && m_pPoison->Load2DArray()) {
         return 1;
     }
@@ -487,7 +366,7 @@ int CTwoDimArrays::Load2DArrays_Poison()
 // FUNCTION: SWKOTOR 0x005C2900
 int CTwoDimArrays::Load2DArrays_Disease()
 {
-    m_pDisease = new C2DA(CResRef("disease"), 0);
+    m_pDisease = new C2DA("disease", 0);
     if (m_pDisease && m_pDisease->Load2DArray()) {
         return 1;
     }
@@ -497,7 +376,7 @@ int CTwoDimArrays::Load2DArrays_Disease()
 // FUNCTION: SWKOTOR 0x005C29A0
 int CTwoDimArrays::Load2DArrays_RepAdjustments()
 {
-    m_pRepAdjustments = new C2DA(CResRef("RepAdjust"), 0);
+    m_pRepAdjustments = new C2DA("RepAdjust", 0);
     if (m_pRepAdjustments && m_pRepAdjustments->Load2DArray()) {
         return 1;
     }
@@ -507,7 +386,7 @@ int CTwoDimArrays::Load2DArrays_RepAdjustments()
 // FUNCTION: SWKOTOR 0x005C2A40
 int CTwoDimArrays::Load2DArrays_FractionalCR()
 {
-    m_pFractionalCR = new C2DA(CResRef("FractionalCR"), 0);
+    m_pFractionalCR = new C2DA("FractionalCR", 0);
     if (m_pFractionalCR && m_pFractionalCR->Load2DArray()) {
         return 1;
     }
@@ -517,7 +396,7 @@ int CTwoDimArrays::Load2DArrays_FractionalCR()
 // FUNCTION: SWKOTOR 0x005C2AE0
 int CTwoDimArrays::Load2DArrays_EncounterDifficulty()
 {
-    m_pEncounterDifficulty = new C2DA(CResRef("EncDifficulty"), 0);
+    m_pEncounterDifficulty = new C2DA("EncDifficulty", 0);
     if (m_pEncounterDifficulty && m_pEncounterDifficulty->Load2DArray()) {
         return 1;
     }
@@ -527,7 +406,7 @@ int CTwoDimArrays::Load2DArrays_EncounterDifficulty()
 // FUNCTION: SWKOTOR 0x005C2B80
 int CTwoDimArrays::Load2DArrays_ExcitedDuration()
 {
-    m_pExcitedDuration = new C2DA(CResRef("ExcitedDuration"), 0);
+    m_pExcitedDuration = new C2DA("ExcitedDuration", 0);
     if (m_pExcitedDuration && m_pExcitedDuration->Load2DArray()) {
         return 1;
     }
@@ -537,7 +416,7 @@ int CTwoDimArrays::Load2DArrays_ExcitedDuration()
 // FUNCTION: SWKOTOR 0x005C2D40
 int CTwoDimArrays::Load2DArrays_XpBase()
 {
-    m_pXpBase = new C2DA(CResRef("XPTable"), 0);
+    m_pXpBase = new C2DA("XPTable", 0);
     if (m_pXpBase && m_pXpBase->Load2DArray()) {
         return 1;
     }
@@ -547,7 +426,7 @@ int CTwoDimArrays::Load2DArrays_XpBase()
 // FUNCTION: SWKOTOR 0x005C2DE0
 int CTwoDimArrays::Load2DArrays_IPRPMonsterDamage()
 {
-    m_pIPRPMonsterDamage = new C2DA(CResRef("IPRP_MONSTCOST"), 0);
+    m_pIPRPMonsterDamage = new C2DA("IPRP_MONSTCOST", 0);
     if (m_pIPRPMonsterDamage && m_pIPRPMonsterDamage->Load2DArray()) {
         return 1;
     }
@@ -557,7 +436,7 @@ int CTwoDimArrays::Load2DArrays_IPRPMonsterDamage()
 // FUNCTION: SWKOTOR 0x005C2E80
 int CTwoDimArrays::Load2DArrays_IPRPBonusCost()
 {
-    m_pIPRPBonusCost = new C2DA(CResRef("IPRP_BONUSCOST"), 0);
+    m_pIPRPBonusCost = new C2DA("IPRP_BONUSCOST", 0);
     if (m_pIPRPBonusCost && m_pIPRPBonusCost->Load2DArray()) {
         return 1;
     }
@@ -567,7 +446,7 @@ int CTwoDimArrays::Load2DArrays_IPRPBonusCost()
 // FUNCTION: SWKOTOR 0x005C2F20
 int CTwoDimArrays::Load2DArrays_IPRPSRCost()
 {
-    m_pIPRPSRCost = new C2DA(CResRef("IPRP_SRCOST"), 0);
+    m_pIPRPSRCost = new C2DA("IPRP_SRCOST", 0);
     if (m_pIPRPSRCost && m_pIPRPSRCost->Load2DArray()) {
         return 1;
     }
@@ -577,7 +456,7 @@ int CTwoDimArrays::Load2DArrays_IPRPSRCost()
 // FUNCTION: SWKOTOR 0x005C2FC0
 int CTwoDimArrays::Load2DArrays_IPRPNeg5Cost()
 {
-    m_pIPRPNeg5Cost = new C2DA(CResRef("IPRP_NEG5COST"), 0);
+    m_pIPRPNeg5Cost = new C2DA("IPRP_NEG5COST", 0);
     if (m_pIPRPNeg5Cost && m_pIPRPNeg5Cost->Load2DArray()) {
         return 1;
     }
@@ -587,7 +466,7 @@ int CTwoDimArrays::Load2DArrays_IPRPNeg5Cost()
 // FUNCTION: SWKOTOR 0x005C3060
 int CTwoDimArrays::Load2DArrays_Ranges()
 {
-    m_pRanges = new C2DA(CResRef("Ranges"), 0);
+    m_pRanges = new C2DA("Ranges", 0);
     if (m_pRanges && m_pRanges->Load2DArray()) {
         return 1;
     }
@@ -597,7 +476,7 @@ int CTwoDimArrays::Load2DArrays_Ranges()
 // FUNCTION: SWKOTOR 0x005C3100
 int CTwoDimArrays::Load2DArrays_OnHit()
 {
-    m_pOnHit = new C2DA(CResRef("IPRP_ONHIT"), 0);
+    m_pOnHit = new C2DA("IPRP_ONHIT", 0);
     if (m_pOnHit && m_pOnHit->Load2DArray()) {
         return 1;
     }
@@ -607,7 +486,7 @@ int CTwoDimArrays::Load2DArrays_OnHit()
 // FUNCTION: SWKOTOR 0x005C31A0
 int CTwoDimArrays::Load2DArrays_OnHitDuration()
 {
-    m_pOnHitDuration = new C2DA(CResRef("IPRP_ONHITDUR"), 0);
+    m_pOnHitDuration = new C2DA("IPRP_ONHITDUR", 0);
     if (m_pOnHitDuration && m_pOnHitDuration->Load2DArray()) {
         return 1;
     }
@@ -617,7 +496,7 @@ int CTwoDimArrays::Load2DArrays_OnHitDuration()
 // FUNCTION: SWKOTOR 0x005C3240
 int CTwoDimArrays::Load2DArrays_DamageHitVisual()
 {
-    m_pDamageHitVisual = new C2DA(CResRef("DamageHitVisual"), 0);
+    m_pDamageHitVisual = new C2DA("DamageHitVisual", 0);
     if (m_pDamageHitVisual && m_pDamageHitVisual->Load2DArray()) {
         return 1;
     }
@@ -627,7 +506,7 @@ int CTwoDimArrays::Load2DArrays_DamageHitVisual()
 // FUNCTION: SWKOTOR 0x005C3670
 int CTwoDimArrays::Load2DArrays_BodyBag()
 {
-    m_pBodyBag = new C2DA(CResRef("bodybag"), 0);
+    m_pBodyBag = new C2DA("bodybag", 0);
     if (m_pBodyBag && m_pBodyBag->Load2DArray()) {
         return 1;
     }
@@ -637,7 +516,7 @@ int CTwoDimArrays::Load2DArrays_BodyBag()
 // FUNCTION: SWKOTOR 0x005C3830
 int CTwoDimArrays::Load2DArrays_GameEffects()
 {
-    m_pGameEffects = new C2DA(CResRef("GameEffects"), 0);
+    m_pGameEffects = new C2DA("GameEffects", 0);
     if (m_pGameEffects && m_pGameEffects->Load2DArray()) {
         return 1;
     }
@@ -647,7 +526,7 @@ int CTwoDimArrays::Load2DArrays_GameEffects()
 // FUNCTION: SWKOTOR 0x005C38D0
 int CTwoDimArrays::Load2DArrays_Repute()
 {
-    m_pRepute = new C2DA(CResRef("Repute"), 0);
+    m_pRepute = new C2DA("Repute", 0);
     if (m_pRepute && m_pRepute->Load2DArray()) {
         return 1;
     }
@@ -657,7 +536,7 @@ int CTwoDimArrays::Load2DArrays_Repute()
 // FUNCTION: SWKOTOR 0x005C3970
 int CTwoDimArrays::Load2DArrays_WeaponDischarge()
 {
-    m_pWeaponDischarge = new C2DA(CResRef("WeaponDischarge"), 0);
+    m_pWeaponDischarge = new C2DA("WeaponDischarge", 0);
     if (m_pWeaponDischarge && m_pWeaponDischarge->Load2DArray()) {
         return 1;
     }
@@ -667,7 +546,7 @@ int CTwoDimArrays::Load2DArrays_WeaponDischarge()
 // FUNCTION: SWKOTOR 0x005C3A10
 int CTwoDimArrays::Load2DArrays_DroidDischarge()
 {
-    m_pDroidDischarge = new C2DA(CResRef("DroidDischarge"), 0);
+    m_pDroidDischarge = new C2DA("DroidDischarge", 0);
     if (m_pDroidDischarge && m_pDroidDischarge->Load2DArray()) {
         return 1;
     }
@@ -677,7 +556,7 @@ int CTwoDimArrays::Load2DArrays_DroidDischarge()
 // FUNCTION: SWKOTOR 0x005C3AB0
 int CTwoDimArrays::Load2DArrays_PlotXP()
 {
-    m_pPlotXP = new C2DA(CResRef("Plot"), 0);
+    m_pPlotXP = new C2DA("Plot", 0);
     if (m_pPlotXP && m_pPlotXP->Load2DArray()) {
         return 1;
     }
@@ -687,7 +566,7 @@ int CTwoDimArrays::Load2DArrays_PlotXP()
 // FUNCTION: SWKOTOR 0x005C3B50
 int CTwoDimArrays::Load2DArrays_CombatAnimations()
 {
-    m_pCombatAnimations = new C2DA(CResRef("CombatAnimations"), 0);
+    m_pCombatAnimations = new C2DA("CombatAnimations", 0);
     if (m_pCombatAnimations && m_pCombatAnimations->Load2DArray()) {
         return 1;
     }
@@ -697,7 +576,7 @@ int CTwoDimArrays::Load2DArrays_CombatAnimations()
 // FUNCTION: SWKOTOR 0x005C3D70
 int CTwoDimArrays::Load2DArrays_NPC()
 {
-    m_pNPC = new C2DA(CResRef("NPC"), 0);
+    m_pNPC = new C2DA("NPC", 0);
     if (m_pNPC && m_pNPC->Load2DArray()) {
         return 1;
     }
@@ -707,7 +586,7 @@ int CTwoDimArrays::Load2DArrays_NPC()
 // FUNCTION: SWKOTOR 0x005C3E10
 int CTwoDimArrays::Load2DArrays_Spells()
 {
-    m_pSpells = new C2DA(CResRef("Spells"), 0);
+    m_pSpells = new C2DA("Spells", 0);
     if (m_pSpells && m_pSpells->Load2DArray()) {
         return 1;
     }
@@ -717,7 +596,7 @@ int CTwoDimArrays::Load2DArrays_Spells()
 // FUNCTION: SWKOTOR 0x005C3EB0
 int CTwoDimArrays::Load2DArrays_Feat()
 {
-    m_pFeat = new C2DA(CResRef("Feat"), 0);
+    m_pFeat = new C2DA("Feat", 0);
     if (m_pFeat && m_pFeat->Load2DArray()) {
         return 1;
     }
@@ -727,7 +606,7 @@ int CTwoDimArrays::Load2DArrays_Feat()
 // FUNCTION: SWKOTOR 0x005C3F50
 int CTwoDimArrays::Load2DArrays_Formations()
 {
-    m_pFormations = new C2DA(CResRef("Formations"), 0);
+    m_pFormations = new C2DA("Formations", 0);
     if (m_pFormations && m_pFormations->Load2DArray()) {
         return 1;
     }
@@ -737,7 +616,7 @@ int CTwoDimArrays::Load2DArrays_Formations()
 // FUNCTION: SWKOTOR 0x005C3FF0
 int CTwoDimArrays::Load2DArrays_GrenadeSound()
 {
-    m_pGrenadeSound = new C2DA(CResRef("GrenadeSND"), 0);
+    m_pGrenadeSound = new C2DA("GrenadeSND", 0);
     if (m_pGrenadeSound && m_pGrenadeSound->Load2DArray()) {
         return 1;
     }
@@ -747,7 +626,7 @@ int CTwoDimArrays::Load2DArrays_GrenadeSound()
 // FUNCTION: SWKOTOR 0x005C4090
 int CTwoDimArrays::Load2DArrays_Planetary()
 {
-    m_pPlanetary = new C2DA(CResRef("Planetary"), 0);
+    m_pPlanetary = new C2DA("Planetary", 0);
     if (m_pPlanetary && m_pPlanetary->Load2DArray()) {
         return 1;
     }
@@ -757,7 +636,7 @@ int CTwoDimArrays::Load2DArrays_Planetary()
 // FUNCTION: SWKOTOR 0x005C4130
 int CTwoDimArrays::Load2DArrays_FeedBackText()
 {
-    m_pFeedBackText = new C2DA(CResRef("FeedBackText"), 0);
+    m_pFeedBackText = new C2DA("FeedBackText", 0);
     if (m_pFeedBackText && m_pFeedBackText->Load2DArray()) {
         return 1;
     }
@@ -767,7 +646,7 @@ int CTwoDimArrays::Load2DArrays_FeedBackText()
 // FUNCTION: SWKOTOR 0x005C41D0
 int CTwoDimArrays::Load2DArrays_ForceShields()
 {
-    m_pForceShields = new C2DA(CResRef("ForceShields"), 0);
+    m_pForceShields = new C2DA("ForceShields", 0);
     if (m_pForceShields && m_pForceShields->Load2DArray()) {
         return 1;
     }
@@ -777,7 +656,7 @@ int CTwoDimArrays::Load2DArrays_ForceShields()
 // FUNCTION: SWKOTOR 0x005C4270
 int CTwoDimArrays::Load2DArrays_Heads()
 {
-    m_pHeads = new C2DA(CResRef("Heads"), 0);
+    m_pHeads = new C2DA("Heads", 0);
     if (m_pHeads && m_pHeads->Load2DArray()) {
         return 1;
     }
@@ -787,7 +666,7 @@ int CTwoDimArrays::Load2DArrays_Heads()
 // FUNCTION: SWKOTOR 0x005C4310
 int CTwoDimArrays::Load2DArrays_ItemValues()
 {
-    m_pItemValues = new C2DA(CResRef("ItemValue"), 0);
+    m_pItemValues = new C2DA("ItemValue", 0);
     if (m_pItemValues && m_pItemValues->Load2DArray()) {
         return 1;
     }
@@ -797,7 +676,7 @@ int CTwoDimArrays::Load2DArrays_ItemValues()
 // FUNCTION: SWKOTOR 0x005C43B0
 int CTwoDimArrays::Load2DArrays_VideoEffects()
 {
-    m_pVideoEffects = new C2DA(CResRef("VideoEffects"), 0);
+    m_pVideoEffects = new C2DA("VideoEffects", 0);
     if (m_pVideoEffects && m_pVideoEffects->Load2DArray()) {
         return 1;
     }
@@ -807,7 +686,7 @@ int CTwoDimArrays::Load2DArrays_VideoEffects()
 // FUNCTION: SWKOTOR 0x005C4450
 int CTwoDimArrays::Load2DArrays_Movies()
 {
-    m_pMovies = new C2DA(CResRef("Movies"), 0);
+    m_pMovies = new C2DA("Movies", 0);
     if (m_pMovies && m_pMovies->Load2DArray()) {
         return 1;
     }
@@ -817,7 +696,7 @@ int CTwoDimArrays::Load2DArrays_Movies()
 // FUNCTION: SWKOTOR 0x005C44F0
 int CTwoDimArrays::Load2DArrays_EffectIcon()
 {
-    m_pEffectIcon = new C2DA(CResRef("EffectIcon"), 0);
+    m_pEffectIcon = new C2DA("EffectIcon", 0);
     if (!m_pEffectIcon)
         return 0;
     if (!m_pEffectIcon->Load2DArray()) {
@@ -831,7 +710,7 @@ int CTwoDimArrays::Load2DArrays_EffectIcon()
 // FUNCTION: SWKOTOR 0x005C45B0
 int CTwoDimArrays::Load2DArrays_RemoveFXOnDeath()
 {
-    m_pRemoveFXOnDeath = new C2DA(CResRef("removefxondeath"), 0);
+    m_pRemoveFXOnDeath = new C2DA("removefxondeath", 0);
     if (!m_pRemoveFXOnDeath)
         return 0;
     if (!m_pRemoveFXOnDeath->Load2DArray()) {
@@ -845,7 +724,7 @@ int CTwoDimArrays::Load2DArrays_RemoveFXOnDeath()
 // FUNCTION: SWKOTOR 0x005C4670
 int CTwoDimArrays::Load2DArrays_TexPacks()
 {
-    m_pTexPacks = new C2DA(CResRef("TexPacks"), 0);
+    m_pTexPacks = new C2DA("TexPacks", 0);
     if (!m_pTexPacks)
         return 0;
     if (!m_pTexPacks->Load2DArray()) {
@@ -859,7 +738,7 @@ int CTwoDimArrays::Load2DArrays_TexPacks()
 // FUNCTION: SWKOTOR 0x005C2180
 int CTwoDimArrays::Load2DArrays_FootstepSounds()
 {
-    m_pFootstepSounds = new C2DA(CResRef("FootstepSounds"), 0);
+    m_pFootstepSounds = new C2DA("FootstepSounds", 0);
     if (m_pFootstepSounds && m_pFootstepSounds->Load2DArray()) {
         {
             CExoString sColumn("PitchOffset");
@@ -877,7 +756,7 @@ int CTwoDimArrays::Load2DArrays_FootstepSounds()
 // FUNCTION: SWKOTOR 0x005C2290
 int CTwoDimArrays::Load2DArrays_WeaponSounds()
 {
-    m_pWeaponSounds = new C2DA(CResRef("WeaponSounds"), 0);
+    m_pWeaponSounds = new C2DA("WeaponSounds", 0);
     if (m_pWeaponSounds && m_pWeaponSounds->Load2DArray()) {
         {
             CExoString sColumn("PitchOffset");
@@ -891,7 +770,7 @@ int CTwoDimArrays::Load2DArrays_WeaponSounds()
 // FUNCTION: SWKOTOR 0x005C2C20
 int CTwoDimArrays::Load2DArrays_Regeneration()
 {
-    m_pRegeneration = new C2DA(CResRef("Regeneration"), 0);
+    m_pRegeneration = new C2DA("Regeneration", 0);
     if (m_pRegeneration && m_pRegeneration->Load2DArray()) {
         {
             CExoString sColumn("ForceRegen");
@@ -909,7 +788,7 @@ int CTwoDimArrays::Load2DArrays_Regeneration()
 // FUNCTION: SWKOTOR 0x005C32E0
 int CTwoDimArrays::Load2DArrays_Animations()
 {
-    m_pAnimations = new C2DA(CResRef("Animations"), 0);
+    m_pAnimations = new C2DA("Animations", 0);
     if (m_pAnimations && m_pAnimations->Load2DArray()) {
         {
             CExoString sColumn("Attack");
@@ -975,7 +854,7 @@ int CTwoDimArrays::Load2DArrays_Animations()
 // FUNCTION: SWKOTOR 0x005C3710
 int CTwoDimArrays::Load2DArrays_ForceAdjust()
 {
-    m_pForceAdjust = new C2DA(CResRef("ForceAdjust"), 0);
+    m_pForceAdjust = new C2DA("ForceAdjust", 0);
     if (m_pForceAdjust && m_pForceAdjust->Load2DArray()) {
         {
             CExoString sColumn("EvilCost");
@@ -993,7 +872,7 @@ int CTwoDimArrays::Load2DArrays_ForceAdjust()
 // FUNCTION: SWKOTOR 0x005C3BF0
 int CTwoDimArrays::Load2DArrays_DialogAnimations()
 {
-    m_pDialogAnimations = new C2DA(CResRef("DialogAnimations"), 0);
+    m_pDialogAnimations = new C2DA("DialogAnimations", 0);
     if (m_pDialogAnimations && m_pDialogAnimations->Load2DArray()) {
         {
             CExoString sColumn("Dialog");
@@ -1019,7 +898,7 @@ int CTwoDimArrays::Load2DArrays_DialogAnimations()
 // FUNCTION: SWKOTOR 0x005C0270
 int CTwoDimArrays::Load2DArrays_Appearance()
 {
-    m_pAppearance = new C2DA(CResRef("Appearance"), 0);
+    m_pAppearance = new C2DA("Appearance", 0);
     if (m_pAppearance && m_pAppearance->Load2DArray()) {
         {
             CExoString sColumn("ABORTONPARRY");
@@ -1141,7 +1020,7 @@ int CTwoDimArrays::Load2DArrays_Appearance()
 // FUNCTION: SWKOTOR 0x005C08F0
 int CTwoDimArrays::Load2DArrays_AppearanceSounds()
 {
-    m_pAppearanceSounds = new C2DA(CResRef("AppearanceSndSet"), 0);
+    m_pAppearanceSounds = new C2DA("AppearanceSndSet", 0);
     if (m_pAppearanceSounds && m_pAppearanceSounds->Load2DArray()) {
         {
             CExoString sColumn("ArmorType");
@@ -1175,7 +1054,7 @@ int CTwoDimArrays::Load2DArrays_AppearanceSounds()
 // FUNCTION: SWKOTOR 0x005C0AE0
 int CTwoDimArrays::Load2DArrays_Gender()
 {
-    m_pGender = new C2DA(CResRef("GENDER"), 0);
+    m_pGender = new C2DA("GENDER", 0);
     if (m_pGender && m_pGender->Load2DArray()) {
         {
             CExoString sColumn("GENDER");
@@ -1189,7 +1068,7 @@ int CTwoDimArrays::Load2DArrays_Gender()
 // FUNCTION: SWKOTOR 0x005C0BB0
 int CTwoDimArrays::Load2DArrays_SurfaceMaterial()
 {
-    m_pSurfaceMaterial = new C2DA(CResRef("SURFACEMAT"), 0);
+    m_pSurfaceMaterial = new C2DA("SURFACEMAT", 0);
     if (m_pSurfaceMaterial && m_pSurfaceMaterial->Load2DArray()) {
         {
             CExoString sColumn("Name");
@@ -1203,7 +1082,7 @@ int CTwoDimArrays::Load2DArrays_SurfaceMaterial()
 // FUNCTION: SWKOTOR 0x005C0C80
 int CTwoDimArrays::Load2DArrays_VisualEffect()
 {
-    m_pVisualEffect = new C2DA(CResRef("visualeffects"), 0);
+    m_pVisualEffect = new C2DA("visualeffects", 0);
     if (m_pVisualEffect && m_pVisualEffect->Load2DArray()) {
         {
             CExoString sColumn("Imp_HeadCon_Node");
@@ -1265,7 +1144,7 @@ int CTwoDimArrays::Load2DArrays_VisualEffect()
 // FUNCTION: SWKOTOR 0x005C1010
 int CTwoDimArrays::Load2DArrays_PersistentVisualEffect()
 {
-    m_pPersistentVisualEffect = new C2DA(CResRef("VFX_Persistent"), 0);
+    m_pPersistentVisualEffect = new C2DA("VFX_Persistent", 0);
     if (m_pPersistentVisualEffect && m_pPersistentVisualEffect->Load2DArray()) {
         {
             CExoString sColumn("DurationVFX");
@@ -1367,7 +1246,7 @@ int CTwoDimArrays::Load2DArrays_PersistentVisualEffect()
 // FUNCTION: SWKOTOR 0x005C1580
 int CTwoDimArrays::Load2DArrays_CreatureSpeed()
 {
-    m_pCreatureSpeed = new C2DA(CResRef("CreatureSpeed"), 0);
+    m_pCreatureSpeed = new C2DA("CreatureSpeed", 0);
     if (m_pCreatureSpeed && m_pCreatureSpeed->Load2DArray()) {
         {
             CExoString sColumn("RUNRATE");
@@ -1385,7 +1264,7 @@ int CTwoDimArrays::Load2DArrays_CreatureSpeed()
 // FUNCTION: SWKOTOR 0x005C1690
 int CTwoDimArrays::Load2DArrays_DoorTypes()
 {
-    m_pDoorTypes = new C2DA(CResRef("DoorTypes"), 0);
+    m_pDoorTypes = new C2DA("DoorTypes", 0);
     if (m_pDoorTypes && m_pDoorTypes->Load2DArray()) {
         {
             CExoString sColumn("SoundAppType");
@@ -1399,7 +1278,7 @@ int CTwoDimArrays::Load2DArrays_DoorTypes()
 // FUNCTION: SWKOTOR 0x005C1760
 int CTwoDimArrays::Load2DArrays_GenericDoors()
 {
-    m_pGenericDoors = new C2DA(CResRef("GenericDoors"), 0);
+    m_pGenericDoors = new C2DA("GenericDoors", 0);
     if (m_pGenericDoors && m_pGenericDoors->Load2DArray()) {
         {
             CExoString sColumn("SoundAppType");
@@ -1413,7 +1292,7 @@ int CTwoDimArrays::Load2DArrays_GenericDoors()
 // FUNCTION: SWKOTOR 0x005C1830
 int CTwoDimArrays::Load2DArrays_Placeables()
 {
-    m_pPlaceables = new C2DA(CResRef("Placeables"), 0);
+    m_pPlaceables = new C2DA("Placeables", 0);
     if (m_pPlaceables && m_pPlaceables->Load2DArray()) {
         {
             CExoString sColumn("SoundAppType");
@@ -1435,7 +1314,7 @@ int CTwoDimArrays::Load2DArrays_Placeables()
 // FUNCTION: SWKOTOR 0x005C1980
 int CTwoDimArrays::Load2DArrays_PlaceableSounds()
 {
-    m_pPlaceableSounds = new C2DA(CResRef("placeableobjsnds"), 0);
+    m_pPlaceableSounds = new C2DA("placeableobjsnds", 0);
     if (m_pPlaceableSounds && m_pPlaceableSounds->Load2DArray()) {
         {
             CExoString sColumn("ArmorType");
@@ -1462,13 +1341,12 @@ int CTwoDimArrays::Load2DArrays_PlaceableSounds()
     return 0;
 }
 
-extern unsigned char g_nAppMode;  // 0x007A39DC (1: client)
 
 // FUNCTION: SWKOTOR 0x005C4730
 int CTwoDimArrays::LoadIPRPCostTables()
 {
     int bLoad;
-    C2DA *pTable = new C2DA(CResRef("IPRP_COSTTABLE"), 0);
+    C2DA *pTable = new C2DA("IPRP_COSTTABLE", 0);
     if (!pTable || !pTable->Load2DArray())
         return 0;
     m_nNumIPRPCostTables = pTable->GetNumRows();
@@ -1483,7 +1361,7 @@ int CTwoDimArrays::LoadIPRPCostTables()
                 continue;
         }
         pTable->GetCExoStringEntry(i, "Name", &sName);
-        m_paIPRPCostTables[i] = new C2DA(CResRef(sName.CStr()), 0);
+        m_paIPRPCostTables[i] = new C2DA(sName.CStr(), 0);
         if (!m_paIPRPCostTables[i]->Load2DArray()) {
             delete pTable;
             return 0;
@@ -1522,7 +1400,7 @@ C2DA *CTwoDimArrays::GetIPRPCostTable(unsigned char nTable)
 // FUNCTION: SWKOTOR 0x005C49C0
 int CTwoDimArrays::LoadIPRPParamTables()
 {
-    C2DA *pTable = new C2DA(CResRef("IPRP_PARAMTABLE"), 0);
+    C2DA *pTable = new C2DA("IPRP_PARAMTABLE", 0);
     if (!pTable || !pTable->Load2DArray())
         return 0;
     m_nNumIPRPParamTables = pTable->GetNumRows();
@@ -1531,7 +1409,7 @@ int CTwoDimArrays::LoadIPRPParamTables()
     for (int i = 0; i < m_nNumIPRPParamTables; i++) {
         m_paIPRPParamTables[i] = 0;
         pTable->GetCExoStringEntry(i, "TableResRef", &sTableResRef);
-        m_paIPRPParamTables[i] = new C2DA(CResRef(sTableResRef.CStr()), 0);
+        m_paIPRPParamTables[i] = new C2DA(sTableResRef.CStr(), 0);
         if (!m_paIPRPParamTables[i]->Load2DArray()) {
             delete pTable;
             return 0;

@@ -2,78 +2,13 @@
 #ifndef M_SW_C_MESSAGE_HANDLERS_H
 #define M_SW_C_MESSAGE_HANDLERS_H
 
-struct Vector;
-class CResRef { public: CResRef(); char m_ref[16]; };
-class CExoString {
-public:
-    char* m_sString; unsigned long m_nBufferLength;
-    CExoString();
-    ~CExoString();
-    CExoString& operator=(const CExoString&);
-    char* CStr() const;
-    int GetLength() const;
-};
-class CSWCAreaObject {
-public:
-    virtual ~CSWCAreaObject();
-    virtual void Unknown04();
-    virtual void Unknown08();
-    virtual void Unknown0C();
-    virtual void Unknown10();
-    virtual void Unknown14();
-    virtual void Unknown18();
-    virtual void Unknown1C();
-    virtual void Unknown20();
-    virtual void Unknown24();
-    virtual void Unknown28();
-    virtual void Unknown2C();
-    virtual void Unknown30();
-    virtual void Unknown34();
-    virtual void Unknown38();
-    virtual void Unknown3C();
-    virtual void Unknown40();
-    virtual void Unknown44();
-    virtual void Unknown48();
-    virtual void Unknown4C();
-    virtual void Unknown50();
-    virtual void Unknown54();
-    virtual void Unknown58();
-    virtual void Unknown5C();
-    virtual void Unknown60();
-    virtual void Unknown64();
-    virtual void Unknown68();
-    virtual void Unknown6C();
-    virtual void Unknown70();
-    virtual void Unknown74();
-    virtual void Unknown78();
-    virtual void Unknown7C();
-    virtual void Unknown80();
-    virtual void Unknown84();
-    virtual void Unknown88();
-    virtual void SetPosition(const Vector&);
-    char pad_004[0xfc-4];
-    int m_bEnabled;
-    CExoString m_sNote;
-    unsigned long m_nReference;
-    int m_bReference;
-    CSWCAreaObject();
-};
+class Vector;
+#include "shared/res_ref.h"
+#include "shared/exo_string.h"
+#include "shared/swc_area_object.h"
 
-struct Vector { float x, y, z; };
-class CSWCAmbientSound {
-public:
-    virtual void PlayMusic(int);
-    virtual void SetMusicDelay(int);
-    virtual void SetMusicDayTrack(int);
-    virtual void SetMusicNightTrack(int);
-    virtual void PlayBattleMusic(int);
-    virtual void SetBattleMusicTrack(int);
-    virtual void PlayAmbientSound(int);
-    virtual void SetAmbientDayTrack(int);
-    virtual void SetAmbientNightTrack(int);
-    void SetAmbientDayVolume(int);
-    void SetAmbientNightVolume(int);
-};
+#include "shared/vector.h"
+#include "shared/swc_ambient_sound.h"
 class CSWCArea {
 public:
     char pad_000[0x1dc];
@@ -92,12 +27,7 @@ public:
     void Stop();
     void SetPositionElevated(const Vector&); // established name, 0x0066ADC0
 };
-class CExoLocString {
-public:
-    CExoLocString(); CExoLocString(const CExoLocString&); ~CExoLocString();
-    int AddString(int, const CExoString&, unsigned char); // established signature, 0x005EA340
-    void* m_pList; void* m_pPad;
-};
+#include "shared/exo_loc_string.h"
 struct SJournalEntry {
     CExoLocString m_sName;           // 0x00
     CExoLocString m_sText;           // 0x08
@@ -153,12 +83,8 @@ public:
     CSWCModule* GetModule(); // 0x005ED530
     CSWCSoundObject* GetSoundObjectByGameObjectID(unsigned long); // 0x005ED620
 };
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;
-};
-extern CAppManager* g_pAppManager;
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 class CSWCMessage {
 public:
     int MessageReadOverflow(int);

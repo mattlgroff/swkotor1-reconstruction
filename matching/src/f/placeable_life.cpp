@@ -1,34 +1,13 @@
 // CSWSPlaceable lifetime / area / 2DA helpers
 // (b0058_f2_surfmesh_placeable, 0x00584950..0x00587A50).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    ~CExoLocString();
-    void *m_pList;
-    void *m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 template <class T>
 class CExoArrayList {
@@ -68,14 +47,13 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 class CVirtualMachine {
 public:
     int RunScript(CExoString *psFileName, unsigned long oid, int bFlag);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
 
 class CExoTimers {
 public:
@@ -88,36 +66,24 @@ public:
     CExoTimers *m_pcExoTimers;       // +0x4
 };
 
-extern CExoBase *g_pExoBase;
 
 class CSWSObject;
 class CSWCPlaceable;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual CSWSObject *AsSWSObject();         // +0x10
-    virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3c();
-    virtual void v40(); virtual void v44(); virtual void v48();
-    virtual CSWCPlaceable *AsSWCPlaceable();   // +0x4c
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5c();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
-    virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7c();
-    virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8c();
-    virtual void v90();
-    virtual int GetDead();                     // +0x94
-
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-    unsigned long GetID() { return m_idSelf; }
-};
+#include "shared/game_object.h"
 
 class CSWSItem : public CGameObject {
 public:
+    virtual void v70();
+    virtual void v74();
+    virtual void v78();
+    virtual void v7c();
+    virtual void v80();
+    virtual void v84();
+    virtual void v88();
+    virtual void v8c();
+    virtual void v90();
+    virtual int GetDead();  // +0x94
     char pad_0xc[0x27c];
     unsigned char m_nFlags288;       // +0x288
 };
@@ -168,16 +134,8 @@ public:
     CSWCCreature *GetCreatureByGameObjectID(unsigned long oid);
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp *m_pClientExoApp;  // +0x4
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-    CClientExoApp *GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
 
 class CSWArea {
 public:
@@ -191,6 +149,16 @@ public:
 
 class CSWSObject : public CGameObject {
 public:
+    virtual void v70();
+    virtual void v74();
+    virtual void v78();
+    virtual void v7c();
+    virtual void v80();
+    virtual void v84();
+    virtual void v88();
+    virtual void v8c();
+    virtual void v90();
+    virtual int GetDead();  // +0x94
     virtual ~CSWSObject();
     CSWSArea *GetArea();
     void SetArea(CSWSArea *pArea);
@@ -278,7 +246,7 @@ void CSWSPlaceable::RemoveFromArea()
 {
     if (GetArea()) {
         if (m_nBoundingBoxIndex >= 0) {
-            GetArea()->RemoveStaticBoundingBox(GetID());
+            GetArea()->RemoveStaticBoundingBox(GetId());
             m_nBoundingBoxIndex = -1;
         }
         GetArea()->RemoveObjectFromArea(m_idSelf);

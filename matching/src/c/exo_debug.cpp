@@ -8,38 +8,9 @@ public:
     int Write(const CExoString& s);                 // 0x005E6A70
 };
 
-class CExoDebugInternal {
-public:
-    int m_bFilesOpen;                               // 0x00
-    CExoFile* m_pLogFile;                           // 0x04
-    CExoFile* m_pScriptLogFile;                     // 0x08
-    char pad_0xc[0x10];
+#include "shared/exo_debug_internal.h"
 
-    CExoDebugInternal();                            // 0x005EC290
-    ~CExoDebugInternal();                           // 0x005EC680
-    void Warning(int nLine, char* sFile, char* sMessage);   // 0x005EC2B0
-    void GetCurrentTimestamp(CExoString& s);        // 0x005EC560
-    void WriteToScriptLogFile(const CExoString& s);
-    void FlushScriptLogFile();
-    void CloseLogFiles();                           // 0x005EC5C0
-    void OpenLogFiles(const CExoString& s);                // 0x0060E760
-};
-
-class CExoDebug {
-public:
-    CExoString m_sUnknown0;                         // 0x00
-    CExoDebugInternal* m_pcExoDebugInternal;        // 0x08
-    int m_nUnknownC;                                // 0x0c
-
-    CExoDebug();
-    ~CExoDebug();
-
-    void FlushScriptLogFile();
-    void OpenLogFiles(const CExoString& s);
-    void Warning(int nLine, char* sFile, char* sMessage);
-    void GetCurrentTimestamp(CExoString& s);
-    void WriteToScriptLogFile(const CExoString& s);
-};
+#include "shared/exo_debug.h"
 
 // FUNCTION: SWKOTOR 0x005E93E0
 void CExoDebug::FlushScriptLogFile()

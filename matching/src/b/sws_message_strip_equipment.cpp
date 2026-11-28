@@ -8,7 +8,7 @@ int CSWSMessage::SendServerToAllPlayersCreatureUpdate_StripEquippedItems(unsigne
     unsigned char* pMessage;
     unsigned long nSize;
     CExoLinkedList<CSWSClient>* pPlayers = g_pAppManager->GetServerExoApp()->GetPlayerList();
-    void* pPos = pPlayers->GetHeadPos();
+    CExoLinkedListPosition pPos = pPlayers->GetHeadPos();
     while (pPos) {
         CSWSPlayer* pPlayer = (CSWSPlayer*)pPlayers->GetAtPos(pPos);
         if (pPlayer->GetLastUpdateObject(oidCreature)) {

@@ -9,7 +9,7 @@
 #include "b/sws_creature.h"
 
 // .rdata copy of the invalid object id (0x7F000000) some sites load.
-extern const unsigned long OBJECT_INVALID_ID;                   // 0x00746644
+#include "shared/globals.h"
 
 class CGameObject;
 class CSWSCreature;
@@ -160,28 +160,9 @@ public:
     int m_nC;                                                   // 0x0c
 };
 
-class CSWSPlayerStore {
-public:
-    CSWSPlayerStore();                                          // 0x005CA7F0
-    ~CSWSPlayerStore();                                         // 0x005CA900
-    void ClearItems();                                          // 0x005CA030 (name guessed)
-    void ClearRepository();                                     // 0x005CA470
-    void Clear();                                               // 0x005CA4A0
+#include "shared/sws_player_store.h"
 
-    unsigned long m_aSlotItems[18];                             // 0x00
-    int m_aSlotStackSize[18];                                   // 0x48
-    char pad_0x90[0x10];
-};
-
-class CSWSPlayerStoreGUI {
-public:
-    CSWSPlayerStoreGUI();                                       // 0x00560C20
-    void SetOpen(int bOpen);                                    // 0x00560C90
-    ~CSWSPlayerStoreGUI() { delete m_pStore; }
-
-    CSWSPlayerStore* m_pStore;                                  // 0x00
-    int m_bOpen;                                                // 0x04
-};
+#include "shared/sws_player_store_gui.h"
 
 class CSWSPlayerObjectRef {
 public:

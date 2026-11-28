@@ -35,7 +35,7 @@ int CSWCMessage::HandleServerToPlayerDoorUpdate_Add()
   door=new CSWCDoor;
   CResRef ref(model);
   door->LoadModel(ref,255,5);
-  door->SetObjectID(id);
+  door->SetId(id);
   door->SetArea(area);
   if (array->AddExternalObject(&id,door,1)!=GAME_OBJECT_VALID) return 0;
   CClientAIMaster* ai=g_pAppManager->m_pClientExoApp->GetClientAIMaster();

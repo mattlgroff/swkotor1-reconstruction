@@ -3,13 +3,7 @@
 
 #include "c/exo_base.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef operator=(const CResRef& r);            // 0x00406120
-};
+#include "shared/res_ref.h"
 
 class C2DA {
 public:
@@ -32,7 +26,7 @@ public:
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWCModule {
 public:
@@ -93,7 +87,7 @@ void CSWCPlayer::SetPortraitId(unsigned short nPortraitId)
         sPrefix = "po_";
         g_pRules->Get2DArrays()->GetPortraits()->GetCExoStringEntry(nPortraitId, "BaseResRef", &sResRef);
         sResRef = sPrefix + sResRef;
-        m_cPortrait = sResRef.CStr();
+        SetPortrait(sResRef.CStr());
     }
     m_nPortraitId = nPortraitId;
 }

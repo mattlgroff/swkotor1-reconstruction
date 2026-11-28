@@ -2,10 +2,7 @@
 // 0x0044f7e0, 0x0044f8b0, 0x0044fcc0, 0x0044fcd0, 0x0044fcf0, 0x0044fd10.
 // Behavioural reference: src/units/0728/344241bbf2-m46_scene_c1.cpp,
 // src/units/1470/5ac096f97b-scene3d.cpp, src/units/1381/0e2b88478d-w3_client_aurora.cpp.
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Gob {
 public:
@@ -25,7 +22,7 @@ public:
     virtual void SetObjectScale(float fScale, int bRecurse);   // +0xcc
 };
 
-extern int g_nGeomFadeMode;                     // 0x0078e3a0
+#include "shared/globals.h"
 
 class Scene {
 public:

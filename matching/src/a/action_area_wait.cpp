@@ -1,6 +1,4 @@
-extern unsigned long g_action_failed_00745dc4;
-extern unsigned long g_action_in_progress_00745dbc;
-extern unsigned long g_action_complete_00745dc0;
+#include "shared/globals.h"
 
 class CSWSCreature {
 public:

@@ -1,10 +1,6 @@
 // CSWCObject animation/model forwarding leaves, checked against the exact
 // decorated symbols and binary vtable offsets.
-class CResRef {
-public:
-    char m_sResRef[16];
-    CResRef(const CResRef& cResRef);
-};
+#include "shared/res_ref.h"
 
 class CAnimBase {
 public:

@@ -12,8 +12,7 @@ char* AurResDoFile(const char* szName);                                         
 char* AurResGetNextLine();                                                         // 0x0044BFA0
 void AurResInterpret(char* szLine);                                                // 0x0044C1F0
 
-extern int g_nModelsRead;                   // 0x007B932C
-extern MaxTree* g_pCurrentTree;             // 0x007FBAE4
+#include "shared/globals.h"
 
 class SyncInput : public InputBinary {
 public:

@@ -23,7 +23,7 @@ int CSWCMessage::HandleServerToPlayerSoundObject_Stop()
 // FUNCTION: SWKOTOR 0x0064F0F0
 int CSWCMessage::HandleServerToPlayerSoundObject_ChangePosition()
 {
-    Vector position = {0.0f, 0.0f, 0.0f};
+    Vector position(0.0f, 0.0f, 0.0f);
     unsigned long id = ReadOBJECTIDClient();
     position.x = ReadFLOAT(1.0f, 0x20);
     position.y = ReadFLOAT(1.0f, 0x20);

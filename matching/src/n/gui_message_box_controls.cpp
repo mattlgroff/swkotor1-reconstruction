@@ -1,9 +1,6 @@
 // Small CSWGuiMessageBox controls; field and callee offsets are confirmed by
 // the original code, symbols.csv, and the neighbouring worker-L layout.
-class CResRef {
-public:
-    int IsValid() const;                              // 0x00406030
-};
+#include "shared/res_ref.h"
 
 class CSWGuiBorderParams {
 public:

@@ -2,28 +2,9 @@
 #ifndef I_VECTOR_MATH_H
 #define I_VECTOR_MATH_H
 
-extern const float g_fZero;                         // 0x0073D700 (0.0f)
-extern const float g_fOne;                          // 0x0073D764 (1.0f)
+#include "shared/globals.h"
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    Vector& operator+=(const Vector& v);                    // 0x004A9740
-    Vector& operator-=(const Vector& v);                    // 0x004A9770
-    Vector& operator*=(float f);                            // 0x004A97A0
-    Vector& operator/=(float f);                            // 0x004A97D0
-    void Normalize();                                       // 0x004AB130
-
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector.h"
 
 // w first: x87 code multiplies/conjugates element 0 as the scalar part.
 class Quaternion {
@@ -87,8 +68,8 @@ void Outcode(Vector* pPoint, Vector* pMin, Vector* pMax, unsigned char* pCode); 
 float FUN_004aa0f0(const Vector& v);                                        // 0x004AA0F0
 float FUN_004aa130(const Vector& v);                                        // 0x004AA130
 Plane* FUN_004aaab0(const Vector& n, const float& d);                       // 0x004AAAB0
-float FUN_004aadf0(float f);                                                // 0x004AADF0
-float FUN_004aae30(float f);                                                // 0x004AAE30
+float CosLookup(float f);                                                   // 0x004AADF0
+float SinLookup(float f);                                                   // 0x004AAE30
 Vector FUN_004aae70(Vector a, Vector b);                                    // 0x004AAE70
 Vector FUN_004aaee0(Vector a, Vector b);                                    // 0x004AAEE0
 float FUN_004aaf50(const Vector& a, const Vector& b, const Plane& p);       // 0x004AAF50
@@ -105,12 +86,7 @@ Vector NormalizeVector(const Vector& v);                                    // 0
 Vector NormalOf(const Vector& a, const Vector& b, const Vector& c);         // 0x004ACA00
 Quaternion YawPitchRoll(float fYaw, float fPitch, float fRoll);             // 0x004ACAC0
 
-extern Vector g_vXAxis;                             // 0x007A1998
-extern Vector g_vYAxis;                             // 0x007A19A4
-extern Vector g_vZAxis;                             // 0x007A19B0
 Quaternion normalize(Quaternion q);                                         // 0x004A9D60
 
-extern const float g_afSinTable[32];                // 0x00743FE8
-extern const float g_afCosTable[32];                // 0x00744070
 
 #endif

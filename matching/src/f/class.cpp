@@ -4,20 +4,9 @@ extern "C" void *memset(void *p, int c, unsigned int n);
 #pragma intrinsic(memset)
 extern "C" void free(void *p);
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const CExoString &s);
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct STR_RES {
     CExoString szString;
@@ -30,8 +19,7 @@ public:
     int GetSimpleString(unsigned long strref, STR_RES *pRes, unsigned char nGender);
 };
 
-extern CTlkTable *g_pTlkTable;
-extern const unsigned char g_nGender;
+#include "shared/globals.h"
 
 class CSWBaseItem {
 public:

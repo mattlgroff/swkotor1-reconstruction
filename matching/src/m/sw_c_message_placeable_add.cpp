@@ -1,22 +1,8 @@
 // CSWCMessage::HandleServerToPlayerPlaceableUpdate_Add (nwchandlemessage.o).
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef(const CExoString& s);                   // 0x00406D60
-    CResRef(const char* s);                         // 0x00406D80
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 void* operator new(unsigned int nSize);
 void operator delete(void* p);
@@ -40,7 +26,7 @@ public:
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWCArea;
 class CAnimationBase;
@@ -167,16 +153,8 @@ public:
     unsigned long ServerToClientObjectId(unsigned long nId);    // 0x005EDA50
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
 
 class CSWCMessage {
 public:

@@ -104,17 +104,7 @@ public:
     }
 };
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator+(const Vector& o) const { return Vector(x + o.x, y + o.y, z + o.z); }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    Vector operator-(const Vector& o) const { return Vector(x - o.x, y - o.y, z - o.z); }
-    int IsZero();                           // 0x0046A620
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:

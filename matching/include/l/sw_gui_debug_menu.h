@@ -6,7 +6,7 @@
 
 #include "l/sw_gui_skill_info.h"
 
-extern CExoString g_sBuildNumber;                   // 0x007A3CC4
+#include "shared/globals.h"
 
 class CGuiInGameDebug : public CGuiInGame {
 public:
@@ -101,10 +101,7 @@ public:
     int m_nOptions;                                 // 0x488
 };
 
-class CSWBaseItemArrayL {
-public:
-    int m_nNumBaseItems;                            // 0x00
-};
+#include "shared/sw_base_item_array_l.h"
 
 // vtable 0x00757B68; ctor 0x006D0620 (not matched yet), ??_G 0x006D09C0,
 // implicit dtor 0x006D09E0. Lists the base items (one button each).

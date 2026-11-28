@@ -5,21 +5,9 @@
 #include <math.h>
 #include "c/client_exo_app.h"
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
-class CExoInput {
-public:
-    void UpdateJoysticks();                         // 0x005ED310 (shared empty body)
-    void SetActive(int b);                          // 0x005DF540
-    void PauseRumble();                             // 0x005DF570
-    int GetActive();                                // 0x005DF510
-    void ClearEvents();                             // 0x005DF4E0
-    int SetRumble(int nMotor, float fLeft, float fRight, unsigned long nDuration);   // 0x005DF550
-};
+#include "shared/exo_input.h"
 
 class CSWSCreature {
 public:
@@ -100,13 +88,7 @@ public:
     void SetCurValue(int nValue);                   // 0x00417FB0
 };
 
-class CResRef {
-public:
-    CResRef(const CExoString& s);                   // 0x00406D60
-    CResRef(const char* s);                         // 0x00406D80
-    int operator!=(const CExoString& s) const;      // 0x00406DE0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CExoStreamingSoundSource {
 public:
@@ -153,10 +135,7 @@ public:
     char pad_0x5c[0x5f8 - 0x5c];
 };
 
-class CSWCAmbientSound {
-public:
-    void StopAll(int b);                            // 0x0068E1B0
-};
+#include "shared/swc_ambient_sound.h"
 
 class CServerExoAppS1 {
 public:
@@ -208,14 +187,7 @@ public:
     CExoString CacheResource(const CExoString& sName, unsigned short nType);       // 0x004085F0
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
-extern CExoInput* g_pExoInput;                      // 0x007A39E4
-extern const int SOUND_MODE_MOVIE;                  // 0x0074C5F8
-extern const int MUSIC_STATE_COMBAT_PAUSED;         // 0x0074C5F4
-extern int g_bCameraResetPending;                   // 0x007A2288
-extern int g_bAppActive;                            // 0x007A3A38
-extern const int MUSIC_STATE_NORMAL;                // 0x0074C5EC
+#include "shared/globals.h"
 void PumpMessages();                                // 0x00401510
 void PauseTimers();                                 // 0x00403CF0
 void ResumeTimers();                                // 0x00403DE0
@@ -232,28 +204,21 @@ public:
     int array_size;                                 // 0x08
 };
 
-class CExoMoviePlayer {
-public:
-    int GetState();                                 // 0x0070C1F0
-    void ShowFadePanel();                           // 0x0070C210
-    void PlayMoviesAsync(const CExoStringMovieList& lstMovies, int a, int b);  // 0x0070C200
-    void PlayMoviesAsync(CExoArrayList<CExoString>& lstMovies, unsigned long nFlags, CExoArrayList<int>* pMovieFlags);  // 0x0070C200
-};
-extern const int g_nSoundModeMenu;                  // 0x0074C5FC
+#include "shared/exo_movie_player.h"
 
 // FUNCTION: SWKOTOR 0x00602C90
 void CClientExoAppInternal::UpdateConnectionStall()
 {
-    CAppPad* pPad = g_pAppManager->m_pPad;
+    CSWReentrantServerStats* pPad = g_pAppManager->m_pReentrantServerStats;
     if (pPad->m_n10 == 1) {
         pPad->m_n10 = 0;
         return;
     }
     if (pPad->m_n14 == 1) {
         pPad->m_n14 = 0;
-        pPad = g_pAppManager->m_pPad;
-        pPad->m_n00 = 0;
-        pPad->m_n04 = 0;
+        pPad = g_pAppManager->m_pReentrantServerStats;
+        pPad->m_bActive = 0;
+        pPad->m_nKind = 0;
         if (m_bConnectionStalled) {
             ShutDownToMainMenu();
         }
@@ -950,7 +915,6 @@ void CClientExoAppInternal::SetPauseState(unsigned char nState, int bPause, CExo
             AddToPauseExclusionList((unsigned long)pList->m_pcExoLinkedListInternal->GetAtPos(pos));
             pList->GetNext(pos);
         }
-        delete pList->m_pcExoLinkedListInternal;
         delete pList;
     }
 }
@@ -1015,7 +979,6 @@ public:
     void SetMovieShown(const CExoString& sMovie, int bShown);   // 0x0061D230
 };
 
-extern unsigned char g_nNumLiveDirectories;         // 0x0073ECD2 (descriptive)
 
 // FUNCTION: SWKOTOR 0x005FBBF0
 int CClientExoAppInternal::AddMovieToExoArrayList(const CExoString& sMovie, CExoArrayList<CExoString>& lstMovies)

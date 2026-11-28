@@ -4,24 +4,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(int n);                              // 0x005E5BC0
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    int IsEmpty() const;                            // 0x005E58A0
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    char* CStr() const;                             // 0x005E5670
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:
@@ -84,7 +69,7 @@ public:
     CSWBaseItemArray* GetBaseItems() { return m_pBaseItems; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CCreatureAppearanceS3 {
 public:
@@ -92,7 +77,6 @@ public:
     unsigned short m_nAppearanceType;               // 0x18
 };
 
-extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
 
 class CSWCCreature;
 class CSWCItem;
@@ -182,15 +166,8 @@ public:
     class CGameObject* GetGameObject(unsigned long oid);  // 0x005ED580
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWCCreature {
 public:
@@ -750,11 +727,7 @@ void SwitchWeaponEvent(CAurObject* pObject, char* sEvent, void* pData)
     }
 }
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CExoSound {
 public:
@@ -762,20 +735,8 @@ public:
                            unsigned long a, unsigned long b, unsigned long c, float fPitch);   // 0x005D5E10
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
-extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
-extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
 
-extern int g_nAppearanceCol_SoundAppType;           // 0x007A2128
-extern int g_nAppearanceSoundsCol_Weapon;           // 0x007A2140
-extern int g_nAppearanceSoundsCol_ArmorType;        // 0x007A2144
-extern int g_nWeaponSoundPitchOffsetColumn;         // 0x007A21A4
-extern int g_nDoorTypesCol_SoundAppType;            // 0x007A224C
-extern int g_nGenericDoorsCol_SoundAppType;         // 0x007A2250
-extern int g_nPlaceablesCol_SoundAppType;           // 0x007A2254
-extern int g_nPlaceableSoundsCol_ArmorType;         // 0x007A2260
 
 class CSWCCombatAttackData {
 public:
@@ -806,22 +767,7 @@ public:
 
 class CSWCObject;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-    virtual void v10();
-    virtual CSWCDoor* AsSWCDoor();                  // 0x14
-    virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48();
-    virtual CSWCPlaceable* AsSWCPlaceable();        // 0x4c
-
-    unsigned long m_idSelf;                         // 0x04
-    unsigned char m_nObjectType;                    // 0x08
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:

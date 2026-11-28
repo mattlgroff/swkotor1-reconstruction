@@ -18,15 +18,7 @@ __declspec(dllimport) __declspec(noreturn) void __stdcall ExitThread(unsigned lo
 
 class CExoCriticalSectionInternal;
 
-class CExoCriticalSection {
-public:
-    CExoCriticalSectionInternal* m_pcExoCriticalSectionInternal;   // 0x00
-
-    CExoCriticalSection();                          // 0x005E9290
-    ~CExoCriticalSection();                         // 0x005E9320
-    void EnterCriticalSection();                    // 0x005E9300
-    void LeaveCriticalSection();                    // 0x005E9310
-};
+#include "shared/exo_critical_section.h"
 
 unsigned long __stdcall ExoFileThreadProc(void* pParameter);   // 0x005EBE10
 
@@ -47,7 +39,7 @@ public:
     ~CExoFileThread();
 };
 
-extern CExoFileThread g_cExoFileThread;             // 0x008328B0
+#include "shared/globals.h"
 
 // Read-ahead worker: each wake-up reads into the queued buffer, then suspends
 // itself until the next request. A real start missing from functions.csv.

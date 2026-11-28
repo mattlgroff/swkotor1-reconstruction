@@ -6,12 +6,7 @@ struct NPartyVector {
     float z;
 };
 
-class CSWFollowPath {
-public:
-    // Inferred name; the binary confirms thiscall, four stack args, RET 10h.
-    int GetFollowPoint(float fDistance, NPartyVector* pPoint,
-                       unsigned long* pPointIndex, int nSide);
-};
+#include "shared/sw_follow_path.h"
 
 class CSWPartyMember {
 public:

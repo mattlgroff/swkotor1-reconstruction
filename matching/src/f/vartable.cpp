@@ -11,7 +11,7 @@ struct CResList {
     unsigned long m_nType;
     unsigned long m_nIndex;
     unsigned long m_nCount;
-    char pad[0x8];
+    char pad_0xc[0x8];
 };
 
 class CResGFF {
@@ -29,11 +29,7 @@ public:
     int WriteFieldDWORD(CResStruct *pStruct, unsigned long nValue, char *szLabel);
 };
 
-class CSWBooleanArray {
-public:
-    CSWBooleanArray() { for (int i = 0; i < 3; i++) m_a[i] = 0; }
-    unsigned long m_a[3];
-};
+#include "shared/sw_boolean_array.h"
 
 class CSWVarTable {
 public:

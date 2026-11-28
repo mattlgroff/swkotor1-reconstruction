@@ -3,10 +3,7 @@
 // title-movies drawable family instead of l/sw_gui_inventory_equip.h.
 #include "l/sw_gui_title_movies.h"
 
-class CSWGuiInGameItemEntry {
-public:
-    virtual ~CSWGuiInGameItemEntry();               // 0x006B7FA0
-};
+#include "shared/sw_gui_in_game_item_entry.h"
 
 class CSWCCreature;
 

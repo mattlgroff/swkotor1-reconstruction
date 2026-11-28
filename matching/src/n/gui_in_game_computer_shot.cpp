@@ -1,6 +1,6 @@
 // CGuiInGame::SetComputerCameraShot (guiingame.o). Standalone layout copied
 // from gui_in_game_set_shot.cpp.
-struct Vector { float x,y,z; };
+#include "shared/vector.h"
 class Quaternion {
 public:
     float w,x,y,z;
@@ -33,8 +33,8 @@ public:
     CSWCModule* GetModule(); // 0x005ED530
     void EnableVideoEffect(int nEffect); // 0x005EDF10
 };
-class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
-extern CAppManager* g_pAppManager; // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 class CSWGuiPanel {
 public:
     virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();

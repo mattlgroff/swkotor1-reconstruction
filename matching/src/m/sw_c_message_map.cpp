@@ -26,7 +26,7 @@ int CSWCMessage::HandleServerToPlayerMapPinEnabled()
 // FUNCTION: SWKOTOR 0x00652D60
 int CSWCMessage::HandleServerToPlayerMapPinReferenceNumber()
 {
-    Vector position = {0.0f, 0.0f, 0.0f};
+    Vector position(0.0f, 0.0f, 0.0f);
     CExoString note;
     if (MessageReadOverflow(1)) return 0;
     position.x = ReadFLOAT(1.0f, 0x20);

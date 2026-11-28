@@ -1,19 +1,8 @@
 // Pilot 4 arm B: 0x006B28C0, GUI character panel refresh (portrait, level, HP).
 
-class CExoString {
-public:
-    CExoString();                               // 0x005B3190
-    CExoString(int n);                          // 0x005E5BC0
-    ~CExoString();                              // 0x005E5C20
-    void Format(const char *format, ...);       // 0x005E5680
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWCCreatureStats {
 public:
@@ -80,16 +69,9 @@ public:
     CSWPartyTable *GetPartyTable();             // 0x004AEE70
 };
 
-class CAppManager {
-public:
-    void *m_pUnknown00;
-    CClientExoApp *m_pClientExoApp;             // 0x04
-    CServerExoApp *m_pServerExoApp;             // 0x08
-    CClientExoApp *GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;              // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWGuiBorderParams {
 public:

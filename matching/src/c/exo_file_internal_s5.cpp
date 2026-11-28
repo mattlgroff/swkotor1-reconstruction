@@ -6,7 +6,7 @@
 extern "C" __declspec(dllimport) void __stdcall Sleep(unsigned long nMilliseconds);   // IAT 0x0073D1E4
 
 // Descriptive name: the file-retry log message buffer at 0x008328D8.
-extern CExoString g_sExoFileRetryLog;
+#include "shared/globals.h"
 
 class CExoFileInternal {
 public:

@@ -10,11 +10,8 @@ int __stdcall GetFileVersionInfoA(const char* sFileName, unsigned long nHandle, 
 int __stdcall VerQueryValueA(const void* pBlock, const char* sSubBlock, void** ppBuffer, unsigned int* pLen);   // 0x0070C132
 }
 
-extern void* g_hInstance;                           // 0x007A39C0
-extern CExoString g_sPrivateBuild;                  // 0x007A3CC4
-extern CExoString g_sInternalName;                  // 0x007A3CCC
-extern CExoString g_sProductVersion;                // 0x007A3CD4
-extern CExoString g_sLegalCopyright;                // 0x007A3CDC
+#include "shared/globals.h"
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x005E6B10
 void LoadVersionInfo()

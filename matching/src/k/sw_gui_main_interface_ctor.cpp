@@ -4,21 +4,9 @@
 // local map-view label's destructor is inlined, so CSWGuiLabel's is an
 // inline virtual destructor here (out-of-line copy 0x00419D10).
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    void Format(const char* szFormat, ...);         // 0x005E5680
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CSWGuiExtent {
     CSWGuiExtent() {}
@@ -59,13 +47,11 @@ public:
     CExoString GetSimpleString(unsigned long nStrRef);  // 0x0041E8F0
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
+#include "shared/globals.h"
 
 class CAurGUIImage;
 CAurGUIImage* NewCAurGUIImage(char* sName);         // 0x0045A260
 
-extern unsigned long g_nScreenWidth;                // 0x0078D1D4
-extern unsigned long g_nScreenHeight;               // 0x0078D1D8
 
 class CSWGuiManager {
 public:
@@ -190,11 +176,7 @@ public:
 };
 
 // Personal action list (CExoArrayList of target actions), 0xc bytes.
-struct CSWGuiTargetActionList {
-    CSWGuiTargetActionList();                       // 0x005A76D0
-    ~CSWGuiTargetActionList();                      // 0x005FBFB0
-    char pad_0x0[0xc];
-};
+#include "shared/sw_gui_target_action_list.h"
 
 // 0x1af0 bytes.
 class CSWGuiTargetActionMenu {
@@ -330,7 +312,6 @@ public:
 
 typedef char KMainInterfaceSize[(sizeof(CSWGuiMainInterface) == 0xc8cc) ? 1 : -1];
 
-extern CSWGuiMainInterface* g_pMainInterface;       // 0x00833BB4 (descriptive)
 
 typedef void (CSWGuiPanel::*CSWGuiCallback)(CSWGuiControl*);
 

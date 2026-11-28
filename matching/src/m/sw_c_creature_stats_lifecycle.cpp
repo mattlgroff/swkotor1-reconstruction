@@ -4,21 +4,9 @@
 
 #include <string.h>
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef operator=(const char* s);               // 0x00406290
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWPortrait {
 public:
@@ -47,12 +35,7 @@ public:
     }
 };
 
-class CSWCombatInformation {
-public:
-    CSWCombatInformation();                         // 0x00552280
-    ~CSWCombatInformation();                        // 0x00550E00
-    char pad_0x0[0x48];
-};
+#include "shared/sw_combat_information.h"
 
 class CSWCFeatUses;
 
@@ -85,9 +68,7 @@ struct CSWRace {
     char pad_0x1e[0x16];
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern const unsigned short RACIAL_TYPE_HUMAN;      // 0x0074BF14
-extern const unsigned char CLASS_TYPE_SCOUT;        // 0x0074B319
+#include "shared/globals.h"
 
 class CSWCCreatureStats {
 public:

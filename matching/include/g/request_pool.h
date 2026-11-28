@@ -13,22 +13,7 @@ void __cdecl operator delete[](void* p) throw();
 #include "g/exo_list.h"
 
 // GL_ARB_vertex_buffer_object entry points (function-pointer globals).
-typedef void(__stdcall* PFNGLBINDBUFFERARB)(unsigned int target, unsigned int buffer);
-typedef void(__stdcall* PFNGLDELETEBUFFERSARB)(int n, const unsigned int* buffers);
-typedef void(__stdcall* PFNGLGENBUFFERSARB)(int n, unsigned int* buffers);
-typedef void(__stdcall* PFNGLBUFFERDATAARB)(unsigned int target, int size, const void* data, unsigned int usage);
-typedef void(__stdcall* PFNGLBUFFERSUBDATAARB)(unsigned int target, int offset, int size, const void* data);
-typedef void*(__stdcall* PFNGLMAPBUFFERARB)(unsigned int target, unsigned int access);
-typedef unsigned char(__stdcall* PFNGLUNMAPBUFFERARB)(unsigned int target);
-typedef void(__stdcall* PFNGLGETBUFFERPARAMETERIVARB)(unsigned int target, unsigned int pname, int* params);
-extern PFNGLBINDBUFFERARB glBindBufferARB;                       // 0x007bb7b4
-extern PFNGLDELETEBUFFERSARB glDeleteBuffersARB;                 // 0x007bb7bc
-extern PFNGLGENBUFFERSARB glGenBuffersARB;                       // 0x007bb5b4
-extern PFNGLBUFFERDATAARB glBufferDataARB;                       // 0x007bb544
-extern PFNGLBUFFERSUBDATAARB glBufferSubDataARB;                 // 0x007bb75c
-extern PFNGLMAPBUFFERARB glMapBufferARB;                         // 0x007bb634
-extern PFNGLUNMAPBUFFERARB glUnmapBufferARB;                     // 0x007bb6e0
-extern PFNGLGETBUFFERPARAMETERIVARB glGetBufferParameterivARB;   // 0x007bb5a4
+#include "shared/gl_ext.h"
 
 #define GL_ARRAY_BUFFER_ARB 0x8892
 #define GL_ELEMENT_ARRAY_BUFFER_ARB 0x8893
@@ -121,9 +106,6 @@ public:
     CExoArrayList<unsigned int> m_aTargets; // +0x50
 };
 
-extern RequestPoolManager* g_pRequestPoolManager;  // 0x007a68a4
-extern int g_nPoolBytes;                           // 0x007a68a8
-extern int g_nPoolPages;                           // 0x007a68ac
-extern unsigned char g_bVBOWriteOnly;              // 0x0078e398
+#include "shared/globals.h"
 
 #endif

@@ -66,7 +66,7 @@ public:
     unsigned char GetNumSkills() { return m_nNumSkills; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWSCreature;
 class CSWCCreatureStats;

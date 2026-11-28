@@ -1,10 +1,4 @@
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    CExoString(const char* s);
-    ~CExoString();
-};
+#include "shared/exo_string.h"
 
 class CSWPartyTable {
 public:
@@ -18,19 +12,14 @@ public:
     CSWPartyTable* GetPartyTable();  // 0x004AEE70
 };
 
-class CAppManager {
-public:
-    char pad_0x0[8];
-    CServerExoApp* m_pServerExoApp;  // +0x8
-};
+#include "shared/app_manager.h"
 
 class CVirtualMachine {
 public:
     int RunScript(CExoString* pScript, unsigned long oid, int b); // 0x005D0FC0
 };
 
-extern CAppManager* g_pAppManager;        // 0x007A39FC
-extern CVirtualMachine* g_pVirtualMachine; // 0x007A3A00
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x005F2A20
 void __fastcall TogglePartyFollow(void*, void*)

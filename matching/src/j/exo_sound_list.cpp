@@ -19,14 +19,14 @@ CPriorityGroup::CPriorityGroup()
 
 // The members below are identical for every T; the linker folded them.
 // FUNCTION: SWKOTOR 0x005D6C40 SYMBOL: ??0?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAE@XZ
-// FUNCTION: SWKOTOR 0x005D6CB0 SYMBOL: ?AddHead@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAXPAVCExoSoundSourceInternal@@@Z
-// FUNCTION: SWKOTOR 0x005D6CC0 SYMBOL: ?Contains@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEHPAVCExoSoundSourceInternal@@@Z
-// FUNCTION: SWKOTOR 0x005D6CD0 SYMBOL: ?GetHead@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAVCExoSoundSourceInternal@@XZ
-// FUNCTION: SWKOTOR 0x005D6CE0 SYMBOL: ?GetHeadPos@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAXXZ
-// FUNCTION: SWKOTOR 0x005D6CF0 SYMBOL: ?Remove@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAVCExoSoundSourceInternal@@PAX@Z
-// FUNCTION: SWKOTOR 0x005D6D00 SYMBOL: ?GetCount@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEKXZ
-// FUNCTION: SWKOTOR 0x005D6D10 SYMBOL: ?GetAtPos@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAVCExoSoundSourceInternal@@PAX@Z
-// FUNCTION: SWKOTOR 0x005D6D20 SYMBOL: ?GetNext@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAVCExoSoundSourceInternal@@AAPAX@Z
+// FUNCTION: SWKOTOR 0x005D6CB0 SYMBOL: ?AddHead@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAVCExoLinkedListNode@@PAVCExoSoundSourceInternal@@@Z
+// FUNCTION: SWKOTOR 0x005D6CC0 SYMBOL: ?Contains@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QBEHPAVCExoSoundSourceInternal@@@Z
+// FUNCTION: SWKOTOR 0x005D6CD0 SYMBOL: ?GetHead@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QBEPAVCExoSoundSourceInternal@@XZ
+// FUNCTION: SWKOTOR 0x005D6CE0 SYMBOL: ?GetHeadPos@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QBEPAVCExoLinkedListNode@@XZ
+// FUNCTION: SWKOTOR 0x005D6CF0 SYMBOL: ?Remove@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QAEPAVCExoSoundSourceInternal@@PAVCExoLinkedListNode@@@Z
+// FUNCTION: SWKOTOR 0x005D6D00 SYMBOL: ?GetCount@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QBEKXZ
+// FUNCTION: SWKOTOR 0x005D6D10 SYMBOL: ?GetAtPos@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QBEPAVCExoSoundSourceInternal@@PAVCExoLinkedListNode@@@Z
+// FUNCTION: SWKOTOR 0x005D6D20 SYMBOL: ?GetNext@?$CExoLinkedList@VCExoSoundSourceInternal@@@@QBEPAVCExoSoundSourceInternal@@AAPAVCExoLinkedListNode@@@Z
 template class CExoLinkedList<CExoSoundSourceInternal>;
 
 // FUNCTION: SWKOTOR 0x005D78F0

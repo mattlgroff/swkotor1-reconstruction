@@ -1,40 +1,12 @@
 // ~CExoInputInternal (b005e6 cluster), worker C r8. Self-contained: the
 // member containers need destructors that exo_input.h's users must not see.
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
+#include "shared/exo_string.h"
 
-    ~CExoString();                                  // 0x005E5C20
-};
 
-typedef void* CExoLinkedListPosition;
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    void* pHead;                                    // 0x00
-    void* pTail;                                    // 0x04
-    unsigned long nCount;                           // 0x08
 
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    void* RemoveHead();                             // 0x005E9C80
-};
-
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
-
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-};
 
 template <class T>
 class CExoArrayList {
@@ -65,12 +37,7 @@ public:
     }
 };
 
-class CExoCriticalSection {
-public:
-    void* m_pcExoCriticalSectionInternal;           // 0x00
-
-    ~CExoCriticalSection();                         // 0x005E9320
-};
+#include "shared/exo_critical_section.h"
 
 class CExoInputClass {
 public:
@@ -91,14 +58,9 @@ public:
     char pad_0x4[0x34];
 };
 
-struct CExoInputRepeatEvent {
-    unsigned long m_nEvent;                         // 0x00
-    char pad_0x4[0x18];
-};
+#include "shared/exo_input_repeat_event.h"
 
-struct CExoInputBufferedPayload {
-    char pad_0x0[0x20];
-};
+#include "shared/exo_input_buffered_payload.h"
 
 struct CExoInputBufferedEvent {
     unsigned long m_nEvent;                         // 0x00

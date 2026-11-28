@@ -3,13 +3,7 @@
 #include "i/autosave_params.h"
 #include <string.h>
 
-// FUNCTION: SWKOTOR 0x004B1330
-CVirtualMachineCmdImplementer::~CVirtualMachineCmdImplementer()
-{
-}
 
-// Hidden start inside functions.csv's 0x004B1330 entry.
-// FUNCTION: SWKOTOR 0x004B1340 SYMBOL: ??_GCVirtualMachineCmdImplementer@@UAEPAXI@Z
 
 // FUNCTION: SWKOTOR 0x004B1360
 CServerInfo::~CServerInfo()
@@ -114,12 +108,12 @@ int KOTOR_AUTOSAVE_PARAMS::SaveToGFF(CResGFF* pGFF, CResStruct* pStruct)
 }
 
 // FUNCTION: SWKOTOR 0x004B13E0
-void CUnknown004b13e0::FUN_004b13e0(unsigned long nValue)
+void CSWReentrantServerStats::FUN_004b13e0(unsigned long nValue)
 {
-    m_n00 = 1;
-    m_n04 = nValue;
+    m_bActive = 1;
+    m_nKind = nValue;
     m_n10 = 1;
-    m_n38 = 0;
+    m_nLoadError = 0;
 }
 
 // FUNCTION: SWKOTOR 0x004B14B0

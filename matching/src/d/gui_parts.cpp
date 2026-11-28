@@ -424,7 +424,7 @@ CSWGuiText::~CSWGuiText()
     }
 }
 
-extern float g_fGuiPulse;                           // 0x0078d3d4
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00416240
 void CSWGuiText::Draw(float fDelta)

@@ -1,9 +1,6 @@
 // Pilot 4 arm B: 0x00512D00, creature follow-point path check.
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 inline Vector operator-(const Vector &a, const Vector &b)
 {
@@ -19,25 +16,11 @@ inline float MagnitudeSquared(const Vector &v)
     return v.x * v.x + v.y * v.y + v.z * v.z;
 }
 
-extern const unsigned long ACTION_IN_PROGRESS;  // 0x00745DBC
-extern const unsigned long ACTION_COMPLETE;     // 0x00745DC0
+#include "shared/globals.h"
 
-class CSWFollowPath {
-public:
-    Vector *GetFollowPoint(int n);              // 0x00634CC0
-    char pad_0x0[0xfa4];
-    int m_nCurrent;                             // 0xfa4
-};
+#include "shared/sw_follow_path.h"
 
-struct CFollowNode {
-    char pad_0x0[0x4];
-    int m_nState;                               // 0x04
-    char pad_0x8[0x10];
-    Vector m_vStart;                            // 0x18
-    int m_nStart;                               // 0x24
-    Vector m_vEnd;                              // 0x28
-    int m_nEnd;                                 // 0x34
-};
+#include "shared/follow_node.h"
 
 class CSWSCreature {
 public:

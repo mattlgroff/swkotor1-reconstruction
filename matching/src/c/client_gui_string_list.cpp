@@ -9,7 +9,7 @@ public:
     void ParseTokens(CExoString* pString);              // 0x0041DD30
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
+#include "shared/globals.h"
 
 template <class T>
 void CExoArrayList<T>::Allocate(int n)

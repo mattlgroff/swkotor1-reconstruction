@@ -96,8 +96,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetItemNonEquippable(int nCommandId
     return 0;
 }
 
-extern const unsigned long OBJECT_INVALID_ID;               // 0x00746644
-extern const unsigned long EVENT_SIGNAL_EVENT;              // 0x007441DC (name guessed)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x005439D0
 int CSWVirtualMachineCommands::ExecuteCommandSignalEvent(int nCommandId, int nParameters)
@@ -186,8 +185,6 @@ struct CSWSObjectDestroyView {
     int m_bSelectableWhenDead;                              // 0xf4
 };
 
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633 (4)
-extern const unsigned long OBJECT_INVALID_ID;               // 0x00746644
 
 // FUNCTION: SWKOTOR 0x00542DC0
 int CSWVirtualMachineCommands::ExecuteCommandSetIsDestroyable(int nCommandId, int nParameters)

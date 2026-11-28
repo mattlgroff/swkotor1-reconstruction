@@ -21,7 +21,7 @@ public:
     char pad_0x0[0x4];
     CExoTimers* m_pcExoTimers;                      // 0x4
 };
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0050CCF0
 float __stdcall GetObstructionFactor(Vector vFrom, Vector vTo)

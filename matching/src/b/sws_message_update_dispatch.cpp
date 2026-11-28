@@ -1,25 +1,16 @@
 // Game-object update control; local minimal layouts preserve the server ABI.
 #include "b/sws_message.h"
 
-extern const unsigned char GAME_OBJECT_VALID; // 0x0074666C
+#include "shared/globals.h"
 
 class CSWSArea;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v01(); virtual void v02(); virtual void v03();
-    virtual CSWSObject* AsSWSObject();                         // 0x10
-    virtual void v05(); virtual void v06(); virtual void v07();
-    virtual void v08(); virtual void v09(); virtual void v10(); virtual void v11();
-    virtual CSWSCreature* AsSWSCreature();                      // 0x30
-    unsigned long m_idSelf;                                   // 0x04
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
     CSWSArea* GetArea();                                      // 0x004CB120
-    char pad_0x8[0x1f8 - 0x8];
+    char pad_0xc[0x1ec];
     int m_bVisible;                                           // 0x1f8
 };
 
@@ -28,12 +19,7 @@ public:
     CSWSArea* GetArea();                                      // 0x004C30F0
 };
 
-class CSWSPlayerLUOSortedObjectList {
-public:
-    unsigned long m_oidObject;
-    unsigned long m_nUnused;
-    unsigned long m_nCategory;
-};
+#include "shared/sws_player_luo_sorted_object_list.h"
 
 // FUNCTION: SWKOTOR 0x00578060
 // NONMATCH: stack-slot reuse and flag-register allocation differ (14 instructions).

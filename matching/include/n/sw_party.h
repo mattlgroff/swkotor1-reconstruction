@@ -4,23 +4,7 @@
 #ifndef MATCHING_N_SW_PARTY_H
 #define MATCHING_N_SW_PARTY_H
 
-class Vector {
-public:
-    float x, y, z;
-
-#ifdef N_SW_PARTY_ZERO_VECTOR
-    // The party constructor's translation unit sees a zeroing default
-    // constructor (member and array construction in 0x00636170).
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-#else
-    Vector() {}
-#endif
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    Vector& operator+=(const Vector& v);            // 0x004A9740
-};
+#include "shared/vector_ops.h"
 
 class Quaternion {
 public:
@@ -36,16 +20,7 @@ Vector Normalize(const Vector& v);                      // 0x004AB180
 float Magnitude(const Vector& v);                       // 0x004AB100, descriptive
 float DegreesToRadians(float fDegrees);                 // 0x004A96D0, descriptive
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    void Format(const char* fmt, ...);              // 0x005E5680
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:
@@ -64,7 +39,7 @@ public:
     CTwoDimArrays* m_p2DArrays;                       // +0xB8
 };
 
-extern CSWRules* g_pRules;                            // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWPartyTable {
 public:
@@ -120,16 +95,8 @@ public:
                             int bArg, Vector* pResult);              // 0x004AEB60
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;                               // +0x00
-    CClientExoApp* m_pClientExoApp;                   // +0x04
-    CServerExoApp* m_pServerExoApp;                   // +0x08
+#include "shared/app_manager.h"
 
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                    // 0x007A39FC
 
 // One 0x88-byte party slot, at party +0x24 (CSWPartyMemberData).
 class CSWPartyMember {

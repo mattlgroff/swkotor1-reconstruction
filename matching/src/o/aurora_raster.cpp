@@ -130,7 +130,7 @@ int CAuroraInterface::ReadRasterHeader(char* szName, unsigned long* pWidth, unsi
     if (strlen(szName) > 16) {
         return 0;
     }
-    CAuroraTexture cTexture(CResRef(szName), 0);
+    CAuroraTexture cTexture(szName, 0);
     return cTexture.ReadTextureHeader(pWidth, pHeight, pBytesPerPixel);
 }
 
@@ -142,7 +142,7 @@ int CAuroraInterface::ReadProcessedRasterHeader(char* szName, int* pWidth, int* 
     if (strlen(szName) > 16) {
         return 0;
     }
-    CAuroraProcessedTexture cTexture(CResRef(szName), 0);
+    CAuroraProcessedTexture cTexture(szName, 0);
     return cTexture.ReadProcessedTextureHeader(pWidth, pHeight, pFormat, pCompressedSize, pDataSize,
                                                pAlphaTest, pMipMaps);
 }
@@ -155,7 +155,7 @@ int CAuroraInterface::ReadCompressedRasterHeader(char* szName, unsigned long* pW
     if (strlen(szName) > 16) {
         return 0;
     }
-    CAuroraCompressedTexture cTexture(CResRef(szName), 0);
+    CAuroraCompressedTexture cTexture(szName, 0);
     return cTexture.ReadTextureHeader(pWidth, pHeight, pBytesPerPixel, pDataSize, pAlphaMean);
 }
 
@@ -166,7 +166,7 @@ int CAuroraInterface::Get16BitRasterHeader(char* szName, unsigned long* pWidth, 
     if (strlen(szName) > 16) {
         return 0;
     }
-    CAurora16BitTexture cTexture(CResRef(szName), 0);
+    CAurora16BitTexture cTexture(szName, 0);
     return cTexture.ReadTextureHeader(pWidth, pHeight, pAlphaMean, pDataSize);
 }
 

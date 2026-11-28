@@ -3,22 +3,12 @@
 // the named module.
 #include "i/server_exo_app.h"
 
-class CAppManager {
-public:
-    void* m_p0;
-    void* m_pClientExoApp;                                          // +0x04
-    CServerExoApp* m_pServerExoApp;                                 // +0x08
-};
-extern CAppManager* g_pAppManager;                                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
-class CExoInput {
-public:
-    void UnpauseRumble();                                           // 0x005DF580
-};
-extern CExoInput* g_pExoInput;                                      // 0x007A39E4
+#include "shared/exo_input.h"
 
-extern unsigned char g_nLiveFolderCount;                            // 0x0073ECD2
 
 // FUNCTION: SWKOTOR 0x004B51A0
 int CServerExoAppInternal::GetModulePreviouslyVisited(CExoString& sModule)

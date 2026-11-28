@@ -7,10 +7,7 @@ extern "C" __declspec(dllimport) void __stdcall glScalef(float, float, float);
 #define __max(a, b) (((a) > (b)) ? (a) : (b))
 #define __min(a, b) (((a) < (b)) ? (a) : (b))
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:
@@ -61,7 +58,7 @@ public:
     Vector m_vFadeTarget;                       // +0xa8, descriptive
 };
 
-class RenderCamera {
+class Camera {
 public:
     char m_pad00[0x7c];
     Vector m_vPosition;                         // +0x7c
@@ -150,20 +147,7 @@ public:
     float m_fScale;                             // +0x1b4
 };
 
-extern int g_bRenderGobs2;                      // 0x0078E860, descriptive
-extern int g_bRenderHiddenModels;               // 0x0078E85C, descriptive
-extern int g_bDrawPartAxes;                     // 0x00828024
-extern int g_bGobFading;                        // 0x0082806C, descriptive
-extern Scene* g_pScene;                         // 0x007B92A0
-extern RenderCamera* g_pRenderCamera;           // 0x007BB4E8
-extern float g_fFrameTime;                      // 0x0078E574
-extern float g_fGobFadeTime;                    // 0x0078E5A0, descriptive
-extern float g_fGobFadeMin;                     // 0x0078E858, descriptive
-extern int g_nGobsRendered;                     // 0x00827FAC, descriptive
-extern int g_bTransformParts;                   // 0x0078E5F0
-extern int g_nDrawGobSpheres;                   // 0x00828060, descriptive
-extern int g_bDrawGobBounds;                    // 0x0082805C, descriptive
-extern CExoArrayList<Gob*> g_l7FBF90;           // 0x007FBF90 blur bucket
+#include "shared/globals.h"
 
 static inline float ReadFloat(const float& f)
 {

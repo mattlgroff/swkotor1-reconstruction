@@ -4,26 +4,7 @@ class CSWCObject;
 class CSWCCreature;
 class CSWSCreature;
 
-class CGameObject {
-public:
-    virtual void V00();
-    virtual void V04();
-    virtual void SetWorldTime(unsigned long nDay, unsigned long nTime);
-    virtual CSWCObject* AsSWCObject();                // vtable +0x0C
-    virtual void V10();
-    virtual void* AsSWCDoor();
-    virtual void V18();
-    virtual void V1C();
-    virtual void V20();
-    virtual void* AsSWCArea();
-    virtual void V28();
-    virtual CSWCCreature* AsSWCCreature();            // vtable +0x2C
-    virtual CSWSCreature* AsSWSCreature();
-    virtual void* GetItemModel();
-
-    unsigned long m_oidSelf;
-    unsigned char m_nObjectType;
-};
+#include "shared/game_object.h"
 
 class CSWCCreatureAppearance {
 public:
@@ -45,7 +26,7 @@ public:
     unsigned char GetObjectGender();
 };
 
-extern unsigned char g_nDefaultObjectGender;           // 0x0073ECD0
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00674B40 SYMBOL: ?GetObjectGender@CSWTlkTable@@QAEEXZ
 unsigned char CSWTlkTable::GetObjectGender()

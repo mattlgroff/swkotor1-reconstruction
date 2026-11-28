@@ -5,11 +5,7 @@
 
 #include <string.h>
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 struct Quaternion {
     float w, x, y, z;
@@ -17,47 +13,17 @@ struct Quaternion {
     Quaternion(Vector vAxis, float fAngle);         // 0x004AC960
 };
 
-extern Vector g_vZAxis;                             // 0x007A19B0 (0, 0, 1)
+#include "shared/globals.h"
 
-extern float g_fGroundTiltScale;                    // 0x007A2680
 
 float GetYaw(const Vector& v);                      // 0x004AA0F0
 float GetPitch(const Quaternion& q);                // 0x004A9F40
 float GetRoll(const Quaternion& q);                 // 0x004AA020
 Quaternion EulerToQuaternion(float fYaw, float fPitch, float fRoll);   // 0x004ACAC0
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
+#include "shared/exo_string.h"
 
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    char* CStr() const;                             // 0x005E5670
-    int GetLength() const;                          // 0x005E5790
-    int operator==(const char* s) const;            // 0x005E5290
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int IsEmpty() const;                            // 0x005E58A0
-    void Format(const char* szFormat, ...);         // 0x005E5680
-};
-
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CResRef& r);
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    CResRef operator=(const char* s);               // 0x00406290
-    void CopyToString(char* pStr) const;            // 0x00405FB0
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    int operator!=(const CResRef& r) const;         // 0x00406DC0
-    char* GetResRef() const;                        // 0x00641DB0
-};
+#include "shared/res_ref.h"
 
 // Aurora model object (NewCAurObject 0x00449CC0).
 class CAurObject {

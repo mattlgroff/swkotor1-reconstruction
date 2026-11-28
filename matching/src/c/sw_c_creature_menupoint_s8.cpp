@@ -2,13 +2,7 @@
 
 #include "c/exo_base.h"
 
-struct Vector {
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-() const { return Vector(-x, -y, -z); }
-
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 inline float DotProduct(const Vector& a, const Vector& b)
 {
@@ -50,13 +44,9 @@ public:
     CSWGuiManager* GetGuiManager();                 // 0x005EDA40
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWSCreature {
 public:
@@ -64,12 +54,10 @@ public:
     CExoString m_sTag;                              // 0x18
 };
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
 };
 
 class CSWCCreature {

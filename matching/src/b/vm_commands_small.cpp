@@ -10,8 +10,7 @@
 #include "b/sws_area_map.h"
 #include <stdlib.h>
 
-extern const unsigned long OBJECT_INVALID_ID;               // 0x00746644
-extern const int EFFECT_TYPE_LINK;                          // 0x0074671C
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00536C60
 int CSWVirtualMachineCommands::ExecuteCommandGetChallengeRating(int nCommandId, int nParameters)
@@ -38,7 +37,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCommandable(int nCommandId, int 
     CGameObject* pObject;
     int bCommandable;
     if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidTarget, &pObject) == GAME_OBJECT_VALID) {
-        bCommandable = pObject->m_bCommandable;
+        bCommandable = ((CSWSObject*)pObject)->m_bCommandable;
     }
     return g_pVirtualMachine->StackPushInteger(bCommandable) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
 }
@@ -167,7 +166,6 @@ public:
     int m_nSpawnsCurrent;                                   // 0x2c8
 };
 
-extern int DAMAGE_FLAG_10;                                  // 0x00746878 (0x400); DAMAGE_TYPE_MAX is 0x00746884
 
 float Magnitude(const Vector& v);                           // 0x004AB100
 
@@ -614,7 +612,6 @@ int CSWVirtualMachineCommands::ExecuteCommandGetIsLinkImmune(int nCommandId, int
     return 0;
 }
 
-extern const char g_sEmpty[];                               // 0x0073D71C
 
 // FUNCTION: SWKOTOR 0x00538ED0
 int CSWVirtualMachineCommands::ExecuteCommandGetGlobalString(int nCommandId, int nParameters)
@@ -679,7 +676,6 @@ public:
     CExoAliasList* m_pcExoAliasList;                        // 0x0c
 };
 
-extern CExoBase* g_pExoBase;                                // 0x007A39E0
 
 // FUNCTION: SWKOTOR 0x00542C60
 int CSWVirtualMachineCommands::ExecuteCommandSetGlobalString(int nCommandId, int nParameters)
@@ -764,7 +760,6 @@ public:
                           unsigned long nObject, unsigned long nEventId, void* pEventData); // 0x004B08D0
 };
 
-extern const unsigned long EVENT_REMOVE_EFFECT;             // 0x007441EC (name guessed)
 
 // FUNCTION: SWKOTOR 0x00542530
 int CSWVirtualMachineCommands::ExecuteCommandSetCameraFacing(int nCommandId, int nParameters)

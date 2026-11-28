@@ -2,19 +2,13 @@
 
 class CSWSItem;
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual void v30(); virtual void v34();
-    virtual CSWSItem* AsSWSItem();                  // 0x38
 };
 
-class CSWCObjectServerLink {
-public:
-    CSWSObject* GetServerObject();                  // 0x0063D4B0
-};
+#include "shared/swc_object_server_link.h"
 
 class CSWCItem {
 public:

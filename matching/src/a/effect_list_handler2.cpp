@@ -72,7 +72,7 @@ int CSWSEffectListHandler::OnApplyMovementSpeedDecrease(CSWSObject* pObject, CGa
 int CSWSEffectListHandler::OnRemoveAreaOfEffect(CSWSObject* pObject, CGameEffect* pEffect)
 {
     if (pObject->AsSWSCreature()) {
-        CSWSCreature* pCreature = pObject->AsSWSCreature();
+        CSWSCreature* pCreature = pObject->AsSWSCreature();  // NOTE: unused in the original
         unsigned long oidAoE = pEffect->GetObjectID(0);
         CGameObject* pAoE;
         if (GetServerExoApp()->GetObjectArray()->GetGameObject(oidAoE, &pAoE) ==
@@ -177,9 +177,9 @@ int CSWSEffectListHandler::OnApply8E8(CSWSObject* pObject, CGameEffect* pEffect,
 int CSWSEffectListHandler::OnApplySkillIncrease(CSWSObject* pObject, CGameEffect* pEffect,
                                                 int bLoadingGame)
 {
-    int nSkill = pEffect->GetInteger(0);
+    int nSkill = pEffect->GetInteger(0);  // NOTE: unused in the original
     int nAmount = pEffect->GetInteger(1);
-    int nRace = pEffect->GetInteger(2);
+    int nRace = pEffect->GetInteger(2);  // NOTE: unused in the original
     int nAlign = pEffect->GetInteger(3);
     if (nAmount < 0) {
         return 1;
@@ -191,9 +191,9 @@ int CSWSEffectListHandler::OnApplySkillIncrease(CSWSObject* pObject, CGameEffect
 int CSWSEffectListHandler::OnApplySkillDecrease(CSWSObject* pObject, CGameEffect* pEffect,
                                                 int bLoadingGame)
 {
-    int nSkill = pEffect->GetInteger(0);
+    int nSkill = pEffect->GetInteger(0);  // NOTE: unused in the original
     int nAmount = pEffect->GetInteger(1);
-    int nRace = pEffect->GetInteger(2);
+    int nRace = pEffect->GetInteger(2);  // NOTE: unused in the original
     int nAlign = pEffect->GetInteger(3);
     if (nAmount < 0 || pObject->m_bF8 || !pObject->AsSWSCreature()) {
         return 1;

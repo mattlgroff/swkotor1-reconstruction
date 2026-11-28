@@ -161,7 +161,7 @@ int CSWCAnimBaseWield::PlayAnimOnModel(CAurObject* pModel, int nAnim, float fSpe
     CSWCItem* pLeft = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_oidLeft);
     if (pRight || pLeft) {
         CExoString sAnim = GetAnimationName(nAnim);
-        if (pRight && pRight->GetBaseItem()->m_nWeaponWield != 0x1d) {
+        if (pRight && pRight->GetBaseItem()->m_nCategory != 0x1d) {
             pPart = pRight->GetPartModel(0xff, 1);
             if (pPart) {
                 pPart->PlayAnimation(sAnim.CStr(), fSpeed, a, b);
@@ -350,7 +350,7 @@ int CSWCAnimBaseWield::SetWieldedItem(unsigned long oid, const CExoString& sNode
         pOld = GetItemModelInline(m_oidRight);
         if (oid != m_oidRight && pOld) {
             pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(m_oidRight);
-            if (pItem && pItem->GetBaseItem()->m_nWeaponWield == 0x1d) {
+            if (pItem && pItem->GetBaseItem()->m_nCategory == 0x1d) {
                 pOld->PlayAnimation("unequip", 1.0f, 3, 0);
                 m_bSaberIgnited = 0;
             }
@@ -367,7 +367,7 @@ int CSWCAnimBaseWield::SetWieldedItem(unsigned long oid, const CExoString& sNode
                 pNew->SetAlpha(fAlpha, 1);
                 m_sRightNode = sNode;
                 pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(oid);
-                if (pItem && pItem->GetBaseItem()->m_nWeaponWield == 0x1d) {
+                if (pItem && pItem->GetBaseItem()->m_nCategory == 0x1d) {
                     pNew->PlayAnimation("equip", 1.0f, 3, 0);
                     m_bSaberIgnited = 1;
                 }

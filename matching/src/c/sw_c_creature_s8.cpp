@@ -2,11 +2,7 @@
 
 #include "c/exo_base.h"
 
-struct Vector {
-    Vector() {}
-    Vector(float a, float b, float c) : x(a), y(b), z(c) {}
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CAurObject;
 
@@ -94,27 +90,17 @@ public:
     CExoString m_sTag;                              // 0x18
 };
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
 };
 
 class CServerExoApp;
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    void* m_pClientExoApp;                          // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
+#include "shared/app_manager.h"
 
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern int g_nForcedGuiAlignment;                   // 0x007A22F8 (descriptive, -1 = unset)
+#include "shared/globals.h"
 
 class CSWCCreatureStats {
 public:

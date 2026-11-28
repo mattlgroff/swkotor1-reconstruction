@@ -4,16 +4,9 @@
 
 #include <stdlib.h>
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CExoString& s);                   // 0x00406D60
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CExoSound {
 public:
@@ -21,12 +14,8 @@ public:
                            unsigned long a, unsigned long b, unsigned long c, float fPitch);   // 0x005D5E10
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
-struct CSWBaseItemData {
-    char pad_0x0[0x8c];
-    unsigned char m_nWeaponSoundRow;                // 0x8c (descriptive)
-};
+#include "shared/sw_base_item_data.h"
 
 class CSWSItem {
 public:
@@ -44,15 +33,9 @@ public:
     CSWCItem* GetItemByGameObjectID(unsigned long oid);   // 0x005ED5A0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class C2DA {
 public:
@@ -76,8 +59,6 @@ public:
     CTwoDimArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern int g_nWeaponSoundPitchColumn;               // 0x007A21A4 (descriptive)
 
 class CSWCCombatAttackData;
 
@@ -86,7 +67,6 @@ public:
     int Exists(const CResRef& cResRef, unsigned short nType, unsigned long* pSize);   // 0x00408BC0
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
 
 class CSWCCreatureStats {
 public:

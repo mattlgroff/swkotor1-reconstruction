@@ -8,9 +8,11 @@ public:
     int m_nFactionId;                               // 0x0c
 };
 
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
-    char pad_0x0[0x18];
+    char pad_0xc[0xc];
     CExoString m_sTag;                              // 0x18
 };
 

@@ -1,8 +1,5 @@
-class CExoString { public:
- char* m_sString; unsigned long m_nBufferLength; CExoString(); ~CExoString();
- void __cdecl Format(const char*,...); int GetLength() const; char* CStr() const;
-};
-class CResRef { public: char m_ref[16]; CResRef(const CExoString&); };
+#include "shared/exo_string.h"
+#include "shared/res_ref.h"
 class CNetLayer { public: int SendMessageToPlayer(unsigned long,unsigned char*,unsigned long,unsigned long); };
 class CGuiInGame;
 class CClientExoApp { public:
@@ -10,9 +7,8 @@ class CClientExoApp { public:
  CGuiInGame* GetGuiInGame(); void ServerModeChange(unsigned char);
  int GetGameOver(); void SetGameOver(int); int GetPlayerCharacterSet(); CExoString* GetPlayerCharacterName();
 };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager;
-extern unsigned long PLAYERID_SERVER;
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 class CSWCMessage { public:
  int MessageReadOverflow(int); int MessageReadUnderflow(int);
  int SendPlayerToServerLogin_LoginLocalCharacter(const CResRef&,int);

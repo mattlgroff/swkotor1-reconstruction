@@ -70,10 +70,8 @@ public:
     char pad_0x0[0x34];
 };
 
-extern const unsigned long OBJECT_ALL_POSSESSOR;                 // 0x0074664C (0x7FFFFFFF)
+#include "shared/globals.h"
 
-extern const unsigned short EFFECT_TYPE_RESURRECTION;            // 0x0074668C (4)
-extern const unsigned short DURATION_TYPE_INSTANT;              // 0x007473B8 (0)
 
 struct FILETIME {
     unsigned long dwLowDateTime;
@@ -81,7 +79,6 @@ struct FILETIME {
 };
 extern "C" __declspec(dllimport) void __stdcall GetSystemTimeAsFileTime(FILETIME* pTime);
 
-extern unsigned __int64 g_nSessionStartTime;                    // 0x007A3A20
 
 // FUNCTION: SWKOTOR 0x00563600
 void CSWPartyTable::ClearInventory()

@@ -3,13 +3,7 @@
 
 #include "c/exo_base.h"
 
-struct Vector {
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-};
+#include "shared/vector_ops.h"
 
 class C2DA {
 public:
@@ -33,7 +27,7 @@ public:
     CTwoDimArrays* m_p2DArrays;                     // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWCCreature {
 public:
@@ -53,20 +47,14 @@ public:
     CGuiInGame* GetInGameGui();                     // 0x005ED690
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CExoSound {
 public:
     void GetListenerPosition(Vector* pPosition);    // 0x005D63C0
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 class CClientExoAppInternal {
 public:

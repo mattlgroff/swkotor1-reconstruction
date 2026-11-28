@@ -2,29 +2,11 @@
 // follow m/sw_c_module_camera.h; this translation unit declares the full
 // polymorphic layout.
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
+#include "shared/exo_string.h"
 
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-};
+#include "shared/res_ref.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    char m_pResRef[16];
-};
-
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 template <class T>
 class CExoArrayList {
@@ -68,14 +50,7 @@ public:
     int m_nVideoEffect;                             // +0x1c
 };
 
-class CGameObject {
-public:
-    CGameObject(unsigned char nObjectType, unsigned long oid);  // 0x004D7D60
-    virtual ~CGameObject() {}
-
-    unsigned long m_idSelf;                         // +0x04
-    unsigned char m_nObjectType;                    // +0x08
-};
+#include "shared/game_object.h"
 
 class CSWCArea {
 public:
@@ -93,9 +68,8 @@ public:
     virtual ~CCameraBehavior();
 };
 
-extern const unsigned char OBJECT_TYPE_MODULE;      // 0x00746632
-extern const unsigned long OBJECT_INVALID;          // 0x00746644
-extern const unsigned long g_nModuleDefaultA4;      // 0x0074410C, descriptive
+#include "shared/globals.h"
+#include "shared/object_id.h"
 
 class CSWCModule : public CGameObject {
 public:

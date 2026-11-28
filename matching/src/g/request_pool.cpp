@@ -337,7 +337,7 @@ void RequestPoolManagerSys::Release(int nId)
 }
 #pragma inline_depth()
 
-extern CExoArrayList<unsigned int> g_aRenderSquares; // 0x007a693c
+#include "shared/globals.h"
 
 #pragma inline_depth(1)
 // FUNCTION: SWKOTOR 0x00435b40

@@ -1,10 +1,9 @@
 // Extended interfaces local to message lifecycle/update handlers.
 #ifndef M_SW_C_MESSAGE_UPDATES_H
 #define M_SW_C_MESSAGE_UPDATES_H
-struct Vector { float x,y,z; };
-class CExoString { public: char* m_sString; unsigned long m_nBufferLength;
- CExoString(); CExoString(const char*); ~CExoString(); };
-class CResRef { public: char m_ref[16]; CResRef(const CExoString&); CResRef(const char*); };
+#include "shared/vector.h"
+#include "shared/exo_string.h"
+#include "shared/res_ref.h"
 class C2DA { public:
  int GetINTEntry(int, const CExoString&, int*);
  int GetCExoStringEntry(int, const CExoString&, CExoString*);
@@ -20,7 +19,7 @@ class CSWBaseItemArray { public: CSWBaseItem* GetBaseItem(int); };
 class CSWRules { public: char pad_000[0x34]; CSWBaseItemArray* m_pBaseItemArray; char pad_038[0xb8-0x38]; CTwoDimArrays* m_p2DArrays;
  CSWBaseItemArray* GetBaseItemArray() { return m_pBaseItemArray; }
  CTwoDimArrays* Get2DArrays() { return m_p2DArrays; } };
-extern CSWRules* g_pRules;
+#include "shared/globals.h"
 class CSWCArea { public: char pad_000[0x184]; int m_nAreaState; void AddCorpse(unsigned long); };
 class CSWCModule { public: char pad_000[0x48]; CSWCArea* m_pArea; };
 class CSWSCreature;
@@ -158,14 +157,7 @@ class CSWCItem : public CSWCObject, public CSWItem { public:
  void SetEquippedBy(CSWCCreature*);
 };
 class CClientAIMaster { public: int AddObject(CSWItem*); };
-class CGameObject {
-public: virtual ~CGameObject();
- virtual void v04(); virtual void v08(); virtual void v0C();
- virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
- virtual void v20(); virtual void v24(); virtual void v28(); virtual CSWCCreature* AsSWCCreature();
- virtual void v30(); virtual CSWCItem* AsSWCItem(); virtual void v38();
- virtual CSWCTrigger* AsSWCTrigger();
-};
+#include "shared/game_object.h"
 class CGameObjectArray { public: unsigned char Delete(unsigned long,CGameObject**);
  unsigned char GetGameObject(unsigned long,CGameObject**);
  unsigned char AddExternalObject(unsigned long*,CSWItem*,int); };
@@ -180,11 +172,8 @@ class CClientExoApp { public:
  CSWCTrigger* GetTriggerByGameObjectID(unsigned long);
  CGameObjectArray* GetGameObjectArray();
 };
-class CAppManager { public: void* m_pUnknown00; CClientExoApp* m_pClientExoApp; };
-extern CAppManager* g_pAppManager;
-extern const unsigned char GAME_OBJECT_VALID;
+#include "shared/app_manager.h"
 class CExoSound { public: int PlayOneShotSoundAt(const CResRef&,Vector,float,unsigned long,unsigned long,unsigned long,unsigned long,unsigned long); };
-extern CExoSound* g_pExoSound;
 void SwitchWeaponEvent(unsigned long,const char*,CSWCCreature*); // descriptive 0x00610F40
 class CSWCMessage {
 public: unsigned long ReadOBJECTIDClient(); int ReadBOOL(); unsigned long ReadDWORD(int);

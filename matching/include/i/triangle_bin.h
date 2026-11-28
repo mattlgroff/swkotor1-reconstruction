@@ -41,25 +41,7 @@ public:
     T* m_p;
 };
 
-class Vector3 {
-public:
-    Vector3()
-    {
-        x = 0.0f;
-        y = 0.0f;
-        z = 0.0f;
-    }
-    Vector3(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector3.h"
 
 void AurTextureRelease(CAurTexture* pTexture);          // 0x00420D70
 

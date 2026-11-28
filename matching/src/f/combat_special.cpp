@@ -34,11 +34,7 @@ public:
     char pad_0x10[0x8c - 0x10];
 };
 
-extern unsigned short EFFECT_TYPE_SETSTATE;        // 0x0074669C (8)
-extern unsigned short EFFECT_TYPE_AC_DECREASE;     // 0x00746740
-extern int AC_TYPE_DODGE;               // 0x007468B0 (0, placeholder name)
-extern int AC_VS_DAMAGE_TYPE_ALL;       // 0x0074688C (0x4007)
-extern unsigned short DURATION_TYPE_TEMPORARY;  // 0x007473C0 (1)
+#include "shared/globals.h"
 
 class CSWRules {
 public:
@@ -46,7 +42,6 @@ public:
     unsigned char m_nDifficultyRacialType;  // 0xaa
 };
 
-extern CSWRules *g_pRules;              // 0x007A3A28
 
 class CSWSCombatAttackData {
 public:
@@ -77,14 +72,8 @@ public:
     CServerAIMaster *GetServerAIMaster();                   // 0x004AED80
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;     // 0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;      // 0x007A39FC
 
 class CSWSCreatureStats {
 public:
@@ -100,14 +89,7 @@ public:
 
 class CSWSCreature;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();   // +0x30
-    unsigned long m_idSelf;             // +0x4
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
@@ -124,7 +106,7 @@ public:
     void ResolveRangedSpecialAttack(CSWSObject *pTarget, int nAttack);
     void ResolveMeleeSpecialAttack(int nAttack, int a2, CSWSObject *pTarget, int nImpactTime);
 
-    char pad_0x8[0x9c8 - 0x8];
+    char pad_0xc[0x9c8 - 0xc];
     CSWSCombatRound *m_pcCombatRound;   // 0x9c8
     char pad_0x9cc[0xa74 - 0x9cc];
     CSWSCreatureStats *m_pStats;        // 0xa74

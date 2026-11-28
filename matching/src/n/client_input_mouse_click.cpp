@@ -5,19 +5,9 @@ class CSWParty { public: CSWCCreature* GetPlayerCharacter(); /* 0x00635460 */ };
 class CGameObjectBase { public: int m_nDummy; };
 class CGameObjectBase2 { public: int m_nDummy2; };
 class CDefaultActionTarget : public CGameObjectBase, public CGameObjectBase2 {};
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CDefaultActionTarget* AsDefaultActionTarget(); // +0x0C
-};
+#include "shared/game_object.h"
 #pragma pack(push,4)
-struct CDefaultAction {
-    char pad_0x0[8];
-    unsigned long m_nArgument;
-    void (CDefaultActionTarget::*m_pfnAction)(unsigned long nArgument,CSWCCreature* pPlayer);
-    char pad_0x14[8];
-    unsigned long m_oidTarget;
-};
+#include "shared/default_action.h"
 #pragma pack(pop)
 class CPlayerControl { public: void ShowAction(); /* 0x00689D80 */ };
 class CGuiInGame { public: char pad_0x0[0x90]; CPlayerControl* m_pPlayerControl; char pad_0x94[0x20]; int m_bB4; void SetCombatMessage(unsigned long message); /* 0x0062B110 */ };
@@ -28,8 +18,8 @@ public:
     CGuiInGame* GetInGameGui(); // 0x005ED690
     CSWParty* GetSWParty(); // 0x005ED8B0
 };
-class CAppManager { public: void* m_p0; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
-extern CAppManager* g_pAppManager; // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 class CClientOptions { public: char pad_0x0[0x6d]; unsigned char m_nCameraMode; };
 class CSWGuiInGameInput { public: char pad_0x0[0x30]; int m_bInputActive; };
 class CSWGuiManager { public: void PlayGuiSound(char nSound); /* 0x0040A140 */ };
@@ -60,7 +50,7 @@ void CClientExoAppInternal::HandleMouseClickInWorld()
                 CSWCCreature* pPlayer = g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
                 CGameObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(pAction->m_oidTarget);
                 if (pObject) {
-                    CDefaultActionTarget* pTarget = pObject->AsDefaultActionTarget();
+                    CDefaultActionTarget* pTarget = (CDefaultActionTarget*)pObject->AsSWCObject();
                     if (pTarget) {
                         m_pGuiManager->PlayGuiSound(6);
                         (pTarget->*pAction->m_pfnAction)(pAction->m_nArgument,pPlayer);

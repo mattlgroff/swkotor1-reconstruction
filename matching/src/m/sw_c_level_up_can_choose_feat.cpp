@@ -38,7 +38,7 @@ public:
     CSWFeat* GetFeat(unsigned short nFeat);         // 0x00550C00
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWCCreatureStats {
 public:

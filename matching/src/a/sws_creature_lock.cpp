@@ -1,7 +1,7 @@
 // Worker A round s7: CSWSCreature::EvaluateLock (nwscreature.cpp).
 #include "a/sws_creature.h"
 
-extern const unsigned long EVENT_0x7441F4;      // 0x007441F4 (placeholder name)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004F0B20
 int CSWSCreature::EvaluateLock(CGameObject* pObject, int bLock)

@@ -5,12 +5,7 @@
 
 #include <stdio.h>
 
-class Vector {
-public:
-    float x, y, z;
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
 inline Vector operator*(const Vector& v, float f)
 {
@@ -27,22 +22,9 @@ bool AurSetGlobalWindVariation(float fA, float fB); // 0x00453140
 unsigned char AurControlPart(char* sCommand);       // 0x0044B900
 void SetClearColor(const char* sColor);             // 0x00401690
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    char* CStr() const;                             // 0x005E5670
-    int CompareNoCase(const char* s) const;         // 0x005E58C0
-    void Format(const char* sFormat, ...);          // 0x005E5680
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWCRoom {
 public:
@@ -89,17 +71,7 @@ public:
     char pad_0xac[0x54];
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20();
-    virtual CSWCArea* AsSWCArea();                  // 0x24
-
-    unsigned long m_idSelf;                         // 0x04
-    unsigned char m_nObjectType;                    // 0x08
-};
+#include "shared/game_object.h"
 
 class CSWCArea : public CSWCAreaEnvironment, public CGameObject {
 public:
@@ -120,9 +92,7 @@ public:
     CSWCRoom* m_pRooms;                             // 0x260
 };
 
-extern const float AREA_WIND_SCALE_NONE;            // 0x0073D700
-extern const float AREA_WIND_SCALE_LIGHT;           // 0x0073D764
-extern const float AREA_WIND_SCALE_STRONG;          // 0x00741BE0
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00605090
 int CSWCArea::SetFogColor(const Vector* pColor)

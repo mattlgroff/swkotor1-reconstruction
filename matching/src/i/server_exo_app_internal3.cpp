@@ -2,13 +2,8 @@
 
 #define OBJECT_INVALID 0x7f000000
 
-class CAppManager {
-public:
-    void* m_p0;
-    void* m_pClientExoApp;                                          // +0x04
-    CServerExoApp* m_pServerExoApp;                                 // +0x08
-};
-extern CAppManager* g_pAppManager;                                  // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
 class CScriptEvent {
@@ -26,7 +21,6 @@ public:
                           CScriptEvent* pEvent);                    // 0x004B08D0
 };
 
-extern const unsigned long EVENT_SIGNAL_EVENT;                      // 0x007441DC
 
 class CPathfindInformation {
 public:

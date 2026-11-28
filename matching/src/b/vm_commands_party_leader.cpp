@@ -5,7 +5,7 @@
 #include "b/sws_creature.h"
 #include "b/party_table.h"
 
-extern const unsigned short DURATION_TYPE_INSTANT;          // 0x007473B8 (0)
+#include "shared/globals.h"
 
 class CSWCCreatureServerView {
 public:
@@ -13,11 +13,7 @@ public:
 };
 
 // Client party member entry (0x88 bytes).
-struct CSWPartyMemberEntry {
-    char pad_0x0[0x20];
-    unsigned long m_oidCreature;                            // 0x20 (client id)
-    char pad_0x24[0x88 - 0x24];
-};
+#include "shared/sw_party_member_entry.h"
 
 class CSWParty {
 public:

@@ -6,9 +6,9 @@ int CSWSModule::LoadModuleFinish()
 {
     CResStruct cTop;
     m_pRes->GetTopLevelStruct(&cTop);
-    CAppManager14* pLoad = g_pAppManager->m_p14;
-    pLoad->m_n8 = pLoad->m_nC;
-    GetServerExoApp()->GetSWSMessage()->SendServerToPlayerLoadBar_UpdateStallEvent(pLoad->m_nC, -1);
+    CSWReentrantServerStats* pLoad = g_pAppManager->m_pReentrantServerStats;
+    pLoad->m_nStep = pLoad->m_nProgress;
+    GetServerExoApp()->GetSWSMessage()->SendServerToPlayerLoadBar_UpdateStallEvent(pLoad->m_nProgress, -1);
     CScriptEvent* pEvent = new CScriptEvent;
     pEvent->m_nType = 0x11;
     GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(0, 0, m_idSelf, m_idSelf,
@@ -47,7 +47,7 @@ int CSWSModule::LoadModuleInProgress(int nAreaIndex, int nArg)
     if (!m_bIsSaveGame) {
         m_oidArea = pArea->m_oid120;
     }
-    g_pAppManager->m_p14->m_n8 = nAreaIndex + 1;
+    g_pAppManager->m_pReentrantServerStats->m_nStep = nAreaIndex + 1;
     GetServerExoApp()->GetSWSMessage()->SendServerToPlayerLoadBar_UpdateStallEvent(nAreaIndex + 1, -1);
     return 0;
 }
@@ -59,9 +59,9 @@ void CSWSModule::PackPlayerCharacterListIntoMessage(CSWSPlayer* pPlayer,
     int nCount = 0;
     CResRef cResRef;
     CExoString sNumber;
-    CExoLinkedListPosition pos = m_lPlayers.m_pList->m_pHead;
+    CExoLinkedListPosition pos = m_lPlayers.m_pcExoLinkedListInternal->pHead;
     while (pos) {
-        CSWSModulePlayerEntry* pEntry = (CSWSModulePlayerEntry*)m_lPlayers.m_pList->GetAtPos(pos);
+        CSWSModulePlayerEntry* pEntry = (CSWSModulePlayerEntry*)m_lPlayers.m_pcExoLinkedListInternal->GetAtPos(pos);
         NWPlayerCharacterList_st* p = new NWPlayerCharacterList_st;
         p->m_sFirstName = pEntry->m_sFirstName;
         p->m_sLastName = pEntry->m_sLastName;
@@ -74,7 +74,7 @@ void CSWSModule::PackPlayerCharacterListIntoMessage(CSWSPlayer* pPlayer,
         } else {
             delete p;
         }
-        m_lPlayers.m_pList->GetNext(pos);
+        m_lPlayers.m_pcExoLinkedListInternal->GetNext(pos);
         nCount++;
     }
 }

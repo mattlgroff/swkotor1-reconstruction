@@ -1,22 +1,8 @@
 // CSWCMessage::ReadCExoLocStringClient (nwcmessage.o).
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    char* m_sString;
-    int m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    CResRef operator=(const char* s);               // 0x00406290
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 // Talk table entry; the sound length is copied out as a raw dword.
 struct STR_RES {
@@ -30,7 +16,7 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender);  // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
+#include "shared/globals.h"
 
 class CSWCMessage {
 public:

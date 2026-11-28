@@ -66,9 +66,7 @@ class CSWRules {
 public:
     unsigned short RollDice(unsigned char nDice, unsigned char nSides);  // 0x00550B60
 };
-extern CSWRules *g_pRules;                      // 0x007A3A28
-extern int g_nDebugAttackRoll;                  // 0x00832874
-extern const unsigned char IMMUNITY_TYPE_CRITICAL_HIT;  // 0x00746970
+#include "shared/globals.h"
 
 class CSWSCreature;
 
@@ -81,17 +79,10 @@ public:
     int GetEffectImmunity(unsigned char nType, CSWSCreature *pVersus);  // 0x005A6960
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();      // 0x30
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
-    unsigned long m_idSelf;                     // 0x04
 };
 
 class CSWSCreature : public CSWSObject {
@@ -100,7 +91,7 @@ public:
     int ResolveDefensiveEffects(CSWSObject *pTarget, int bHit);  // 0x005B8E50
     void ResolveTargetAttackOfOpportunity(CSWSCreature *pTarget); // 0x005B8820 (placeholder)
 
-    char pad_0x8[0x8d4 - 0x8];
+    char pad_0xc[0x8d4 - 0xc];
     int m_bAutoHit;                             // 0x8d4
     char pad_0x8d8[0x9c8 - 0x8d8];
     CSWSCombatRound *m_pcCombatRound;           // 0x9c8

@@ -15,7 +15,7 @@ public:
                           CScriptEvent* pEvent);            // 0x004B08D0
 };
 
-extern const unsigned long EVENT_DESTROY_OBJECT;           // 0x007441E0 (11)
+#include "shared/globals.h"
 
 class CSWParty {
 public:

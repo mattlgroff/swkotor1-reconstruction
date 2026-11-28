@@ -28,8 +28,7 @@ struct AurResFileList {
     }
 };
 
-extern AurResFileList g_AurResOpenFiles;                // 0x007B8FD8
-extern char g_szAurResDoFileMessage[];                  // 0x007B8FE8
+#include "shared/globals.h"
 
 AurResFile* AurResOpen(const char* szBase, const char* szExt, int a, int b);   // 0x0044C740
 void AurResClose(AurResFile* pFile, int a);             // 0x0044C8F0

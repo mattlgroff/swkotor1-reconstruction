@@ -132,23 +132,7 @@ public:
 };
 
 // 0x24-byte appearance block (creature +0xa50, CLastUpdateObject +0x0).
-struct CSWSCreatureAppearanceInfo {
-    unsigned long m_aParts[4];                              // 0x0
-    unsigned short m_nAppearance;                           // 0x10
-    unsigned char m_n12;                                    // 0x12
-    unsigned char m_n13;                                    // 0x13
-    unsigned char m_n14;                                    // 0x14
-    unsigned char m_n15;                                    // 0x15
-    unsigned char m_n16;                                    // 0x16
-    unsigned char m_n17;                                    // 0x17
-    unsigned char m_n18;                                    // 0x18
-    unsigned char m_n19;                                    // 0x19
-    unsigned char m_n1A;                                    // 0x1a
-    char pad_0x1b[0x1c - 0x1b];
-    unsigned long m_n1C;                                    // 0x1c
-    unsigned char m_n20;                                    // 0x20
-    char pad_0x21[0x24 - 0x21];
-};
+#include "shared/sws_creature_appearance_info.h"
 
 // 0x1c-byte action queue entry (creature +0x3a8, player last update +0x40).
 struct CSWSActionQueueEntry {
@@ -351,92 +335,9 @@ public:
 class CExoLocString;
 struct CResStruct;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v01(); virtual void v02(); virtual void v03();
-    virtual class CSWSObject* AsSWSObject();                // 0x10
-    virtual void v05();
-    virtual class CSWSDoor* AsSWSDoor();                    // 0x18
-    virtual void v07();
-    virtual class CSWSModule* AsSWSModule();                // 0x20
-    virtual void v09();
-    virtual CSWSArea* AsSWSArea();                          // 0x28
-    virtual void v11();
-    virtual CSWSCreature* AsSWSCreature();                  // 0x30
-    virtual void v13();
-    virtual class CSWSItem* AsSWSItem();                    // 0x38
-    virtual void v15();
-    virtual class CSWSTrigger* AsSWSTrigger();              // 0x40
-    virtual void v17();
-    virtual class CSWSPlaceable* AsSWSPlaceable();          // 0x48
-    virtual void v19();
-    virtual class CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject(); // 0x50
-    virtual void v21(); virtual void v22();
-    virtual class CSWSEncounter* AsSWSEncounter();          // 0x5c
-    virtual void v24();
-    virtual class CSWSStore* AsSWSStore();                  // 0x64
-    virtual class CSWSSoundObject* AsSWSSoundObject();      // 0x68
-    virtual void v27();
-    virtual void AIUpdate();                                // 0x70 (CSWSCreature 0x004FDE40)
-    virtual void v29();
-    virtual void EventHandler(unsigned long nEventId, unsigned long nCallerObjectId, void* pScript,
-                              unsigned long nCalendarDay, unsigned long nTimeOfDay); // 0x78
-    virtual void SetDialogDelay7C(int nMilliseconds);       // 0x7c (name guessed)
-    virtual class CResRef GetTemplateResRef();              // 0x80 (name guessed)
-    virtual void v33();
-    virtual unsigned char GetGender();                      // 0x88
-    virtual CExoLocString* GetFirstName();                  // 0x8c
-    virtual CExoLocString* GetLastName();                   // 0x90
-    virtual int GetObjectState94();                      // 0x94
-    virtual short GetCreatureSize(int bArg);                // 0x98
-    virtual short GetCurrentHitPoints(int bArg);            // 0x9c
-    virtual void v40(); virtual void v41(); virtual void v42(); virtual void v43();
-    virtual void v44(); virtual void v45();
-    virtual unsigned long GetLastSpellId();                 // 0xb8 (placeholder name, as in bucket a)
-    virtual void v47();
-    virtual void SetDialogOwner(unsigned long oid);         // 0xc0 (name guessed)
-    virtual void v49();
-    virtual class CResRef GetPortrait();                    // 0xc8
-    virtual void v51();
-    virtual unsigned short GetPortraitId();                 // 0xd0
+#include "shared/game_object.h"
 
-    unsigned long GetId() { return m_idSelf; }
-    int GetAILevel() { return m_nAILevel; }
-
-    unsigned long m_idSelf;                                 // 0x4
-    unsigned char m_nObjectType;                            // 0x8
-    char pad_0x9[0x18 - 0x9];
-    CExoString m_sTag;                                      // 0x18
-    char pad_0x20[0x50 - 0x20];
-    int m_bDialogPaused;                                    // 0x50 (name guessed)
-    unsigned long m_oid54;                                  // 0x54 (name guessed)
-    char pad_0x58[0x78 - 0x58];
-    int m_nAILevel;                                         // 0x78 (name guessed)
-    char pad_0x7c[0x8c - 0x7c];
-    unsigned long m_oidArea;                                // 0x8c
-    Vector m_vPosition;                                     // 0x90
-    Vector m_vOrientation;                                  // 0x9c
-    char pad_0xa8[0xd4 - 0xa8];
-    int m_nD4;                                              // 0xd4 (items: 10001)
-    char pad_0xd8[0xe0 - 0xd8];
-    short m_nE0;                                            // 0xe0 (party update; name unknown)
-    char pad_0xe2[0xe4 - 0xe2];
-    short m_nE4;                                            // 0xe4 (party update; name unknown)
-    char pad_0xe6[0xe8 - 0xe6];
-    int m_bCommandable;                                     // 0xe8
-    int m_bEC;                                              // 0xec (name guessed)
-    int m_bF0;                                              // 0xf0
-};
-
-class CGameObjectClient {
-public:
-    virtual void v00(); virtual void v01(); virtual void v02(); virtual void v03();
-    virtual void v04(); virtual void v05(); virtual void v06(); virtual void v07();
-    virtual void v08(); virtual void v09(); virtual void v10(); virtual void v11();
-    virtual void v12();
-    virtual void* AsClientItem();                           // 0x34
-};
+#include "shared/game_object_client.h"
 
 class CResHelperModule {
 public:
@@ -484,6 +385,54 @@ public:
 
 class CSWSObject : public CGameObject {
 public:
+    virtual void AIUpdate();  // 0x70 (CSWSCreature 0x004FDE40)
+    virtual void v29();
+    virtual void EventHandler(unsigned long nEventId, unsigned long nCallerObjectId, void* pScript,
+                              unsigned long nCalendarDay, unsigned long nTimeOfDay);  // 0x78
+    virtual void SetDialogDelay7C(int nMilliseconds);  // 0x7c (name guessed)
+    virtual class CResRef GetTemplateResRef();  // 0x80 (name guessed)
+    virtual void v33();
+    virtual unsigned char GetGender();  // 0x88
+    virtual CExoLocString* GetFirstName();  // 0x8c
+    virtual CExoLocString* GetLastName();  // 0x90
+    virtual int GetObjectState94();  // 0x94
+    virtual short GetCreatureSize(int bArg);  // 0x98
+    virtual short GetCurrentHitPoints(int bArg);  // 0x9c
+    virtual void v40();
+    virtual void v41();
+    virtual void v42();
+    virtual void v43();
+    virtual void v44();
+    virtual void v45();
+    virtual unsigned long GetLastSpellId();  // 0xb8 (placeholder name, as in bucket a)
+    virtual void v47();
+    virtual void SetDialogOwner(unsigned long oid);  // 0xc0 (name guessed)
+    virtual void v49();
+    virtual class CResRef GetPortrait();  // 0xc8
+    virtual void v51();
+    virtual unsigned short GetPortraitId();  // 0xd0
+    int GetAILevel() { return m_nAILevel; }
+    char pad_0xc[0xc];
+    CExoString m_sTag;                              // 0x18
+    char pad_0x20[0x30];
+    int m_bDialogPaused;                            // 0x50
+    unsigned long m_oid54;                          // 0x54
+    char pad_0x58[0x20];
+    int m_nAILevel;                                 // 0x78
+    char pad_0x7c[0x10];
+    unsigned long m_oidArea;                        // 0x8c
+    Vector m_vPosition;                             // 0x90
+    Vector m_vOrientation;                          // 0x9c
+    char pad_0xa8[0x2c];
+    int m_nD4;                                      // 0xd4
+    char pad_0xd8[0x8];
+    short m_nE0;                                    // 0xe0
+    char pad_0xe2[0x2];
+    short m_nE4;                                    // 0xe4
+    char pad_0xe6[0x2];
+    int m_bCommandable;                             // 0xe8
+    int m_bEC;                                      // 0xec
+    int m_bF0;                                      // 0xf0
     CSWSObject(unsigned char nObjectType, unsigned long nId, int bArg); // 0x004CFCB0
     ~CSWSObject();                                          // 0x004D0220
     void SetOrientation(const Vector& vOrientation);        // 0x004CD170

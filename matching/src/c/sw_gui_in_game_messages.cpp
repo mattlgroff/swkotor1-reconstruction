@@ -16,15 +16,9 @@ public:
     void ShowTutorialWindow(int n, unsigned long a, unsigned long b, int c);   // 0x005EDF40
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;                             // 0x00
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWGuiPanel {
 public:

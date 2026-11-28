@@ -1,9 +1,6 @@
 // Client path cancellation from the server creature. Batch-local partial
 // layouts preserve the existing creature and last-update base sizes.
-struct Vector {
-    Vector(float x1, float y1, float z1) { x = x1; y = y1; z = z1; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 class CLastUpdateObject {
 public:
     char pad_0[0x40];
@@ -31,12 +28,8 @@ public:
     char pad_0[4];
     CServerExoAppInternal* m_pInternal;
 };
-class CAppManager {
-public:
-    char pad_0[8];
-    CServerExoApp* m_pServerExoApp;
-};
-extern CAppManager* g_pAppManager;                    // 0x007A39FC
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 class CSWSCreature {
 public:
     char pad_0[4];

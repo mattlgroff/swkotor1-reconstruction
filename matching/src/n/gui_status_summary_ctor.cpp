@@ -5,8 +5,8 @@ struct CSWGuiExtent { int left,top,width,height; };
 class CSWGuiControl;
 class CSWGuiPanel;
 class CSWGuiManager;
-class CExoString { public: char* m_sString; unsigned long m_nLength; CExoString(const char* s); ~CExoString(); };
-class CResRef { public: char m_resRef[16]; CResRef(const char* s); };
+#include "shared/exo_string.h"
+#include "shared/res_ref.h"
 class CSWGuiControl {
 public:
     virtual ~CSWGuiControl();

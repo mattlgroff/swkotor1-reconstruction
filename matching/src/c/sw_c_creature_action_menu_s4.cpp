@@ -4,17 +4,14 @@
 // which already names them).
 
 struct CSWFeat;
-struct CSWBaseItemData {
-    char pad_0x0[0xac];
-    unsigned char m_nItemClass;                     // 0xac
-};
+#include "shared/sw_base_item_data.h"
 
 class CSWRules {
 public:
     CSWFeat* GetFeat(unsigned short nFeat);         // 0x00550C00
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWSItem {
 public:
@@ -37,16 +34,8 @@ public:
     CSWSItem* GetItemByGameObjectID(unsigned long oid);     // 0x004AE760
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CGameObject;
 
@@ -88,7 +77,7 @@ void CSWCCreature::ActionMenuFeat(unsigned long nFeat, CSWCCreature* pCreature)
 void CSWCCreature::ActionMenuUseItem(unsigned long oidItem, CSWCCreature* pCreature)
 {
     CSWSItem* pItem = g_pAppManager->m_pServerExoApp->GetItemByGameObjectID(oidItem);
-    if (pItem && pItem->GetBaseItem()->m_nItemClass == 6) {
+    if (pItem && pItem->GetBaseItem()->m_nCategory == 6) {
         if (g_pAppManager->GetClientExoApp()->ShowTutorialWindow(1, GetId(), pCreature->GetId(), oidItem)) {
             return;
         }
@@ -165,7 +154,6 @@ public:
     CClientExoAppT* m_pClientExoApp;                // 0x04
 };
 
-extern CAppManagerT* g_pAppManagerT;                // 0x007A39FC (g_pAppManager)
 
 class CSWCCreatureTarget {
 public:

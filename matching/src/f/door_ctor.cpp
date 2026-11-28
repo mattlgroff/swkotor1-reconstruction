@@ -1,27 +1,10 @@
 // CSWSDoor constructor and small accessors (round s8, 0x00589EE0-0x0058A1E0).
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    CExoString &operator=(const char *s);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    ~CExoLocString();
-    void *m_pList;
-    void *m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 template <class T>
 class CExoArrayList {
@@ -37,11 +20,7 @@ public:
     }
 };
 
-class Vector {
-public:
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:
@@ -49,10 +28,7 @@ public:
     float w, x, y, z;
 };
 
-extern const unsigned char g_nObjectTypeDoor;      // 0x00746639
-extern int g_nDoorStateClosed;
-extern int g_nDoorStateOpen1;
-extern int g_nDoorStateOpen2;
+#include "shared/globals.h"
 
 class CSWSObject;
 
@@ -66,22 +42,10 @@ public:
     CServerAIMaster *GetServerAIMaster();
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:

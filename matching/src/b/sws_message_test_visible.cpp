@@ -6,10 +6,8 @@
 #include "b/server_exo_app.h"
 #include <stdlib.h>
 
-extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634 (5)
-extern const unsigned char OBJECT_TYPE_TRIGGER;             // 0x00746636 (7)
-extern const unsigned char OBJECT_TYPE_WAYPOINT;            // 0x0074663B (12)
-extern const unsigned char OBJECT_TYPE_STORE;               // 0x0074663D (14)
+#include "shared/globals.h"
+#include "shared/globals.h"
 
 // Trap trigger (vtable slot 0x40, AsSWSTrigger).
 class CSWSTrigger : public CSWSObject {

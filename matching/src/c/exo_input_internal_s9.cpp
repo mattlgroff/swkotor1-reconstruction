@@ -2,12 +2,7 @@
 
 #include "c/exo_input.h"
 
-struct tagMSG {
-    void* hwnd;                                     // 0x00
-    unsigned int message;                           // 0x04
-    unsigned int wParam;                            // 0x08
-    long lParam;                                    // 0x0c
-};
+#include "shared/tag_msg.h"
 
 #define LOWORD(l) ((unsigned short)((unsigned long)(l) & 0xffff))
 #define HIWORD(l) ((unsigned short)((unsigned long)(l) >> 16))
@@ -26,10 +21,7 @@ struct tagMSG {
 #define WM_MBUTTONUP 0x0208
 #define WM_MOUSEWHEEL 0x020A
 
-extern const unsigned long g_nInputMouseLeft;       // 0x0074D3E0
-extern const unsigned long g_nInputMouseRight;      // 0x0074D3E4
-extern const unsigned long g_nInputMouseMiddle;     // 0x0074D3E8
-extern const unsigned long g_nInputMouseWheel;      // 0x0074D3F4
+#include "shared/globals.h"
 
 // Buffers the cursor position of a button message unless a SetMousePos
 // warp is pending (descriptive helpers; expanded inline in each case).

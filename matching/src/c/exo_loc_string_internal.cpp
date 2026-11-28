@@ -1,76 +1,16 @@
 // CExoLocStringInternal constructor, ClearLocString, destructor
 // (b005e0_exo_foundation_leaves, b005e4_exo_pimpl_ctors).
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
+#include "shared/exo_string.h"
 
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    int GetLength() const;                          // 0x005E5790
-};
+#include "shared/exo_loc_string_st.h"
 
-struct ExoLocString_st {
-    int m_nLanguage;                                // 0x00
-    CExoString m_sString;                           // 0x04
+#include "shared/exo_linked_list.h"
 
-    ~ExoLocString_st();                             // 0x0059EA20
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    void* pHead;                                    // 0x00
-    void* pTail;                                    // 0x04
-    unsigned long nCount;                           // 0x08
 
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* GetHead();
-    void* RemoveHead();                             // 0x005E9C80
-    void* GetNext(void*& pos);                      // 0x005E9B90
-    void* Remove(void* pos);                        // 0x005E9C10
-};
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;                      // 0x00
-    CExoLinkedListNode* pNext;                      // 0x04
-    void* pObject;                                  // 0x08
-};
-
-// The early `return 0` (through a local internal pointer) keeps the
-// original's unthreaded empty-list `je` into the caller's own null test.
-inline void* CExoLinkedListInternal::GetHead()
-{
-    CExoLinkedListNode* pNode = (CExoLinkedListNode*)pHead;
-    if (!pNode) {
-        return 0;
-    }
-    return pNode->pObject;
-}
-
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
-
-    CExoLinkedList();                               // 0x005EC690 for ExoLocString_st
-    ~CExoLinkedList()
-    {
-        if (m_pcExoLinkedListInternal) {
-            delete m_pcExoLinkedListInternal;
-        }
-    }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-    void* GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetHead()
-    {
-        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
-        return (T*)pInternal->GetHead();
-    }
-    T* GetNext(void*& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-    T* Remove(void* pos) { return (T*)m_pcExoLinkedListInternal->Remove(pos); }
-};
 
 class CExoLocStringInternal {
 public:
@@ -114,7 +54,7 @@ CExoLocStringInternal::~CExoLocStringInternal()
 // FUNCTION: SWKOTOR 0x005EC9C0
 int CExoLocStringInternal::GetString(int nLanguage, CExoString& sOut)
 {
-    void* pos = m_lstLocStrings.GetHeadPos();
+    CExoLinkedListPosition pos = m_lstLocStrings.GetHeadPos();
     ExoLocString_st* p = m_lstLocStrings.GetHead();
     while (p) {
         if (p->m_nLanguage == nLanguage) {
@@ -132,7 +72,7 @@ int CExoLocStringInternal::GetStringLength(unsigned long nIndex)
     if (nIndex >= m_nCount) {
         return 0;
     }
-    void* pos = m_lstLocStrings.GetHeadPos();
+    CExoLinkedListPosition pos = m_lstLocStrings.GetHeadPos();
     ExoLocString_st* p = m_lstLocStrings.GetHead();
     unsigned long i = 0;
     while (p) {
@@ -148,7 +88,7 @@ int CExoLocStringInternal::GetStringLength(unsigned long nIndex)
 // FUNCTION: SWKOTOR 0x005ECA80
 void CExoLocStringInternal::RemoveString(int nLanguage)
 {
-    void* pos = m_lstLocStrings.GetHeadPos();
+    CExoLinkedListPosition pos = m_lstLocStrings.GetHeadPos();
     ExoLocString_st* p = m_lstLocStrings.GetHead();
     while (p) {
         if (p->m_nLanguage == nLanguage) {

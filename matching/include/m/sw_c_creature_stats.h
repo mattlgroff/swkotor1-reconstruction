@@ -5,11 +5,7 @@
 
 #include <math.h>
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef operator=(const CResRef& r);            // 0x00406120
-};
+#include "shared/res_ref.h"
 
 template <class T>
 class CExoArrayList {
@@ -183,13 +179,8 @@ public:
     C2DAs* m_p2DArrays;                             // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern int g_nRacialTypeColumn;                     // 0x007A2124
+#include "shared/globals.h"
 
-extern const unsigned char CLASS_TYPE_JEDI_GUARDIAN;    // 0x0074B31C
-extern const unsigned char CLASS_TYPE_JEDI_CONSULAR;    // 0x0074B31D
-extern const unsigned char CLASS_TYPE_JEDI_SENTINEL;    // 0x0074B31E
-extern const unsigned short RACIAL_TYPE_DROID;      // 0x0074BF10
 
 class CSWCCombatInformation {
 public:

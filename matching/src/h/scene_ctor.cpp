@@ -18,7 +18,7 @@ public:
     void* operator new(unsigned int n);     // 0x0043E1B0
     void operator delete(void* p);          // 0x0044AEC0
     int AddRef(Gob* pGob);                  // 0x0043E240
-    char pad[0xc4];
+    char pad_0x0[0xc4];
 };
 
 class Gob {
@@ -35,14 +35,14 @@ class LightManager {
 public:
     LightManager();                         // 0x004A38B0
     ~LightManager();
-    char pad[0xf8];
+    char pad_0x0[0xf8];
 };
 
 class WindManager {
 public:
     WindManager();                          // 0x004A6640
     ~WindManager();
-    char pad[0x858];
+    char pad_0x0[0x858];
 };
 
 class SafePointerHost : public CExoArrayList<void*> {
@@ -113,8 +113,7 @@ CAurTexture* AurTextureGetReference(char* szName, int n);   // 0x00423A60
 int AurGLCaps560();                         // 0x0045F560
 void ResetVertexPrograms_004a2470();        // 0x004A2470
 
-extern int g_nFocusGobCounter;              // 0x007B92D8, descriptive
-extern CExoArrayList<Scene*> g_lScenes;     // 0x007B9398
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x00458790
 Scene::Scene(char* szName) : m_gob("c_FocusGob")

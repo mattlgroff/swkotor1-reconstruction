@@ -36,19 +36,10 @@ struct CFrameInfoLine {
     char m_szLine[0x200];               // 0x0c
 };
 
-extern CFrameInfoLine g_cFrameInfoLine; // 0x007a3a40
-extern int g_nCommandHistoryIndex;      // 0x007b8fbc
-extern char** g_ppCommandHistory;       // 0x007b8fcc
-extern int g_nCommandHistoryCount;      // 0x007b8fd0
-extern int g_bFrameInfoTextInput;       // 0x007a3cb4
-extern int g_nCompletionOffset;         // 0x007a3cf0
+#include "shared/globals.h"
 
-class CExoInput {
-public:
-    void StopTextInput();               // 0x005df530
-};
+#include "shared/exo_input.h"
 
-extern CExoInput* g_pExoInput;          // 0x007a39e4
 
 char* __cdecl ConsoleComplete(char* sLine, CExoArrayList<char*>* pMatches); // 0x0044c040
 char* __cdecl ConsoleExecute(char* sLine);                                  // 0x0044bc70

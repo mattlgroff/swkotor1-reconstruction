@@ -4,22 +4,9 @@
 #include <stdlib.h>
 #include <math.h>
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    char* CStr() const;                             // 0x005E5670
-};
+#include "shared/exo_string.h"
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 
 class C2DA {
@@ -41,7 +28,7 @@ public:
     CTwoDimArrays* m_p2DArrays;                     // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CAurCamera;
 class CGuiAreaLoadscreen;
@@ -115,13 +102,8 @@ public:
     CClientExoAppInternal* m_pInternal;             // 0x04
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CExoTimers {
 public:
@@ -134,7 +116,6 @@ public:
     CExoTimers* m_pTimers;                          // 0x04
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 void SetClearColorFromString(const char* sColor);   // 0x00401690
 void RunFrame(float fDelta, int a, int b);          // 0x00401C10

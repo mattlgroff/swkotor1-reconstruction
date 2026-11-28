@@ -2,47 +2,11 @@
 // 0x0059EAA0..0x005A27B0. Own copy of the CSWSDialog layout (dialog.cpp keeps
 // its own), extended with the camera and stunt members the loaders touch.
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    CExoString(const CExoString &s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    int operator==(const char *s) const;
-    int operator!=(const char *s) const;
-    int operator==(const CExoString &s) const;
-    int GetLength() const;
-    int IsEmpty() const;
-    int CompareNoCase(const char *s) const;
-    int CompareNoCase(const CExoString &s) const;
-    CExoString operator+(const CExoString &s) const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef(const char *s);
-    CResRef(const CResRef &r);
-    CResRef operator=(const CResRef &r);
-    CResRef operator=(const char *s);
-    int operator==(const char *s) const;
-    int IsValid() const;
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class CExoLocString {
-public:
-    float GetStringReadTime(int nLanguage, unsigned char nGender);
-    CExoLocString();
-    ~CExoLocString();
-    CExoLocString &operator=(const CExoLocString &s);
-    int GetString(unsigned long nLanguage, CExoString *pString, unsigned char nGender) const;
-    void *m_pList;
-    unsigned long m_nStrRef;
-};
+#include "shared/exo_loc_string.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;
@@ -79,50 +43,20 @@ public:
     float ReadFieldFLOAT(CResStruct *pStruct, char *szLabel, int &bSuccess, float fDefault);
 };
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ) : x(fX), y(fY), z(fZ) {}
-    float x, y, z;
-    Vector operator-(const Vector &v) const
-    {
-        Vector r;
-        r.x = x - v.x;
-        r.y = y - v.y;
-        r.z = z - v.z;
-        return r;
-    }
-};
+#include "shared/vector_ops.h"
 
 class CSWSArea;
 class CSWSCreature;
 class CSWSObject;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04();
-    virtual void v08();
-    virtual void v0c();
-    virtual CSWSObject *AsSWSObject();      // +0x10
-    virtual void v14();
-    virtual void v18();
-    virtual void v1c();
-    virtual void v20();
-    virtual void v24();
-    virtual void v28();
-    virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();   // +0x30
-
-    CSWSArea *GetArea();
-    unsigned long GetNearestObjectByTag(const CExoString &sTag, float fRange);
-    unsigned long m_idSelf;          // +0x4
-    char pad_0x8[0x10];
-    CExoString m_sTag;               // +0x18
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
+    CSWSArea *GetArea();
+    unsigned long GetNearestObjectByTag(const CExoString &sTag, float fRange);
+    char pad_0xc[0xc];
+    CExoString m_sTag;                              // 0x18
     void SetDialogDelay(float fDelay);
     void SetDialogOwner(unsigned long oidOwner);
     void StopSoundPlayingInDialog();
@@ -184,7 +118,7 @@ public:
     char GetGameObject(unsigned long id, CGameObject **ppObject);
 };
 
-extern char g_cObjectArraySuccess;
+#include "shared/globals.h"
 
 class CWorldTimer {
 public:
@@ -210,15 +144,8 @@ public:
     int GetIgnoreConversationStartRange();
 };
 
-extern float g_fDialogSpeakerRange;  // 0x0074744C (placeholder name, 1000.0)
 
-class CSWSDialogSpeaker {
-public:
-    CSWSDialogSpeaker();
-    ~CSWSDialogSpeaker();
-    unsigned long m_oidSpeaker;      // +0x0
-    CExoString m_sTag;               // +0x4
-};
+#include "shared/sws_dialog_speaker.h"
 
 class CSWSMessage {
 public:
@@ -259,8 +186,6 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES &strRes, unsigned char nGender);
 };
 
-extern CTlkTable *g_pTlkTable;       // 0x007A3A08
-extern int g_bLogConversations;      // 0x00833A9C (placeholder name)
 
 class CSWCCreatureStats {
 public:
@@ -290,38 +215,12 @@ public:
 };
 
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp *m_pClientExoApp;  // +0x4
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-    CClientExoApp *GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode *pPrev;
-    CExoLinkedListNode *pNext;
-    void *pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    void *RemoveHead();
-    void *GetNext(CExoLinkedListNode *&pPos);
-    void *GetHead()
-    {
-        CExoLinkedListNode *pNode = m_pHead;
-        if (!pNode)
-            return 0;
-        return pNode->pObject;
-    }
-    CExoLinkedListNode *m_pHead;
-    CExoLinkedListNode *m_pTail;
-    int m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
 class CSWSDialogPlayer {
 public:
@@ -353,13 +252,7 @@ public:
     unsigned long m_nIndex;          // +0x10
 };
 
-class CSWSDialogStuntModel {
-public:
-    CSWSDialogStuntModel();
-    ~CSWSDialogStuntModel();
-    CExoString m_sParticipant;       // +0x0
-    CResRef m_cStuntModel;           // +0x8
-};
+#include "shared/sws_dialog_stunt_model.h"
 
 class CSWSDialogBase {
 public:
@@ -421,32 +314,9 @@ public:
     int m_nB0;                       // +0xb0
 };
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();
-    ~CExoLinkedList();
-    int IsEmpty() { return m_pcExoLinkedListInternal->m_pHead == 0; }
-    T *RemoveHead() { return (T *)m_pcExoLinkedListInternal->RemoveHead(); }
-    CExoLinkedListNode *GetHeadPos() { return m_pcExoLinkedListInternal->m_pHead; }
-    T *GetHeadObject()
-    {
-        void *pObject = m_pcExoLinkedListInternal->m_pHead;
-        if (pObject)
-            pObject = ((CExoLinkedListNode *)pObject)->pObject;
-        return (T *)pObject;
-    }
-    T *GetNext(CExoLinkedListNode *&pPos) { return (T *)m_pcExoLinkedListInternal->GetNext(pPos); }
-    T *GetFirst()
-    {
-        CExoLinkedListInternal *pInternal = m_pcExoLinkedListInternal;
-        return (T *)pInternal->GetHead();
-    }
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-};
 
 
-extern unsigned char g_nDefaultGender;  // 0x0073ECD0 (placeholder name)
+
 
 class CSWSDialog {
 public:
@@ -832,7 +702,7 @@ void CSWSDialog::BarkOneLine(unsigned long nEntry)
     }
     if (!cSound.IsValid()) {
         STR_RES strRes;
-        unsigned long nStrRef = m_pEntries[nEntry].m_sText.m_nStrRef;
+        unsigned long nStrRef = m_pEntries[nEntry].m_sText.m_dwStringRef;
         g_pTlkTable->Fetch(nStrRef, strRes, g_nDefaultGender);
         cSound = strRes.cSoundResRef;
     }
@@ -1089,7 +959,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject *pObject, unsign
     if (!bForce && (m_n74 != -1 || nEntry != (unsigned long)m_n70))
         return 1;
     pPos = m_lPlayers.GetHeadPos();
-    CSWSDialogPlayer *pPlayer = m_lPlayers.GetFirst();
+    CSWSDialogPlayer *pPlayer = m_lPlayers.GetHead();
     while (pPlayer) {
         if (pPlayer->m_nPlayerId == nPlayerId)
             break;
@@ -1122,7 +992,7 @@ int CSWSDialog::HandleReply(unsigned long nPlayerId, CSWSObject *pObject, unsign
     unsigned long nReplyIndex = m_pEntries[m_n70].m_pReplies[nReply].m_nIndex;
     if (m_lPlayers.GetHeadPos()) {
         pPos = m_lPlayers.GetHeadPos();
-        CSWSDialogPlayer *pOther = m_lPlayers.GetFirst();
+        CSWSDialogPlayer *pOther = m_lPlayers.GetHead();
         while (pOther) {
             if (pOther->m_nPlayerId != nPlayerId) {
                 CExoString sListener(

@@ -134,7 +134,7 @@ CSWGuiScriptSelect::CSWGuiScriptSelect(CSWGuiManager* pManager)
     m_lblDesc.CopyStyle(m_lbDesc.m_pProtoItem->m_extent, m_lbDesc.m_pProtoItem, 1.0f);
     CExoArrayListL<CSWGuiControl*> lstOptions;
     CSWGuiControl* pProto = m_lbStates.m_pProtoItem;
-    C2DA* p2DA = new C2DA(CResRef("aiscripts"), 0);
+    C2DA* p2DA = new C2DA("aiscripts", 0);
     p2DA->Load2DArray();
     lstOptions.SetSizeFree(p2DA->m_nNumRows);
     m_lstScripts.SetSizeFree(p2DA->m_nNumRows);

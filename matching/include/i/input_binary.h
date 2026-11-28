@@ -97,27 +97,10 @@ void* PoolLock(int nId, int nUnused1, int nUnused2, int nFlags);           // 0x
 void PoolUnlock(int nId);                                                   // 0x00423f30
 
 // MdlNode type words (.rdata 0x00740a18..0x00740a44).
-extern const unsigned short NODE_TYPE_DUMMY;        // 0x00740a18 (0x001)
-extern const unsigned short NODE_TYPE_LIGHT;        // 0x00740a1c (0x003)
-extern const unsigned short NODE_TYPE_EMITTER;      // 0x00740a20 (0x005)
-extern const unsigned short NODE_TYPE_CAMERA;       // 0x00740a24 (0x009)
-extern const unsigned short NODE_TYPE_REFERENCE;    // 0x00740a28 (0x011)
-extern const unsigned short NODE_TYPE_TRIMESH;      // 0x00740a2c (0x021)
-extern const unsigned short NODE_TYPE_SKIN;         // 0x00740a30 (0x061)
-extern const unsigned short NODE_TYPE_ANIM;         // 0x00740a34 (0x0a1)
-extern const unsigned short NODE_TYPE_DANGLY;       // 0x00740a38 (0x121)
-extern const unsigned short NODE_TYPE_AABB;         // 0x00740a3c (0x221)
-extern const unsigned short NODE_TYPE_PATCH;        // 0x00740a40 (0x401)
-extern const unsigned short NODE_TYPE_SABER;        // 0x00740a44 (0x821)
+#include "shared/globals.h"
 
 // Lightsaber vertex-buffer dimensions (.rdata words).
-extern const short SABER_NUM_SEGMENTS;              // 0x00740a4c
-extern const short SABER_NUM_VERTS;                 // 0x00740a50
-extern const short SABER_NUM_STRIPS;                // 0x00740a54
 
-extern int g_nMeshFaces;            // 0x00832c80
-extern int g_nMeshVertBytes;        // 0x00832c88
-extern int g_nModelMemory;          // 0x007a6990
 
 class MdlNode;
 class MaxTreeParser;
@@ -270,12 +253,7 @@ public:
     int m_nBoneConst;                   // +0x1d4
 };
 
-class AABB {
-public:
-    char pad00[0x18];
-    AABB* m_pLeft;                      // +0x18
-    AABB* m_pRight;                     // +0x1c
-};
+#include "shared/aabb.h"
 
 class MdlNodeAABB : public MdlNodeTriMesh {
 public:

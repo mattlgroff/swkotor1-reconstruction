@@ -1,8 +1,6 @@
 // CExoCriticalSectionInternal: a CRITICAL_SECTION wrapper (b005e0_exo_foundation_leaves).
 
-struct _RTL_CRITICAL_SECTION {
-    char data[0x18];
-};
+#include "shared/_rtl_critical_section.h"
 
 extern "C" {
 __declspec(dllimport) void __stdcall InitializeCriticalSection(_RTL_CRITICAL_SECTION* p);  // IAT 0x0073D178
@@ -11,15 +9,7 @@ __declspec(dllimport) void __stdcall EnterCriticalSection(_RTL_CRITICAL_SECTION*
 __declspec(dllimport) void __stdcall LeaveCriticalSection(_RTL_CRITICAL_SECTION* p);       // IAT 0x0073D16C
 }
 
-class CExoCriticalSectionInternal {
-public:
-    _RTL_CRITICAL_SECTION m_cCriticalSection;       // 0x00
-
-    CExoCriticalSectionInternal();
-    ~CExoCriticalSectionInternal();
-    void EnterCriticalSection();
-    void LeaveCriticalSection();
-};
+#include "shared/exo_critical_section_internal.h"
 
 // FUNCTION: SWKOTOR 0x005EC250
 CExoCriticalSectionInternal::CExoCriticalSectionInternal()

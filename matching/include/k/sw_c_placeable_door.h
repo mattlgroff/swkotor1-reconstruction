@@ -2,20 +2,12 @@
 #define K_SW_C_PLACEABLE_DOOR_H
 #include <math.h>
 #include <string.h>
-class CExoString {
-public:
- char* m_sString; unsigned long m_nBufferLength;
- CExoString(); CExoString(const char*); CExoString(const CExoString&); ~CExoString();
- CExoString& operator=(const char*);
- CExoString& operator=(const CExoString&);
- CExoString operator+(const CExoString&) const;
- CExoString SubString(int,int) const; char* CStr() const;
-};
+#include "shared/exo_string.h"
 class CSWCObject;
 class CResRef;
 class CSWCDoor;
 void __cdecl DoorAnimationEvent(void*,const char*,CSWCDoor*);
-struct Vector { float x,y,z; Vector() { x=0; y=0; z=0; } Vector(float fX,float fY,float fZ) { x=fX; y=fY; z=fZ; } Vector operator-() const { return Vector(-x,-y,-z); } Vector operator+(const Vector& v) const { return Vector(x+v.x,y+v.y,z+v.z); } };
+#include "shared/vector_ops.h"
 struct Quaternion { float w,x,y,z; Quaternion() { z=0; y=0; x=0; w=1; } };
 class CAurObject {
 public:
@@ -129,29 +121,12 @@ public:
 };
 class CSWSPlaceable { public: char pad0[0x230]; unsigned char m_nAppearance; char pad231[0x340-0x231]; int m_bHostile; char pad344[0x440-0x344]; int m_n440; int m_n444; char pad448[4]; void* m_pCreature; unsigned char GetAppearance() { return m_nAppearance; } };
 class CSWSDoor { public: void MoveToNextOpenState(); };
-class CSWSObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
- virtual void v00();
- virtual void v04();
- virtual void v08();
- virtual void v0C();
- virtual void v10();
- virtual void v14();
- virtual CSWSDoor* AsSWCDoor();
- virtual void v1C();
- virtual void v20();
- virtual void v24();
- virtual void v28();
- virtual void v2C();
- virtual void v30();
- virtual void v34();
- virtual void v38();
- virtual void v3C();
- virtual void v40();
- virtual void v44();
- virtual CSWSPlaceable* AsSWCPlaceable();
 };
-class CSWCObjectServerLink { public: virtual ~CSWCObjectServerLink(); CSWSObject* GetServerObject(); };
+#include "shared/swc_object_server_link.h"
 class CSWCObject : public CSWCObjectServerLink {
 public:
  CSWCObject(unsigned char); virtual ~CSWCObject();
@@ -256,7 +231,7 @@ public:
  CExoString GetName(); void ActionMenuLock(int,CSWCCreature*);
  void UnloadLight(); int LoadLight(); /* 006826E0, descriptive */ int GetIsHostile(); int PlayAnimation(unsigned short,float,int);
  CSWSPlaceable* GetServerPlaceable();
- CSWSPlaceable* ServerInline() { if(GetServerObject()) return GetServerObject()->AsSWCPlaceable(); return 0; }
+ CSWSPlaceable* ServerInline() { if(GetServerObject()) return GetServerObject()->AsSWSPlaceable(); return 0; }
  void UpdateAI(); void UpdateAnimation();
  int SetShadow(); void SetAppearance(unsigned char); float GetCanSeeHeight();
  unsigned char GetReticlePoint(Vector&); // 00682FF0
@@ -293,26 +268,21 @@ class CClientExoApp { public:
  class CGameObjectArray* GetGameObjectArray(); class CClientAIMaster* GetClientAIMaster();
  class CSWCModuleCamera* GetModuleCamera(); class CSWGuiManager* GetGuiManager(); // 005ED560, 005EDA40
 };
-class CAppManager { public: void* vptr; CClientExoApp* m_pClientExoApp; CClientExoApp* GetClientExoApp() { return m_pClientExoApp; } };
-extern CAppManager* g_pAppManager;
+#include "shared/app_manager.h"
+#include "shared/globals.h"
 class CWorldTimer { public: void GetWorldTime(unsigned long*,unsigned long*);
  int SubtractWorldTimes(unsigned long,unsigned long,unsigned long,unsigned long,unsigned long*,unsigned long*); };
-extern unsigned char g_nObjectTypePlaceable; // 00746638
-extern unsigned char g_nObjectTypeDoor; // 00746639
-extern const char g_sEmpty[]; // 0073D71C
 class CClientObject;
 class CGameObject;
 class CClientAIList { public: int RemoveObject(CClientObject*); };
 class CClientAIMaster { public: void* vptr; CClientAIList m_List; CClientAIList* GetAIList() { return &m_List; } };
 class CGameObjectArray { public: unsigned char Delete(unsigned long,CGameObject**); };
-extern const unsigned char g_nObjectArraySuccess; // 0074666C
 class C2DA { public: int GetINTEntry(int,const CExoString&,int*); int GetFLOATEntry(int,const CExoString&,float*);
  int GetINTEntry(int,int,int*); /* 00413510 */ int GetCExoStringEntry(int,int,CExoString*); /* 00413190 */
  int GetCExoStringEntry(int,const CExoString&,CExoString*); /* 00413270 */ };
 class C2DAs { public: char pad0[0x24]; C2DA* m_pDoorTypes; C2DA* m_pGenericDoors; C2DA* m_pPlaceables; char pad30[0x48-0x30]; C2DA* m_pLightColors; char pad4c[0x70-0x4c]; C2DA* m_pPlaceableSounds; C2DA* GetPlaceables() { return m_pPlaceables; } C2DA* GetLightColors() { return m_pLightColors; } C2DA* GetPlaceableSounds() { return m_pPlaceableSounds; } };
 class CSWRules { public: char pad0[0xb8]; C2DAs* m_p2DArrays; C2DAs* Get2DArrays() { return m_p2DArrays; } };
-extern CSWRules* g_pRules;
-class CResRef { public: char m_resRef[16]; void CopyToString(CExoString&) const; };
+#include "shared/res_ref.h"
 class CSWCAnimBasePlaceable : public CSWCAnimBase { public: CSWCAnimBasePlaceable(); };
 class CSWCAnimBaseDoor : public CSWCAnimBase { public: CSWCAnimBaseDoor(); };
 // C++98 layout checks; none of the existing shared headers are extended.

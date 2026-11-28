@@ -3,31 +3,13 @@
 // aoe_collision.cpp (+0x22c area effect row, +0x230 shape, +0x238 radius,
 // +0x23c width, +0x240 length, +0x244 rectangle corners, +0x260 scripts).
 
-class Vector {
-public:
-    Vector();                                               // 0x00409E70
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-(const Vector &v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    Vector operator+(const Vector &v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator*(float f) const { return Vector(x * f, y * f, z * f); }
-    Vector operator-() const { return Vector(-x, -y, -z); }
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 Vector CrossProduct(const Vector &a, const Vector &b);      // 0x004AB210
 Vector Normalize(const Vector &v);                          // 0x004AB180
 Vector operator/(const Vector &v, float f);                 // 0x00437A90
 
-class CExoString {
-public:
-    CExoString();                                           // 0x005B3190
-    CExoString(const char *s);                              // 0x005E5A90
-    ~CExoString();                                          // 0x005E5C20
-    CExoString &operator=(const CExoString &s);             // 0x005E5C50
-    int operator==(const char *s) const;                    // 0x005E5290
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 struct CResStruct;
 
@@ -68,7 +50,7 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;              // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWSCreature;
 class CGameObject;
@@ -115,51 +97,17 @@ public:
     CGameObjectArray *GetObjectArray();                     // 0x004AED70
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;     // 0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;      // 0x007A39FC
-extern char g_cObjectArraySuccess;
-extern unsigned long g_oidInvalid;      // 0x00746644
 
-class CGameObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
-    virtual ~CGameObject();
-    virtual void v04();
-    virtual void v08();
-    virtual void v0c();
-    virtual void v10();
-    virtual void v14();
-    virtual void v18();
-    virtual void v1c();
-    virtual void v20();
-    virtual void v24();
-    virtual void v28();
-    virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();     // +0x30
-    virtual void v34();
-    virtual void v38();
-    virtual void v3c();
-    virtual void v40();
-    virtual void v44();
-    virtual void v48();
-    virtual void v4c();
-    virtual void v50();
-    virtual void v54();
-    virtual void v58();
-    virtual void v5c();
-    virtual void v60();
-    virtual void v64();
-    virtual void v68();
-    virtual void v6c();
     virtual void v70();
     virtual void v74();
     virtual void v78();
-    virtual void SetAnimation(int nAnimation);   // +0x7c
+    virtual void SetAnimation(int nAnimation);  // +0x7c
     virtual void v80();
     virtual void v84();
     virtual void v88();
@@ -174,19 +122,13 @@ public:
     virtual void vac();
     virtual void vb0();
     virtual void vb4();
-    virtual int GetLastSpellId();              // +0xb8
-
-    unsigned long m_idSelf;             // 0x4
-};
-
-class CSWSObject : public CGameObject {
-public:
+    virtual int GetLastSpellId();  // +0xb8
     void SetTag(CExoString &sTag);                          // 0x00553040
     CSWSArea *GetArea();                                    // 0x004CB120
     void SetArea(CSWSArea *pArea);                          // 0x004CB160
     void SetPosition(const Vector &v, int a, int b, int c); // 0x004CD1A0
 
-    char pad_0x8[0x18 - 0x8];
+    char pad_0xc[0xc];
     CExoString m_sTag;                  // 0x18
     char pad_0x20[0x90 - 0x20];
     Vector m_vPosition;                 // 0x90

@@ -5,51 +5,14 @@
 
 #include <stddef.h>
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(int n);                              // 0x005E5BC0
-    int AsINT() const;                              // 0x005E5630
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    char* CStr() const;                             // 0x005E5670
-    int operator==(const CExoString& s) const;      // 0x005E5200
-    int IsEmpty() const;                            // 0x005E58A0
-    int CompareNoCase(const char* s) const;         // 0x005E58C0
-    int Find(char c, int nStart) const;             // 0x005E5F20
-    char operator[](int n) const;                   // 0x005E5600
-    CExoString& operator=(const char* s);           // 0x005E5140
-    int operator!=(const char* s) const;            // 0x005E5390
-    int GetLength() const;                          // 0x005E5790
-    CExoString Right(int nCount) const;             // 0x005E6170
-    CExoString Left(int nCount) const;              // 0x005E5F70
-    CExoString operator+(const CExoString& s) const; // 0x005E5D10
-    void Format(char* sFormat, ...);                // 0x005E5680
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-struct Vector {
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 // Passed by value with an inline (member-wise) copy.
-struct CResRef {
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CExoString& s);                   // 0x00406D60
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-#ifdef I_CRESREF_DECLARED_COPY
-    // Declared, not defined: a temporary is then built in the argument slot.
-    CResRef(const CResRef& c);
-#endif
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-extern const float g_fZero;                         // 0x0073D700
+#include "shared/globals.h"
 
 class C2DA {
 public:
@@ -101,11 +64,7 @@ public:
 };
 class CSWSSoundObject;
 class CWorldTimer;
-class CSWVirtualMachineCommands {
-public:
-    virtual ~CSWVirtualMachineCommands();
-    char m_pad4[0x10 - 4];
-};
+#include "shared/sw_virtual_machine_commands.h"
 class CFactionManager;
 class CPathfindInformation;
 class CSWSModule;
@@ -159,20 +118,6 @@ class CSWSArea;
 class CSWSCreature;
 class CSWSObject;
 
-extern const unsigned char GAME_OBJECT_VALID;               // 0x0074666C
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633
-extern const unsigned char OBJECT_TYPE_CREATURE;            // 0x00746634
-extern const unsigned char OBJECT_TYPE_ITEM;                // 0x00746635
-extern const unsigned char OBJECT_TYPE_TRIGGER;             // 0x00746636
-extern const unsigned char OBJECT_TYPE_PLACEABLE;           // 0x00746638
-extern const unsigned char OBJECT_TYPE_DOOR;                // 0x00746639
-extern const unsigned char OBJECT_TYPE_AREA_OF_EFFECT;      // 0x0074663A
-extern const unsigned char OBJECT_TYPE_WAYPOINT;            // 0x0074663B
-extern const unsigned char OBJECT_TYPE_ENCOUNTER;           // 0x0074663C
-extern const unsigned char OBJECT_TYPE_STORE;               // 0x0074663D
-extern const unsigned char OBJECT_TYPE_SOUND;               // 0x0074663E
-extern const unsigned long OBJECT_INVALID_ID;               // 0x00746644
-extern const unsigned long CLIENT_OBJECT_MASK;              // 0x0074665C
 
 template <class T>
 class CExoArrayList {
@@ -213,78 +158,14 @@ public:
     int array_size;
 };
 
-typedef void* CExoLinkedListPosition;
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* RemoveHead();                             // 0x005E9C80
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    void* Remove(CExoLinkedListPosition pos);       // 0x005E9C10
-    CExoLinkedListPosition AddTail(void* p);        // 0x005E9DC0
-    CExoLinkedListPosition AddHead(void* p);        // 0x005E9D70
-    CExoLinkedListNode* m_pHead;
-    CExoLinkedListNode* m_pTail;
-    unsigned long m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();                               // 0x004B25D0 (out of line)
-    ~CExoLinkedList() { delete m_pList; }
-    CExoLinkedListPosition GetHeadPos() { return m_pList->m_pHead; }
-    int IsEmpty() { return m_pList->m_pHead == NULL; }
-    unsigned long GetCount() { return m_pList->m_nCount; }
-    T* RemoveHead() { return (T*)m_pList->RemoveHead(); }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pList->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pList->GetNext(pos); }
-    T* Remove(CExoLinkedListPosition pos) { return (T*)m_pList->Remove(pos); }
-    CExoLinkedListPosition AddTail(T* p) { return m_pList->AddTail(p); }
-    CExoLinkedListPosition AddHead(T* p) { return m_pList->AddHead(p); }
-    CExoLinkedListInternal* m_pList;
-};
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04();
-    virtual void SetWorldTime(unsigned long nDay, unsigned long nTime);     // +0x08
-    virtual void* AsSWCObject();                    // +0x0c
-    virtual CSWSObject* AsSWSObject();              // +0x10
-    virtual void* AsSWCDoor();                      // +0x14
-    virtual CSWSDoor* AsSWSDoor();                  // +0x18
-    virtual void* AsSWCModule();                    // +0x1c
-    virtual CSWSModule* AsSWSModule();              // +0x20
-    virtual void* AsSWCArea();                      // +0x24
-    virtual CSWSArea* AsSWSArea();                  // +0x28
-    virtual void* AsSWCCreature();                  // +0x2c
-    virtual CSWSCreature* AsSWSCreature();          // +0x30
-    virtual void* AsSWCItem();                      // +0x34
-    virtual CSWSItem* AsSWSItem();                  // +0x38
-    virtual void* AsSWCTrigger();                   // +0x3c
-    virtual CSWSTrigger* AsSWSTrigger();            // +0x40
-    virtual void* AsSWCPlaceable();                 // +0x44
-    virtual CSWSPlaceable* AsSWSPlaceable();        // +0x48
-    virtual void* AsSWCAreaOfEffectObject();        // +0x4c
-    virtual CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject();  // +0x50
-    virtual void* AsSWCWaypoint();                  // +0x54
-    virtual CSWSWaypoint* AsSWSWaypoint();          // +0x58
-    virtual CSWSEncounter* AsSWSEncounter();        // +0x5c
-    virtual void* AsSWCStore();                     // +0x60
-    virtual CSWSStore* AsSWSStore();                // +0x64
-    virtual CSWSSoundObject* AsSWSSoundObject();    // +0x68
 
-    unsigned long m_idSelf;                         // +0x04
-    unsigned char m_nObjectType;                    // +0x08
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
@@ -401,11 +282,7 @@ public:
     char m_pad10c[0x42c - 0x10c];
 };
 
-class CSWS2DArrays {
-public:
-    char m_pad0[0xc];
-    C2DA* m_pAppearanceTable;                       // +0x0c (placeholder name)
-};
+#include "shared/sws2_d_arrays.h"
 
 class CSWRules {
 public:
@@ -415,13 +292,8 @@ public:
     CSWS2DArrays* m_p2DArrays;                      // +0xb8 (placeholder name)
     char m_padbc[0xdc - 0xbc];
 };
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
-class CExoDebug {
-public:
-    void OpenLogFiles(const CExoString& sName);     // 0x005E93F0
-    void GetCurrentTimestamp(CExoString& s);        // 0x005E9410
-};
+#include "shared/exo_debug.h"
 
 class CExoTimers {
 public:
@@ -445,7 +317,6 @@ public:
     CExoDebug* m_pcExoDebug;                        // +0x08
     CExoAliasList* m_pcExoAliasList;                // +0x0c
 };
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 class CSWSCreatureStats {
 public:
@@ -460,13 +331,7 @@ public:
     unsigned long m_oidNewAttackTarget;             // +0x9cc
 };
 
-class CExoLocString {
-public:
-    CExoLocString();                                // 0x005E9E10
-    ~CExoLocString();                               // 0x005EA000
-    void* m_pInternal;
-    unsigned long m_n4;
-};
+#include "shared/exo_loc_string.h"
 
 struct CSWSCreatureAppearance {
     char m_pad0[0x10];
@@ -476,7 +341,7 @@ struct CSWSCreatureAppearance {
 
 class CSWSCreature : public CGameObject {
 public:
-    virtual void v6c(); virtual void v70(); virtual void v74(); virtual void v78();
+     virtual void v70(); virtual void v74(); virtual void v78();
     virtual void v7c(); virtual void v80(); virtual void v84(); virtual void v88();
     virtual CExoLocString* GetFirstName();          // +0x8c
     virtual void v90();
@@ -547,7 +412,6 @@ public:
     int RemoveFile(const CExoString& sFileName, unsigned short nType);             // 0x00406B20
     char m_pad0[0x60];
 };
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
 
 class CSWSArea {
 public:
@@ -575,12 +439,7 @@ public:
     unsigned short m_nLoadScreenID;                 // +0x228 (placeholder name)
 };
 
-class CSWSAreaMap {
-public:
-    void SetWorldPointExplored(Vector v, int bExplored);                // 0x005792D0
-    void SetPartyMemberWorldLocation(int nIndex, Vector v);             // 0x005790C0
-    void SetPartyMemberWorldOrientation(int nIndex, Vector v);          // 0x00579130
-};
+#include "shared/sws_area_map.h"
 
 struct CSWSModuleEntryInfo {
     char m_pad0[0x10];

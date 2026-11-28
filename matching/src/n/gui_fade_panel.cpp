@@ -1,22 +1,17 @@
 // CSWGuiFade (swguiingame.o, vtable 0x0074FC60, 0x1B8 bytes): the global
 // fade panel. Standalone layout; +0x4C alpha and +0x50 colour belong to the
 // CSWGuiPanel base (SetAlpha 0x00404B00).
-struct Vector { float x,y,z; Vector() {} Vector(float a,float b,float c) { x=a; y=b; z=c; } };
+#include "shared/vector.h"
 struct CSWGuiExtent { int left,top,width,height; };
 class CSWGuiControl;
-class CExoString {
-public:
-    char* m_sString; unsigned long m_nLength;
-    CExoString(); CExoString(const char* s); ~CExoString();
-    CExoString& operator=(const CExoString& s);
-};
-class CResRef { public: char m_resRef[16]; CResRef(const char* s); };
+#include "shared/exo_string.h"
+#include "shared/res_ref.h"
 class CTlkTable {
 public:
     CExoString GetSimpleString(unsigned long nStrRef); // 0x0041E8F0
     void ParseTokens(CExoString* pString); // 0x0041DD30
 };
-extern CTlkTable* g_pTlkTable;
+#include "shared/globals.h"
 class CSWGuiTextParams { public: char pad_0x0[0x58]; void SetText(const CExoString& s); };
 class CSWGuiControl { public: virtual ~CSWGuiControl(); char pad_0x4[0x4c]; };
 class CSWGuiLabel : public CSWGuiControl {
@@ -31,8 +26,7 @@ public:
     char pad_0x0[4]; CClientExoAppInternal* m_pInternal;
     CGuiInGame* GetInGameGui(); CSWGuiManager* GetGuiManager();
 };
-class CAppManager { public: char pad_0x0[4]; CClientExoApp* m_pClient; };
-extern CAppManager* g_pAppManager;
+#include "shared/app_manager.h"
 
 class CSWGuiPanel {
 public:
@@ -77,18 +71,18 @@ void CSWGuiFade::StartFade(int bFadeIn,float fWait,float fLength,const Vector& v
     m_fFadeLength = fLength;
     m_bFadeIn = bFadeIn;
     m_fFadeTime = 0.1f;
-    m_nLastTime = (unsigned long)((__int64)g_pAppManager->m_pClient->m_pInternal->m_pWorldTimer->GetSnapshotTime() / 1000);
+    m_nLastTime = (unsigned long)((__int64)g_pAppManager->m_pClientExoApp->m_pInternal->m_pWorldTimer->GetSnapshotTime() / 1000);
 }
 
 // FUNCTION: SWKOTOR 0x00624570
 void CSWGuiFade::Draw(float fDelta)
 {
-    unsigned long nNow = (unsigned long)((__int64)g_pAppManager->m_pClient->m_pInternal->m_pWorldTimer->GetSnapshotTime() / 1000);
+    unsigned long nNow = (unsigned long)((__int64)g_pAppManager->m_pClientExoApp->m_pInternal->m_pWorldTimer->GetSnapshotTime() / 1000);
     unsigned long nDiff = nNow - m_nLastTime;
     m_nLastTime = nNow;
     float fElapsed = nDiff * 0.001f;
-    if (g_pAppManager->m_pClient->GetInGameGui() &&
-        g_pAppManager->m_pClient->GetInGameGui()->GetFadeOverridePanelVisible())
+    if (g_pAppManager->m_pClientExoApp->GetInGameGui() &&
+        g_pAppManager->m_pClientExoApp->GetInGameGui()->GetFadeOverridePanelVisible())
         return;
     if (m_fFadeTime > 0.0f) {
         if (fElapsed < 5.0f) m_fFadeTime += fElapsed;
@@ -141,13 +135,13 @@ void CSWGuiFade::ResetFade()
     m_fFadeLength = 0.0f;
     m_fFadeTime = 0.0f;
     m_bFadeIn = 0;
-    m_nLastTime = (unsigned long)(g_pAppManager->m_pClient->m_pInternal->m_pWorldTimer->GetSnapshotTime() / 1000);
+    m_nLastTime = (unsigned long)(g_pAppManager->m_pClientExoApp->m_pInternal->m_pWorldTimer->GetSnapshotTime() / 1000);
 }
 
 // FUNCTION: SWKOTOR 0x00624810
 CSWGuiFade::CSWGuiFade(CSWGuiManager* pManager) : CSWGuiPanel(pManager)
 {
-    if (!m_pManager) m_pManager = g_pAppManager->m_pClient->GetGuiManager();
+    if (!m_pManager) m_pManager = g_pAppManager->m_pClientExoApp->GetGuiManager();
     {
         CResRef cLayout("fade");
         StartLoadFromLayout(cLayout);

@@ -8,13 +8,7 @@ public:
     ~CExoRandInternal();                            // 0x005ECC80
 };
 
-class CExoRand {
-public:
-    CExoRandInternal* m_pcExoRandInternal;          // 0x00
-
-    CExoRand();
-    ~CExoRand();
-};
+#include "shared/exo_rand.h"
 
 // FUNCTION: SWKOTOR 0x005EA420
 CExoRand::CExoRand()

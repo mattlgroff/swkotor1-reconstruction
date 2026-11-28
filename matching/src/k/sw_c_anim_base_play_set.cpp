@@ -20,8 +20,7 @@ public:
     C2DArrays* m_p2DArrays;                         // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern int g_nAnimNameColumn;                       // 0x007A2174
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0069E620
 // NONMATCH: register allocation only (the original keeps nAnim in edi and

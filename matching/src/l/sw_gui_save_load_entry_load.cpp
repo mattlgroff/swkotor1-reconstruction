@@ -3,7 +3,7 @@
 // party portraits).
 #include "l/sw_gui_save_load.h"
 
-extern unsigned char g_nLiveFolderCount;            // 0x0073ECD2 (descriptive)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x006C8E50
 void CSWGuiSaveLoadEntry::LoadData(const CExoString& sDirectory)

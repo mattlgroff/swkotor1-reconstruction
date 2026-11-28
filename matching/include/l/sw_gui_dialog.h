@@ -4,43 +4,9 @@
 #ifndef L_SW_GUI_DIALOG_H
 #define L_SW_GUI_DIALOG_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* sString);                // 0x005E5A90
-    CExoString(int n);                              // 0x005E5BC0
-    CExoString(const CExoString& sString);          // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int IsEmpty() const;                          // 0x005E58A0
-    int operator==(const char* s) const;            // 0x005E5290
-    int AsINT() const;                            // 0x005E5630
-    int GetLength() const;                          // 0x005E5790
-    char* CStr() const;                             // 0x005E5670
-    void Format(const char* szFormat, ...);         // 0x005E5680
-    int Find(char c, int nStart) const;             // 0x005E5F20
-    int Find(const CExoString& s, int nStart) const;    // 0x005E5EB0
-    CExoString Left(int nCount) const;              // 0x005E5F70
-    CExoString Right(int nCount) const;             // 0x005E6170
-};
+#include "shared/exo_string.h"
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    Vector& operator-=(const Vector& v);            // 0x004A9770
-    void Normalize();                               // 0x004AB130
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct CSWGuiExtent {
     int left;
@@ -101,7 +67,7 @@ public:
     void RestoreOldMousePosition();                 // 0x0040C7D0
     void HandleMouseMove(int x, int y);             // 0x0040C1E0
 };
-extern CSWGuiManager* g_pGuiManager;                // 0x007A39F4
+#include "shared/globals.h"
 
 // Text parameters embedded in labels/controls.
 class CSWGuiTextParams {
@@ -128,13 +94,7 @@ public:
     void SetHighlighted(int b) { m_bHighlighted = b; }
     void UpdateFont();                              // 0x00415DF0
     char m_szFont[0x10];                            // 0x3c (the base font CResRef)
-#ifdef L_GUI_TEXT_PARAMS_EXACT
-    // The real object is 0x54 bytes (stack temporaries); embedding labels
-    // keep their 0x140 size with the trailing dword declared in CSWGuiLabel.
-    char pad_0x4c[0x8];
-#else
     char pad_0x4c[0xc];
-#endif
 };
 
 class CSWGuiControl;
@@ -274,9 +234,6 @@ public:
     char pad_0xc4[0xc];
     CSWGuiLabelText m_cTextBox;                     // 0xd0
     CSWGuiTextParams m_cText;                       // 0xe8
-#ifdef L_GUI_TEXT_PARAMS_EXACT
-    int m_n13c;                                     // 0x13c
-#endif
 
     void Draw(float fDelta);                        // 0x00417750
 };
@@ -646,20 +603,8 @@ public:
     class CGameObjectArray* GetObjectArray();       // 0x004AED70
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern int g_nScreenWidth;                          // 0x0078D1D4
-extern int g_nScreenHeight;                         // 0x0078D1D8
-extern CExoString g_sComputerBGPrefix;              // 0x007A3D70
-extern Vector g_vDefaultReplyColor;                 // 0x007A23C0
 
 // Conversation panel; implicit destructor 0x006A6F30.
 class CSWGuiDialog : public CSWGuiPanel {
@@ -763,7 +708,6 @@ public:
     CDialogCamera* m_pCamera;                       // 0x207c
 };
 
-extern Vector g_vBlack;                             // 0x00833910
 
 // Cinematic letterbox bars; vtable 0x00755A78; implicit dtor 0x006A8A10.
 class CSWGuiLetterbox : public CSWGuiPanel {

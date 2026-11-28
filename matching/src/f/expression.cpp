@@ -1,12 +1,6 @@
 // CSWSExpression node/lifetime leaves (b0059_f2_scriptvar_dialog).
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 template <class T>
 class CExoArrayList {

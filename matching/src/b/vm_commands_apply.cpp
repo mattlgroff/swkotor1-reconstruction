@@ -5,7 +5,7 @@
 #include "b/sws_creature.h"
 #include "b/global_variable_table.h"
 
-extern const int EFFECT_TYPE_LINK;                          // 0x0074671C
+#include "shared/globals.h"
 
 // CSWSObject +0x148 (sws_creature.h keeps CSWSObject data-free, as CSWSItem and
 // CSWSCreature declare their own members from +0xf4).

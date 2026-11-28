@@ -90,7 +90,7 @@ public:
     C2DAs* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                         // 0x007A3A28
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x006914D0
 void CSWCTrigger::SetCursor(unsigned char nRow)

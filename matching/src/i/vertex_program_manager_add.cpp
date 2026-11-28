@@ -1,11 +1,6 @@
-struct VertexProgramArray {
-    void* data;
-    int size;
-    int capacity;
-    void Allocate(int count);
-};
+#include "shared/vertex_program_array.h"
 
-extern VertexProgramArray g_vertex_programs_008305cc;
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004A2770
 void __cdecl AddVertexProgramToManager_004a2770(void* program)

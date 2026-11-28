@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "shared/float_to_int.h"
 
 // FUNCTION: SWKOTOR 0x0045D990
 void ImageFlipY(unsigned char* pData, int nWidth, int nHeight, int nBpp)
@@ -105,8 +106,7 @@ void ImageGammaCorrect(int nWidth, int nHeight, int nBpp, unsigned char* pData, 
     }
 }
 
-extern int g_nImageDecodeCalls;     // 0x007B9334
-extern int g_bImageDecodeDisabled;  // 0x007BB510
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0045DE10
 unsigned int* ImageDecode(unsigned char* pSrc, int nWidth, int nHeight,
@@ -228,16 +228,6 @@ unsigned short* ImageReadPLT(char* szName, int* pWidth, int* pHeight)
     return pData;
 }
 
-static inline void FloatToInt(int* pOut, float f)
-{
-    __asm {
-        fld f
-        mov edx, pOut
-        frndint
-        fistp dword ptr [edx]
-    }
-}
-
 // FUNCTION: SWKOTOR 0x0045E5B0
 unsigned char ImageInterpolate(unsigned char* pData, float x, float y, int nWidth, int nHeight)
 {
@@ -291,7 +281,6 @@ float ImageGetAlphaMean(unsigned char* pData, int nWidth, int nHeight, int nBpp)
     return fSum / n;
 }
 
-extern float g_aLowpassKernel[3][3];    // 0x0078E450
 
 // FUNCTION: SWKOTOR 0x0045E8B0
 void ImageLowpassLowQualityBlur(unsigned char* pDst, unsigned char* pSrc, int nWidth,
@@ -312,7 +301,6 @@ void ImageLowpassLowQualityBlur(unsigned char* pDst, unsigned char* pSrc, int nW
     }
 }
 
-extern unsigned char g_aLowpassShift[3][3];     // 0x0078E474
 
 // FUNCTION: SWKOTOR 0x0045EA70
 void ImageLowpassLowQualityBlur2(unsigned char* pData, int nWidth, int nHeight)

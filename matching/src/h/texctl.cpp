@@ -191,8 +191,7 @@ void CycleTIDTextureController::ParseField(char* szField)
     TextureController::ParseField(szField);
 }
 
-extern int g_nAurFrameCounter;          // 0x007A46F4
-extern float g_fAurFrameDelta;          // 0x0078E574
+#include "shared/globals.h"
 
 // NONMATCH (4 insns): the dead m_pTexture stack slot comes from the
 // by-reference GetNumFrames helper; the original loads m_pTexture before

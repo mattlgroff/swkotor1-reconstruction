@@ -34,9 +34,6 @@ CExoString CSWCDoor::GetTransitionName()
 CSWGuiInGameAreaTransition::CSWGuiInGameAreaTransition(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
-    m_vPosition.x = 0.0f;
-    m_vPosition.y = 0.0f;
-    m_vPosition.z = 0.0f;
     StartLoadFromLayout("areatransition");
     InitControl(&m_lblTextBG, "LBL_TEXTBG", 1);
     InitControl(&m_lblIcon, "LBL_ICON", 1);

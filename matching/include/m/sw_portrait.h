@@ -5,42 +5,16 @@
 
 #include <stddef.h>
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int operator==(const char* s) const;            // 0x005E5290
-    int GetLength() const;                          // 0x005E5790
+#include "shared/exo_string.h"
 
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
-
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CExoString& s);                   // 0x00406D60
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    CResRef operator=(const char* s);               // 0x00406290
-    CResRef operator=(const CExoString& s);         // 0x004061F0
-    CResRef operator+=(const CExoString& s);        // 0x00406300
-    char* GetResRef() const;                        // 0x00641DB0
-
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CExoResMan {
 public:
     int Exists(const CResRef& cResRef, unsigned short nType, unsigned long* pSize); // 0x00408BC0
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
+#include "shared/globals.h"
 
 class C2DA {
 public:
@@ -70,7 +44,6 @@ public:
     C2DAs* m_p2DArrays;                             // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CClientOptions {
 public:
@@ -83,13 +56,8 @@ public:
     CClientOptions* GetClientOptions();             // 0x005ED700
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CSWPortrait {
 public:

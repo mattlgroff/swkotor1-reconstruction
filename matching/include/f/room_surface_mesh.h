@@ -6,16 +6,7 @@
 
 #include <stdio.h>
 
-class Vector {
-public:
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator+(const Vector &v) const { return Vector(x + v.x, y + v.y, z + v.z); }
-    Vector operator-(const Vector &v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    Vector &operator*=(float f);
-    Vector &operator+=(const Vector &v);
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 Vector Normalize(const Vector &v);
 Vector NormalOf(const Vector &v0, const Vector &v1, const Vector &v2);
@@ -31,23 +22,9 @@ public:
 Quaternion operator~(const Quaternion &q);
 Vector operator*(const Quaternion &q, const Vector &v);
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    char *CStr() const;
-    void Format(const char *szFormat, ...);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef operator=(const CResRef &r);
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 
 
@@ -67,7 +44,7 @@ public:
     void SetResObject(const CResRef &cResRef, unsigned short nType, CRes *pRes);
 };
 
-extern CExoResMan *g_pExoResMan;
+#include "shared/globals.h"
 
 class C2DA {
 public:
@@ -89,7 +66,6 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;
 
 // The BWM file header (0x88 bytes).
 struct CSWWalkMeshHeader {

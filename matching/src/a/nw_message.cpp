@@ -40,7 +40,7 @@ void CNWMessage::SetReadPositionToEnd()
 // FUNCTION: SWKOTOR 0x004D6180
 CResRef CSWMessage::ReadCResRef(int nSize)
 {
-    char szResRef[16];
+    unsigned char szResRef[16];
     if (nSize > 16) {
         nSize = 16;
     }
@@ -50,7 +50,7 @@ CResRef CSWMessage::ReadCResRef(int nSize)
     }
     memcpy(szResRef, m_pnReadBuffer + m_nReadBufferPtr, nSize);
     m_nReadBufferPtr += nSize;
-    return *(CResRef*)szResRef;
+    return CResRef(szResRef);
 }
 
 // FUNCTION: SWKOTOR 0x004D6200

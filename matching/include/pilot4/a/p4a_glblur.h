@@ -34,35 +34,15 @@ __declspec(dllimport) void __stdcall glVertex3f(float x, float y, float z);
 #define GL_CONSTANT_COLOR1_NV 0x852b
 #define WGL_FRONT_LEFT_ARB 0x2083
 
-typedef void(__stdcall* PFNGLACTIVETEXTUREARB)(unsigned int tex);
-typedef void(__stdcall* PFNGLMULTITEXCOORD2FARB)(unsigned int tex, float s, float t);
-typedef void(__stdcall* PFNGLCOMBINERSTAGEPARAMETERFVNV)(unsigned int stage, unsigned int pname,
-                                                        const float* params);
-typedef int(__stdcall* PFNWGLBINDTEXIMAGEARB)(void* hPbuffer, int iBuffer);
 
-extern PFNGLACTIVETEXTUREARB glActiveTextureARB;                    // 0x007BB80C
-extern PFNGLMULTITEXCOORD2FARB glMultiTexCoord2fARB;                // 0x007BB6E8
-extern PFNGLCOMBINERSTAGEPARAMETERFVNV glCombinerStageParameterfvNV; // 0x007BB6F8
-extern PFNWGLBINDTEXIMAGEARB wglBindTexImageARB;                    // 0x007BB7B8
-extern PFNWGLBINDTEXIMAGEARB wglReleaseTexImageARB;                 // 0x007BB6D0
+#include "shared/gl_ext.h"
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 float* AurMakeColor(const Vector& vColor, const float& fAlpha);     // 0x004AAAB0
 void FrameBufferModificationPixelShaders(int nMode, int a, int b, int c, int d); // 0x004299C0
 
-extern float g_fSpeedBlurRatio;                         // 0x0078D43C
-extern unsigned int g_nBloomTexture;                    // 0x007A68C0
-extern void* g_hBloomPbuffer;                           // 0x007A68C4
-extern unsigned int g_nRootTexture;                     // 0x007A687C
-extern int g_nWindowWidth;                              // 0x0078D1D4
-extern int g_nWindowHeight;                             // 0x0078D1D8
+#include "shared/globals.h"
 
 void RenderAccumulationBlur(unsigned int nTexture);     // 0x00433DA0
 

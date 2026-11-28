@@ -14,7 +14,7 @@ public:
                            unsigned char, float, float);  // 0x005D5E10
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
+#include "shared/globals.h"
 
 // Note for 0x006832A0: the original loads the sound table (+0x70) before
 // pushing, so its arms merge before any push; ours push first. One

@@ -7,9 +7,7 @@
 
 #include "l/sw_gui_store.h"
 
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
-extern const unsigned short RACIAL_TYPE_DROID;      // 0x0074BF10
-extern unsigned long g_aInventoryFilterNames[6];    // 0x00756444 (descriptive)
+#include "shared/globals.h"
 
 // Per equipment slot (9 entries of 0x14 bytes at 0x00756560), e.g.
 // {0x20, "INV_WEAP_L", "weap_l", 0x7A92, 0x7A92}.
@@ -20,7 +18,6 @@ struct CSWEquipSlotInfo {
     unsigned long m_nStrRef;                        // 0x0c
     unsigned long m_nStrRef2;                       // 0x10
 };
-extern CSWEquipSlotInfo g_aEquipSlots[9];           // 0x00756560 (descriptive)
 
 class CSWCCreatureStats {
 public:
@@ -126,8 +123,6 @@ public:
     unsigned long GetAttackTarget() { return m_oidAttackTarget; }
 };
 
-extern int g_bClearTargetOnAction;                 // 0x008338F8
-extern Vector g_vAbilityColorAvailable;             // 0x007A23D8
 
 class CSWCMessage {
 public:

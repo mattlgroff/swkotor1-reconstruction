@@ -107,7 +107,7 @@ public:
     char pad_0x1c[0x34 - 0x1c];
 };
 
-extern int g_bDo3DGui;                              // 0x0078D1E4 (descriptive)
+#include "shared/globals.h"
 
 // Inline 3D model view control (vtable 0x00752E30); dtor 0x0067AC50, 0x90 bytes.
 class CSWGui3DSceneView : public CSWGuiControl {
@@ -129,11 +129,6 @@ public:
     void SetSoundMode(int nMode);                   // 0x005D5E80
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern int g_nSoundModeZero;                        // 0x0074C5EC
-extern int g_bGuiFlag;                              // 0x007A2370
-extern Vector g_vDifficultyExitColor;               // 0x007A23B4
-extern Vector g_vKeyMapLockedTextColor;             // 0x007A2408
 
 class CSWGuiLevelUpPanel;
 

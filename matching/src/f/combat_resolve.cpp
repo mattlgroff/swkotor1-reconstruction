@@ -1,21 +1,7 @@
 // CSWSCreature weapon-discharge 2DA getters and combat resolvers
 // (b005b_f2_combat).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    CExoString(const CExoString &s);
-    CExoString(int n);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    CExoString operator+(const CExoString &s) const;
-    char operator[](int nIndex) const;
-    CExoString SubString(int nStart, int nCount) const;
-    int AsINT() const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:
@@ -53,7 +39,7 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;              // 0x007A3A28
+#include "shared/globals.h"
 
 template <class T>
 class CExoArrayList {
@@ -86,41 +72,9 @@ public:
     }
 };
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04();
-    virtual void v08();
-    virtual void v0c();
-    virtual CGameObject *AsSWSObject();   // +0x10
-    virtual void v14();
-    virtual CGameObject *AsDoor();        // +0x18
-    virtual void v1c();
-    virtual void v20();
-    virtual void v24();
-    virtual void v28();
-    virtual void v2c();
-    virtual CGameObject *AsSWSCreature();    // +0x30
-    virtual void v34();
-    virtual void v38();
-    virtual void v3c();
-    virtual void v40();
-    virtual void v44();
-    virtual CGameObject *AsPlaceable();   // +0x48
-    virtual void v4c(); virtual void v50(); virtual void v54(); virtual void v58();
-    virtual void v5c(); virtual void v60(); virtual void v64(); virtual void v68();
-    virtual void v6c(); virtual void v70(); virtual void v74(); virtual void v78();
-    virtual void SetAnimation(int nAnimation);   // +0x7c
-    virtual void v80(); virtual void v84(); virtual void v88();
-    virtual void v8c(); virtual void v90(); virtual void v94(); virtual void v98();
-    virtual short GetCurrentHitPoints(int bExcludeTemporary);   // +0x9c
-    unsigned long GetID() { return m_idSelf; }
-    unsigned long m_idSelf;             // +0x4
-};
+#include "shared/game_object.h"
 
 class CSWArea {
 public:
@@ -130,7 +84,7 @@ public:
 
 class CSWSArea : public CSWArea, public CGameObject {
 public:
-    char pad_0x124[0x6c];
+    char pad_0x128[0x68];
     CExoArrayList<unsigned long> m_aCreatures;   // +0x190
 };
 
@@ -149,16 +103,6 @@ public:
     char pad_0xc[0x80];
 };
 
-extern unsigned short EFFECT_TYPE_VISUAL_EFFECT;   // 0x007466F4
-extern unsigned short SUBTYPE_MAGICAL;             // 0x007473B8
-extern unsigned short EFFECT_TYPE_LINK;            // 0x0074671C
-extern unsigned short EFFECT_TYPE_DEATH;           // 0x007466C8
-extern unsigned char IMMUNITY_TYPE_04;             // 0x0074690C
-extern unsigned char IMMUNITY_TYPE_06;             // 0x00746914
-extern unsigned char IMMUNITY_TYPE_12;             // 0x0074692C
-extern unsigned char IMMUNITY_TYPE_13;             // 0x00746930
-extern unsigned char IMMUNITY_TYPE_16;             // 0x00746934
-extern unsigned long g_nEventProjectileMiss;       // 0x007441C8
 
 class CServerAIMaster {
 public:
@@ -189,14 +133,8 @@ public:
     CSWPartyTable *GetPartyTable();
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;     // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;      // 0x007A39FC
 
 class CSWBaseItem {
 public:
@@ -267,7 +205,23 @@ struct CSWSDetectEntry {
     unsigned char m_nFlags;             // +0x4
 };
 
-class CSWSCreature : public CGameObject {
+class CSWSObject : public CGameObject {
+public:
+    virtual void v70();
+    virtual void v74();
+    virtual void v78();
+    virtual void SetAnimation(int nAnimation);  // +0x7c
+    virtual void v80();
+    virtual void v84();
+    virtual void v88();
+    virtual void v8c();
+    virtual void v90();
+    virtual void v94();
+    virtual void v98();
+    virtual short GetCurrentHitPoints(int bExcludeTemporary);  // +0x9c
+};
+
+class CSWSCreature : public CSWSObject {
 public:
     int IsCreature();
     int HasTargetBeenDetected(unsigned long oidTarget, int bCheckSeen);
@@ -296,7 +250,7 @@ public:
                                  unsigned char nWield, unsigned char bSpecial,
                                  unsigned long nExtra);
 
-    char pad_0x08[0x88];
+    char pad_0xc[0x84];
     Vector m_vPosition;                 // 0x90
     char pad_0x9c[0x468];
     unsigned long m_oidAttackTarget;    // 0x504
@@ -343,7 +297,7 @@ int CSWSCreature::HasTargetBeenDetected(unsigned long oidTarget, int bCheckSeen)
 {
     int bDetected = 1;
     CGameObject *pObject = g_pAppManager->m_pServerExoApp->GetGameObject(oidTarget);
-    if (pObject && (pObject->AsDoor() || pObject->AsPlaceable()))
+    if (pObject && (pObject->AsSWSDoor() || pObject->AsSWSPlaceable()))
         return bDetected;
     if (m_bA88)
         return bDetected;
@@ -388,7 +342,7 @@ void CSWSCreature::ResolveSafeProjectile(int nAttack, unsigned long nDelay, int 
         bSpecial = 1;
         break;
     }
-    BroadcastSafeProjectile(GetID(), pAttack->m_oidTarget, &m_vPosition, &pAttack->m_vTarget,
+    BroadcastSafeProjectile(GetId(), pAttack->m_oidTarget, &m_vPosition, &pAttack->m_vTarget,
                             nDelay, nProjectileType, nHand, nWield, bSpecial, pAttack->m_n18);
 }
 
@@ -404,7 +358,7 @@ void CSWSCreature::ResolveProjectileMissImpact(Vector *pPosition, unsigned long 
     pEffect->SetFloat(1, pPosition->y);
     pEffect->SetFloat(2, pPosition->z);
     g_pAppManager->GetServerExoApp()->GetServerAIMaster()->AddEventDeltaTime(
-        0, nDelay, GetID(), GetArea()->GetID(), g_nEventProjectileMiss, pEffect);
+        0, nDelay, GetId(), GetArea()->GetId(), g_nEventProjectileMiss, pEffect);
 }
 
 // FUNCTION: SWKOTOR 0x005B4F30
@@ -547,7 +501,7 @@ void CSWSCreature::ResolvePostMeleeDamage(CGameObject *pTarget)
         return;
     CSWSCombatAttackData *pAttack = m_pcCombatRound->GetAttack(m_pcCombatRound->m_nCurrentAttack);
     int nDamage = pAttack->GetTotalDamage(1);
-    if (nDamage >= pTarget->GetCurrentHitPoints(0))
+    if (nDamage >= ((CSWSObject*)pTarget)->GetCurrentHitPoints(0))
         pAttack->m_bKillingBlow = 1;
     if (pTarget->AsSWSCreature()) {
         pTarget->AsSWSCreature();
@@ -605,7 +559,7 @@ unsigned long CSWSCreature::GetFirstAttacker()
 void CSWSCreature::ResolveAttack(unsigned long oidTarget, int a2, int a3, int a4, int a5, int a6, int a7)
 {
     CGameObject *pObject = g_pAppManager->m_pServerExoApp->GetGameObject(oidTarget);
-    if (!pObject || (!pObject->AsSWSCreature() && !pObject->AsDoor() && !pObject->AsPlaceable())) {
+    if (!pObject || (!pObject->AsSWSCreature() && !pObject->AsSWSDoor() && !pObject->AsSWSPlaceable())) {
         m_pcCombatRound->SetRoundPaused(0, 0x7f000000);
         m_pcCombatRound->SetPauseTimer(0, 0);
         SetAnimation(0x2711);

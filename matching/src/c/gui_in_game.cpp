@@ -3,13 +3,7 @@
 
 #include "c/client_exo_app.h"
 
-class CSWGuiManagerPanels {
-public:
-    void AddPanel(CSWGuiPanel* pPanel, int a, int b);   // 0x0040BC70
-    int PanelExists(CSWGuiPanel* pPanel);               // 0x0040BD70
-    void PopModalPanel();                               // 0x0040BE00
-    void RemovePanel(CSWGuiPanel* pPanel);              // 0x0040C830
-};
+#include "shared/sw_gui_manager_panels.h"
 
 class CSWGuiPanelV : public CSWGuiPanel {
 public:

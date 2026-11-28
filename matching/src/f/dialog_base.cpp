@@ -1,52 +1,17 @@
 // CSWSDialog node classes and small dialog / journal records
 // (0x0059E860-0x0059F5B0).
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const CExoString &s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    ~CExoLocString();
-    CExoLocString &operator=(const CExoLocString &s);
-    void *m_pList;
-    unsigned long m_nStrRef;
-};
+#include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef operator=(const CResRef &r);
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();
-    ~CExoLinkedListInternal();
-    void *m_pHead;
-    void *m_pTail;
-    int m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList() { m_pcExoLinkedListInternal = new CExoLinkedListInternal(); }
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-};
+
 
 class CSWSDialogPlayer;
 
@@ -140,12 +105,7 @@ CSWSDialogBase::~CSWSDialogBase()
 {
 }
 
-class CSWSDialogSpeaker {
-public:
-    CSWSDialogSpeaker();
-    unsigned long m_oidSpeaker;      // +0x0
-    CExoString m_sTag;               // +0x4
-};
+#include "shared/sws_dialog_speaker.h"
 
 // FUNCTION: SWKOTOR 0x0059E990
 CSWSDialogSpeaker::CSWSDialogSpeaker() : m_oidSpeaker(0x7f000000)
@@ -164,12 +124,7 @@ CSWSPlayerJournalQuestUpdates::~CSWSPlayerJournalQuestUpdates()
 {
 }
 
-class CSWSDialogStuntModel {
-public:
-    CSWSDialogStuntModel();
-    CExoString m_sParticipant;       // +0x0
-    CResRef m_cModel;                // +0x8
-};
+#include "shared/sws_dialog_stunt_model.h"
 
 // FUNCTION: SWKOTOR 0x0059EA40
 CSWSDialogStuntModel::CSWSDialogStuntModel()
@@ -187,28 +142,7 @@ CLiveContentStruct::CLiveContentStruct()
 {
 }
 
-class CSWSDialogNodeData {
-public:
-    CSWSDialogNodeData()
-    {
-        m_n8 = 0;
-        m_nC = 0;
-        m_n10 = 0;
-        m_n14 = 0;
-        m_n18 = 0x7fff;
-        m_f1C = -1.0f;
-        m_n20 = -1;
-    }
-    CExoString m_sComment;           // +0x0
-    unsigned long m_n8;              // +0x8
-    unsigned long m_nC;              // +0xc
-    unsigned long m_n10;             // +0x10
-    unsigned long m_n14;             // +0x14
-    unsigned short m_n18;            // +0x18
-    char pad_0x1a[0x2];
-    float m_f1C;                     // +0x1c
-    int m_n20;                       // +0x20
-};
+#include "shared/sws_dialog_node_data.h"
 
 class CSWSDialogNode : public CSWSDialogBase, public CSWSDialogNodeData {
 public:

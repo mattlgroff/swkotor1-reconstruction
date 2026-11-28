@@ -9,31 +9,11 @@
 class CSWSObject;
 class CSWSCreature;
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
+#include "shared/exo_string.h"
 
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_loc_string.h"
 
-class CExoLocString {
-public:
-    ~CExoLocString();                               // 0x005EA000
-
-    char pad_0x0[0xc];
-};
-
-class CResRef {
-public:
-    CResRef(const char* szName);                    // 0x00406D80
-    CResRef operator=(const CResRef& cResRef);      // 0x00406120
-
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;
@@ -99,24 +79,9 @@ template <class T> void CExoArrayList<T>::SetSize(int nSize)
     num = nSize;
 }
 
-class CExoLinkedListInternal {
-public:
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* RemoveHead();                             // 0x005E9C80
+#include "shared/exo_linked_list.h"
 
-    void* pHead;
-    void* pTail;
-    unsigned long m_nCount;
-};
 
-template <class T> class CExoLinkedList {
-public:
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == NULL; }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-};
 
 #pragma pack(push, 4)
 class CGameEffect {
@@ -191,7 +156,7 @@ public:
     char pad_0x0[0x8c];
     CSWSpellArray* m_pSpellArray;                   // 0x8c
 };
-extern CSWRules* g_pRules;                          // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWSCreatureStats {
 public:
@@ -200,15 +165,7 @@ public:
     unsigned short m_nSpellLevelAbsorptionStart;    // 0x152 (placeholder name)
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject() {}                       // 0x00
-    virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual CSWSObject* AsSWSObject();              // 0x10
-    virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
-};
+#include "shared/game_object.h"
 
 class CGameObjectArray {
 public:
@@ -238,33 +195,14 @@ public:
     CWorldTimer* GetWorldTimer();                   // 0x004AEDE0
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp* m_pServerExoApp;                 // 0x8
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
-extern const int g_nTRUE;                           // 0x00746678
-extern const unsigned char g_nObjectTypeCreature;   // 0x00746634 (placeholder name)
-extern const unsigned short g_nDurationTemporary;   // 0x007473C0
-extern const unsigned short g_nDurationInnate;      // 0x007473BC (placeholder name)
-extern const unsigned short g_nDurationEquipped;    // 0x007473C8 (placeholder name)
-extern const int g_nEffectType7466A0;               // 0x007466A0
-extern const int g_nEffectType7466F4;               // 0x007466F4
-extern const int g_nEffectType74671C;               // 0x0074671C
-extern const int g_nEffectType746780;               // 0x00746780
-extern const int g_nEffectType746788;               // 0x00746788
 
 // vtable 0x00745F18
 class CSWSObject : public CGameObject {
 public:
     virtual ~CSWSObject();
-    virtual void v34(); virtual void v38(); virtual void v3c();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4c();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5c();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7c();
     virtual CResRef GetDialogResref();              // 0x80
     virtual void v84(); virtual void v88();
@@ -300,10 +238,9 @@ public:
     void LoadEffectList(CResGFF* pRes, CResStruct* pStruct);
     void LoadObjectState(CResGFF* pRes, CResStruct* pStruct);
 
-    unsigned long m_idSelf;                         // 0x04
-    unsigned char m_nObjectType;                    // 0x08
-    char pad_0x9[0xc - 0x9];
     CExoLocString m_sLocName;                       // 0x0c
+    unsigned short m_nNextGroupActionId;            // 0x14
+    unsigned short m_nLastGroupActionId;            // 0x16
     CExoString m_sTag;                              // 0x18
     CResRef m_cTemplateResRef;                      // 0x20
     unsigned short m_n30;                           // 0x30

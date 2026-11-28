@@ -8,32 +8,11 @@
 
 extern "C" int __cdecl sprintf(char* buffer, const char* format, ...);
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* sString);                // 0x005E5A90
-    CExoString(const CExoString& sString);          // 0x005E5B00
-    void Format(const char* szFormat, ...);         // 0x005E5680
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int GetLength() const;                          // 0x005E5790
-    char* CStr() const;                             // 0x005E5670
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    void CopyToString(char* pStr) const;            // 0x00405FB0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct Quaternion {
     float w, x, y, z;
@@ -88,8 +67,7 @@ public:
     C2DArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
-extern int g_nAnimNameColumn;                       // 0x007A2174
+#include "shared/globals.h"
 
 // Common animation interface base (vtable 0x00754AE4, one slot).
 class CAnimBase {

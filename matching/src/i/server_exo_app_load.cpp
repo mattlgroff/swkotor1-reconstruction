@@ -2,14 +2,7 @@
 // entry points (0x004BA5B0-0x004BA918).
 #include "i/server_exo_app.h"
 
-struct CAppManager14 {
-    int m_n0;                                       // +0x00
-    int m_n4;                                       // +0x04
-    char m_pad08[0x14 - 0x08];
-    int m_bLoadError;                               // +0x14 (placeholder name)
-    char m_pad18[0x38 - 0x18];
-    unsigned long m_nLoadError;                     // +0x38 (placeholder name)
-};
+#include "shared/reentrant_server_stats.h"
 
 class CWorldTimer {
 public:
@@ -23,11 +16,8 @@ public:
     void SendServerToPlayerModule_StartStartNewModule();                           // 0x0056CBF0
 };
 
-class CExoInput {
-public:
-    void ClearEvents();                             // 0x005DF4E0
-};
-extern CExoInput* g_pExoInput;                      // 0x007A39E4
+#include "shared/exo_input.h"
+#include "shared/globals.h"
 
 class CClientExoApp {
 public:
@@ -36,36 +26,22 @@ public:
     void DisableInput();                            // 0x005EDBE0
 };
 
-class CAppManager {
-public:
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                 // +0x04
-    CServerExoApp* m_pServerExoApp;                 // +0x08
-    char m_pad0c[0x14 - 0x0c];
-    CAppManager14* m_p14;                           // +0x14
+#include "shared/app_manager.h"
 
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-
-extern unsigned char g_nAppMode;                    // 0x007A39DC (placeholder name)
-extern int g_nDriveForward;                         // 0x008338F0 (placeholder name)
-extern int g_nDriveTurn;                            // 0x008338F4 (placeholder name)
-extern int g_nDriveStrafe;                          // 0x008338F8 (placeholder name)
 
 void PrintModuleName(const char* sName);            // 0x00401430 (placeholder name)
 
 // FUNCTION: SWKOTOR 0x004BA5B0
 void CServerExoAppInternal::DealWithLoadGameError(unsigned long nError)
 {
-    CAppManager14* pState = g_pAppManager->m_p14;
+    CSWReentrantServerStats* pState = g_pAppManager->m_pReentrantServerStats;
     UnloadModule();
     pState->m_nLoadError = nError;
-    pState->m_bLoadError = 1;
+    pState->m_n14 = 1;
     if (g_nAppMode == 2) {
-        pState->m_bLoadError = 0;
-        pState->m_n0 = 0;
-        pState->m_n4 = 0;
+        pState->m_n14 = 0;
+        pState->m_bActive = 0;
+        pState->m_nKind = 0;
     }
     m_nServerMode = 0;
     m_bLoadingModule = 0;

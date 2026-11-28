@@ -6,16 +6,7 @@
 #ifndef N_SW_C_OBJECT_H
 #define N_SW_C_OBJECT_H
 
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-() const { return Vector(-x, -y, -z); }
-};
-inline float operator*(const Vector& a, const Vector& b)
-{
-    return a.x * b.x + a.y * b.y + a.z * b.z;
-}
+#include "shared/vector_ops.h"
 class Quaternion {
 public:
     float w, x, y, z;
@@ -25,25 +16,9 @@ public:
 Quaternion RotationArc(Vector vFrom, Vector vTo);   // 0x004AB630
 float Magnitude(const Vector& v);                   // 0x004AB100
 int operator==(const Vector& a, const Vector& b);   // 0x004AA980
-inline Vector operator-(const Vector& a, const Vector& b)
-{
-    return Vector(a.x - b.x, a.y - b.y, a.z - b.z);
-}
+#include "shared/exo_string.h"
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-};
-
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef operator=(const CResRef& r);            // 0x00406120
-};
+#include "shared/res_ref.h"
 
 class CSWPortrait {
 public:
@@ -53,83 +28,18 @@ public:
     CResRef GetPortrait(unsigned char n);           // 0x00678EF0
 };
 
-extern const char g_sEmpty[];                       // 0x0073D71C
-extern const unsigned long OBJECT_INVALID;          // 0x00746644
-extern const unsigned char OBJECT_TYPE_ITEM;        // 0x00746635
-extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
-extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
-extern int g_bUpdateCreatureOnMove;                 // 0x0083395C
-extern int g_nScreenWidth;                          // 0x0078D1D4
-extern int g_nScreenHeight;                         // 0x0078D1D8
-extern const float g_fZero;                         // 0x0073D700
-extern const float g_fOne;                          // 0x0073D764
+#include "shared/globals.h"
+#include "shared/object_id.h"
 
 // Linked list -----------------------------------------------------------
 
-typedef void* CExoLinkedListPosition;
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListNode* pHead;
-    CExoLinkedListNode* pTail;
-    unsigned long nCount;
+#include "shared/exo_linked_list.h"
 
-    void* GetHead()
-    {
-        CExoLinkedListNode* pNode = pHead;
-        if (!pNode) {
-            return 0;
-        }
-        return pNode->pObject;
-    }
-    void* GetHeadInline() { void* p = pHead; if (pHead) p = pHead->pObject; return p; }
-    void* GetTail() { void* p = pTail; if (pTail) p = pTail->pObject; return p; }
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    ~CExoLinkedListInternal();                      // 0x005E9AB0
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    void* GetPrev(CExoLinkedListPosition& pos);     // 0x005E9BD0
-    void* Remove(CExoLinkedListPosition pos);       // 0x005E9C10
-    void* RemoveHead();                             // 0x005E9C80
-    CExoLinkedListPosition AddTail(void* p);        // 0x005E9DC0
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
 
-    CExoLinkedList();
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    CExoLinkedListPosition GetTailPos() { return m_pcExoLinkedListInternal->pTail; }
-    T* GetHead()
-    {
-        CExoLinkedListInternal* pInternal = m_pcExoLinkedListInternal;
-        return (T*)pInternal->GetHead();
-    }
-    T* GetTail() { return (T*)m_pcExoLinkedListInternal->GetTail(); }
-    // Head object through the internal list's conditional-assign accessor;
-    // the loops that fetch the object before the position use this shape.
-    T* GetHeadInline() { return (T*)m_pcExoLinkedListInternal->GetHeadInline(); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-    T* GetPrev(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetPrev(pos); }
-    T* Remove(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->Remove(pos); }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-    CExoLinkedListPosition AddTail(T* p) { return m_pcExoLinkedListInternal->AddTail(p); }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-};
-
-template <class T>
-CExoLinkedList<T>::CExoLinkedList()
-{
-    m_pcExoLinkedListInternal = new CExoLinkedListInternal;
-}
 
 template <class T>
 class CExoArrayList {
@@ -225,45 +135,11 @@ public:
     int UnHilite(int a);                            // 0x006A0440 (placeholder name)
 };
 
-class CSWCVisualEffectOnObject {
-public:
-    CSWCVisualEffectOnObject();                     // 0x006A09E0
-    ~CSWCVisualEffectOnObject();                    // 0x006A1810
-    int IsReady();                                  // 0x006A0480
-    unsigned char GetType();                        // 0x006A0920
-    void DestroyModels();                           // 0x006A0BF0
-    void Detach();                                  // 0x006A0C70
-    int Load(unsigned short nEffect, int nDuration, unsigned long oidSelf,
-             unsigned long nTarget, unsigned long nNode, unsigned char nA,
-             unsigned char nB, Vector vOffset);     // 0x006A1880 (placeholder name)
-    void ReAttachVisualEffect();                    // 0x006A5000
-    void DetachAll();                               // 0x006A5F00
-    void StartVisualEffect();                       // 0x006A5FC0
-    void ShowVisualEffect(int bShow);               // 0x006A5A40
-    void StopVisualEffect(int bForce);              // 0x006A6590
-    void Reset();                                   // 0x006A6950
-    void Update(unsigned long nDelta);              // 0x006A6A50
+#include "shared/swc_visual_effect_on_object.h"
 
-    char pad_0x0[0xa8];
-    unsigned long m_nA8;                            // 0xa8
-    char pad_0xac[0xbc - 0xac];
-    void* m_pBC;                                    // 0xbc
-    unsigned long m_bC0;                            // 0xc0
-    unsigned short m_nEffect;                       // 0xc4
-    unsigned char m_bC6;                            // 0xc6
-    unsigned char m_bC7;                            // 0xc7
-    unsigned char m_bC8;                            // 0xc8
-    char pad_0xc9[0xcc - 0xc9];
-    float m_fAlpha;                                 // 0xcc
-    char pad_0xd0[0xd8 - 0xd0];
-    unsigned char m_nPriority;                      // 0xd8
-    char pad_0xd9[0xdc - 0xd9];
-    int m_bDC;                                      // 0xdc
-    int m_bAttached;                                // 0xe0
-    char pad_0xe4[0xf8 - 0xe4];
-};
+#include "shared/game_object.h"
 
-class CSWSObject {
+class CSWSObject : public CGameObject {
 public:
     void DetachFromClientObject();                  // 0x004CC320
 };
@@ -334,19 +210,14 @@ public:
     void RemoveObjectFromHitcheckIgnoreList(unsigned long oid);  // 0x005ED760
 };
 
-class CAppManager {
-public:
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
 
 // Object -----------------------------------------------------------------
 
 struct FireForgetAnimation {
     int active;
     unsigned short animation;
-    unsigned short pad;
+    unsigned short pad_0x6;
     unsigned long day, tick, duration;
     float speed;
     void* data;
@@ -382,37 +253,7 @@ public:
     void PlayAnimation(unsigned short nAnim, void* pData, int n);         // 0x006911B0
 };
 
-class CGameObject {
-public:
-    CGameObject(unsigned char nObjectType, unsigned long oid);  // 0x004D7D60
-    virtual ~CGameObject() {}
-    virtual void SetId(unsigned long oid);          // 0x04
-    virtual void ResetUpdateTimes(unsigned long nDay, unsigned long nTime);  // 0x08
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-    virtual void* AsSWSObject();                    // 0x10
-    virtual CSWCDoor* AsSWCDoor();                  // 0x14
-    virtual void* AsSWSDoor();                      // 0x18
-    virtual void* AsSWCModule();                    // 0x1c
-    virtual void* AsSWSModule();                    // 0x20
-    virtual void* AsSWCArea();                      // 0x24
-    virtual void* AsSWSArea();                      // 0x28
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-    virtual void* AsSWSCreature();                  // 0x30
-    virtual void* AsSWCItem();                      // 0x34
-    virtual void* AsSWSItem();                      // 0x38
-    virtual CSWCTrigger* AsSWCTrigger();            // 0x3c
-    virtual void* AsSWSTrigger();                   // 0x40
-    virtual void* AsSWCProjectile();                // 0x44
-    virtual void* AsSWSPlaceable();                 // 0x48
-    virtual CSWCPlaceable* AsSWCPlaceable();        // 0x4c
-    virtual void* As50(); virtual void* As54(); virtual void* As58();
-    virtual void* As5C(); virtual void* As60(); virtual void* As64();
-    virtual void* As68(); virtual void* As6C();
-    virtual CExoString GetName();                   // 0x70
-
-    unsigned long m_idSelf;                         // 0x04
-    unsigned char m_nObjectType;                    // 0x08
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:

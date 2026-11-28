@@ -13,32 +13,10 @@ class CSWSArea;
 struct CSWSCreatureFollowInfo;
 struct CResStruct;
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    char* CStr() const;                             // 0x005E5670
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    int operator==(const char* s) const;            // 0x005E5290
-    int operator==(const CExoString& s) const;      // 0x005E5200
-    int IsEmpty() const;                            // 0x005E58A0
-    void Format(const char* sFormat, ...);          // 0x005E5680
-
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 
-struct Vector {
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    float MagnitudeSquared() const { return x * x + y * y + z * z; }
-
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 class CResGFF {
 public:
@@ -136,16 +114,7 @@ public:
     CSWBaseItem* GetBaseItem(int nItem) { return m_pBaseItemArray->GetBaseItem(nItem); }
     CSWFeat* GetFeat(unsigned short nFeat);         // 0x00550C00
 };
-extern CSWRules* g_pRules;
-extern int g_nAppearanceColHitRadius;               // 0x007A2118 (cached 2DA column, placeholder names)
-extern int g_nAppearanceColPerSpace;                // 0x007A20D0
-extern int g_nAppearanceColCrePerSpace;             // 0x007A20CC
-extern int g_nAppearanceColWalkDist;                // 0x007A2108
-extern int g_nAppearanceColHeight;                  // 0x007A2104
-extern int g_nAppearanceCol_DisableInjuredAnim;     // 0x007A20D4
-extern int g_nAppearanceCol_SIZECATEGORY;           // 0x007A2124
-extern int g_nAppearanceCol_MODELTYPE;              // 0x007A2110
-extern int g_nAppearanceColPrefAttackDist;          // 0x007A210C (placeholder name)                          // 0x007A3A28
+#include "shared/globals.h"
 
 template <class T> class CExoArrayList {
 public:
@@ -169,29 +138,14 @@ public:
 };
 
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class CExoLinkedListInternal {
-public:
-    void* GetAtPos(void* pos);                      // 0x005E9B60
-    void* GetNext(void*& pos);                      // 0x005E9B90
-    void* Remove(void* pos);                        // 0x005E9C10
-    void* GetPrev(void*& pos);                      // 0x005E9BD0
-    void* m_pHead;
-    void* m_pTail;
-};
+#include "shared/exo_linked_list.h"
 
 class CVirtualMachine {
 public:
     int RunScript(CExoString* psFile, unsigned long oidSelf, int bOid);   // 0x005D0FC0
 };
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
 
 #pragma pack(push, 4)
 class CGameEffect {
@@ -215,25 +169,6 @@ public:
 };
 #pragma pack(pop)
 
-extern const int EFFECT_TYPE_AC_INCREASE;           // 0x0074673C
-extern const int EFFECT_TYPE_AC_DECREASE;           // 0x00746740
-extern const int EFFECT_TYPE_0746738;               // 0x00746738 (47, placeholder name)
-extern const int EFFECT_TYPE_0746778;               // 0x00746778 (63, placeholder name)
-extern const int EFFECT_TYPE_0746828;               // 0x00746828 (108, placeholder name)
-extern const int EFFECT_TYPE_074682C;               // 0x0074682C (109, placeholder name)
-extern const int EFFECT_TYPE_07466F0;               // 0x007466F0 (29, placeholder name)
-extern const int EFFECT_TYPE_0746768;               // 0x00746768 (59, placeholder name)
-extern const unsigned short g_nDurationEquipped;    // 0x007473C8 (placeholder name)
-extern const float g_fRate125;                      // 0x0073F400 (0.125f)
-extern const float g_fRate15;                       // 0x0073F414 (1.5f)
-extern const float g_fThousand;                     // 0x0073D6FC (1000.0f)
-extern const float g_fHundred;                      // 0x00741838 (100.0f)
-extern const float g_fZero;                         // 0x0073D700 (0.0f)
-extern const int AI_ACTION_RESULT_005140D0;         // 0x00745DC4 (placeholder name)
-extern const int AI_ACTION_RESULT_005140E0;         // 0x00745DC0 (placeholder name)
-extern const int DAMAGE_FLAG_00;                    // 0x00746850
-extern const int EVENT_AI_SOON;                     // 0x007441C4 (placeholder name)
-extern const int EVENT_AI_LATER;                    // 0x007441E0 (placeholder name)
 
 class CSWSAction {
 public:
@@ -272,14 +207,8 @@ public:
                            unsigned long oidObject, unsigned long nEvent, void* pData);  // 0x004B08D0
 };
 
-class CSWSPlayerStore {
-public:
-    unsigned long m_aSlotItems[18];
-};
-class CSWSPlayerStoreGUI {
-public:
-    CSWSPlayerStore* m_pStore;
-};
+#include "shared/sws_player_store.h"
+#include "shared/sws_player_store_gui.h"
 
 class CSWSPlayer {
 public:
@@ -327,12 +256,7 @@ public:
     unsigned char GetGameObject(unsigned long oid, CGameObject** ppObject);  // 0x004D8230
 };
 
-extern const unsigned long OBJECT_INVALID;          // 0x00746644
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
-extern const unsigned char OBJECT_TYPE_ITEM;        // 0x00746635
-extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
-extern const unsigned char OBJECT_TYPE_TRIGGER;     // 0x00746636
-extern const unsigned char OBJECT_TYPE_DOOR;        // 0x00746639
+#include "shared/object_id.h"
 class CSWPartyTable {
 public:
     CItemRepository* GetItemRepository();           // 0x00563340
@@ -396,9 +320,6 @@ public:
     char pad_0x0[0xc8];
     int m_nC8;                                      // 0xc8 (placeholder name)
 };
-extern const unsigned short RACE_TYPE_0074BF10;     // 0x0074BF10 (5, placeholder name)
-extern const unsigned short RACE_TYPE_0074BF14;     // 0x0074BF14 (6, placeholder name)
-extern int g_b7A1B34;                               // 0x007A1B34 (placeholder name)
 
 class CSWPartyMember {
 public:
@@ -434,15 +355,7 @@ public:
     class CSWCCreature* GetCreatureByGameObjectID(unsigned long oid);  // 0x005ED5B0
 };
 
-class CAppManager {
-public:
-    CServerExoApp* GetServer() { return m_pServerExoApp; }  // inline accessor (changes load order)
-    CClientExoApp* GetClient() { return m_pClientExoApp; }
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x4
-    CServerExoApp* m_pServerExoApp;                 // 0x8
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 inline CClientExoApp* GetClientExoApp() { return g_pAppManager->m_pClientExoApp; }
 
@@ -547,15 +460,7 @@ public:
     char pad_0x298[0x29c - 0x298];
 };
 
-class CSWSInventory {
-public:
-    CSWSItem* GetItemInSlot(unsigned long nSlot);   // 0x005A4C20
-    unsigned long GetSlotFromItem(CSWSItem* pItem); // 0x005A4980
-    int RemoveItem(CSWSItem* pItem);                // 0x005A4BA0
-    int Fn5A4950(CSWSItem* pItem);                  // 0x005A4950 (placeholder name)
-    int GetItemInInventory(CSWSItem* pItem);        // 0x005A4950
-    void PutItemInSlot(unsigned long nSlot, CSWSItem* pItem); // 0x005A4BE0
-};
+#include "shared/sws_inventory.h"
 
 class CItemRepository {
 public:
@@ -699,13 +604,6 @@ public:
     float m_f19C;                                   // 0x19c (placeholder name)
 };
 
-struct CExoLinkedListWrap {
-    CExoLinkedListInternal* m_pInternal;
-    void* GetHeadPos() { return m_pInternal->m_pHead; }
-    void* GetAtPos(void* pos) { return m_pInternal->GetAtPos(pos); }
-    void* GetNext(void*& pos) { return m_pInternal->GetNext(pos); }
-};
-
 struct CSWSCombatRoundPending {
     ~CSWSCombatRoundPending();                      // 0x004015A0
     char pad_0x0[0x10];
@@ -744,7 +642,7 @@ public:
     char pad_0x95c[0x96c - 0x95c];
     unsigned char m_nCurrentAttack;                 // 0x96c
     char pad_0x96d[0x9b0 - 0x96d];
-    CExoLinkedListWrap* m_pPending;                 // 0x9b0 (placeholder name)
+    CExoLinkedList<struct CSWSCombatRoundPending>* m_pPending; // 0x9b0 (placeholder name)
     char pad_0x9b4[0x9b8 - 0x9b4];
     int m_n9B8;                                     // 0x9b8 (placeholder names 0x9b8-0x9cc)
     int m_n9BC;
@@ -820,8 +718,6 @@ public:
     char pad_0x2[0x34 - 0x2];
 };
 
-extern const unsigned long EVENT_0x7441DC;          // 0x007441DC (placeholder name)
-extern const unsigned char OBJECT_TYPE_0746633;     // 0x00746633 (placeholder name)
 
 Vector VectorSubtract(const Vector& a, const Vector& b);    // 0x00423BC0 (placeholder name)
 Vector NormalizeVector(const Vector& v);            // 0x004AB180
@@ -836,11 +732,7 @@ public:
     unsigned long m_nFlags104;                      // 0x104 (placeholder name)
 };
 
-class CSWSAttackData {
-public:
-    char pad_0x0[0x3a];
-    unsigned char m_nWeaponAttackType;              // 0x3a
-};
+#include "shared/sws_attack_data.h"
 
 struct CSWCCreature21C {
     char pad_0x0[0x60];
@@ -858,13 +750,7 @@ public:
     CSWCCreature21C* m_p21C;                        // 0x21c (placeholder name)
 };
 
-class CGameObjectClient {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-};
+#include "shared/game_object_client.h"
 
 class CSWSObjectF8 {
 public:
@@ -872,29 +758,7 @@ public:
     int m_nF8;                                      // 0xf8 (placeholder name)
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void* AsSWSObject();                    // 0x10 (placeholder name)
-    virtual void v14(); virtual class CSWSDoor* AsSWSDoor(); virtual void v1c();  // 0x18 (descriptive name)
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
-    virtual void v34();
-    virtual CSWSItem* AsSWSItem();                  // 0x38
-    virtual void v3c(); virtual class CSWSTrigger* AsSWSTrigger(); virtual void v44();  // 0x40
-    virtual class CSWSPlaceable* AsSWSPlaceable();  // 0x48
-    virtual void v4c();
-    virtual class CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject();  // 0x50
-
-    CGameObject(unsigned char nObjectType, unsigned long oid);  // 0x004D7D60
-
-    unsigned long m_idSelf;                         // 0x04
-    unsigned char m_nObjectType;                    // 0x08
-    char pad_0x9[0xc - 0x9];
-    char m_aLocName[8];                             // 0x0c (CExoLocString storage, descriptive name)
-    char pad_0x14[0x16 - 0x14];
-    unsigned short m_nAIGroupId;                    // 0x16 (placeholder name)
-};
+#include "shared/game_object.h"
 
 // The ctor is declared throw(): SetInParty's new-expression has no EH frame.
 struct CSWSCreaturePartyFollowInfo {
@@ -1068,26 +932,7 @@ public:
     unsigned long m_n34;                            // 0x34 (placeholder name)
 };
 
-struct CSWSCreatureListEntry {
-    CSWSCreatureListEntry()
-    {
-        m_oid = 0x7f000000;
-        m_b0 = 0;
-        m_b1 = 0;
-        m_n2 = 0;
-        m_b4 = 0;
-    }
-    unsigned long m_oid;                            // 0x00
-    union {
-        unsigned long m_nFlags;                     // 0x04
-        struct {
-            unsigned char m_b0 : 1;                 // placeholder names
-            unsigned char m_b1 : 1;
-            unsigned char m_n2 : 2;
-            unsigned char m_b4 : 1;
-        };
-    };
-};
+#include "shared/sws_creature_list_entry.h"
 
 struct CSWSCreature93C {
     unsigned long m_n0;
@@ -1106,10 +951,7 @@ public:
     unsigned long m_oidTarget;                      // 0x18
 };
 
-class CExoLocString {
-public:
-    char pad_0x0[0x8];                              // opaque in this bucket header
-};
+#include "shared/exo_loc_string.h"
 
 class CSWSObjectActionNode {
 public:
@@ -1136,8 +978,9 @@ public:
 
 class CSWSCreature : public CGameObject {
 public:
-    virtual void v54(); virtual void v58(); virtual void v5c();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
+    char m_aLocName[8];                              // 0xc
+    char pad_0x14[0x2];
+    unsigned short m_nAIGroupId;                    // 0x16
     virtual void v70();
     virtual int ClearAction(CSWSObjectActionNode* pNode, int bArg);  // 0x74 -> 0x004FAB00 (descriptive name)
     virtual void v78(); virtual void SetAnimation(int nAnimation);  // 0x7c (placeholder name)
@@ -1255,7 +1098,7 @@ public:
     void ClearActionsForType4F8770(int nType);      // 0x004F8770 (placeholder name)
     int AddAction38(unsigned long a1, unsigned long a2, unsigned long a3);  // 0x004F0900 (placeholder name)
     int GetNumActionGroups();                       // 0x004CC690
-    void* GetPositionByGroupIndex(int nIndex);      // 0x004CC5C0
+    CExoLinkedListPosition GetPositionByGroupIndex(int nIndex); // 0x004CC5C0
     unsigned short GetActionByGroupId(unsigned short nGroupId, CSWSObjectActionNode** ppNode);  // 0x004CC530
     void RemoveGroup(unsigned short nGroupId);      // 0x004CC6F0
     void RemoveTargetActions4F61D0(CGameObject* pTarget);  // 0x004F61D0 (placeholder name)

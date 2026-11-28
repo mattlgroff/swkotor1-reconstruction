@@ -1,36 +1,12 @@
 // CSWCMessage active item property handlers (nwchandlemessage.o).
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-struct CSWCItemProperty {
-    unsigned short m_nPropertyName;                 // 0x00
-    unsigned short m_nSubType;                      // 0x02
-    unsigned short m_n04;                           // 0x04
-    unsigned short m_nCostValue;                    // 0x06
-    unsigned char m_nParam1Value;                   // 0x08
-    char pad_0x9[3];
-    int m_bActive;                                  // 0x0c
-    unsigned char m_nUsesLeft;                      // 0x10
-    unsigned char m_nUpgradeType;                   // 0x11
-};
+#include "shared/swc_item_property.h"
 
-struct CSWBaseItemData {
-    char pad_0x0[0xac];
-    unsigned char m_nEquipType;                     // 0xac (descriptive)
-};
+#include "shared/sw_base_item_data.h"
 
 class CSWCItem {
 public:
@@ -64,14 +40,9 @@ public:
     CGuiInGame* GetInGameGui();                     // 0x005ED690
 };
 
-class CAppManager {
-public:
-    void* m_p00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWCMessage {
 public:
@@ -91,7 +62,7 @@ int CSWCMessage::HandleServerToPlayerActiveItemProperties(unsigned long nId)
 {
     CExoString sName;
     CSWCItem* pItem = g_pAppManager->GetClientExoApp()->GetItemByGameObjectID(nId);
-    if (pItem && pItem->GetBaseItem()->m_nEquipType >= 0x1f && pItem->GetBaseItem()->m_nEquipType <= 0x26) {
+    if (pItem && pItem->GetBaseItem()->m_nCategory >= 0x1f && pItem->GetBaseItem()->m_nCategory <= 0x26) {
         short nCharges = ReadWORD(16);
         if (MessageReadOverflow(1)) {
             return 0;
@@ -121,8 +92,8 @@ int CSWCMessage::HandleServerToPlayerActiveItemProperties(unsigned long nId)
                 return 0;
             }
             if (pItem) {
-                pItem->GetActiveProperty(i)->m_nPropertyName = nName;
-                pItem->GetActiveProperty(i)->m_nSubType = nSubType;
+                pItem->GetActiveProperty(i)->m_nPropertyType = nName;
+                pItem->GetActiveProperty(i)->m_nSubtype = nSubType;
                 pItem->GetActiveProperty(i)->m_nCostValue = nCostValue;
                 pItem->GetActiveProperty(i)->m_nParam1Value = nParam;
                 pItem->GetActiveProperty(i)->m_bActive = 1;

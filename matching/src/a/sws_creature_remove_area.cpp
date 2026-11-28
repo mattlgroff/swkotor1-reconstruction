@@ -1,7 +1,7 @@
 // Worker A round s7: CSWSCreature::RemoveFromArea (nwscreature.cpp).
 #include "a/sws_creature.h"
 
-extern const unsigned long EVENT_0x7441DC;      // 0x007441DC (placeholder name)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004F0FD0
 void CSWSCreature::RemoveFromArea(int bArg)

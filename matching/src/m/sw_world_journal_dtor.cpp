@@ -1,9 +1,5 @@
 // World-journal lifetime: arrays of entries and sorted indices.
-class CSWCWorldJournalEntry {
-public:
-    ~CSWCWorldJournalEntry(); // 0x004C4030
-    char pad_0x00[0x24];
-};
+#include "shared/swc_world_journal_entry.h"
 template <class T> class CExoArrayList {
 public:
     T* element;

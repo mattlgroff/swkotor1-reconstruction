@@ -52,22 +52,9 @@ extern "C" __declspec(dllimport) int __stdcall BinkBufferUnlock(BINKBUFFER* hBuf
 extern "C" __declspec(dllimport) void __stdcall BinkBufferBlit(BINKBUFFER* hBuffer, void* pRects, unsigned long nRects);
 extern "C" __declspec(dllimport) int __stdcall BinkBufferSetOffset(BINKBUFFER* hBuffer, int nX, int nY);
 
-struct tagMSG {
-    void* hwnd;
-    unsigned int message;
-    unsigned int wParam;
-    long lParam;
-    unsigned long time;
-    long pt_x;
-    long pt_y;
-};
+#include "shared/tag_msg.h"
 
-struct tagRECT {
-    long left;
-    long top;
-    long right;
-    long bottom;
-};
+#include "shared/tag_rect.h"
 
 struct tagWINDOWINFO {
     unsigned long cbSize;           // 0x00
@@ -105,19 +92,7 @@ extern "C" __declspec(dllimport) void* __stdcall CreateThread(void* pAttr, unsig
                                                               void* pParam, unsigned long nFlags,
                                                               unsigned long* pThreadId);
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                   // 0x005b3190
-    ~CExoString();                  // 0x005e5c20
-    CExoString& operator=(const char* s);           // 0x005e5140
-    CExoString& operator=(const CExoString& s);     // 0x005e5c50
-    CExoString operator+(const CExoString& s) const; // 0x005e5d10
-    char* CStr() const;                             // 0x005e5670
-    void Format(const char* sFormat, ...);          // 0x005e5680
-    int operator!=(const char* s) const;            // 0x005e5390
-};
+#include "shared/exo_string.h"
 
 template <class T>
 class CExoArrayList {
@@ -134,20 +109,9 @@ public:
     T& operator[](int i) { return element[i]; }
 };
 
-class CExoCriticalSection {
-public:
-    CExoCriticalSection();          // 0x005e9290
-    ~CExoCriticalSection();
-    void EnterCriticalSection();    // 0x005e9300
-    void LeaveCriticalSection();    // 0x005e9310
+#include "shared/exo_critical_section.h"
 
-    void* m_pcExoCriticalSectionInternal;
-};
-
-class CExoDebug {
-public:
-    void Warning(int nLine, char* sFile, char* sMessage);   // 0x005e9400
-};
+#include "shared/exo_debug.h"
 
 class CExoAliasList {
 public:
@@ -161,7 +125,6 @@ public:
     CExoAliasList* m_pcExoAliasList; // 0x0c
 };
 
-extern CExoBase* g_pExoBase;        // 0x007a39e0
 
 class CSWGuiFadePanel;
 
@@ -187,16 +150,9 @@ public:
     CClientOptions* GetClientOptions(); // 0x005ed700
 };
 
-class CAppManager {
-public:
-    void* m_pLargeTempBuffer;       // 0x00
-    CClientExoApp* m_pClientExoApp; // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;  // 0x007a39fc
-extern void* g_hMainWindow;         // 0x007a39d8
-extern int g_nScreenWidth;          // 0x0078d1d4
-extern int g_nScreenHeight;         // 0x0078d1d8
+#include "shared/globals.h"
 
 void __cdecl RunFrame(float fDelta, int bRunServer, int bNoRender);    // 0x00401c10
 
@@ -326,21 +282,10 @@ void _glOrtho(double left, double right, double bottom, double top, double zNear
     glOrtho(left, right, bottom, top, zNear, zFar);
 }
 
-class Vector {
-public:
-    float x;
-    float y;
-    float z;
-    Vector(float fX, float fY, float fZ);
-};
+#include "shared/vector.h"
 
-// FUNCTION: SWKOTOR 0x00404ae0
-Vector::Vector(float fX, float fY, float fZ)
-{
-    x = fX;
-    y = fY;
-    z = fZ;
-}
+// The out-of-line copy of Vector's inline three-float constructor.
+// FUNCTION: SWKOTOR 0x00404ae0 SYMBOL: ??0Vector@@QAE@MMM@Z
 
 // The fading panel created by the movie player (0x1b8 bytes, ctor 0x00624810).
 class CSWGuiFadePanel {
@@ -512,8 +457,6 @@ public:
     int m_bSwapMouseButtons;        // 0x54
 };
 
-extern void* g_hWindow;             // 0x007a39d4
-extern CExoMoviePlayerInternal* g_pMoviePlayer; // 0x007a3cf4
 
 inline CClientOptions* GetClientOptions() { return g_pAppManager->m_pClientExoApp->GetClientOptions(); }
 
@@ -584,14 +527,8 @@ extern "C" __declspec(dllimport) unsigned long __stdcall WaitForSingleObject(voi
 extern "C" __declspec(dllimport) int __stdcall PostMessageA(void* hWnd, unsigned int nMsg, unsigned int wParam,
                                                             long lParam);
 
-class CRenderWindow {
-public:
-    virtual void Slot00();
-    virtual int IsFullScreen();     // 0x04
-};
+#include "shared/render_window.h"
 
-extern CRenderWindow* g_pRenderWindow;              // 0x007a39f8
-extern int g_bMovieResolutionLocked;                // 0x007a3cc0
 
 // FUNCTION: SWKOTOR 0x00405a50
 CExoMoviePlayerInternal::~CExoMoviePlayerInternal()
@@ -724,8 +661,6 @@ extern "C" __declspec(dllimport) int __stdcall BinkBufferSetScale(BINKBUFFER* hB
                                                                   unsigned long nHeight);
 extern "C" char* __cdecl strchr(const char* s, int c);
 
-extern void* g_hInstance;           // 0x007a39c0
-extern int g_bMovieWaitForFrame;    // 0x007a3c9c (descriptive)
 int g_bMovieClassRegistered;        // 0x007a3cfc
 
 // NONMATCH: 65 insns, body and calls line up; the original keeps the

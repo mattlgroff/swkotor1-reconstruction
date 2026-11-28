@@ -5,26 +5,13 @@
 #include <stdio.h>
 #include "c/exo_base.h"
 
-class CResRef {
-public:
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    char* GetResRefStr() const;                     // 0x00405FE0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class RenderInterface {
-public:
-    static int IsResident(char* sModel);            // 0x0070D980
-};
+#include "shared/render_interface.h"
 
-class CAuroraInterface {
-public:
-    static void RequestModel(char* sModel);         // 0x0070D8D0
-};
+#include "shared/aurora_interface.h"
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 struct Quaternion {
     float w, x, y, z;
@@ -38,7 +25,7 @@ struct Quaternion {
     }
 };
 
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
+#include "shared/globals.h"
 
 class CSWCCreature;
 

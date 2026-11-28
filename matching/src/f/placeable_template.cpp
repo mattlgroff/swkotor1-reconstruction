@@ -3,25 +3,9 @@
 // follows LoadFromTemplate's padding). Round s10. Own minimal layouts; most
 // member names here are placeholders (offsets are from the original).
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    CExoString &operator=(const char *s);
-    int operator==(const char *s) const;
-    int IsEmpty() const;
-    void Format(const char *szFormat, ...);
-    char *CStr();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    void CopyToString(CExoString &s) const;
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;
@@ -37,10 +21,7 @@ public:
     char pad_0x98[0x8];
 };
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 template <class T>
 class CExoArrayList {
@@ -124,23 +105,11 @@ public:
 
 class CGameEffect;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
-    virtual void v04(); virtual void v08(); virtual void v0c(); virtual void v10();
-    virtual void v14(); virtual void v18(); virtual void v1c(); virtual void v20();
-    virtual void v24(); virtual void v28(); virtual void v2c(); virtual void v30();
-    virtual void v34(); virtual void v38(); virtual void v3c(); virtual void v40();
-    virtual void v44(); virtual void v48(); virtual void v4c(); virtual void v50();
-    virtual void v54(); virtual void v58(); virtual void v5c(); virtual void v60();
-    virtual void v64(); virtual void v68(); virtual void v6c(); virtual void v70();
+       virtual void v70();
     virtual void v74();
     virtual void EventHandler(unsigned long nEventId, unsigned long oidCaller, void *pData,
                               unsigned long nCalendarDay, unsigned long nTimeOfDay);  // +0x78
@@ -238,14 +207,9 @@ public:
     CServerExoAppInternal *m_pInternal;  // +0x4
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
 class CVirtualMachine {
 public:
@@ -253,22 +217,7 @@ public:
     int RunScriptSituation(void *pSituation, unsigned long oid, int bOid);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
-extern int g_bDebugEventStrings;                    // 0x008327E4 (placeholder name)
-extern const unsigned char g_nImmunityTypeTrap;     // 0x00746910 (placeholder name)
 
-extern const unsigned long EVENT_TIMED_EVENT;
-extern const unsigned long EVENT_REMOVE_FROM_AREA;
-extern const unsigned long EVENT_APPLY_EFFECT;
-extern const unsigned long EVENT_OPEN_OBJECT;
-extern const unsigned long EVENT_SPELL_IMPACT;
-extern const unsigned long EVENT_PLAY_ANIMATION;
-extern const unsigned long EVENT_SIGNAL_EVENT;      // 0x007441DC
-extern const unsigned long EVENT_DESTROY_OBJECT;
-extern const unsigned long EVENT_REMOVE_EFFECT;
-extern const unsigned long EVENT_ON_MELEE_ATTACKED; // 0x007441F0
-extern const unsigned long EVENT_FEEDBACK_MESSAGE;  // 0x0074420C (placeholder name)
-extern const unsigned long EVENT_ACQUIRE_ITEM;      // 0x00744218
 
 class CSWSPlaceable : public CSWSObject {
 public:

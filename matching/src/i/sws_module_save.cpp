@@ -8,7 +8,7 @@ inline void* operator new(size_t, void* p) { return p; }
 int CSWSModule::GetPlayerIndexInPlayerList(CSWSPlayer* pPlayer)
 {
     int nIndex = 0;
-    CExoLinkedListPosition pos = m_lPlayers.m_pList->m_pHead;
+    CExoLinkedListPosition pos = m_lPlayers.m_pcExoLinkedListInternal->pHead;
     while (pos) {
         CSWSModulePlayerEntry* pEntry = m_lPlayers.GetAtPos(pos);
         if (pEntry->m_sPlayerName == pPlayer->GetPlayerName()) {
@@ -19,7 +19,7 @@ int CSWSModule::GetPlayerIndexInPlayerList(CSWSPlayer* pPlayer)
                 return nIndex;
             }
         }
-        m_lPlayers.m_pList->GetNext(pos);
+        m_lPlayers.m_pcExoLinkedListInternal->GetNext(pos);
         nIndex++;
     }
     return -1;
@@ -333,7 +333,7 @@ int CSWSModule::SaveModuleIFOStart(CResGFF* pRes, CResStruct* pStruct)
     pRes->AddListElement(&cElement, &cList, 6);
     pRes->WriteFieldCResRef(&cElement, cAreaRef, "Area_Name");
     pRes->WriteFieldDWORD(&cElement, m_oidArea, "ObjectId");
-    g_pAppManager->m_p14->m_nC = 1;
+    g_pAppManager->m_pReentrantServerStats->m_nProgress = 1;
     pRes->AddList(&cList, pStruct, "Mod_Tokens");
     for (unsigned long i = 0; i < g_pTlkTable->m_nTokens; i++) {
         if (g_pTlkTable->m_pTokens[i].m_nNumber > (unsigned long)MIN_CUSTOM_TOKEN) {
@@ -419,7 +419,7 @@ int CSWSModule::SavePlayers(CResGFF* pRes, CResStruct* pStruct, const CExoString
         g_pExoResMan->ReleaseResObject(pIFO);
         return 0;
     }
-    for (unsigned long j = 0; j < m_lPlayers.m_pList->m_nCount; j++) {
+    for (unsigned long j = 0; j < m_lPlayers.m_pcExoLinkedListInternal->nCount; j++) {
         if (FindIndex(aFound, j)) {
             continue;
         }

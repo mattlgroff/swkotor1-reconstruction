@@ -7,10 +7,7 @@ public:
     int array_size;
 };
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Model {
 public:

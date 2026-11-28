@@ -5,8 +5,7 @@
 #include "b/sws_item.h"
 #include "b/sws_player.h"
 
-extern const unsigned long OBJECT_INVALID_ID;               // 0x00746644
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633
+#include "shared/globals.h"
 
 class CSWParty {
 public:
@@ -21,10 +20,7 @@ struct CSWCCreatureIdView {
     unsigned long m_idSelf;                                 // 0x04
 };
 
-struct CSWSObjectPlotView {
-    char pad_0x0[0xf8];
-    int m_bPlotObject;                                      // 0xf8
-};
+#include "shared/sws_object_plot_view.h"
 
 // PC levelling-up object of the module.
 struct CSWSModuleLevelUpView {
@@ -284,7 +280,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPosition(int nCommandId, int nPa
     CGameObject* pObject;
     if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidTarget, &pObject) == GAME_OBJECT_VALID &&
         pObject && pObject->m_nObjectType > OBJECT_TYPE_AREA) {
-        vPosition = pObject->m_vPosition;
+        vPosition = ((CSWSObject*)pObject)->m_vPosition;
     }
     return g_pVirtualMachine->StackPushVector(vPosition) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
 }
@@ -308,18 +304,9 @@ int CSWVirtualMachineCommands::ExecuteCommandGetRacialType(int nCommandId, int n
     return g_pVirtualMachine->StackPushInteger(nRace) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
 }
 
-extern int g_nScriptVar;                                    // 0x00832828 (.data)
 
 // Last-spell state shared by creatures, placeables and doors (CSWSObject).
-struct CSWSObjectSpellView {
-    char pad_0x0[0x1bc];
-    unsigned long m_oidSpellTarget;                         // 0x1bc
-    int m_nSpellId;                                         // 0x1c0
-    char pad_0x1c4[0x1d8 - 0x1c4];
-    unsigned long m_oidLastSpellCaster;                     // 0x1d8
-    int m_nLastSpellId;                                     // 0x1dc
-    int m_bLastSpellHarmful;                                // 0x1e0
-};
+#include "shared/sws_object_spell_view.h"
 
 struct CSWSCreatureSpellItemView {
     char pad_0x0[0x95c];
@@ -574,8 +561,6 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender); // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                              // 0x007A3A08
-extern const unsigned char GENDER_MALE;                     // 0x0073ECD0
 
 // FUNCTION: SWKOTOR 0x0053D610
 int CSWVirtualMachineCommands::ExecuteCommandGetStringByStrRef(int nCommandId, int nParameters)

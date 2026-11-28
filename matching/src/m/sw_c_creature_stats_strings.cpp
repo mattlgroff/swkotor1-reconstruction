@@ -1,24 +1,9 @@
 // CSWCCreatureStats display strings (nwccreaturestats.o): class/level
 // summary and alignment name.
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(int n);                              // 0x005E5BC0
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct STR_RES {
     CExoString sString;                             // 0x00
@@ -31,8 +16,7 @@ public:
     int Fetch(unsigned long nStrRef, STR_RES& strRes, unsigned char nGender); // 0x0041E550
 };
 
-extern CTlkTable* g_pTlkTable;                      // 0x007A3A08
-extern unsigned char g_nGender;                     // 0x0073ECD0
+#include "shared/globals.h"
 
 class CSWClass {
 public:
@@ -46,7 +30,6 @@ public:
     CSWClass* m_lstClasses;                         // 0xac
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWCCreatureStats_ClassInfo {
 public:

@@ -4,38 +4,11 @@
 extern "C" double pow(double x, double y);
 extern "C" double ceil(double x);
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const CExoString &s);
-    ~CExoString();
-    int operator==(const char *s) const;
-    int operator!=(const char *s) const;
-    int CompareNoCase(const CExoString &s) const;
-    int GetLength() const;
-    char operator[](int n) const;
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef(const char *s);
-    CResRef(const CResRef &r);
-    CResRef operator=(const CResRef &r);
-    int operator==(const char *s) const;
-    void CopyToString(CExoString &s) const;
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-class CExoLocString {
-public:
-    int GetString(unsigned long nLanguage, CExoString *pString, unsigned char nGender) const;
-    CExoLocString &operator=(const CExoLocString &s);
-    void *m_pList;
-    unsigned long m_nStrRef;
-};
+#include "shared/exo_loc_string.h"
 
 class CRes {
 public:
@@ -56,35 +29,9 @@ class CSWSCreature;
 class CSWSPlaceable;
 class CSWSArea;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04();
-    virtual void v08();
-    virtual void v0c();
-    virtual CGameObject *AsSWSObject(); // +0x10
-    virtual void v14();
-    virtual void v18();
-    virtual void v1c();
-    virtual void v20();
-    virtual void v24();
-    virtual void v28();
-    virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();   // +0x30
-    virtual void v34();
-    virtual void v38();
-    virtual void v3c();
-    virtual void v40();
-    virtual void v44();
-    virtual CSWSPlaceable *AsSWSPlaceable(); // +0x48
+class CSWSObject;
 
-    CSWSArea *GetArea();
-    unsigned long GetNearestObjectByTag(const CExoString &sTag, int n);
-    unsigned long m_idSelf;          // +0x4
-    char pad_0x8[0x10];
-    CExoString m_sTag;               // +0x18
-    unsigned long GetID() { return m_idSelf; }
-};
+#include "shared/game_object.h"
 
 template <class T>
 class CExoArrayList {
@@ -112,6 +59,10 @@ public:
 
 class CSWSObject : public CGameObject {
 public:
+    CSWSArea *GetArea();
+    unsigned long GetNearestObjectByTag(const CExoString &sTag, int n);
+    char pad_0xc[0xc];
+    CExoString m_sTag;                              // 0x18
     void SetDialogOwner(unsigned long oidOwner);
     char pad_0x20[0x34];
     unsigned long m_oidDialogOwner;  // +0x54
@@ -119,7 +70,7 @@ public:
     int m_nAILevel;                  // +0x78
 };
 
-class CSWSCreature : public CGameObject {
+class CSWSCreature : public CSWSObject {
 public:
     void SetDialogState(int nState, int a, int b);
     int GetTimeSinceLastHostile(unsigned long nTime, int b);
@@ -127,7 +78,7 @@ public:
     CSWSCombatRound *GetCombatRound();
     void ClearAllHostileActionsVs(CGameObject *pObject);
 
-    char pad_0x20[0xa68];
+    char pad_0x7c[0xa0c];
     int m_bPlayerControlled;         // +0xa88
 };
 
@@ -136,7 +87,7 @@ public:
     char GetGameObject(unsigned long id, CGameObject **ppObject);
 };
 
-extern char g_cObjectArraySuccess;
+#include "shared/globals.h"
 
 class CSWSModule {
 public:
@@ -160,7 +111,6 @@ public:
     int GetRunScriptReturnValue(int *pnType, void **ppValue);
 };
 
-extern CVirtualMachine *g_pVirtualMachine;
 
 class CServerExoApp {
 public:
@@ -180,22 +130,15 @@ public:
     int GetPlayerModelIndex(const CExoString &sTag);
 };
 
-class CServerMessage {
+class CClientExoApp {
 public:
     unsigned long ServerToClientObjectId(unsigned long oid);
     CNetLayer *GetNetLayer();
     void SetDialogModelsDirty(int b);
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CServerMessage *m_pServerMessage; // +0x4
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
 
 class CDialogLink {
 public:
@@ -203,51 +146,11 @@ public:
     unsigned long m_nIndex;          // +0x10
 };
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode *pPrev;
-    CExoLinkedListNode *pNext;
-    void *pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    ~CExoLinkedListInternal();
-    void *RemoveHead();
-    void *GetNext(CExoLinkedListNode *&pPos);
-    void *Remove(CExoLinkedListNode *pPos);
-    void *GetHeadObject()
-    {
-        CExoLinkedListNode *pNode = (CExoLinkedListNode *)m_pHead;
-        if (!pNode)
-            return 0;
-        return pNode->pObject;
-    }
-    void *m_pHead;
-    void *m_pTail;
-    int m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    ~CExoLinkedList() { delete m_pcExoLinkedListInternal; }
-    void *GetHeadPos() { return m_pcExoLinkedListInternal->m_pHead; }
-    int IsEmpty() { return m_pcExoLinkedListInternal->m_pHead == 0; }
-    T *RemoveHead() { return (T *)m_pcExoLinkedListInternal->RemoveHead(); }
-    CExoLinkedListNode *GetHead()
-    {
-        return (CExoLinkedListNode *)m_pcExoLinkedListInternal->m_pHead;
-    }
-    T *GetHeadObject()
-    {
-        CExoLinkedListInternal *pInternal = m_pcExoLinkedListInternal;
-        return (T *)pInternal->GetHeadObject();
-    }
-    T *GetNext(CExoLinkedListNode *&pPos) { return (T *)m_pcExoLinkedListInternal->GetNext(pPos); }
-    void Remove(CExoLinkedListNode *pPos) { m_pcExoLinkedListInternal->Remove(pPos); }
-    int Count() { return m_pcExoLinkedListInternal->m_nCount; }
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-};
+
 
 class CDialogEntry {
 public:
@@ -288,23 +191,23 @@ class CSWSDialog {
 public:
     unsigned long GetPlayerCharacterId();
     unsigned long GetDialogModel(int nIndex, int *pnModel);
-    int SendDialogModels(CGameObject *pObject, unsigned long nPlayer);
-    int GetSpeaker(CGameObject *pObject, const CExoString &sSpeaker);
+    int SendDialogModels(CSWSObject *pObject, unsigned long nPlayer);
+    int GetSpeaker(CSWSObject *pObject, const CExoString &sSpeaker);
     void BarkOneLine(unsigned long nEntry);
-    unsigned long GetStartEntry(CGameObject *pObject);
+    unsigned long GetStartEntry(CSWSObject *pObject);
     virtual ~CSWSDialog();
     void ClearDialogEntries();
     void ClearDialogReplies();
     void Cleanup();
     void ClearAllPlayerHostileActions();
-    void RunScript(CGameObject *pObject, const CResRef &cScript);
-    void RunEndConversationScript(CGameObject *pObject, int bOwnerOnly);
+    void RunScript(CSWSObject *pObject, const CResRef &cScript);
+    void RunEndConversationScript(CSWSObject *pObject, int bOwnerOnly);
     void LoadDialogLinkedNode(CDialogLink *pLink, CResGFF *pGFF, CResGFFStruct *pStruct,
                                      int *bSuccess, unsigned long nMax);
-    int CheckScript(CGameObject *pObject, const CResRef &cScript);
-    CExoString GetExoStringFromLocString(const CExoLocString &cLoc, unsigned char nGender);
+    int CheckScript(CSWSObject *pObject, const CResRef &cScript);
+    CExoString GetExoStringFromLocString(CExoLocString &cLoc, unsigned char nGender);
     void ClearDialogOwnerInObject(unsigned long oidObject);
-    int GetStartEntryOneLiner(CGameObject *pObject, CExoLocString &sText, CResRef &cSound,
+    int GetStartEntryOneLiner(CSWSObject *pObject, CExoLocString &sText, CResRef &cSound,
                               CResRef &cScript);
     void InitializePsuedoRandomCameraAngles(CRes *pRes);
     void GiveDialogPlotXP(int nPlotIndex, float fXPPercentage);
@@ -362,17 +265,17 @@ void CSWSDialog::ClearDialogOwnerInObject(unsigned long oidObject)
 }
 
 // FUNCTION: SWKOTOR 0x0059ED70
-void CSWSDialog::RunScript(CGameObject *pObject, const CResRef &cScript)
+void CSWSDialog::RunScript(CSWSObject *pObject, const CResRef &cScript)
 {
     if (cScript == "")
         return;
     CExoString sScript;
     cScript.CopyToString(sScript);
-    g_pVirtualMachine->RunScript(&sScript, pObject->GetID(), 1);
+    g_pVirtualMachine->RunScript(&sScript, pObject->GetId(), 1);
 }
 
 // FUNCTION: SWKOTOR 0x0059EE00
-int CSWSDialog::GetStartEntryOneLiner(CGameObject *pObject, CExoLocString &sText, CResRef &cSound,
+int CSWSDialog::GetStartEntryOneLiner(CSWSObject *pObject, CExoLocString &sText, CResRef &cSound,
                                       CResRef &cScript)
 {
     for (unsigned long i = 0; i < m_nStartingEntries; i++) {
@@ -438,13 +341,13 @@ void CSWSDialog::LoadDialogLinkedNode(CDialogLink *pLink, CResGFF *pGFF, CResGFF
 }
 
 // FUNCTION: SWKOTOR 0x0059EC90
-int CSWSDialog::CheckScript(CGameObject *pObject, const CResRef &cScript)
+int CSWSDialog::CheckScript(CSWSObject *pObject, const CResRef &cScript)
 {
     if (cScript == "")
         return 1;
     CExoString sScript;
     cScript.CopyToString(sScript);
-    int nResult = g_pVirtualMachine->RunScript(&sScript, pObject->GetID(), 1);
+    int nResult = g_pVirtualMachine->RunScript(&sScript, pObject->GetId(), 1);
     if (nResult == 1) {
         int nType;
         void *pValue;
@@ -457,7 +360,7 @@ int CSWSDialog::CheckScript(CGameObject *pObject, const CResRef &cScript)
 }
 
 // FUNCTION: SWKOTOR 0x0059F320
-CExoString CSWSDialog::GetExoStringFromLocString(const CExoLocString &cLoc, unsigned char nGender)
+CExoString CSWSDialog::GetExoStringFromLocString(CExoLocString &cLoc, unsigned char nGender)
 {
     int nLanguage = g_pAppManager->m_pServerExoApp->GetLanguage();
     CExoString sText;
@@ -499,7 +402,7 @@ void CSWSDialog::ClearAllPlayerHostileActions()
 }
 
 // FUNCTION: SWKOTOR 0x005A0A40
-void CSWSDialog::RunEndConversationScript(CGameObject *pObject, int bOwnerOnly)
+void CSWSDialog::RunEndConversationScript(CSWSObject *pObject, int bOwnerOnly)
 {
     if (m_bConversationStarted && !m_bEndScriptRun) {
         m_bEndScriptRun = 1;
@@ -508,7 +411,7 @@ void CSWSDialog::RunEndConversationScript(CGameObject *pObject, int bOwnerOnly)
         CGameObject *pFound;
         pArray->GetGameObject(m_oidOwner, &pFound);
         if (pFound) {
-            CGameObject *pOwner = pFound->AsSWSObject();
+            CSWSObject *pOwner = pFound->AsSWSObject();
             if (pOwner) {
                 CSWSArea *pArea = pOwner->GetArea();
                 if (!bOwnerOnly) {
@@ -543,17 +446,17 @@ unsigned long CSWSDialog::GetDialogModel(int nIndex, int *pnModel)
     if (nIndex >= 0 && nIndex < (int)m_nSpeakers) {
         CGameObject *pObject = g_pAppManager->GetServerExoApp()->GetGameObject(m_oidOwner);
         if (pObject && pObject->AsSWSObject()) {
-            CGameObject *pOwner = pObject->AsSWSObject();
-            CServerMessage *pMessage = g_pAppManager->m_pServerMessage;
+            CSWSObject *pOwner = pObject->AsSWSObject();
+            CClientExoApp *pClient = g_pAppManager->m_pClientExoApp;
             unsigned long oid;
             if (m_pSpeakers[nIndex].m_sTag == "PLAYER") {
-                oid = pMessage->ServerToClientObjectId(GetPlayerCharacterId());
+                oid = pClient->ServerToClientObjectId(GetPlayerCharacterId());
             } else if (m_pSpeakers[nIndex].m_sTag == "OWNER" || m_pSpeakers[nIndex].m_sTag == "") {
-                oid = pMessage->ServerToClientObjectId(m_oidOwner);
+                oid = pClient->ServerToClientObjectId(m_oidOwner);
             } else {
-                oid = pMessage->ServerToClientObjectId(
+                oid = pClient->ServerToClientObjectId(
                     pOwner->GetNearestObjectByTag(m_pSpeakers[nIndex].m_sTag, 0));
-                *pnModel = pMessage->GetNetLayer()->GetPlayerModelIndex(m_pSpeakers[nIndex].m_sTag);
+                *pnModel = pClient->GetNetLayer()->GetPlayerModelIndex(m_pSpeakers[nIndex].m_sTag);
             }
             return oid;
         }
@@ -562,31 +465,31 @@ unsigned long CSWSDialog::GetDialogModel(int nIndex, int *pnModel)
 }
 
 // FUNCTION: SWKOTOR 0x005A0080
-int CSWSDialog::SendDialogModels(CGameObject *pObject, unsigned long nPlayer)
+int CSWSDialog::SendDialogModels(CSWSObject *pObject, unsigned long nPlayer)
 {
-    CServerMessage *pMessage = g_pAppManager->m_pServerMessage;
+    CClientExoApp *pClient = g_pAppManager->m_pClientExoApp;
     CResRef *pModels = new CResRef[m_nSpeakers];
     unsigned long *pIds = new unsigned long[m_nSpeakers];
     for (unsigned long i = 0; i < m_nSpeakers; i++) {
         pIds[i] = 0x7f000000;
         if (m_pSpeakers[i].m_sTag == "PLAYER")
-            pIds[i] = pMessage->ServerToClientObjectId(m_lPlayers.GetHeadPos() ? m_oidPlayer : 0x7f000000);
+            pIds[i] = pClient->ServerToClientObjectId(m_lPlayers.GetHeadPos() ? m_oidPlayer : 0x7f000000);
         else if (m_pSpeakers[i].m_sTag == "OWNER" || m_pSpeakers[i].m_sTag == "")
-            pIds[i] = pMessage->ServerToClientObjectId(m_oidOwner);
+            pIds[i] = pClient->ServerToClientObjectId(m_oidOwner);
         else
-            pIds[i] = pMessage->ServerToClientObjectId(
+            pIds[i] = pClient->ServerToClientObjectId(
                 pObject->GetNearestObjectByTag(m_pSpeakers[i].m_sTag, 0));
         pModels[i] = m_pSpeakers[i].m_cModel;
     }
-    if (pMessage->GetNetLayer()->SendDialogModels(nPlayer, m_nSpeakers, pIds, pModels, m_a50, m_aFC))
-        g_pAppManager->m_pServerMessage->SetDialogModelsDirty(1);
+    if (pClient->GetNetLayer()->SendDialogModels(nPlayer, m_nSpeakers, pIds, pModels, m_a50, m_aFC))
+        g_pAppManager->m_pClientExoApp->SetDialogModelsDirty(1);
     delete[] pIds;
     delete[] pModels;
     return 1;
 }
 
 // FUNCTION: SWKOTOR 0x005A3640
-unsigned long CSWSDialog::GetStartEntry(CGameObject *pObject)
+unsigned long CSWSDialog::GetStartEntry(CSWSObject *pObject)
 {
     for (unsigned long i = 0; i < m_nStartingEntries; i++) {
         if ((!(m_pEntries[m_pStartingEntries[i].m_nIndex].m_sSpeaker != "") ||
@@ -623,16 +526,16 @@ unsigned long CSWSDialog::GetStartEntry(CGameObject *pObject)
 // FUNCTION: SWKOTOR 0x0059FB60
 int CSWSDialog::RemovePlayer(unsigned long oidPlayer)
 {
-    CExoLinkedListNode *pPos = m_lPlayers.GetHead();
+    CExoLinkedListNode *pPos = m_lPlayers.GetHeadPos();
     int bFirst = 1;
-    for (CPlayerEntry *pPlayer = m_lPlayers.GetHeadObject(); pPlayer;
+    for (CPlayerEntry *pPlayer = m_lPlayers.GetHead(); pPlayer;
          pPlayer = m_lPlayers.GetNext(pPos)) {
         if (pPlayer->m_oidPlayer == oidPlayer) {
-            if (m_lPlayers.Count() != 1 && (!m_bLockFirstPlayer || !bFirst)) {
+            if (m_lPlayers.GetCount() != 1 && (!m_bLockFirstPlayer || !bFirst)) {
                 m_lPlayers.Remove(pPos);
                 if (pPlayer->m_oidPlayer == m_oidPlayer) {
                     delete pPlayer;
-                    CPlayerEntry *pNew = m_lPlayers.GetHeadObject();
+                    CPlayerEntry *pNew = m_lPlayers.GetHead();
                     if (pNew) {
                         m_oidPlayer = pNew->m_oidPlayer;
                         m_nPlayerType = pNew->m_nPlayerType;

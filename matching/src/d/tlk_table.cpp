@@ -7,7 +7,7 @@ extern "C" int __cdecl memcmp(const void* a, const void* b, unsigned int n);
 extern "C" int __cdecl strncmp(const char* a, const char* b, unsigned int n);
 #pragma intrinsic(memcmp)
 
-extern const char* g_sTlkFileVersion;       // 0x0078d3ec -> "V3.0"
+#include "shared/globals.h"
 
 #define TLK_FOURCC(p) \
     ((((((unsigned long)(unsigned char)(p)[3] << 8) | (unsigned char)(p)[2]) << 8 \
@@ -23,17 +23,13 @@ struct TLK_HEADER {
 
 struct TLK_STRING_DATA {
     unsigned long nFlags;                   // 0x00
-    char cSoundResRef[16];                  // 0x04
+    unsigned char cSoundResRef[16];         // 0x04
     unsigned long nVolumeVariance;          // 0x14
     unsigned long nPitchVariance;           // 0x18
     unsigned long nOffsetToString;          // 0x1c
     unsigned long nStringSize;              // 0x20
     float fSoundLength;                     // 0x24 (V3.0 only)
 };
-
-// operator=(const char (&)[16]) is ambiguous with operator=(const char*)
-// at a call site; select it with a cast of the member address.
-typedef CResRef (CResRef::*PFN_RESREF_ASSIGN16)(const char (&)[16]);
 
 struct STR_RES {
     CExoString sString;                     // 0x00
@@ -292,7 +288,7 @@ int CTlkTable::FetchInternal(unsigned long nStrRef, STR_RES& strRes, int bParse)
                             strRes.fSoundLength = 0;
                         }
                         if (cData.nFlags & 2) {
-                            (strRes.cSoundResRef.*(PFN_RESREF_ASSIGN16)&CResRef::operator=)(cData.cSoundResRef);
+                            strRes.cSoundResRef = cData.cSoundResRef;
                         }
                         else {
                             strRes.cSoundResRef = "";
@@ -487,7 +483,7 @@ int CTlkTable::OpenFile(const CExoString& sFileName)
         delete[] m_pTokens;
     }
     STR_TOKEN cSwap;
-    C2DA cTokens(CResRef("StringTokens"), 0);
+    C2DA cTokens("StringTokens", 0);
     if (!cTokens.Load2DArray()) {
         return 0;
     }

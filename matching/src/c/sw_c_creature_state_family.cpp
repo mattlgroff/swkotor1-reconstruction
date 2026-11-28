@@ -3,24 +3,10 @@
 #include "c/exo_base.h"
 #include "c/sw_c_creature_ability_list.h"
 
-class CResRef {
-public:
-    char m_resref[16];
-    CResRef();
-    CResRef(const CExoString& s);
-    int operator==(const char* s) const;
-    CResRef operator=(const CResRef& s);
-    int operator!=(const CResRef& s) const;
-};
+#include "shared/res_ref.h"
 class CSWCCreature;
 class CSWSCreature;
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual CSWSCreature* AsSWSCreature();
-};
+#include "shared/game_object.h"
 class CGob {
 public:
     virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
@@ -117,11 +103,8 @@ public:
     char pad_0x0[0xc]; C2DA* m_pAppearanceTable;
     char pad_0x10[0x48]; C2DA* m_pFootstepTable;
 };
-extern int g_nAppearanceCol_FootstepType; // 0x007a20ec
-extern int g_nFootstepRollingColumn; // 0x007a219c
-extern int g_nAppearanceCol_SIZECATEGORY; // 0x007a2124
-extern int g_nFootstepPitchOffsetColumn; // 0x007a21a0
-struct Vector { float x, y, z; };
+#include "shared/globals.h"
+#include "shared/vector.h"
 class CExoSoundSource {
 public:
     virtual ~CExoSoundSource();
@@ -152,10 +135,7 @@ public:
     char pad_0x4[0x18];
     CSoundSet(const CResRef& s);
 };
-class CSoundSetList {
-public:
-    CResRef GetSoundSetResRef(unsigned short nId); // 0x006788d0, descriptive name.
-};
+#include "shared/sound_set_list.h"
 class CSWCCreaturePartyStatus {
 public:
     char pad_0x0[4];
@@ -173,7 +153,6 @@ class CSWRules {
 public: char pad_0x0[0x34]; CSWBaseItemArray* m_pBaseItems;
     char pad_0x38[0x80]; C2DAs* m_p2DArrays;
 };
-extern CSWRules* g_pRules;
 class CSceneHolder {
 public:
     virtual void v00();
@@ -215,7 +194,6 @@ public:
     char pad_0x0[0x104]; unsigned long m_idSelf;
     char pad_0x108[0x7c]; void* m_pScene;
 };
-extern const unsigned long OBJECT_INVALID_ID;
 class CSWCCreatureStats {
 public:
     char pad_0x0[0x70]; CResRef m_sPortrait;
@@ -251,12 +229,7 @@ public:
         num = n;
     }
 };
-class CSWPartyClient {
-public:
-    int SetPlayerCreature(unsigned long oid);       // 0x006364C0 (returns int: mov eax, ebp)
-    int RemovePartyMember(unsigned long oid); // 0x006349f0, descriptive callee name.
-    void SetPC(int nIndex);
-};
+#include "shared/sw_party_client.h"
 class CItemVisualState {
 public:
     virtual void v00();
@@ -332,7 +305,6 @@ public:
 };
 class CSWCItem : public CGameObject {
 public:
-    char pad_0x4[8];
     int m_nBaseItem;
     CItemVisualState m_visualState; // +10, nested visual interface.
 };
@@ -377,14 +349,7 @@ public:
     CSWPartyClient* GetSWParty();
     int IsPlayerCreature(CGameObject* p);
 };
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;
-
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-extern CAppManager* g_pAppManager;
+#include "shared/app_manager.h"
 
 class CSWCCreature {
 public:

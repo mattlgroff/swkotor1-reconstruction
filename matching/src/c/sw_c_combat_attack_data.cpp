@@ -3,11 +3,7 @@
 
 // CSWCCombatAttackData initialization and memberwise copying. The copy helper
 // name is descriptive: unlike a constructor, its EAX is not the destination.
-struct Vector {
-    float x, y, z;
-    Vector() { x = 0.0f; y = 0.0f; z = 0.0f; }
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 class CSWCCombatAttackData {
 public:
     unsigned char m_nAttackType, m_nResult;
@@ -85,11 +81,7 @@ void CSWCCombatAttackData::CopyFrom(const CSWCCombatAttackData& source)
 
 void* __cdecl operator new(unsigned int n);         // 0x006FA7E6
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 template <class T>
 class CExoArrayList {
@@ -132,17 +124,10 @@ public:
     CWorldTimer* GetWorldTimer();                   // 0x005ED4F0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
-extern const unsigned long OBJECT_INVALID;          // 0x00746644
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
+#include "shared/globals.h"
+#include "shared/object_id.h"
 
 struct CPerceptionRecord;
 

@@ -2,16 +2,7 @@
 // CSWSArea +0x100): destructor and SetResRef. Self-contained declarations
 // in the shape of worker J's j/res.h / j/res_helper.h.
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    int operator==(const CResRef& cResRef) const;   // 0x004060B0
-    int operator==(const char* szResRef) const;     // 0x004060D0
-    int operator!=(const char* szResRef) const;     // 0x00406060
-    CResRef operator=(const char* szResRef);        // 0x00406290
-    CResRef operator=(const CResRef& cResRef);      // 0x00406120
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CRes {
 public:
@@ -26,7 +17,7 @@ public:
     CRes* GetResObject(const CResRef& cResRef, unsigned short nType); // 0x004074D0
     int ReleaseResObject(CRes* pRes);               // 0x00409CF0
 };
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
+#include "shared/globals.h"
 
 class CResGFF : public CRes {
 public:

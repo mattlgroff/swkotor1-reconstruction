@@ -5,6 +5,8 @@
 // Names come from the debug map (matching/mac_names.csv) where it has them;
 // placeholder member names keep their offset in the name.
 
+#include "shared/float_to_int.h"
+
 template <class T>
 class CExoArrayList {
 public:
@@ -26,12 +28,7 @@ public:
 class Vector;
 Vector operator-(const Vector &a, const Vector &b);         // 0x00423BC0
 
-class Vector {
-public:
-    float x, y, z;
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 class CGameEffect {
 public:
@@ -82,57 +79,19 @@ public:
     unsigned char GetParam1Value() { return m_nParam1Value; }
 };
 
-extern int EFFECT_TYPE_VISUALEFFECT;   // 0x007466F4 (0x1e)
-extern int EFFECT_TYPE_SETSTATE;       // 0x0074669C (8)
-extern int EFFECT_TYPE_SLOW;                     // 0x00746688 (3; NWN true type 3 = slow)
-extern int EFFECT_TYPE_POISON;         // 0x00746708 (0x23, placeholder)
-extern int EFFECT_TYPE_ABILITY_DECREASE;  // 0x00746710 (0x25, placeholder)
-extern int EFFECT_TYPE_746788;         // 0x00746788 (0x43)
-extern int EFFECT_TYPE_DEATH;          // 0x007466C8
-extern int EFFECT_TYPE_DAMAGE;         // 0x00746714
-extern int EFFECT_TYPE_DAMAGE_SHIELD;  // 0x00746770
-extern int EFFECT_TYPE_FORCE_JUMP;     // 0x00746810
+#include "shared/globals.h"
 
-extern int g_nDamageIndex;             // 0x008327E0
-extern const float g_fInvLog10Of2;     // 0x00745FF8
-
-static inline void FloatToInt(int *pOut, float f)
-{
-    __asm {
-        fld f
-        mov edx, pOut
-        frndint
-        fistp dword ptr [edx]
-    }
-}
 
 extern "C" int __cdecl rand();
 extern "C" double __cdecl log10(double x);
 #pragma intrinsic(log10)
-extern unsigned short DURATION_TYPE_INSTANT;      // 0x007473B8 (0)
-extern unsigned short DURATION_TYPE_TEMPORARY;    // 0x007473C0 (1)
-extern unsigned short DURATION_TYPE_PERMANENT;    // 0x007473C4
 
 float Magnitude(const Vector &v);                           // 0x004AB100 (cdecl)
 Vector NormalizeVector(const Vector &v);                    // 0x004AB180 (cdecl)
-extern unsigned char IMMUNITY_TYPE_SNEAK_ATTACK;   // 0x0074696C (0x1e, placeholder)
-extern unsigned char IMMUNITY_TYPE_CRITICAL_HIT;   // 0x00746970 (0x1f, placeholder)
 
-class CSWSCreatureListEntry {
-public:
-    unsigned long m_oid;                // 0x0
-    unsigned char m_nFlags;             // 0x4
-};
+#include "shared/sws_creature_list_entry.h"
 
-class CExoString {
-public:
-    CExoString();                                           // 0x005B3190
-    CExoString(const char *s);                              // 0x005E5A90
-    ~CExoString();                                          // 0x005E5C20
-    CExoString &operator=(const char *s);                   // 0x005E5140
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:
@@ -163,9 +122,6 @@ public:
     C2DArrays *Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules *g_pRules;              // 0x007A3A28
-extern int EFFECT_TYPE_PROPERTY55;      // 0x007467E8
-extern int EFFECT_TYPE_PROPERTY56;      // 0x007467EC
 
 class CSWSCombatAttackData {
 public:
@@ -277,11 +233,7 @@ public:
                                 int a6);            // 0x005EDCE0
 };
 
-class CResRef {
-public:
-    CResRef(const char *s);                                 // 0x00406D80
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWPartyTable {
 public:
@@ -304,17 +256,8 @@ public:
                        int a8);                             // 0x004AEE80
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp *m_pClientExoApp;     // 0x4
-    CServerExoApp *m_pServerExoApp;     // 0x8
-    CClientExoApp *GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;      // 0x007A39FC
-extern int g_bDebugNoDamage;            // 0x00832878 (placeholder name)
 
 class CSWSCreature;
 class CSWSObject;
@@ -372,27 +315,23 @@ public:
     unsigned char m_nDexterityBonus;    // 0x16d (placeholder name)
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();   // +0x30
-    virtual void v34(); virtual void v38(); virtual void v3c();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4c();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5c();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
-    virtual void v70(); virtual void v74(); virtual void v78();
-    virtual void SetAnimation(int nAnimation); // +0x7c
-    virtual void v80(); virtual void v84(); virtual void v88();
-    virtual void v8c(); virtual void v90(); virtual void v94(); virtual void v98();
-    virtual short GetCurrentHitPoints(int bExcludeTemporary);   // +0x9c
-    unsigned long m_idSelf;             // +0x4
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
-    char pad_0x8[0x90 - 0x8];
+    virtual void v70();
+    virtual void v74();
+    virtual void v78();
+    virtual void SetAnimation(int nAnimation);  // +0x7c
+    virtual void v80();
+    virtual void v84();
+    virtual void v88();
+    virtual void v8c();
+    virtual void v90();
+    virtual void v94();
+    virtual void v98();
+    virtual short GetCurrentHitPoints(int bExcludeTemporary);  // +0x9c
+    char pad_0xc[0x84];
     Vector m_vPosition;                 // 0x90
     Vector m_vOrientation;              // 0x9c
     char pad_0xa8[0xd4 - 0xa8];

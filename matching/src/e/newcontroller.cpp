@@ -4,11 +4,7 @@
 #include <math.h>
 #include "e/mdlanim.h"
 
-extern float g_fPositionScale;      // 0x00798B38
-extern int g_bReportKeys;           // 0x008302CC
-extern float g_fAnimationLength;    // 0x008302D0
-extern unsigned char g_bNoKeyReports;   // 0x008302C8
-extern float g_fAnimationTime;      // 0x0078E574
+#include "shared/globals.h"
 
 static float s_fControlOld;         // 0x00830330
 static float s_fControlNew;         // 0x00830334

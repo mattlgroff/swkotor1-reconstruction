@@ -4,7 +4,7 @@
 #include "b/sws_creature.h"
 #include "b/sws_item.h"
 
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x005209B0
 int CSWSMessage::HandlePlayerToServerQuickChatMessage(CSWSPlayer* pPlayer, unsigned char nMinor)
@@ -183,7 +183,7 @@ int CSWSMessage::HandlePlayerToServerPlayModuleCharacterList_Start(CSWSPlayer* p
 {
     if (!MessageReadOverflow(1) && !MessageReadUnderflow(1)) {
         CExoLinkedList<CSWSClient>* pPlayers = g_pAppManager->GetServerExoApp()->GetPlayerList();
-        void* pPos = pPlayers->GetHeadPos();
+        CExoLinkedListPosition pPos = pPlayers->GetHeadPos();
         while (pPos) {
             CSWSPlayer* pOther = (CSWSPlayer*)pPlayers->GetAtPos(pPos);
             if (pOther && pOther->GetGameObject()) {
@@ -241,8 +241,6 @@ int CSWSMessage::HandlePlayerToServerDialogMessage(CSWSPlayer* pPlayer, unsigned
     return 0;
 }
 
-extern const unsigned char OBJECT_TYPE_ITEM;        // 0x00746635
-extern const unsigned char OBJECT_TYPE_PLACEABLE;   // 0x00746638
 
 // FUNCTION: SWKOTOR 0x005232A0
 int CSWSMessage::HandlePlayerToServerGuiContainerMessage(CSWSPlayer* pPlayer, unsigned char nMinor)

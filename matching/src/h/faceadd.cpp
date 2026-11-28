@@ -2,7 +2,6 @@
 // instance (0x004647F0).
 
 #define H_ALLOCATE_OUT_OF_LINE
-#define H_ADD_OUT_OF_LINE
 #include "h/texctl.h"
 
 struct MaxFace_PostProcess {

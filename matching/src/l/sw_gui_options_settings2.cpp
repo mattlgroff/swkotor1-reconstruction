@@ -9,7 +9,7 @@ class CExoSound {
 public:
     int GetMaxSoundQuality(); // 0x005D6460
 };
-extern CExoSound* g_pExoSound; // 0x007A39EC
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x006DDD70
 void CSWGuiOptionsSoundAdvanced::SetEAXText()
@@ -191,7 +191,7 @@ void CSWGuiInGameGameplay::SetUpOptions()
 void CSWGuiOptionsGraphicsAdvanced::SetTexQualText()
 {
     int nStrRef;
-    C2DA* pTexPacks = new C2DA(CResRef("texpacks"), 0);
+    C2DA* pTexPacks = new C2DA("texpacks", 0);
     if (pTexPacks) {
         if (!pTexPacks->Load2DArray()) {
             delete pTexPacks;
@@ -244,7 +244,7 @@ void CSWGuiOptionsGraphicsAdvanced::SetUpOptions()
     }
     SetAntiAliasText();
     SetAnisotropyText();
-    C2DA* pTexPacks = new C2DA(CResRef("texpacks"), 0);
+    C2DA* pTexPacks = new C2DA("texpacks", 0);
     if (pTexPacks) {
         if (!pTexPacks->Load2DArray()) {
             delete pTexPacks;

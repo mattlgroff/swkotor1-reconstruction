@@ -14,40 +14,12 @@ class CSWSAreaOfEffectObject;
 class CWorldTimer;
 class CSWSArea;
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const CExoString& s);                // 0x005E5B00
-    ~CExoString();                                  // 0x005E5C20
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString operator+(const CExoString& s) const;    // 0x005E5D10
-    int operator==(const char* s) const;            // 0x005E5290
-    int CompareNoCase(const CExoString& s) const;   // 0x005E6450
-    char* CStr() const;                             // 0x005E5670
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-struct CResRef {
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    char* GetResRefStr() const;                     // 0x00405FE0
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef operator=(const CResRef& o);            // 0x00406120
-    CResRef operator=(const CExoString& s);         // 0x004061F0
-    int operator==(const char* s) const;            // 0x004060D0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 // 8 bytes.
-class CExoLocString {
-public:
-    CExoLocString();                                // 0x005E9E10
-    ~CExoLocString();                               // 0x005EA000
-    void* m_pInternal;
-    unsigned long m_n4;
-};
+#include "shared/exo_loc_string.h"
 
 class C2DA {
 public:
@@ -55,11 +27,7 @@ public:
                            CExoString* pValue);     // 0x00413270
 };
 
-struct Vector {
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 int operator==(const Vector& a, const Vector& b);  // 0x004AA980 (cdecl)
 
@@ -164,74 +132,13 @@ public:
     unsigned char m_nBodyPart;                      // 0x08 (placeholder name)
 };
 
-typedef void* CExoLinkedListPosition;
 
-struct CExoLinkedListNode {
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    void* Remove(CExoLinkedListPosition pos);       // 0x005E9C10
-    void* RemoveHead();                             // 0x005E9C80
-    CExoLinkedListPosition AddHead(void* p);        // 0x005E9D70
-    CExoLinkedListPosition AddTail(void* p);        // 0x005E9DC0
-    void* GetHeadObject()
-    {
-        CExoLinkedListNode* pNode = m_pHead;
-        if (!pNode) {
-            return 0;
-        }
-        return pNode->pObject;
-    }
-    CExoLinkedListNode* m_pHead;
-    CExoLinkedListNode* m_pTail;
-    unsigned long m_nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList();
-    CExoLinkedListPosition GetHeadPos() { return m_pList->m_pHead; }
-    T* GetHead()
-    {
-        CExoLinkedListInternal* pInternal = m_pList;
-        return (T*)pInternal->GetHeadObject();
-    }
-    T* GetHeadInline()
-    {
-        void* p = m_pList->m_pHead;
-        if (p) {
-            p = ((CExoLinkedListNode*)p)->pObject;
-        }
-        return (T*)p;
-    }
-    T* GetAtPosInline(CExoLinkedListPosition pos)
-    {
-        CExoLinkedListNode* p = (CExoLinkedListNode*)pos;
-        return p ? (T*)p->pObject : NULL;
-    }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pList->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pList->GetNext(pos); }
-    T* Remove(CExoLinkedListPosition pos) { return (T*)m_pList->Remove(pos); }
-    T* RemoveHead() { return (T*)m_pList->RemoveHead(); }
-    CExoLinkedListPosition AddHead(T* p) { return m_pList->AddHead(p); }
-    CExoLinkedListPosition AddTail(T* p) { return m_pList->AddTail(p); }
-    int IsEmpty() { return m_pList->m_pHead == NULL; }
-    CExoLinkedListInternal* m_pList;
-};
 
-template <class T>
-CExoLinkedList<T>::CExoLinkedList()
-{
-    m_pList = new CExoLinkedListInternal();
-}
+
 
 template <class T> class CExoArrayList {
 public:
@@ -289,7 +196,7 @@ public:
     int LoadScriptSituation(void** ppScript, CResGFF* pRes, CResStruct* pStruct); // 0x005D1100
     void DeleteScriptSituation(CVirtualMachineScript* pScript);   // 0x005D1110
 };
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
+#include "shared/globals.h"
 
 // 0x74 bytes.
 class CSWSObjectActionNode {
@@ -341,7 +248,7 @@ public:
     unsigned long FUN_004cc4b0();                   // 0x004CC4B0
     unsigned long GetOwnerInline()
     {
-        if (m_lstPlayers.m_pList->m_pHead) {
+        if (m_lstPlayers.m_pcExoLinkedListInternal->pHead) {
             return m_oidOwner;
         }
         return 0x7f000000;
@@ -372,34 +279,7 @@ public:
     void FUN_0063d520(CSWSObject* pObject);         // 0x0063D520
 };
 
-class CGameObject {
-public:
-    virtual void v00();
-    virtual void v04();
-    virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // +0x0c
-    virtual CSWSObject* AsSWSObject();              // +0x10
-    virtual void v14();
-    virtual void v18();
-    virtual void v1c();
-    virtual void v20();
-    virtual void v24();
-    virtual CSWSArea* AsSWSArea();                  // +0x28
-    virtual void v2c();
-    virtual CSWSCreature* AsSWSCreature();          // +0x30
-    virtual void v34();
-    virtual void v38();
-    virtual void v3c();
-    virtual void v40();
-    virtual void v44();
-    virtual void v48();
-    virtual void v4c();
-    virtual CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject();  // +0x50
-    unsigned long GetId() { return m_idSelf; }
-
-    unsigned long m_idSelf;                         // +0x04
-    unsigned char m_nObjectType;                    // +0x08
-};
+#include "shared/game_object.h"
 
 class CGameObjectArray {
 public:
@@ -515,13 +395,7 @@ public:
     CClientExoAppInternal* m_pInternal;             // 0x04
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp* m_pClientExoApp;                 // 0x4
-    CServerExoApp* m_pServerExoApp;                 // 0x8
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 
 class CExoTimers {
@@ -534,17 +408,13 @@ public:
     char pad_0x0[0x4];
     CExoTimers* m_pcExoTimers;                      // 0x4
 };
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 struct CSWFeat {
     char pad_0x0[0x4];
     unsigned short m_nSpellId;                      // 0x04 (placeholder name)
 };
 
-struct CSWS2DArrays {
-    char pad_0x0[0x38];
-    C2DA* m_pPortraits;                             // 0x38 (placeholder name)
-};
+#include "shared/sws2_d_arrays.h"
 
 class CSWSpell;
 
@@ -561,7 +431,6 @@ public:
     char pad_0x90[0xb8 - 0x90];
     CSWS2DArrays* m_p2DArrays;                      // 0xb8 (placeholder name)
 };
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CGameEffect {
 public:
@@ -607,22 +476,10 @@ public:
     char pad_0x0[0x14];
 };
 
-extern const unsigned long OBJECT_INVALID_ID;       // 0x00746644
-extern unsigned char g_nDefaultGender;              // 0x0073ECD0
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
-extern const unsigned char OBJECT_TYPE_AREA_OF_EFFECT;  // 0x0074663A
 
 // vtable 0x00745F18
 class CSWSObject : public CGameObject {
 public:
-    virtual void v54();
-    virtual void v58();
-    virtual void v5c();
-    virtual void v60();
-    virtual void v64();
-    virtual void v68();
-    virtual void v6c();
     virtual void v70();
     virtual int RunActionNode(CSWSObjectActionNode* pNode, int bFlag);  // 0x74 (placeholder name)
     virtual void v78();

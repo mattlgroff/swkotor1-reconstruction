@@ -4,21 +4,13 @@
 #ifndef J_EXO_SOUND_H
 #define J_EXO_SOUND_H
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
-struct Vector {
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 int __cdecl operator==(const Vector& a, const Vector& b);    // 0x004AA980
 
-extern int g_bSoundDisabled;                        // 0x00832894
-extern int g_n74C5F4;                               // 0x0074C5F4
-extern int g_n74C5FC;                               // 0x0074C5FC
+#include "shared/globals.h"
 
 class CExoTimers {
 public:
@@ -31,7 +23,6 @@ public:
     CExoTimers* m_pcExoTimers;                      // 0x04
 };
 
-extern CExoBase* g_pExoBase;                        // 0x007A39E0
 
 // Miles Sound System 3D listener API (IAT 0x0073D4A4-0x0073D4B0).
 typedef void* HPROVIDER;
@@ -313,6 +304,5 @@ public:
     CExoSoundInternal* m_pInternal;                 // 0x00
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
 
 #endif

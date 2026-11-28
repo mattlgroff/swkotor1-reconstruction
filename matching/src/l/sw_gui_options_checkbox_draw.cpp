@@ -1,9 +1,7 @@
 // Options checkbox drawing and layout-load colour overrides.
 #include "l/sw_gui_options_in_game.h"
 
-extern Vector g_vAbilityColorGranted; // 0x007A23C0 (selected text)
-extern Vector g_vDifficultyExitColor; // 0x007A23B4 (enabled text)
-extern Vector g_vKeyMapLockedTextColor; // 0x007A2408 (disabled text)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x006DE0E0
 void CSWGuiOptionsCheckbox::Draw(float fDelta)

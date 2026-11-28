@@ -5,21 +5,7 @@
 #ifndef D_GUI_CONTROL_H
 #define D_GUI_CONTROL_H
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005b3190
-    CExoString(const char* sString);                // 0x005e5a90
-    CExoString(const CExoString& sString);          // 0x005e5b00
-    ~CExoString();                                  // 0x005e5c20
-    CExoString& operator=(const CExoString& s);     // 0x005e5c50
-    CExoString& operator=(const char* s);           // 0x005e5140
-    char* CStr() const;                             // 0x005e5c40
-    int operator==(const CExoString& s) const;      // 0x005e5200
-    int operator==(const char* s) const;            // 0x005e5290
-    CExoString operator+(const CExoString& s) const; // 0x005e5d10
-};
+#include "shared/exo_string.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;
@@ -111,23 +97,9 @@ struct CSWGuiControlEvent {
     int m_nEvent;
 };
 
-class Vector {
-public:
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-    float x, y, z;
-};
+#include "shared/vector.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ed0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWGuiImageParams {
 public:
@@ -145,8 +117,7 @@ public:
     void* m_pImage;                                 // 0x28
 };
 
-extern Vector g_vDisabledColor;                 // 0x0078d3b4
-extern Vector g_vHilightColor;                  // 0x0078d3c0
+#include "shared/globals.h"
 
 class CSWGuiManager {
 public:
@@ -167,7 +138,6 @@ public:
     void DisplayToolTip(const CExoString& sText);   // 0x0040b490
 };
 
-extern CSWGuiManager* g_pGuiManager;            // 0x007a39f4
 
 CSWGuiExtent IntersectExtents(const CSWGuiExtent& a, const CSWGuiExtent& b); // 0x0040a4a0
 
@@ -178,35 +148,22 @@ public:
     unsigned long m_nKey;                           // 0x1c
 };
 
-class CExoInput {
-public:
-    void StartTextInput();                          // 0x005df520
-    void StopTextInput();                           // 0x005df530
-    CExoInputEvent* GetEvent(unsigned long nId, int nClass); // 0x005df4c0
-};
+#include "shared/exo_input.h"
 
-extern CExoInput* g_pExoInput;                  // 0x007a39e4
-extern const int g_nFirstKeyIndex;              // 0x0074d3d8
 
 class CClientExoApp {
 public:
     int GetInputClass();                            // 0x005eda70
 };
 
-class CAppManager {
-public:
-    void* m_pServer;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;              // 0x007a39fc
 
 class CTlkTable {
 public:
     CExoString GetSimpleString(unsigned long nStrRef); // 0x0041e8f0
 };
 
-extern CTlkTable* g_pTlkTable;                  // 0x007a3a08
 
 class C2DA {
 public:
@@ -226,7 +183,6 @@ public:
     C2DArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;                      // 0x007a3a28
 
 class CSWGuiBorderParams {
 public:

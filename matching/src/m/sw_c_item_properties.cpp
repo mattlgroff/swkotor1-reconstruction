@@ -9,14 +9,9 @@ public:
     CSWCCreature* GetCreatureByGameObjectID(unsigned long oid);
 };
 
-class CAppManager {
-public:
-    char pad_0x0[4];
-    CClientExoApp* m_pClientExoApp;
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;
+#include "shared/globals.h"
 
 class CSWBaseItemData;
 class CSWBaseItemArray {
@@ -30,12 +25,7 @@ public:
     CSWBaseItemArray* m_pBaseItemArray;
 };
 
-class CSWCItemProperty {
-public:
-    unsigned short m_nPropertyType;
-    unsigned short m_nSubtype;
-    char pad_0x4[0x18];
-};
+#include "shared/swc_item_property.h"
 
 class CSWCItem {
 public:
@@ -49,7 +39,7 @@ public:
     char pad_0x0[0xc];
     unsigned long m_nBaseItem;
     char pad_0x10[0x110];
-    volatile unsigned long m_nNumActiveProperties;
+    unsigned long m_nNumActiveProperties;
     CSWCItemProperty* m_pActiveProperties;
     char pad_0x128[0x38];
     unsigned long m_oidEquippedBy;
@@ -76,7 +66,7 @@ void CSWCItem::SetNumActiveProperties(unsigned long nCount)
     if (m_pActiveProperties) {
         delete[] m_pActiveProperties;
     }
-    m_pActiveProperties = (CSWCItemProperty*)::operator new(m_nNumActiveProperties * 0x1c);
+    m_pActiveProperties = new CSWCItemProperty[m_nNumActiveProperties];
 }
 
 // FUNCTION: SWKOTOR 0x006466A0
@@ -106,7 +96,7 @@ int CSWCItem::GetPropertyByType(int nIndex)
 CSWBaseItemData* CSWCItem::SetStackSize(unsigned long nSize)
 {
     m_nStackSize = nSize;
-    return (*(CSWRules**)0x007a3a28)->m_pBaseItemArray->GetBaseItem((int)m_nBaseItem);
+    return g_pRules->m_pBaseItemArray->GetBaseItem((int)m_nBaseItem);
 }
 
 // NONMATCH (10 diff insns): loop values/semantics agree, but the original

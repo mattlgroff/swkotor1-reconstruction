@@ -1,34 +1,11 @@
 // CSWSStore::LoadStore / LoadFromTemplate / SaveStore
 // (b005c_f2_journal_store): UTM template load and GFF load / save of a store.
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    ~CExoString();
-    CExoString &operator=(const CExoString &s);
-    void Format(const char *szFormat, ...);
-    char *CStr();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    ~CExoLocString();
-    CExoLocString &operator=(const CExoLocString &s);
-    void *m_pList;
-    unsigned long m_nStrRef;
-};
+#include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    CResRef(const CExoString &s);
-    CResRef(const char *s);
-    void CopyToString(CExoString &s) const;
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;
@@ -133,19 +110,11 @@ public:
     CSWSModule *GetModule();
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x8];
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
+#include "shared/globals.h"
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWSStore {
 public:

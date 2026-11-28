@@ -12,9 +12,7 @@ public:
     unsigned __int64 FUN_004adc70();                // 0x004ADC70
 };
 
-struct CAppManager14 {
-    int m_n0;
-};
+#include "shared/reentrant_server_stats.h"
 
 struct CClientPartyMember {
     char m_pad0[0x24];
@@ -37,21 +35,11 @@ class CVirtualMachine {
 public:
     int RunScript(CExoString* sScript, unsigned long oidSelf, int nScriptType);  // 0x005D0FC0
 };
-extern CVirtualMachine* g_pVirtualMachine;          // 0x007A3A00
+#include "shared/globals.h"
 
 class CSWSPlayerCharacterQuery;
 
-class CAppManager {
-public:
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                 // +0x04
-    CServerExoApp* m_pServerExoApp;                 // +0x08
-    char m_pad0c[0x14 - 0x0c];
-    CAppManager14* m_p14;                           // +0x14
-
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/app_manager.h"
 
 // FUNCTION: SWKOTOR 0x004B14F0
 CSWSModule* CServerExoAppInternal::GetModule()
@@ -456,7 +444,7 @@ CSWSClient* CServerExoAppInternal::GetClientObjectByPlayerID(unsigned long nPlay
 // FUNCTION: SWKOTOR 0x004B4030
 int CServerExoAppInternal::FUN_004b4030()
 {
-    return g_pAppManager->m_p14->m_n0 == 1;
+    return g_pAppManager->m_pReentrantServerStats->m_bActive == 1;
 }
 
 // FUNCTION: SWKOTOR 0x004B4050
@@ -513,7 +501,7 @@ int CServerExoAppInternal::IsActionsPending(unsigned long oid)
 {
     CSWSCreature* pCreature = GetCreatureByGameObjectID(ClientToServerObjectID(oid));
     if (pCreature) {
-        return pCreature->m_lActions.m_pList->m_pHead != 0;
+        return pCreature->m_lActions.m_pcExoLinkedListInternal->pHead != 0;
     }
     return 0;
 }

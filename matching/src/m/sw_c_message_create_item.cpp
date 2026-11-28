@@ -2,23 +2,9 @@
 // resolves its icon and model resources, falling back to the base item's
 // defaults.
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005B3190
-    ~CExoString();                                  // 0x005E5C20
-    char* CStr() const;                             // 0x005E5670
-    void __cdecl Format(const char* sFormat, ...);  // 0x005E5680
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 void* operator new(unsigned int nSize);
 void operator delete(void* p);
@@ -28,7 +14,7 @@ public:
     int Exists(const CResRef& cRes, unsigned short nType, unsigned long* pSize);  // 0x00408BC0
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
+#include "shared/globals.h"
 
 class CSWBaseItem {
 public:
@@ -53,7 +39,6 @@ public:
     CSWBaseItemArray* m_pBaseItemArray;             // 0x34
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 class CSWCItem {
 public:

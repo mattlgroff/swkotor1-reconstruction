@@ -5,15 +5,7 @@
 
 #include "g/exo_list.h"
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-
-    Vector& operator*=(float f);                        // 0x004a97a0
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:
@@ -38,14 +30,7 @@ class Model;
 class MdlNode;
 
 // Attachment record behind Gob +0x188.
-class GobAttachment {
-public:
-    virtual ~GobAttachment();
-    virtual void v04();
-    virtual void Render(int nFlags);                    // +0x08
-    virtual void SetLight(int n);                       // +0x0c
-    virtual int GetId();                                // +0x10
-};
+#include "shared/gob_attachment.h"
 
 class Gob;
 

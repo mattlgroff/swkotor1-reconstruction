@@ -161,22 +161,9 @@ public:
     MdlNodeTriMesh* m_pObject;      // +0x08
 };
 
-extern int g_bRenderFlat;           // 0x0078E614
-extern int g_bRenderFlatKeepState;  // 0x0078E61C
-extern int g_bRenderLightMapped;    // 0x0078E620
-extern int g_bRegisterCombiners;    // 0x007B92A0
-extern int g_nFlatParts;            // 0x00827FB4
-extern int g_nFlatTriangles;        // 0x00827FB0
-extern unsigned int g_eTexCoordArray;   // 0x0073F398
-extern unsigned int g_aBlendFactors[];  // 0x0073F270
+#include "shared/globals.h"
 
-typedef void (__cdecl* PFNCOMBINER)(unsigned int, CAurTexture*, CAurTexture*, CAurTexture*, CAurTexture*);
-extern PFNCOMBINER g_pfnCombiner;   // 0x007A47E0
-typedef void (__stdcall* PFNACTIVETEXTURE)(unsigned int);
-extern PFNACTIVETEXTURE glClientActiveTextureARB; // 0x007BB6B0
-extern unsigned int g_eNormalArray;     // 0x0073F39C
-extern unsigned int g_eColorArray;      // 0x0073F3A0
-extern unsigned int g_eVertexArray;     // 0x0073F3A4
+#include "shared/gl_ext.h"
 
 extern "C" __declspec(dllimport) void __stdcall glBlendFunc(unsigned int, unsigned int);
 
@@ -184,27 +171,8 @@ extern "C" __declspec(dllimport) void __stdcall glTexEnvi(unsigned int, unsigned
 extern "C" __declspec(dllimport) void __stdcall glTexGeni(unsigned int, unsigned int, int);
 
 // GL enums kept in .data.
-extern unsigned int g_eGLTexture2D;     // 0x0078D44C
-extern unsigned int g_eGLTexture2DB;    // 0x0078D458
-extern unsigned int g_eGLLighting;      // 0x0078D45C
-extern unsigned int g_eGLTexGenS;       // 0x0078D460
-extern unsigned int g_eGLTexGenT;       // 0x0078D464
-extern unsigned int g_eGLTexGenR;       // 0x0078D468
-extern unsigned int g_eGLTexture3D;     // 0x0078D46C
-extern unsigned int g_eGLTexCubeMap;    // 0x0078D478
 
-extern int g_bRenderLightMappedNoShaders;   // 0x0078E628
 
-extern int g_bRenderEnvMapped;      // 0x0078E640
-extern int g_bRenderEMLM;           // 0x0078E644
-extern int g_bOnePassEnvMap;        // 0x0078E638
-extern int g_bEnvMapTexturesOnly;   // 0x0078E63C
-extern int g_bEnvMapBlendAdd;       // 0x00827FD4
-extern unsigned int g_nActiveTextureUnit;   // 0x007A6898
-typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int);
-extern PFNCLIENTACTIVETEXTURE glActiveTextureARB;    // 0x007BB80C
-typedef void (__cdecl* PFNCOMBINERCONST)(Vector*, float);
-extern PFNCOMBINERCONST g_pfnCombinerConst; // 0x007A6820
 
 unsigned char AurTextureEnvMapDisabled();   // 0x004204D0
 namespace GLRender {

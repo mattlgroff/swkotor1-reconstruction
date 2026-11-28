@@ -8,57 +8,11 @@ extern "C" int __cdecl _stricmp(const char* a, const char* b);
 extern "C" int __cdecl strcmp(const char* a, const char* b);
 #pragma intrinsic(strcmp)
 
-class CExoLinkedListNode {
-public:
-    CExoLinkedListNode* pPrev;
-    CExoLinkedListNode* pNext;
-    void* pObject;
-};
+#include "shared/exo_linked_list.h"
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListInternal();                       // 0x005E9AA0
-    void* GetHead()
-    {
-        CExoLinkedListNode* pNode = pHead;
-        if (!pNode) {
-            return 0;
-        }
-        return pNode->pObject;
-    }
-    void* GetNext(CExoLinkedListNode*& pPosition);  // 0x005E9B90
-    void* Remove(CExoLinkedListNode* pPosition);    // 0x005E9C10
-    void* RemoveHead();                             // 0x005E9C80
-    void* AddBefore(void* pObject, void* pPosition); // 0x005E9AD0
-    void* AddTail(void* pObject);                   // 0x005E9DC0
+#include "shared/exo_linked_list.h"
 
-    CExoLinkedListNode* pHead;
-    CExoLinkedListNode* pTail;
-    unsigned long nCount;
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedList() { m_pcExoLinkedListInternal = new CExoLinkedListInternal; }
-    CExoLinkedListNode* GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetHead()
-    {
-        CExoLinkedListInternal* pList = m_pcExoLinkedListInternal;
-        return (T*)pList->GetHead();
-    }
-    T* GetNext(CExoLinkedListNode*& pPosition) { return (T*)m_pcExoLinkedListInternal->GetNext(pPosition); }
-    T* Remove(CExoLinkedListNode* pPosition) { return (T*)m_pcExoLinkedListInternal->Remove(pPosition); }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-    void* AddBefore(T* pObject, CExoLinkedListNode* pPosition)
-    {
-        return m_pcExoLinkedListInternal->AddBefore(pObject, pPosition);
-    }
-    void* AddTail(T* pObject) { return m_pcExoLinkedListInternal->AddTail(pObject); }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-};
 
 class Model;
 Model* BinaryFindModel(char* szName);               // 0x004640F0
@@ -67,28 +21,9 @@ int AurTextureSetMem(int nMem);                     // 0x00421D90
 // Folded onto the shared "return 0" leaf 0x0063E7F0; real name unknown.
 int AurInterfaceStub(int nArg1, int nArg2);
 
-extern const char g_sEmpty[];                       // 0x0073D71C
-extern int g_nMaxTextureMemory;                     // 0x007A399C
-extern CExoLinkedList<CAuroraModel> g_lRequestedModels; // 0x00834094
-extern CExoString g_asTexturePacks[4];              // 0x00834098
+#include "shared/globals.h"
 
-// The renderer's resource callbacks.
-extern unsigned char* (*g_pfnAurResGet)(const char*, const char*, int*); // 0x007B8FC4
-extern void (*g_pfnAurResFree)(void*, int);                              // 0x007B8FC8
-extern unsigned char* (*g_pfnGetRaster)(char*, unsigned long*, unsigned long*, unsigned long*); // 0x0078D404
-extern int (*g_pfnReadRasterHeader)(char*, unsigned long*, unsigned long*, unsigned long*); // 0x0078D408
-extern unsigned char* (*g_pfnGetCompressedRaster)(char*, unsigned long*, unsigned long*, unsigned long*,
-                                                  unsigned long*, float*); // 0x0078D40C
-extern int (*g_pfnReadCompressedRasterHeader)(char*, unsigned long*, unsigned long*, unsigned long*,
-                                              unsigned long*, float*); // 0x0078D410
-extern unsigned char* (*g_pfnGet16BitRaster)(char*, unsigned long*, unsigned long*, float*, int*); // 0x0078D414
-extern int (*g_pfnGet16BitRasterHeader)(char*, unsigned long*, unsigned long*, float*, int*); // 0x0078D418
-extern unsigned char* (*g_pfnGetLayeredRaster)(char*, unsigned long*, unsigned long*, unsigned long*); // 0x0078D41C
-extern unsigned char* (*g_pfnGetProcessedRaster)(char*, int*, int*, char*, int*, int*, int*, float*,
-                                                 char*); // 0x0078D420
-extern int (*g_pfnReadProcessedRasterHeader)(char*, int*, int*, char*, int*, int*, float*, char*); // 0x0078D424
-extern void (*g_pfnReleaseRaster)(void*, int, int, int, int, int, int, unsigned char); // 0x007A46F8
-extern void (*g_pfnReleaseLayeredRaster)(void*, int, int);  // 0x007A46FC
+#include "shared/aurora_callbacks.h"
 
 // FUNCTION: SWKOTOR 0x0070C920
 unsigned char* CAuroraInterface::GetResource(const char* szName, const char* szType, int* pSize)
@@ -326,7 +261,7 @@ CAuroraModel* CAuroraInterface::GetModelResHelper(const CExoString& sName, int b
         pModel = g_lRequestedModels.GetNext(pPosition);
     }
     if (!pModel) {
-        pModel = new CAuroraModel(CResRef(sName), bAutoRequest);
+        pModel = new CAuroraModel(sName, bAutoRequest);
         if (!pModel) {
             return 0;
         }

@@ -173,12 +173,7 @@ int CSWSEffectListHandler::OnApplyHeal(CSWSObject* pObject, CGameEffect* pEffect
     return 1;
 }
 
-class CResRef {
-public:
-    CResRef(const CExoString& sName);           // 0x00406D60
-
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWSArea;
 
@@ -199,7 +194,7 @@ class CVirtualMachine {
 public:
     int RunScript(CExoString* psFileName, unsigned long oidSelf, int bArg);  // 0x005D0FC0
 };
-extern CVirtualMachine* g_pVirtualMachine;      // 0x007A3A00
+#include "shared/globals.h"
 
 // a whole server creature (size 0xac8)
 class CSWSCreatureSummon : public CSWSCreature {
@@ -269,7 +264,6 @@ public:
     char pad_0x0[0x34];
 };
 
-extern const unsigned long EVENT_SUMMON_CREATURE;  // 0x00744214 (0x18, placeholder name)
 
 // FUNCTION: SWKOTOR 0x004D8680
 // NONMATCH (74): same flow; the original keeps 0 in ebp and -1 in edi and

@@ -119,8 +119,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionGiveItem(int nCommandId, int 
     return 0;
 }
 
-extern int g_bDebugActions;                                 // 0x0083281C (name guessed)
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633 (4)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0052CBE0
 int CSWVirtualMachineCommands::ExecuteCommandActionFollowLeader(int nCommandId, int nParameters)
@@ -232,7 +231,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionLockObject(int nCommandId, in
     return 0;
 }
 
-extern const unsigned long OBJECT_INVALID;                  // 0x00746644
+#include "shared/object_id.h"
 
 // FUNCTION: SWKOTOR 0x0052D330
 int CSWVirtualMachineCommands::ExecuteCommandActionPauseConversation(int nCommandId, int nParameters)
@@ -263,10 +262,10 @@ int CSWVirtualMachineCommands::ExecuteCommandActionRandomWalk(int nCommandId, in
     CGameObject* pObject;
     if (m_bValidObjectRunScript == 1 &&
         g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID) {
-        Vector vPosition = pObject->m_vPosition;
+        Vector vPosition = ((CSWSObject*)pObject)->m_vPosition;
         CSWSArea* pArea = ((CSWSObject*)pObject)->GetArea();
         CResRef cResRef;
-        if (pArea && pObject->m_bCommandable) {
+        if (pArea && ((CSWSObject*)pObject)->m_bCommandable) {
             unsigned long oidArea = pArea->m_idSelf;
             ((CSWSObject*)pObject)->AddAction(0x2d, 0xffff, 2, &vPosition.x, 2, &vPosition.y, 2, &vPosition.z, 3, &oidArea);
         }
@@ -280,13 +279,12 @@ int CSWVirtualMachineCommands::ExecuteCommandActionResumeConversation(int nComma
     CGameObject* pObject;
     if (m_bValidObjectRunScript == 1 &&
         g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
-        pObject->m_bCommandable) {
+        ((CSWSObject*)pObject)->m_bCommandable) {
         ((CSWSObject*)pObject)->AddAction(0x20, 0xffff, 0, NULL);
     }
     return 0;
 }
 
-extern const float MOVE_AWAY_DEFAULT_RANGE;                 // 0x00746B10 (40.0f, name guessed)
 
 // NONMATCH (24): the original keeps pObject in edi from the area check on;
 // ours keeps the constant 1 in edi. Scoping vDiff and the action block gives
@@ -321,13 +319,13 @@ int CSWVirtualMachineCommands::ExecuteCommandActionMoveAwayFromLocation(int nCom
         CResRef cResRef;
         if (pArea) {
             {
-                Vector vDiff = pObject->m_vPosition - vAwayFrom;
+                Vector vDiff = ((CSWSObject*)pObject)->m_vPosition - vAwayFrom;
                 if (!(vDiff.z * vDiff.z + vDiff.y * vDiff.y + vDiff.x * vDiff.x <= fMoveAwayRange * fMoveAwayRange)) {
                     return 0;
                 }
             }
             {
-                Vector vNewPosition = pArea->ComputeAwayVector(pObject->m_vPosition, vAwayFrom, fMoveAwayRange,
+                Vector vNewPosition = pArea->ComputeAwayVector(((CSWSObject*)pObject)->m_vPosition, vAwayFrom, fMoveAwayRange,
                                                                pObject->AsSWSCreature()->m_n340);
                 int nTen = 10;
                 Vector vFace(0.0f, 0.0f, 0.0f);
@@ -443,7 +441,6 @@ public:
                           unsigned long nObject, unsigned long nEventId, void* pEventData); // 0x004B08D0
 };
 
-extern const unsigned long EVENT_TIMED_EVENT;               // 0x007441B8 (1)
 
 // FUNCTION: SWKOTOR 0x0052E720
 int CSWVirtualMachineCommands::ExecuteCommandAssignCommand(int nCommandId, int nParameters)

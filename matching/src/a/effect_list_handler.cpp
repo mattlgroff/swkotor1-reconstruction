@@ -89,9 +89,9 @@ int CSWSEffectListHandler::OnApplyAbilityIncrease(CSWSObject* pObject, CGameEffe
 int CSWSEffectListHandler::OnRemoveAbilityIncrease(CSWSObject* pObject, CGameEffect* pEffect)
 {
     if (pObject->AsSWSCreature()) {
-        CSWSCreature* pCreature = pObject->AsSWSCreature();
+        CSWSCreature* pCreature = pObject->AsSWSCreature();  // NOTE: unused in the original
         int nAbility = pEffect->GetInteger(0);
-        int nAmount = pEffect->GetInteger(1);
+        int nAmount = pEffect->GetInteger(1);  // NOTE: unused in the original
     }
     return 1;
 }
@@ -132,7 +132,7 @@ int CSWSEffectListHandler::OnApplyAbilityDecrease(CSWSObject* pObject, CGameEffe
 int CSWSEffectListHandler::OnRemoveAbilityDecrease(CSWSObject* pObject, CGameEffect* pEffect)
 {
     if (pObject->AsSWSCreature()) {
-        CSWSCreature* pCreature = pObject->AsSWSCreature();
+        CSWSCreature* pCreature = pObject->AsSWSCreature();  // NOTE: unused in the original
         int nAbility = pEffect->GetInteger(0);
     }
     return 1;

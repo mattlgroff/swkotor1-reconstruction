@@ -1,19 +1,7 @@
 // CSWSCreature::GetWeaponDischargeRow (pilot group 2).
 // Needs exception handling: compile with --flags "-O2 -Gy -GX".
 
-class CExoString {
-public:
-    CExoString();                               // 0x005B3190 (out-of-line copy)
-    CExoString(const char* s);                  // 0x005E5A90
-    CExoString(const CExoString& s);            // 0x005E5B00
-    CExoString(int n);                          // 0x005E5BC0
-    ~CExoString();                              // 0x005E5C20
-    CExoString& operator=(const CExoString& s); // 0x005E5C50
-    CExoString operator+(const CExoString& s) const;   // 0x005E5D10
-
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:
@@ -43,7 +31,7 @@ public:
     C2DArrays* Get2DArrays() { return m_p2DArrays; }
 };
 
-extern CSWRules* g_pRules;              // 0x007A3A28
+#include "shared/globals.h"
 
 class CSWSCreature {
 public:

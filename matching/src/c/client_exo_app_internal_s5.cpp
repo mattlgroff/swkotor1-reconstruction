@@ -3,14 +3,7 @@
 #include <string.h>
 #include "c/client_exo_app.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef operator=(const char* s);               // 0x00406290
-};
+#include "shared/res_ref.h"
 
 class CExoFile {
 public:
@@ -31,21 +24,7 @@ public:
     void* m_pcExoIniInternal;                       // 0x00
 };
 
-struct DEVMODEA {
-    char dmDeviceName[32];                          // 0x00
-    unsigned short dmSpecVersion;                   // 0x20
-    unsigned short dmDriverVersion;                 // 0x22
-    unsigned short dmSize;                          // 0x24
-    unsigned short dmDriverExtra;                   // 0x26
-    unsigned long dmFields;                         // 0x28
-    char pad_0x2c[0x68 - 0x2c];
-    unsigned long dmBitsPerPel;                     // 0x68
-    unsigned long dmPelsWidth;                      // 0x6c
-    unsigned long dmPelsHeight;                     // 0x70
-    unsigned long dmDisplayFlags;                   // 0x74
-    unsigned long dmDisplayFrequency;               // 0x78
-    char pad_0x7c[0x9c - 0x7c];
-};
+#include "shared/devmodea.h"
 
 extern "C" __declspec(dllimport) int __stdcall EnumDisplaySettingsA(const char* sDevice, unsigned long nMode,
                                                                     void* pDevMode);   // IAT 0x0073D3E4
@@ -56,11 +35,7 @@ unsigned long FindVideoMode(unsigned long nWidth, unsigned long nHeight, unsigne
 unsigned long FindNearestVideoMode(unsigned long nWidth, unsigned long nHeight, unsigned char nDepth,
                                    unsigned long nRefresh); // 0x0070D0A0
 
-extern int g_bMovieVideoMode;                       // 0x007A3C54 (descriptive)
-extern unsigned long g_nScreenWidth;                // 0x0078D1D4
-extern unsigned long g_nScreenHeight;               // 0x0078D1D8
-extern unsigned char g_nScreenDepth;                // 0x0078D1E0
-extern unsigned long g_nScreenRefreshRate;          // 0x0078D1DC
+#include "shared/globals.h"
 
 struct RECT {
     long left;
@@ -72,17 +47,8 @@ struct RECT {
 extern "C" __declspec(dllimport) void* __stdcall GetDesktopWindow();                   // IAT 0x0073D3BC
 extern "C" __declspec(dllimport) int __stdcall GetWindowRect(void* hWnd, RECT* pRect);  // IAT 0x0073D3C0
 
-class CRender {
-public:
-    virtual void v00();
-    virtual int GetFullScreen();                    // 0x04 (descriptive)
-    virtual void v08(); virtual void v0C(); virtual void v10(); virtual void v14();
-    virtual void ReleaseDevice();                   // 0x18 (descriptive)
-};
+#include "shared/render.h"
 
-extern CRender* g_pRender;                          // 0x007A39F8
-extern int g_nActivateState;                        // 0x007A3A2C
-extern int g_bWindowed;                             // 0x007A3A30
 
 int ReInitAurora(unsigned long nWidth, unsigned long nHeight, unsigned long nDepth, int bFullScreen,
                  int b);                            // 0x00403800
@@ -119,17 +85,8 @@ public:
 class CSWSObject : public CGameObject {
 };
 
-struct Vector {
-    float x, y, z;
-    Vector() {}
-    Vector(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-};
+#include "shared/vector.h"
 
-extern Vector g_vAbilityColorAvailable;             // 0x007A23D8
-extern Vector g_vAbilityColorLocked;                // 0x007A23E4
-extern Vector g_vFloatyTextColorWhite;              // 0x007A23A8 (descriptive)
-extern Vector g_vKeyMapChangedColor;                // 0x007A23FC
-extern Vector g_vFloatyTextColor23F0;               // 0x007A23F0 (descriptive)
 
 class CGuiInGame {
 public:
@@ -164,16 +121,12 @@ public:
     CTwoDimArrays* m_p2DArrays;                     // 0xb8
 };
 
-extern CSWRules* g_pRules;                          // 0x007A3A28
 
 void AurTextureResetAll();                          // 0x00421D50
 void AurTextureSetDynamicMemoryRatio(float fRatio); // 0x0041E9B0
 int AurTextureSetMem(int nMem);                     // 0x00421D90
 
-class CAuroraInterface {
-public:
-    static int SetTexturePack(unsigned char nType, const CExoString& sPack);   // 0x0070D800
-};
+#include "shared/aurora_interface.h"
 
 // FUNCTION: SWKOTOR 0x005F0AD0
 void CClientExoAppInternal::LoadItemDropSoundList()

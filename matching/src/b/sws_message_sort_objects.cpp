@@ -7,17 +7,9 @@
 #include "b/server_exo_app.h"
 #include <math.h>
 
-extern const unsigned char OBJECT_TYPE_AREA;                // 0x00746633 (4)
-extern const unsigned char GAME_OBJECT_VALID;               // 0x0074666C
+#include "shared/globals.h"
 
-class CSWSPlayerLUOSortedObjectList {
-public:
-    CSWSPlayerLUOSortedObjectList();                        // 0x00566D80
-
-    unsigned long m_oidObject;                              // 0x0
-    float m_fDistance;                                      // 0x4
-    unsigned long m_nCategory;                              // 0x8
-};
+#include "shared/sws_player_luo_sorted_object_list.h"
 
 // FUNCTION: SWKOTOR 0x00567850
 CSWSPlayerLUOSortedObjectList* CSWSMessage::SortObjectsForGameObjectUpdate(
@@ -57,8 +49,8 @@ CSWSPlayerLUOSortedObjectList* CSWSMessage::SortObjectsForGameObjectUpdate(
             pObject->m_nObjectType <= OBJECT_TYPE_AREA) {
             continue;
         }
-        float fDY = pObject->m_vPosition.y - vPosition.y;
-        float fDX = pObject->m_vPosition.x - vPosition.x;
+        float fDY = ((CSWSObject*)pObject)->m_vPosition.y - vPosition.y;
+        float fDX = ((CSWSObject*)pObject)->m_vPosition.x - vPosition.x;
         float fDistanceSq = fDX * fDX + fDY * fDY;
         int bInclude = 0;
         float fRange = 250.0f;

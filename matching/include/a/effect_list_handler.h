@@ -42,18 +42,7 @@ template <class T> void CExoArrayList<T>::Remove(T t)
     }
 }
 
-class CExoString {
-public:
-    CExoString();                               // 0x005B3190
-    CExoString(const char* s);                  // 0x005E5A90
-    ~CExoString();                              // 0x005E5C20
-    CExoString& operator=(const CExoString& s); // 0x005E5C50
-    int operator!=(const char* s) const;        // 0x005E5390
-    int operator==(const char* s) const;        // 0x005E5290
-
-    char* m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:
@@ -94,7 +83,7 @@ public:
     C2DAs* m_p2DArrays;                         // 0xb8
     C2DAs* Get2DArrays() { return m_p2DArrays; }
 };
-extern CSWRules* g_pRules;                      // 0x007A3A28
+#include "shared/globals.h"
 
 int IsIgnoredVisualEffect(int nVisual);         // 0x004CA960 (placeholder name)
 
@@ -141,12 +130,7 @@ public:
 };
 #pragma pack(pop)
 
-struct Vector {
-    Vector() {}
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class CSWSCombatRound {
 public:
@@ -175,28 +159,10 @@ public:
     char pad_0x0[0x34];
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject();                     // 0x00
-    virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual class CSWSObject* AsSWSObject();    // 0x10
-    virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual CSWSCreature* AsSWSCreature();      // 0x30
-
-    unsigned long GetId() { return m_idSelf; }
-
-    unsigned long m_idSelf;                     // 0x04
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
-    virtual void v34(); virtual void v38(); virtual void v3c();
-    virtual void v40(); virtual void v44();
-    virtual class CSWSPlaceable* AsSWSPlaceable();  // 0x48
-    virtual void v4c();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5c();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
     virtual void v70(); virtual void v74(); virtual void v78();
     virtual void SendFeedbackMessage(int nStrRef);  // 0x7c (placeholder name)
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8c();
@@ -216,8 +182,7 @@ public:
 
     void SetAIValue(int nValue);                // 0x004CD240 (placeholder name)
 
-    unsigned char m_nObjectType;                // 0x08
-    char pad_0x9[0x8c - 0x9];
+    char pad_0xc[0x80];
     unsigned long m_oidArea;                    // 0x8c
     Vector m_vPosition;                         // 0x90
     Vector m_vOrientation;                      // 0x9c
@@ -439,26 +404,8 @@ public:
     CSWSCreature* GetCreatureByGameObjectID(unsigned long oid); // 0x004AE770
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    class CClientExoApp* m_pClientExoApp;       // 0x4
-    CServerExoApp* m_pServerExoApp;             // 0x8
-};
-extern CAppManager* g_pAppManager;              // 0x007A39FC
+#include "shared/app_manager.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
-extern const unsigned char g_nGameObjectFound;   // 0x0074666C
-extern const unsigned long g_nEventRemoveAoE;    // 0x007441E0 (0x0b)
-extern const unsigned long g_nEventRemoveEffect;  // 0x007441EC (placeholder name)
-extern const unsigned long g_nEvent4;            // 0x007441C4 (4)
-extern const unsigned long g_nEvent7441C8;       // 0x007441C8
-extern const unsigned short g_nDurationInstant;
-extern const unsigned short g_nDurationTemporary;  // 0x007473C0
-extern const unsigned short g_nDurationPermanent;  // 0x007473C4 (placeholder name)
-extern const unsigned short g_nDurationEquipped;   // 0x007473C8 (placeholder name)
-extern const unsigned char g_nObjectTypeA;       // 0x00746634
-extern const unsigned char g_nObjectTypeB;       // 0x00746638
-extern const unsigned char g_nObjectTypeC;       // 0x00746639  // 0x007473B8
 
 // vtable 0x00744254
 class CGameEffectApplierRemover {

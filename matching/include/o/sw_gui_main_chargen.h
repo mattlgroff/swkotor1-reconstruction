@@ -141,7 +141,7 @@ public:
     CExoString m_sName;                             // 0x22D4
 };
 
-extern Vector g_vAbilityColorGranted;               // 0x007A23C0
+#include "shared/globals.h"
 
 // A CExoArrayList member with the inline constructor and destructor (the
 // shared o CExoArrayList declares neither).
@@ -313,7 +313,6 @@ public:
     char pad_0x4[0x24 - 0x4];
 };
 
-extern const unsigned short RACIAL_TYPE_HUMAN;     // 0x0074BF14
 
 #ifdef O_NAME_CHARGEN_DTOR
 class __declspec(novtable) CSWGuiNameChargen : public CSWGuiPanel {

@@ -6,19 +6,7 @@
 #include <string.h>
 #pragma intrinsic(strcpy, strcat, strlen)
 
-class Vector {
-public:
-    Vector()
-    {
-        x = 0.0f;
-        y = 0.0f;
-        z = 0.0f;
-    }
-
-    float x;
-    float y;
-    float z;
-};
+#include "shared/vector.h"
 
 class Matrix {
 public:
@@ -39,14 +27,10 @@ public:
     Quaternion m_qOrientation;                      // +0x88
 };
 
-extern Camera* g_pRenderCamera;                     // 0x007BB4E8
-extern int g_bUseARBVertexProgram;                  // 0x0078E5EC
-extern char g_szLightText0[0x400];                  // 0x00830E08 (placeholder name)
-extern char g_szLightText1[0x400];                  // 0x00830A08 (placeholder name)
-extern char g_szLightText2[0x400];                  // 0x00830608 (placeholder name)
-extern void(__stdcall* g_pfnProgramEnvParameter4fARB)(unsigned int, unsigned int, float, float, float,
+#include "shared/globals.h"
+extern void(__stdcall* glProgramEnvParameter4fARB)(unsigned int, unsigned int, float, float, float,
                                                       float);  // 0x007BB850
-extern void(__stdcall* g_pfnProgramParameter4fNV)(unsigned int, unsigned int, float, float, float,
+extern void(__stdcall* glProgramParameter4fNV)(unsigned int, unsigned int, float, float, float,
                                                   float);      // 0x007BB7AC
 
 void AurSetVertexProgramParameter(unsigned int nIndex, float a, float b, float c, float d);  // 0x0044F820
@@ -54,9 +38,9 @@ void AurSetVertexProgramParameter(unsigned int nIndex, float a, float b, float c
 static inline void SetVertexProgramParameter(unsigned int nIndex, float x, float y, float z, float w)
 {
     if (g_bUseARBVertexProgram)
-        g_pfnProgramEnvParameter4fARB(0x8620, nIndex, x, y, z, w);
+        glProgramEnvParameter4fARB(0x8620, nIndex, x, y, z, w);
     else
-        g_pfnProgramParameter4fNV(0x8620, nIndex, x, y, z, w);
+        glProgramParameter4fNV(0x8620, nIndex, x, y, z, w);
 }
 
 // FUNCTION: SWKOTOR 0x004A30E0

@@ -1,17 +1,6 @@
 // Pilot 4 arm B: 0x006754D0, split "a.b c" into three strings.
 
-class CExoString {
-public:
-    CExoString();
-    CExoString(const char *s);
-    CExoString(const char *s, int nLength);     // 0x005E5B70
-    CExoString(const CExoString &s);
-    ~CExoString();                              // 0x005E5C20
-    CExoString &operator=(const CExoString &s); // 0x005E5C50
-    CExoString &operator=(const char *s);       // 0x005E5140
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
 class CScriptParser {
 public:

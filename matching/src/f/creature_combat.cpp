@@ -1,11 +1,6 @@
 // CSWSCreature combat leaves (b0058_f_lifetime_leaves).
 
-struct CSWSAttackData {
-    char pad_0x0[0x10];
-    short m_nAttackDelay;      // +0x10
-    char pad_0x12[0x2];
-    short m_nReactionDelay;    // +0x14
-};
+#include "shared/sws_attack_data.h"
 
 struct CSWSCombatRoundAction {
     char pad_0x0[0x38];
@@ -109,12 +104,9 @@ class CSWRules {
 public:
     int IsFeatUseable(unsigned short nFeat);
 };
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
-struct CSWClassFeat {
-    unsigned short m_nFeat;
-    char pad_0x2[6];
-};
+#include "shared/sw_class_feat.h"
 
 class CSWClass {
 public:

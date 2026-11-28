@@ -211,7 +211,7 @@ public:
     char pad_0x2[0x34 - 0x2];
 };
 
-extern const unsigned long EVENT_0x7441DC;      // 0x007441DC (placeholder name)
+#include "shared/globals.h"
 
 // CSWSModule: the CGameObject base sits at +0x1c (only the id is used here)
 class CSWSModuleBase7 {
@@ -222,7 +222,7 @@ public:
 
 class CSWSModule7 : public CSWSModuleBase7, public CGameObject {
 public:
-    char pad_0x24[0x1a0 - 0x24];
+    char pad_0x28[0x1a0 - 0x28];
     unsigned char m_nMinutesPerHour;            // 0x1a0
 };
 
@@ -454,7 +454,6 @@ public:
     void DisplayFloatyDataToSelf(unsigned long nData);  // 0x004EF560
 };
 
-extern const unsigned long g_nMillisecondsPerMinute;  // 0x00744178 (60000)
 
 // FUNCTION: SWKOTOR 0x004E2720
 int CSWSEffectListHandler::OnApplyDisease(CSWSObject* pObject, CGameEffect* pEffect,
@@ -714,12 +713,7 @@ int CSWSEffectListHandler::OnApplyNegativeLevel(CSWSObject* pObject, CGameEffect
     return 0;
 }
 
-struct CSWSAttackData {
-    char pad_0x0[0x12d];
-    unsigned char m_nAttackResult;              // 0x12d (placeholder name)
-    char pad_0x12e[0x13c - 0x12e];
-    int m_bEffectFeedback;                      // 0x13c (placeholder name)
-};
+#include "shared/sws_attack_data.h"
 
 class CSWSCreatureState : public CSWSCreature {
 public:
@@ -1104,10 +1098,7 @@ inline Vector operator-(const Vector& a, const Vector& b)
 
 Vector Normalize(const Vector& v);              // 0x004AB180
 
-class CResRef {
-public:
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 // CSWSArea + 0x100 (CResHelper base); its resref sits at +0x0c
 class CAreaResHelper7 {

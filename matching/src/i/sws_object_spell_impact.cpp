@@ -30,7 +30,7 @@ public:
                           void* pEventData);        // 0x004B08D0
 };
 
-extern const unsigned long EVENT_SPELL_IMPACT;      // 0x007441D4
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004CDF50
 void CSWSObject::SpellCastAndImpact(unsigned long nSpellId, const Vector& vTargetPosition,

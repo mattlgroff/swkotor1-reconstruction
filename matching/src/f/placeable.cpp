@@ -1,59 +1,24 @@
 // CSWSPlaceable inventory / effect glue
 // (b0058_f2_surfmesh_placeable, 0x00584870..0x00587770).
 
-class Vector {
-public:
-    float x, y, z;
-};
+#include "shared/vector.h"
 
 class Quaternion {
 public:
     float w, x, y, z;
 };
 
-struct CExoLinkedListNode;
+class CExoLinkedListNode;
 
-class CExoLinkedListInternal {
-public:
-    void *GetAtPos(CExoLinkedListNode *pos);
-    void *GetNext(CExoLinkedListNode *&pos);
-    CExoLinkedListNode *pHead;
-    CExoLinkedListNode *pTail;
-    unsigned long nCount;
-};
+#include "shared/exo_linked_list.h"
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListNode *GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T *GetAtPos(CExoLinkedListNode *pos) { return (T *)m_pcExoLinkedListInternal->GetAtPos(pos); }
-    T *GetNext(CExoLinkedListNode *&pos) { return (T *)m_pcExoLinkedListInternal->GetNext(pos); }
-    CExoLinkedListInternal *m_pcExoLinkedListInternal;
-};
+
 
 class CSWSCreature;
 class CSWSItem;
 class CSWSPlaceable;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();     // +0x30
-    virtual void v34();
-    virtual CSWSItem *AsSWSItem();             // +0x38
-    virtual void v3c(); virtual void v40(); virtual void v44();
-    virtual CSWSPlaceable *AsSWSPlaceable();   // +0x48
-    virtual void v4c(); virtual void v50(); virtual void v54(); virtual void v58();
-    virtual void v5c(); virtual void v60(); virtual void v64(); virtual void v68();
-    virtual void v6c(); virtual void v70(); virtual void v74(); virtual void v78();
-    virtual void SetAnimation(int nAnimation); // +0x7c
-
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CGameObjectArray {
 public:
@@ -72,6 +37,10 @@ public:
 
 class CSWSItem : public CGameObject {
 public:
+    virtual void v70();
+    virtual void v74();
+    virtual void v78();
+    virtual void SetAnimation(int nAnimation);  // +0x7c
     void SetPossessor(unsigned long oid, int a, int b, unsigned long oidPrev);
     void RemoveFromArea();
     unsigned long m_nBaseItem;       // +0xc
@@ -82,6 +51,10 @@ public:
 
 class CSWSCreature : public CGameObject {
 public:
+    virtual void v70();
+    virtual void v74();
+    virtual void v78();
+    virtual void SetAnimation(int nAnimation);  // +0x7c
     int RemoveItem(CSWSItem *pItem, int a, int b, CSWSItem **ppItem);
     CItemRepository *GetItemRepository(int bPlayer);
 };
@@ -141,19 +114,9 @@ public:
     CClientOptions *GetClientOptions();
 };
 
-class CAppManager {
-public:
-    char pad_0x0[0x4];
-    CClientExoApp *m_pClientExoApp;  // +0x4
-    CServerExoApp *m_pServerExoApp;  // +0x8
-    CServerExoApp *GetServerExoApp() { return m_pServerExoApp; }
-};
+#include "shared/app_manager.h"
 
-extern CAppManager *g_pAppManager;
-extern CSWRules *g_pRules;
-extern char g_cObjectArraySuccess;
-extern unsigned long EVENT_SIGNAL_EVENT;
-extern unsigned long EVENT_PLACEABLE_CLOSED;
+#include "shared/globals.h"
 
 class CScriptEvent {
 public:
@@ -162,9 +125,6 @@ public:
     char pad_0x2[0x32];
 };
 
-extern unsigned short g_nEffectTypeVisual;
-extern unsigned short g_nEffectSubTypeMagical;
-extern int g_nEffectVisualParam;
 
 class CGameEffect {
 public:
@@ -190,6 +150,10 @@ public:
 
 class CSWSPlaceable : public CGameObject {
 public:
+    virtual void v70();
+    virtual void v74();
+    virtual void v78();
+    virtual void SetAnimation(int nAnimation);  // +0x7c
     void PostProcess();
     int RemoveItem(CSWSItem *pItem);
     int AcquireItem(CSWSItem **ppItem, unsigned long oidPossessor, int bFlag);

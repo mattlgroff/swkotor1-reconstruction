@@ -1,11 +1,6 @@
 // End-game message carries a temporary localized string which is discarded.
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-    ~CExoString();                                  // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 class CSWCMessage {
 public:

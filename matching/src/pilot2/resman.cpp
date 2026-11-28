@@ -1,24 +1,9 @@
 // CExoResMan::ServiceFromEncapsulated (pilot group 2).
 
-typedef void* CExoLinkedListPosition;
 
-class CExoLinkedListInternal {
-public:
-    CExoLinkedListPosition pHead;
+#include "shared/exo_linked_list.h"
 
-    void* GetAtPos(CExoLinkedListPosition pos);         // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);         // 0x005E9B90
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;
-
-    CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-};
 
 class CExoEncapsulatedFile {
 public:

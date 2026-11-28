@@ -1,7 +1,7 @@
 // Scene ordered Gob list (+0x54); names describe the ordering operations.
 class Gob;
-struct Vector { float x, y, z; };
-extern int g_nGeomFadeMode; // 0x0078E3A0
+#include "shared/vector.h"
+#include "shared/globals.h"
 
 template<class T> class CExoArrayList {
 public:

@@ -4,38 +4,9 @@
 #ifndef O_AURORA_RES_H
 #define O_AURORA_RES_H
 
-class CExoString {
-public:
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    CExoString(const CExoString& s);                // 0x005E5B00
-    CExoString(int n);                              // 0x005E5BC0
-    ~CExoString();                                  // 0x005E5C20
-    CExoString& operator=(const CExoString& s);     // 0x005E5C50
-    CExoString& operator=(const char* s);           // 0x005E5140
-    int operator==(const CExoString& s) const;      // 0x005E5200
-    int operator>(const CExoString& s) const;       // 0x005E5490
-    int GetLength() const;                          // 0x005E5790
-    CExoString LowerCase() const;                   // 0x005E6080
+#include "shared/exo_string.h"
 
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-};
-
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* szResRef);                  // 0x00406D80
-    CResRef(const CExoString& sResRef);             // 0x00406D60
-    CResRef(const CResRef& cResRef);                // 0x00406DA0
-    void CopyToString(CExoString& sString) const;   // 0x00405F70
-    int operator==(const CResRef& cResRef) const;   // 0x004060B0
-    int operator==(const char* szResRef) const;     // 0x004060D0
-    int operator!=(const char* szResRef) const;     // 0x00406060
-    CResRef operator=(const char* szResRef);        // 0x00406290
-    CResRef operator=(const CResRef& cResRef);      // 0x00406120
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 // vtable 0x0073D86C
 class CRes {
@@ -76,7 +47,7 @@ public:
     int RemoveEncapsulatedResourceFile(const CExoString& sName); // 0x00408820
 };
 
-extern CExoResMan* g_pExoResMan;                    // 0x007A39E8
+#include "shared/globals.h"
 
 // Plain resources: loaded flag, size and data pointer (as CResNCS).
 // CResMDX::OnResourceFreed (0x00710E60) and the inherited

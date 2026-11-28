@@ -21,7 +21,7 @@ void __cdecl free(void* p);
 void* __cdecl operator new(unsigned int n);     // 0x006fa7e6
 void __cdecl operator delete(void* p);          // 0x006fa390
 
-extern char g_szConsoleResult[0x500];           // 0x007b8ab8
+#include "shared/globals.h"
 
 // Console command callback holder (base vtable 0x00741428).
 class funcholder {
@@ -71,8 +71,6 @@ public:
     ~ConsoleFunc();
 };
 
-extern ConsoleFunc* g_apConsoleFuncs[0x4000];   // 0x007a8ab8
-extern int g_nConsoleFuncs;                     // 0x007b8fb8
 
 void __cdecl ConsoleAddFunc(ConsoleFunc* pFunc);        // 0x0044ba80
 void __cdecl ConsoleRemoveFunc(char* szName);           // 0x0044bb10
@@ -127,14 +125,12 @@ public:
     }
 };
 
-extern CExoArrayList<AurRes*> g_lAurResStack;   // 0x007b8fd8
 
 char* __cdecl AurResGetDataBytes(int nSize, AurRes* pRes);  // 0x0044bd10
 void __cdecl AurResFreeDataBytes(AurRes* pRes, char* pData); // 0x0044bd50
 AurRes* __cdecl AurResFind(AurRes* pRes);                   // 0x0044bd70
 void __cdecl AurResRemove(AurRes* pRes);                    // 0x0044bdc0
 char* __cdecl AurResReadFile(int nSize);                    // 0x0044bee0
-char* __cdecl AurResReadData(int nSize);                    // 0x0044bf30
 char* __cdecl AurResGetData(int nSize);                     // 0x0044bfd0
 
 #endif

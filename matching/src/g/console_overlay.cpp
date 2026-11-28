@@ -2,9 +2,7 @@
 // 0x0044ce50.
 #include "g/gl_draw.h"
 
-extern int g_bConsoleOverlay;                         // 0x0078e360
-extern char g_bFontFlag;                              // 0x0078e35c
-extern unsigned int g_nGLCap2;                        // 0x0078d45c
+#include "shared/globals.h"
 void AurBuildFont();                                  // 0x0044cb10
 void AurDrawStringAt(char* sz, float x, float y);     // 0x0044cb90
 void AurDrawFontStringAt(char* sz, float x, float y); // 0x0044cca0

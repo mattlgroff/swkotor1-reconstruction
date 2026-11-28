@@ -31,13 +31,9 @@ public:
     ~CVirtualMachine();                                             // 0x005D0FB0
     char m_pad0[4];
 };
-extern CVirtualMachine* g_pVirtualMachine;                          // 0x007A3A00
+#include "shared/globals.h"
 
-class CScriptCompiler {
-public:
-    ~CScriptCompiler();                                             // 0x005D1120
-};
-extern CScriptCompiler* g_pScriptCompiler;                          // 0x007A3A04 (placeholder name)
+#include "shared/script_compiler.h"
 
 class CTlkTable {
 public:
@@ -47,19 +43,14 @@ public:
     ~CTlkTable();                                                   // 0x0041E100
     char m_pad0[0x58];
 };
-extern CTlkTable* g_pTlkTable;                                      // 0x007A3A08
 
-extern unsigned char g_nAppMode;                                    // 0x007A39DC
 
 class CSWSRules : public CSWRules {
 public:
     CSWSRules();                                                    // 0x0057A1F0
 };
 
-class CObjectTableManager {
-public:
-    int RemovePlayer(unsigned long nPlayerId);                      // 0x004AE650
-};
+#include "shared/object_table_manager.h"
 
 class CSWParty {
 public:
@@ -76,17 +67,8 @@ class CExoSound {
 public:
     void SetMusicState(int nState);                                 // 0x005D5E80
 };
-extern CExoSound* g_pExoSound;                                      // 0x007A39EC
-extern const int MUSIC_STATE_NORMAL;                                // 0x0074C5EC
 
-class CAppManager {
-public:
-    CObjectTableManager* GetObjectTableManager(int nTable);         // 0x00401060
-    void* m_p0;
-    CClientExoApp* m_pClientExoApp;                                 // +0x04
-    CServerExoApp* m_pServerExoApp;                                 // +0x08
-};
-extern CAppManager* g_pAppManager;                                  // 0x007A39FC
+#include "shared/app_manager.h"
 inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp; }
 inline CClientExoApp* GetClientExoApp() { return g_pAppManager->m_pClientExoApp; }
 
@@ -351,3 +333,9 @@ int CServerExoAppInternal::UnloadModule()
     }
     return 1;
 }
+
+// Out-of-line copies of the command implementers' inline destructors, which
+// this unit's `new CSWVirtualMachineCommands` emits with the vtables.
+// FUNCTION: SWKOTOR 0x004B1330 SYMBOL: ??1CVirtualMachineCmdImplementer@@UAE@XZ
+// FUNCTION: SWKOTOR 0x004B1340 SYMBOL: ??_GCVirtualMachineCmdImplementer@@UAEPAXI@Z
+// FUNCTION: SWKOTOR 0x004B16E0 SYMBOL: ??_GCSWVirtualMachineCommands@@UAEPAXI@Z

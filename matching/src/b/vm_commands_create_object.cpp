@@ -43,8 +43,8 @@ public:
     char pad_0xf4[0x240 - 0xf4];
 };
 
-extern const unsigned long OBJECT_INVALID;                  // 0x00746644
-extern const unsigned short EFFECT_TYPE_APPEAR;             // 0x007467C0 (name guessed)
+#include "shared/object_id.h"
+#include "shared/globals.h"
 
 // NONMATCH (63): from the safe-location copy on, cl rotates the scratch
 // registers (eax/ecx/edx) for every later temporary.

@@ -17,7 +17,7 @@ struct NewController {
     char pad_0xd[3];
 };
 
-extern int g_nControllers;      // 0x007FBAE8
+#include "shared/globals.h"
 
 // Add with the growth expanded (operator new / delete).
 __forceinline void AddFloat(CExoArrayList<float>* pList, float f)
@@ -82,7 +82,7 @@ void ParseList(char* s, CExoArrayList<AurGenericKey>* pList);  // 0x00464440
 void CullUnnecessaryKeys(CExoArrayList<AurGenericKey>* pList);  // 0x00463F80
 void CompressQuaternionKey(CExoArrayList<AurGenericKey>* pList);    // 0x00464B50
 
-class LoadingModel {
+class Model {
 public:
     char pad_0x0[0x50];
     unsigned short m_nFlags;            // +0x50
@@ -90,9 +90,6 @@ public:
     int NoCompress() { return (m_nFlags >> 9) & 1; }
 };
 
-extern LoadingModel* g_pLoadingModel;   // 0x007FBAE4
-extern int g_bCullKeys;                 // 0x0078E590
-extern int g_bCompressQuaternions;      // 0x0078E588
 
 // NONMATCH (99 insns): first draft. The original keeps the zero in ebp,
 // copies the time value through an integer register, tests the model flag

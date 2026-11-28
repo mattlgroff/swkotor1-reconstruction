@@ -4,7 +4,7 @@
 
 #include "c/client_exo_app.h"
 
-extern float g_fFPS;                                // 0x007A22B4
+#include "shared/globals.h"
 
 extern "C" __declspec(dllimport) void __stdcall PostQuitMessage(int nExitCode);
 
@@ -58,7 +58,7 @@ void CClientExoApp::SetApplicationIdsMatch(int bMatch)
 // FUNCTION: SWKOTOR 0x005ED990
 unsigned long CClientExoApp::GetApplicationId()
 {
-    return g_pAppManager->m_nApplicationId;
+    return g_pAppManager->m_nStartTime;
 }
 
 // FUNCTION: SWKOTOR 0x005EE350

@@ -21,38 +21,12 @@ struct tagCURSORINFO {
 };
 extern "C" __declspec(dllimport) int __stdcall GetCursorInfo(tagCURSORINFO* pci);
 
-extern HINSTANCE g_hInstance;                       // 0x007A39C0
+#include "shared/globals.h"
 
-typedef void* CExoLinkedListPosition;
 
-class CExoLinkedListInternal {
-public:
-    void* pHead;                                    // 0x00
-    void* pTail;                                    // 0x04
-    unsigned long nCount;                           // 0x08
+#include "shared/exo_linked_list.h"
 
-    void* GetAtPos(CExoLinkedListPosition pos);     // 0x005E9B60
-    void* GetNext(CExoLinkedListPosition& pos);     // 0x005E9B90
-    void* Remove(CExoLinkedListPosition pos);       // 0x005E9C10
-    void* RemoveHead();                             // 0x005E9C80
-    CExoLinkedListPosition AddHead(void* p);        // 0x005E9D70
-    CExoLinkedListPosition AddTail(void* p);        // 0x005E9DC0
-};
 
-template <class T>
-class CExoLinkedList {
-public:
-    CExoLinkedListInternal* m_pcExoLinkedListInternal;   // 0x00
-
-    CExoLinkedListPosition GetHeadPos() { return m_pcExoLinkedListInternal->pHead; }
-    T* GetAtPos(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->GetAtPos(pos); }
-    T* GetNext(CExoLinkedListPosition& pos) { return (T*)m_pcExoLinkedListInternal->GetNext(pos); }
-    CExoLinkedListPosition AddHead(T* p) { return m_pcExoLinkedListInternal->AddHead(p); }
-    CExoLinkedListPosition AddTail(T* p) { return m_pcExoLinkedListInternal->AddTail(p); }
-    T* Remove(CExoLinkedListPosition pos) { return (T*)m_pcExoLinkedListInternal->Remove(pos); }
-    T* RemoveHead() { return (T*)m_pcExoLinkedListInternal->RemoveHead(); }
-    int IsEmpty() { return m_pcExoLinkedListInternal->pHead == 0; }
-};
 
 template <class T>
 class CExoArrayList {
@@ -95,16 +69,7 @@ struct CExoInputEvent {
     unsigned long m_nValue3;                        // 0x0c
 };
 
-class CExoString {
-public:
-    char* m_sString;                                // 0x00
-    unsigned long m_nBufferLength;                  // 0x04
-
-    CExoString();                                   // 0x005B3190
-    CExoString(const char* s);                      // 0x005E5A90
-    ~CExoString();                                  // 0x005E5C20
-    void Format(const char* format, ...);           // 0x005E5680
-};
+#include "shared/exo_string.h"
 
 class CExoFile {
 public:
@@ -144,12 +109,7 @@ public:
     char pad_0x0[0x38];
 };
 
-extern const int g_nInputAnySlot;                   // 0x0074D3C4 (-1)
-extern const unsigned long g_nInputMouseAxisX;      // 0x0074D3EC (3)
-extern const unsigned long g_nInputMouseAxisY;      // 0x0074D3F0 (4)
-extern float g_fMouseDeltaScale;                    // 0x007A2278 (100.0f)
-extern int g_nScreenHeight;                         // 0x0078D1D8
-extern void* g_hWnd;                                // 0x007A39D8
+#include "shared/globals.h"
 
 extern "C" {
 __declspec(dllimport) int __stdcall ClientToScreen(void* hWnd, struct tagPOINT* p);  // IAT 0x0073D3C4
@@ -172,19 +132,7 @@ struct CExoInputActiveEvent {
 };
 
 // Payload of a buffered event (vtable 0x0074D5FC).
-class CExoInputBufferedPayload {
-public:
-    CExoInputBufferedPayload() { m_n4 = 0; m_n8 = 0; m_nC = 0; }
-    virtual void Unknown00();
-
-    unsigned long m_n4;                             // 0x04
-    unsigned long m_n8;                             // 0x08
-    unsigned long m_nC;                             // 0x0c
-    unsigned long m_n10;                            // 0x10
-    unsigned long m_n14;                            // 0x14
-    unsigned long m_nValue1;                        // 0x18
-    unsigned long m_nValue2;                        // 0x1c
-};
+#include "shared/exo_input_buffered_payload.h"
 
 struct CExoInputBufferedEvent {
     unsigned long m_nEvent;                         // 0x00
@@ -201,15 +149,7 @@ struct CExoInputClass {
     CExoArrayList<unsigned long> m_aBits;           // 0x24
 };
 
-struct CExoInputRepeatEvent {
-    unsigned long m_nEvent;                         // 0x00
-    unsigned long m_nInitialDelay;                  // 0x04
-    unsigned long m_nRepeatDelay;                   // 0x08
-    unsigned long m_nUnknown0c;                     // 0x0c
-    unsigned long m_nUnknown10;                     // 0x10
-    unsigned long m_nUnknown14;                     // 0x14
-    unsigned long m_nUnknown18;                     // 0x18
-};
+#include "shared/exo_input_repeat_event.h"
 
 typedef void* HWND;
 typedef long HRESULT;
@@ -262,15 +202,6 @@ public:
 
 extern "C" HRESULT __stdcall DirectInput8Create(HINSTANCE h, unsigned long dwVersion,
                                                 const _GUID& riid, void** ppv, void* pOuter);  // 0x005E50C0
-extern const _GUID IID_IDirectInput8A;              // 0x0074D6F4
-extern const _GUID GUID_SysKeyboard;                // 0x0074D694
-extern const _GUID GUID_SysMouse;                   // 0x0074D6A4
-extern const DIDATAFORMAT c_dfDIKeyboard;           // 0x0074D8FC
-extern const DIDATAFORMAT c_dfDIMouse;              // 0x0074DB04
-extern const int g_nInputDeviceKeyboard;            // 0x0074D3C8 (0)
-extern const int g_nInputDeviceMouse;               // 0x0074D3CC (1)
-extern const int g_nInputDeviceJoystick;            // 0x0074D3D0 (2)
-extern int g_nRawInputUnknown;                      // 0x008328A0
 
 #define DIPROP_BUFFERSIZE (*(const _GUID*)1)
 
@@ -299,15 +230,13 @@ struct CExoKeyboardBuffer {
     unsigned long m_nUnknown08;                     // 0x08
 };
 
-extern const int g_nFirstKeyIndex;                  // 0x0074D3D8
-extern const int g_nLastKeyIndex;                   // 0x0074D3DC
 
 class CExoTimers {
 public:
     unsigned __int64 GetHighResolutionTimer();      // 0x005E9260
 };
 
-class CExoBaseTimers {
+class CExoBase {
 public:
     void* m_p0;                                     // 0x00
     CExoTimers* m_pcExoTimers;                      // 0x04
@@ -322,7 +251,6 @@ struct DIPROPSTRING {
 
 #define DIPROP_KEYNAME (*(const _GUID*)20)
 
-extern CExoBaseTimers* g_pExoBase;                  // 0x007A39E0
 
 class CExoRawInputInternal {
 public:

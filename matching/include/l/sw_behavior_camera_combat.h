@@ -6,14 +6,7 @@
 
 #include "l/sw_behavior_camera_dialog.h"
 
-class CExoString {
-public:
-    char* m_sString;
-    unsigned long m_nBufferLength;
-
-    CExoString(const char* szSource);           // 0x005E5A90
-    ~CExoString();                              // 0x005E5C20
-};
+#include "shared/exo_string.h"
 
 class C2DA {
 public:
@@ -29,7 +22,7 @@ public:
     char pad_0x00[0xb8];
     CTwoDimArrays* m_p2DArrays;                 // +0xb8
 };
-extern CSWRules* g_pRules;                      // 0x007A3A28
+#include "shared/globals.h"
 
 class CClientOptions {
 public:
@@ -68,11 +61,7 @@ public:
     virtual Quaternion GetOrientation();        // +0x24
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CSWCObject* AsSWCObject();          // +0x0c
-};
+#include "shared/game_object.h"
 
 class CSWParty {
 public:
@@ -97,40 +86,20 @@ Vector Normalize(const Vector& v);              // 0x004AB180
 float Magnitude(const Vector& v);               // 0x004AB100
 Quaternion operator*(const Quaternion& a, const Quaternion& b);   // 0x004A9AC0
 Quaternion EulerToQuaternion(float fYaw, float fPitch, float fRoll);    // 0x004ACAC0
-class CAppManager {
-public:
-    void* pad;
-    CClientExoApp* m_pClientExoApp;
-};
-extern CAppManager* g_pAppManager;              // 0x007A39FC
+#include "shared/app_manager.h"
 
-extern int g_bSwapMouseButtons;                 // 0x008338F0
-extern int g_bRenderQA;                         // 0x008327EC
 
 class CSWGuiManager {
 public:
     void SaveMousePosition();                   // 0x0040A3D0
     void RestoreOldMousePosition();             // 0x0040C7D0
 };
-extern CSWGuiManager* g_pGuiManager;            // 0x007A39F4
 
 // Spring integrators embedded in the cameras (descriptive names; the
 // playable source calls them CSWRK4Acceleration / CSWRK4SplitAcceleration):
 // a 4th-order Runge-Kutta step of {position, velocity} pulled towards an
 // input point. Vtable 0x00757BD4 (base) / 0x00757BD8 (split).
-struct CSWCameraClipState {
-    CSWCameraClipState() : m_vPosition(0.0f, 0.0f, 0.0f), m_vVelocity(0.0f, 0.0f, 0.0f)
-    {
-        m_vVelocity = Vector(0.0f, 0.0f, 0.0f);
-        m_vPosition = Vector(0.0f, 0.0f, 0.0f);
-    }
-    CSWCameraClipState(const Vector& vPosition, const Vector& vVelocity)
-        : m_vPosition(vPosition), m_vVelocity(vVelocity)
-    {
-    }
-    Vector m_vPosition;                         // +0x00
-    Vector m_vVelocity;                         // +0x0c
-};
+#include "shared/sw_camera_clip_state.h"
 
 CSWCameraClipState operator/(const CSWCameraClipState& s, float f);    // 0x006D0A40
 Vector operator/(const Vector& v, float f);    // 0x00437A90

@@ -8,14 +8,7 @@ public:
     void SetPowered(int a, int b, int c, int d);    // 0x00647130
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual void v30();
-    virtual CSWCItem* AsSWCItem();                  // 0x34
-};
+#include "shared/game_object.h"
 
 class CSWCAnimBase {
 public:
@@ -79,15 +72,9 @@ public:
     CSWCCreature* GetCreatureByGameObjectID(unsigned long oid);   // 0x005ED5B0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
+#include "shared/globals.h"
 
 class CSWPlayerControlCamRelative {
 public:
@@ -97,14 +84,7 @@ public:
     virtual float GetMoveX();                       // 0x0c (descriptive)
 };
 
-struct Vector {
-    Vector() {}
-    Vector(float a, float b, float c) : x(a), y(b), z(c) {}
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y, z - v.z); }
-    Vector& operator+=(const Vector& v);            // 0x004A9740
-    Vector& operator-=(const Vector& v);            // 0x004A9770
-    float x, y, z;
-};
+#include "shared/vector_ops.h"
 
 Vector operator*(const Vector& v, float f);         // 0x00423BF0
 
@@ -121,28 +101,13 @@ public:
     void SetListenerPosition(const Vector& vPosition);  // 0x005D5DF0
 };
 
-extern CExoSound* g_pExoSound;                      // 0x007A39EC
-extern float g_fListenerOffsetBlend;                // 0x007A22A0 (descriptive)
 
 class CSWCameraOnAStick {
 public:
     Vector GetTargetHeadPosition();                 // 0x005F5180
 };
 
-class CSWCCamera {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual Vector GetPosition();                   // 0x20
-    virtual Quaternion GetOrientation();            // 0x24
-    virtual void v28(); virtual void v2C();
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
-    virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
-    virtual void* GetCameraOfType(unsigned long nType);  // 0x80 (descriptive)
-};
+#include "shared/swc_camera.h"
 
 class CSWTrackFollower {
 public:

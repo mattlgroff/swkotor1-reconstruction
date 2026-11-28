@@ -4,21 +4,9 @@
 #include <stdio.h>
 #include <string.h>
 
-class CExoString {
-public:
-    CExoString();
-    ~CExoString();
-    char *m_sString;
-    unsigned long m_nBufferLength;
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef(const char *szName);
-    CResRef(const CResRef &cResRef);
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWBaseItem {
 public:
@@ -78,7 +66,7 @@ public:
     CSWBaseItemArray *m_pBaseItemArray; // +0x34
 };
 
-extern CSWRules *g_pRules;
+#include "shared/globals.h"
 
 class CSWItem {
 public:

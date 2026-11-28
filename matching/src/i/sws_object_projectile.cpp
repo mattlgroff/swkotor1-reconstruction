@@ -14,7 +14,7 @@ public:
                                                    int bFlag);  // 0x0056E5F0
 };
 
-extern const float PROJECTILE_BROADCAST_RANGE;     // 0x00747440 (placeholder name)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x004CDB00
 void CSWSObject::BroadcastSafeProjectile(unsigned long oidOriginator, unsigned long oidTarget,

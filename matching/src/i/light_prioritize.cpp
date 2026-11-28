@@ -16,7 +16,7 @@ void LightManager::PrioritizeIllumination(unsigned char bForce)
         if (pLight->m_fRadius == 0.0f) {
             continue;
         }
-        if (pLight->m_vColor.IsEqual(vZero)) {
+        if (VectorEqual(pLight->m_vColor, vZero)) {
             continue;
         }
         m_lEnabled44.Add(m_lRenderLights.element[i]);

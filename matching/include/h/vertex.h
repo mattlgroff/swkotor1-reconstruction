@@ -3,19 +3,11 @@
 #ifndef MATCHING_H_VERTEX_H
 #define MATCHING_H_VERTEX_H
 
-class Vector {
-public:
-    float x, y, z;
-
-    Vector() { x = 0; y = 0; z = 0; }
-    Vector(float fX, float fY, float fZ) { x = fX; y = fY; z = fZ; }
-};
+#include "shared/vector.h"
 
 int operator==(const Vector& a, const Vector& b);      // 0x004AA980
 
-struct Vector2 {
-    float u, v;
-};
+#include "shared/vector2.h"
 
 template <class T>
 class CExoArrayList {
@@ -45,27 +37,10 @@ public:
 class NodeVertexAnim;
 class NodeVertexDangly;
 
-extern int g_nNodeVertexBytes;          // 0x00830238
+#include "shared/globals.h"
 
 // 0x56 bytes (0x58 with padding).
-class NodeVertex {
-public:
-    NodeVertex(Vector* pPosition, Vector* pNormal, Vector* pV18, Vector* pV24,
-               Vector* pV30, Vector* pV3C, Vector* pColor);
-    bool operator==(NodeVertex& o);
-    NodeVertexAnim* AsAnim();
-    NodeVertexDangly* AsDangly();
-
-    Vector m_vPosition;         // +0x00
-    Vector m_vNormal;           // +0x0c
-    Vector m_v18;               // +0x18
-    Vector m_v24;               // +0x24
-    Vector m_v30;               // +0x30
-    Vector m_v3C;               // +0x3c
-    Vector m_vColor;            // +0x48
-    unsigned char m_nFlags;     // +0x54
-    unsigned char m_nType;      // +0x55 (1 anim, 2 dangly)
-};
+#include "shared/node_vertex.h"
 
 class NodeVertexDangly : public NodeVertex {
 public:
@@ -171,22 +146,9 @@ int AurBumpProgramCreate();                                             // 0x004
 int AurBumpMappingAvailable();                                          // 0x0045FB10
 int AurVertexProgramsAvailable();                                       // 0x0045F770
 
-extern int g_bDisableTexCoordArray;     // 0x008305E0
-extern unsigned int g_eColorArray;      // 0x0073F3A0
-extern unsigned int g_eTexCoordArray;   // 0x0073F398
 void ActivateTextureStage(int nStage);  // 0x00425250
 int AurGLCaps710();                     // 0x0045F710, multitexture available
-typedef void (__stdcall* PFNCLIENTACTIVETEXTURE)(unsigned int texture);
-extern PFNCLIENTACTIVETEXTURE glClientActiveTextureARB; // 0x007BB6B0
-extern unsigned int g_nActiveTextureUnit;   // 0x007A6898
-extern int g_bARBVertexProgram;         // 0x0078E5EC
-extern int g_bNVVertexProgram;          // 0x0078E8C0
-typedef void (__stdcall* PFNVERTEXATTRIBPTR)(unsigned int index, int size,
-    unsigned int type, unsigned char normalized, int stride, const void* p);
-extern PFNVERTEXATTRIBPTR g_pglVertexAttribPointerARB;  // 0x007BB7D8
-typedef void (__stdcall* PFNVERTEXATTRIBPTRNV)(unsigned int index, int size,
-    unsigned int type, int stride, const void* p);
-extern PFNVERTEXATTRIBPTRNV g_pglVertexAttribPointerNV; // 0x007BB854
+#include "shared/gl_ext.h"
 
 extern "C" __declspec(dllimport) void __stdcall glEnableClientState(unsigned int);
 extern "C" __declspec(dllimport) void __stdcall glDisableClientState(unsigned int);

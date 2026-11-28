@@ -133,19 +133,19 @@ void CSWCObject::ActivateHardCodedVisualWithHighestPriority(unsigned char nType,
     CExoLinkedListPosition pos = m_lVisualEffects.GetHeadPos();
     while (pos) {
         if (!pEffect->m_bC0 && pEffect->GetType() == nType) {
-            if (pEffect->m_nPriority == 0) {
-                if (pEffect->m_bDC &&
+            if (pEffect->m_nD8 == 0) {
+                if (pEffect->m_nDC &&
                     !g_pAppManager->m_pClientExoApp->GetModule()->m_pArea->GetIsDark()) {
-                    if (pEffect->m_bAttached) {
+                    if (pEffect->m_nE0) {
                         pEffect->Detach();
                     }
                 }
-                else if (!pEffect->m_bAttached) {
+                else if (!pEffect->m_nE0) {
                     pEffect->ReAttachVisualEffect();
                 }
             }
-            else if (pEffect->m_nPriority <= nBest) {
-                nBest = pEffect->m_nPriority;
+            else if (pEffect->m_nD8 <= nBest) {
+                nBest = pEffect->m_nD8;
                 pBest = pEffect;
             }
         }
@@ -155,29 +155,29 @@ void CSWCObject::ActivateHardCodedVisualWithHighestPriority(unsigned char nType,
     pEffect = m_lVisualEffects.GetHeadInline();
     pos = m_lVisualEffects.GetHeadPos();
     while (pos) {
-        if (!pEffect->m_bC0 && pEffect->GetType() == nType && pEffect->m_nPriority) {
+        if (!pEffect->m_bC0 && pEffect->GetType() == nType && pEffect->m_nD8) {
             if (pEffect == pBest) {
                 if (pEffect->GetType() == 4) {
-                    if (pEffect->m_bDC &&
+                    if (pEffect->m_nDC &&
                         !g_pAppManager->m_pClientExoApp->GetModule()->m_pArea->GetIsDark()) {
-                        if (pEffect->m_bAttached && !pEffect->m_pBC) {
+                        if (pEffect->m_nE0 && !pEffect->m_bBC) {
                             pEffect->StopVisualEffect(0);
                         }
                     }
                     else {
-                        if (pEffect->m_pBC) {
+                        if (pEffect->m_bBC) {
                             pEffect->StartVisualEffect();
                         }
-                        if (!pEffect->m_bAttached) {
+                        if (!pEffect->m_nE0) {
                             pEffect->ReAttachVisualEffect();
                         }
                     }
                 }
-                else if (!pEffect->m_bAttached) {
+                else if (!pEffect->m_nE0) {
                     pEffect->ReAttachVisualEffect();
                 }
             }
-            else if (pEffect->m_bAttached) {
+            else if (pEffect->m_nE0) {
                 pEffect->Detach();
             }
         }
@@ -192,8 +192,8 @@ void CSWCObject::DetachVisualEffectOfSameType(CSWCVisualEffectOnObject* pNew)
     CSWCVisualEffectOnObject* pEffect = m_lVisualEffects.GetTail();
     while (pos) {
         if (pNew->GetType() != 7 && pEffect->GetType() == pNew->GetType() && pNew != pEffect &&
-            pEffect->m_nPriority && !pEffect->m_bC0) {
-            if (pEffect->m_bAttached) {
+            pEffect->m_nD8 && !pEffect->m_bC0) {
+            if (pEffect->m_nE0) {
                 pEffect->Detach();
             }
             return;
@@ -224,10 +224,10 @@ float CSWCObject::GetVisualEffectAlpha()
     CExoLinkedListPosition pos = m_lVisualEffects.GetTailPos();
     CSWCVisualEffectOnObject* pEffect = m_lVisualEffects.GetTail();
     while (pos) {
-        if (pEffect->GetType() == 0xd && !pEffect->m_bC0 && pEffect->m_bAttached &&
-            pEffect->m_nPriority < nBest) {
-            fAlpha = pEffect->m_fAlpha;
-            nBest = pEffect->m_nPriority;
+        if (pEffect->GetType() == 0xd && !pEffect->m_bC0 && pEffect->m_nE0 &&
+            pEffect->m_nD8 < nBest) {
+            fAlpha = pEffect->m_fCC;
+            nBest = pEffect->m_nD8;
         }
         pEffect = m_lVisualEffects.GetPrev(pos);
     }
@@ -286,7 +286,7 @@ void CSWCObject::UpdateVisualEffectsList()
         pEffect->Update(m_nDeltaTime);
         ActivateHardCodedVisualWithHighestPriority(pEffect->GetType(), 0);
         if (pEffect->IsReady()) {
-            if (!pEffect->m_bC8) {
+            if (!pEffect->m_bHasDuration) {
                 DetachVisualEffectOfSameType(pEffect);
                 ActivateHardCodedVisualWithHighestPriority(pEffect->GetType(), 0);
             }

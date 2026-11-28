@@ -8,28 +8,10 @@ class CSWCPlaceable;
 class CSWSObject;
 class CSWSCreature;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-    virtual CSWSObject* AsSWSObject();              // 0x10
-    virtual CSWCDoor* AsSWCDoor();                  // 0x14
-    virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
-
-    unsigned long m_idSelf;                         // 0x04
-    unsigned char m_nObjectType;                    // 0x08
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:
-    virtual void v34(); virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48();
-    virtual CSWCPlaceable* AsSWCPlaceable();        // 0x4c
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
     virtual void v90(); virtual void v94(); virtual void v98(); virtual void v9C();
@@ -68,15 +50,8 @@ public:
     CSWSPlaceable* GetServerPlaceable();            // 0x00682E00
 };
 
-class CSWSObject {
+class CSWSObject : public CGameObject {
 public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
     virtual void v90();
@@ -110,14 +85,9 @@ public:
     unsigned char GetGameObject(unsigned long id, CGameObject** ppObject);  // 0x004D8230
 };
 
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
-extern const unsigned char OBJECT_TYPE_CREATURE;    // 0x00746634
+#include "shared/globals.h"
 
-struct CSWPartyMemberEntry {
-    char pad_0x0[0x80];
-    unsigned long m_oidTarget;                      // 0x80 (descriptive)
-    unsigned long m_nCombatMessage;                 // 0x84 (descriptive)
-};
+#include "shared/sw_party_member_entry.h"
 
 class CSWParty {
 public:
@@ -144,17 +114,8 @@ public:
     CSWCCreature* GetCreatureByGameObjectID(unsigned long oid);   // 0x005ED5B0
 };
 
-class CAppManager {
-public:
-    void* m_pUnknown00;
-    CClientExoApp* m_pClientExoApp;                 // 0x04
-    CServerExoApp* m_pServerExoApp;                 // 0x08
+#include "shared/app_manager.h"
 
-    CClientExoApp* GetClientExoApp() { return m_pClientExoApp; }
-    CServerExoApp* GetServerExoApp() { return m_pServerExoApp; }
-};
-
-extern CAppManager* g_pAppManager;                  // 0x007A39FC
 
 class CClientExoAppInternal {
 public:

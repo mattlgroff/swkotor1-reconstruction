@@ -12,29 +12,9 @@ extern "C" int __cdecl memcmp(const void* a, const void* b, unsigned int n);
 extern "C" int __cdecl strcmp(const char* a, const char* b);
 #pragma intrinsic(strlen, memcmp, strcmp)
 
-class CExoString {
-public:
-    char* m_sString;
-    int m_nBufferLength;
-    CExoString();                                   // 0x005b3190
-    CExoString(const char* sString);                // 0x005e5a90
-    CExoString(const CExoString& sString);          // 0x005e5b00
-    ~CExoString();                                  // 0x005e5c20
-    CExoString& operator=(const CExoString& s);     // 0x005e5c50
-    CExoString& operator=(const char* s);           // 0x005e5140
-    CExoString operator+(const CExoString& s) const; // 0x005e5d10
-};
+#include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ed0
-    CResRef(const CResRef& cResRef);
-    CResRef(const char* szResRef);                  // 0x00406d80
-    CResRef(const CExoString& sResRef);             // 0x00406d60
-    CResRef operator=(const char* szResRef);        // 0x00406290
-    char* GetResRefStr() const;                     // 0x00405fe0
-};
+#include "shared/res_ref.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;
@@ -44,17 +24,7 @@ struct CResList : public CResStruct {
     char m_pLabel[16];
 };
 
-class Vector {
-public:
-    float x, y, z;
-    Vector() {}
-    Vector(float fX, float fY, float fZ)
-    {
-        x = fX;
-        y = fY;
-        z = fZ;
-    }
-};
+#include "shared/vector.h"
 
 class CRes {
 public:
@@ -389,10 +359,7 @@ public:
     void SetMousePosition(int x, int y);            // 0x005f4ea0
 };
 
-class CExoInput {
-public:
-    void SetMousePosition(int x, int y);            // 0x005df5d0
-};
+#include "shared/exo_input.h"
 
 class CClientExoApp {
 public:
@@ -404,13 +371,9 @@ public:
     int GetInFreeLook();            // 0x005ee230
 };
 
-class CAppManager {
-public:
-    void* m_pServer;
-    CClientExoApp* m_pClientExoApp; // 0x04
-};
+#include "shared/app_manager.h"
 
-extern CAppManager* g_pAppManager;              // 0x007a39fc
+#include "shared/globals.h"
 
 class CExoTimers {
 public:
@@ -423,7 +386,6 @@ public:
     CExoTimers* m_pcExoTimers;                      // 0x04
 };
 
-extern CExoBase* g_pExoBase;                    // 0x007a39e0
 
 class CExoResMan {
 public:
@@ -432,14 +394,6 @@ public:
     unsigned char m_nUnloadRims;                    // 0x34 (1: RIMS:CHARGEN, 2: RIMS:MAINMENU)
 };
 
-extern CExoResMan* g_pExoResMan;                // 0x007a39e8
-extern CSWGuiManager* g_pGuiManager;            // 0x007a39f4
-extern CExoInput* g_pExoInput;                  // 0x007a39e4
-extern int g_nScreenWidth;                      // 0x0078d1d4
-extern int g_nScreenHeight;                     // 0x0078d1d8
-extern char* g_aCursorNames[];                  // 0x0078d240
-extern CExoString g_aResolutionSuffixes[];      // 0x007a3d50
-extern int g_bDrawSafeRegion;                   // 0x007a3d4c
 
 void GuiBeginFrame();                           // 0x0044ed90
 void GuiUpdateFrame(float fDelta);              // 0x00418300

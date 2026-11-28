@@ -3,11 +3,7 @@
 
 #include "c/client_exo_app.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef(const char* szResRef);                  // 0x00406D80
-};
+#include "shared/res_ref.h"
 
 // FUNCTION: SWKOTOR 0x005ED320
 CSWCQuestJournal* CClientExoApp::GetQuestJournal()

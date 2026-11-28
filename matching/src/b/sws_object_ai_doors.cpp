@@ -6,12 +6,7 @@
 #include "b/sws_door.h"
 
 // .rdata action results.
-extern const unsigned long ACTION_COMPLETE;         // 0x00745DC0 (2)
-extern const unsigned long ACTION_FAILED;           // 0x00745DC4 (3)
-extern const unsigned char GAME_OBJECT_VALID;       // 0x0074666C
-extern const unsigned long EVENT_CLOSE_OBJECT;      // 0x007441CC (name guessed)
-extern const unsigned long EVENT_OPEN_OBJECT;       // 0x007441D0 (name guessed)
-extern const unsigned long EVENT_SIGNAL_EVENT;      // 0x007441DC (name guessed)
+#include "shared/globals.h"
 
 // FUNCTION: SWKOTOR 0x0057BBF0
 unsigned long CSWSObject::AIActionCloseDoor(CSWSObjectActionNode* pNode)
