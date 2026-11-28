@@ -33,15 +33,7 @@ public:
 
 #include "shared/encounter_spawn_point.h"
 
-class CEncounterListEntry {
-public:
-    CResRef m_cResRef;               // +0x0
-    float m_fCR;                     // +0x10
-    float m_fPoints;                 // +0x14
-    int m_bAlreadyUsed;              // +0x18
-    int m_bTried;                    // +0x1c
-    int m_bSingleSpawn;              // +0x20
-};
+#include "shared/encounter_list_entry.h"
 
 class CSWSEncounter {
 public:

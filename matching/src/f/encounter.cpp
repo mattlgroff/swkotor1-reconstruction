@@ -262,17 +262,7 @@ public:
     char pad_0x20[0x208];
 };
 
-class CEncounterListEntry {
-public:
-    CEncounterListEntry &operator=(const CEncounterListEntry &o);
-    ~CEncounterListEntry() {}
-    CResRef m_cResRef;               // +0x0
-    float m_fCR;                     // +0x10
-    unsigned long m_n14;             // +0x14
-    unsigned long m_n18;             // +0x18
-    unsigned long m_n1C;             // +0x1c
-    unsigned long m_n20;             // +0x20
-};
+#include "shared/encounter_list_entry.h"
 
 #include "shared/encounter_spawn_point.h"
 
