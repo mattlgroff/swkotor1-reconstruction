@@ -1,11 +1,6 @@
 // Pilot group 1: CTwoDimArrays loaders. Needs /GX (EH frame for new).
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef(const char* szName);
-    CResRef(const CResRef& cResRef);
-};
+#include "shared/res_ref.h"
 
 class C2DA {
 public:
@@ -24,7 +19,7 @@ public:
 // FUNCTION: SWKOTOR 0x005C2680
 int CTwoDimArrays::Load2DArrays_DifficultyOptions()
 {
-    m_pDifficultyOptions = new C2DA(CResRef("difficultyopt"), 0);
+    m_pDifficultyOptions = new C2DA("difficultyopt", 0);
     if (m_pDifficultyOptions && m_pDifficultyOptions->Load2DArray()) {
         return 1;
     }

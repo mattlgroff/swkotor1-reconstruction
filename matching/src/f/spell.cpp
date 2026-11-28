@@ -3,13 +3,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef(const CResRef &r);
-    CResRef operator=(const char *s);
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct STR_RES {
     CExoString szString;

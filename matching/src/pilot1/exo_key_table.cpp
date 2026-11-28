@@ -2,13 +2,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();
-    CResRef(const CResRef& cResRef);
-    CResRef operator=(const char* szResRef);
-};
+#include "shared/res_ref.h"
 
 struct RIM_HEADER {
     char pad_0x0[0xc];

@@ -4,17 +4,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef(const char *s);
-    CResRef(const CResRef &r);
-    CResRef operator=(const CResRef &r);
-    CResRef operator=(const char *s);
-    int operator==(const char *s) const;
-    int IsValid() const;
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 #include "shared/exo_loc_string.h"
 

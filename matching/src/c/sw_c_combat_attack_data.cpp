@@ -81,11 +81,7 @@ void CSWCCombatAttackData::CopyFrom(const CSWCCombatAttackData& source)
 
 void* __cdecl operator new(unsigned int n);         // 0x006FA7E6
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 template <class T>
 class CExoArrayList {

@@ -1,6 +1,6 @@
 // Item sound/model helpers used by inventory lifecycle messages.
 #include "shared/exo_string.h"
-class CResRef { public: char m_ref[16]; CResRef(); CResRef operator=(const char*); CResRef operator=(const CResRef&); };
+#include "shared/res_ref.h"
 class CAurObject { public: virtual ~CAurObject();
  virtual void v04();
  virtual void v08();

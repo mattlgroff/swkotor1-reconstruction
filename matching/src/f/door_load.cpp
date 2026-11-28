@@ -5,12 +5,7 @@
 
 #include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    CResRef(const char *s);
-    void CopyToString(CExoString &s) const;
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;

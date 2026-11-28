@@ -7,17 +7,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ed0
-    CResRef(const char* szResRef);                  // 0x00406d80
-    CResRef(const CExoString& sResRef);             // 0x00406d60
-    CResRef operator=(const CResRef& cResRef);      // 0x00406120
-    int operator!=(const CResRef& cResRef) const;   // 0x00406dc0
-    int IsValid() const;                            // 0x00406030
-    void CopyToString(char* pStr) const;            // 0x00405fb0
-};
+#include "shared/res_ref.h"
 
 #include "shared/vector.h"
 

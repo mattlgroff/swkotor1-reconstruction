@@ -85,7 +85,7 @@ public:
     void AddControls(const CExoArrayList<CSWGuiControl*>& lControls,int n1,int n2,int n3); // 0x0041C1D0
     void SetSelectedControl(int nIndex,int bArg); // 0x0041C040
 };
-class CResRef { public: char m_resRef[16]; CResRef(const char* s); };
+#include "shared/res_ref.h"
 class CSWGuiPanel {
 public:
     CSWGuiPanel(CSWGuiManager* pManager); // 0x0040B570

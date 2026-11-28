@@ -6,20 +6,7 @@
 
 #include "l/sw_gui_dialog.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CExoString& s);                   // 0x00406D60
-    CResRef();                                      // 0x00405ED0
-#ifndef L_RESREF_IMPLICIT_COPY
-    CResRef(const CResRef& cResRef);
-#endif
-    CResRef operator=(const CResRef& cResRef);      // 0x00406120
-    CResRef operator=(const CExoString& sResRef);   // 0x004061F0
-    CResRef operator=(const char* sResRef);         // 0x00406290
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CExoStreamingSoundSource {
 public:

@@ -6,16 +6,7 @@ extern "C" double ceil(double x);
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef(const char *s);
-    CResRef(const CResRef &r);
-    CResRef operator=(const CResRef &r);
-    int operator==(const char *s) const;
-    void CopyToString(CExoString &s) const;
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 #include "shared/exo_loc_string.h"
 

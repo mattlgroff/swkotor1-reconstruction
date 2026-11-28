@@ -19,14 +19,7 @@ struct CResStruct {
 
 class CResGFF;
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef operator=(const char* s);               // 0x00406290
-    char* GetResRef() const;                        // 0x00641DB0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 void* operator new(unsigned int nSize);
 void operator delete(void* p);

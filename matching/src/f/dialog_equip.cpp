@@ -2,11 +2,7 @@
 // creatures whose equipped items are hidden or that head-track the speaker),
 // 0x005A0BA0..0x005A0DD0. Names are descriptive (no debug-map names).
 
-class CResRef {
-public:
-    CResRef();
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CExoLinkedListNode {
     CExoLinkedListNode *pPrev;

@@ -3,7 +3,7 @@
 struct CSWGuiExtent { int left,top,width,height; };
 class CSWGuiControl;
 #include "shared/exo_string.h"
-class CResRef { public: char m_resRef[16]; CResRef(const char* s); };
+#include "shared/res_ref.h"
 class CSWGuiTextLayout { public: CSWGuiExtent GetExtent(); }; // 0x00414F10, descriptive
 class CSWGuiTextParams { public: char pad_0x0[0x50]; CSWGuiTextLayout* m_pLayout; char pad_0x54[4]; };
 class CSWGuiControl {

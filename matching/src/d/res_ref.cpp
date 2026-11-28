@@ -6,11 +6,6 @@ extern "C" void* __cdecl memset(void* dst, int c, unsigned int n);
 extern "C" int __cdecl memcmp(const void* a, const void* b, unsigned int n);
 #pragma intrinsic(memcpy, memset, memcmp)
 
-inline CResRef::CResRef(const CResRef& cResRef)
-{
-    memcpy(m_resRef, cResRef.m_resRef, 16);
-}
-
 // FUNCTION: SWKOTOR 0x00405f70 SYMBOL: ?CopyToString@CResRef@@QBEXAAVCExoString@@@Z
 void CResRef::CopyToString(CExoString& sStr) const
 {

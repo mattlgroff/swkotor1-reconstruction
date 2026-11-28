@@ -24,19 +24,7 @@ Quaternion EulerToQuaternion(float fYaw, float fPitch, float fRoll);   // 0x004A
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CResRef& r);
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    CResRef operator=(const char* s);               // 0x00406290
-    void CopyToString(char* pStr) const;            // 0x00405FB0
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    int operator!=(const CResRef& r) const;         // 0x00406DC0
-    char* GetResRef() const;                        // 0x00641DB0
-};
+#include "shared/res_ref.h"
 
 // Aurora model object (NewCAurObject 0x00449CC0).
 class CAurObject {

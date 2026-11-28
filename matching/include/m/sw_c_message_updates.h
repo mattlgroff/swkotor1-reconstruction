@@ -3,7 +3,7 @@
 #define M_SW_C_MESSAGE_UPDATES_H
 #include "shared/vector.h"
 #include "shared/exo_string.h"
-class CResRef { public: char m_ref[16]; CResRef(const CExoString&); CResRef(const char*); };
+#include "shared/res_ref.h"
 class C2DA { public:
  int GetINTEntry(int, const CExoString&, int*);
  int GetCExoStringEntry(int, const CExoString&, CExoString*);

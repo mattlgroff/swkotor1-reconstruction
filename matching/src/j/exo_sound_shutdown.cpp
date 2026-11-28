@@ -132,7 +132,7 @@ void CExoSoundInternal::InitPriorityGroups()
     float fMax;
     float fMin;
     float fVariance;
-    C2DA* p2DA = new C2DA(CResRef("PriorityGroups"), 0);
+    C2DA* p2DA = new C2DA("PriorityGroups", 0);
     if (!p2DA->Load2DArray()) {
         delete p2DA;
         return;
@@ -169,7 +169,7 @@ void CExoSoundInternal::InitPriorityGroups()
 // FUNCTION: SWKOTOR 0x005D9140
 void CExoSoundInternal::LoadProviderSettings()
 {
-    C2DA* p2DA = new C2DA(CResRef("SoundProvider"), 0);
+    C2DA* p2DA = new C2DA("SoundProvider", 0);
     if (!p2DA->Load2DArray()) {
         delete p2DA;
         return;

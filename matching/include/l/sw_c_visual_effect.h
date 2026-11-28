@@ -25,14 +25,7 @@ Vector CrossProduct(const Vector& a, const Vector& b);   // 0x004AB210
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef(const CExoString& s);                   // 0x00406D60
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CResRef& r);
-    char* GetResRef() const;                        // 0x00641DB0 (returns this)
-};
+#include "shared/res_ref.h"
 
 // Aurora model object (NewCAurObject 0x00449CC0).
 class CAurObject {

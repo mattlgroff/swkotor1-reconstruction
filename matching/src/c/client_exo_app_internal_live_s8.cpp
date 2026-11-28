@@ -3,11 +3,7 @@
 
 #include "c/exo_base.h"
 
-class CResRef {
-public:
-    CResRef(const CExoString& s);                   // 0x00406D60
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CExoResMan {
 public:

@@ -5,7 +5,7 @@
 struct CSWGuiExtent { int left,top,width,height; };
 class CSWGuiControl;
 #include "shared/exo_string.h"
-class CResRef { public: char m_resRef[16]; CResRef(const char* s); };
+#include "shared/res_ref.h"
 class CTlkTable {
 public:
     CExoString GetSimpleString(unsigned long nStrRef); // 0x0041E8F0

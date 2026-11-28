@@ -15,12 +15,7 @@ extern "C" void* __cdecl memset(void* p, int c, unsigned int n);
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ED0
-    CResRef(const CExoString& s);                   // 0x00406D60
-};
+#include "shared/res_ref.h"
 
 #include "shared/vector.h"
 

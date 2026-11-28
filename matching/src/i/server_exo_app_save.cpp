@@ -7,7 +7,7 @@
 int CServerExoAppInternal::IncludeModuleInSave(const CExoString& sModule)
 {
     int nInclude;
-    C2DA* p2DA = new C2DA(CResRef("modulesave"), 0);
+    C2DA* p2DA = new C2DA("modulesave", 0);
     if (p2DA == NULL) {
         return 1;
     }
@@ -80,7 +80,7 @@ int CServerExoAppInternal::StartNewModule(CExoString& sModule)
     m_bDoingStartNewModule = 1;
     ForceRunAreaOnExitScripts();
     if (StorePlayerCharacters() && StoreCurrentModule()) {
-        p2DA = new C2DA(CResRef("modulesave"), 0);
+        p2DA = new C2DA("modulesave", 0);
         if (p2DA && !p2DA->Load2DArray()) {
             delete p2DA;
             p2DA = NULL;

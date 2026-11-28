@@ -4,14 +4,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CExoString& s);                   // 0x00406D60
-    CResRef operator=(const CExoString& s);         // 0x004061F0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CSWGuiExtent {
     CSWGuiExtent(int nLeft, int nTop, int nWidth, int nHeight)

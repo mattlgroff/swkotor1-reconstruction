@@ -3,14 +3,7 @@
 #include <string.h>
 #include "c/client_exo_app.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef operator=(const char* s);               // 0x00406290
-};
+#include "shared/res_ref.h"
 
 class CExoFile {
 public:

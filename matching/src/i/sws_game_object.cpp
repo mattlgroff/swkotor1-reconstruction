@@ -18,10 +18,7 @@ class CSWSCreature;
 
 #include "shared/exo_loc_string.h"
 
-struct CResRef {
-    CResRef();                                      // 0x00405ED0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct NWPlayerCharacterList_st {
     NWPlayerCharacterList_st();                     // 0x004C6830

@@ -32,11 +32,7 @@ class CSWSCreature;
 class CSWSItem;
 class CSWSPlaceable;
 
-class CResRef {
-public:
-    CResRef(const char *szName);
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 template <class T>
 class CExoArrayList {

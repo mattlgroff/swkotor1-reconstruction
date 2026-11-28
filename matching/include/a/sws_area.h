@@ -18,14 +18,7 @@ public:
 
 class CExoString;
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* szResRef);                  // 0x00406D80
-    char* GetResRefStr() const;                     // 0x00405FE0
-    void CopyToString(CExoString& sOut) const;      // 0x00405F70
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 template <class T> class CExoArrayList {
 public:

@@ -6,15 +6,7 @@
 
 #include "shared/vector_ops.h"
 
-class CResRef {
-public:
-    char* GetResRefStr() const;                     // 0x00405FE0
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef operator=(const char* s);               // 0x00406290
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWSpell {
 public:

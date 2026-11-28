@@ -173,12 +173,7 @@ int CSWSEffectListHandler::OnApplyHeal(CSWSObject* pObject, CGameEffect* pEffect
     return 1;
 }
 
-class CResRef {
-public:
-    CResRef(const CExoString& sName);           // 0x00406D60
-
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWSArea;
 

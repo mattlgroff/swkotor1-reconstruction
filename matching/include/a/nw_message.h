@@ -8,13 +8,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CResRef& r);                      // 0x00406DA0
-    char* GetResRef();                              // 0x00641DB0 (returns this)
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 #include "shared/vector.h"
 

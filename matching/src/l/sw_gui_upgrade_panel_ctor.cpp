@@ -7,8 +7,8 @@ CSWGuiUpgrade::CSWGuiUpgrade(CSWGuiManager* pManager)
     : CSWGuiPanel(pManager)
 {
     CExoString sName;
-    m_pUpgrade2DA = new C2DA(CResRef("upgrade"), 0);
-    m_pCrystals2DA = new C2DA(CResRef("upcrystals"), 0);
+    m_pUpgrade2DA = new C2DA("upgrade", 0);
+    m_pCrystals2DA = new C2DA("upcrystals", 0);
     m_pUpgrade2DA->Load2DArray();
     m_pCrystals2DA->Load2DArray();
     StartLoadFromLayout("upgrade");

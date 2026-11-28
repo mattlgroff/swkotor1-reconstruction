@@ -1,5 +1,5 @@
 #include "shared/vector.h"
-class CResRef { public: char m_ref[16]; CResRef(); CResRef operator=(const CResRef&); };
+#include "shared/res_ref.h"
 class CSWCDoor { public: void SetState(int); }; // descriptive 0x00683D40
 class CSWCObject { public:
  virtual void v00();

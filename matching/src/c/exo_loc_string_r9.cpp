@@ -4,12 +4,7 @@
 
 #include "c/exo_base.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-
-    CResRef();                                      // 0x00405ED0
-};
+#include "shared/res_ref.h"
 
 struct STR_RES {
     CExoString sString;                             // 0x00

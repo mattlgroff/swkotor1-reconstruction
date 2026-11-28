@@ -8,31 +8,7 @@ extern "C" int __cdecl tolower(int c);
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ed0
-    CResRef(const CResRef& cResRef);
-    CResRef(const char* szResRef);
-    CResRef(const char* pResRef, unsigned char nLength); // 0x00405ef0
-    int operator==(const CResRef& cResRef) const;   // 0x004060b0
-    int operator==(const char* szResRef) const;     // 0x004060d0
-    int operator!=(const CResRef& cResRef) const;   // 0x00406dc0
-    int IsValid() const;                            // 0x00406030
-    CResRef operator=(const char* szResRef);        // 0x00406290
-    CResRef operator=(const CResRef& cResRef);      // 0x00406120
-    CResRef operator=(unsigned char* pResRef);      // 0x00406170
-    CResRef operator=(const CExoString& sResRef);   // 0x004061f0
-    CResRef operator+=(const CExoString& sString);  // 0x00406300
-    CResRef(const CExoString& sResRef);             // 0x00406d60
-    int operator!=(const CExoString& sResRef) const; // 0x00406de0
-    int operator!=(const char* szResRef) const;     // 0x00406060
-    void CopyToString(char* pStr) const;            // 0x00405fb0
-    void CopyToString(CExoString& sStr) const;      // 0x00405f70
-    char* GetResRefStr() const;                     // 0x00405fe0
-    unsigned char GetLength() const;                // 0x00406040
-    char* GetResRef() const;                        // 0x00641db0
-};
+#include "shared/res_ref.h"
 
 typedef void* CExoLinkedListPosition;
 

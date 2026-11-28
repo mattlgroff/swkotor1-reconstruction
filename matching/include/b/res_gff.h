@@ -6,18 +6,7 @@
 
 class CExoLocString;
 
-class CResRef {
-public:
-    CResRef();                                          // 0x00405ED0
-    CResRef(const CExoString& sName);                   // 0x00406D60
-    CResRef(const char* szName);                        // 0x00406D80
-    CResRef operator=(const char* szName);              // 0x00406290
-    CResRef operator=(const CResRef& cResRef);          // 0x00406120
-    void CopyToString(CExoString& sString) const;       // 0x00405F70
-    int operator!=(const CResRef& cResRef) const;       // 0x00406DC0
-
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CRes {
 public:

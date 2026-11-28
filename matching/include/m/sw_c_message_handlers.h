@@ -3,7 +3,7 @@
 #define M_SW_C_MESSAGE_HANDLERS_H
 
 class Vector;
-class CResRef { public: CResRef(); char m_ref[16]; };
+#include "shared/res_ref.h"
 #include "shared/exo_string.h"
 #include "shared/swc_area_object.h"
 

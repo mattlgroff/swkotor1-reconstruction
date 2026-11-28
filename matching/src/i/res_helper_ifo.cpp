@@ -4,16 +4,7 @@
 
 class CExoString;
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    int operator==(const CResRef& cResRef) const;   // 0x004060B0
-    int operator==(const char* szResRef) const;     // 0x004060D0
-    int operator!=(const char* szResRef) const;     // 0x00406060
-    CResRef operator=(const char* szResRef);        // 0x00406290
-    CResRef operator=(const CResRef& cResRef);      // 0x00406120
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CRes {
 public:

@@ -4,7 +4,7 @@
 #include "shared/vector.h"
 Vector Normalize(const Vector&); // 0x004AB180
 class CExoString;
-class CResRef { public: char data[16]; CResRef(const CExoString&); CResRef operator=(const CResRef&); int operator==(const char*) const; void CopyToString(CExoString&) const; };
+#include "shared/res_ref.h"
 #include "shared/exo_string.h"
 // Descriptive name for the recovered 28-byte queue record; padding is untouched.
 struct FireForgetAnimation {

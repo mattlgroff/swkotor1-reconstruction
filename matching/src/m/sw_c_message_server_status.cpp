@@ -1,5 +1,5 @@
 #include "shared/exo_string.h"
-class CResRef { public: char m_ref[16]; CResRef(const CExoString&); };
+#include "shared/res_ref.h"
 class CNetLayer { public: int SendMessageToPlayer(unsigned long,unsigned char*,unsigned long,unsigned long); };
 class CGuiInGame;
 class CClientExoApp { public:

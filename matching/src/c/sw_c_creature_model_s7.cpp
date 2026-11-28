@@ -5,12 +5,7 @@
 #include <stdio.h>
 #include "c/exo_base.h"
 
-class CResRef {
-public:
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    char* GetResRefStr() const;                     // 0x00405FE0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 #include "shared/render_interface.h"
 

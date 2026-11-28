@@ -6,11 +6,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef operator=(const char* s);               // 0x00406290
-};
+#include "shared/res_ref.h"
 
 #include "shared/vector.h"
 

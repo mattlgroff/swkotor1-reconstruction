@@ -5,11 +5,7 @@
 
 #include <math.h>
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef operator=(const CResRef& r);            // 0x00406120
-};
+#include "shared/res_ref.h"
 
 template <class T>
 class CExoArrayList {

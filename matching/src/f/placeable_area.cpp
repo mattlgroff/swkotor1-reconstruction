@@ -2,12 +2,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef(const CExoString &s);
-    CResRef operator=(const CResRef &r);
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 #include "shared/vector.h"
 

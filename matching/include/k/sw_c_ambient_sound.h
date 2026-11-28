@@ -6,15 +6,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ED0
-    CResRef(const CExoString& s);                   // 0x00406D60
-    CResRef operator=(const CExoString& s);         // 0x004061F0
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-};
+#include "shared/res_ref.h"
 
 class CExoStreamingSoundSource {
 public:

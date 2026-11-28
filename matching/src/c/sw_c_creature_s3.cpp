@@ -727,11 +727,7 @@ void SwitchWeaponEvent(CAurObject* pObject, char* sEvent, void* pData)
     }
 }
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CExoSound {
 public:

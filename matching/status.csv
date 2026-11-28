@@ -97,7 +97,7 @@ address,name,status,diff_insns,file
 0x00406CF0,??0?$CExoLinkedList@VCExoKeyTable@@@@QAE@XZ,MATCH,0,matching/src/d/exo_linked_list.cpp
 0x00406D60,??0CResRef@@QAE@ABVCExoString@@@Z,MATCH,0,matching/src/d/res_ref.cpp
 0x00406D80,??0CResRef@@QAE@PBD@Z,MATCH,0,matching/src/d/res_ref.cpp
-0x00406DA0,??0CResRef@@QAE@ABV0@@Z,MATCH,0,matching/src/d/res_ref_copy.cpp
+0x00406DA0,??0CResRef@@QAE@PAE@Z,MATCH,0,matching/src/d/res_ref_copy.cpp
 0x00406DC0,??9CResRef@@QBEHABV0@@Z,MATCH,0,matching/src/d/res_ref.cpp
 0x00406DE0,??9CResRef@@QBEHABVCExoString@@@Z,MATCH,0,matching/src/d/res_ref.cpp
 0x00406E20,CExoResMan::AddKeyTable,MATCH,0,matching/src/d/exo_res_man.cpp
@@ -3558,7 +3558,7 @@ address,name,status,diff_insns,file
 0x005298A0,CSWGlobalVariableTable::SetValueString,MATCH,0,matching/src/b/global_variable_table.cpp
 0x005299B0,CSWGlobalVariableTable::WriteTable,NONMATCH,86,matching/src/b/global_variable_table.cpp
 0x00529EF0,CSWGlobalVariableTable::ReadTableWithoutCatalogue,NONMATCH,32,matching/src/b/global_variable_table.cpp
-0x0052A280,CSWGlobalVariableTable::ReadTableWithCatalogue,NONMATCH,195,matching/src/b/global_variable_table.cpp
+0x0052A280,CSWGlobalVariableTable::ReadTableWithCatalogue,NONMATCH,194,matching/src/b/global_variable_table.cpp
 0x0052ABE0,CSWGlobalVariableTable::ReadTable,MATCH,0,matching/src/b/global_variable_table.cpp
 0x0052AD10,CSWGlobalVariableTable::Save,MATCH,0,matching/src/b/global_variable_table.cpp
 0x0052ADE0,CSWGlobalVariableTable::Load,MATCH,0,matching/src/b/global_variable_table.cpp

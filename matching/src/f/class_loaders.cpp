@@ -2,13 +2,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef(const char *szName);
-    CResRef(const CExoString &sName);
-    CResRef(const CResRef &cResRef);
-};
+#include "shared/res_ref.h"
 
 class C2DA {
 public:

@@ -1,11 +1,6 @@
 // CResGFF field lookup, typed readers and builders.
 #include "d/res_gff.h"
 
-inline CResRef::CResRef(const CResRef& cResRef)
-{
-    memcpy(m_resRef, cResRef.m_resRef, 16);
-}
-
 inline int LabelsEqual(const CResGFFLabel& a, const CResGFFLabel& b)
 {
     const unsigned long* pA = (const unsigned long*)a.m_pLabel;

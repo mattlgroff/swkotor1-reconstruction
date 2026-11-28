@@ -8,7 +8,7 @@ class CGameObjectArray {
 public:
     unsigned char Delete(unsigned long, CGameObject**);
 };
-class CResRef { public: CResRef(); char m_ref[16]; };
+#include "shared/res_ref.h"
 class CSWCArea { public: char pad_000[0x184]; int m_nAreaState; };
 class CSWCModule { public: char pad_000[0x48]; CSWCArea* m_pArea; };
 class CSWItem {

@@ -1,5 +1,5 @@
 #include "shared/vector.h"
-class CResRef { public: char m_ref[16]; CResRef(const char*); };
+#include "shared/res_ref.h"
 class CSWCArea { public: char pad_000[0x184]; int m_nAreaState; };
 class CSWCModule { public: char pad_000[0x48]; CSWCArea* m_pArea; };
 class CSWCObject;

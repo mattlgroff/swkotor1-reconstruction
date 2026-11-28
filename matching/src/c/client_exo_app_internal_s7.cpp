@@ -3,11 +3,7 @@
 
 #include "c/exo_base.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 // Inline constructor; MSVC 7.0 expands it once in GetObjectName and emits the
 // second use out of line (0x00414DC0, debug map: clientexoappinternal.o).

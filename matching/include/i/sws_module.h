@@ -100,16 +100,7 @@ extern "C" int strcmp(const char* a, const char* b);
 // 8 bytes; Compare is 0x005EA020 (non-zero when equal).
 #include "shared/exo_loc_string.h"
 
-struct CResRef {
-    char* GetResRefStr() const;                     // 0x00405FE0
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CExoString& s);                   // 0x00406D60
-    CResRef operator=(const CExoString& s);         // 0x004061F0
-    CResRef operator=(const CResRef& o);            // 0x00406120
-    int operator!=(const char* s) const;            // 0x00406060
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;

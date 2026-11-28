@@ -115,17 +115,24 @@ public:
     }
 };
 
-class CResRef {
+#include "shared/res_ref.h"
+
+// The 16 bytes at CClientPlayer +0x14: StopServices destroys them through the
+// shared empty function 0x004015A0, so their type has an out-of-line
+// destructor. CResRef's destructor is trivial everywhere else, so this is
+// left as a placeholder until the element type is known (CSWCPlayer keeps
+// its portrait CResRef at +0x14).
+class CClientPlayerField14 {
 public:
-    ~CResRef();                                     // 0x004015A0 (empty)
-    char m_resRef[16];
+    ~CClientPlayerField14();                        // 0x004015A0 (empty)
+    char m_data[16];
 };
 
 class CClientPlayer {
 public:
     char pad_0x0[0xc];
     CExoString m_sPlayerName;                       // 0x0c
-    CResRef m_cResRef;                              // 0x14 (descriptive)
+    CClientPlayerField14 m_field14;                 // 0x14
     char pad_0x24[0x30 - 0x24];
     CExoString m_sCommunityName;                    // 0x30 (descriptive)
 };

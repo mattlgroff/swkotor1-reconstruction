@@ -4,21 +4,7 @@
 
 #include "j/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* szResRef);                  // 0x00406D80
-    CResRef(const CExoString& sResRef);             // 0x00406D60
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    char* GetResRefStr() const;                     // 0x00405FE0
-    int operator==(const CResRef& cResRef) const;   // 0x004060B0
-    int operator==(const char* szResRef) const;     // 0x004060D0
-    int operator!=(const char* szResRef) const;     // 0x00406060
-    int operator!=(const CResRef& cResRef) const;   // 0x00406DC0
-    CResRef operator=(const char* szResRef);        // 0x00406290
-    CResRef operator=(const CResRef& cResRef);      // 0x00406120
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CRes {
 public:

@@ -99,11 +99,7 @@ struct CSWGuiControlEvent {
 
 #include "shared/vector.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ed0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWGuiImageParams {
 public:

@@ -10,12 +10,7 @@ extern "C" int __cdecl sprintf(char* buffer, const char* format, ...);
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    void CopyToString(char* pStr) const;            // 0x00405FB0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 #include "shared/vector.h"
 

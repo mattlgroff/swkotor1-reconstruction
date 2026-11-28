@@ -5,11 +5,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef(const char* s);                         // 0x00406D80
-};
+#include "shared/res_ref.h"
 
 class CSWPortrait {
 public:

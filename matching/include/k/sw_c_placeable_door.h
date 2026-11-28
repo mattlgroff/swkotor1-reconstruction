@@ -282,7 +282,7 @@ class C2DA { public: int GetINTEntry(int,const CExoString&,int*); int GetFLOATEn
  int GetCExoStringEntry(int,const CExoString&,CExoString*); /* 00413270 */ };
 class C2DAs { public: char pad0[0x24]; C2DA* m_pDoorTypes; C2DA* m_pGenericDoors; C2DA* m_pPlaceables; char pad30[0x48-0x30]; C2DA* m_pLightColors; char pad4c[0x70-0x4c]; C2DA* m_pPlaceableSounds; C2DA* GetPlaceables() { return m_pPlaceables; } C2DA* GetLightColors() { return m_pLightColors; } C2DA* GetPlaceableSounds() { return m_pPlaceableSounds; } };
 class CSWRules { public: char pad0[0xb8]; C2DAs* m_p2DArrays; C2DAs* Get2DArrays() { return m_p2DArrays; } };
-class CResRef { public: char m_resRef[16]; void CopyToString(CExoString&) const; };
+#include "shared/res_ref.h"
 class CSWCAnimBasePlaceable : public CSWCAnimBase { public: CSWCAnimBasePlaceable(); };
 class CSWCAnimBaseDoor : public CSWCAnimBase { public: CSWCAnimBaseDoor(); };
 // C++98 layout checks; none of the existing shared headers are extended.

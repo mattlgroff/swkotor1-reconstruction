@@ -13,13 +13,7 @@ class CSWSCreature;
 
 #include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    CResRef(const char* szName);                    // 0x00406D80
-    CResRef operator=(const CResRef& cResRef);      // 0x00406120
-
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;

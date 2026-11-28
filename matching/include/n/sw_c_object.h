@@ -18,11 +18,7 @@ float Magnitude(const Vector& v);                   // 0x004AB100
 int operator==(const Vector& a, const Vector& b);   // 0x004AA980
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef operator=(const CResRef& r);            // 0x00406120
-};
+#include "shared/res_ref.h"
 
 class CSWPortrait {
 public:

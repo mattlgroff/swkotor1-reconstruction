@@ -8,7 +8,7 @@ class CSWGuiControl;
 class CSWGuiPanel;
 class CSWGuiManager;
 #include "shared/exo_string.h"
-class CResRef { public: char m_resRef[16]; CResRef(const char* s); };
+#include "shared/res_ref.h"
 class CSWGuiText {
 public:
     virtual void v00(); virtual void v04(); virtual int GetIdealHeight();

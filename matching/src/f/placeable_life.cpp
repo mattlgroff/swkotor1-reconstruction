@@ -5,10 +5,7 @@
 
 #include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 #include "shared/vector.h"
 

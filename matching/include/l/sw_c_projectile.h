@@ -27,18 +27,7 @@ extern "C" int __cdecl rand(void);
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ED0
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    CResRef operator=(const char* s);               // 0x00406290
-    CResRef(const CExoString& s);                   // 0x00406D60
-    void CopyToString(char* pStr) const;            // 0x00405FB0
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    int operator==(const char* s) const;            // 0x004060D0
-    char* GetResRef() const;                        // 0x00641DB0 (returns this)
-};
+#include "shared/res_ref.h"
 
 #include "shared/object_id.h"
 #include "shared/globals.h"

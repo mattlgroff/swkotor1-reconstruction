@@ -7,11 +7,7 @@
 
 #include "shared/vector.h"
 
-class CResRef {
-public:
-    void CopyToString(CExoString &s) const;
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;

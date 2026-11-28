@@ -345,7 +345,7 @@ void CSWGuiUpgradeItemSelect::FinishUpgrading()
 // FUNCTION: SWKOTOR 0x006C4520
 void CSWGuiUpgradeSelection::OnPanelAdded()
 {
-    C2DA* p2DA = new C2DA(CResRef("upgrade"), 0);
+    C2DA* p2DA = new C2DA("upgrade", 0);
     p2DA->Load2DArray();
     CSWSItem* pItem;
     if (m_oidItem != 0x7f000000 &&
@@ -407,7 +407,7 @@ void CSWGuiUpgradeItemSelect::BuildUpgradeList()
     CSWGuiListBox* pListBox = &m_lbItems;
     CSWGuiButton* pProto = (CSWGuiButton*)m_lbItems.m_pProtoItem;
     int nWidth = pListBox->m_nAreaWidth - m_lbItems.m_nPadding * 2;
-    C2DA* p2DA = new C2DA(CResRef("upgrade"), 0);
+    C2DA* p2DA = new C2DA("upgrade", 0);
     p2DA->Load2DArray();
     CSWSCreature* pPlayer = pServer->GetCreatureByGameObjectID(
         pServer->GetPlayerList()->GetHead()->AsSWSPlayer()->m_oidServer);

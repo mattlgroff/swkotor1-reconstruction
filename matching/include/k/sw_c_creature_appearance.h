@@ -17,18 +17,7 @@ struct Quaternion {
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ED0
-    CResRef(const CExoString& s);                   // 0x00406D60
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    CResRef operator=(const CExoString& s);         // 0x004061F0
-    CResRef operator=(const char* s);               // 0x00406290
-    int operator!=(const char* s) const;            // 0x00406060
-    char* GetResRefStr() const;                     // 0x00405FE0
-};
+#include "shared/res_ref.h"
 
 class CExoResMan {
 public:

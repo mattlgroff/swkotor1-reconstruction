@@ -80,11 +80,7 @@ public:
     void AddGoldMessage(int b, int nDelta);         // 0x0062EEB0
 };
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef(const char* s);                         // 0x00406D80
-};
+#include "shared/res_ref.h"
 
 class CSWGuiDisableable {
 public:

@@ -10,16 +10,7 @@
 #include "shared/vector.h"
 
 // Passed by value with an inline (member-wise) copy.
-struct CResRef {
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef(const CExoString& s);                   // 0x00406D60
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-#ifdef I_CRESREF_DECLARED_COPY
-    // Declared, not defined: a temporary is then built in the argument slot.
-    CResRef(const CResRef& c);
-#endif
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 #include "shared/globals.h"
 

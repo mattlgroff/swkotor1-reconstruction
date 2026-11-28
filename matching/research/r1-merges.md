@@ -150,40 +150,43 @@ table became the table itself (`m_pCommands[i]`).
 
 Result: no match lost.
 
-## CResRef: not merged yet (two copy behaviours)
+## CResRef: merged (`shared/res_ref.h`)
 
-163 copies; the layout (`char m_resRef[16]`) and the method list agree with
-the Mac tables, and every method except the copy constructor is an
-out-of-line function. The merge was built and gated, then reverted, because
-the bytes show two incompatible copy behaviours:
+163 copies. The layout (`char m_resRef[16]`) and the methods follow the Mac
+debug map, all out of line, and there is no user-written copy constructor:
+the map lists none, and a CResRef copies as its 16 bytes.
 
-| canonical copy constructor | lost matches | what breaks |
-| --- | --- | --- |
-| declared, out of line | 37 | getters that return a member by value copy it inline in the original |
-| none (implicit, trivial) | 106 | the 2DA loaders: `new C2DA(CResRef("GENDER"), 0)` builds the argument in place, which MSVC 7.0 does only for a class with a non-trivial copy constructor; `res_ref.cpp`'s own by-value returns too |
-| user-declared, inline (`memcpy`) | 24 | getters and senders (`GetResRef44`, `GetPortrait`, `GetFilePlaying`, `GetItemDropSound`, ...): the inline copy computes the source address in a different order from the original's trivial copy. No inline body tried (`memcpy` of the array or of `this`, a struct copy, a word loop) reproduces it |
-| implicit copy plus `~CResRef() {}` | 163 | the destructor adds unwind states everywhere |
+The earlier attempt found two copy behaviours: getters copy a member inline
+as a trivial copy does, while the 2DA loaders build the argument in place,
+which MSVC 7.0 does for an explicit temporary only when the copy
+constructor is non-trivial. The second behaviour came from the source, not
+the class: the loaders called `new C2DA(CResRef("GENDER"), 0)`, where the
+original passes the string and lets the conversion build the by-value
+parameter in place (`new C2DA("GENDER", 0)`). With that, `f/two_dim_arrays.cpp`
+matches 77/77 with the trivially copyable class (4/77 with an inline
+converting constructor instead). The same holds for the CAurora* texture and
+model constructors and `ReplaceTexture(CResRef, float)`; each takes its
+CResRef by value and has no overload that a string could select instead.
 
-So the units that copy a `CResRef` see a trivially copyable class in some
-places and a non-trivial one in others. Either the original had two
-declarations (one a plain 16-byte struct used by the getters' classes), or
-these getters have a source shape not yet found. Resolving it needs a look
-at the getters' callers and member types, not another copy-constructor body.
+Other sites the merge corrected:
 
-One part stands on its own and is applied: 0x00406170 is
-`operator=(unsigned char*)` in the Mac tables, not
-`operator=(const char (&)[16])`. With the real signature the KEY, ERF and TLK
-record fields are `unsigned char[16]`, and the three member-pointer casts
-that selected the array overload are gone (`d/exo_key_table.cpp`,
-`d/tlk_table.cpp`, `d/res_ref_copy.cpp`).
+- 0x00406DA0 is `CResRef(unsigned char*)`, as the map names it; it had been
+  annotated as the copy constructor (same bytes). `CSWMessage::ReadCResRef`
+  constructs its result from the byte buffer instead of casting the buffer
+  to a CResRef.
+- `CSWCPlayer::SetPortraitId` calls `SetPortrait(sResRef.CStr())`, the
+  by-value setter just above it, and `CSWSPlaceable::LoadBodyBag` assigns its
+  two empty resrefs through by-value setters: the original assigns from the
+  argument (`lea` of it, not the constructor's result), as an expanded
+  setter does.
+- `res_ref.cpp` and `res_gff.cpp` defined their own inline copy constructor;
+  both are gone.
+- `c/client_exo_app_internal_dtor_s8.cpp`'s CClientPlayer has a 16-byte
+  member at +0x14 that StopServices destroys through the shared empty
+  function 0x004015A0, which a CResRef never needs; it is a placeholder type
+  until the element type is known.
 
-Two more findings for the eventual merge:
-
-- 0x00406DA0 is `CResRef::CResRef(unsigned char*)` in the Mac tables; this
-  repository annotates it as the copy constructor (same bytes).
-- Several sites assign a `char*` where the original builds a temporary
-  `CResRef` first (`CSWCPlayer::SetPortraitId`, `CSWSPlaceable::LoadBodyBag`
-  and others: the original frame is 16 bytes larger).
+Byte gate: 8474/9538, no match lost.
 
 ## Next
 

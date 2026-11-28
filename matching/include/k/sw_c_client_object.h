@@ -6,13 +6,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef() {}
-    CResRef(const CExoString&);                                      // 0x00406D60
-    char* GetResRefStr() const;                                      // 0x00405FE0
-};
+#include "shared/res_ref.h"
 
 #include "shared/vector_ops.h"
 

@@ -88,13 +88,7 @@ public:
     void SetCurValue(int nValue);                   // 0x00417FB0
 };
 
-class CResRef {
-public:
-    CResRef(const CExoString& s);                   // 0x00406D60
-    CResRef(const char* s);                         // 0x00406D80
-    int operator!=(const CExoString& s) const;      // 0x00406DE0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CExoStreamingSoundSource {
 public:

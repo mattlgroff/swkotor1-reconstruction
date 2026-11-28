@@ -22,10 +22,7 @@ public:
     int m_n44;                       // +0x44
 };
 
-class CResRef {
-public:
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWAreaHead {
 public:

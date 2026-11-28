@@ -14,16 +14,7 @@ extern "C" int __cdecl strcmp(const char* a, const char* b);
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ed0
-    CResRef(const CResRef& cResRef);
-    CResRef(const char* szResRef);                  // 0x00406d80
-    CResRef(const CExoString& sResRef);             // 0x00406d60
-    CResRef operator=(const char* szResRef);        // 0x00406290
-    char* GetResRefStr() const;                     // 0x00405fe0
-};
+#include "shared/res_ref.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;

@@ -191,7 +191,7 @@ void CSWGuiInGameGameplay::SetUpOptions()
 void CSWGuiOptionsGraphicsAdvanced::SetTexQualText()
 {
     int nStrRef;
-    C2DA* pTexPacks = new C2DA(CResRef("texpacks"), 0);
+    C2DA* pTexPacks = new C2DA("texpacks", 0);
     if (pTexPacks) {
         if (!pTexPacks->Load2DArray()) {
             delete pTexPacks;
@@ -244,7 +244,7 @@ void CSWGuiOptionsGraphicsAdvanced::SetUpOptions()
     }
     SetAntiAliasText();
     SetAnisotropyText();
-    C2DA* pTexPacks = new C2DA(CResRef("texpacks"), 0);
+    C2DA* pTexPacks = new C2DA("texpacks", 0);
     if (pTexPacks) {
         if (!pTexPacks->Load2DArray()) {
             delete pTexPacks;

@@ -75,14 +75,7 @@ public:
 
 #include "shared/vector.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    int IsValid() const;                            // 0x00406030
-};
+#include "shared/res_ref.h"
 
 class CExoSound {
 public:

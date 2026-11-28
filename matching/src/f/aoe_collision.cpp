@@ -34,11 +34,7 @@ public:
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWSCreature;
 class CSWSArea;

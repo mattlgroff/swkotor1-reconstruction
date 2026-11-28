@@ -16,16 +16,7 @@ class CSWSArea;
 
 #include "shared/exo_string.h"
 
-struct CResRef {
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    char* GetResRefStr() const;                     // 0x00405FE0
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef operator=(const CResRef& o);            // 0x00406120
-    CResRef operator=(const CExoString& s);         // 0x004061F0
-    int operator==(const char* s) const;            // 0x004060D0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 // 8 bytes.
 #include "shared/exo_loc_string.h"

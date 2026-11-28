@@ -8,16 +8,7 @@
 
 #include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef(const CExoString &s);
-    CResRef operator=(const char *s);
-    CResRef operator=(const CResRef &r);
-    void CopyToString(CExoString &s) const;
-    char *GetResRef();
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 #include "shared/vector.h"
 

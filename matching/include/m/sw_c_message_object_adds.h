@@ -2,7 +2,7 @@
 #define M_SW_C_MESSAGE_OBJECT_ADDS_H
 #include "shared/vector.h"
 #include "shared/exo_string.h"
-class CResRef { public: char m_ref[16]; CResRef(); CResRef(const char*); CResRef(const CExoString&); };
+#include "shared/res_ref.h"
 class C2DA { public: int GetCExoStringEntry(int,const CExoString&,CExoString*); int GetINTEntry(int,const CExoString&,int*); };
 class CTwoDimArrays { public:
  char pad_000[0x24]; C2DA *m_pGenericDoors,*m_pDoors,*m_pPlaceables;

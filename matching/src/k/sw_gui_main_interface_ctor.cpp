@@ -6,11 +6,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef(const char* s);                         // 0x00406D80
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CSWGuiExtent {
     CSWGuiExtent() {}

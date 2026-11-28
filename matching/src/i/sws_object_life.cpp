@@ -17,11 +17,7 @@ class CSWSObjectActionNode;
 
 #include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    CResRef();                                      // 0x00405ED0
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 #include "shared/vector.h"
 

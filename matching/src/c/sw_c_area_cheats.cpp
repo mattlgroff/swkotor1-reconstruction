@@ -22,11 +22,7 @@ public:
     void* m_pInternal;
 };
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef(const char* s);                         // 0x00406D80
-};
+#include "shared/res_ref.h"
 
 class CSWPartyTable {
 public:

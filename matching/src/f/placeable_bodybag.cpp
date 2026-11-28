@@ -6,12 +6,7 @@
 
 #include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    CResRef(const char *s);
-    CResRef operator=(const CResRef &r);
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class C2DA {
 public:
@@ -103,6 +98,11 @@ public:
     virtual void SetPortrait(const CResRef &cPortrait);  // +0xcc
 
     int LoadBodyBag(unsigned char nAppearance);
+    // LoadBodyBag builds each of these CResRefs as a by-value argument and
+    // assigns from it (lea of the argument, not the constructor's result), as
+    // an inline setter does; SetResRef378 is a placeholder name.
+    void SetResRef378(CResRef cResRef) { m_cResRef378 = cResRef; }
+    void SetConversation(CResRef cResRef) { m_cConversation = cResRef; }
     void SetTag(const CExoString &sTag);
     void SetCurrentHitPoints(int nHitPoints);
     void PostProcess();
@@ -169,7 +169,7 @@ int CSWSPlaceable::LoadBodyBag(unsigned char nAppearance)
     if (bMissing)
         nStrRef = 0;
     sLocName.SetStrRef(nStrRef);
-    m_cResRef378 = "";
+    SetResRef378("");
     SetTag("Body Bag");
     m_sLocName = sLocName;
     m_n270 = 0;
@@ -203,7 +203,7 @@ int CSWSPlaceable::LoadBodyBag(unsigned char nAppearance)
     m_n26C = 0;
     m_n275 = 0;
     SetPortrait("PO_PLC_B04_");
-    m_cConversation = "";
+    SetConversation("");
     sLocName.ClearLocString();
     sLocName.SetStrRef(38612);
     m_sDescription = sLocName;

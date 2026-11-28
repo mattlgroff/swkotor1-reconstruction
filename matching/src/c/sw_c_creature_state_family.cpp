@@ -3,15 +3,7 @@
 #include "c/exo_base.h"
 #include "c/sw_c_creature_ability_list.h"
 
-class CResRef {
-public:
-    char m_resref[16];
-    CResRef();
-    CResRef(const CExoString& s);
-    int operator==(const char* s) const;
-    CResRef operator=(const CResRef& s);
-    int operator!=(const CResRef& s) const;
-};
+#include "shared/res_ref.h"
 class CSWCCreature;
 class CSWSCreature;
 #include "shared/game_object.h"

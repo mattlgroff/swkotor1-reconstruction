@@ -59,12 +59,7 @@ public:
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef operator=(const CExoString &s);
-    void CopyToString(CExoString &s) const;
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CResBWM;
 

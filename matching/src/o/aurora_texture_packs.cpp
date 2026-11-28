@@ -308,7 +308,7 @@ CAuroraModel* CAuroraInterface::GetModelResHelper(const CExoString& sName, int b
         pModel = g_lRequestedModels.GetNext(pPosition);
     }
     if (!pModel) {
-        pModel = new CAuroraModel(CResRef(sName), bAutoRequest);
+        pModel = new CAuroraModel(sName, bAutoRequest);
         if (!pModel) {
             return 0;
         }

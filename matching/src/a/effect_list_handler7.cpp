@@ -1098,10 +1098,7 @@ inline Vector operator-(const Vector& a, const Vector& b)
 
 Vector Normalize(const Vector& v);              // 0x004AB180
 
-class CResRef {
-public:
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 // CSWSArea + 0x100 (CResHelper base); its resref sits at +0x0c
 class CAreaResHelper7 {

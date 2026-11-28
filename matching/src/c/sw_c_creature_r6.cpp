@@ -491,12 +491,7 @@ extern "C" void* __cdecl memcpy(void* dst, const void* src, unsigned int n);
 
 Quaternion __cdecl RotationArc(Vector a, Vector b);     // 0x004AB630
 
-class CResRef {
-public:
-    CResRef(const CExoString& s);                   // 0x00406D60
-
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CExoSoundSource {
 public:

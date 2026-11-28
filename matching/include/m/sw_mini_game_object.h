@@ -162,20 +162,7 @@ public:
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ED0
-    CResRef(const char* s);                         // 0x00406D80
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    CResRef operator=(const char* s);               // 0x00406290
-    int IsValid() const;                            // 0x00406030
-    int operator==(const char* s) const;            // 0x004060D0
-    int operator==(const CResRef& r) const;         // 0x004060B0
-    void CopyToString(CExoString& s) const;         // 0x00405F70
-    void CopyToString(char* sz) const;              // 0x00405FB0
-    char* GetResRef();                              // 0x00641DB0 (identity, folded)
-};
+#include "shared/res_ref.h"
 
 class CResStruct {
 public:

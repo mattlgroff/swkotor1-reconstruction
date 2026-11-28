@@ -4,14 +4,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef(const CExoString &sName);
-    CResRef operator=(const CResRef &cResRef);
-    void CopyToString(CExoString &sStr) const;
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 #include "shared/vector.h"
 

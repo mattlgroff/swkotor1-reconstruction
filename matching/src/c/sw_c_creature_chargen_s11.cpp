@@ -7,12 +7,7 @@
 
 #include "shared/exo_loc_string.h"
 
-class CResRef {
-public:
-    CResRef(const CExoString& sName);               // 0x00406D60
-
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;

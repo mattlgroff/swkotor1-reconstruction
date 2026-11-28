@@ -2,13 +2,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    int operator!=(const char* szName) const;       // 0x00406060
-    void CopyToString(CExoString& sOut) const;      // 0x00405F70
-
-    char m_pResRef[16];
-};
+#include "shared/res_ref.h"
 
 class CAurObject;
 CAurObject* NewCAurObject(const char* szModel, const char* szParent, int nFlags, int nUnused); // 0x00449CC0

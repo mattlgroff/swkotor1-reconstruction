@@ -8,14 +8,7 @@
 
 #include "shared/vector.h"
 
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef();                                      // 0x00405ED0
-    CResRef operator=(const CResRef& r);            // 0x00406120
-    CResRef operator=(const char* s);               // 0x00406290
-    int operator==(const char* s) const;            // 0x004060D0
-};
+#include "shared/res_ref.h"
 
 template <class T>
 class CExoArrayList {

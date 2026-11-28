@@ -6,13 +6,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef(const char *szName);
-    CResRef(const CResRef &cResRef);
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWBaseItem {
 public:

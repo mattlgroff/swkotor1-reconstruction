@@ -483,7 +483,7 @@ int CTlkTable::OpenFile(const CExoString& sFileName)
         delete[] m_pTokens;
     }
     STR_TOKEN cSwap;
-    C2DA cTokens(CResRef("StringTokens"), 0);
+    C2DA cTokens("StringTokens", 0);
     if (!cTokens.Load2DArray()) {
         return 0;
     }

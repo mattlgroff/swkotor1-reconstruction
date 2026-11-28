@@ -3,16 +3,7 @@
 
 #include "shared/exo_string.h"
 
-class CResRef {
-public:
-    CResRef();
-    CResRef(const CExoString &sName);
-    CResRef(const CResRef &cResRef);
-    CResRef operator=(const CResRef &cResRef);
-    int operator==(const char *s) const;
-    void CopyToString(CExoString &s) const;
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class C2DA {
 public:

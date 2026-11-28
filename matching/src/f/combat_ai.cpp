@@ -233,11 +233,7 @@ public:
                                 int a6);            // 0x005EDCE0
 };
 
-class CResRef {
-public:
-    CResRef(const char *s);                                 // 0x00406D80
-    char m_resRef[16];
-};
+#include "shared/res_ref.h"
 
 class CSWPartyTable {
 public:

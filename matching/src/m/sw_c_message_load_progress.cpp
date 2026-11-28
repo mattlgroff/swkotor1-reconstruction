@@ -1,5 +1,5 @@
 #include "shared/exo_string.h"
-class CResRef { public: char m_ref[16]; void CopyToString(CExoString&) const; };
+#include "shared/res_ref.h"
 class CSWCModule { public: char pad_000[0x28]; CResRef m_resArea; };
 class CClientExoAppInternal { public: char pad_000[0x3e4]; unsigned char m_nLoadSteps[5]; };
 class CClientExoApp { public: void* m_pVTable; CClientExoAppInternal* m_pcInternal;

@@ -1,11 +1,6 @@
 // CTwoDimArrays constructor, destructor and the Load2DArrays / UnLoad2DArrays
 // drivers (0x005BFB60, 0x005BFCC0, 0x005C4C20, 0x005C5070).
-class CResRef {
-public:
-    char m_resRef[16];
-    CResRef(const char *szName);
-    CResRef(const CResRef &cResRef);
-};
+#include "shared/res_ref.h"
 
 #include "shared/exo_string.h"
 
