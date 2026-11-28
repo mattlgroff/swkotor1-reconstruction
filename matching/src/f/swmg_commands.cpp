@@ -142,11 +142,7 @@ public:
     int m_n184;                      // +0x184
 };
 
-class CSWMiniGameObjectArray {
-public:
-    CSWMiniGameObject *GetObject(unsigned long nId, unsigned char nType);
-    CSWMiniGameObject *GetObjectByTag(const CExoString &sTag);
-};
+#include "shared/sw_mini_game_object_array.h"
 
 class CSWCMiniGame {
 public:

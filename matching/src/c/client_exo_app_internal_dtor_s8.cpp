@@ -293,11 +293,7 @@ public:
     void SetCreature(unsigned long oid);            // 0x00679340
 };
 
-class CSWMiniGameObjectArray {
-public:
-    CSWMiniGameObjectArray();                       // 0x0066BF10
-    char pad_0x0[0x400];
-};
+#include "shared/sw_mini_game_object_array.h"
 
 // Three zero-initialised words (descriptive).
 struct CClientZeroTriple {

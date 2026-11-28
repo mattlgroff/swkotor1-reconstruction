@@ -352,16 +352,7 @@ public:
     unsigned char m_bActive;                        // 0x1a0
 };
 
-class CSWMiniGameObjectArray {
-public:
-    CSWMiniGameObjectArray();                       // 0x0066BF10
-    CSWMiniGameObject* GetObject(unsigned long nId, unsigned char nType);   // 0x0066BF30
-    CSWMiniGameObject* GetObjectByTag(const CExoString& sTag);             // 0x0066BFB0
-    int GetFreeSlot();                              // 0x0066C060
-
-    int m_nNext;                                    // 0x00
-    CSWMiniGameObject* m_pObjects[0xff];            // 0x04
-};
+#include "shared/sw_mini_game_object_array.h"
 
 // One track point of the mini game (+0x38 list): a name and a position.
 struct CSWMiniTrackPoint {
