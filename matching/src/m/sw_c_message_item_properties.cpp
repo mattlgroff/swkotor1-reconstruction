@@ -8,17 +8,7 @@ public:
     char m_resRef[16];
 };
 
-struct CSWCItemProperty {
-    unsigned short m_nPropertyName;                 // 0x00
-    unsigned short m_nSubType;                      // 0x02
-    unsigned short m_n04;                           // 0x04
-    unsigned short m_nCostValue;                    // 0x06
-    unsigned char m_nParam1Value;                   // 0x08
-    char pad_0x9[3];
-    int m_bActive;                                  // 0x0c
-    unsigned char m_nUsesLeft;                      // 0x10
-    unsigned char m_nUpgradeType;                   // 0x11
-};
+#include "shared/swc_item_property.h"
 
 struct CSWBaseItemData {
     char pad_0x0[0xac];
@@ -109,8 +99,8 @@ int CSWCMessage::HandleServerToPlayerActiveItemProperties(unsigned long nId)
                 return 0;
             }
             if (pItem) {
-                pItem->GetActiveProperty(i)->m_nPropertyName = nName;
-                pItem->GetActiveProperty(i)->m_nSubType = nSubType;
+                pItem->GetActiveProperty(i)->m_nPropertyType = nName;
+                pItem->GetActiveProperty(i)->m_nSubtype = nSubType;
                 pItem->GetActiveProperty(i)->m_nCostValue = nCostValue;
                 pItem->GetActiveProperty(i)->m_nParam1Value = nParam;
                 pItem->GetActiveProperty(i)->m_bActive = 1;

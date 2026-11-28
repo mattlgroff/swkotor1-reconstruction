@@ -25,12 +25,7 @@ public:
     CSWBaseItemArray* m_pBaseItemArray;
 };
 
-class CSWCItemProperty {
-public:
-    unsigned short m_nPropertyType;
-    unsigned short m_nSubtype;
-    char pad_0x4[0x18];
-};
+#include "shared/swc_item_property.h"
 
 class CSWCItem {
 public:
