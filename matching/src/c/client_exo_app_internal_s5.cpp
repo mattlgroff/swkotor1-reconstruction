@@ -54,13 +54,7 @@ struct RECT {
 extern "C" __declspec(dllimport) void* __stdcall GetDesktopWindow();                   // IAT 0x0073D3BC
 extern "C" __declspec(dllimport) int __stdcall GetWindowRect(void* hWnd, RECT* pRect);  // IAT 0x0073D3C0
 
-class CRender {
-public:
-    virtual void v00();
-    virtual int GetFullScreen();                    // 0x04 (descriptive)
-    virtual void v08(); virtual void v0C(); virtual void v10(); virtual void v14();
-    virtual void ReleaseDevice();                   // 0x18 (descriptive)
-};
+#include "shared/render.h"
 
 
 int ReInitAurora(unsigned long nWidth, unsigned long nHeight, unsigned long nDepth, int bFullScreen,
