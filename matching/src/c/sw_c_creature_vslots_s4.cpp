@@ -36,10 +36,7 @@ public:
     void ShowBarkBubble(unsigned long oid, const CExoString& text, const CResRef& sound, int b);   // 0x0062AB30
 };
 
-struct CSWCAreaX {
-    char pad_0x0[0x104];
-    unsigned long m_nId104;                         // 0x104
-};
+#include "shared/swc_area_x.h"
 
 class CSWCModuleX {
 public:

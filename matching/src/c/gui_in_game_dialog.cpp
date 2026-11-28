@@ -86,10 +86,7 @@ public:
     int m_bNoTransitions;                               // 0x2c4
 };
 
-class CSWCAreaX {
-public:
-    CSWSAreaX* GetServerArea();                         // 0x00605640
-};
+#include "shared/swc_area_x.h"
 
 class CResRefX;
 

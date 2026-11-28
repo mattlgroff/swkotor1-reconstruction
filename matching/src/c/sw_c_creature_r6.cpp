@@ -143,10 +143,7 @@ struct CSWCAttackData {
 };
 
 
-class CSWCAreaX {
-public:
-    void UpdatePosition(const Vector& v);           // 0x006054E0
-};
+#include "shared/swc_area_x.h"
 
 class CSWCObject : public CGameObject {
 public:
