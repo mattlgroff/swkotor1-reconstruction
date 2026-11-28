@@ -37,17 +37,7 @@ extern "C" int __cdecl rand(void);                  // 0x006FC447
 #include "shared/pazaak_card.h"
 
 // 0x70 bytes, no vtable (ctor 0x006E4B50).
-class CPazaakPlayer {
-public:
-    CPazaakPlayer();                                // 0x006E4B50
-    int GetTotal();                                 // 0x006E4360
-    void ChooseSidedeck(CPazaakCard* pCards);       // 0x006E4580
-    void AddGameCard(CPazaakCard cCard);            // 0x006E45F0
-    CPazaakCard m_aHand[4];                         // 0x00
-    CPazaakCard m_aBoard[9];                        // 0x20
-    int m_bStanding;                                // 0x68
-    int m_nSetsWon;                                 // 0x6c
-};
+#include "shared/pazaak_player.h"
 
 // 0x230 bytes, no vtable (ctor 0x006E4C00).
 class CSWPazaak {

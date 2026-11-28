@@ -266,18 +266,7 @@ public:
 #include "shared/pazaak_card.h"
 
 // 0x70 bytes, no vtable (ctor 0x006E4B50).
-class CPazaakPlayer {
-public:
-    CPazaakPlayer();                                // 0x006E4B50
-    int GetTotal();                                 // 0x006E4360
-    void AddGameCard(CPazaakCard cCard);            // 0x006E45F0
-    CPazaakCard GetBoardCard(int i) { return m_aBoard[i]; }
-    CPazaakCard GetHandCard(int i) { return m_aHand[i]; }
-    CPazaakCard m_aHand[4];                         // 0x00
-    CPazaakCard m_aBoard[9];                        // 0x20
-    int m_bStanding;                                // 0x68
-    int m_nSetsWon;                                 // 0x6c
-};
+#include "shared/pazaak_player.h"
 
 // 0x230 bytes, no vtable (ctor 0x006E4C00).
 class CSWPazaak {
