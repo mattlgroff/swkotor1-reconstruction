@@ -65,10 +65,7 @@ public:
 
 #include "shared/globals.h"
 
-class CExoLocString {
-public:
-    int GetString(unsigned long nLanguage, CExoString* pString, unsigned char nGender) const;  // 0x005EA130
-};
+#include "shared/exo_loc_string.h"
 
 #include "shared/sw_base_item_data.h"
 

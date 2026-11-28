@@ -2,12 +2,7 @@
 
 #include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    ~CExoLocString();
-    void *m_pInternal;
-    unsigned long m_n4;
-};
+#include "shared/exo_loc_string.h"
 
 template <class T>
 class CExoArrayList {

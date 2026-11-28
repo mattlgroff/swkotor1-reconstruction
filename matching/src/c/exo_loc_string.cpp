@@ -15,18 +15,7 @@ public:
     CExoLocStringInternal& operator=(const CExoLocStringInternal& o);   // 0x005ECBB0
 };
 
-class CExoLocString {
-public:
-    CExoLocStringInternal* m_pcExoLocStringInternal;   // 0x00
-    unsigned long m_dwStringRef;                    // 0x04
-
-    CExoLocString();
-    CExoLocString(const CExoLocString& o);
-    ~CExoLocString();
-    int GetString(int nIndex, int* pLanguage, CExoString& s, unsigned char* pGender);
-    CExoLocString& operator=(const CExoLocString& o);
-    unsigned long GetStringCount();
-};
+#include "shared/exo_loc_string.h"
 
 // FUNCTION: SWKOTOR 0x005E9E70
 CExoLocString& CExoLocString::operator=(const CExoLocString& o)
@@ -39,7 +28,7 @@ CExoLocString& CExoLocString::operator=(const CExoLocString& o)
 }
 
 // FUNCTION: SWKOTOR 0x005E9EF0
-unsigned long CExoLocString::GetStringCount()
+unsigned long CExoLocString::GetStringCount() const
 {
     return m_pcExoLocStringInternal->m_nCount;
 }

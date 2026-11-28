@@ -213,21 +213,7 @@ public:
     unsigned short m_nType;         // 0x1a
 };
 
-class CExoLocString {
-public:
-    CExoLocString();                                                // 0x005e9e10
-    CExoLocString(const CExoLocString& lsString);                   // 0x005e9f80
-    ~CExoLocString();
-    void AddString(int nLanguage, const CExoString& sString, unsigned char nGender); // 0x005ea340
-    int GetString(int nIndex, int* nLanguage, CExoString* sString, unsigned char* nGender); // 0x005e9eb0
-    unsigned long GetStringCount() const;                           // 0x005e9ef0
-    unsigned long GetStringLength(int nIndex);                      // 0x005e9f00
-    CExoLocString& operator=(const CExoLocString& lsString);        // 0x005e9f80
-    void ClearLocString();                                          // 0x005e9ea0
-
-    void* m_pList;
-    unsigned long m_nStrRef;
-};
+#include "shared/exo_loc_string.h"
 
 // vtable 0x0073e128
 class CExoBaseResFile {

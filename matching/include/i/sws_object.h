@@ -28,13 +28,7 @@ struct CResRef {
 };
 
 // 8 bytes.
-class CExoLocString {
-public:
-    CExoLocString();                                // 0x005E9E10
-    ~CExoLocString();                               // 0x005EA000
-    void* m_pInternal;
-    unsigned long m_n4;
-};
+#include "shared/exo_loc_string.h"
 
 class C2DA {
 public:

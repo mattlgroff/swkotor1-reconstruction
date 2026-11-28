@@ -38,13 +38,7 @@ public:
     void* AddTail(T* p) { return m_pcExoLinkedListInternal->AddTail(p); }
 };
 
-class CExoLocString {
-public:
-    void* m_pcExoLocStringInternal;                 // 0x00
-
-    unsigned long GetStringCount() const;           // 0x005E9EF0
-    int GetString(int nLanguage, CExoString& s, unsigned char nGender) const;   // 0x005EA050
-};
+#include "shared/exo_loc_string.h"
 
 class CExoLocStringInternal {
 public:
@@ -52,14 +46,14 @@ public:
     unsigned long m_nCount;                         // 0x04
     int m_bModified;                                // 0x08
 
-    int Compare(const CExoLocString& other);
+    int Compare(CExoLocString& other);
 };
 
 // NONMATCH (16 diff insns): loop-entry register choice (original reads the
 // language into esi and reuses eax for the string address; ours keeps the
 // node in esi). A language local swaps esi/edi for the two scratch strings.
 // FUNCTION: SWKOTOR 0x005EC7F0
-int CExoLocStringInternal::Compare(const CExoLocString& other)
+int CExoLocStringInternal::Compare(CExoLocString& other)
 {
     unsigned long nCount = m_nCount;
     if (nCount != other.GetStringCount()) {
@@ -71,7 +65,7 @@ int CExoLocStringInternal::Compare(const CExoLocString& other)
     void* pos = m_lstLocStrings.GetHeadPos();
     while (p) {
         *pMine = p->m_sString;
-        other.GetString(p->m_nLanguage, *pTheirs, 0);
+        other.GetString(p->m_nLanguage, pTheirs, 0);
         if (*pMine != *pTheirs) {
             delete pMine;
             delete pTheirs;

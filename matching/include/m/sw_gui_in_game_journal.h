@@ -74,12 +74,7 @@ public:
 };
 
 
-class CExoLocString {
-public:
-    int GetString(unsigned long nLanguage, CExoString* pString, unsigned char nGender) const; // 0x005EA130
-    void* m_pList;
-    void* m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
 class C2DA {
 public:

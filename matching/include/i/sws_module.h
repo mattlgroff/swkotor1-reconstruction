@@ -98,16 +98,7 @@ extern "C" int strcmp(const char* a, const char* b);
 #include "shared/exo_string.h"
 
 // 8 bytes; Compare is 0x005EA020 (non-zero when equal).
-class CExoLocString {
-public:
-    CExoLocString();                                // 0x005E9E10
-    ~CExoLocString();                               // 0x005EA000
-    int Compare(const CExoLocString& o) const;      // 0x005EA020
-    int operator==(const CExoLocString& o);         // 0x005EA020
-    CExoLocString& operator=(const CExoLocString& o);   // 0x005E9E70
-    void* m_pInternal;
-    unsigned long m_n4;
-};
+#include "shared/exo_loc_string.h"
 
 struct CResRef {
     char* GetResRefStr() const;                     // 0x00405FE0

@@ -27,12 +27,7 @@ public:
     void Stop();
     void SetPositionElevated(const Vector&); // established name, 0x0066ADC0
 };
-class CExoLocString {
-public:
-    CExoLocString(); CExoLocString(const CExoLocString&); ~CExoLocString();
-    int AddString(int, const CExoString&, unsigned char); // established signature, 0x005EA340
-    void* m_pList; void* m_pPad;
-};
+#include "shared/exo_loc_string.h"
 struct SJournalEntry {
     CExoLocString m_sName;           // 0x00
     CExoLocString m_sText;           // 0x08

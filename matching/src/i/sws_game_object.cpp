@@ -16,13 +16,7 @@ class CSWSCreature;
 // inline in shared/game_object.h; i/sws_module_life.cpp emits them, for
 // CSWSModule's constructor.
 
-class CExoLocString {
-public:
-    CExoLocString();                                // 0x005E9E10
-    ~CExoLocString();                               // 0x005EA000
-    void* m_pInternal;
-    unsigned long m_n4;
-};
+#include "shared/exo_loc_string.h"
 
 struct CResRef {
     CResRef();                                      // 0x00405ED0

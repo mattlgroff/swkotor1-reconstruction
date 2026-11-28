@@ -5,15 +5,7 @@
 
 #include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();                                // 0x005E9E10
-    ~CExoLocString();                               // 0x005EA000
-    int AddString(int nLanguage, const CExoString& sString, unsigned char nGender); // 0x005EA340
-
-    void* m_pList;                                  // 0x00
-    unsigned long m_dwStringRef;                    // 0x04
-};
+#include "shared/exo_loc_string.h"
 
 class CResRef {
 public:

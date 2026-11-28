@@ -4,16 +4,7 @@
 
 #include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    ~CExoLocString();
-    CExoLocString &operator=(const CExoLocString &s);
-    void ClearLocString();
-    void SetStrRef(unsigned long nStrRef) { m_nStrRef = nStrRef; }
-    void *m_pList;
-    unsigned long m_nStrRef;
-};
+#include "shared/exo_loc_string.h"
 
 class CResRef {
 public:

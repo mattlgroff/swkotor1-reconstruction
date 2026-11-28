@@ -11,12 +11,7 @@ class CSWSCreature;
 
 #include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    ~CExoLocString();                               // 0x005EA000
-
-    char pad_0x0[0xc];
-};
+#include "shared/exo_loc_string.h"
 
 class CResRef {
 public:
@@ -265,6 +260,8 @@ public:
     void LoadObjectState(CResGFF* pRes, CResStruct* pStruct);
 
     CExoLocString m_sLocName;                       // 0x0c
+    unsigned short m_nNextGroupActionId;            // 0x14
+    unsigned short m_nLastGroupActionId;            // 0x16
     CExoString m_sTag;                              // 0x18
     CResRef m_cTemplateResRef;                      // 0x20
     unsigned short m_n30;                           // 0x30

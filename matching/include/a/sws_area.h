@@ -151,15 +151,7 @@ public:
 
 #include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    CExoLocString();                                // 0x005E9E10
-    ~CExoLocString();                               // 0x005EA000
-    CExoLocString& operator=(const CExoLocString& s); // 0x005E9E70
-
-    void* m_pList;                                  // 0x00
-    unsigned long m_nStrRef;                        // 0x04
-};
+#include "shared/exo_loc_string.h"
 
 // 8-byte value copied to CSWSArea +0x08 before the layout loads (unknown type).
 struct CSWSAreaValue8 {

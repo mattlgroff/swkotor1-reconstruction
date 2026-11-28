@@ -119,17 +119,10 @@ public:
     int GetString(int nIndex, CExoString& s);       // 0x005EC9C0 RET 8
 };
 
-class CExoLocString {
-public:
-    CExoLocStringInternal* m_pcExoLocStringInternal;   // 0x00
-    unsigned long m_dwStringRef;                    // 0x04
-
-    int Compare(const CExoLocString& o);
-    int GetStringLoc(int nLanguage, CExoString& s, unsigned char nGender);
-};
+#include "shared/exo_loc_string.h"
 
 // FUNCTION: SWKOTOR 0x005E9F10
-int CExoLocString::Compare(const CExoLocString& o)
+int CExoLocString::Compare(const CExoLocString& o) const
 {
     // NONMATCH (4 diff insns): the original tests each branch's count in its
     // own register (ecx / eax) and joins at one `jne`; ours loads both into
@@ -156,11 +149,11 @@ int CExoLocString::Compare(const CExoLocString& o)
 }
 
 // FUNCTION: SWKOTOR 0x005EA240
-int CExoLocString::GetStringLoc(int nLanguage, CExoString& s, unsigned char nGender)
+int CExoLocString::GetStringLoc(int nLanguage, CExoString* pString, unsigned char nGender) const
 {
     CExoLocStringInternal* p = m_pcExoLocStringInternal;
     unsigned char nIndex = nLanguage ? nGender : 0;
-    return p->GetString(nLanguage * 2 + nIndex, s);
+    return p->GetString(nLanguage * 2 + nIndex, *pString);
 }
 
 #include "shared/globals.h"

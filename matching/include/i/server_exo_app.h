@@ -372,13 +372,7 @@ public:
     unsigned long m_oidNewAttackTarget;             // +0x9cc
 };
 
-class CExoLocString {
-public:
-    CExoLocString();                                // 0x005E9E10
-    ~CExoLocString();                               // 0x005EA000
-    void* m_pInternal;
-    unsigned long m_n4;
-};
+#include "shared/exo_loc_string.h"
 
 struct CSWSCreatureAppearance {
     char m_pad0[0x10];

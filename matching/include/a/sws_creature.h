@@ -972,10 +972,7 @@ public:
     unsigned long m_oidTarget;                      // 0x18
 };
 
-class CExoLocString {
-public:
-    char pad_0x0[0x8];                              // opaque in this bucket header
-};
+#include "shared/exo_loc_string.h"
 
 class CSWSObjectActionNode {
 public:

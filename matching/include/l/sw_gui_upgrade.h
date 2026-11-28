@@ -11,15 +11,7 @@
 // The original's CSWGuiExtent has a zeroing ctor (returned through a hidden pointer).
 CSWGuiZeroExtent IntersectExtents(const CSWGuiExtent& a, const CSWGuiExtent& b);  // 0x0040A4A0
 
-class CExoLocString {
-public:
-    CExoLocString();                                // 0x005E9E10
-    CExoLocString(const CExoLocString& s);          // 0x005E9F80
-    ~CExoLocString();                               // 0x005EA000
-    int GetString(unsigned long nLanguage, CExoString* pOut, unsigned char nGender) const;  // 0x005EA130
-    void* m_pInternal;
-    unsigned long m_n4;
-};
+#include "shared/exo_loc_string.h"
 
 class CExoResMan {
 public:

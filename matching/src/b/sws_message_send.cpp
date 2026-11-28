@@ -1036,7 +1036,7 @@ int CSWSMessage::SendServerToPlayerChat_Shout(unsigned long nPlayerId, unsigned 
     else {
         CExoLocString sFirstName;
         CExoLocString sLastName;
-        sFirstName.m_nStrRef = 0x10782;
+        sFirstName.m_dwStringRef = 0x10782;
         WriteOBJECTIDServer(INVALID_OBJECT_ID);
         WriteCExoString(sMessage, 0x20);
         WriteFLOAT(0.0f, 1.0f, 0x20);

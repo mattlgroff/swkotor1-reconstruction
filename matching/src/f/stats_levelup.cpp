@@ -163,10 +163,7 @@ class CSWSItem;
 
 #include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    char pad_0x0[0x8];
-};
+#include "shared/exo_loc_string.h"
 
 class CSWSMessage {
 public:

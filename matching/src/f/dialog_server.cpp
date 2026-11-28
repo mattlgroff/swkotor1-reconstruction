@@ -16,16 +16,7 @@ public:
     char m_resRef[16];
 };
 
-class CExoLocString {
-public:
-    float GetStringReadTime(int nLanguage, unsigned char nGender);
-    CExoLocString();
-    ~CExoLocString();
-    CExoLocString &operator=(const CExoLocString &s);
-    int GetString(unsigned long nLanguage, CExoString *pString, unsigned char nGender) const;
-    void *m_pList;
-    unsigned long m_nStrRef;
-};
+#include "shared/exo_loc_string.h"
 
 struct CResStruct {
     unsigned long m_nStructIndex;
@@ -767,7 +758,7 @@ void CSWSDialog::BarkOneLine(unsigned long nEntry)
     }
     if (!cSound.IsValid()) {
         STR_RES strRes;
-        unsigned long nStrRef = m_pEntries[nEntry].m_sText.m_nStrRef;
+        unsigned long nStrRef = m_pEntries[nEntry].m_sText.m_dwStringRef;
         g_pTlkTable->Fetch(nStrRef, strRes, g_nDefaultGender);
         cSound = strRes.cSoundResRef;
     }

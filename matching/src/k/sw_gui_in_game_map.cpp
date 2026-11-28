@@ -6,11 +6,7 @@
 
 #include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    int GetString(unsigned long nLanguage, CExoString* pString, unsigned char nGender) const;  // 0x005EA130
-    char pad_0x0[0x8];
-};
+#include "shared/exo_loc_string.h"
 
 class CSWSWaypoint {
 public:

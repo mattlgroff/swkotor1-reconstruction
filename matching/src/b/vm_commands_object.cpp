@@ -446,7 +446,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetModuleName(int nCommandId, int n
     case 0x231: {
         CExoLocString lsName(g_pAppManager->GetServerExoApp()->GetModule()->m_lsModuleName);
         int nLanguage = g_pAppManager->GetServerExoApp()->GetModuleLanguage();
-        lsName.GetStringLoc(nLanguage, sName, 0);
+        lsName.GetStringLoc(nLanguage, &sName, 0);
         break;
     }
     case 0xd2: {

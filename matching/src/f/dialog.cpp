@@ -17,13 +17,7 @@ public:
     char m_resRef[16];
 };
 
-class CExoLocString {
-public:
-    int GetString(unsigned long nLanguage, CExoString *pString, unsigned char nGender) const;
-    CExoLocString &operator=(const CExoLocString &s);
-    void *m_pList;
-    unsigned long m_nStrRef;
-};
+#include "shared/exo_loc_string.h"
 
 class CRes {
 public:
@@ -260,7 +254,7 @@ public:
     void LoadDialogLinkedNode(CDialogLink *pLink, CResGFF *pGFF, CResGFFStruct *pStruct,
                                      int *bSuccess, unsigned long nMax);
     int CheckScript(CSWSObject *pObject, const CResRef &cScript);
-    CExoString GetExoStringFromLocString(const CExoLocString &cLoc, unsigned char nGender);
+    CExoString GetExoStringFromLocString(CExoLocString &cLoc, unsigned char nGender);
     void ClearDialogOwnerInObject(unsigned long oidObject);
     int GetStartEntryOneLiner(CSWSObject *pObject, CExoLocString &sText, CResRef &cSound,
                               CResRef &cScript);
@@ -415,7 +409,7 @@ int CSWSDialog::CheckScript(CSWSObject *pObject, const CResRef &cScript)
 }
 
 // FUNCTION: SWKOTOR 0x0059F320
-CExoString CSWSDialog::GetExoStringFromLocString(const CExoLocString &cLoc, unsigned char nGender)
+CExoString CSWSDialog::GetExoStringFromLocString(CExoLocString &cLoc, unsigned char nGender)
 {
     int nLanguage = g_pAppManager->m_pServerExoApp->GetLanguage();
     CExoString sText;

@@ -35,32 +35,12 @@ public:
     void RemoveString(int nId);                     // 0x005ECA80
 };
 
-class CExoLocString {
-public:
-    CExoLocStringInternal* m_pcExoLocStringInternal;   // 0x00
-    unsigned long m_dwStringRef;                    // 0x04
+#include "shared/exo_loc_string.h"
 
-    static int MakeId(int nLanguage, unsigned char nGender)
-    {
-        nGender = nLanguage ? nGender : 0;
-        return nLanguage * 2 + nGender;
-    }
-    static int MakeIdRef(int nLanguage, unsigned char& nGender)
-    {
-        nGender = nLanguage ? nGender : 0;
-        return nLanguage * 2 + nGender;
-    }
-
-    void RemoveString(int nLanguage, unsigned char nGender)
-    {
-        m_pcExoLocStringInternal->RemoveString(MakeId(nLanguage, nGender));
-    }
-
-    int AddString(int nLanguage, const CExoString& s, unsigned char nGender);
-    float GetStringReadTime(int nLanguage, unsigned char nGender);
-    int GetStringAndCache(int nLanguage, CExoString& s, unsigned char nGender);
-    int GetString(int nLanguage, CExoString& s, unsigned char nGender);
-};
+inline void CExoLocString::RemoveString(int nLanguage, unsigned char nGender)
+{
+    m_pcExoLocStringInternal->RemoveString(MakeId(nLanguage, nGender));
+}
 
 // FUNCTION: SWKOTOR 0x005EA340
 int CExoLocString::AddString(int nLanguage, const CExoString& sNew, unsigned char nGender)
@@ -68,7 +48,7 @@ int CExoLocString::AddString(int nLanguage, const CExoString& sNew, unsigned cha
     int nId = MakeIdRef(nLanguage, nGender);
     RemoveString(nLanguage, nGender);
     CExoString s;
-    GetStringAndCache(nLanguage, s, nGender);
+    GetStringAndCache(nLanguage, &s, nGender);
     if (s == sNew) {
         return 1;
     }
@@ -81,7 +61,7 @@ float CExoLocString::GetStringReadTime(int nLanguage, unsigned char nGender)
 {
     CExoString s;
     int nId = MakeId(nLanguage, nGender);
-    GetString(nId, s, 0);
+    GetString(nId, &s, 0);
     if (s.GetLength()) {
         return (float)s.GetLength() * 0.11f + 1.0f;
     }
@@ -89,18 +69,18 @@ float CExoLocString::GetStringReadTime(int nLanguage, unsigned char nGender)
 }
 
 // FUNCTION: SWKOTOR 0x005EA130
-int CExoLocString::GetStringAndCache(int nLanguage, CExoString& s, unsigned char nGender)
+int CExoLocString::GetStringAndCache(int nLanguage, CExoString* pString, unsigned char nGender)
 {
     int nId = MakeIdRef(nLanguage, nGender);
-    if (m_pcExoLocStringInternal->GetString(nId, s)) {
+    if (m_pcExoLocStringInternal->GetString(nId, *pString)) {
         return 1;
     }
     STR_RES strRes;
     bool bFound;
     if (g_pTlkTable && g_pTlkTable->Fetch(m_dwStringRef, strRes, nGender)) {
-        s = strRes.sString;
-        if (s != "") {
-            m_pcExoLocStringInternal->AddString(nId, s);
+        *pString = strRes.sString;
+        if (*pString != "") {
+            m_pcExoLocStringInternal->AddString(nId, *pString);
             m_pcExoLocStringInternal->m_bModified = 1;
         }
         bFound = true;
@@ -111,16 +91,16 @@ int CExoLocString::GetStringAndCache(int nLanguage, CExoString& s, unsigned char
 }
 
 // FUNCTION: SWKOTOR 0x005EA050
-int CExoLocString::GetString(int nLanguage, CExoString& s, unsigned char nGender)
+int CExoLocString::GetString(int nLanguage, CExoString* pString, unsigned char nGender)
 {
     int nId = MakeIdRef(nLanguage, nGender);
-    if (m_pcExoLocStringInternal->GetString(nId, s)) {
+    if (m_pcExoLocStringInternal->GetString(nId, *pString)) {
         return 1;
     }
     STR_RES strRes;
     bool bFound;
     if (g_pTlkTable && g_pTlkTable->Fetch(m_dwStringRef, strRes, nGender)) {
-        s = strRes.sString;
+        *pString = strRes.sString;
         bFound = true;
     } else {
         bFound = false;

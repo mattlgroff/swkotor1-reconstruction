@@ -23,15 +23,7 @@ public:
 
 #include "shared/globals.h"
 
-class CExoLocString {
-public:
-    CExoLocString();
-    CExoLocString(const CExoLocString&);
-    ~CExoLocString();
-    int GetString(unsigned long nLanguage, CExoString* pString, unsigned char nGender) const; // 0x005EA130
-    void* m_pList;
-    void* m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
 template <class T>
 class CExoArrayList {

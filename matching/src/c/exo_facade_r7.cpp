@@ -236,17 +236,7 @@ public:
     unsigned long GetStringLength(int nLanguage);   // 0x005ECA20 RET 4
 };
 
-class CExoLocString {
-public:
-    CExoLocStringInternal* m_pcExoLocStringInternal;   // 0x00
-    unsigned long m_dwStringRef;                    // 0x04
-
-    void ClearLocString();
-    unsigned long GetStringLength(int nLanguage);
-    int Compare(const CExoLocString& o);            // 0x005E9F10 RET 4
-    int operator==(const CExoLocString& o);
-    int operator!=(const CExoLocString& o);
-};
+#include "shared/exo_loc_string.h"
 
 // FUNCTION: SWKOTOR 0x005E9EA0
 void CExoLocString::ClearLocString()
@@ -261,13 +251,13 @@ unsigned long CExoLocString::GetStringLength(int nLanguage)
 }
 
 // FUNCTION: SWKOTOR 0x005EA020
-int CExoLocString::operator==(const CExoLocString& o)
+int CExoLocString::operator==(const CExoLocString& o) const
 {
     return Compare(o);
 }
 
 // FUNCTION: SWKOTOR 0x005EA030
-int CExoLocString::operator!=(const CExoLocString& o)
+int CExoLocString::operator!=(const CExoLocString& o) const
 {
     return !Compare(o);
 }

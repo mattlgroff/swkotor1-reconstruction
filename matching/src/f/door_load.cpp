@@ -3,13 +3,7 @@
 
 #include "shared/exo_string.h"
 
-class CExoLocString {
-public:
-    ~CExoLocString();
-    CExoLocString &operator=(const CExoLocString &s);
-    void *m_pList;
-    void *m_pPad;
-};
+#include "shared/exo_loc_string.h"
 
 class CResRef {
 public:
