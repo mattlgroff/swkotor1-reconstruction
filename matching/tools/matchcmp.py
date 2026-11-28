@@ -95,6 +95,28 @@ def annotated_functions(path):
     return found
 
 
+LIBRARIES = ROOT / "matching" / "libraries.csv"
+LIBRARY_DEFINES = {"aurora": ["-DAURORA_LIBRARY"]}
+_library_of = None
+
+
+def library_defines(path):
+    """Build defines for the library a unit belongs to (matching/libraries.csv;
+    units it does not list are the game's). CODE_RULES.md, R1: the renderer
+    and the game were built with different versions of some headers."""
+    global _library_of
+    if _library_of is None:
+        _library_of = {}
+        if LIBRARIES.exists():
+            for r in csv.DictReader(open(LIBRARIES, newline="")):
+                _library_of[r["unit"]] = r["library"]
+    try:
+        rel = Path(path).resolve().relative_to(ROOT).as_posix()
+    except ValueError:
+        rel = Path(path).as_posix()
+    return LIBRARY_DEFINES.get(_library_of.get(rel, "game"), [])
+
+
 def compile_source(path, flags, outdir):
     obj = Path(outdir) / (path.stem + ".obj")
     env = dict(os.environ)
@@ -103,7 +125,7 @@ def compile_source(path, flags, outdir):
     # Under Wine the SDK headers go on the command line instead (searched
     # after matching/include, as INCLUDE would be), so any launcher works.
     sdk = [] if WINDOWS else ["/I", winpath(MSVC / "INCLUDE")]
-    cmd = [winpath(MSVC / "BIN" / "CL.EXE"), "/nologo", "/c", *flags.split(),
+    cmd = [winpath(MSVC / "BIN" / "CL.EXE"), "/nologo", "/c", *flags.split(), *library_defines(path),
            "/I", winpath(ROOT / "matching" / "include"), *sdk,
            f"/Fo{winpath(obj)}", winpath(path)]
     run = run_tool(cmd, env)

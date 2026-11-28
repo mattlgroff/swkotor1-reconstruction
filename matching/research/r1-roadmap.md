@@ -74,10 +74,55 @@ both resolutions lose matches is a unit-boundary case.
    take one copy per type.
 2. **Templates.** `CExoArrayList` has 220 copies. Most share `element`,
    `num`, `array_size`, but `Add` grows to 16 in some and to 8 in others,
-   which one template cannot do. Either the renderer (Aurora) and the game
-   had separate array classes, or some copies are wrong. The inlining
-   variants go once the units are joined. `CExoLinkedList` and
-   `SafePointer` follow.
+   which one template cannot do. The original's out-of-line instances
+   (`mtools/growth.py` reads them) split by object:
+
+   | grows to | objects |
+   | --- | --- |
+   | 8 | `aurscene.o`, `aurmodelparse.o`, `aurtexman.o`, `bsp.o`, `swroomsurfacemesh.o`, and two with no object recorded (0x004A77C0, 0x004AD5E0) |
+   | 16 | `clientexoapp.o`, `swguicontrol.o`, `nwsmodule.o`, `nwcjournal.o`, `nwscombatround.o`, `nwscreature.o`, `nwsarea.o`, `nwssendplayermessage.o` |
+
+   So the renderer and the game were built with different versions of the
+   template, under the same name (the linker keeps one body per mangled
+   name, so a type the two sides share gets either). Two instances break
+   the pattern or mark an object boundary: `CExoArrayList<Quaternion>::Add`
+   (0x00438AF0) and `CExoArrayList<MdlNodeTriMesh*>::Add` (0x00438B40) grow
+   to 16 inside `aurlightmanager.o`'s range, next to `UpdateAnimFootprint`
+   (0x00437DB0), which has no object recorded. R1 now counts per library
+   (CODE_RULES.md): `matching/libraries.csv` marks the renderer's units and
+   the build defines `AURORA_LIBRARY` for them.
+
+   The copies show more than the growth constant. Per library, the
+   destructor is `if (element) delete[] element;` in the renderer (seen by
+   116 renderer units and 2 game units) and `delete[] element; element = 0;`
+   in the game; `SetSize(0)` clears `array_size` outside the null test in
+   the renderer and inside it in the game. The game's constructor
+   (`CExoArrayList<CExoString>::CExoArrayList(int)`, 0x004058F0) calls
+   `Allocate`. Every original `Add` instance calls `Allocate` out of line.
+
+   A merged header built on that (branch `al-merge-wip`) compiles in every
+   unit but does not hold the byte gate, because whether a caller expands a
+   member differs by unit:
+
+   | game members | lost | won |
+   | --- | --- | --- |
+   | defined in the class | 88 | 17 |
+   | defined after the class, not `inline` | 80 | 16 |
+   | declared only, bodies in a header for the 48 units that emit instances | 242 | 6 |
+
+   `CSWGuiManager::PushModalPanel` (0x0040BD90) calls the pointer `Add` at
+   0x00671C00, which is in `swminigame.o`, so `swguimanager.o` neither
+   expanded it nor emitted its own; other game units do expand `Add`. The
+   old copies reproduced this with a declarations-only view in some units
+   and inline bodies in others. `#pragma auto_inline(off)` cannot stand in
+   for that: MSVC compiles template members where they are instantiated, at
+   the end of the unit, so the pragma there takes every member out of line,
+   `operator[]` included (`gui_manager.cpp` went from 38 matches to 34).
+   Which members a unit expands is a property of the original object, so
+   the template waits on joining the split units (step 1). (The game was
+   built with automatic inlining too: compiling the game's units at `-Ob1`
+   loses 152 matches and gains none.) `CExoLinkedList`
+   and `SafePointer` follow.
    `Quaternion` (90 copies) has the same problem in small: 36 copies have no
    constructor, 13 an empty one, and 37 an identity constructor that stores
    its members in one of three orders (z, y, x, w; x, y, z, w; w, x, y, z),
@@ -92,6 +137,31 @@ both resolutions lose matches is a unit-boundary case.
 4. **The large game classes**: `CSWCCreature` (89 copies), `CGuiInGame`
    (76), `CClientExoApp` (parked: `wip_CClientExoApp.patch`), `CSWSCreature`,
    `CServerExoApp`.
+
+Smaller cases that need evidence rather than a script:
+
+- `ScenePart`: `h/scene.h` names vtable slots +0x34 and +0x54 `GetLight` and
+  `GetEmitter`; `h/sceneaddpart.cpp` names them `AsDynamic` and `AsEmitter`,
+  next to `AsGob`, `AsStatic`, `AsLight` and `AsTileSlot`. Aurora's other
+  downcasts are `As<Type>` (`MdlNode::AsMdlNodeLight`, `MaxTree::AsModel`),
+  but `room.cpp` and `scene.cpp` use the +0x34 result as a light.
+- `GobRef`: its inline bodies reach `Gob::m_lWatchers`, so it waits on
+  `Gob`; one copy declares `operator=(CAurObject*)` at the address others
+  declare `operator=(Gob*)` (0x00447FA0).
+- `TriMeshPart::GetTriMesh` returns `MdlNode*` in one copy and
+  `MdlNodeTriMesh*` in another; `VertexPC` is `Vector v` in one copy and
+  `x`, `y`, `z` in another; `VertexPrimitive` has pure virtuals in its
+  fullest copy that `part_material.cpp`'s subclasses do not override.
+- 38 types whose copies lay the same bytes out differently: a `Vector`
+  against three floats (`CSWSModuleEntryInfo`), an explicit `m_pVtbl`
+  against a real vtable (`Particle`, `TilePart`), a byte array against named
+  fields (`CCreatureAppearance`), a struct against the fields it holds
+  (`m_cHit` in `CSWMiniGameObject`).
+
+`mtools/automerge_vt.py` adds a slot-by-slot vtable merge: copies that are
+vtable views (placeholder slots `V00`, `V04` and the few slots their unit
+calls) give the shared class those slots' names, and two names for one slot
+stop the merge.
 
 `mtools/automerge.py` (driven by `drive.py`) merges the types whose fullest
 copy covers the others; the ones it skips are listed with the reason in the

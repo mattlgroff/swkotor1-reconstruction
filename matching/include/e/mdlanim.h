@@ -143,17 +143,7 @@ class Model;
 class AnimRun;
 class LookAtAnimation;
 
-typedef void (*GobCallback)(Gob* pGob, char* szEvent, void* pData);
-
-struct GobEventHandler {
-    char szEvent[0x20];                                 // +0x00
-    void (*pfnCallback)(Gob* pGob, char* szEvent, void* pData);  // +0x20
-    void* pDefaultData;                                 // +0x24
-    float fTime;                                        // +0x28
-    unsigned char bAlways;                              // +0x2c
-
-    GobEventHandler(GobCallback pfn, char* szName, void* pData, float fTime, unsigned char bAlways) throw();
-};
+#include "shared/gob_event_handler.h"
 
 class Scene;
 class CAurBehavior;
