@@ -55,11 +55,7 @@ class CExoFile;
 
 #include "shared/hostile_hilite.h"
 
-struct CRumblePattern {
-    int GetIntensity(float fTime, float* pfLeft, float* pfRight);  // 0x0068FDD0 (descriptive)
-    char pad_0x0[0x20];
-    int m_bExclusive;                               // 0x20
-};
+#include "shared/rumble_pattern.h"
 
 // GUI string cache entry (0xc): strref and its parsed text.
 struct CGuiStringStruct {

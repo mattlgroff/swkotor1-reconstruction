@@ -5,14 +5,7 @@
 
 #include "shared/rumble_channel.h"
 
-class CRumblePattern {
-public:
-    CRumbleChannel m_cLeft;                         // 0x00
-    CRumbleChannel m_cRight;                        // 0x10
-    int m_bExclusive;                               // 0x20
-
-    int GetIntensity(float fTime, float* pfLeft, float* pfRight); // 0x0068FDD0
-};
+#include "shared/rumble_pattern.h"
 
 // FUNCTION: SWKOTOR 0x0068FCB0
 float CRumbleChannel::GetMagnitude(float fTime, int bLoop)

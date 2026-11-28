@@ -329,9 +329,7 @@ struct CClientPazaakState {
 
 #include "shared/hostile_hilite.h"
 
-struct CRumblePattern {
-    int m_nPattern;
-};
+#include "shared/rumble_pattern.h"
 
 #include "shared/active_rumble.h"
 
