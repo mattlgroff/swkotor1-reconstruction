@@ -1,6 +1,5 @@
 // CServerExoAppInternal members that pass a CResRef temporary by
 // value (built in place, so CResRef's copy constructor is declared here).
-#define I_CRESREF_DECLARED_COPY
 #include "i/server_exo_app.h"
 
 // FUNCTION: SWKOTOR 0x004B20E0

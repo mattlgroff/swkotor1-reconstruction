@@ -55,10 +55,10 @@ original `nwsitem.o` (0x00553020-0x00560970) is seven project files.
 | `B_EXO_ARRAY_LIST_OPAQUE_ADD` | removed: the inline `Add` is closer (65 -> 35 differing instructions) |
 | `M_INLINE_MINI_HIT_INFO`, `M_INLINE_TARGETTING_INFO` | removed: the constructors live in their own unit |
 | `L_GUI_BUTTON_INLINE_CTOR`, `M_GUI_BUTTON_INLINE_CTOR`, `M_INLINE_RES_HELPER_CTOR` | removed: the inline body suits every unit |
+| `I_CRESREF_DECLARED_COPY`, `L_RESREF_IMPLICIT_COPY` | removed: `CResRef` is merged, with no copy constructor |
 | `B_ITEM_REPOSITORY_OPAQUE_GET_ITEM_AT`, `B_SWS_ITEM_OPAQUE_PROPERTY_GETTERS` | open: needs `nwsitem.o` joined |
 | `L_OPTIONS_CHECKBOX_INLINE_CTOR`, `L_OPTIONS_FAMILY_NOVTABLE`, `L_RADIO_BUTTON_INLINE`, `L_SLIDER_READONLY_DTOR_TU` | open: the options and save/load panels' constructors and destructors |
 | `L_GUI_CONTROL_DRAW_SLOT`, `L_GUI_LABEL_SET_STYLE_SLOT` | open: a virtual slot present only in some units (needs the real `CSWGuiControl` vtable) |
-| `I_CRESREF_DECLARED_COPY`, `L_RESREF_IMPLICIT_COPY` | open: `CResRef`'s copy constructor (`r1-merges.md`) |
 | `G_AUR_FONT_INFO_INLINE_CTOR`, `G_EXO_LIST_SIZED_DEFAULT`, `G_EXO_LIST_CONTAINS` | open: `CAurTextureBasic`'s unit and the `CExoArrayList` copies |
 | `B_COMBAT_INFO_NODE_INLINE`, `SWS_COMBAT_ROUND_OUTLINE_GETATTACK`, `M_OUTLINE_MINI_STATE`, `B_PLAYER_CLIENT_ENTRY_FIELDS`, `B_OUT_OF_LINE_FACTION_MANAGER` | open |
 
