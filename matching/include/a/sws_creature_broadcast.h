@@ -122,13 +122,7 @@ public:
     void GetWorldTime(unsigned long* pDay, unsigned long* pTime);   // 0x004ADE40
 };
 
-class CGameObjectClient {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual class CSWCCreature* AsSWCCreature();    // 0x2c
-};
+#include "shared/game_object_client.h"
 
 class CSWSCombatRound {
 public:

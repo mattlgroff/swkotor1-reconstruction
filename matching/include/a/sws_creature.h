@@ -771,13 +771,7 @@ public:
     CSWCCreature21C* m_p21C;                        // 0x21c (placeholder name)
 };
 
-class CGameObjectClient {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-};
+#include "shared/game_object_client.h"
 
 class CSWSObjectF8 {
 public:

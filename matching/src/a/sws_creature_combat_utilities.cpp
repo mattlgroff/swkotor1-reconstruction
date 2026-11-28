@@ -9,13 +9,7 @@ class CSWSObject;
 class CGameObject;
 class CSWSCreature;
 class CSWCCreature { public: void SetAttackTarget(int nTarget); }; // 0x00610A10
-class CGameObjectClient {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();
-};
+#include "shared/game_object_client.h"
 class CSWSCombatRound {
 public:
     void EndCombatRound(int bCancel); // 0x004D4620
