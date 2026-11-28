@@ -149,10 +149,7 @@ public:
     char pad_0x4[0x18];
     CSoundSet(const CResRef& s);
 };
-class CSoundSetList {
-public:
-    CResRef GetSoundSetResRef(unsigned short nId); // 0x006788d0, descriptive name.
-};
+#include "shared/sound_set_list.h"
 class CSWCCreaturePartyStatus {
 public:
     char pad_0x0[4];

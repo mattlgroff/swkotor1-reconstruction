@@ -187,10 +187,7 @@ public:
 
 #include "shared/client_message_handler1c0.h"
 
-class CSoundSetList {
-public:
-    ~CSoundSetList();                               // 0x00678880
-};
+#include "shared/sound_set_list.h"
 
 struct CItemDropSounds {
     char m_resRef[16];

@@ -158,17 +158,7 @@ public:
     char pad_0x28[0x2c];
 };
 
-class CSoundSetList {
-public:
-    CSoundSetList();
-    ~CSoundSetList();
-    CResRef GetSoundSetResRef(unsigned short nId);
-
-    unsigned short m_nNumSoundSets;                 // 0x00
-    CResRef* m_pResRefs;                            // 0x04
-    unsigned char* m_pGenders;                      // 0x08
-    unsigned long* m_pStrRefs;                      // 0x0c
-};
+#include "shared/sound_set_list.h"
 
 // FUNCTION: SWKOTOR 0x00678940 SYMBOL: ??1?$CResHelper@VCResSSF@@$0IAM@@@UAE@XZ
 // FUNCTION: SWKOTOR 0x006789A0 SYMBOL: ?SetResRef@?$CResHelper@VCResSSF@@$0IAM@@@QAEXABVCResRef@@H@Z
