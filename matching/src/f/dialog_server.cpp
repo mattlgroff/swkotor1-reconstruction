@@ -270,13 +270,7 @@ public:
     unsigned long m_nIndex;          // +0x10
 };
 
-class CSWSDialogStuntModel {
-public:
-    CSWSDialogStuntModel();
-    ~CSWSDialogStuntModel();
-    CExoString m_sParticipant;       // +0x0
-    CResRef m_cStuntModel;           // +0x8
-};
+#include "shared/sws_dialog_stunt_model.h"
 
 class CSWSDialogBase {
 public:

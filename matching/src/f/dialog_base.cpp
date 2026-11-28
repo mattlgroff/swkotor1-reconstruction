@@ -136,12 +136,7 @@ CSWSPlayerJournalQuestUpdates::~CSWSPlayerJournalQuestUpdates()
 {
 }
 
-class CSWSDialogStuntModel {
-public:
-    CSWSDialogStuntModel();
-    CExoString m_sParticipant;       // +0x0
-    CResRef m_cModel;                // +0x8
-};
+#include "shared/sws_dialog_stunt_model.h"
 
 // FUNCTION: SWKOTOR 0x0059EA40
 CSWSDialogStuntModel::CSWSDialogStuntModel()
