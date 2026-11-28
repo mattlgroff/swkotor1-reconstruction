@@ -244,33 +244,11 @@ public:
 class CItemModel : public CItemModelBase, public CGob {
 };
 
-class CGameObject {
-public:
-    virtual void v00();
-    virtual void v04();
-    virtual void SetWorldTime(unsigned long nDay, unsigned long nTime);  // 0x08
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-    virtual CSWSObject* AsSWSObject();              // 0x10
-    virtual CSWCDoor* AsSWCDoor(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual CSWCArea* AsSWCArea(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
-    virtual CItemModel* GetItemModel();             // 0x34
-
-    unsigned long m_idSelf;                         // 0x04
-
-    unsigned long GetId() { return m_idSelf; }
-    unsigned char m_nObjectType;                    // 0x08
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:
-    virtual void v38(); virtual CSWCTrigger* AsSWCTrigger(); virtual void v40();
-    virtual CSWCProjectile* AsSWCProjectile();      // 0x44
-    virtual void v48(); virtual CSWCPlaceable* AsSWCPlaceable(); virtual void v50();
-    virtual CSWCAreaOfEffectObject* AsSWCAreaOfEffectObject();   // 0x54
-    virtual void v58(); virtual void v5C(); virtual void v60(); virtual void v64();
-    virtual void v68(); virtual CSWCSoundObject* AsSWCSoundObject(); virtual void v70(); virtual void v74();
+      virtual void v70(); virtual void v74();
     virtual void v78(); virtual void v7C(); virtual void v80(); virtual void v84();
     virtual void v88(); virtual void v8C(); virtual void v90();
     virtual void v94(void* pAreaScene);             // 0x94 (attach to area scene; name unresolved)

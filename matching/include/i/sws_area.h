@@ -111,30 +111,7 @@ class CSWSArea;
 class CSWSAreaOfEffectObject;
 class CSWSEncounter;
 
-class CGameObject {
-public:
-    virtual ~CGameObject() {}                       // 0x00
-    virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual CSWSObject* AsSWSObject();              // 0x10
-    virtual void v14();
-    virtual CSWSDoor* AsSWSDoor();                  // 0x18
-    virtual void v1c(); virtual void v20(); virtual void v24();
-    virtual CSWSArea* AsSWSArea();                  // 0x28
-    virtual void v2c();
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
-    virtual void v34(); virtual void v38(); virtual void v3c();
-    virtual CSWSTrigger* AsSWSTrigger();            // 0x40
-    virtual void v44();
-    virtual CSWSPlaceable* AsSWSPlaceable();        // 0x48
-    virtual void v4c();
-    virtual CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject();  // 0x50
-    virtual void v54(); virtual void v58();
-    virtual CSWSEncounter* AsSWSEncounter();        // 0x5c
-
-    unsigned long m_idSelf;                         // 0x04
-    unsigned char m_nObjectType;                    // 0x08
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CPathfindInformation {
 public:

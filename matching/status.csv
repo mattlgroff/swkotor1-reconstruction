@@ -2587,8 +2587,8 @@ address,name,status,diff_insns,file
 0x004C15F0,CSWSArea::SmoothSelectionPasses,NONMATCH,7,matching/src/i/sws_area_smooth.cpp
 0x004C1670,CSWSArea::SmoothPointsOnPath,MATCH,0,matching/src/i/sws_area_smooth.cpp
 0x004C17A0,CSWSArea::SmoothPointsOnPathRestartable,NONMATCH,15,matching/src/i/sws_area_smooth.cpp
-0x004C3030,CGameObject::~CGameObject,MATCH,0,matching/src/i/sws_game_object.cpp
-0x004C3040,??_GCGameObject@@UAEPAXI@Z,MATCH,0,matching/src/i/sws_game_object.cpp
+0x004C3030,??1CGameObject@@UAE@XZ,MATCH,0,matching/src/i/sws_module_life.cpp
+0x004C3040,??_GCGameObject@@UAEPAXI@Z,MATCH,0,matching/src/i/sws_module_life.cpp
 0x004C3060,CSWSModule::SetLowerCaseName,MATCH,0,matching/src/i/sws_module_tags.cpp
 0x004C30C0,CResIFO::CResIFO,MATCH,0,matching/src/i/sws_module.cpp
 0x004C30F0,CSWSModule::GetArea,MATCH,0,matching/src/i/sws_module.cpp

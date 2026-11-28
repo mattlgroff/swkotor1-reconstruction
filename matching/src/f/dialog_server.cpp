@@ -68,30 +68,12 @@ class CSWSArea;
 class CSWSCreature;
 class CSWSObject;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04();
-    virtual void v08();
-    virtual void v0c();
-    virtual CSWSObject *AsSWSObject();      // +0x10
-    virtual void v14();
-    virtual void v18();
-    virtual void v1c();
-    virtual void v20();
-    virtual void v24();
-    virtual void v28();
-    virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();   // +0x30
-
-    CSWSArea *GetArea();
-    unsigned long GetNearestObjectByTag(const CExoString &sTag, float fRange);
-    unsigned long m_idSelf;          // +0x4
-    char pad_0x8[0x4];
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
+    CSWSArea *GetArea();
+    unsigned long GetNearestObjectByTag(const CExoString &sTag, float fRange);
     char pad_0xc[0xc];
     CExoString m_sTag;                              // 0x18
     void SetDialogDelay(float fDelay);

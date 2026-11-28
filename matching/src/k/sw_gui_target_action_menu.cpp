@@ -442,7 +442,7 @@ void CSWGuiMainInterface::UpdateActions()
     }
     if (pObject) {
         // Slot 0x0c returns the client object (AsSWCObject).
-        pTarget = (CSWCObject*)pObject->AsActionTarget();
+        pTarget = (CSWCObject*)pObject->AsSWCObject();
     }
     int i;
     for (i = 0; i < 6; i++) {
@@ -506,7 +506,7 @@ void CSWGuiTargetActionMenu::UseAction(int nSlot, int a2)
         if (pPC && pAction) {
             CGameObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(pAction->m_oidTarget);
             if (pObject) {
-                CSWCActionTarget* pTarget = pObject->AsActionTarget();
+                CSWCActionTarget* pTarget = (CSWCActionTarget*)pObject->AsSWCObject();
                 if (pTarget) {
                     if (pAction->m_bEnabled && pAction->m_pfnAction) {
                         int bAttack = 0;

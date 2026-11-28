@@ -165,11 +165,7 @@ public:
 
 class CSWCObject;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-};
+#include "shared/game_object.h"
 
 const unsigned long OBJECT_INVALID = 0x7f000000;
 

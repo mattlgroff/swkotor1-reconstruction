@@ -36,7 +36,7 @@ int CSWSMessage::SendServerToPlayerQuickChatMessage(unsigned long oidSpeaker, un
         CSWSPlayer* pPlayer = (CSWSPlayer*)pPlayers->GetAtPos(pos);
         if (pPlayer->GetGameObject()) {
             CGameObject* pPlayerObject = pPlayer->GetGameObject();
-            Vector vDelta = VectorDelta(pPlayerObject->m_vPosition, vPosition);
+            Vector vDelta = VectorDelta(((CSWSObject*)pPlayerObject)->m_vPosition, vPosition);
             if (pArea == ((CSWSObject*)pPlayer->GetGameObject())->GetArea()) {
                 if (vDelta.z*vDelta.z + vDelta.y*vDelta.y + vDelta.x*vDelta.x <= AI_SOUND_RANGE * AI_SOUND_RANGE) {
                     bResult = SendServerToPlayerQuickChat(pPlayer->m_nPlayerID, oidSpeaker, nQuickChat) & 1;

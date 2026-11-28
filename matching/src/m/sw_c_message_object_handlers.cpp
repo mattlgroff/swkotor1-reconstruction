@@ -3,12 +3,7 @@
 #include "shared/globals.h"
 class CGameObject;
 class CSWCDoor { public: virtual ~CSWCDoor(); };
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04(); virtual void v08(); virtual void v0C(); virtual void v10();
-    virtual CSWCDoor* AsSWCDoor();
-};
+#include "shared/game_object.h"
 class CGameObjectArray {
 public:
     unsigned char Delete(unsigned long, CGameObject**);

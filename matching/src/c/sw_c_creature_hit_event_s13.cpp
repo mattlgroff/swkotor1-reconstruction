@@ -78,15 +78,7 @@ public:
 class CSWCCreature;
 class CSWCDoor;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10();
-    virtual CSWCDoor* AsSWCDoor();                  // 0x14
-    virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-};
+#include "shared/game_object.h"
 
 struct CSWCCreatureSoundSet {
     char pad_0x0[0x4c];
@@ -106,8 +98,7 @@ public:
     int AnimationParry(unsigned short nAnim);       // 0x0063C4F0
     void AbortFireForgetAnimation(int b);           // 0x0063CAD0
 
-    unsigned long m_idSelf;                         // 0x04
-    char pad_0x8[0x20 - 0x8];
+    char pad_0xc[0x14];
     CSWCArea* m_pArea;                              // 0x20
     Vector m_vPosition;                             // 0x24
 };

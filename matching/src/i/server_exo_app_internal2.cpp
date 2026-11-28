@@ -198,7 +198,7 @@ void CServerExoAppInternal::SetWorldTimeOnList(unsigned char nList)
         CGameObject* pObject;
         m_pGameObjArray->GetGameObject(oid, &pObject);
         if (pObject) {
-            pObject->SetWorldTime(nDay, nTime);
+            pObject->ResetUpdateTimes(nDay, nTime);
         }
         pList->GetNext(pos);
     }

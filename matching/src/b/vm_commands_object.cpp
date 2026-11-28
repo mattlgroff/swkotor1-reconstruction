@@ -214,7 +214,7 @@ public:
 // The generic object's local variable table (+0x110).
 class CSWSObjectVarTableView : public CGameObject {
 public:
-    char pad_0xf4[0x110 - 0xf4];
+    char pad_0xc[0x110 - 0xc];
     CSWVarTable m_VarTable;                                 // 0x110
 };
 
@@ -399,7 +399,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetLocal(int nCommandId, int nParam
                 if (nValue >= -128 && nValue <= 127) {
                     pVarTable->SetLocalNumber(nIndex, nValue);
                 } else {
-                    ExoDebugLog(pObject->m_sTag.CStr(), pObject->m_sTag.CStr());
+                    ExoDebugLog(((CSWSObject*)pObject)->m_sTag.CStr(), ((CSWSObject*)pObject)->m_sTag.CStr());
                 }
                 break;
             }
@@ -432,7 +432,7 @@ int CSWVirtualMachineCommands::ExecuteCommandPlaySound(int nCommandId, int nPara
     CGameObject* pObject;
     if (m_bValidObjectRunScript == 1 &&
         g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
-        pObject->m_bCommandable) {
+        ((CSWSObject*)pObject)->m_bCommandable) {
         ((CSWSObject*)pObject)->AddAction(0x17, 0xffff, 4, &sSoundName);
     }
     return 0;

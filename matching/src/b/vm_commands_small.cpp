@@ -37,7 +37,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetCommandable(int nCommandId, int 
     CGameObject* pObject;
     int bCommandable;
     if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidTarget, &pObject) == GAME_OBJECT_VALID) {
-        bCommandable = pObject->m_bCommandable;
+        bCommandable = ((CSWSObject*)pObject)->m_bCommandable;
     }
     return g_pVirtualMachine->StackPushInteger(bCommandable) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
 }

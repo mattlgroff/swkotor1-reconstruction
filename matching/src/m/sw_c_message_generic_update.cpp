@@ -67,7 +67,7 @@ class CSWCObject { public:
  char pad_004[4]; unsigned char m_nObjectType;
  char pad_009[0x4c-9]; float m_fAnimationSpeed;
 };
-class CGameObject { public: virtual void v00(); virtual void v04(); virtual void v08(); virtual CSWCObject* AsSWCObject(); };
+#include "shared/game_object.h"
 class CClientExoApp { public: CGameObject* GetGameObject(unsigned long); };
 #include "shared/app_manager.h"
 #include "shared/globals.h"

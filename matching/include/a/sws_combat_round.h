@@ -53,23 +53,10 @@ public:
 class CGameObject;
 class CSWSObject;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual CSWSObject* AsSWSObject();          // 0x10
-    virtual void v14();
-    virtual CSWSDoor* AsSWSDoor();              // 0x18
-    virtual void v1c(); virtual void v20(); virtual void v24(); virtual void v28();
-    virtual void v2c();
-    virtual CSWSCreature* AsSWSCreature();      // 0x30
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
-    virtual void v34(); virtual void v38(); virtual void v3c();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4c();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5c();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7c();
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8c();
     virtual void v90();

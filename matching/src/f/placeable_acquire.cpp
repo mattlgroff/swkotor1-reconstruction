@@ -61,25 +61,7 @@ public:
     }
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();     // +0x30
-    virtual void v34();
-    virtual CSWSItem *AsSWSItem();             // +0x38
-    virtual void v3c(); virtual void v40(); virtual void v44();
-    virtual CSWSPlaceable *AsSWSPlaceable();   // +0x48
-    virtual void v4c(); virtual void v50(); virtual void v54(); virtual void v58();
-    virtual void v5c(); virtual void v60(); virtual void v64(); virtual void v68();
-    virtual void v6c(); virtual void v70(); virtual void v74(); virtual void v78();
-    virtual void SetAnimation(int nAnimation); // +0x7c
-
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CGameObjectArray {
 public:
@@ -98,6 +80,10 @@ public:
 
 class CSWSItem : public CGameObject {
 public:
+    virtual void v70();
+    virtual void v74();
+    virtual void v78();
+    virtual void SetAnimation(int nAnimation);  // +0x7c
     CSWSItem(unsigned long oid);
     void SetPossessor(unsigned long oid, int a, int b, unsigned long oidPrev);
     void RemoveFromArea();
@@ -120,6 +106,10 @@ public:
 
 class CSWSCreature : public CGameObject {
 public:
+    virtual void v70();
+    virtual void v74();
+    virtual void v78();
+    virtual void SetAnimation(int nAnimation);  // +0x7c
     int RemoveItem(CSWSItem *pItem, int a, int b, CSWSItem **ppItem);
     CItemRepository *GetItemRepository(int bPlayer);
     unsigned long GetGold();
@@ -221,6 +211,10 @@ public:
 
 class CSWSPlaceable : public CGameObject {
 public:
+    virtual void v70();
+    virtual void v74();
+    virtual void v78();
+    virtual void SetAnimation(int nAnimation);  // +0x7c
     void PostProcess();
     int RemoveItem(CSWSItem *pItem);
     int AcquireItem(CSWSItem **ppItem, unsigned long oidPossessor, int bFlag);

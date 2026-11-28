@@ -468,29 +468,7 @@ public:
     char m_padA78[0xac8 - 0xa78];
 };
 
-class CGameObject {
-public:
-    virtual void v00();
-    virtual void v04();
-    virtual void v08();
-    virtual void v0c();
-    virtual void v10();
-    virtual void v14();
-    virtual CSWSDoor* AsSWSDoor();                  // +0x18
-    virtual void v1c();
-    virtual void v20();
-    virtual void v24();
-    virtual CSWSArea* AsSWSArea();                  // +0x28
-    virtual void v2c();
-    virtual CSWSCreature* AsSWSCreature();          // +0x30
-    virtual void v34();
-    virtual void v38();
-    virtual void v3c();
-    virtual CSWSTrigger* AsSWSTrigger();            // +0x40
-
-    unsigned long m_idSelf;                         // +0x04
-    unsigned char m_nObjectType;                    // +0x08
-};
+#include "shared/game_object.h"
 
 class CSWSArea {
 public:

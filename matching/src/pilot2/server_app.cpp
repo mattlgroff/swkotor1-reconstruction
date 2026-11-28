@@ -18,24 +18,7 @@ public:
 class CSWSArea;
 class CSWSCreature;
 
-class CGameObject {
-public:
-    virtual void v00();
-    virtual void v04();
-    virtual void v08();
-    virtual void v0C();
-    virtual void v10();
-    virtual void v14();
-    virtual void v18();
-    virtual void v1C();
-    virtual void v20();
-    virtual void v24();
-    virtual void v28();
-    virtual void v2C();
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
-
-    unsigned long m_idSelf;                         // 0x04
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
@@ -44,7 +27,7 @@ public:
 
 class CSWSCreature : public CSWSObject {
 public:
-    char pad_0x08[0x308];
+    char pad_0xc[0x304];
     unsigned long m_oidArea;                        // 0x310
 };
 

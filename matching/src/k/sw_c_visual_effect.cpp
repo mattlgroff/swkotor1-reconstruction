@@ -109,7 +109,7 @@ CSWCVisualEffect::CSWCVisualEffect(int bRegister) : CSWCObject(0x0b)
     m_nDelay = 0;
     m_nAnimation = 0;
     if (bRegister) {
-        g_pAppManager->GetClientExoApp()->GetGameObjectArray()->AddInternalObject(&m_oid, this, 0);
+        g_pAppManager->GetClientExoApp()->GetGameObjectArray()->AddInternalObject(&m_idSelf, this, 0);
         g_pAppManager->GetClientExoApp()->GetClientAIMaster()->AddObject(this);
     }
     m_pSound = 0;
@@ -123,7 +123,7 @@ CSWCVisualEffect::CSWCVisualEffect(int bRegister) : CSWCObject(0x0b)
 // FUNCTION: SWKOTOR 0x0068FF70
 CSWCVisualEffect::~CSWCVisualEffect()
 {
-    g_pAppManager->m_pClientExoApp->GetGameObjectArray()->Delete(m_oid);
+    g_pAppManager->m_pClientExoApp->GetGameObjectArray()->Delete(m_idSelf);
     if (m_pSound)
         delete m_pSound;
     if (m_pModel) {

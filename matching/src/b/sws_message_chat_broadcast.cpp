@@ -51,7 +51,7 @@ int CSWSMessage::ChatStrRefMessage(unsigned long nTalkVolume, unsigned long oidS
         while (pos) {
             CSWSPlayer* pPlayer = (CSWSPlayer*)pPlayers->GetAtPos(pos);
             if (pPlayer->GetGameObject()) {
-                Vector vDelta = VectorDelta(pPlayer->GetGameObject()->m_vPosition, vPosition);
+                Vector vDelta = VectorDelta(((CSWSObject*)pPlayer->GetGameObject())->m_vPosition, vPosition);
                 if (pArea == ((CSWSObject*)pPlayer->GetGameObject())->GetArea()) {
                     if (vDelta.z * vDelta.z + vDelta.y * vDelta.y + vDelta.x * vDelta.x <= fRange * fRange) {
                         bResult &= SendServerToPlayerChat_StrRef(pPlayer->m_nPlayerID, oidSpeaker, nVolume, nStrRef);
@@ -112,7 +112,7 @@ int CSWSMessage::SendServerToPlayerChatMultiLangMessage(unsigned char nChatType,
                     break;
                 }
             }
-            Vector vDelta = VectorDelta(pPlayer->GetGameObject()->m_vPosition, vPosition);
+            Vector vDelta = VectorDelta(((CSWSObject*)pPlayer->GetGameObject())->m_vPosition, vPosition);
             if (!bSkip && pArea == ((CSWSObject*)pPlayer->GetGameObject())->GetArea()) {
                 if (vDelta.z * vDelta.z + vDelta.y * vDelta.y + vDelta.x * vDelta.x <= AI_SOUND_RANGE * AI_SOUND_RANGE) {
                     bResult = SendServerToPlayerChatMultiLang_Helper(pPlayer->m_nPlayerID, 8, oidSpeaker, sMessage,

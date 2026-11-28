@@ -206,39 +206,7 @@ public:
     CExoLinkedListInternal* m_pList;
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04();
-    virtual void SetWorldTime(unsigned long nDay, unsigned long nTime);     // +0x08
-    virtual void* AsSWCObject();                    // +0x0c
-    virtual CSWSObject* AsSWSObject();              // +0x10
-    virtual void* AsSWCDoor();                      // +0x14
-    virtual CSWSDoor* AsSWSDoor();                  // +0x18
-    virtual void* AsSWCModule();                    // +0x1c
-    virtual CSWSModule* AsSWSModule();              // +0x20
-    virtual void* AsSWCArea();                      // +0x24
-    virtual CSWSArea* AsSWSArea();                  // +0x28
-    virtual void* AsSWCCreature();                  // +0x2c
-    virtual CSWSCreature* AsSWSCreature();          // +0x30
-    virtual void* AsSWCItem();                      // +0x34
-    virtual CSWSItem* AsSWSItem();                  // +0x38
-    virtual void* AsSWCTrigger();                   // +0x3c
-    virtual CSWSTrigger* AsSWSTrigger();            // +0x40
-    virtual void* AsSWCPlaceable();                 // +0x44
-    virtual CSWSPlaceable* AsSWSPlaceable();        // +0x48
-    virtual void* AsSWCAreaOfEffectObject();        // +0x4c
-    virtual CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject();  // +0x50
-    virtual void* AsSWCWaypoint();                  // +0x54
-    virtual CSWSWaypoint* AsSWSWaypoint();          // +0x58
-    virtual CSWSEncounter* AsSWSEncounter();        // +0x5c
-    virtual void* AsSWCStore();                     // +0x60
-    virtual CSWSStore* AsSWSStore();                // +0x64
-    virtual CSWSSoundObject* AsSWSSoundObject();    // +0x68
-
-    unsigned long m_idSelf;                         // +0x04
-    unsigned char m_nObjectType;                    // +0x08
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
@@ -420,7 +388,7 @@ struct CSWSCreatureAppearance {
 
 class CSWSCreature : public CGameObject {
 public:
-    virtual void v6c(); virtual void v70(); virtual void v74(); virtual void v78();
+     virtual void v70(); virtual void v74(); virtual void v78();
     virtual void v7c(); virtual void v80(); virtual void v84(); virtual void v88();
     virtual CExoLocString* GetFirstName();          // +0x8c
     virtual void v90();

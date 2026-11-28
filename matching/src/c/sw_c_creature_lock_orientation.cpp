@@ -2,10 +2,7 @@
 
 class CSWSCreature : public CGameObject {
 public:
-    virtual void v38(); virtual void v3c(); virtual void v40(); virtual void v44();
-    virtual void v48(); virtual void v4c(); virtual void v50(); virtual void v54();
-    virtual void v58(); virtual void v5c(); virtual void v60(); virtual void v64();
-    virtual void v68(); virtual void v6c(); virtual void v70(); virtual void v74();
+      virtual void v70(); virtual void v74();
     virtual void v78(); virtual void v7c(); virtual void v80(); virtual void v84();
     virtual void v88(); virtual void v8c(); virtual void v90();
     virtual int v94();                              // name unresolved; vtable slot 0x94

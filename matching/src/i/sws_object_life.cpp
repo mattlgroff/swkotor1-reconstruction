@@ -33,41 +33,7 @@ public:
 
 int operator==(const Vector& a, const Vector& b);  // 0x004AA980
 
-class CGameObject {
-public:
-    CGameObject(unsigned char nType, unsigned long oid);    // 0x004D7D60
-    virtual ~CGameObject();                         // 0x004C3030
-    virtual void SetId(unsigned long oid);          // +0x04 (placeholder name)
-    virtual void ResetUpdateTimes(unsigned long nDay, unsigned long nTime);    // +0x08 (placeholder name)
-    virtual void* As0c();
-    virtual CSWSObject* AsSWSObject();              // +0x10
-    virtual void* As14();
-    virtual void* As18();
-    virtual void* As1c();
-    virtual void* As20();
-    virtual void* As24();
-    virtual CSWSArea* AsSWSArea();                  // +0x28
-    virtual void* As2c();
-    virtual CSWSCreature* AsSWSCreature();          // +0x30
-    virtual void* As34();
-    virtual void* As38();
-    virtual void* As3c();
-    virtual void* As40();
-    virtual void* As44();
-    virtual void* As48();
-    virtual void* As4c();
-    virtual void* As50();
-    virtual void* As54();
-    virtual void* As58();
-    virtual void* As5c();
-    virtual void* As60();
-    virtual void* As64();
-    virtual void* As68();
-    virtual void* As6c();
-
-    unsigned long m_idSelf;                         // +0x04
-    unsigned char m_nObjectType;                    // +0x08
-};
+#include "shared/game_object.h"
 
 class CExoLinkedListInternal;
 

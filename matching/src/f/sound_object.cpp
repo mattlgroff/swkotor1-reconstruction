@@ -138,18 +138,7 @@ public:
 
 class CSWSCreature;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();     // +0x30
-    unsigned long GetID() { return m_idSelf; }
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CSWSPlayer {
 public:
@@ -322,7 +311,7 @@ void CSWSSoundObject::AddToArea(CSWSArea *pArea, int bFlag)
     if (pArea) {
         SetArea(pArea);
         pArea->AddSoundObject(m_idSelf, bFlag);
-        g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(&m_sTag, GetID());
+        g_pAppManager->GetServerExoApp()->GetModule()->AddObjectToLookupTable(&m_sTag, GetId());
     }
 }
 
@@ -397,7 +386,7 @@ void CSWSSoundObject::Stop()
 void CSWSSoundObject::FadeAndStop(float fTime)
 {
     m_bActive = 0;
-    unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetID());
+    unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetId());
     CClientSoundObject *pSound = g_pAppManager->GetClientExoApp()->GetSoundObjectByGameObjectID(oid);
     if (pSound)
         pSound->FadeAndStop(fTime);
@@ -408,7 +397,7 @@ void CSWSSoundObject::ChangePitchVariation(float f)
 {
     if (f != m_fPitchVariation) {
         m_fPitchVariation = f;
-        unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetID());
+        unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetId());
         CClientSoundObject *pSound = g_pAppManager->GetClientExoApp()->GetSoundObjectByGameObjectID(oid);
         if (pSound)
             pSound->SetPitchVariation(f);
@@ -420,7 +409,7 @@ void CSWSSoundObject::ChangeFixedVariance(float f)
 {
     if (f != m_fFixedVariance) {
         m_fFixedVariance = f;
-        unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetID());
+        unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetId());
         CClientSoundObject *pSound = g_pAppManager->GetClientExoApp()->GetSoundObjectByGameObjectID(oid);
         if (pSound)
             pSound->SetFixedVariance(f);
@@ -435,7 +424,7 @@ void CSWSSoundObject::ChangeVolume(int nVolume)
     nVolume = nVolume < 0 ? 0 : nVolume;
     if (nVolume != m_nVolume) {
         m_nVolume = nVolume;
-        unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetID());
+        unsigned long oid = g_pAppManager->GetClientExoApp()->ServerToClientObjectId(GetId());
         CClientSoundObject *pSound = g_pAppManager->GetClientExoApp()->GetSoundObjectByGameObjectID(oid);
         if (pSound)
             pSound->SetVolume(nVolume);
@@ -703,7 +692,7 @@ int CSWSAmbientSound::GetPlayersInArea(CExoArrayList<unsigned long> *pList)
             if (pPlayer && pPlayer->GetGameObject()) {
                 CSWSCreature *pCreature = pPlayer->GetGameObject()->AsSWSCreature();
                 if (pCreature && ((CSWSObject *)pCreature)->GetArea() &&
-                    ((CSWSObject *)pCreature)->GetArea()->GetID() == m_oidArea)
+                    ((CSWSObject *)pCreature)->GetArea()->GetId() == m_oidArea)
                     pList->Add(pPlayer->m_nPlayerID);
             }
             pPlayers->GetNext(pos);

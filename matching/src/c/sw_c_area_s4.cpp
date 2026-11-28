@@ -75,17 +75,7 @@ public:
     char pad_0xac[0x54];
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20();
-    virtual CSWCArea* AsSWCArea();                  // 0x24
-
-    unsigned long m_idSelf;                         // 0x04
-    unsigned char m_nObjectType;                    // 0x08
-};
+#include "shared/game_object.h"
 
 class CSWCArea : public CSWCAreaEnvironment, public CGameObject {
 public:

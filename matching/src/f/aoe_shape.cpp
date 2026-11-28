@@ -100,40 +100,14 @@ public:
 #include "shared/app_manager.h"
 
 
-class CGameObject {
+#include "shared/game_object.h"
+
+class CSWSObject : public CGameObject {
 public:
-    virtual ~CGameObject();
-    virtual void v04();
-    virtual void v08();
-    virtual void v0c();
-    virtual void v10();
-    virtual void v14();
-    virtual void v18();
-    virtual void v1c();
-    virtual void v20();
-    virtual void v24();
-    virtual void v28();
-    virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();     // +0x30
-    virtual void v34();
-    virtual void v38();
-    virtual void v3c();
-    virtual void v40();
-    virtual void v44();
-    virtual void v48();
-    virtual void v4c();
-    virtual void v50();
-    virtual void v54();
-    virtual void v58();
-    virtual void v5c();
-    virtual void v60();
-    virtual void v64();
-    virtual void v68();
-    virtual void v6c();
     virtual void v70();
     virtual void v74();
     virtual void v78();
-    virtual void SetAnimation(int nAnimation);   // +0x7c
+    virtual void SetAnimation(int nAnimation);  // +0x7c
     virtual void v80();
     virtual void v84();
     virtual void v88();
@@ -148,19 +122,13 @@ public:
     virtual void vac();
     virtual void vb0();
     virtual void vb4();
-    virtual int GetLastSpellId();              // +0xb8
-
-    unsigned long m_idSelf;             // 0x4
-};
-
-class CSWSObject : public CGameObject {
-public:
+    virtual int GetLastSpellId();  // +0xb8
     void SetTag(CExoString &sTag);                          // 0x00553040
     CSWSArea *GetArea();                                    // 0x004CB120
     void SetArea(CSWSArea *pArea);                          // 0x004CB160
     void SetPosition(const Vector &v, int a, int b, int c); // 0x004CD1A0
 
-    char pad_0x8[0x18 - 0x8];
+    char pad_0xc[0xc];
     CExoString m_sTag;                  // 0x18
     char pad_0x20[0x90 - 0x20];
     Vector m_vPosition;                 // 0x90

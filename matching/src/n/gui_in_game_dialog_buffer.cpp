@@ -13,11 +13,7 @@ public:
     virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
     virtual CExoString GetName(); // +0x70
 };
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CSWCObject* AsSWCObject(); // +0x0C
-};
+#include "shared/game_object.h"
 class CClientExoApp { public: CGameObject* GetGameObject(unsigned long oid); /* 0x005ED580 */ };
 #include "shared/app_manager.h"
 #include "shared/globals.h"

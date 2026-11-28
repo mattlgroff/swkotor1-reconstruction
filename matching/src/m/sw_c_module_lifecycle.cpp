@@ -54,14 +54,7 @@ public:
     int m_nVideoEffect;                             // +0x1c
 };
 
-class CGameObject {
-public:
-    CGameObject(unsigned char nObjectType, unsigned long oid);  // 0x004D7D60
-    virtual ~CGameObject() {}
-
-    unsigned long m_idSelf;                         // +0x04
-    unsigned char m_nObjectType;                    // +0x08
-};
+#include "shared/game_object.h"
 
 class CSWCArea {
 public:

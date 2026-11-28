@@ -127,31 +127,7 @@ class CSWCObject;
 class CSWCCreature;
 class CSWCPlaceable;
 
-class CGameObject {
-public:
-    virtual void v00();
-    virtual void v04();
-    virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // +0x0C
-    virtual CSWSObject* AsSWSObject();              // +0x10
-    virtual void v14();
-    virtual void v18();
-    virtual void v1C();
-    virtual void v20();
-    virtual void v24();
-    virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // +0x2C
-    virtual void v30();
-    virtual void v34();
-    virtual void v38();
-    virtual void v3C();
-    virtual void v40();
-    virtual void v44();
-    virtual void v48();
-    virtual CSWCPlaceable* AsSWCPlaceable();        // +0x4C
-
-    unsigned long m_idSelf;                         // +0x04
-};
+#include "shared/game_object.h"
 
 class CSWSObject {
 public:
@@ -183,8 +159,6 @@ public:
 
 class CSWCObject : public CGameObject {
 public:
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
     virtual void v90(); virtual void v94();
@@ -202,7 +176,7 @@ public:
     // Descriptive: the speaker's own sound/lip-sync fallback.
     virtual void PlayDialogSound(const CResRef& rSound);    // +0x128
 
-    char pad_0x8[0x54 - 0x8];
+    char pad_0xc[0x48];
     int m_n54;                                      // +0x54
     char pad_0x58[0x68 - 0x58];
     CSWCAnimBase* m_pAnimationBase;                 // +0x68

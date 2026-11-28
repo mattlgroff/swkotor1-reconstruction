@@ -47,14 +47,7 @@ public:
     void AddObjectToArea(unsigned long oid, int bRunScripts);
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-    unsigned long GetID() { return m_idSelf; }
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
@@ -138,7 +131,7 @@ void CSWSPlaceable::AddToArea(CSWSArea *pArea, const Vector &vPosition, int bRun
         m_cWalkMesh.GetMeshBoundingBox(vMin, vMax);
         if (g_bShowPlaceableBoxes)
             m_cWalkMesh.RenderDebug(0, 0xffff0000, 0xff00ff00);
-        m_nBoundingBoxIndex = pArea->AddStaticBoundingBox(GetID(), &vMin, &vMax);
+        m_nBoundingBoxIndex = pArea->AddStaticBoundingBox(GetId(), &vMin, &vMax);
     }
     GetArea()->AddObjectToArea(m_idSelf, 1);
 }

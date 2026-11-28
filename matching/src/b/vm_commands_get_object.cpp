@@ -280,7 +280,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetPosition(int nCommandId, int nPa
     CGameObject* pObject;
     if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidTarget, &pObject) == GAME_OBJECT_VALID &&
         pObject && pObject->m_nObjectType > OBJECT_TYPE_AREA) {
-        vPosition = pObject->m_vPosition;
+        vPosition = ((CSWSObject*)pObject)->m_vPosition;
     }
     return g_pVirtualMachine->StackPushVector(vPosition) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
 }

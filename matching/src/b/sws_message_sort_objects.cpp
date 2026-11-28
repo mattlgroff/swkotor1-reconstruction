@@ -49,8 +49,8 @@ CSWSPlayerLUOSortedObjectList* CSWSMessage::SortObjectsForGameObjectUpdate(
             pObject->m_nObjectType <= OBJECT_TYPE_AREA) {
             continue;
         }
-        float fDY = pObject->m_vPosition.y - vPosition.y;
-        float fDX = pObject->m_vPosition.x - vPosition.x;
+        float fDY = ((CSWSObject*)pObject)->m_vPosition.y - vPosition.y;
+        float fDX = ((CSWSObject*)pObject)->m_vPosition.x - vPosition.x;
         float fDistanceSq = fDX * fDX + fDY * fDY;
         int bInclude = 0;
         float fRange = 250.0f;

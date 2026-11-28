@@ -399,7 +399,7 @@ void CClientExoAppInternal::ClearPauseExclusionList()
         if (pObject) {
             unsigned long nDay, nTime;
             GetActiveTimer(pObject->GetId())->GetWorldTime(&nDay, &nTime);
-            pObject->SetWorldTime(nDay, nTime);
+            pObject->ResetUpdateTimes(nDay, nTime);
             pObject->AsSWCObject()->FindPart(0xff, 1)->Resume();
         }
     }
@@ -415,7 +415,7 @@ void CClientExoAppInternal::AddToPauseExclusionList(unsigned long oid)
         m_pPauseExclusionList->AddTail((unsigned long*)oid);
         unsigned long nDay, nTime;
         GetActiveTimer(pObject->GetId())->GetWorldTime(&nDay, &nTime);
-        pObject->SetWorldTime(nDay, nTime);
+        pObject->ResetUpdateTimes(nDay, nTime);
     }
 }
 

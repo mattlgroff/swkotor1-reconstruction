@@ -89,14 +89,7 @@ public:
 
 class CSWSCreature;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();   // +0x30
-    unsigned long m_idSelf;             // +0x4
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
@@ -113,7 +106,7 @@ public:
     void ResolveRangedSpecialAttack(CSWSObject *pTarget, int nAttack);
     void ResolveMeleeSpecialAttack(int nAttack, int a2, CSWSObject *pTarget, int nImpactTime);
 
-    char pad_0x8[0x9c8 - 0x8];
+    char pad_0xc[0x9c8 - 0xc];
     CSWSCombatRound *m_pcCombatRound;   // 0x9c8
     char pad_0x9cc[0xa74 - 0x9cc];
     CSWSCreatureStats *m_pStats;        // 0xa74

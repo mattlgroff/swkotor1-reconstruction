@@ -7,12 +7,10 @@
 // records at +0x24.
 class CSWSPlaceableAnimView : public CGameObject {
 public:
-    virtual void v54(); virtual void v58(); virtual void v5c();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
     virtual void v70(); virtual void v74(); virtual void v78();
     virtual void SetAnimation(int nAnimation);      // 0x7c
 
-    char pad_0x18[0xd4 - 0x18];
+    char pad_0xc[0xd4 - 0xc];
     int m_nAnimation;                               // 0xd4
     float m_fAnimationSpeed;                        // 0xd8
     char pad_0xdc[0x450 - 0xdc];

@@ -46,32 +46,7 @@ class CSWSArea;
 
 class CSWSObject;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v04();
-    virtual void v08();
-    virtual void v0c();
-    virtual CSWSObject *AsSWSObject(); // +0x10
-    virtual void v14();
-    virtual void v18();
-    virtual void v1c();
-    virtual void v20();
-    virtual void v24();
-    virtual void v28();
-    virtual void v2c();
-    virtual CSWSCreature *AsSWSCreature();   // +0x30
-    virtual void v34();
-    virtual void v38();
-    virtual void v3c();
-    virtual void v40();
-    virtual void v44();
-    virtual CSWSPlaceable *AsSWSPlaceable(); // +0x48
-
-    unsigned long m_idSelf;          // +0x4
-    char pad_0x8[0x4];
-    unsigned long GetID() { return m_idSelf; }
-};
+#include "shared/game_object.h"
 
 template <class T>
 class CExoArrayList {
@@ -351,7 +326,7 @@ void CSWSDialog::RunScript(CSWSObject *pObject, const CResRef &cScript)
         return;
     CExoString sScript;
     cScript.CopyToString(sScript);
-    g_pVirtualMachine->RunScript(&sScript, pObject->GetID(), 1);
+    g_pVirtualMachine->RunScript(&sScript, pObject->GetId(), 1);
 }
 
 // FUNCTION: SWKOTOR 0x0059EE00
@@ -427,7 +402,7 @@ int CSWSDialog::CheckScript(CSWSObject *pObject, const CResRef &cScript)
         return 1;
     CExoString sScript;
     cScript.CopyToString(sScript);
-    int nResult = g_pVirtualMachine->RunScript(&sScript, pObject->GetID(), 1);
+    int nResult = g_pVirtualMachine->RunScript(&sScript, pObject->GetId(), 1);
     if (nResult == 1) {
         int nType;
         void *pValue;

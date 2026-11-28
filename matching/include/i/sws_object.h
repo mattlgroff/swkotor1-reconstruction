@@ -355,34 +355,7 @@ public:
     void FUN_0063d520(CSWSObject* pObject);         // 0x0063D520
 };
 
-class CGameObject {
-public:
-    virtual void v00();
-    virtual void v04();
-    virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // +0x0c
-    virtual CSWSObject* AsSWSObject();              // +0x10
-    virtual void v14();
-    virtual void v18();
-    virtual void v1c();
-    virtual void v20();
-    virtual void v24();
-    virtual CSWSArea* AsSWSArea();                  // +0x28
-    virtual void v2c();
-    virtual CSWSCreature* AsSWSCreature();          // +0x30
-    virtual void v34();
-    virtual void v38();
-    virtual void v3c();
-    virtual void v40();
-    virtual void v44();
-    virtual void v48();
-    virtual void v4c();
-    virtual CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject();  // +0x50
-    unsigned long GetId() { return m_idSelf; }
-
-    unsigned long m_idSelf;                         // +0x04
-    unsigned char m_nObjectType;                    // +0x08
-};
+#include "shared/game_object.h"
 
 class CGameObjectArray {
 public:
@@ -583,13 +556,6 @@ public:
 // vtable 0x00745F18
 class CSWSObject : public CGameObject {
 public:
-    virtual void v54();
-    virtual void v58();
-    virtual void v5c();
-    virtual void v60();
-    virtual void v64();
-    virtual void v68();
-    virtual void v6c();
     virtual void v70();
     virtual int RunActionNode(CSWSObjectActionNode* pNode, int bFlag);  // 0x74 (placeholder name)
     virtual void v78();

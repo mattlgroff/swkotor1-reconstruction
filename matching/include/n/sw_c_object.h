@@ -312,37 +312,7 @@ public:
     void PlayAnimation(unsigned short nAnim, void* pData, int n);         // 0x006911B0
 };
 
-class CGameObject {
-public:
-    CGameObject(unsigned char nObjectType, unsigned long oid);  // 0x004D7D60
-    virtual ~CGameObject() {}
-    virtual void SetId(unsigned long oid);          // 0x04
-    virtual void ResetUpdateTimes(unsigned long nDay, unsigned long nTime);  // 0x08
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-    virtual void* AsSWSObject();                    // 0x10
-    virtual CSWCDoor* AsSWCDoor();                  // 0x14
-    virtual void* AsSWSDoor();                      // 0x18
-    virtual void* AsSWCModule();                    // 0x1c
-    virtual void* AsSWSModule();                    // 0x20
-    virtual void* AsSWCArea();                      // 0x24
-    virtual void* AsSWSArea();                      // 0x28
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-    virtual void* AsSWSCreature();                  // 0x30
-    virtual void* AsSWCItem();                      // 0x34
-    virtual void* AsSWSItem();                      // 0x38
-    virtual CSWCTrigger* AsSWCTrigger();            // 0x3c
-    virtual void* AsSWSTrigger();                   // 0x40
-    virtual void* AsSWCProjectile();                // 0x44
-    virtual void* AsSWSPlaceable();                 // 0x48
-    virtual CSWCPlaceable* AsSWCPlaceable();        // 0x4c
-    virtual void* As50(); virtual void* As54(); virtual void* As58();
-    virtual void* As5C(); virtual void* As60(); virtual void* As64();
-    virtual void* As68(); virtual void* As6C();
-    virtual CExoString GetName();                   // 0x70
-
-    unsigned long m_idSelf;                         // 0x04
-    unsigned char m_nObjectType;                    // 0x08
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:

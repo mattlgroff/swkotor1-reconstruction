@@ -63,11 +63,7 @@ class CGob;
 class CSWCObject;
 class CSWCCreature;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-};
+#include "shared/game_object.h"
 
 class CGameObjectArray {
 public:
@@ -78,15 +74,6 @@ public:
 
 class CSWCObject : public CGameObject {
 public:
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-    virtual void v30();
-    virtual void* GetItemModel();                   // 0x34
-    virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7C();
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8C();
     virtual void v90(); virtual void v94();
@@ -102,7 +89,7 @@ class CSWCCreature : public CSWCObject {
 public:
     unsigned long GetEquippedItemID(unsigned long nSlot);   // 0x0060CA80
 
-    char pad_0x4[0x21c - 0x4];
+    char pad_0xc[0x21c - 0xc];
     CSWCCreatureItem21C* m_p21C;                    // 0x21c (descriptive)
 };
 
@@ -188,7 +175,7 @@ void CClientExoAppInternal::SetHitcheckIgnoreList(CExoArrayList<CGob*>* pList)
                 CSWCObject* pObject = pFound->AsSWCObject();
                 if (pObject) {
                     CSWCCreature* pCreature = pObject->AsSWCCreature();
-                    pObject->GetItemModel();
+                    pObject->AsSWCItem();
                     if (pObject->FindPart(0xff, 1)) {
                         pList->AddInline(pObject->FindPart(0xff, 1));
                     }

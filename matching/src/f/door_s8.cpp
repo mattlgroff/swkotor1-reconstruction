@@ -17,17 +17,7 @@ Vector Normalize(const Vector &v);
 class CSWSObject;
 class CSWSDoor;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual CSWSObject *AsSWSObject();         // +0x10
-    virtual void v14();
-    virtual CSWSDoor *AsSWSDoor();             // +0x18
-
-    unsigned long m_idSelf;          // +0x4
-    unsigned char m_nObjectType;     // +0x8
-    char pad_0x9[0x3];
-};
+#include "shared/game_object.h"
 
 class CServerExoApp {
 public:

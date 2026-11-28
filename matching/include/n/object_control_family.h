@@ -152,11 +152,7 @@ public:
 };
 class CClientExoApp { public: CSWCModule* GetModule(); CWorldTimer* GetWorldTimer(); CGuiInGame* GetInGameGui(); unsigned char GetActivePauseState(); };
 class CSWSObject { public: void AttachmentFromClientObject(CSWCObject*); };
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual CSWSObject* AsSWSObject();
-};
+#include "shared/game_object.h"
 class CServerExoApp { public: unsigned long ClientToServerObjectID(unsigned long); CGameObject* GetGameObject(unsigned long); };
 #include "shared/app_manager.h"
 class CSWCObject {

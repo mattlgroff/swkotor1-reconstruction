@@ -222,7 +222,7 @@ public:
 
 class CSWSModule7 : public CSWSModuleBase7, public CGameObject {
 public:
-    char pad_0x24[0x1a0 - 0x24];
+    char pad_0x28[0x1a0 - 0x28];
     unsigned char m_nMinutesPerHour;            // 0x1a0
 };
 

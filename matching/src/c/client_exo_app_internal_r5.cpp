@@ -281,7 +281,7 @@ CSWCItem* CClientExoAppInternal::GetItemByGameObjectID(unsigned long oid)
     CGameObject* pObject = 0;
     if (m_pGameObjectArray->GetGameObject(oid, &pObject) == GAME_OBJECT_VALID
         && pObject && pObject->m_nObjectType == OBJECT_TYPE_ITEM) {
-        return (CSWCItem*)pObject->GetItemModel();
+        return (CSWCItem*)pObject->AsSWCItem();
     }
     return 0;
 }

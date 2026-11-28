@@ -157,14 +157,7 @@ class CSWCItem : public CSWCObject, public CSWItem { public:
  void SetEquippedBy(CSWCCreature*);
 };
 class CClientAIMaster { public: int AddObject(CSWItem*); };
-class CGameObject {
-public: virtual ~CGameObject();
- virtual void v04(); virtual void v08(); virtual void v0C();
- virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
- virtual void v20(); virtual void v24(); virtual void v28(); virtual CSWCCreature* AsSWCCreature();
- virtual void v30(); virtual CSWCItem* AsSWCItem(); virtual void v38();
- virtual CSWCTrigger* AsSWCTrigger();
-};
+#include "shared/game_object.h"
 class CGameObjectArray { public: unsigned char Delete(unsigned long,CGameObject**);
  unsigned char GetGameObject(unsigned long,CGameObject**);
  unsigned char AddExternalObject(unsigned long*,CSWItem*,int); };

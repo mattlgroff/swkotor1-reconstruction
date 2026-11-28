@@ -191,15 +191,7 @@ public:
     unsigned short m_nSpellLevelAbsorptionStart;    // 0x152 (placeholder name)
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject() {}                       // 0x00
-    virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual CSWSObject* AsSWSObject();              // 0x10
-    virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
-};
+#include "shared/game_object.h"
 
 class CGameObjectArray {
 public:
@@ -237,10 +229,6 @@ inline CServerExoApp* GetServerExoApp() { return g_pAppManager->m_pServerExoApp;
 class CSWSObject : public CGameObject {
 public:
     virtual ~CSWSObject();
-    virtual void v34(); virtual void v38(); virtual void v3c();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4c();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5c();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
     virtual void v70(); virtual void v74(); virtual void v78(); virtual void v7c();
     virtual CResRef GetDialogResref();              // 0x80
     virtual void v84(); virtual void v88();
@@ -276,9 +264,6 @@ public:
     void LoadEffectList(CResGFF* pRes, CResStruct* pStruct);
     void LoadObjectState(CResGFF* pRes, CResStruct* pStruct);
 
-    unsigned long m_idSelf;                         // 0x04
-    unsigned char m_nObjectType;                    // 0x08
-    char pad_0x9[0xc - 0x9];
     CExoLocString m_sLocName;                       // 0x0c
     CExoString m_sTag;                              // 0x18
     CResRef m_cTemplateResRef;                      // 0x20

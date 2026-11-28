@@ -5,21 +5,12 @@
 
 class CSWSArea;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    virtual void v01(); virtual void v02(); virtual void v03();
-    virtual CSWSObject* AsSWSObject();                         // 0x10
-    virtual void v05(); virtual void v06(); virtual void v07();
-    virtual void v08(); virtual void v09(); virtual void v10(); virtual void v11();
-    virtual CSWSCreature* AsSWSCreature();                      // 0x30
-    unsigned long m_idSelf;                                   // 0x04
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
     CSWSArea* GetArea();                                      // 0x004CB120
-    char pad_0x8[0x1f8 - 0x8];
+    char pad_0xc[0x1ec];
     int m_bVisible;                                           // 0x1f8
 };
 

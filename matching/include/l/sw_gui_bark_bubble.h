@@ -89,17 +89,7 @@ public:
     unsigned long GetId() { return m_oid; }
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-    virtual void v10();
-    virtual class CSWCDoor* AsSWCDoor();            // 0x14
-    virtual void v18(); virtual void v1C(); virtual void v20(); virtual void v24();
-    virtual void v28(); virtual void v2C(); virtual void v30(); virtual void v34();
-    virtual class CSWSItem* AsSWSItem();            // 0x38
-    virtual class CSWCTrigger* AsSWCTrigger();      // 0x3c
-};
+#include "shared/game_object.h"
 class CGameObjectArray {
 public:
     unsigned char GetGameObject(unsigned long oid, CGameObject** ppObject);   // 0x004D8230

@@ -89,21 +89,14 @@ public:
     int m_bKeyRequired;                             // 0x2d8
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14();
-    virtual CSWSDoor* AsSWSDoor();                  // 0x18
-
-    unsigned long m_idSelf;                         // 0x04
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:
     CGameObject* GetServerObject();                 // 0x0063D4B0
     unsigned short GetCurrentAnimation();           // 0x0063C060
 
-    char pad_0x8[0x20 - 0x8];
+    char pad_0xc[0x14];
     CSWCArea* m_pArea;                              // 0x20
     char pad_0x24[0xfc - 0x24];
 };

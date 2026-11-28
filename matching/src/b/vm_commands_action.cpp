@@ -262,10 +262,10 @@ int CSWVirtualMachineCommands::ExecuteCommandActionRandomWalk(int nCommandId, in
     CGameObject* pObject;
     if (m_bValidObjectRunScript == 1 &&
         g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID) {
-        Vector vPosition = pObject->m_vPosition;
+        Vector vPosition = ((CSWSObject*)pObject)->m_vPosition;
         CSWSArea* pArea = ((CSWSObject*)pObject)->GetArea();
         CResRef cResRef;
-        if (pArea && pObject->m_bCommandable) {
+        if (pArea && ((CSWSObject*)pObject)->m_bCommandable) {
             unsigned long oidArea = pArea->m_idSelf;
             ((CSWSObject*)pObject)->AddAction(0x2d, 0xffff, 2, &vPosition.x, 2, &vPosition.y, 2, &vPosition.z, 3, &oidArea);
         }
@@ -279,7 +279,7 @@ int CSWVirtualMachineCommands::ExecuteCommandActionResumeConversation(int nComma
     CGameObject* pObject;
     if (m_bValidObjectRunScript == 1 &&
         g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pObject) == GAME_OBJECT_VALID &&
-        pObject->m_bCommandable) {
+        ((CSWSObject*)pObject)->m_bCommandable) {
         ((CSWSObject*)pObject)->AddAction(0x20, 0xffff, 0, NULL);
     }
     return 0;
@@ -319,13 +319,13 @@ int CSWVirtualMachineCommands::ExecuteCommandActionMoveAwayFromLocation(int nCom
         CResRef cResRef;
         if (pArea) {
             {
-                Vector vDiff = pObject->m_vPosition - vAwayFrom;
+                Vector vDiff = ((CSWSObject*)pObject)->m_vPosition - vAwayFrom;
                 if (!(vDiff.z * vDiff.z + vDiff.y * vDiff.y + vDiff.x * vDiff.x <= fMoveAwayRange * fMoveAwayRange)) {
                     return 0;
                 }
             }
             {
-                Vector vNewPosition = pArea->ComputeAwayVector(pObject->m_vPosition, vAwayFrom, fMoveAwayRange,
+                Vector vNewPosition = pArea->ComputeAwayVector(((CSWSObject*)pObject)->m_vPosition, vAwayFrom, fMoveAwayRange,
                                                                pObject->AsSWSCreature()->m_n340);
                 int nTen = 10;
                 Vector vFace(0.0f, 0.0f, 0.0f);

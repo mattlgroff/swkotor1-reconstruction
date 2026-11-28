@@ -52,41 +52,7 @@ public:
 
 class CSWSModule;
 
-class CGameObject {
-public:
-    CGameObject(unsigned char nType, unsigned long oid);    // 0x004D7D60
-    virtual ~CGameObject() {}                       // 0x004C3030
-    virtual void SetId(unsigned long oid);          // +0x04 (placeholder name)
-    virtual void ResetUpdateTimes(unsigned long nDay, unsigned long nTime);    // +0x08 (placeholder name)
-    virtual void* As0c();
-    virtual void* As10();
-    virtual void* As14();
-    virtual void* As18();
-    virtual void* As1c();
-    virtual CSWSModule* AsSWSModule();              // +0x20
-    virtual void* As24();
-    virtual void* As28();
-    virtual void* As2c();
-    virtual void* AsSWSCreature();                  // +0x30
-    virtual void* As34();
-    virtual void* As38();
-    virtual void* As3c();
-    virtual void* As40();
-    virtual void* As44();
-    virtual void* As48();
-    virtual void* As4c();
-    virtual void* As50();
-    virtual void* As54();
-    virtual void* As58();
-    virtual void* As5c();
-    virtual void* As60();
-    virtual void* As64();
-    virtual void* As68();
-    virtual void* As6c();
-
-    unsigned long m_idSelf;                         // +0x04
-    unsigned char m_nObjectType;                    // +0x08
-};
+#include "shared/game_object.h"
 
 class CExoLinkedListInternal {
 public:
@@ -340,6 +306,10 @@ public:
     CSWSArea* m_pCachedArea;                        // +0x220
 };
 
+// ~CGameObject is inline (shared/game_object.h); this unit emits its
+// out-of-line copy for the constructor's unwind code, as nwsmodule.o did.
+// FUNCTION: SWKOTOR 0x004C3030 SYMBOL: ??1CGameObject@@UAE@XZ
+// FUNCTION: SWKOTOR 0x004C3040 SYMBOL: ??_GCGameObject@@UAEPAXI@Z
 // FUNCTION: SWKOTOR 0x004C84A0
 CSWSModule::CSWSModule(const CExoString& sModule, int bAutoRequest, int nUnused)
     : CGameObject(OBJECT_TYPE_MODULE, 0x7f000000)

@@ -22,12 +22,7 @@ public:
     char pad_0x0[0x34];
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject() {}
-    unsigned long m_idSelf;                         // 0x04
-    char pad_0x8[0x4];
-};
+#include "shared/game_object.h"
 
 class CSWSPlayer {
 public:
@@ -128,12 +123,16 @@ public:
     void RemoveSpellAction();                       // 0x004D3BA0 (placeholder name)
 };
 
-class CSWSCreature : public CGameObject {
+class CSWSObject : public CGameObject {
 public:
+    CSWSArea* GetArea();                            // 0x004CB120
     char pad_0xc[0x80];
     unsigned long m_oidArea;                        // 0x8c
     Vector m_vPosition;                             // 0x90
-    CSWSArea* GetArea();                            // 0x004CB120
+};
+
+class CSWSCreature : public CSWSObject {
+public:
     CGameObjectClient* GetClientObject();           // 0x004CC2B0
     void UpdateObjectId(unsigned long nId, int a, int b, int c, int d);   // 0x0051B370 (placeholder name)
     void OnIdChanged(unsigned long nOldId);         // 0x00517960 (placeholder name)

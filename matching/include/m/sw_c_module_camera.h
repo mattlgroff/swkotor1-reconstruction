@@ -215,15 +215,7 @@ public:
     virtual Gob* GetModel(int nPart, int bLoad);    // +0x98, descriptive
 };
 
-class CGameObject {
-public:
-    virtual void g00(); virtual void g04(); virtual void g08();
-    virtual CSWCObject* AsSWCObject();              // +0x0c
-    M_CAM_VSLOTS4(g10)
-    virtual void g20(); virtual void g24(); virtual void g28();
-    virtual CSWCCreature* AsSWCCreature();          // +0x2c
-    virtual void g30(); virtual void g34(); virtual void g38(); virtual void g3c();
-};
+#include "shared/game_object.h"
 
 struct CClientOptions {
     void SetCameraMode(unsigned char nMode);        // 0x0061B6F0

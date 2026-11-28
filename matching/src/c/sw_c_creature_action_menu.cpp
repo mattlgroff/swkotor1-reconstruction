@@ -200,21 +200,11 @@ public:
 };
 
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual CSWCCreature* AsSWCCreature();          // 0x2c
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
-    virtual CSWCItem* AsSWCItem();                  // 0x34
-
-    unsigned long m_idSelf;                         // 0x04
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:
-    char pad_0x8[0x24 - 0x8];
+    char pad_0xc[0x18];
     Vector m_vPosition;                             // 0x24
 };
 

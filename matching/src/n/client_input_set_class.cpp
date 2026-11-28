@@ -4,7 +4,7 @@
 #include "shared/vector.h"
 #include "shared/exo_input.h"
 #include "shared/globals.h"
-class CGameObject { public: virtual ~CGameObject(); unsigned long m_idSelf; };
+#include "shared/game_object.h"
 class CSWSCreature : public CGameObject {};
 class CServerExoApp { public: CSWSCreature* GetPlayerCreature(); /* 0x004B2820 */ };
 class CClientExoApp { public: unsigned long ServerToClientObjectId(unsigned long oid); /* 0x005EDA50 */ };

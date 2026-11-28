@@ -76,17 +76,14 @@ public:
 
 #include "shared/globals.h"
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-    void UnloadModel();                             // 0x004015A0 (empty)
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:
+    void UnloadModel();                             // 0x004015A0 (empty)
     virtual ~CSWCObject();                          // 0x0063E800
 
-    char pad_0x4[0x68 - 0x4];
+    char pad_0xc[0x5c];
     CModel* m_pModel;                               // 0x68
 };
 
@@ -159,7 +156,7 @@ CSWCCreature::~CSWCCreature()
     }
     // The empty base version, as CSWCCreature::UnloadModel (0x0060C8E0)
     // itself starts with; the dtor does not call the creature override.
-    CGameObject::UnloadModel();
+    CSWCObject::UnloadModel();
     if (m_pModel) {
         m_pModel->DetachFromScene();
         delete m_pModel;

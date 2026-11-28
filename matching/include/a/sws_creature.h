@@ -779,26 +779,7 @@ public:
     int m_nF8;                                      // 0xf8 (placeholder name)
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void* AsSWSObject();                    // 0x10 (placeholder name)
-    virtual void v14(); virtual class CSWSDoor* AsSWSDoor(); virtual void v1c();  // 0x18 (descriptive name)
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
-    virtual void v34();
-    virtual CSWSItem* AsSWSItem();                  // 0x38
-    virtual void v3c(); virtual class CSWSTrigger* AsSWSTrigger(); virtual void v44();  // 0x40
-    virtual class CSWSPlaceable* AsSWSPlaceable();  // 0x48
-    virtual void v4c();
-    virtual class CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject();  // 0x50
-
-    CGameObject(unsigned char nObjectType, unsigned long oid);  // 0x004D7D60
-
-    unsigned long m_idSelf;                         // 0x04
-    unsigned char m_nObjectType;                    // 0x08
-    char pad_0x9[0xc - 0x9];
-};
+#include "shared/game_object.h"
 
 // The ctor is declared throw(): SetInParty's new-expression has no EH frame.
 struct CSWSCreaturePartyFollowInfo {
@@ -1024,8 +1005,6 @@ public:
     char m_aLocName[8];                              // 0xc
     char pad_0x14[0x2];
     unsigned short m_nAIGroupId;                    // 0x16
-    virtual void v54(); virtual void v58(); virtual void v5c();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
     virtual void v70();
     virtual int ClearAction(CSWSObjectActionNode* pNode, int bArg);  // 0x74 -> 0x004FAB00 (descriptive name)
     virtual void v78(); virtual void SetAnimation(int nAnimation);  // 0x7c (placeholder name)

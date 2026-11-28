@@ -78,10 +78,7 @@ public:
                               float*, float*);                       // 0x0058F840
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject();
-};
+#include "shared/game_object.h"
 
 class CClientObject : public CGameObject {
 public:
@@ -92,13 +89,6 @@ class CSWCObject : public CClientObject {
 public:
     CSWCObject(unsigned char);                                       // 0x0063E530
     virtual ~CSWCObject();                                           // 0x0063E800
-    virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6C();
     virtual CExoString GetName();                                    // +0x70
     virtual void AIUpdate();                                         // +0x74
     virtual int LoadModel(const CResRef&, unsigned char, int);       // +0x78
@@ -116,8 +106,7 @@ public:
     virtual void vE0(); virtual void vE4();
     virtual void UnknownE8();                                        // +0xE8 (empty in the base)
 
-    unsigned long m_oid;                                             // +0x04
-    char pad_0x8[0x20 - 0x8];
+    char pad_0xc[0x20 - 0xc];
     CSWSArea* m_pArea;                                               // +0x20 (as used by trigger edge tests)
     Vector m_vPosition;                                              // +0x24
     Vector m_vOrientation;                                           // +0x30

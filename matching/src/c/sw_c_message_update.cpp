@@ -12,21 +12,7 @@
 class CSWCItem;
 class CSWCPlaceable;
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0C();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28();
-    virtual void JoinParty();                       // 0x2c
-    virtual void v30();
-    virtual CSWCItem* AsSWCItem();                  // 0x34
-    virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48();
-    virtual CSWCPlaceable* AsSWCPlaceable();        // 0x4c
-
-    char pad_0x4[0x4];
-    unsigned char m_nObjectType;                    // 0x08
-};
+#include "shared/game_object.h"
 
 class CGameObjectArray {
 public:
@@ -668,7 +654,7 @@ int CSWCMessage::HandleServerToPlayerParty(unsigned char nType)
             unsigned long oid = ReadOBJECTIDClient();
             CGameObject* pObject;
             if (pArray->GetGameObject(oid, &pObject) == GAME_OBJECT_VALID) {
-                pObject->JoinParty();
+                pObject->AsSWCCreature();
             }
         }
         break;

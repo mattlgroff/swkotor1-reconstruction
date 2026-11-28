@@ -104,7 +104,7 @@ int CSWVirtualMachineCommands::ExecuteCommandSetCommandable(int nCommandId, int 
     }
     if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidTarget, &pObject) == GAME_OBJECT_VALID) {
         if (pObject->m_nObjectType > OBJECT_TYPE_AREA) {
-            pObject->m_bCommandable = bCommandable != 0;
+            ((CSWSObject*)pObject)->m_bCommandable = bCommandable != 0;
         }
     }
     return 0;

@@ -80,11 +80,7 @@ public:
 };
 
 class CSWCObject;
-class CGameObject {
-public:
-    virtual void g00(); virtual void g04(); virtual void g08();
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-};
+#include "shared/game_object.h"
 
 class CGuiInGame {
 public:

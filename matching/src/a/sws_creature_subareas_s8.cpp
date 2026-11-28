@@ -30,13 +30,7 @@ public:
     }
 };
 class CSWSArea;
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24();
-    virtual CSWSArea* AsSWSArea();                   // 0x28
-};
+#include "shared/game_object.h"
 class CGameObjectArray {
 public:
     unsigned char GetGameObject(unsigned long oid, CGameObject** ppObject); // 0x004D8230

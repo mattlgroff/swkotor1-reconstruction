@@ -5,11 +5,7 @@ class CSWParty { public: CSWCCreature* GetPlayerCharacter(); /* 0x00635460 */ };
 class CGameObjectBase { public: int m_nDummy; };
 class CGameObjectBase2 { public: int m_nDummy2; };
 class CDefaultActionTarget : public CGameObjectBase, public CGameObjectBase2 {};
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CDefaultActionTarget* AsDefaultActionTarget(); // +0x0C
-};
+#include "shared/game_object.h"
 #pragma pack(push,4)
 #include "shared/default_action.h"
 #pragma pack(pop)
@@ -54,7 +50,7 @@ void CClientExoAppInternal::HandleMouseClickInWorld()
                 CSWCCreature* pPlayer = g_pAppManager->GetClientExoApp()->GetSWParty()->GetPlayerCharacter();
                 CGameObject* pObject = g_pAppManager->GetClientExoApp()->GetGameObject(pAction->m_oidTarget);
                 if (pObject) {
-                    CDefaultActionTarget* pTarget = pObject->AsDefaultActionTarget();
+                    CDefaultActionTarget* pTarget = (CDefaultActionTarget*)pObject->AsSWCObject();
                     if (pTarget) {
                         m_pGuiManager->PlayGuiSound(6);
                         (pTarget->*pAction->m_pfnAction)(pAction->m_nArgument,pPlayer);

@@ -159,28 +159,10 @@ public:
     char pad_0x0[0x34];
 };
 
-class CGameObject {
-public:
-    virtual ~CGameObject();                     // 0x00
-    virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual class CSWSObject* AsSWSObject();    // 0x10
-    virtual void v14(); virtual void v18(); virtual void v1c();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2c();
-    virtual CSWSCreature* AsSWSCreature();      // 0x30
-
-    unsigned long GetId() { return m_idSelf; }
-
-    unsigned long m_idSelf;                     // 0x04
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
-    virtual void v34(); virtual void v38(); virtual void v3c();
-    virtual void v40(); virtual void v44();
-    virtual class CSWSPlaceable* AsSWSPlaceable();  // 0x48
-    virtual void v4c();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5c();
-    virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
     virtual void v70(); virtual void v74(); virtual void v78();
     virtual void SendFeedbackMessage(int nStrRef);  // 0x7c (placeholder name)
     virtual void v80(); virtual void v84(); virtual void v88(); virtual void v8c();
@@ -200,8 +182,7 @@ public:
 
     void SetAIValue(int nValue);                // 0x004CD240 (placeholder name)
 
-    unsigned char m_nObjectType;                // 0x08
-    char pad_0x9[0x8c - 0x9];
+    char pad_0xc[0x80];
     unsigned long m_oidArea;                    // 0x8c
     Vector m_vPosition;                         // 0x90
     Vector m_vOrientation;                      // 0x9c

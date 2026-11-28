@@ -101,11 +101,7 @@ public:
     unsigned char m_bHilitable;                     // 0x90 (descriptive)
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-};
+#include "shared/game_object.h"
 
 class CClientExoApp {
 public:

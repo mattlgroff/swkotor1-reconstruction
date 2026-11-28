@@ -157,27 +157,12 @@ public:
 
 class CSWCSoundObject;
 
-class CGameObject {
-public:
-    virtual ~CGameObject();                         // 0x00
-    virtual void SetId(unsigned long id);           // 0x04
-    virtual void v08();
-    virtual CSWCObject* AsSWCObject();              // 0x0c
-
-    unsigned long m_idSelf;                         // 0x04
-};
+#include "shared/game_object.h"
 
 class CSWCObject : public CGameObject {
 public:
     CSWCObject(unsigned char nObjectType);          // 0x0063E530
     virtual ~CSWCObject();                          // 0x0063E800
-    virtual void v10(); virtual void v14(); virtual void v18(); virtual void v1C();
-    virtual void v20(); virtual void v24(); virtual void v28(); virtual void v2C();
-    virtual void v30(); virtual void v34(); virtual void v38(); virtual void v3C();
-    virtual void v40(); virtual void v44(); virtual void v48(); virtual void v4C();
-    virtual void v50(); virtual void v54(); virtual void v58(); virtual void v5C();
-    virtual void v60(); virtual void v64(); virtual void v68();
-    virtual CSWCSoundObject* AsSWCSoundObject();    // 0x6c
     virtual void v70();
     virtual void AIUpdate() = 0;                    // 0x74
     virtual int Unknown78(int a, int b, int c) = 0; // 0x78
@@ -187,7 +172,7 @@ public:
     virtual void v88();
     virtual void SetPosition(const Vector& v);      // 0x8c (base 0x0063F340)
 
-    char pad_0x8[0xfc - 0x8];
+    char pad_0xc[0xf0];
 };
 
 class CSWCSoundObject : public CSWCObject {

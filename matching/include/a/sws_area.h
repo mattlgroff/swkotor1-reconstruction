@@ -228,38 +228,11 @@ class CSWSEncounter;
 class CSWSStore;
 class CSWSSoundObject;
 
-class CGameObject {
-public:
-    virtual ~CGameObject() {}                       // 0x00
-    virtual void v04(); virtual void v08(); virtual void v0c();
-    virtual CSWSObject* AsSWSObject();              // 0x10
-    virtual void v14();
-    virtual CSWSDoor* AsSWSDoor();                  // 0x18
-    virtual void v1c(); virtual void v20(); virtual void v24(); virtual void v28();
-    virtual void v2c();
-    virtual CSWSCreature* AsSWSCreature();          // 0x30
-    virtual void v34();
-    virtual CSWSItem* AsSWSItem();                  // 0x38
-    virtual void v3c();
-    virtual CSWSTrigger* AsSWSTrigger();            // 0x40
-    virtual void v44();
-    virtual CSWSPlaceable* AsSWSPlaceable();        // 0x48
-    virtual void v4c();
-    virtual CSWSAreaOfEffectObject* AsSWSAreaOfEffectObject();  // 0x50
-    virtual void v54();
-    virtual CSWSWaypoint* AsSWSWaypoint();          // 0x58
-    virtual CSWSEncounter* AsSWSEncounter();        // 0x5c
-    virtual void v60();
-    virtual CSWSStore* AsSWSStore();                // 0x64
-    virtual CSWSSoundObject* AsSWSSoundObject();    // 0x68
-
-    unsigned long m_idSelf;                         // 0x04
-    unsigned char m_nObjectType;                    // 0x08
-};
+#include "shared/game_object.h"
 
 class CSWSObject : public CGameObject {
 public:
-    virtual void v6c(); virtual void v70(); virtual void v74(); virtual void v78();
+     virtual void v70(); virtual void v74(); virtual void v78();
     virtual void v7c(); virtual void v80(); virtual void v84(); virtual void v88();
     virtual void v8c(); virtual void v90();
     virtual int GetDead();                          // 0x94 (placeholder name)

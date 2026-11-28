@@ -196,10 +196,7 @@ public:
     unsigned long GetEquippedItemID(unsigned long nSlot);  // 0x0060CA80
 };
 
-class CGameObject {
-public:
-    char pad_0x0[0xc];
-};
+#include "shared/game_object.h"
 
 class CClientExoApp {
 public:

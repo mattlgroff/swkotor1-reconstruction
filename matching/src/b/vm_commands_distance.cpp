@@ -30,7 +30,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDistanceBetween(int nCommandId, 
     CGameObject* pObjectB;
     if (pObjectArray->GetGameObject(oidObjectA, &pObjectA) == GAME_OBJECT_VALID &&
         pObjectArray->GetGameObject(oidObjectB, &pObjectB) == GAME_OBJECT_VALID) {
-        Vector vDelta = VectorSubtract(pObjectA->m_vPosition, pObjectB->m_vPosition);
+        Vector vDelta = VectorSubtract(((CSWSObject*)pObjectA)->m_vPosition, ((CSWSObject*)pObjectB)->m_vPosition);
         fDistance = Magnitude(vDelta);
     }
     return g_pVirtualMachine->StackPushFloat(fDistance) ? 0 : VIRTUAL_MACHINE_ERROR_STACK_OVERFLOW;
@@ -51,8 +51,8 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDistanceBetween2D(int nCommandId
     CGameObject* pObjectB;
     if (pObjectArray->GetGameObject(oidObjectA, &pObjectA) == GAME_OBJECT_VALID &&
         pObjectArray->GetGameObject(oidObjectB, &pObjectB) == GAME_OBJECT_VALID) {
-        Vector vA = pObjectA->m_vPosition;
-        Vector vB = pObjectB->m_vPosition;
+        Vector vA = ((CSWSObject*)pObjectA)->m_vPosition;
+        Vector vB = ((CSWSObject*)pObjectB)->m_vPosition;
         Vector vDelta;
         vDelta.x = vA.x - vB.x;
         vDelta.y = vA.y - vB.y;
@@ -154,12 +154,12 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDistanceToObject(int nCommandId,
     CGameObject* pSelf;
     if (m_bValidObjectRunScript == 1 &&
         g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pSelf) == GAME_OBJECT_VALID) {
-        Vector vSelf = pSelf->m_vPosition;
+        Vector vSelf = ((CSWSObject*)pSelf)->m_vPosition;
         CSWSArea* pArea = ((CSWSObject*)pSelf)->GetArea();
         CGameObject* pObject;
         if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidObject, &pObject) == GAME_OBJECT_VALID &&
             pObject && pObject->m_nObjectType > OBJECT_TYPE_AREA) {
-            Vector vObject = pObject->m_vPosition;
+            Vector vObject = ((CSWSObject*)pObject)->m_vPosition;
             if (((CSWSObject*)pObject)->GetArea() == pArea) {
                 Vector vDelta = VectorSubtract(vObject, vSelf);
                 fDistance = Magnitude(vDelta);
@@ -180,12 +180,12 @@ int CSWVirtualMachineCommands::ExecuteCommandGetDistanceToObject2D(int nCommandI
     CGameObject* pSelf;
     if (m_bValidObjectRunScript == 1 &&
         g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(m_oidObjectRunScript, &pSelf) == GAME_OBJECT_VALID) {
-        Vector vSelf = pSelf->m_vPosition;
+        Vector vSelf = ((CSWSObject*)pSelf)->m_vPosition;
         CSWSArea* pArea = ((CSWSObject*)pSelf)->GetArea();
         CGameObject* pObject;
         if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidObject, &pObject) == GAME_OBJECT_VALID &&
             pObject && pObject->m_nObjectType > OBJECT_TYPE_AREA) {
-            Vector vObject = pObject->m_vPosition;
+            Vector vObject = ((CSWSObject*)pObject)->m_vPosition;
             if (((CSWSObject*)pObject)->GetArea() == pArea) {
                 Vector vDelta;
                 vDelta.x = vObject.x - vSelf.x;
@@ -216,7 +216,7 @@ int CSWVirtualMachineCommands::ExecuteCommandGetFacing(int nCommandId, int nPara
     CGameObject* pObject;
     if (g_pAppManager->GetServerExoApp()->GetObjectArray()->GetGameObject(oidObject, &pObject) == GAME_OBJECT_VALID &&
         pObject && pObject->m_nObjectType > OBJECT_TYPE_AREA) {
-        vOrientation = pObject->m_vOrientation;
+        vOrientation = ((CSWSObject*)pObject)->m_vOrientation;
         vOrientation.z = 0.0f;
         Vector vNormal = Normalize(vOrientation);
         fFacing = (float)atan2(vOrientation.y, vOrientation.x) * 57.29578f;

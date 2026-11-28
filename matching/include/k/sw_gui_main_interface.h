@@ -547,11 +547,7 @@ public:
     };
 };
 
-class CGameObject {
-public:
-    virtual void v00(); virtual void v04(); virtual void v08();
-    virtual CSWCActionTarget* AsActionTarget();     // 0x0c
-};
+#include "shared/game_object.h"
 
 class CGuiInGame {
 public:
