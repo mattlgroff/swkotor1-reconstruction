@@ -267,18 +267,7 @@ public:
 };
 
 // A Pazaak card {value, flag}; the constructor only clears the flag.
-struct CPazaakCard {
-    CPazaakCard() { m_bFlag = 0; }
-    CPazaakCard(int nValue, int bFlag)
-    {
-        m_nValue = nValue;
-        m_bFlag = bFlag;
-    }
-    int operator!=(CPazaakCard cCard) { return m_nValue != cCard.m_nValue || m_bFlag != cCard.m_bFlag; }
-
-    int m_nValue;
-    int m_bFlag;
-};
+#include "shared/pazaak_card.h"
 
 // 0x70 bytes, no vtable (ctor 0x006E4B50).
 class CPazaakPlayer {

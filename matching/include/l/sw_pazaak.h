@@ -34,16 +34,7 @@ extern "C" int __cdecl rand(void);                  // 0x006FC447
 #include "shared/globals.h"
 
 // A Pazaak card {value, flag}; the constructor only clears the flag.
-struct CPazaakCard {
-    CPazaakCard() { m_bFlag = 0; }
-    CPazaakCard(int nValue, int bFlag)
-    {
-        m_nValue = nValue;
-        m_bFlag = bFlag;
-    }
-    int m_nValue;
-    int m_bFlag;
-};
+#include "shared/pazaak_card.h"
 
 // 0x70 bytes, no vtable (ctor 0x006E4B50).
 class CPazaakPlayer {
