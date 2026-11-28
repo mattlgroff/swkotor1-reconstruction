@@ -198,8 +198,7 @@ public:
 
 class CGameObject {
 public:
-    char pad_0x0[0x10];
-    CSWCObject m_cClientObject;                     // 0x10 (placeholder)
+    char pad_0x0[0xc];
 };
 
 class CClientExoApp {

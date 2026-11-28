@@ -798,9 +798,6 @@ public:
     unsigned long m_idSelf;                         // 0x04
     unsigned char m_nObjectType;                    // 0x08
     char pad_0x9[0xc - 0x9];
-    char m_aLocName[8];                             // 0x0c (CExoLocString storage, descriptive name)
-    char pad_0x14[0x16 - 0x14];
-    unsigned short m_nAIGroupId;                    // 0x16 (placeholder name)
 };
 
 // The ctor is declared throw(): SetInParty's new-expression has no EH frame.
@@ -1024,6 +1021,9 @@ public:
 
 class CSWSCreature : public CGameObject {
 public:
+    char m_aLocName[8];                              // 0xc
+    char pad_0x14[0x2];
+    unsigned short m_nAIGroupId;                    // 0x16
     virtual void v54(); virtual void v58(); virtual void v5c();
     virtual void v60(); virtual void v64(); virtual void v68(); virtual void v6c();
     virtual void v70();

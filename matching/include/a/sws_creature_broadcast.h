@@ -26,9 +26,7 @@ class CGameObject {
 public:
     virtual ~CGameObject() {}
     unsigned long m_idSelf;                         // 0x04
-    char pad_0x8[0x8c - 0x8];
-    unsigned long m_oidArea;                        // 0x8c
-    Vector m_vPosition;                             // 0x90
+    char pad_0x8[0x4];
 };
 
 class CSWSPlayer {
@@ -132,6 +130,9 @@ public:
 
 class CSWSCreature : public CGameObject {
 public:
+    char pad_0xc[0x80];
+    unsigned long m_oidArea;                        // 0x8c
+    Vector m_vPosition;                             // 0x90
     CSWSArea* GetArea();                            // 0x004CB120
     CGameObjectClient* GetClientObject();           // 0x004CC2B0
     void UpdateObjectId(unsigned long nId, int a, int b, int c, int d);   // 0x0051B370 (placeholder name)

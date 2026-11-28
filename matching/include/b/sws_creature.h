@@ -390,27 +390,7 @@ public:
 
     unsigned long m_idSelf;                                 // 0x4
     unsigned char m_nObjectType;                            // 0x8
-    char pad_0x9[0x18 - 0x9];
-    CExoString m_sTag;                                      // 0x18
-    char pad_0x20[0x50 - 0x20];
-    int m_bDialogPaused;                                    // 0x50 (name guessed)
-    unsigned long m_oid54;                                  // 0x54 (name guessed)
-    char pad_0x58[0x78 - 0x58];
-    int m_nAILevel;                                         // 0x78 (name guessed)
-    char pad_0x7c[0x8c - 0x7c];
-    unsigned long m_oidArea;                                // 0x8c
-    Vector m_vPosition;                                     // 0x90
-    Vector m_vOrientation;                                  // 0x9c
-    char pad_0xa8[0xd4 - 0xa8];
-    int m_nD4;                                              // 0xd4 (items: 10001)
-    char pad_0xd8[0xe0 - 0xd8];
-    short m_nE0;                                            // 0xe0 (party update; name unknown)
-    char pad_0xe2[0xe4 - 0xe2];
-    short m_nE4;                                            // 0xe4 (party update; name unknown)
-    char pad_0xe6[0xe8 - 0xe6];
-    int m_bCommandable;                                     // 0xe8
-    int m_bEC;                                              // 0xec (name guessed)
-    int m_bF0;                                              // 0xf0
+    char pad_0x9[0x3];
 };
 
 #include "shared/game_object_client.h"
@@ -461,6 +441,27 @@ public:
 
 class CSWSObject : public CGameObject {
 public:
+    char pad_0xc[0xc];
+    CExoString m_sTag;                              // 0x18
+    char pad_0x20[0x30];
+    int m_bDialogPaused;                            // 0x50
+    unsigned long m_oid54;                          // 0x54
+    char pad_0x58[0x20];
+    int m_nAILevel;                                 // 0x78
+    char pad_0x7c[0x10];
+    unsigned long m_oidArea;                        // 0x8c
+    Vector m_vPosition;                             // 0x90
+    Vector m_vOrientation;                          // 0x9c
+    char pad_0xa8[0x2c];
+    int m_nD4;                                      // 0xd4
+    char pad_0xd8[0x8];
+    short m_nE0;                                    // 0xe0
+    char pad_0xe2[0x2];
+    short m_nE4;                                    // 0xe4
+    char pad_0xe6[0x2];
+    int m_bCommandable;                             // 0xe8
+    int m_bEC;                                      // 0xec
+    int m_bF0;                                      // 0xf0
     CSWSObject(unsigned char nObjectType, unsigned long nId, int bArg); // 0x004CFCB0
     ~CSWSObject();                                          // 0x004D0220
     void SetOrientation(const Vector& vOrientation);        // 0x004CD170

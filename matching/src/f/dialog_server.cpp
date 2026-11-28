@@ -87,12 +87,13 @@ public:
     CSWSArea *GetArea();
     unsigned long GetNearestObjectByTag(const CExoString &sTag, float fRange);
     unsigned long m_idSelf;          // +0x4
-    char pad_0x8[0x10];
-    CExoString m_sTag;               // +0x18
+    char pad_0x8[0x4];
 };
 
 class CSWSObject : public CGameObject {
 public:
+    char pad_0xc[0xc];
+    CExoString m_sTag;                              // 0x18
     void SetDialogDelay(float fDelay);
     void SetDialogOwner(unsigned long oidOwner);
     void StopSoundPlayingInDialog();

@@ -69,8 +69,7 @@ public:
     CSWSArea *GetArea();
     unsigned long GetNearestObjectByTag(const CExoString &sTag, int n);
     unsigned long m_idSelf;          // +0x4
-    char pad_0x8[0x10];
-    CExoString m_sTag;               // +0x18
+    char pad_0x8[0x4];
     unsigned long GetID() { return m_idSelf; }
 };
 
@@ -100,6 +99,8 @@ public:
 
 class CSWSObject : public CGameObject {
 public:
+    char pad_0xc[0xc];
+    CExoString m_sTag;                              // 0x18
     void SetDialogOwner(unsigned long oidOwner);
     char pad_0x20[0x34];
     unsigned long m_oidDialogOwner;  // +0x54
@@ -109,6 +110,8 @@ public:
 
 class CSWSCreature : public CGameObject {
 public:
+    char pad_0xc[0xc];
+    CExoString m_sTag;                              // 0x18
     void SetDialogState(int nState, int a, int b);
     int GetTimeSinceLastHostile(unsigned long nTime, int b);
     void SetCombatMode(int b);
