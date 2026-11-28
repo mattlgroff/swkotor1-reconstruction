@@ -81,22 +81,7 @@ public:
 #include "shared/globals.h"
 
 // Localized string table entry (0x0C bytes).
-class CERFString {
-public:
-    CERFString()
-    {
-        m_nLanguage = 0;
-        m_nLength = 0;
-        m_sText = 0;
-    }
-    ~CERFString();
-    void SetText(CExoString& sText);
-    int Read(CExoFile* pFile);
-
-    unsigned long m_nLanguage;                      // 0x00
-    unsigned long m_nLength;                        // 0x04
-    char* m_sText;                                  // 0x08
-};
+#include "shared/erf_string.h"
 
 // Key list entry (0x18 bytes).
 class CERFKey {
