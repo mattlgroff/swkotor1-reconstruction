@@ -31,6 +31,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MATCHING = ROOT / "matching"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import rulecheck as rc
+from matchcmp import library_defines
 
 
 def first_branch_only(text):
@@ -107,6 +108,7 @@ def compile_all(jobs):
     def one(item):
         i, p = item
         run = subprocess.run([str(msvc / "BIN" / "CL.EXE"), "/nologo", "/c", "-O2", "-Gy", "-GX",
+                              *library_defines(p),
                               "/I", str(MATCHING / "include"), f"/Fo{out / f'{i}.obj'}", str(p)],
                              capture_output=True, text=True, env=env)
         return p, run.returncode, run.stdout + run.stderr

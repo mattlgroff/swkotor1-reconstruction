@@ -173,6 +173,16 @@ run it after the byte gate.
   `CSWVirtualMachineCommands`, `CVirtualMachineCmdImplementer`.
   Globals have one declaration each in `include/shared/globals.h`, apart from
   the cases [research/r2-globals.md](research/r2-globals.md) lists.
+- **R1 counts per library.** The renderer (Aurora) and the game were built
+  with different versions of some headers: the original's out-of-line
+  `CExoArrayList` instances start at 8 elements in the renderer's objects and
+  at 16 in the game's ([research/r1-roadmap.md](research/r1-roadmap.md)).
+  `matching/libraries.csv` lists the renderer's units, and the build
+  (`tools/matchcmp.py`, `tools/mergetype.py`) defines `AURORA_LIBRARY` for
+  them; every other unit is the game's. A shared header may test
+  `AURORA_LIBRARY` where the two versions differ, with the evidence beside
+  the test. It is still one declaration in one header. A unit that
+  `#define`s `AURORA_LIBRARY` itself is an R1 finding, like any other toggle.
 - **R7 stays advisory.** Placeholder names never block a match.
 
 ## Fakematch patterns seen in this tree
