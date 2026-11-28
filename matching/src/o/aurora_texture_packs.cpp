@@ -22,7 +22,6 @@ int AurTextureSetMem(int nMem);                     // 0x00421D90
 int AurInterfaceStub(int nArg1, int nArg2);
 
 #include "shared/globals.h"
-extern CExoLinkedList<CAuroraModel> g_lRequestedModels; // 0x00834094
 
 #include "shared/aurora_callbacks.h"
 

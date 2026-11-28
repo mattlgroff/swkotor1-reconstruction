@@ -77,12 +77,11 @@ went from 259 to 3; the byte gate lost nothing.
 - **Declarator lists** (`extern int a, b, c;`) are one declaration per line.
 - `g_hWnd` and `g_hInstance` are `void*`, as the units' own `HWND` and
   `HINSTANCE` typedefs already made them.
+- `g_lRequestedModels` (`CExoLinkedList<CAuroraModel>`) moved to `globals.h`
+  once `CExoLinkedList` was merged; no byte match is blocked by R2 now.
 
 ## Still open
 
-- `g_lRequestedModels` (three byte matches in `o/aurora_texture_packs.cpp`)
-  is a `CExoLinkedList<CAuroraModel>`, a template that unit defines itself;
-  it moves when `CExoLinkedList` is merged (R1).
 - **Aliases the checker cannot see.** Writable globals at one address are one
   variable (ICF folds only functions and constants), but two reconstructions
   name some of them differently: the raster callbacks at

@@ -7,6 +7,7 @@
 #define SHARED_GLOBALS_H
 
 #include "shared/vector.h"
+#include "shared/exo_linked_list.h"
 
 template <class T> class CExoArrayList;
 template <class T> class SafePointer;
@@ -1967,5 +1968,8 @@ extern int g_vertex_program_capacity_008305d4;
 extern VertexProgramData** g_vertex_program_data_008305cc;
 extern int g_vertex_program_size_008305d0;
 extern VertexProgramArray g_vertex_programs_008305cc;
+
+class CAuroraModel;
+extern CExoLinkedList<CAuroraModel> g_lRequestedModels;  // 0x00834094
 
 #endif
