@@ -283,12 +283,7 @@ public:
     unsigned long Rand();                           // 0x005ECCA0
 };
 
-class CExoRand {
-public:
-    CExoRandInternal* m_pcExoRandInternal;          // 0x00
-
-    unsigned long Rand();
-};
+#include "shared/exo_rand.h"
 
 // FUNCTION: SWKOTOR 0x005EA490
 unsigned long CExoRand::Rand()

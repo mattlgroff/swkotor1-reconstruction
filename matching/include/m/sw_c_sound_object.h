@@ -45,10 +45,7 @@ public:
     void DelIndex(int i);                           // <CResRef>: 0x00648100
 };
 
-class CExoRand {
-public:
-    unsigned long Rand();                           // 0x005EA490
-};
+#include "shared/exo_rand.h"
 
 class CExoBase {
 public:

@@ -5,7 +5,7 @@ class CExoIni { public: CExoIni(); ~CExoIni(); void* m_p; };                    
 class CExoAliasList { public: CExoAliasList(); ~CExoAliasList(); void* m_p; };   // 0x005E6810 / 0x005E69B0
 class CExoTimers { public: CExoTimers(); ~CExoTimers(); void* m_p; };            // 0x005E91E0 / 0x005E9270
 class CExoDebug { public: CExoDebug(); ~CExoDebug(); char pad_0x0[0x10]; };          // 0x005E9370 / 0x005E9430
-class CExoRand { public: CExoRand(); ~CExoRand(); void* m_p; };                  // 0x005EA420 / 0x005EA4A0
+#include "shared/exo_rand.h"                  // 0x005EA420 / 0x005EA4A0
 
 class CExoBase {
 public:
