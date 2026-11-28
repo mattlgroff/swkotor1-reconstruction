@@ -106,11 +106,7 @@ public:
 
 // Object returned by CAurBehavior slot +0x1C; only its accumulated tilt
 // at +0x48 is used here (descriptive names).
-class CSWCameraTiltTarget {
-public:
-    char pad_0x00[0x48];
-    float m_fTilt;                              // +0x48
-};
+#include "shared/sw_camera_tilt_target.h"
 
 class CAurBehavior {
 public:
