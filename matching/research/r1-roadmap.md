@@ -153,6 +153,32 @@ both resolutions lose matches is a unit-boundary case.
    So each family needs its real bases settled from evidence (vtables,
    constructors, the Mac tables) and merged from the root down:
    `CGameObject`, then `CSWSObject` and `CSWCObject`, then their subclasses.
+
+   `CGameObject` is merged (`shared/game_object.h`). `CSWSObject` is next and
+   waits on three by-value member types: `CExoLocString` (+0x0C), `CResRef`
+   (+0x20) and `CExoArrayList` (several lists). Its vtable is settled from
+   the original, not by vote: the constructor (0x004CFCB0) stores 0x00745F18,
+   and `tools/vtread.py 0x745F18 56` names every slot from the Mac map,
+   `symbols.csv` and the annotations. The 25 flattened copies (no base list)
+   rebase onto `CGameObject` cleanly; the copies named slots differently
+   where the vtable shows one function:
+
+   | slot | function | names the copies use |
+   | --- | --- | --- |
+   | +0x70, +0x78 | `_purecall` | `AIUpdate`, `EventHandler`: pure virtual |
+   | +0x7C | `CSWSObject::SetAnimation(int)` (Mac) | `SetAnimation` 9, `SendFeedbackMessage`, `SetDialogDelay7C` (the effect handlers pass animation numbers such as 0x27A1) |
+   | +0x80 | `CSWSObject::GetDialogResref()` (Mac) | `GetConversation`, `GetTemplateResRef` |
+   | +0x94 | `CSWSObject::GetDead` 0x004CB810 | `GetIsInConversation` 3, `GetObjectState94`, `GetIsDead` |
+   | +0x98 | 0x004D01A0; `CSWSCreature::GetMaxHitPoints(int)` (Mac) overrides it | `GetGender(int)` (the definition in `a/sws_object.cpp`), `GetCreatureSize` |
+   | +0xA0 | `CSWSObject::DamageHitPoints` 0x004CCF80 | declared non-virtual by the copies |
+   | +0xB4 | `CSWSObject::GetDamageImmunityByFlags` 0x004CAF70 | `GetDamageImmunity`, `GetTotalDamageImmunity` |
+   | +0xC8 | base 0x004D01C0 returns `m_cTemplateResRef`; `CSWSCreature` 0x004F8370 returns `m_pStats->m_cPortrait` | `GetTemplateResRef`, `GetPortrait` |
+   | +0xD0 | 0x004D0210 returns `m_n30` | `Get30`, `GetPortraitId` |
+   | +0xDC | `CSWSCreature::UpdateAttributesOnEffect(CGameEffect*)` (Mac) | `OnEffectListChanged` |
+
+   `CSWSCreature`'s vtable is 0x007470C8 (constructor 0x004F7A10),
+   `CSWSDoor`'s 0x007498B0, `CSWSPlaceable`'s 0x007494D0, `CSWSItem`'s
+   0x00748DA0.
    The flattened copies keep their layout when the intermediate class is put
    back (`class CSWSCreature : public CSWSObject` with `CSWSObject`'s members
    moved there), so the bytes and the mangled names stay the same.
