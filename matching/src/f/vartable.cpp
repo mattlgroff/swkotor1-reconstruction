@@ -29,11 +29,7 @@ public:
     int WriteFieldDWORD(CResStruct *pStruct, unsigned long nValue, char *szLabel);
 };
 
-class CSWBooleanArray {
-public:
-    CSWBooleanArray() { for (int i = 0; i < 3; i++) m_a[i] = 0; }
-    unsigned long m_a[3];
-};
+#include "shared/sw_boolean_array.h"
 
 class CSWVarTable {
 public:
