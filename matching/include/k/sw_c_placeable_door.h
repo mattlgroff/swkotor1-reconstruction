@@ -143,7 +143,7 @@ public:
  virtual void v44();
  virtual CSWSPlaceable* AsSWCPlaceable();
 };
-class CSWCObjectServerLink { public: virtual ~CSWCObjectServerLink(); CSWSObject* GetServerObject(); };
+#include "shared/swc_object_server_link.h"
 class CSWCObject : public CSWCObjectServerLink {
 public:
  CSWCObject(unsigned char); virtual ~CSWCObject();

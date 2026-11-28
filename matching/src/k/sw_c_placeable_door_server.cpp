@@ -4,10 +4,7 @@ class CSWSPlaceable;
 class CSWSDoor;
 class CSWSObject;
 
-class CSWCObjectServerLink {
-public:
-    CSWSObject* GetServerObject();                        // 0x0063D4B0
-};
+#include "shared/swc_object_server_link.h"
 
 class CSWCObject : public CSWCObjectServerLink {};
 

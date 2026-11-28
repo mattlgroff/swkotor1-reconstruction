@@ -11,10 +11,7 @@ public:
     virtual CSWSItem* AsSWSItem();                  // 0x38
 };
 
-class CSWCObjectServerLink {
-public:
-    CSWSObject* GetServerObject();                  // 0x0063D4B0
-};
+#include "shared/swc_object_server_link.h"
 
 class CSWCItem {
 public:
