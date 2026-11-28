@@ -122,11 +122,7 @@ public:
 // destructor. CResRef's destructor is trivial everywhere else, so this is
 // left as a placeholder until the element type is known (CSWCPlayer keeps
 // its portrait CResRef at +0x14).
-class CClientPlayerField14 {
-public:
-    ~CClientPlayerField14();                        // 0x004015A0 (empty)
-    char m_data[16];
-};
+#include "shared/client_player_field14.h"
 
 class CClientPlayer {
 public:
