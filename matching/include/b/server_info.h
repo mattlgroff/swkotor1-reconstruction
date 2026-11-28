@@ -8,11 +8,7 @@
 #include "b/sw_rules.h"
 #endif
 
-struct CServerOption {
-    char* m_szName;                                 // 0x0
-    char* m_szValue;                                // 0x4
-    char pad_0x8[0x8];
-};
+#include "shared/server_option.h"
 
 class CServerInfo {
 public:
