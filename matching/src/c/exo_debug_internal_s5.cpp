@@ -4,10 +4,7 @@
 #include <string.h>
 #include "c/exo_base.h"
 
-class CExoDebugInternal {
-public:
-    void Warning(int nLine, char* sFile, const char* sMessage);
-};
+#include "shared/exo_debug_internal.h"
 
 // The bare CStr() calls are debugger-output statements compiled out of the
 // release build.

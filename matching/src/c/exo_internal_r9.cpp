@@ -149,20 +149,7 @@ public:
     ~CExoFile();                                    // 0x005E69E0
 };
 
-class CExoDebugInternal {
-public:
-    int m_bFilesOpen;                               // 0x00
-    CExoFile* m_pLogFile;                           // 0x04
-    CExoFile* m_pScriptLogFile;                     // 0x08
-    CExoFile* m_pErrorLogFile;                      // 0x0c
-    CExoFile* m_pWarningLogFile;                    // 0x10
-    CExoFile* m_pFile14;                            // 0x14
-    CExoFile* m_pFile18;                            // 0x18
-
-    CExoDebugInternal();
-    void GetCurrentTimestamp(CExoString& s);
-    void CloseLogFiles();
-};
+#include "shared/exo_debug_internal.h"
 
 // FUNCTION: SWKOTOR 0x005EC290
 CExoDebugInternal::CExoDebugInternal()
