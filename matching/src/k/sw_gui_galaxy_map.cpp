@@ -53,11 +53,7 @@ public:
 };
 
 // One galaxy-map planet entry (descriptive).
-struct CSWGuiGalaxyPlanet {
-    unsigned long m_nNameStrRef;
-    unsigned long m_nDescriptionStrRef;
-    CResRef m_cModel;
-};
+#include "shared/sw_gui_galaxy_planet.h"
 
 class CSWPartyTable {
 public:

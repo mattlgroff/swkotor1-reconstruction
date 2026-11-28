@@ -193,11 +193,7 @@ public:
 
 #include "shared/globals.h"
 
-struct CSWGuiGalaxyPlanet {
-    int m_nNameStrRef;                              // 0x00
-    int m_nDescriptionStrRef;                       // 0x04
-    CResRef m_cModel;                               // 0x08
-};
+#include "shared/sw_gui_galaxy_planet.h"
 
 class CSWGuiPanel : public CSWGuiObject {
 public:
